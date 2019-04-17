@@ -175,6 +175,10 @@ dependencies {
     debugImplementation "com.willowtreeapps.hyperion:hyperion-timber:$rootProject.hyperionVersion"
     debugImplementation "com.willowtreeapps.hyperion:hyperion-build-config:$rootProject.hyperionVersion"
 
+    // Fonts
+    implementation "io.github.inflationx:calligraphy3:$calligraphy3Version"
+    implementation "io.github.inflationx:viewpump:$viewpumpVersion"
+
 }
 
 detekt {

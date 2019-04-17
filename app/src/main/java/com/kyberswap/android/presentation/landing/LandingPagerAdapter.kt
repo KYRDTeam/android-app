@@ -9,7 +9,7 @@ class LandingPagerAdapter constructor(
 ) : FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
-        return LandingFragment.newInstance()
+        return LandingFragment.newInstance(position)
     }
 
     override fun getCount() = 3

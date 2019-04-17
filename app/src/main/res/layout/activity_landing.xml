@@ -4,13 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".presentation.main.MainActivity">
 
-    <data>
-
-        <variable
-            name="viewModel"
-            type="com.kyberswap.android.presentation.landing.LandingViewModel" />
-    </data>
-
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -34,11 +27,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="418dp"
+                app:ci_animator="@anim/indicator"
+                app:ci_drawable="@drawable/ci_drawable"
+                app:ci_drawable_unselected="@drawable/ci_drawable_unselected"
+                app:ci_gravity="center"
                 app:ci_height="6dp"
                 app:ci_margin="9dp"
                 app:ci_width="21dp"
-                app:ci_animator="@anim/indicator"
-                app:ci_gravity="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
