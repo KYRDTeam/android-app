@@ -44,7 +44,7 @@ ext {
     fabVersion = '1.6.4'
     glideVersion = '4.9.0'
     archLifeCycleVersion = '1.1.1'
-    daggerVersion = '2.16'
+    daggerVersion = '2.22.1'
     multidexVersion = '1.0.3'
     retrofitVersion = '2.5.0'
     gsonVersion = '2.8.5'
@@ -63,5 +63,7 @@ ext {
     mockWebserverVersion = '3.10.0'
     materialDialogVersion = '0.9.6.0'
     indicatorVersion = '1.2.2'
+    calligraphy3Version = '3.1.0'
+    viewpumpVersion = '1.0.0'
 
 }

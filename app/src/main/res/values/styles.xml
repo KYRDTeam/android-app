@@ -2,7 +2,7 @@
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@android:color/transparent</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
@@ -46,5 +46,17 @@
 
     <style name="splashScreenTheme" parent="AppThemeTranslucentStatus"/>
 
+    <style name="TextViewCustomFont">
+        <item name="fontPath">fonts/Montserrat-Medium.ttf</item>
+    </style>
+
+
+    <style name="TextAppearance.Montserrat.Medium" parent="android:TextAppearance">
+        <item name="fontPath">fonts/Montserrat-Medium.ttf</item>
+    </style>
+
+    <style name="TextAppearance.Montserrat.SemiBold" parent="android:TextAppearance">
+        <item name="fontPath">fonts/Montserrat-SemiBold.ttf</item>
+    </style>
 
 </resources>
