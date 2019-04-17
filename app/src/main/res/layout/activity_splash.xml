@@ -36,12 +36,13 @@
             android:gravity="center_horizontal"
             android:textColor="#ffffff"
             android:textSize="24sp"
+            android:text="@string/company_name"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView"
-            tools:text="Kyber" />
+            android:textAppearance="@style/TextAppearance.Montserrat.Medium" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>

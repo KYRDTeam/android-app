@@ -23,6 +23,11 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="landing_1_title">Easy to Swap</string>
-    <string name="landing_1_content">Swap between arbitrary token pair.\n No desposit needed.</string>
+    <string name="landing_1_title">Secure &amp; Compatible</string>
+    <string name="landing_2_title">Easy to Swap</string>
+    <string name="landing_3_title">Profile</string>
+    <string name="landing_1_content">Designed with highest security standard.\n Easily import &amp; export accounts from other\n wallet apps.</string>
+    <string name="landing_2_content">Swap between arbitrary token pair.\nNo desposit needed.</string>
+    <string name="landing_3_content">Profile process just got simpler.\nStraight from the app.</string>
+    <string name="company_name">Kyber</string>
 </resources>

@@ -26,41 +26,44 @@
                 android:id="@+id/imgLanding"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="124dp"
+                android:layout_marginTop="112dp"
                 android:src="@drawable/ic_security_check"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:resourceId="@{viewModel.imageId}" />
 
             <TextView
                 android:id="@+id/tvLanding"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="54dp"
+                android:layout_marginTop="50dp"
                 android:layout_marginEnd="8dp"
                 android:gravity="center_horizontal"
+                android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                 android:textColor="#ffffff"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imgLanding"
-                android:text="@string/landing_1_title" />
+                app:resourceId="@{viewModel.title}" />
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/tvLandingContent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="29dp"
                 android:layout_marginEnd="8dp"
                 android:gravity="center_horizontal"
+                android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                 android:textColor="#ffffff"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvLanding"
-                android:text="@string/landing_1_content" />
+                app:resourceId="@{viewModel.titleDescription}" />
 
             <TextView
                 android:id="@+id/tvPromo"
@@ -72,13 +75,14 @@
                 android:background="@drawable/promo_button"
                 android:gravity="center"
                 android:text="@string/promo_code"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                 android:textColor="#fa6b64"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView2" />
+                app:layout_constraintTop_toBottomOf="@+id/tvLandingContent" />
 
             <TextView
                 android:id="@+id/textCreateWallet"
@@ -89,14 +93,15 @@
                 android:layout_marginEnd="2dp"
                 android:background="@drawable/wallet_button"
                 android:gravity="center"
+                android:text="@string/create_wallet"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                 android:textColor="#ffffff"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toStartOf="@+id/tvImportWallet"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintHorizontal_chainStyle="spread"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvPromo"
-                android:text="@string/create_wallet" />
+                app:layout_constraintTop_toBottomOf="@+id/tvPromo" />
 
             <TextView
                 android:id="@+id/tvImportWallet"
@@ -107,13 +112,14 @@
                 android:layout_marginEnd="36dp"
                 android:background="@drawable/wallet_button"
                 android:gravity="center"
+                android:text="@string/import_wallet"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                 android:textColor="#ffffff"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/textCreateWallet"
-                app:layout_constraintTop_toBottomOf="@+id/tvPromo"
-                android:text="@string/import_wallet" />
+                app:layout_constraintTop_toBottomOf="@+id/tvPromo" />
 
             <TextView
                 android:id="@+id/tvTermAndCondition"
@@ -124,12 +130,13 @@
                 android:layout_marginEnd="8dp"
                 android:gravity="center_horizontal"
                 android:letterSpacing="0.07"
+                android:text="@string/terms_and_conditions"
+                android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                 android:textColor="#ffffff"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textCreateWallet"
-                android:text="@string/terms_and_conditions" />
+                app:layout_constraintTop_toBottomOf="@+id/textCreateWallet" />
 
         </android.support.constraint.ConstraintLayout>
     </android.support.v4.widget.NestedScrollView>
