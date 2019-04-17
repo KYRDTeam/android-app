@@ -48,6 +48,6 @@ object ImageViewBindingAdapter {
     @BindingAdapter("app:resourceId")
     @JvmStatic
     fun loadResource(view: ImageView, resourceId: Int) {
-        Glide.with(view).load(resourceId).into(view)
+        Glide.with(view).load("").error(resourceId).into(view)
     }
 }
