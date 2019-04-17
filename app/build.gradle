@@ -1,0 +1,191 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'deploygate'
+apply plugin: "io.gitlab.arturbosch.detekt"
+apply from: '../gradle/findbugs.gradle'
+apply from: '../gradle/ktlint.gradle'
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+    flavorDimensions "default"
+
+    defaultConfig {
+        applicationId "com.kyberswap.android"
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        def versionMajor = 0
+        def versionMinor = 0
+        def versionPatch = 1
+        versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch * 1
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+        vectorDrawables.useSupportLibrary = true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas".toString())
+    
+
+    }
+
+
+    dataBinding {
+        enabled = true
+    }
+
+    buildTypes {
+        debug {
+            versionNameSuffix "-debug"
+            debuggable true
+            multiDexEnabled true
+            shrinkResources false
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+
+        release {
+            debuggable false
+            multiDexEnabled true
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug//todo release signing
+
+    }
+
+    productFlavors {
+        //todo fix app name and app icon
+        dev {
+            applicationIdSuffix ".dev"
+
+        stg {
+            applicationIdSuffix ".stg"
+
+        prod {
+
+    }
+    applicationVariants.all { variant ->
+        copy {
+            from "src/${variant.flavorName}"
+            into "."
+            include "google-services.json"
+
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
+    android {
+        lintOptions {
+            xmlReport true
+            abortOnError false
+
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+    //implementation 'androidx.core:core-ktx:1.0.0'
+
+    // Support Library
+    implementation "com.android.support:appcompat-v7:$rootProject.supportLibVersion"
+    implementation "com.android.support:design:$rootProject.supportLibVersion"
+    implementation "com.android.support:support-v4:$rootProject.supportLibVersion"
+    implementation "com.android.support:cardview-v7:$rootProject.supportLibVersion"
+    implementation "com.android.support:recyclerview-v7:$rootProject.supportLibVersion"
+    implementation "com.android.support:exifinterface:$rootProject.supportLibVersion"
+    implementation "com.android.support:customtabs:$rootProject.supportLibVersion"
+    implementation "com.android.support:support-annotations:$rootProject.supportLibVersion"
+
+    implementation "com.android.support:multidex:$rootProject.multidexVersion"
+
+    // DI
+    def dagger_version = '2.16'
+    implementation "com.google.dagger:dagger:$rootProject.daggerVersion"
+    implementation "com.google.dagger:dagger-android:$rootProject.daggerVersion"
+    implementation "com.google.dagger:dagger-android-support:$rootProject.daggerVersion"
+    implementation 'com.android.support:support-v4:28.0.0'
+    kapt "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
+    kapt "com.google.dagger:dagger-android-processor:$rootProject.daggerVersion"
+
+    // Utility
+    implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroidVersion"
+    implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxJavaVersion"
+
+    // Network
+    implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofitVersion"
+    implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.loggingIntercepterVersion"
+
+    // View
+    implementation "com.android.support.constraint:constraint-layout:$rootProject.constraintLayoutVersion"
+    implementation "de.hdodenhof:circleimageview:$rootProject.circleImageViewVersion"
+
+    // Debug
+    implementation "com.jakewharton.timber:timber:$rootProject.timberVersion"
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:$rootProject.leakCanaryVersion"
+    releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.leakCanaryVersion"
+
+    // Test
+    testImplementation "junit:junit:$rootProject.junitVersion"
+    testImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
+    testImplementation "org.robolectric:robolectric:$rootProject.roboletricVersion"
+    androidTestImplementation "com.android.support.test:runner:$rootProject.testRunnerVersion"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:$rootProject.espressoVerion"
+    testImplementation "com.squareup.okhttp3:mockwebserver:$rootProject.mockWebserverVersion"
+    testImplementation "android.arch.core:core-testing:$rootProject.archLifeCycleVersion"
+
+    implementation "com.afollestad.material-dialogs:core:$rootProject.materialDialogVersion"
+
+    implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
+    kapt "android.arch.persistence.room:compiler:$rootProject.roomVersion"
+    implementation "android.arch.persistence.room:rxjava2:$rootProject.roomVersion"
+
+
+    implementation "com.github.bumptech.glide:glide:$rootProject.glideVersion"
+    kapt "com.github.bumptech.glide:compiler:$rootProject.glideVersion"
+
+    implementation "android.arch.lifecycle:extensions:$rootProject.archLifeCycleVersion"
+    kapt "android.arch.lifecycle:compiler:$rootProject.archLifeCycleVersion"
+
+    implementation "com.orhanobut:hawk:$rootProject.hawkVersion"
+    implementation "com.github.clans:fab:$rootProject.fabVersion"
+
+    implementation "me.relex:circleindicator:$rootProject.indicatorVersion"
+
+    //App Inspection Tool
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-core:$rootProject.hyperionVersion"
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-attr:$rootProject.hyperionVersion"
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-measurement:$rootProject.hyperionVersion"
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-disk:$rootProject.hyperionVersion"
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-recorder:$rootProject.hyperionVersion"
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-phoenix:$rootProject.hyperionVersion"
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-crash:$rootProject.hyperionVersion"
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-shared-preferences:$rootProject.hyperionVersion"
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-geiger-counter:$rootProject.hyperionVersion"
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-timber:$rootProject.hyperionVersion"
+    debugImplementation "com.willowtreeapps.hyperion:hyperion-build-config:$rootProject.hyperionVersion"
+
+}
+
+detekt {
+    version = "1.0.0.RC8"
+    profile("main") {
+        input = "$projectDir"
+        config = "$project.rootDir/app/detekt-config.yml"
+        filters = ".*test.*,.*/resources/.*,.*/tmp/.*"
+        output = "${project.buildDir}/reports/detekt"
+        parallel = true
+        disableDefaultRuleSets = false
+
+    }
+}

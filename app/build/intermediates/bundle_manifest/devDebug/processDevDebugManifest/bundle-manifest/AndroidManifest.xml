@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.kyberswap.android.dev"
+    android:versionCode="1"
+    android:versionName="0.0.1-debug" >
+
+    <uses-sdk
+        android:minSdkVersion="21"
+        android:targetSdkVersion="28" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!-- To store the heap dumps and leak analysis results. -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application
+        android:name="com.kyberswap.android.KyberSwapApplication"
+        android:allowBackup="true"
+        android:appComponentFactory="android.support.v4.app.CoreComponentFactory"
+        android:debuggable="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:testOnly="true"
+        android:theme="@style/AppTheme.NoActionBar" >
+        <activity
+            android:name="com.kyberswap.android.presentation.splash.SplashActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.kyberswap.android.presentation.landing.LandingActivity" />
+
+        <service
+            android:name="com.squareup.leakcanary.internal.HeapAnalyzerService"
+            android:enabled="false"
+            android:process=":leakcanary" />
+        <service
+            android:name="com.squareup.leakcanary.DisplayLeakService"
+            android:enabled="false"
+            android:process=":leakcanary" />
+
+        <provider
+            android:name="com.squareup.leakcanary.internal.LeakCanaryFileProvider"
+            android:authorities="com.squareup.leakcanary.fileprovider.com.kyberswap.android.dev"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/leak_canary_file_paths" />
+        </provider>
+
+        <activity
+            android:name="com.squareup.leakcanary.internal.DisplayLeakActivity"
+            android:enabled="false"
+            android:icon="@mipmap/leak_canary_icon"
+            android:label="@string/leak_canary_display_activity_label"
+            android:process=":leakcanary"
+            android:taskAffinity="com.squareup.leakcanary.com.kyberswap.android.dev"
+            android:theme="@style/leak_canary_LeakCanary.Base" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.squareup.leakcanary.internal.RequestStoragePermissionActivity"
+            android:enabled="false"
+            android:excludeFromRecents="true"
+            android:icon="@mipmap/leak_canary_icon"
+            android:label="@string/leak_canary_storage_permission_activity_label"
+            android:process=":leakcanary"
+            android:roundIcon="@mipmap/leak_canary_icon"
+            android:taskAffinity="com.squareup.leakcanary.com.kyberswap.android.dev"
+            android:theme="@style/leak_canary_Theme.Transparent" />
+
+        <provider
+            android:name="com.willowtreeapps.hyperion.core.internal.HyperionInitProvider"
+            android:authorities="com.kyberswap.android.dev.HyperionInitProvider"
+            android:exported="false" />
+
+        <service
+            android:name="com.willowtreeapps.hyperion.core.internal.HyperionService"
+            android:exported="false" />
+
+        <activity
+            android:name="com.willowtreeapps.hyperion.disk.FileExplorerActivity"
+            android:theme="@style/hd_FileExplorerActivityTheme" />
+
+        <provider
+            android:name="com.willowtreeapps.hyperion.disk.DiskFileProvider"
+            android:authorities="com.kyberswap.android.dev.DiskFileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/hd_file_paths" />
+        </provider>
+
+        <activity
+            android:name="com.willowtreeapps.hyperion.recorder.RecordingsActivity"
+            android:theme="@style/Theme.AppCompat.Light" />
+
+        <provider
+            android:name="com.willowtreeapps.hyperion.recorder.RecorderFileProvider"
+            android:authorities="com.kyberswap.android.dev.RecorderFileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/hr_file_paths" />
+        </provider>
+
+        <activity
+            android:name="com.willowtreeapps.hyperion.phoenix.ProcessPhoenix"
+            android:process=":phoenix"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name="com.willowtreeapps.hyperion.crash.CrashActivity"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:process=":crash"
+            android:theme="@style/hc_ActivityTheme" />
+        <activity
+            android:name="com.willowtreeapps.hyperion.sharedpreferences.list.SharedPreferencesListActivity"
+            android:theme="@style/hsp_SharedPreferencesActivityTheme"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name="com.willowtreeapps.hyperion.sharedpreferences.detail.SharedPreferencesDetailActivity"
+            android:theme="@style/hsp_SharedPreferencesActivityTheme"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name="com.willowtreeapps.hyperion.timber.list.TimberLogListActivity"
+            android:theme="@style/tmb_TimberActivityTheme"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name="com.willowtreeapps.hyperion.buildconfig.list.BuildConfigListActivity"
+            android:theme="@style/hbc_BuildConfigActivityTheme"
+            android:windowSoftInputMode="stateHidden" />
+
+        <provider
+            android:name="android.arch.lifecycle.ProcessLifecycleOwnerInitializer"
+            android:authorities="com.kyberswap.android.dev.lifecycle-trojan"
+            android:exported="false"
+            android:multiprocess="true" />
+        <provider
+            android:name="com.android.tools.ir.server.InstantRunContentProvider"
+            android:authorities="com.kyberswap.android.dev.com.android.tools.ir.server.InstantRunContentProvider"
+            android:multiprocess="true" />
+    </application>
+
+</manifest>

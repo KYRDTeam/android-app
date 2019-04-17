@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "/Users/steve/KyberNetwork/Projects/KyberSwap-Android/KyberSwap/app/build/intermediates/incremental/mergeDevDebugResources/merged.dir/values-sw720dp-land-v13/values-sw720dp-land-v13.xml",
+            "map": [
+                {
+                    "source": "/Users/steve/.gradle/caches/transforms-1/files-1.1/core-0.9.6.0.aar/2b0b2f87e18ed3111b11c8c5e3f2bb9e/res/values-sw720dp-land-v13/values-sw720dp-land-v13.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "51",
+                        "endOffsets": "102"
+            
+        
+            ]
+
+    ]
+}
