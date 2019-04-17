@@ -1,0 +1,1 @@
+[{"outputType":{"type":"INSTANT_APP_MANIFEST"},"apkInfo":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"0.0.1-debug","enabled":true,"outputFile":"app-dev-debug.apk","fullName":"devDebug","baseName":"dev-debug"},"path":"AndroidManifest.xml","properties":{"packageId":"com.kyberswap.android.dev","split":"","minSdkVersion":"21"}}]

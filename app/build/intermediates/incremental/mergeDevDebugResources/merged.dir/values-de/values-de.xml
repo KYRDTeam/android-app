@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string msgid="4600421777120114993" name="abc_action_bar_home_description">"Zur Startseite"</string>
+    <string msgid="1594238315039666878" name="abc_action_bar_up_description">"Nach oben"</string>
+    <string msgid="3588849162933574182" name="abc_action_menu_overflow_description">"Weitere Optionen"</string>
+    <string msgid="4076576682505996667" name="abc_action_mode_done">"Fertig"</string>
+    <string msgid="7468859129482906941" name="abc_activity_chooser_view_see_all">"Alle ansehen"</string>
+    <string msgid="2031811694353399454" name="abc_activitychooserview_choose_application">"App auswählen"</string>
+    <string msgid="121134116657445385" name="abc_capital_off">"Aus"</string>
+    <string msgid="3405795526292276155" name="abc_capital_on">"An"</string>
+    <string msgid="1302280443949172191" name="abc_menu_alt_shortcut_label">"Alt +"</string>
+    <string msgid="1324831542140195728" name="abc_menu_ctrl_shortcut_label">"Strg +"</string>
+    <string msgid="8362206064229013510" name="abc_menu_delete_shortcut_label">"Löschen"</string>
+    <string msgid="8341180395196749340" name="abc_menu_enter_shortcut_label">"Eingabetaste"</string>
+    <string msgid="4792426091847145555" name="abc_menu_function_shortcut_label">"Funktionstaste +"</string>
+    <string msgid="7643535737296831317" name="abc_menu_meta_shortcut_label">"Meta-Taste +"</string>
+    <string msgid="8126296154200614004" name="abc_menu_shift_shortcut_label">"Umschalttaste +"</string>
+    <string msgid="2378550843553983978" name="abc_menu_space_shortcut_label">"Leertaste +"</string>
+    <string msgid="9002602288060866689" name="abc_menu_sym_shortcut_label">"Sym-Taste +"</string>
+    <string msgid="1351762916121158029" name="abc_prepend_shortcut_label">"Menütaste +"</string>
+    <string msgid="7723749260725869598" name="abc_search_hint">"Suchen…"</string>
+    <string msgid="3691816814315814921" name="abc_searchview_description_clear">"Suchanfrage löschen"</string>
+    <string msgid="2550479030709304392" name="abc_searchview_description_query">"Suchanfrage"</string>
+    <string msgid="8264924765203268293" name="abc_searchview_description_search">"Suchen"</string>
+    <string msgid="8928215447528550784" name="abc_searchview_description_submit">"Suchanfrage senden"</string>
+    <string msgid="893419373245838918" name="abc_searchview_description_voice">"Sprachsuche"</string>
+    <string msgid="3421042268587513524" name="abc_shareactionprovider_share_with">"Freigeben für"</string>
+    <string msgid="3300176832234831527" name="abc_shareactionprovider_share_with_application">"Mit <ns1:g id="APPLICATION_NAME">%s</ns1:g> teilen"</string>
+    <string msgid="1603543279005712093" name="abc_toolbar_collapse_description">"Minimieren"</string>
+    <string name="leak_canary_analysis_failed">Leak Analyse fehlgeschlagen</string>
+    <string name="leak_canary_class_has_leaked">%1$s hat geleaked</string>
+    <string name="leak_canary_class_has_leaked_retaining">%1$s hat %2$s geleaked</string>
+    <string name="leak_canary_class_no_leak">%1$s was never GCed but no leak found</string>
+    <string name="leak_canary_could_not_save_text">LeakCanary konnte das Ergebnis der Analyse nicht speichern.</string>
+    <string name="leak_canary_delete">Löschen</string>
+    <string name="leak_canary_delete_all">Alle löschen</string>
+    <string name="leak_canary_delete_all_leaks_title">Bist du dir sicher, dass du alle Leaks löschen möchtest?</string>
+    <string name="leak_canary_display_activity_label">Leaks</string>
+    <string name="leak_canary_download_dump">You can download the heap dump via \"Menu > Share Heap Dump\" or \"adb pull %1$s\"</string>
+    <string name="leak_canary_excluded_row">[Ausgeschlossen] %s</string>
+    <string name="leak_canary_failure_report">"Bitte sende diesen Fehler an http://github.com/square/leakcanary\n"</string>
+    <string name="leak_canary_help_detail"><![CDATA[Ein Memory-Leak ist ein Programmierfehler der
+    dafür sorgt, dass deine Anwendung eine Referenz auf ein Objekt hält, das nicht länger benötigt
+    wird. Daraus folgt, dass der Speicher der dem Objekt zugewiesen wurde nicht wieder freigegeben
+    wird, was eventuell zu einem OutOfMemoryError-Absturz führt.<br>
+  <br>Eine Instanz einer Android-Activity wird nicht mehr benötigt, nachdem ihre <i>onDestroy()</i>
+  Methode aufgerufen wurde. Würde man eine Referenz auf diese Activity in einem statischen Feld
+  speichern, dann wird der durch die Activity genutzte Speicher nicht mehr durch den Garbage
+  Collector freigegeben.<br>
+  <br>
+  LeakCanary identifiziert ein Objekt, dass nicht länger benötigt wird und findet die Kette an
+  <font color=\'#9976a8\'>Referenzen</font> die es davon abhält seinen Speicher freizugeben.<br>
+  <br>
+  Um ein Memory-Leak zu beheben, musst du anhand der Kette herausfinden, welche Referenz für das
+  Leak verantwortlich ist, d.h. welche Referenz beim Auftreten des Leaks bereinigt sein soll.
+  LeakCanary hebt <b><u><font color=\'#9976a8\'>Referenzen</font></u></b> die mögliche Ursachen
+  für das Memory-Leak sein könnten mit einer roten Wellenlinie hervor.<br>
+  <br>
+  Tippe auf eine Zeile mit einer Referenz um mehr Details anzuzeigen, tippe noch einmal um die
+  Details zu schließen.
+]]></string>
+    <string name="leak_canary_help_title">Tippe hier, um mehr zu erfahren</string>
+    <string name="leak_canary_leak_excluded">[Ausgeschlossen] %1$s hat geleaked</string>
+    <string name="leak_canary_leak_excluded_retaining">[Ausgeschlossen] %1$s hat %2$s geleaked</string>
+    <string name="leak_canary_leak_list_title">Leaks in %s</string>
+    <string name="leak_canary_no_leak_details">LeakCanary could not find a valid path to GC roots. Download the heap dump and investigate with MAT or YourKit.</string>
+    <string name="leak_canary_notification_analysing">Analyisere Heap Dump</string>
+    <string name="leak_canary_notification_channel">LeakCanary</string>
+    <string name="leak_canary_notification_dumping">Sichere Heap</string>
+    <string name="leak_canary_notification_foreground_text">LeakCanary ist beschäftigt.</string>
+    <string name="leak_canary_notification_message">Für mehr Details, hier klicken</string>
+    <string name="leak_canary_notification_reporting">Sichere LeakCanary Ergebnis</string>
+    <string name="leak_canary_permission_not_granted">Bitte gewähre die Storage Berechtigung, andernfalls werden Memory Leaks nicht erkannt.</string>
+    <string name="leak_canary_permission_notification_text">Hier klicken, um Storage Berechtigung für %s zu aktivieren.</string>
+    <string name="leak_canary_permission_notification_title">Leak erkannt, benötige Berechtigung</string>
+    <string name="leak_canary_result_failure_no_disk_space">Das Analyseergebnis konnte nicht gespeichert werden</string>
+    <string name="leak_canary_result_failure_no_file">Das Analyseergebnis konnte nicht aus dem Speicher geladen werden</string>
+    <string name="leak_canary_result_failure_title">Analysis result failure</string>
+    <string name="leak_canary_share_heap_dump">Heap Dump teilen</string>
+    <string name="leak_canary_share_leak">Info teilen</string>
+    <string name="leak_canary_share_with">Teilen mit…</string>
+    <string name="leak_canary_storage_permission_activity_label">Storage Berechtigung</string>
+    <string name="leak_canary_toast_heap_dump">Sichere den Speicher, die App wird einfrieren. Brrr.</string>
+    <string msgid="146198913615257606" name="search_menu_title">"Suchen"</string>
+    <string msgid="7988687684186075107" name="status_bar_notification_info_overflow">"999+"</string>
+</resources>

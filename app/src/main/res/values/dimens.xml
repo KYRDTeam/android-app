@@ -1,0 +1,12 @@
+<resources>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="item_header_height">200dp</dimen>
+    <dimen name="tab_height">30dp</dimen>
+    <dimen name="header_elevation">4dp</dimen>
+    <dimen name="tab_indicator_height">3dp</dimen>
+    <dimen name="rounded_corner_value">4dp</dimen>
+    <dimen name="ah_bottom_navigation_height">49dp</dimen>
+    <dimen name="profile_margin">16</dimen>
+    <dimen name="actionbar_size">44dp</dimen>
+</resources>
