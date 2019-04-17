@@ -1,4 +1,0 @@
-#Wed Apr 17 00:25:17 ICT 2019
-base.0=/Users/steve/KyberNetwork/Projects/KyberSwap-Android/KyberSwap/app/build/intermediates/transforms/dexMerger/dev/debug/3
-path.0=classes.dex
-renamed.0=classes.dex
