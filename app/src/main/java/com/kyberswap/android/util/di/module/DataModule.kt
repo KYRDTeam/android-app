@@ -26,25 +26,25 @@ object DataModule {
     @Provides
     @JvmStatic
     fun provideFeatureArticleRepository(
-            homeApi: HomeApi,
-            mapper: ArticleMapper
+        homeApi: HomeApi,
+        mapper: ArticleMapper
     ): FeatureArticleRepository = FeatureArticleDataRepository(homeApi, mapper)
 
     @Singleton
     @Provides
     @JvmStatic
     fun provideHeaderRepository(
-            @Local local: HeaderDataStore,
-            @Remote remote: HeaderDataStore,
-            mapper: HeaderMapper
+        @Local local: HeaderDataStore,
+        @Remote remote: HeaderDataStore,
+        mapper: HeaderMapper
     ): HeaderRepository = HeaderDataRepository(local, remote, mapper)
 
     @Singleton
     @Provides
     @JvmStatic
     fun provideTopArticleRepository(
-            homeApi: HomeApi,
-            mapper: ArticleMapper
+        homeApi: HomeApi,
+        mapper: ArticleMapper
     ): TopArticleRepository = TopArticleDataRepository(homeApi, mapper)
 
     @Provides
@@ -52,12 +52,12 @@ object DataModule {
     @Local
     @JvmStatic
     fun provideLocalDataSource(headerDao: HeaderDao): HeaderDataStore =
-            HeaderLocalDataSource(headerDao)
+        HeaderLocalDataSource(headerDao)
 
     @Provides
     @Singleton
     @Remote
     @JvmStatic
     fun provideRemoteDataSource(homeApi: HomeApi): HeaderDataStore =
-            HeaderRemoteDataSource(homeApi)
+        HeaderRemoteDataSource(homeApi)
 }

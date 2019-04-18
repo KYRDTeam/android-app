@@ -28,12 +28,12 @@ class NetworkModule {
             val builder = original.newBuilder()
             if (storageMediator.isAuthenticated()) {
                 builder.header(
-                        "Authorization",
-                        "Bearer ${storageMediator.getAuthentication()?.accessToken}"
+                    "Authorization",
+                    "Bearer ${storageMediator.getAuthentication()?.accessToken}"
                 )
     
             val request = builder.method(original.method(), original.body())
-                    .build()
+                .build()
             it.proceed(request)
 
         if (BuildConfig.DEBUG) {
@@ -48,19 +48,19 @@ class NetworkModule {
     @Singleton
     fun provideHomeApi(context: Context, client: OkHttpClient): HomeApi {
         return createApiClient(
-                HomeApi::class.java,
-                context.getString(R.string.home_endpoint_url),
-                client
+            HomeApi::class.java,
+            context.getString(R.string.home_endpoint_url),
+            client
         )
     }
 
     private fun <T> createApiClient(clazz: Class<T>, baseUrl: String, client: OkHttpClient): T {
         return Retrofit.Builder()
-                .client(client)
-                .baseUrl(baseUrl)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(clazz)
+            .client(client)
+            .baseUrl(baseUrl)
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(clazz)
     }
 }
