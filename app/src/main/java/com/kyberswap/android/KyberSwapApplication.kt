@@ -32,12 +32,17 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 
-        ViewPump.init(ViewPump.builder()
-                .addInterceptor(CalligraphyInterceptor(
+        ViewPump.init(
+            ViewPump.builder()
+                .addInterceptor(
+                    CalligraphyInterceptor(
                         CalligraphyConfig.Builder()
-                                .setDefaultFontPath("fonts/Montserrat-Medium.ttf")
-                                .build()))
-                .build())
+                            .setDefaultFontPath("fonts/Montserrat-Medium.ttf")
+                            .build()
+                    )
+                )
+                .build()
+        )
     }
 
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> {

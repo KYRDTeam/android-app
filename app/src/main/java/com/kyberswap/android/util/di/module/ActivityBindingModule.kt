@@ -11,25 +11,25 @@ import dagger.android.ContributesAndroidInjector
 interface ActivityBindingModule {
     @ActivityScoped
     @ContributesAndroidInjector(
-            modules = [
-                MainActivityModule::class
-            ]
+        modules = [
+            MainActivityModule::class
+        ]
     )
     fun contributeMainActivity(): MainActivity
 
     @ActivityScoped
     @ContributesAndroidInjector(
-            modules = [
-                SplashActivityModule::class
-            ]
+        modules = [
+            SplashActivityModule::class
+        ]
     )
     fun contributeSplashActivity(): SplashActivity
 
     @ActivityScoped
     @ContributesAndroidInjector(
-            modules = [
-                LandingActivityModule::class
-            ]
+        modules = [
+            LandingActivityModule::class
+        ]
     )
     fun contributeLandingActivity(): LandingActivity
 

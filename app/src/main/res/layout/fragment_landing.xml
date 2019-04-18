@@ -85,7 +85,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/tvLandingContent" />
 
             <TextView
-                android:id="@+id/textCreateWallet"
+                android:id="@+id/tvCreateWallet"
                 android:layout_width="0dp"
                 android:layout_height="45dp"
                 android:layout_marginStart="36dp"
@@ -118,7 +118,7 @@
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/textCreateWallet"
+                app:layout_constraintStart_toEndOf="@+id/tvCreateWallet"
                 app:layout_constraintTop_toBottomOf="@+id/tvPromo" />
 
             <TextView
@@ -136,7 +136,7 @@
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textCreateWallet" />
+                app:layout_constraintTop_toBottomOf="@+id/tvCreateWallet" />
 
         </android.support.constraint.ConstraintLayout>
     </android.support.v4.widget.NestedScrollView>
