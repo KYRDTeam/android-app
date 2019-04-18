@@ -30,4 +30,7 @@
     <string name="landing_2_content">Swap between arbitrary token pair.\nNo desposit needed.</string>
     <string name="landing_3_content">Profile process just got simpler.\nStraight from the app.</string>
     <string name="company_name">Kyber</string>
+    <string name="title_confirmation">Confirm</string>
+    <string name="message_close_app_confirmation">This will create a new wallet. It can not be undone, but you could abandon it</string>
+    <string name="confirm">Confirm</string>
 </resources>

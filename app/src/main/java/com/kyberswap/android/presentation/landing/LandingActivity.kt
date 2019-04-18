@@ -24,6 +24,6 @@ class LandingActivity : BaseActivity() {
 
     companion object {
         fun newIntent(context: Context) =
-                Intent(context, LandingActivity::class.java)
+            Intent(context, LandingActivity::class.java)
     }
 }

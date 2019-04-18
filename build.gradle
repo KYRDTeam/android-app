@@ -44,7 +44,7 @@ ext {
     fabVersion = '1.6.4'
     glideVersion = '4.9.0'
     archLifeCycleVersion = '1.1.1'
-    daggerVersion = '2.22.1'
+    daggerVersion = '2.16'
     multidexVersion = '1.0.3'
     retrofitVersion = '2.5.0'
     gsonVersion = '2.8.5'
@@ -65,5 +65,8 @@ ext {
     indicatorVersion = '1.2.2'
     calligraphy3Version = '3.1.0'
     viewpumpVersion = '1.0.0'
+    web3jVersion = '4.2.0-android'
+    gethVersion = '1.7.3'
+    bitcoinjVersion = '0.15.1'
 
 }

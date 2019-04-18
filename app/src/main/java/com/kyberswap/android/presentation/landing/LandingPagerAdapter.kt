@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 
 class LandingPagerAdapter constructor(
-        fm: FragmentManager
+    fm: FragmentManager
 ) : FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {

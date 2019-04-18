@@ -19,7 +19,7 @@ interface MainActivityModule {
     @IntoMap
     @ViewModelKey(MainViewModel::class)
     fun bindMainViewModel(
-            mainViewModel: MainViewModel
+        mainViewModel: MainViewModel
     ): ViewModel
 
 }

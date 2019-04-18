@@ -17,9 +17,9 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     @JvmOverloads
     fun replaceFragment(
-            fragment: Fragment,
-            addToBackStack: Boolean = true,
-            customAnimations: Int = WITHOUT_ANIMATION
+        fragment: Fragment,
+        addToBackStack: Boolean = true,
+        customAnimations: Int = WITHOUT_ANIMATION
     ) {
         val transaction = fragmentManager.beginTransaction()
         if (customAnimations == IN_RIGHT_OUT_LEFT) {
