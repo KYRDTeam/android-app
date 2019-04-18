@@ -19,6 +19,6 @@ interface SplashActivityModule {
     @IntoMap
     @ViewModelKey(SplashViewModel::class)
     fun bindSplashViewModel(
-            splashViewModel: SplashViewModel
+        splashViewModel: SplashViewModel
     ): ViewModel
 }

@@ -12,9 +12,9 @@ import io.reactivex.Flowable
 import javax.inject.Inject
 
 class HeaderDataRepository @Inject constructor(
-        @Local private val headerLocalDataSource: HeaderDataStore,
-        @Remote private val headerRemoteDataSource: HeaderDataStore,
-        private val mapper: HeaderMapper
+    @Local private val headerLocalDataSource: HeaderDataStore,
+    @Remote private val headerRemoteDataSource: HeaderDataStore,
+    private val mapper: HeaderMapper
 ) : HeaderRepository {
 
     override fun getLikeAndReviewInfo(): Flowable<HeaderInfo> {

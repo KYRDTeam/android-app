@@ -14,7 +14,8 @@ class DatabaseModule {
     @Singleton
     fun provideDatabase(app: Application) = AppDatabase.getInstance(app)
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     fun provideArticleFeatureDao(db: AppDatabase): HeaderDao = db.articleFeatureDao()
 
 }

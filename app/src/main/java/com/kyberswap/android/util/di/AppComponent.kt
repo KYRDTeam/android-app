@@ -11,14 +11,14 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(
-        modules = [
-            AndroidSupportInjectionModule::class,
-            ActivityBindingModule::class,
-            AppModule::class,
-            NetworkModule::class,
-            DatabaseModule::class,
-            DataModule::class
-        ]
+    modules = [
+        AndroidSupportInjectionModule::class,
+        ActivityBindingModule::class,
+        AppModule::class,
+        NetworkModule::class,
+        DatabaseModule::class,
+        DataModule::class
+    ]
 )
 interface AppComponent : AndroidInjector<KyberSwapApplication> {
 

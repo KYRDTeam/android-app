@@ -4,7 +4,7 @@ import android.arch.persistence.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.kyberswap.android.data.api.home.entity.ArticleFeatureEntity
-import java.util.Collections
+import java.util.*
 
 class HeaderTypeConverter {
     private val gson = Gson()

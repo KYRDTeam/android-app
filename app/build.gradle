@@ -84,6 +84,11 @@ android {
             xmlReport true
             abortOnError false
 
+
+        compileOptions {
+            sourceCompatibility 1.8
+            targetCompatibility 1.8
+
     }
 }
 
@@ -107,7 +112,6 @@ dependencies {
     implementation "com.android.support:multidex:$rootProject.multidexVersion"
 
     // DI
-    def dagger_version = '2.16'
     implementation "com.google.dagger:dagger:$rootProject.daggerVersion"
     implementation "com.google.dagger:dagger-android:$rootProject.daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$rootProject.daggerVersion"
@@ -178,6 +182,19 @@ dependencies {
     // Fonts
     implementation "io.github.inflationx:calligraphy3:$calligraphy3Version"
     implementation "io.github.inflationx:viewpump:$viewpumpVersion"
+
+    // web3j
+    implementation "org.web3j:core:$web3jVersion"
+
+    // Geth
+    implementation "org.ethereum:geth:$rootProject.gethVersion"
+
+    // Bitcoinj
+    implementation "com.github.bitcoinj:bitcoinj:$bitcoinjVersion"
+
+//    implementation 'com.github.komputing:KEthereum:0.74.9'
+
+
 
 }
 

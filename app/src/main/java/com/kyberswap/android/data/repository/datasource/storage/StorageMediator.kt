@@ -18,7 +18,7 @@ class StorageMediator @Inject constructor(private val hawkWrapper: HawkWrapper) 
     fun isAuthenticated(): Boolean {
         val loginSession = hawkWrapper.getItem(KEY_AUTHENTICATION, LoginSession::class.java)
         return loginSession != null &&
-                loginSession.createdAt + loginSession.expiresIn > System.currentTimeMillis() / 1000
+            loginSession.createdAt + loginSession.expiresIn > System.currentTimeMillis() / 1000
     }
 
     fun getAuthentication(): LoginSession? {
