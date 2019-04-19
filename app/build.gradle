@@ -89,6 +89,14 @@ android {
             sourceCompatibility 1.8
             targetCompatibility 1.8
         }
+
+        androidExtensions {
+            experimental = true
+        }
+
+        packagingOptions {
+            exclude 'lib/x86_64/darwin/libscrypt.dylib'
+        }
     }
 }
 
@@ -190,10 +198,9 @@ dependencies {
     implementation "org.ethereum:geth:$rootProject.gethVersion"
 
     // Bitcoinj
-    implementation "com.github.bitcoinj:bitcoinj:$bitcoinjVersion"
+//    implementation "com.github.bitcoinj:bitcoinj:$bitcoinjVersion"
 
-//    implementation 'com.github.komputing:KEthereum:0.74.9'
-
+    implementation "com.github.consenlabs:token-core-android:$tokenCoreVersion"
 
 
 }

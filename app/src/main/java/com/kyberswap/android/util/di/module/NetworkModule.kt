@@ -26,12 +26,12 @@ class NetworkModule {
             val original = it.request()
 
             val builder = original.newBuilder()
-            if (storageMediator.isAuthenticated()) {
-                builder.header(
-                    "Authorization",
-                    "Bearer ${storageMediator.getAuthentication()?.accessToken}"
-                )
-            }
+//            if (storageMediator.isAuthenticated()) {
+//                builder.header(
+//                    "Authorization",
+//                    "Bearer ${storageMediator.getAuthentication()?.accessToken}"
+//                )
+//            }
             val request = builder.method(original.method(), original.body())
                 .build()
             it.proceed(request)

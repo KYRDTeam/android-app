@@ -68,5 +68,6 @@ ext {
     web3jVersion = '4.2.0-android'
     gethVersion = '1.7.3'
     bitcoinjVersion = '0.15.1'
+    tokenCoreVersion = 'v0.1'
 
 }
