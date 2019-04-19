@@ -13,7 +13,6 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
-import timber.log.Timber
 import javax.inject.Inject
 
 private const val ARG_PARAM = "arg_param"
@@ -65,8 +64,8 @@ class LandingFragment : BaseFragment() {
                 showProgress(state == CreateWalletState.Loading)
                 when (state) {
                     is CreateWalletState.Success -> {
-                        Timber.e(state.wallet.address)
-                        navigator.navigateToLandingPage()
+
+                        navigator.navigateToBackupWalletPage(state.words)
                     }
                     is CreateWalletState.ShowError -> {
                         Toast.makeText(

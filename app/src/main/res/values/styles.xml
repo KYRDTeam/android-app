@@ -38,18 +38,11 @@
         <item name="android:textSize">11sp</item>
     </style>
 
-    <style name="AppThemeTranslucentStatus" parent="AppTheme">
+    <style name="AppThemeTranslucentStatus" parent="AppTheme.NoActionBar">
         <item name="android:windowTranslucentStatus">true</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
-    <style name="splashScreenTheme" parent="AppThemeTranslucentStatus" />
-
-    <style name="TextViewCustomFont">
-        <item name="fontPath">fonts/Montserrat-Medium.ttf</item>
-    </style>
-
 
     <style name="TextAppearance.Montserrat.Medium" parent="android:TextAppearance">
         <item name="fontPath">fonts/Montserrat-Medium.ttf</item>
@@ -57,6 +50,10 @@
 
     <style name="TextAppearance.Montserrat.SemiBold" parent="android:TextAppearance">
         <item name="fontPath">fonts/Montserrat-SemiBold.ttf</item>
+    </style>
+
+    <style name="TextAppearance.Montserrat.Bold" parent="android:TextAppearance">
+        <item name="fontPath">fonts/Montserrat-Bold.ttf</item>
     </style>
 
 </resources>
