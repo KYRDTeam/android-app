@@ -1,15 +1,19 @@
 package com.kyberswap.android.presentation.landing
 
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.kyberswap.android.R
+import android.widget.Toast
 import com.kyberswap.android.databinding.FragmentLandingBinding
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.util.di.ViewModelFactory
+import timber.log.Timber
 import javax.inject.Inject
 
 private const val ARG_PARAM = "arg_param"
@@ -25,24 +29,15 @@ class LandingFragment : BaseFragment() {
     @Inject
     lateinit var navigator: Navigator
 
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
     private var position: Int = 0
 
-    private val landingList by lazy {
-        listOf(
-            LandingViewModel(
-                R.drawable.ic_security_check,
-                R.string.landing_1_title,
-                R.string.landing_1_content
-            ),
-            LandingViewModel(R.drawable.swap, R.string.landing_2_title, R.string.landing_2_content),
-            LandingViewModel(
-                R.drawable.profile,
-                R.string.landing_3_title,
-                R.string.landing_3_content
-            )
-        )
-    }
 
+    private val viewModel by lazy {
+        ViewModelProviders.of(this, viewModelFactory).get(LandingViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,12 +54,30 @@ class LandingFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        binding.viewModel = landingList[position]
+        binding.viewModel = viewModel.landingList[position]
         binding.tvCreateWallet.setOnClickListener {
             dialogHelper.showConfirmation {
-                navigator.navigateToLandingPage()
+                viewModel.createWallet()
             }
         }
+        viewModel.createWalletCallback.observe(this, Observer {
+            it?.let { state ->
+                showProgress(state == CreateWalletState.Loading)
+                when (state) {
+                    is CreateWalletState.Success -> {
+                        Timber.e(state.wallet.address)
+                        navigator.navigateToLandingPage()
+                    }
+                    is CreateWalletState.ShowError -> {
+                        Toast.makeText(
+                            this.context,
+                            state.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        })
     }
 
     companion object {
