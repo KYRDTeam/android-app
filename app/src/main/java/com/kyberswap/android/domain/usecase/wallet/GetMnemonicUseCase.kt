@@ -8,20 +8,17 @@ import com.kyberswap.android.domain.usecase.SequentialUseCase
 import io.reactivex.Single
 import javax.inject.Inject
 
-class CreateWalletUseCase @Inject constructor(
+class GetMnemonicUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val walletRepository: WalletRepository
-) : SequentialUseCase<CreateWalletUseCase.Param, List<Word>>(schedulerProvider) {
+) : SequentialUseCase<GetMnemonicUseCase.Param, List<Word>>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public override fun buildUseCaseSingle(param: Param): Single<List<Word>> {
-        return walletRepository.createWallet(param).flatMap { wallet ->
-            walletRepository.getMnemonic(GetMnemonicUseCase.Param(param.pinLock, wallet.id))
-
-
+        return walletRepository.getMnemonic(param)
     }
 
     class Param(
-        val pinLock: String
+        val password: String,
+        val walletId: String
     )
-
 }

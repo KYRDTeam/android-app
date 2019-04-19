@@ -21,7 +21,6 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.splashScreenTheme)
         super.onCreate(savedInstanceState)
         binding.vpLanding.adapter = LandingPagerAdapter(supportFragmentManager)
         binding.indicator.setViewPager(binding.vpLanding)

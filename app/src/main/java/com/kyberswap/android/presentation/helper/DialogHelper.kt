@@ -17,4 +17,16 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
             .create()
             .show()
     }
+
+    fun showWrongBackup(okListener: () -> Unit) {
+        AlertDialog.Builder(activity)
+            .setTitle(activity.getString(R.string.title_wrong_backup))
+            .setMessage(activity.getString(R.string.message_wrong_backup))
+            .setPositiveButton(activity.getString(R.string.try_again)) { _, _ ->
+                okListener.invoke()
+    
+            .create()
+            .show()
+    }
+
 }

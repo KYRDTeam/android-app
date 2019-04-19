@@ -4,7 +4,10 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AppCompatActivity
 import com.kyberswap.android.R
+import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.presentation.landing.LandingActivity
+import com.kyberswap.android.presentation.wallet.BackupWalletActivity
+import com.kyberswap.android.presentation.wallet.VerifyBackupWordActivity
 import javax.inject.Inject
 
 class Navigator @Inject constructor(private val activity: AppCompatActivity) {
@@ -13,6 +16,14 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     fun navigateToLandingPage() {
         activity.startActivity(LandingActivity.newIntent(activity))
+    }
+
+    fun navigateVerifyBackupWordPage(words: List<Word>) {
+        activity.startActivity(VerifyBackupWordActivity.newIntent(activity, words))
+    }
+
+    fun navigateToBackupWalletPage(words: List<Word>) {
+        activity.startActivity(BackupWalletActivity.newIntent(activity, words))
     }
 
     @JvmOverloads
