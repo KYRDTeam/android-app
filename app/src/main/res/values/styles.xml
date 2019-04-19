@@ -44,7 +44,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="splashScreenTheme" parent="AppThemeTranslucentStatus"/>
+    <style name="splashScreenTheme" parent="AppThemeTranslucentStatus" />
 
     <style name="TextViewCustomFont">
         <item name="fontPath">fonts/Montserrat-Medium.ttf</item>
