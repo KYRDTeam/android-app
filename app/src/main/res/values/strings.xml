@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">KyberSwap</string>
+    <string name="message_loading">Loading…</string>
     <string name="header_top">Top</string>
     <string name="header_title_home">Home</string>
     <string name="label_empty" />
@@ -33,4 +34,7 @@
     <string name="title_confirmation">Confirm</string>
     <string name="message_close_app_confirmation">This will create a new wallet. It can not be undone, but you could abandon it</string>
     <string name="confirm">Confirm</string>
+
+    <string name="unlock_screen_title_android">Unlock screen</string>
+    <string name="unlock_screen_prompt_android">Please unlock your Android device to continue.</string>
 </resources>

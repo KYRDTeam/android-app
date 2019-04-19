@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.kyberswap.android.presentation.landing.LandingViewModel" />
+            type="com.kyberswap.android.presentation.landing.Landing" />
     </data>
 
     <android.support.v4.widget.NestedScrollView
