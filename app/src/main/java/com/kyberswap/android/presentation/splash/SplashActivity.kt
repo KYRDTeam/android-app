@@ -28,7 +28,6 @@ class SplashActivity : BaseActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.splashScreenTheme)
         super.onCreate(savedInstanceState)
         binding.viewModel = viewModel
         Handler().postDelayed({

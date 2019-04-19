@@ -4,7 +4,6 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.kyberswap.android.R
 import com.kyberswap.android.domain.usecase.wallet.CreateWalletUseCase
-import com.kyberswap.android.domain.usecase.wallet.GetWalletUseCase
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
@@ -16,8 +15,7 @@ data class Landing(
 )
 
 class LandingViewModel @Inject constructor(
-    private val createWalletUseCase: CreateWalletUseCase,
-    private val getWalletUseCase: GetWalletUseCase
+    private val createWalletUseCase: CreateWalletUseCase
 ) : ViewModel() {
     val landingList by lazy {
         listOf(
@@ -41,6 +39,7 @@ class LandingViewModel @Inject constructor(
         createWalletCallback.postValue(CreateWalletState.Loading)
         createWalletUseCase.execute(
             Consumer {
+
                 createWalletCallback.value = CreateWalletState.Success(it)
 
             },

@@ -9,4 +9,5 @@
     <dimen name="ah_bottom_navigation_height">49dp</dimen>
     <dimen name="profile_margin">16</dimen>
     <dimen name="actionbar_size">44dp</dimen>
+    <dimen name="toolbar_height">82dp</dimen>
 </resources>
