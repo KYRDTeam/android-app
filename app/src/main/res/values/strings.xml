@@ -32,9 +32,35 @@
     <string name="landing_3_content">Profile process just got simpler.\nStraight from the app.</string>
     <string name="company_name">Kyber</string>
     <string name="title_confirmation">Confirm</string>
+    <string name="title_wrong_backup">Wrong Backup</string>
     <string name="message_close_app_confirmation">This will create a new wallet. It can not be undone, but you could abandon it</string>
+    <string name="message_wrong_backup">Your backup words are incorrect.\n Please try again.</string>
     <string name="confirm">Confirm</string>
+    <string name="try_again">Try again</string>
 
     <string name="unlock_screen_title_android">Unlock screen</string>
     <string name="unlock_screen_prompt_android">Please unlock your Android device to continue.</string>
+    <string name="next">Next</string>
+    <string name="backup_wallet_description_1">We will give you a list of 12 random words. Please&#160;</string>
+    <string name="backup_wallet_description_2">write down on paper</string>
+    <string name="backup_wallet_description_3">and keep safe.\n\n</string>
+    <string name="backup_wallet_description_4">This paper is&#160;</string>
+    <string name="backup_wallet_description_5">the only way</string>
+    <string name="backup_wallet_description_6">to restore your Kyber Wallet if you lose your phone or forget your password.</string>
+    <string name="backup_wallet_description_title">Paper Only</string>
+    <string name="description_words_from_1_4">Write down the words from 1 – 4:</string>
+    <string name="backup_wallet_title">Backup your Wallet</string>
+    <string name="test_wallet_title">Test your Wallet</string>
+    <string name="backup_wallet_instruction">Write down the words from %d - %d:</string>
+    <string name="verify">Continue</string>
+    <string name="word_2">Word #2</string>
+    <string name="word_6">Word #6</string>
+    <string name="backup_message">We will give you a list of 12 randon words. Please write down on paper and keep safe.\n\n This paper is the only way to restore your Kyber Wallet if you lose your phone or forget your password.</string>
+    <string name="bold_font_path">fonts/Montserrat-Bold.ttf</string>
+    <string name="verify_word_description">To make sure you have written down all of your backup words. Please enter the following.</string>
+
+    <string-array name="backup_wallet_description_bold">
+        <item>@string/backup_wallet_description_2</item>
+        <item>@string/backup_wallet_description_5</item>
+    </string-array>
 </resources>

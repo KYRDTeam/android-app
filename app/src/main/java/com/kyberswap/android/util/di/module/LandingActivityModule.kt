@@ -26,7 +26,7 @@ interface LandingActivityModule {
     @IntoMap
     @ViewModelKey(LandingViewModel::class)
     fun bindLandingViewModel(
-        splashViewModel: LandingViewModel
+        landingViewModel: LandingViewModel
     ): ViewModel
 
 }

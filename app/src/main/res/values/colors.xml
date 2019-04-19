@@ -4,7 +4,6 @@
     <color name="colorPrimaryDark">#2980b9</color>
     <color name="colorAccent">#ffb046</color>
     <color name="color_mine_shaft">#333333</color>
-    <color name="color_gray">#888888</color>
     <color name="color_divider">#d9d9d9</color>
     <color name="grey">#555555</color>
     <color name="header_gradient">#4c000000</color>
@@ -13,4 +12,6 @@
     <color name="color_snack_bar">#e6ffffff</color>
     <color name="background_bottom">#fafafa</color>
     <color name="color_active">#f070c0cb</color>
+    <color name="color_bg_gray">#F6F7FA</color>
+    <color name="edt_background_tint">#acb3c6</color>
 </resources>

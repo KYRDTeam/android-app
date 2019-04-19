@@ -2,9 +2,7 @@ package com.kyberswap.android.util.ext
 
 import android.util.Patterns
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 fun String.isEmailValid(): Boolean {
     return Patterns.EMAIL_ADDRESS.matcher(this).matches()
