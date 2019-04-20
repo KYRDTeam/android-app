@@ -27,6 +27,7 @@
         <activity android:name=".presentation.landing.LandingActivity" />
         <activity android:name=".presentation.wallet.BackupWalletActivity" />
         <activity android:name=".presentation.wallet.VerifyBackupWordActivity" />
+        <activity android:name=".presentation.wallet.ImportWalletActivity" />
     </application>
 
 </manifest>

@@ -4,6 +4,7 @@ import com.kyberswap.android.presentation.landing.LandingActivity
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.splash.SplashActivity
 import com.kyberswap.android.presentation.wallet.BackupWalletActivity
+import com.kyberswap.android.presentation.wallet.ImportWalletActivity
 import com.kyberswap.android.presentation.wallet.VerifyBackupWordActivity
 import com.kyberswap.android.util.di.scope.ActivityScoped
 import dagger.Module
@@ -50,5 +51,13 @@ interface ActivityBindingModule {
         ]
     )
     fun contributeVerifyBackupWordActivity(): VerifyBackupWordActivity
+
+    @ActivityScoped
+    @ContributesAndroidInjector(
+        modules = [
+            ImportWalletActivityModule::class
+        ]
+    )
+    fun contributeImportWalletActivity(): ImportWalletActivity
 
 }
