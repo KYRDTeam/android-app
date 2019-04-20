@@ -7,6 +7,7 @@ import com.kyberswap.android.R
 import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.presentation.landing.LandingActivity
 import com.kyberswap.android.presentation.wallet.BackupWalletActivity
+import com.kyberswap.android.presentation.wallet.ImportWalletActivity
 import com.kyberswap.android.presentation.wallet.VerifyBackupWordActivity
 import javax.inject.Inject
 
@@ -16,6 +17,10 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     fun navigateToLandingPage() {
         activity.startActivity(LandingActivity.newIntent(activity))
+    }
+
+    fun navigateToImportWalletPage() {
+        activity.startActivity(ImportWalletActivity.newIntent(activity))
     }
 
     fun navigateVerifyBackupWordPage(words: List<Word>) {
