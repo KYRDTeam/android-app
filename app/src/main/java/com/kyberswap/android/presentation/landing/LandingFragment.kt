@@ -59,6 +59,11 @@ class LandingFragment : BaseFragment() {
                 viewModel.createWallet()
     
 
+
+        binding.tvImportWallet.setOnClickListener {
+            navigator.navigateToImportWalletPage()
+
+
         viewModel.createWalletCallback.observe(this, Observer {
             it?.let { state ->
                 showProgress(state == CreateWalletState.Loading)

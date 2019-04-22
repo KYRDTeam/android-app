@@ -14,4 +14,8 @@
     <color name="color_active">#f070c0cb</color>
     <color name="color_bg_gray">#F6F7FA</color>
     <color name="edt_background_tint">#acb3c6</color>
+    <color name="import_button_color_active">#9ea1aa</color>
+    <color name="import_button_color_normal">#ffffff</color>
+    <color name="import_text_view_active_color">#ffffff</color>
+    <color name="import_text_view_normal_color">#141927</color>
 </resources>

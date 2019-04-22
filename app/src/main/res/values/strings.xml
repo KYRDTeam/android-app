@@ -35,9 +35,10 @@
     <string name="title_wrong_backup">Wrong Backup</string>
     <string name="message_close_app_confirmation">This will create a new wallet. It can not be undone, but you could abandon it</string>
     <string name="message_wrong_backup">Your backup words are incorrect.\n Please try again.</string>
+    <string name="message_wrong_backup_again">You entered the wrong backup words for another time. Want to backup again?</string>
     <string name="confirm">Confirm</string>
     <string name="try_again">Try again</string>
-
+    <string name="retry">Retry</string>
     <string name="unlock_screen_title_android">Unlock screen</string>
     <string name="unlock_screen_prompt_android">Please unlock your Android device to continue.</string>
     <string name="next">Next</string>
@@ -50,7 +51,8 @@
     <string name="backup_wallet_description_title">Paper Only</string>
     <string name="description_words_from_1_4">Write down the words from 1 – 4:</string>
     <string name="backup_wallet_title">Backup your Wallet</string>
-    <string name="test_wallet_title">Test your Wallet</string>
+    <string name="test_wallet_title">Test your Backup</string>
+    <string name="import_wallet_title">Import your Wallet</string>
     <string name="backup_wallet_instruction">Write down the words from %d - %d:</string>
     <string name="verify">Continue</string>
     <string name="word_2">Word #2</string>
@@ -58,6 +60,10 @@
     <string name="backup_message">We will give you a list of 12 randon words. Please write down on paper and keep safe.\n\n This paper is the only way to restore your Kyber Wallet if you lose your phone or forget your password.</string>
     <string name="bold_font_path">fonts/Montserrat-Bold.ttf</string>
     <string name="verify_word_description">To make sure you have written down all of your backup words. Please enter the following.</string>
+    <string name="backup_success">Backup successfully</string>
+    <string name="backup_json">JSON</string>
+    <string name="backup_private_key">Private Key</string>
+    <string name="backup_seed">Seeds</string>
 
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>

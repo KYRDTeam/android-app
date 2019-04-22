@@ -25,6 +25,8 @@ class VerifyBackupWordActivity : BaseActivity() {
     @Inject
     lateinit var dialogHelper: DialogHelper
 
+    private var numberOfTry = 0
+
 
     private val binding by lazy {
         DataBindingUtil.setContentView<ActivityVerifyBackupWordBinding>(
@@ -39,7 +41,6 @@ class VerifyBackupWordActivity : BaseActivity() {
         binding.title = getString(R.string.test_wallet_title)
         var first = words.random()
         var second: Word
-
         do {
             second = words.random()
  while (second == first)
@@ -53,13 +54,17 @@ class VerifyBackupWordActivity : BaseActivity() {
             if (first.content == edtFirst.text.trim().toString() && second.content == edtSecond.text.trim().toString()) {
                 Snackbar.make(
                     findViewById(android.R.id.content),
-                    "Backup successfully",
+                    getString(R.string.backup_success),
                     Snackbar.LENGTH_LONG
                 ).show()
      else {
-                dialogHelper.showWrongBackup {
+                dialogHelper.showWrongBackup(numberOfTry, {
 
-        
+        , {
+
+        )
+                numberOfTry = numberOfTry.inc()
+
     
 
     }
