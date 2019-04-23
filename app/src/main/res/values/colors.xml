@@ -18,4 +18,5 @@
     <color name="import_button_color_normal">#ffffff</color>
     <color name="import_text_view_active_color">#ffffff</color>
     <color name="import_text_view_normal_color">#141927</color>
+    <color name="color_import_button_bg_stroke">#b8babe</color>
 </resources>

@@ -1,13 +1,11 @@
 package com.kyberswap.android.presentation.landing
 
 
-import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import com.kyberswap.android.databinding.FragmentLandingBinding
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -54,34 +52,7 @@ class LandingFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.viewModel = viewModel.landingList[position]
-        binding.tvCreateWallet.setOnClickListener {
-            dialogHelper.showConfirmation {
-                viewModel.createWallet()
-    
 
-
-        binding.tvImportWallet.setOnClickListener {
-            navigator.navigateToImportWalletPage()
-
-
-        viewModel.createWalletCallback.observe(this, Observer {
-            it?.let { state ->
-                showProgress(state == CreateWalletState.Loading)
-                when (state) {
-                    is CreateWalletState.Success -> {
-
-                        navigator.navigateToBackupWalletPage(state.words)
-            
-                    is CreateWalletState.ShowError -> {
-                        Toast.makeText(
-                            this.context,
-                            state.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
-            
-        
-    
-)
     }
 
     companion object {

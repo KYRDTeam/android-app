@@ -5,12 +5,15 @@ import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import com.jakewharton.rxbinding2.widget.RxTextView
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityVerifyBackupWordBinding
 import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.Observables
 import kotlinx.android.synthetic.main.activity_backup_wallet.btnNext
 import kotlinx.android.synthetic.main.activity_verify_backup_word.*
 import javax.inject.Inject
@@ -27,6 +30,7 @@ class VerifyBackupWordActivity : BaseActivity() {
 
     private var numberOfTry = 0
 
+    private lateinit var disposable: CompositeDisposable
 
     private val binding by lazy {
         DataBindingUtil.setContentView<ActivityVerifyBackupWordBinding>(
@@ -48,6 +52,7 @@ class VerifyBackupWordActivity : BaseActivity() {
         if (first.position > second.position) {
             first = second.also { second = first }
 
+        disposable = CompositeDisposable()
         binding.word1 = first
         binding.word2 = second
         btnNext.setOnClickListener {
@@ -67,6 +72,30 @@ class VerifyBackupWordActivity : BaseActivity() {
 
     
 
+        val firstWordObservable = RxTextView.textChanges(binding.edtFirst).skip(1).map {
+            it.toString()
+
+        val secondWordObservable = RxTextView.textChanges(binding.edtSecond).skip(1).map {
+            it.toString()
+
+
+        disposable.add(
+            Observables.combineLatest(
+                firstWordObservable,
+                secondWordObservable
+            ) { first, second ->
+                {
+                    first.isNotEmpty() && second.isNotEmpty()
+        
+    .subscribe {
+                binding.btnNext.isEnabled = true
+    )
+
+    }
+
+    override fun onDestroy() {
+        disposable.dispose()
+        super.onDestroy()
     }
 
 
