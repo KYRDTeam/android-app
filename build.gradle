@@ -69,5 +69,9 @@ ext {
     gethVersion = '1.7.3'
     bitcoinjVersion = '0.15.1'
     tokenCoreVersion = 'v0.1'
+    rxPermissionVersion = '0.10.2'
+    filePickerVersion = '2.1.5'
+    zxingVersion = '3.6.0'
+    rxBindingVersion = '2.1.1'
 
 }

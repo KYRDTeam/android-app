@@ -39,4 +39,8 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
             }
 
     }
+
+    fun showProgress(showProgress: Boolean) {
+        if (showProgress) dialog?.show() else dialog?.dismiss()
+    }
 }

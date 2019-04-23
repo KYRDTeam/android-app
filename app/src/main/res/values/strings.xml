@@ -57,13 +57,25 @@
     <string name="verify">Continue</string>
     <string name="word_2">Word #2</string>
     <string name="word_6">Word #6</string>
-    <string name="backup_message">We will give you a list of 12 randon words. Please write down on paper and keep safe.\n\n This paper is the only way to restore your Kyber Wallet if you lose your phone or forget your password.</string>
+    <string name="backup_message">We will give you a list of 12 random words. Please write down on paper and keep safe.\n\n This paper is the only way to restore your Kyber Wallet if you lose your phone or forget your password.</string>
     <string name="bold_font_path">fonts/Montserrat-Bold.ttf</string>
     <string name="verify_word_description">To make sure you have written down all of your backup words. Please enter the following.</string>
     <string name="backup_success">Backup successfully</string>
     <string name="backup_json">JSON</string>
     <string name="backup_private_key">Private Key</string>
     <string name="backup_seed">Seeds</string>
+    <string name="enter_password_to_decrypt">Enter Password to Decrypt</string>
+    <string name="import_your_json_file">Import your JSON file</string>
+    <string name="name_of_your_wallet">Name of your wallet</string>
+    <string name="recover_with_seeds">Recover with seeds</string>
+    <string name="please_use_seed">Please use seed, the 12 random words assigned when you create the wallet</string>
+    <string name="enter_private_key">Enter Private Key</string>
+    <string name="enter_seeds">Enter Seeds</string>
+    <string name="permission_required">The permission is required to perform this action</string>
+    <string name="something_wrong">Something went wrong.</string>
+    <string name="your_private_key">Your Private Key</string>
+    <string name="text_counter">word count: %d</string>
+    <string name="message_cancelled">Cancelled</string>
 
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>

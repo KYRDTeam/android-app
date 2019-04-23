@@ -1,0 +1,107 @@
+package com.kyberswap.android.presentation.wallet
+
+
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import com.google.zxing.integration.android.IntentIntegrator
+import com.kyberswap.android.AppExecutors
+import com.kyberswap.android.R
+import com.kyberswap.android.databinding.FragmentImportPrivateKeyBinding
+import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.landing.ImportWalletState
+import com.kyberswap.android.presentation.listener.addTextChangeListener
+import com.kyberswap.android.util.di.ViewModelFactory
+import javax.inject.Inject
+
+
+class ImportPrivateKeyFragment : BaseFragment() {
+
+    private lateinit var binding: FragmentImportPrivateKeyBinding
+
+    @Inject
+    lateinit var navigator: Navigator
+
+    @Inject
+    lateinit var appExecutors: AppExecutors
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
+    private val viewModel by lazy {
+        ViewModelProviders.of(this, viewModelFactory).get(ImportPrivateKeyViewModel::class.java)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentImportPrivateKeyBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        binding.edtPrivateKey.addTextChangeListener {
+            onTextChanged { s, _, _, _ ->
+                val count = s.toString().trim().split(" ").size
+                binding.btnImportWallet.isEnabled = count > 0
+            }
+        }
+
+        binding.btnImportWallet.setOnClickListener {
+            viewModel.importFromPrivateKey(
+                binding.edtPrivateKey.text?.trim().toString(),
+                binding.edtWalletName.text?.trim().toString()
+            )
+        }
+
+        viewModel.importWalletCallback.observe(this, Observer {
+            it?.let { state ->
+                showProgress(state == ImportWalletState.Loading)
+                when (state) {
+                    is ImportWalletState.Success -> {
+                        showMessageLong(state.wallet.address)
+                    }
+                    is ImportWalletState.ShowError -> {
+                        showMessage(state.message ?: getString(R.string.something_wrong))
+                    }
+                }
+            }
+        })
+
+        binding.imgQR.setOnClickListener {
+            IntentIntegrator.forSupportFragment(this)
+                .setBeepEnabled(false)
+                .initiateScan()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        if (result != null) {
+            if (result.contents == null) {
+                showMessage(getString(com.kyberswap.android.R.string.message_cancelled))
+            } else {
+                binding.edtPrivateKey.setText(result.contents.toString())
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
+    companion object {
+        fun newInstance() =
+            ImportPrivateKeyFragment().apply {
+                arguments = Bundle().apply {
+                }
+            }
+    }
+
+
+}
