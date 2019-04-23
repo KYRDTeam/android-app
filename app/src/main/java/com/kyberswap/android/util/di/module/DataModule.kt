@@ -18,7 +18,8 @@ object DataModule {
     @Provides
     @JvmStatic
     fun provideWalletRepository(
-    ): WalletRepository = WalletDataRepository()
+        context: Context
+    ): WalletRepository = WalletDataRepository(context)
 
     @Singleton
     @Provides

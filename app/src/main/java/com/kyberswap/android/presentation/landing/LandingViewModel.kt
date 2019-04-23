@@ -1,10 +1,8 @@
 package com.kyberswap.android.presentation.landing
 
-import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.kyberswap.android.R
 import com.kyberswap.android.domain.usecase.wallet.CreateWalletUseCase
-import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 
@@ -33,22 +31,9 @@ class LandingViewModel @Inject constructor(
         )
     }
 
-    val createWalletCallback: MutableLiveData<CreateWalletState> = MutableLiveData()
-
-    fun createWallet(pinLock: String = "") {
-        createWalletCallback.postValue(CreateWalletState.Loading)
-        createWalletUseCase.execute(
-            Consumer {
-
-                createWalletCallback.value = CreateWalletState.Success(it)
-
-            },
-            Consumer {
-                it.printStackTrace()
-                createWalletCallback.value = CreateWalletState.ShowError(it.localizedMessage)
-            },
-            CreateWalletUseCase.Param(pinLock)
-        )
+    override fun onCleared() {
+        createWalletUseCase.dispose()
+        super.onCleared()
     }
 
 }

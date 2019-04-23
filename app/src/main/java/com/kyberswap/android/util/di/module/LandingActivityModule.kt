@@ -3,6 +3,7 @@ package com.kyberswap.android.util.di.module
 import android.arch.lifecycle.ViewModel
 import android.support.v7.app.AppCompatActivity
 import com.kyberswap.android.presentation.landing.LandingActivity
+import com.kyberswap.android.presentation.landing.LandingActivityViewModel
 import com.kyberswap.android.presentation.landing.LandingFragment
 import com.kyberswap.android.presentation.landing.LandingViewModel
 import com.kyberswap.android.util.di.ViewModelKey
@@ -27,6 +28,13 @@ interface LandingActivityModule {
     @ViewModelKey(LandingViewModel::class)
     fun bindLandingViewModel(
         landingViewModel: LandingViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LandingActivityViewModel::class)
+    fun bindLandingActivityViewModel(
+        landingActivityViewModel: LandingActivityViewModel
     ): ViewModel
 
 }
