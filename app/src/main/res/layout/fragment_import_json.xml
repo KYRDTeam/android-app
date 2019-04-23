@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presentation.wallet.ImportWalletActivity">
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/button"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="53dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/import_json_button"
+                android:text="@string/import_your_json_file"
+                android:textAllCaps="false"
+                android:textColor="#141927"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/textInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="36dp"
+                android:layout_marginEnd="20dp"
+                android:backgroundTint="@color/edt_background_tint"
+                app:hintEnabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="#9ea1aa">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/edtPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/edt_background_tint"
+                    android:hint="@string/enter_password_to_decrypt"
+                    android:inputType="textPassword"
+                    android:letterSpacing="0.07"
+                    android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                    android:textColor="#5a5e67"
+                    android:textColorHint="#9ea1aa"
+                    android:textSize="14sp"
+                    tools:text="Enter Password to Decrypt" />
+
+
+            </android.support.design.widget.TextInputLayout>
+
+
+            <EditText
+                android:id="@+id/edtWalletName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginEnd="20dp"
+                android:backgroundTint="@color/edt_background_tint"
+                android:hint="@string/name_of_your_wallet"
+                android:inputType="text"
+                android:letterSpacing="0.07"
+                android:singleLine="true"
+                android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                android:textColor="#9ea1aa"
+                android:textColorHint="#9ea1aa"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
+                tools:text="Name of your wallet" />
+
+            <Button
+                android:id="@+id/btnImportWallet"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="41dp"
+                android:background="@drawable/import_wallet_toggle_drawable"
+                android:enabled="false"
+                android:gravity="center"
+                android:text="@string/import_wallet"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+
+</layout>

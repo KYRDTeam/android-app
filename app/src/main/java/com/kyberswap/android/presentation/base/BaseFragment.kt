@@ -2,6 +2,7 @@ package com.kyberswap.android.presentation.base
 
 import android.app.ProgressDialog
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import com.kyberswap.android.R
 import dagger.android.support.DaggerFragment
 
@@ -25,5 +26,17 @@ abstract class BaseFragment : DaggerFragment() {
 
     fun showProgress(showProgress: Boolean) {
         if (showProgress) dialog?.show() else dialog?.dismiss()
+    }
+
+    fun showMessage(message: String) {
+        if (view != null) {
+            Snackbar.make(view!!, message, Snackbar.LENGTH_SHORT).show()
+
+    }
+
+    fun showMessageLong(message: String) {
+        if (view != null) {
+            Snackbar.make(view!!, message, Snackbar.LENGTH_LONG).show()
+
     }
 }

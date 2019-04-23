@@ -50,6 +50,10 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         transaction.commitAllowingStateLoss()
     }
 
+    fun navigateToHome(address: String?) {
+
+    }
+
     companion object {
         const val IN_RIGHT_OUT_LEFT = 1
         const val IN_LEFT_OUT_RIGHT = -1
