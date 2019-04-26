@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="token_endpoint_url" formatted="false" translatable="false">https://api.kyber.network/</string>
+    <string name="base_rpc_url">https://ropsten.infura.io/v3/1b9c2fe6f5fa424cb1304b67fee3e71e</string>
 </resources>
