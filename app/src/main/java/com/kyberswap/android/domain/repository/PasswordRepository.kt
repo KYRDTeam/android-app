@@ -1,6 +1,5 @@
 package com.kyberswap.android.domain.repository
 
-
 import com.kyberswap.android.domain.model.Wallet
 import io.reactivex.Completable
 import io.reactivex.Single

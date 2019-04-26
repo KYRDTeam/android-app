@@ -1,6 +1,6 @@
 package com.kyberswap.android.util.di.module
 
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.kyberswap.android.presentation.wallet.BackupWalletActivity
 import com.kyberswap.android.presentation.wallet.BackupWalletFragment
 import com.kyberswap.android.presentation.wallet.BackupWalletFragmentNext
@@ -22,6 +22,4 @@ interface BackupWalletActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeBackupWalletFragmentNext(): BackupWalletFragmentNext
-
-
 }

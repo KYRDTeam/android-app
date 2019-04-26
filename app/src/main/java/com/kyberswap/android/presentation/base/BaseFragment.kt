@@ -2,7 +2,7 @@ package com.kyberswap.android.presentation.base
 
 import android.app.ProgressDialog
 import android.os.Bundle
-import android.support.design.widget.Snackbar
+import com.google.android.material.snackbar.Snackbar
 import com.kyberswap.android.R
 import dagger.android.support.DaggerFragment
 
@@ -16,7 +16,6 @@ abstract class BaseFragment : DaggerFragment() {
                 setCanceledOnTouchOutside(false)
                 setCancelable(false)
             }
-
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

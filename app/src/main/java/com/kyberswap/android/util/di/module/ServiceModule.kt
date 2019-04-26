@@ -23,5 +23,4 @@ object ServiceModule {
     fun provideFile(
         context: Context
     ): File = File(context.filesDir, "keystore/keystore")
-
 }

@@ -1,7 +1,7 @@
 package com.kyberswap.android.presentation.wallet
 
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.usecase.wallet.ImportWalletFromPrivateKeyUseCase
 import com.kyberswap.android.presentation.landing.ImportWalletState
 import io.reactivex.functions.Consumer
@@ -25,5 +25,4 @@ class ImportPrivateKeyViewModel @Inject constructor(
             ImportWalletFromPrivateKeyUseCase.Param(privateKey, walletName)
         )
     }
-
 }

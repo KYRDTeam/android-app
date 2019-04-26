@@ -1,7 +1,7 @@
 package com.kyberswap.android.util.di.module
 
-import android.arch.lifecycle.ViewModel
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
 import com.kyberswap.android.presentation.splash.SplashActivity
 import com.kyberswap.android.presentation.splash.SplashViewModel
 import com.kyberswap.android.util.di.ViewModelKey
