@@ -1,6 +1,6 @@
 package com.kyberswap.android.util.di.module
 
-import android.arch.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider
 import com.kyberswap.android.util.di.ViewModelFactory
 import dagger.Binds
 import dagger.Module

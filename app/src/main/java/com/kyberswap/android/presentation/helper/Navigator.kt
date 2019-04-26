@@ -1,11 +1,13 @@
 package com.kyberswap.android.presentation.helper
 
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.kyberswap.android.R
+import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.presentation.landing.LandingActivity
+import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.wallet.BackupWalletActivity
 import com.kyberswap.android.presentation.wallet.ImportWalletActivity
 import com.kyberswap.android.presentation.wallet.VerifyBackupWordActivity
@@ -23,12 +25,16 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         activity.startActivity(ImportWalletActivity.newIntent(activity))
     }
 
-    fun navigateVerifyBackupWordPage(words: List<Word>) {
-        activity.startActivity(VerifyBackupWordActivity.newIntent(activity, words))
+    fun navigateVerifyBackupWordPage(words: List<Word>, wallet: Wallet) {
+        activity.startActivity(VerifyBackupWordActivity.newIntent(activity, words, wallet))
     }
 
-    fun navigateToBackupWalletPage(words: List<Word>) {
-        activity.startActivity(BackupWalletActivity.newIntent(activity, words))
+    fun navigateToBackupWalletPage(words: List<Word>, wallet: Wallet) {
+        activity.startActivity(BackupWalletActivity.newIntent(activity, words, wallet))
+    }
+
+    fun navigateToHome(wallet: Wallet? = null) {
+        activity.startActivity(MainActivity.newIntent(activity, wallet))
     }
 
     @JvmOverloads
@@ -48,10 +54,6 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
             transaction.addToBackStack(fragment.javaClass.simpleName)
 
         transaction.commitAllowingStateLoss()
-    }
-
-    fun navigateToHome(address: String?) {
-
     }
 
     companion object {

@@ -1,9 +1,9 @@
 package com.kyberswap.android.presentation.base
 
-import android.databinding.ViewDataBinding
-import android.support.v7.recyclerview.extensions.AsyncDifferConfig
-import android.support.v7.util.DiffUtil
 import android.view.ViewGroup
+import androidx.databinding.ViewDataBinding
+import androidx.recyclerview.widget.AsyncDifferConfig
+import androidx.recyclerview.widget.DiffUtil
 import com.kyberswap.android.AppExecutors
 
 abstract class DataBoundListAdapter<T, V : ViewDataBinding>(

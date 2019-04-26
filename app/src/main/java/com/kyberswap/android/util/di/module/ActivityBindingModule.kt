@@ -59,5 +59,4 @@ interface ActivityBindingModule {
         ]
     )
     fun contributeImportWalletActivity(): ImportWalletActivity
-
 }

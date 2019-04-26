@@ -1,10 +1,9 @@
 package com.kyberswap.android.presentation.landing
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import com.kyberswap.android.R
 import com.kyberswap.android.domain.usecase.wallet.CreateWalletUseCase
 import javax.inject.Inject
-
 
 data class Landing(
     val imageId: Int,
@@ -35,5 +34,4 @@ class LandingViewModel @Inject constructor(
         createWalletUseCase.dispose()
         super.onCleared()
     }
-
 }

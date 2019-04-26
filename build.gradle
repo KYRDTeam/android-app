@@ -73,5 +73,7 @@ ext {
     filePickerVersion = '2.1.5'
     zxingVersion = '3.6.0'
     rxBindingVersion = '2.1.1'
+    rxKotlinVersion = '2.3.0'
+    ahbottomnavigationVersion = '2.3.4'
 
 }

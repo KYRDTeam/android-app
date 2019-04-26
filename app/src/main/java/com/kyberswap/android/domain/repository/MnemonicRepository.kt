@@ -4,5 +4,4 @@ import io.reactivex.Single
 
 interface MnemonicRepository {
     fun create12wordsAccount(numberOfWords: Int): Single<List<String>>
-
 }

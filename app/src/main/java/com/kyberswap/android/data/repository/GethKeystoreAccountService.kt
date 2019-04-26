@@ -165,7 +165,6 @@ class GethKeystoreAccountService : AccountService {
                 /* Quietly: interest only result, maybe next is ok. */
     
 
-
         throw ServiceException("Wallet with address: $address not found")
     }
 

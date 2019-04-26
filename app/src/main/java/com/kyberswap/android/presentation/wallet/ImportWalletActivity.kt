@@ -2,10 +2,10 @@ package com.kyberswap.android.presentation.wallet
 
 import android.content.Context
 import android.content.Intent
-import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.view.View
+import androidx.databinding.DataBindingUtil
+import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityImportWalletBinding
 import com.kyberswap.android.presentation.base.BaseActivity
@@ -15,7 +15,6 @@ import org.consenlabs.tokencore.wallet.KeystoreStorage
 import org.consenlabs.tokencore.wallet.WalletManager
 import java.io.File
 import javax.inject.Inject
-
 
 class ImportWalletActivity : BaseActivity(), KeystoreStorage {
     override fun getKeystoreDir(): File {
@@ -58,13 +57,10 @@ class ImportWalletActivity : BaseActivity(), KeystoreStorage {
 
                 when {
                     view.id == R.id.vJson -> {
-
             
                     view.id == R.id.vPrivateKey -> {
-
             
                     else -> {
-
             
         
     
@@ -85,7 +81,6 @@ class ImportWalletActivity : BaseActivity(), KeystoreStorage {
                 setSelectedOption(options[position])
     
 )
-
     }
 
     private fun setSelectedOption(view: View) {
@@ -94,10 +89,8 @@ class ImportWalletActivity : BaseActivity(), KeystoreStorage {
         currentSelectedView = view
     }
 
-
     companion object {
         fun newIntent(context: Context) =
             Intent(context, ImportWalletActivity::class.java)
     }
-
 }

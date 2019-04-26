@@ -2,7 +2,6 @@ package com.kyberswap.android.data.service
 
 import com.kyberswap.android.Constant
 
-
 class ErrorEnvelope constructor(
     val code: Int,
     val message: String?,

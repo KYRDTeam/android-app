@@ -11,10 +11,10 @@
             type="String" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/splash_screen_background"
+        android:background="@drawable/screen_background"
         android:orientation="vertical">
 
         <include
@@ -24,7 +24,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:title="@{title}" />
 
-        <android.support.v4.view.ViewPager
+        <androidx.viewpager.widget.ViewPager
             android:id="@+id/vpBackupWallet"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -50,5 +50,5 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent" />
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

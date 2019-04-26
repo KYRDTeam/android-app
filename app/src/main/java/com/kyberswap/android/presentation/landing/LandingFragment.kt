@@ -1,11 +1,10 @@
 package com.kyberswap.android.presentation.landing
 
-
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProviders
 import com.kyberswap.android.databinding.FragmentLandingBinding
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -14,7 +13,6 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
 
 private const val ARG_PARAM = "arg_param"
-
 
 class LandingFragment : BaseFragment() {
 
@@ -31,7 +29,6 @@ class LandingFragment : BaseFragment() {
 
     private var position: Int = 0
 
-
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(LandingViewModel::class.java)
     }
@@ -42,7 +39,8 @@ class LandingFragment : BaseFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentLandingBinding.inflate(inflater, container, false)
@@ -52,7 +50,6 @@ class LandingFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.viewModel = viewModel.landingList[position]
-
     }
 
     companion object {
@@ -63,6 +60,4 @@ class LandingFragment : BaseFragment() {
         
     
     }
-
-
 }

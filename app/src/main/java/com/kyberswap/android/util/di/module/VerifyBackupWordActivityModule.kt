@@ -1,6 +1,6 @@
 package com.kyberswap.android.util.di.module
 
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.kyberswap.android.presentation.wallet.VerifyBackupWordActivity
 import dagger.Binds
 import dagger.Module
@@ -10,5 +10,4 @@ interface VerifyBackupWordActivityModule {
 
     @Binds
     fun bindsAppCompatActivity(verifyBackupWordActivity: VerifyBackupWordActivity): AppCompatActivity
-
 }

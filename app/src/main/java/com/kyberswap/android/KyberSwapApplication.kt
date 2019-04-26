@@ -1,9 +1,9 @@
 package com.kyberswap.android
 
-import android.arch.lifecycle.Lifecycle
-import android.arch.lifecycle.LifecycleObserver
-import android.arch.lifecycle.OnLifecycleEvent
-import android.arch.lifecycle.ProcessLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.kyberswap.android.util.di.DaggerAppComponent
 import com.kyberswap.android.util.di.module.DatabaseModule
 import com.kyberswap.android.util.di.module.NetworkModule
@@ -15,7 +15,6 @@ import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.viewpump.ViewPump
 import io.reactivex.plugins.RxJavaPlugins
 import timber.log.Timber
-
 
 class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
 
