@@ -17,8 +17,7 @@ import javax.inject.Singleton
         AppModule::class,
         NetworkModule::class,
         DatabaseModule::class,
-        DataModule::class,
-        ServiceModule::class
+        DataModule::class
     ]
 )
 interface AppComponent : AndroidInjector<KyberSwapApplication> {
