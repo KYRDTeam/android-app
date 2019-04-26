@@ -34,15 +34,15 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
             android:gravity="center_horizontal"
+            android:text="@string/company_name"
+            android:textAppearance="@style/TextAppearance.Montserrat.Medium"
             android:textColor="#ffffff"
             android:textSize="24sp"
-            android:text="@string/company_name"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView"
-            android:textAppearance="@style/TextAppearance.Montserrat.Medium" />
+            app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
