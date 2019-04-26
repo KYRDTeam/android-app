@@ -15,10 +15,6 @@ class CreateWalletUseCase @Inject constructor(
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public override fun buildUseCaseSingle(param: Param): Single<Wallet> {
         return walletRepository.createWallet(param)
-//        return walletRepository.createWallet(param).flatMap { wallet ->
-//            walletRepository.getMnemonic(GetMnemonicUseCase.Param(param.pinLock, wallet.id))
-//
-//
     }
 
     class Param(
