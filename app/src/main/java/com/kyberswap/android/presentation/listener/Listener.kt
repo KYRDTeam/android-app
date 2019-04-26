@@ -1,11 +1,11 @@
 package com.kyberswap.android.presentation.listener
 
-import android.support.v4.widget.DrawerLayout
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import androidx.drawerlayout.widget.DrawerLayout
 
 inline fun EditText.addTextChangeListener(func: AddTextChangeListener.() -> Unit) {
     val listener = AddTextChangeListener()

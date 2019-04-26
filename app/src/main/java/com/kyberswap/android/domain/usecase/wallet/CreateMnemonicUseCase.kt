@@ -1,6 +1,6 @@
 package com.kyberswap.android.domain.usecase.wallet
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.repository.MnemonicRepository
 import com.kyberswap.android.domain.usecase.SequentialUseCase
@@ -14,6 +14,5 @@ class CreateMnemonicUseCase @Inject constructor(
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public override fun buildUseCaseSingle(param: Int): Single<List<String>> {
         return mnemonicRepository.create12wordsAccount(param)
-
     }
 }

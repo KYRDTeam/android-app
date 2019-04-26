@@ -14,7 +14,6 @@ import org.consenlabs.tokencore.wallet.model.Metadata
 import org.consenlabs.tokencore.wallet.model.Network
 import javax.inject.Inject
 
-
 class WalletDataRepository @Inject constructor(val context: Context) : WalletRepository {
     override fun importWallet(param: ImportWalletFromSeedUseCase.Param): Single<Wallet> {
         return Single.fromCallable {
@@ -90,10 +89,8 @@ class WalletDataRepository @Inject constructor(val context: Context) : WalletRep
                 Network.MAINNET,
                 Metadata.P2WPKH
             )
-
         }
     }
-
 
     override fun getMnemonic(param: GetMnemonicUseCase.Param): Single<List<Word>> {
         return Single.fromCallable {
@@ -105,7 +102,6 @@ class WalletDataRepository @Inject constructor(val context: Context) : WalletRep
                 words.add(Word(index + 1, s))
             }
             words
-
         }
     }
 

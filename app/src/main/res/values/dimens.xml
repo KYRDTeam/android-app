@@ -10,4 +10,17 @@
     <dimen name="profile_margin">16</dimen>
     <dimen name="actionbar_size">44dp</dimen>
     <dimen name="toolbar_height">82dp</dimen>
+
+    <dimen name="bottom_navigation_text_size_active">10sp</dimen>
+    <dimen name="bottom_navigation_text_size_inactive">10sp</dimen>
+
+    <dimen name="bottom_navigation_text_size_forced_active">10sp</dimen>
+    <dimen name="bottom_navigation_text_size_forced_inactive">10sp</dimen>
+
+    <dimen name="bottom_navigation_margin_top_active">8dp</dimen>
+    <dimen name="bottom_navigation_margin_top_inactive">8dp</dimen>
+
+    <dimen name="bottom_navigation_margin_bottom_active">8dp</dimen>
+    <dimen name="bottom_navigation_margin_bottom_inactive">8dp</dimen>
+
 </resources>

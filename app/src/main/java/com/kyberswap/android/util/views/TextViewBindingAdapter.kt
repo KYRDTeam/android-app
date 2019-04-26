@@ -1,9 +1,9 @@
 package com.kyberswap.android.util.views
 
-import android.databinding.BindingAdapter
 import android.text.Spannable
 import android.text.SpannableString
 import android.widget.TextView
+import androidx.databinding.BindingAdapter
 import io.github.inflationx.calligraphy3.CalligraphyTypefaceSpan
 import io.github.inflationx.calligraphy3.TypefaceUtils
 
@@ -13,7 +13,6 @@ object TextViewBindingAdapter {
     fun setText(view: TextView, resourceId: Int) {
         view.text = view.context.resources.getString(resourceId)
     }
-
 
     @BindingAdapter("app:data", "app:font")
     @JvmStatic
@@ -40,5 +39,4 @@ object TextViewBindingAdapter {
 
         view.setText(spannableString, TextView.BufferType.SPANNABLE)
     }
-
 }

@@ -1,6 +1,5 @@
 package com.kyberswap.android.domain.model
 
-
 class ServiceErrorException @JvmOverloads constructor(
     val code: Int,
     message: String? = null,

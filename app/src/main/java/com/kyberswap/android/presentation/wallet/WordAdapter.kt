@@ -1,9 +1,9 @@
 package com.kyberswap.android.presentation.wallet
 
-import android.databinding.DataBindingUtil
-import android.support.v7.util.DiffUtil
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.DiffUtil
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.BR
 import com.kyberswap.android.R
@@ -37,5 +37,4 @@ class WordAdapter(
             parent,
             false
         )
-
 }

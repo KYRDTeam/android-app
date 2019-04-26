@@ -1,7 +1,7 @@
 package com.kyberswap.android.presentation.helper
 
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import com.kyberswap.android.R
 import javax.inject.Inject
 
@@ -57,5 +57,4 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
             .create()
             .show()
     }
-
 }

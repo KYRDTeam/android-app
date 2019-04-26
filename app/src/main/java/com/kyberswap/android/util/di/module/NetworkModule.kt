@@ -3,12 +3,14 @@ package com.kyberswap.android.util.di.module
 import android.content.Context
 import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.R
-import com.kyberswap.android.data.api.home.HomeApi
-import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
+import com.kyberswap.android.data.api.home.TokenApi
+import com.kyberswap.android.util.TokenClient
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.web3j.protocol.Web3j
+import org.web3j.protocol.http.HttpService
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -19,19 +21,11 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(storageMediator: StorageMediator): OkHttpClient {
+    fun provideOkHttpClient(): OkHttpClient {
         val client = OkHttpClient().newBuilder()
         client.addInterceptor {
-
             val original = it.request()
-
             val builder = original.newBuilder()
-//            if (storageMediator.isAuthenticated()) {
-//                builder.header(
-//                    "Authorization",
-//                    "Bearer ${storageMediator.getAuthentication()?.accessToken}"
-//                )
-//            }
             val request = builder.method(original.method(), original.body())
                 .build()
             it.proceed(request)
@@ -46,12 +40,30 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideHomeApi(context: Context, client: OkHttpClient): HomeApi {
+    fun provideHomeApi(context: Context, client: OkHttpClient): TokenApi {
         return createApiClient(
-            HomeApi::class.java,
-            context.getString(R.string.home_endpoint_url),
+            TokenApi::class.java,
+            context.getString(R.string.token_endpoint_url),
             client
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideWeb3j(context: Context, client: OkHttpClient): Web3j {
+        return Web3j.build(
+            HttpService(
+                context.getString(R.string.base_rpc_url),
+                client,
+                false
+            )
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideTokenClient(web3j: Web3j): TokenClient {
+        return TokenClient(web3j)
     }
 
     private fun <T> createApiClient(clazz: Class<T>, baseUrl: String, client: OkHttpClient): T {
