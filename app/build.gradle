@@ -31,6 +31,13 @@ android {
         }
     }
 
+    defaultConfig {
+        multiDexEnabled true
+    }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
 
     dataBinding {
         enabled = true

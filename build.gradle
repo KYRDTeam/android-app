@@ -62,7 +62,7 @@ ext {
     espressoVerion = '3.0.2'
     mockWebserverVersion = '3.10.0'
     materialDialogVersion = '0.9.6.0'
-    indicatorVersion = '1.2.2'
+    indicatorVersion = '2.1.0'
     calligraphy3Version = '3.1.0'
     viewpumpVersion = '1.0.0'
     web3jVersion = '4.2.0-android'
