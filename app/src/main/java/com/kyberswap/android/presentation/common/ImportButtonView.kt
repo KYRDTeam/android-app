@@ -1,14 +1,13 @@
 package com.kyberswap.android.presentation.common
 
 import android.content.Context
-import android.databinding.DataBindingUtil
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import androidx.databinding.DataBindingUtil
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ImportButtonViewBinding
-
 
 class ImportButtonView : LinearLayout {
 
@@ -51,12 +50,8 @@ class ImportButtonView : LinearLayout {
                 true
             )
 
-
         drawable?.apply {
             binding.icon.background = this
-
-
-
 
 
         text?.apply {
@@ -64,7 +59,5 @@ class ImportButtonView : LinearLayout {
 
 
         binding.test = "abc"
-
     }
 }
-

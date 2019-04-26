@@ -1,7 +1,7 @@
 package com.kyberswap.android.presentation.wallet
 
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.usecase.wallet.ImportWalletFromSeedUseCase
 import com.kyberswap.android.presentation.landing.ImportWalletState
 import io.reactivex.functions.Consumer
@@ -12,7 +12,6 @@ class ImportSeedViewModel @Inject constructor(
 ) : ViewModel() {
 
     val importWalletCallback: MutableLiveData<ImportWalletState> = MutableLiveData()
-
 
     fun importFromSeed(seed: String, walletName: String) {
         importWalletCallback.postValue(ImportWalletState.Loading)

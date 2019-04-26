@@ -1,7 +1,7 @@
 package com.kyberswap.android.presentation.listener
 
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 abstract class EndlessRecyclerOnScrollListener(private val linearLayoutManager: LinearLayoutManager) :
     RecyclerView.OnScrollListener() {

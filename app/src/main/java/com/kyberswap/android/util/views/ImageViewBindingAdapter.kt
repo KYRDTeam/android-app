@@ -1,11 +1,12 @@
 package com.kyberswap.android.util.views
 
-import android.databinding.BindingAdapter
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.widget.ImageView
+import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.kyberswap.android.R
 
 object ImageViewBindingAdapter {
     @BindingAdapter("app:imageUrl")
@@ -49,5 +50,17 @@ object ImageViewBindingAdapter {
     @JvmStatic
     fun loadResource(view: ImageView, resourceId: Int) {
         Glide.with(view).load("").error(resourceId).into(view)
+    }
+
+    @BindingAdapter("app:identifier")
+    @JvmStatic
+    fun loadResource(view: ImageView, identifier: String) {
+        Glide.with(view).load(
+            view.context.resources.getIdentifier(
+                identifier.toLowerCase(),
+                "drawable",
+                view.context.packageName
+            )
+        ).error(R.drawable.token_default).into(view)
     }
 }

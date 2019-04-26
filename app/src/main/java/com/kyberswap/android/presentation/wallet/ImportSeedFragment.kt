@@ -1,15 +1,15 @@
 package com.kyberswap.android.presentation.wallet
 
-
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentImportSeedBinding
+import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.landing.ImportWalletState
@@ -17,7 +17,6 @@ import com.kyberswap.android.presentation.listener.addTextChangeListener
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_import_seed.*
 import javax.inject.Inject
-
 
 class ImportSeedFragment : BaseFragment() {
 
@@ -36,9 +35,9 @@ class ImportSeedFragment : BaseFragment() {
         ViewModelProviders.of(this, viewModelFactory).get(ImportSeedViewModel::class.java)
     }
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentImportSeedBinding.inflate(inflater, container, false)
@@ -71,7 +70,7 @@ class ImportSeedFragment : BaseFragment() {
                 showProgress(state == ImportWalletState.Loading)
                 when (state) {
                     is ImportWalletState.Success -> {
-                        showMessageLong(state.wallet.address)
+                        navigator.navigateToHome(Wallet(state.wallet))
             
                     is ImportWalletState.ShowError -> {
                         showMessage(state.message ?: getString(R.string.something_wrong))
@@ -79,9 +78,7 @@ class ImportSeedFragment : BaseFragment() {
         
     
 )
-
     }
-
 
     companion object {
         fun newInstance() =
@@ -90,6 +87,4 @@ class ImportSeedFragment : BaseFragment() {
         
     
     }
-
-
 }

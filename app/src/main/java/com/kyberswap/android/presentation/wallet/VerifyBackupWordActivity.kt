@@ -2,12 +2,12 @@ package com.kyberswap.android.presentation.wallet
 
 import android.content.Context
 import android.content.Intent
-import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import com.jakewharton.rxbinding2.widget.RxTextView
+import androidx.databinding.DataBindingUtil
+import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityVerifyBackupWordBinding
+import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -18,8 +18,8 @@ import kotlinx.android.synthetic.main.activity_backup_wallet.btnNext
 import kotlinx.android.synthetic.main.activity_verify_backup_word.*
 import javax.inject.Inject
 
-
 private const val ARG_PARAM = "arg_param"
+private const val WALLET_PARAM = "wallet_param"
 
 class VerifyBackupWordActivity : BaseActivity() {
     @Inject
@@ -42,6 +42,7 @@ class VerifyBackupWordActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val words = intent.getParcelableArrayListExtra<Word>(ARG_PARAM)
+        val wallet = intent.getParcelableExtra<Wallet>(WALLET_PARAM)
         binding.title = getString(R.string.test_wallet_title)
         var first = words.random()
         var second: Word
@@ -56,26 +57,21 @@ class VerifyBackupWordActivity : BaseActivity() {
         binding.word1 = first
         binding.word2 = second
         btnNext.setOnClickListener {
-            if (first.content == edtFirst.text.trim().toString() && second.content == edtSecond.text.trim().toString()) {
-                Snackbar.make(
-                    findViewById(android.R.id.content),
-                    getString(R.string.backup_success),
-                    Snackbar.LENGTH_LONG
-                ).show()
+            if (first.content == edtFirst.text.trim().toString() &&
+                second.content == edtSecond.text.trim().toString()
+            ) {
+                navigator.navigateToHome(wallet)
      else {
                 dialogHelper.showWrongBackup(numberOfTry, {
-
         , {
-
         )
                 numberOfTry = numberOfTry.inc()
-
     
 
-        val firstWordObservable = RxTextView.textChanges(binding.edtFirst).skip(1).map {
+        val firstWordObservable = binding.edtFirst.textChanges().skip(1).map {
             it.toString()
 
-        val secondWordObservable = RxTextView.textChanges(binding.edtSecond).skip(1).map {
+        val secondWordObservable = binding.edtSecond.textChanges().skip(1).map {
             it.toString()
 
 
@@ -83,14 +79,13 @@ class VerifyBackupWordActivity : BaseActivity() {
             Observables.combineLatest(
                 firstWordObservable,
                 secondWordObservable
-            ) { first, second ->
+            ) { f, s ->
                 {
-                    first.isNotEmpty() && second.isNotEmpty()
+                    f.isNotEmpty() && s.isNotEmpty()
         
     .subscribe {
                 binding.btnNext.isEnabled = true
     )
-
     }
 
     override fun onDestroy() {
@@ -98,11 +93,11 @@ class VerifyBackupWordActivity : BaseActivity() {
         super.onDestroy()
     }
 
-
     companion object {
-        fun newIntent(context: Context, words: List<Word>) =
+        fun newIntent(context: Context, words: List<Word>, wallet: Wallet) =
             Intent(context, VerifyBackupWordActivity::class.java).apply {
                 putParcelableArrayListExtra(ARG_PARAM, ArrayList(words))
+                putExtra(WALLET_PARAM, wallet)
     
     }
 }

@@ -1,8 +1,8 @@
 package com.kyberswap.android.presentation.wallet
 
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
 import android.net.Uri
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.usecase.wallet.ImportWalletFromJsonUseCase
 import com.kyberswap.android.presentation.landing.ImportWalletState
 import io.reactivex.functions.Consumer
@@ -12,7 +12,6 @@ class ImportJsonViewModel @Inject constructor(
     private val importWalletFromJsonUseCase: ImportWalletFromJsonUseCase
 ) : ViewModel() {
     val importWalletCallback: MutableLiveData<ImportWalletState> = MutableLiveData()
-
 
     fun importFromJson(uri: Uri, password: String, walletName: String) {
         importWalletCallback.postValue(ImportWalletState.Loading)

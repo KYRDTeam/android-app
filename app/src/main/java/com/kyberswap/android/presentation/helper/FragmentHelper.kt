@@ -1,7 +1,7 @@
 package com.kyberswap.android.presentation.helper
 
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.kyberswap.android.R
 import javax.inject.Inject
 

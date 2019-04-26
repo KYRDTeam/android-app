@@ -1,6 +1,6 @@
 package com.kyberswap.android.domain.usecase.wallet
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.PasswordRepository

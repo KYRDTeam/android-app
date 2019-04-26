@@ -18,5 +18,4 @@ class MnemonicDataRepository @Inject constructor(
             mnemonicCode.toMnemonic(seed)
 
     }
-
 }

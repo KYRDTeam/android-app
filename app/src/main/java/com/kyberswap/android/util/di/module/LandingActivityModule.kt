@@ -1,7 +1,7 @@
 package com.kyberswap.android.util.di.module
 
-import android.arch.lifecycle.ViewModel
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
 import com.kyberswap.android.presentation.landing.LandingActivity
 import com.kyberswap.android.presentation.landing.LandingActivityViewModel
 import com.kyberswap.android.presentation.landing.LandingFragment
@@ -36,5 +36,4 @@ interface LandingActivityModule {
     fun bindLandingActivityViewModel(
         landingActivityViewModel: LandingActivityViewModel
     ): ViewModel
-
 }

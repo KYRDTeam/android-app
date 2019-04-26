@@ -1,6 +1,6 @@
 package com.kyberswap.android.util.ext
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 
 fun <T : Any> MutableLiveData<List<T>>.addAll(newList: List<T>) {
     val list = mutableListOf<T>()

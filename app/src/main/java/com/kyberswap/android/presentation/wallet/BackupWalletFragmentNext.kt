@@ -1,12 +1,11 @@
 package com.kyberswap.android.presentation.wallet
 
-
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentBackupWalletNextBinding
@@ -16,9 +15,7 @@ import com.kyberswap.android.presentation.helper.Navigator
 import kotlinx.android.synthetic.main.fragment_backup_wallet.*
 import javax.inject.Inject
 
-
 private const val ARG_PARAM = "arg_param"
-
 
 class BackupWalletFragmentNext : BaseFragment() {
 
@@ -32,14 +29,14 @@ class BackupWalletFragmentNext : BaseFragment() {
     @Inject
     lateinit var appExecutors: AppExecutors
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         words = arguments?.getParcelableArrayList(ARG_PARAM) ?: listOf()
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentBackupWalletNextBinding.inflate(inflater, container, false)
@@ -62,7 +59,6 @@ class BackupWalletFragmentNext : BaseFragment() {
             words.first().position,
             words.last().position
         )
-
     }
 
     companion object {
@@ -73,6 +69,4 @@ class BackupWalletFragmentNext : BaseFragment() {
         
     
     }
-
-
 }

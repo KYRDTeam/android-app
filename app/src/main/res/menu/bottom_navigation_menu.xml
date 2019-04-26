@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:icon="@drawable/ic_balance_toggle"
+        android:title="@string/balance" />
+
+    <item
+        android:icon="@drawable/ic_swap_toggle"
+        android:title="@string/kyberswap" />
+
+    <item
+        android:icon="@drawable/ic_person_toggle"
+        android:title="@string/profile" />
+
+    <item
+        android:icon="@drawable/ic_setting_toggle"
+        android:title="@string/setting" />
+
+</menu>
