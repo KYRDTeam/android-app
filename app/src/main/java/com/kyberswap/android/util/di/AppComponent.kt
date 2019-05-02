@@ -2,6 +2,7 @@ package com.kyberswap.android.util.di
 
 import android.app.Application
 import com.kyberswap.android.KyberSwapApplication
+import com.kyberswap.android.service.job.GetTokenWorker
 import com.kyberswap.android.util.di.module.*
 import dagger.BindsInstance
 import dagger.Component
@@ -13,6 +14,7 @@ import javax.inject.Singleton
 @Component(
     modules = [
         AndroidSupportInjectionModule::class,
+        AndroidWorkerInjectionModule::class,
         ActivityBindingModule::class,
         AppModule::class,
         NetworkModule::class,
@@ -33,4 +35,6 @@ interface AppComponent : AndroidInjector<KyberSwapApplication> {
     }
 
     override fun inject(instance: KyberSwapApplication)
+
+    fun inject(worker: GetTokenWorker)
 }

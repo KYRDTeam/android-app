@@ -3,8 +3,10 @@ package com.kyberswap.android.presentation.main
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,10 +21,8 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_drawer.view.*
-import org.consenlabs.tokencore.wallet.Identity
 import org.consenlabs.tokencore.wallet.KeystoreStorage
 import org.consenlabs.tokencore.wallet.WalletManager
-import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -48,14 +48,11 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WalletManager.storage = this
-        val wallets = Identity.getCurrentIdentity().wallets.map {
-            Wallet(it)
-
 
         wallet = intent.getParcelableExtra(WALLET_PARAM)
 
         binding.viewModel = mainViewModel
-        val adapter = MainPagerAdapter(supportFragmentManager, wallet ?: wallets[0])
+        val adapter = MainPagerAdapter(supportFragmentManager, wallet)
         binding.vpNavigation.adapter = adapter
 
         val tabColors =
@@ -83,8 +80,25 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         )
         val walletAdapter = WalletAdapter(appExecutors)
         binding.navView.rvWallet.adapter = walletAdapter
-        walletAdapter.submitList(wallets)
-        Timber.e(wallets.last().address)
+
+        mainViewModel.getWallets()
+        mainViewModel.getAllWalletStateCallback.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetAllWalletState.Success -> {
+                        walletAdapter.submitList(state.wallets)
+
+            
+                    is GetAllWalletState.ShowError -> {
+                        navigator.navigateToLandingPage()
+            
+        
+    
+)
+
+        binding.imgMenu.setOnClickListener {
+            binding.drawerLayout.openDrawer(Gravity.RIGHT)
+
     }
 
     override fun getKeystoreDir(): File {

@@ -86,6 +86,12 @@
     <string name="transactions">Transactions</string>
     <string name="my_wallet">My Wallet(s)</string>
     <string name="default_balance">0</string>
+    <string name="buy">Buy</string>
+    <string name="sell">Sell</string>
+    <string name="send">Send</string>
+    <string name="unit_usd">USD</string>
+    <string name="unit_eth">ETH</string>
+    <string name="your_balance_is_empty">Your balance is empty</string>
 
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>

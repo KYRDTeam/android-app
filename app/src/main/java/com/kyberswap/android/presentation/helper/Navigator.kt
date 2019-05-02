@@ -19,6 +19,7 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     fun navigateToLandingPage() {
         activity.startActivity(LandingActivity.newIntent(activity))
+        activity.finish()
     }
 
     fun navigateToImportWalletPage() {
@@ -35,6 +36,7 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     fun navigateToHome(wallet: Wallet? = null) {
         activity.startActivity(MainActivity.newIntent(activity, wallet))
+        activity.finish()
     }
 
     @JvmOverloads
