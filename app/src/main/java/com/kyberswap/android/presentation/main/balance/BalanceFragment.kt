@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main
+package com.kyberswap.android.presentation.main.balance
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -64,7 +64,10 @@ class BalanceFragment : BaseFragment() {
         binding.wallet = wallet
 
 
-        val adapter = BalancePagerAdapter(childFragmentManager, wallet)
+        val adapter = BalancePagerAdapter(
+            childFragmentManager,
+            wallet
+        )
         binding.vpBalance.adapter = adapter
         binding.vpBalance.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {}

@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main
+package com.kyberswap.android.presentation.main.balance
 
 sealed class SetUnitState {
     object Loading : SetUnitState()

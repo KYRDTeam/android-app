@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main
+package com.kyberswap.android.presentation.main.balance
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -19,12 +19,20 @@ class MainViewModel @Inject constructor(
     fun getWallets() {
         getAllWalletUseCase.execute(
             Consumer {
-                _getAllWalletStateCallback.value = Event(GetAllWalletState.Success(it))
+                _getAllWalletStateCallback.value = Event(
+                    GetAllWalletState.Success(
+                        it
+                    )
+                )
     ,
             Consumer {
                 it.printStackTrace()
                 _getAllWalletStateCallback.value =
-                    Event(GetAllWalletState.ShowError(it.localizedMessage))
+                    Event(
+                        GetAllWalletState.ShowError(
+                            it.localizedMessage
+                        )
+                    )
     ,
             null
         )

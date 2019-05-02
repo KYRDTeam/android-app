@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main
+package com.kyberswap.android.presentation.main.balance
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

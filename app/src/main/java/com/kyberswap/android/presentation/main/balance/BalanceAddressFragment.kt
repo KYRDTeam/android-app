@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main
+package com.kyberswap.android.presentation.main.balance
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -71,7 +71,8 @@ class BalanceAddressFragment : BaseFragment() {
             val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_TEXT, wallet!!.address)
-                type = MIME_TYPE_TEXT
+                type =
+                    MIME_TYPE_TEXT
     
             startActivity(sendIntent)
 
