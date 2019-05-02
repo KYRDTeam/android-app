@@ -3,6 +3,8 @@ package com.kyberswap.android.util.di.module
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.presentation.main.balance.*
+import com.kyberswap.android.presentation.main.swap.SwapFragment
+import com.kyberswap.android.presentation.main.swap.SwapViewModel
 import com.kyberswap.android.util.di.ViewModelKey
 import com.kyberswap.android.util.di.scope.FragmentScoped
 import dagger.Binds
@@ -31,6 +33,10 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeBalanceAddressFragment(): BalanceAddressFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeSwapFragment(): SwapFragment
 
     @Binds
     @IntoMap
@@ -65,5 +71,12 @@ interface MainActivityModule {
     @ViewModelKey(BalanceAddressViewModel::class)
     fun bindBalanceAddressViewModel(
         otherViewModel: BalanceAddressViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SwapViewModel::class)
+    fun bindSwapViewModel(
+        swapViewModel: SwapViewModel
     ): ViewModel
 }
