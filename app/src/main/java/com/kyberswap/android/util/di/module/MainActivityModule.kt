@@ -2,10 +2,7 @@ package com.kyberswap.android.util.di.module
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
-import com.kyberswap.android.presentation.main.BalanceFragment
-import com.kyberswap.android.presentation.main.BalanceViewModel
-import com.kyberswap.android.presentation.main.MainActivity
-import com.kyberswap.android.presentation.main.MainViewModel
+import com.kyberswap.android.presentation.main.*
 import com.kyberswap.android.util.di.ViewModelKey
 import com.kyberswap.android.util.di.scope.FragmentScoped
 import dagger.Binds
@@ -23,6 +20,14 @@ interface MainActivityModule {
     @ContributesAndroidInjector
     fun contributeBalanceFragment(): BalanceFragment
 
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeKyberListFragment(): KyberListFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeOtherFragment(): OtherFragment
+
     @Binds
     @IntoMap
     @ViewModelKey(BalanceViewModel::class)
@@ -35,5 +40,19 @@ interface MainActivityModule {
     @ViewModelKey(MainViewModel::class)
     fun bindMainViewModel(
         mainViewModel: MainViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(KyberListViewModel::class)
+    fun bindKyberListViewModel(
+        kyberListViewModel: KyberListViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(OtherViewModel::class)
+    fun bindOtherViewModel(
+        otherViewModel: OtherViewModel
     ): ViewModel
 }

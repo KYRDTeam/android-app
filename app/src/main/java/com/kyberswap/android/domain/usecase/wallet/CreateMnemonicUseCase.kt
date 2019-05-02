@@ -13,6 +13,7 @@ class CreateMnemonicUseCase @Inject constructor(
 ) : SequentialUseCase<Int, List<String>>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public override fun buildUseCaseSingle(param: Int): Single<List<String>> {
+
         return mnemonicRepository.create12wordsAccount(param)
     }
 }
