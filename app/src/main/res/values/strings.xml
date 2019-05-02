@@ -92,6 +92,9 @@
     <string name="unit_usd">USD</string>
     <string name="unit_eth">ETH</string>
     <string name="your_balance_is_empty">Your balance is empty</string>
+    <string name="receive_token">Receive Token</string>
+    <string name="share">Share</string>
+    <string name="copy">Copy</string>
 
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>

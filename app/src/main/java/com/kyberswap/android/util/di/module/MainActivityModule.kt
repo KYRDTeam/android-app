@@ -28,6 +28,10 @@ interface MainActivityModule {
     @ContributesAndroidInjector
     fun contributeOtherFragment(): OtherFragment
 
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeBalanceAddressFragment(): BalanceAddressFragment
+
     @Binds
     @IntoMap
     @ViewModelKey(BalanceViewModel::class)
@@ -54,5 +58,12 @@ interface MainActivityModule {
     @ViewModelKey(OtherViewModel::class)
     fun bindOtherViewModel(
         otherViewModel: OtherViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(BalanceAddressViewModel::class)
+    fun bindBalanceAddressViewModel(
+        otherViewModel: BalanceAddressViewModel
     ): ViewModel
 }

@@ -33,9 +33,17 @@ class BalanceFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
+    var currentSelectedView: View? = null
+
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(BalanceViewModel::class.java)
     }
+
+    private val options by lazy {
+        listOf(binding.tvKyberList, binding.tvOther)
+    }
+
+    private val balanceAddress by lazy { listOf(binding.tvAddress, binding.tvQr) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,7 +101,29 @@ class BalanceFragment : BaseFragment() {
     
 )
 
+        binding.tvKyberList.isSelected = true
+        currentSelectedView = binding.tvKyberList
 
+        options.forEachIndexed { index, view ->
+            view.setOnClickListener {
+                setSelectedOption(it)
+                binding.vpBalance.currentItem = index
+    
+
+
+        balanceAddress.forEach { view ->
+            view.setOnClickListener {
+                navigator.navigateToBalanceAddressScreen(this.childFragmentManager, wallet)
+    
+
+
+
+    }
+
+    private fun setSelectedOption(view: View) {
+        currentSelectedView?.isSelected = false
+        view.isSelected = true
+        currentSelectedView = view
     }
 
     companion object {
