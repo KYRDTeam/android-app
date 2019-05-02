@@ -1,7 +1,7 @@
 package com.kyberswap.android.util.di.module
 
 import com.kyberswap.android.presentation.landing.LandingActivity
-import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.presentation.main.balance.MainActivity
 import com.kyberswap.android.presentation.splash.SplashActivity
 import com.kyberswap.android.presentation.wallet.BackupWalletActivity
 import com.kyberswap.android.presentation.wallet.ImportWalletActivity

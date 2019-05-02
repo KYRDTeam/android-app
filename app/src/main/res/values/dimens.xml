@@ -22,5 +22,6 @@
 
     <dimen name="bottom_navigation_margin_bottom_active">8dp</dimen>
     <dimen name="bottom_navigation_margin_bottom_inactive">8dp</dimen>
+    <dimen name="bar_code_dimen">204dp</dimen>
 
 </resources>

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".presentation.main.MainActivity">
+    tools:context=".presentation.main.balance.MainActivity">
 
     <data>
 
         <variable
             name="viewModel"
-            type="com.kyberswap.android.presentation.main.MainViewModel" />
+            type="com.kyberswap.android.presentation.main.balance.MainViewModel" />
 
         <variable
             name="wallet"
