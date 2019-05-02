@@ -51,6 +51,12 @@ class SwapFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.wallet = wallet
+        binding.tvAdvanceOption.setOnClickListener {
+            binding.expandableLayout.expand()
+
+        binding.imgClose.setOnClickListener {
+            binding.expandableLayout.collapse()
+
 
 
     }

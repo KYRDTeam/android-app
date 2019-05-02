@@ -2,6 +2,7 @@ package com.kyberswap.android.util.views
 
 import android.text.Spannable
 import android.text.SpannableString
+import android.widget.RadioButton
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import io.github.inflationx.calligraphy3.CalligraphyTypefaceSpan
@@ -36,6 +37,31 @@ object TextViewBindingAdapter {
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
             )
 
+
+        view.setText(spannableString, TextView.BufferType.SPANNABLE)
+    }
+
+
+    @BindingAdapter("app:styleBold", "app:font")
+    @JvmStatic
+    fun styleRadioButtonText(view: RadioButton, bold: String, font: String) {
+
+        val spannableString = SpannableString(view.text.toString())
+        val typeface = TypefaceUtils.load(
+            view.context.assets,
+            font
+        )
+
+        val calligraphyTypeface = CalligraphyTypefaceSpan(
+            typeface
+        )
+
+        spannableString.setSpan(
+            calligraphyTypeface,
+            spannableString.indexOf(bold),
+            spannableString.indexOf(bold) + bold.length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
 
         view.setText(spannableString, TextView.BufferType.SPANNABLE)
     }
