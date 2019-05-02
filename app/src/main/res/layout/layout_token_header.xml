@@ -21,15 +21,17 @@
         android:textSize="14sp" />
 
     <LinearLayout
+        android:id="@+id/lnChangeUnit"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center|end">
 
         <TextView
+            android:id="@+id/tvChangeUnit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ETH"
+            android:text="@string/unit_usd"
             android:textColor="#4e5063"
             android:textSize="14sp" />
 

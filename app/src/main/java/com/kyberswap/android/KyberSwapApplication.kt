@@ -4,6 +4,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.kyberswap.android.util.di.AppComponent
 import com.kyberswap.android.util.di.DaggerAppComponent
 import com.kyberswap.android.util.di.module.DatabaseModule
 import com.kyberswap.android.util.di.module.NetworkModule
@@ -16,7 +17,9 @@ import io.github.inflationx.viewpump.ViewPump
 import io.reactivex.plugins.RxJavaPlugins
 import timber.log.Timber
 
+
 class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
+    private lateinit var applicationComponent: AppComponent
 
     override fun onCreate() {
         super.onCreate()
@@ -45,11 +48,17 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
     }
 
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
-        return DaggerAppComponent.builder()
+        applicationComponent = DaggerAppComponent.builder()
             .application(this)
             .networkModule(NetworkModule())
             .databaseModule(DatabaseModule())
             .build()
+        return applicationComponent
+    }
+
+    @Synchronized
+    fun getComponent(): AppComponent {
+        return applicationComponent
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)

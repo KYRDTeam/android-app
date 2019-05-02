@@ -12,12 +12,6 @@ class MainPagerAdapter constructor(
 
     override fun getItem(position: Int): Fragment {
         return BalanceFragment.newInstance(wallet)
-
-//        return when (position) {
-//            JSON -> ImportJsonFragment.newInstance()
-//            PRIVATE_KEY -> return ImportPrivateKeyFragment.newInstance()
-//            else -> return ImportSeedFragment.newInstance()
-//
     }
 
     override fun getCount() = 4

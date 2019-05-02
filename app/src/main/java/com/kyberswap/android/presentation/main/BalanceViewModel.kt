@@ -3,32 +3,39 @@ package com.kyberswap.android.presentation.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.kyberswap.android.domain.usecase.token.GetBalanceUseCase
+import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
+import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.splash.GetWalletState
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class BalanceViewModel @Inject constructor(
-    private val getBalanceUseCase: GetBalanceUseCase
+    private val getBalancePollingUseCase: GetBalancePollingUseCase,
+    private val getWalletByAddressUseCase: GetWalletByAddressUseCase
 ) : ViewModel() {
 
-    private val _getBalanceStateCallback = MutableLiveData<Event<GetBalanceState>>()
-    val getBalanceStateCallback: LiveData<Event<GetBalanceState>>
-        get() = _getBalanceStateCallback
+    private val _getWalletCallback = MutableLiveData<Event<GetWalletState>>()
+    val getWalletCallback: LiveData<Event<GetWalletState>>
+        get() = _getWalletCallback
 
-    fun getTokenBalance(address: String) {
-        _getBalanceStateCallback.postValue(Event(GetBalanceState.Loading))
-        getBalanceUseCase.execute(
+    fun getWallet(address: String) {
+        getWalletByAddressUseCase.execute(
             Consumer {
-
-                _getBalanceStateCallback.value = Event(GetBalanceState.Success(it))
+                _getWalletCallback.value = Event(GetWalletState.Success(it))
     ,
             Consumer {
                 it.printStackTrace()
-                _getBalanceStateCallback.value =
-                    Event(GetBalanceState.ShowError(it.localizedMessage))
+                _getWalletCallback.value = Event(GetWalletState.ShowError(it.localizedMessage))
     ,
-            GetBalanceUseCase.Param(address)
+            address
         )
     }
+
+    override fun onCleared() {
+        getBalancePollingUseCase.dispose()
+        getWalletByAddressUseCase.dispose()
+        super.onCleared()
+    }
+
 }

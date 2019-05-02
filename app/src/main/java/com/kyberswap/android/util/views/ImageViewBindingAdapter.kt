@@ -7,6 +7,7 @@ import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.kyberswap.android.R
+import com.kyberswap.android.util.tokenDrawableList
 
 object ImageViewBindingAdapter {
     @BindingAdapter("app:imageUrl")
@@ -55,12 +56,34 @@ object ImageViewBindingAdapter {
     @BindingAdapter("app:identifier")
     @JvmStatic
     fun loadResource(view: ImageView, identifier: String) {
-        Glide.with(view).load(
-            view.context.resources.getIdentifier(
+        val resourceIcon: Int?
+        try {
+            resourceIcon = view.context.resources.getIdentifier(
                 identifier.toLowerCase(),
                 "drawable",
                 view.context.packageName
             )
-        ).error(R.drawable.token_default).into(view)
+            Glide.with(view).load(
+                resourceIcon
+            ).error(R.drawable.token_default).into(view)
+ catch (exception: Exception) {
+            exception.printStackTrace()
+
+
+
+    }
+
+    @BindingAdapter("app:tokenSymbol")
+    @JvmStatic
+    fun loadTokenResource(view: ImageView, tokenSymbol: String) {
+        var tokenDrawable = tokenDrawableList[tokenSymbol]
+        if (tokenDrawable == null) {
+            tokenDrawable = R.drawable.token_default
+
+        Glide.with(view).load(
+            ""
+        ).error(tokenDrawable).into(view)
+
+
     }
 }
