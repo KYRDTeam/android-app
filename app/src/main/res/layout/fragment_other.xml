@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".presentation.main.MainActivity">
+    tools:context=".presentation.main.balance.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,9 +11,24 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="52dp"
             android:text="@string/your_balance_is_empty"
             android:textColor="#acb3c6"
             android:textSize="18sp" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="64dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/default_button"
+            android:gravity="center"
+            android:minHeight="45dp"
+            android:text="@string/receive_token"
+            android:textAllCaps="false"
+            android:textColor="#ffffff"
+            android:textSize="16sp" />
     </LinearLayout>
 </layout>

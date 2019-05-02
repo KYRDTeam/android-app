@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main
+package com.kyberswap.android.presentation.main.balance
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -11,7 +11,9 @@ class MainPagerAdapter constructor(
 ) : FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
-        return BalanceFragment.newInstance(wallet)
+        return BalanceFragment.newInstance(
+            wallet
+        )
     }
 
     override fun getCount() = 4

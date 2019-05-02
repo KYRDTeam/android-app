@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main
+package com.kyberswap.android.presentation.main.balance
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -45,12 +45,20 @@ class KyberListViewModel @Inject constructor(
         getBalanceUseCase.execute(
             Consumer {
 
-                _getBalanceStateCallback.value = Event(GetBalanceState.Success(it))
+                _getBalanceStateCallback.value = Event(
+                    GetBalanceState.Success(
+                        it
+                    )
+                )
     ,
             Consumer {
                 it.printStackTrace()
                 _getBalanceStateCallback.value =
-                    Event(GetBalanceState.ShowError(it.localizedMessage))
+                    Event(
+                        GetBalanceState.ShowError(
+                            it.localizedMessage
+                        )
+                    )
     ,
             null
         )

@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main
+package com.kyberswap.android.presentation.main.balance
 
 import android.content.Context
 import android.content.Intent
@@ -52,7 +52,10 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         wallet = intent.getParcelableExtra(WALLET_PARAM)
 
         binding.viewModel = mainViewModel
-        val adapter = MainPagerAdapter(supportFragmentManager, wallet)
+        val adapter = MainPagerAdapter(
+            supportFragmentManager,
+            wallet
+        )
         binding.vpNavigation.adapter = adapter
 
         val tabColors =
@@ -78,7 +81,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             RecyclerView.VERTICAL,
             false
         )
-        val walletAdapter = WalletAdapter(appExecutors)
+        val walletAdapter =
+            WalletAdapter(appExecutors)
         binding.navView.rvWallet.adapter = walletAdapter
 
         mainViewModel.getWallets()
