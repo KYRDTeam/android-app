@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main
+package com.kyberswap.android.presentation.main.balance
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -77,7 +77,8 @@ class KyberListFragment : BaseFragment() {
             RecyclerView.VERTICAL,
             false
         )
-        val tokenAdapter = TokenAdapter(appExecutors)
+        val tokenAdapter =
+            TokenAdapter(appExecutors)
         tokenAdapter.mode = Attributes.Mode.Single
         binding.rvToken.adapter = tokenAdapter
 

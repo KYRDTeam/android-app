@@ -7,8 +7,8 @@ import com.kyberswap.android.R
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.presentation.landing.LandingActivity
-import com.kyberswap.android.presentation.main.BalanceAddressFragment
-import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.presentation.main.balance.BalanceAddressFragment
+import com.kyberswap.android.presentation.main.balance.MainActivity
 import com.kyberswap.android.presentation.wallet.BackupWalletActivity
 import com.kyberswap.android.presentation.wallet.ImportWalletActivity
 import com.kyberswap.android.presentation.wallet.VerifyBackupWordActivity

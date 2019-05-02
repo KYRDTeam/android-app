@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main
+package com.kyberswap.android.presentation.main.balance
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -13,8 +13,12 @@ class BalancePagerAdapter constructor(
     override fun getItem(position: Int): Fragment {
 
         return when (position) {
-            KYBER_LIST -> KyberListFragment.newInstance(wallet)
-            else -> return OtherFragment.newInstance(wallet)
+            KYBER_LIST -> KyberListFragment.newInstance(
+                wallet
+            )
+            else -> return OtherFragment.newInstance(
+                wallet
+            )
         }
     }
 

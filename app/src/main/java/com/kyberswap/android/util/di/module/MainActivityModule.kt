@@ -2,7 +2,7 @@ package com.kyberswap.android.util.di.module
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
-import com.kyberswap.android.presentation.main.*
+import com.kyberswap.android.presentation.main.balance.*
 import com.kyberswap.android.util.di.ViewModelKey
 import com.kyberswap.android.util.di.scope.FragmentScoped
 import dagger.Binds
