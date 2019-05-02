@@ -59,6 +59,7 @@
     <string name="word_6">Word #6</string>
     <string name="backup_message">We will give you a list of 12 random words. Please write down on paper and keep safe.\n\n This paper is the only way to restore your Kyber Wallet if you lose your phone or forget your password.</string>
     <string name="bold_font_path">fonts/Montserrat-Bold.ttf</string>
+    <string name="semi_bold_font_path">fonts/Montserrat-Bold.ttf</string>
     <string name="verify_word_description">To make sure you have written down all of your backup words. Please enter the following.</string>
     <string name="backup_success">Backup successfully</string>
     <string name="backup_json">JSON</string>
@@ -95,7 +96,9 @@
     <string name="receive_token">Receive Token</string>
     <string name="share">Share</string>
     <string name="copy">Copy</string>
-
+    <string name="swap_fast">20</string>
+    <string name="swap_regular">10</string>
+    <string name="swap_slow">1</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>
