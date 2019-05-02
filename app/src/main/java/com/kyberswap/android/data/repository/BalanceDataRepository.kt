@@ -1,20 +1,25 @@
 package com.kyberswap.android.data.repository
 
 import com.kyberswap.android.data.api.home.TokenApi
+import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.data.mapper.TokenMapper
-import com.kyberswap.android.domain.model.token.Token
+import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.repository.BalanceRepository
 import com.kyberswap.android.util.TokenClient
 import io.reactivex.Flowable
+import io.reactivex.FlowableTransformer
 import io.reactivex.Single
+import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.Singles
 import java.math.BigDecimal
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class BalanceDataRepository @Inject constructor(
     val api: TokenApi,
     private val tokenMapper: TokenMapper,
-    private val tokenClient: TokenClient
+    private val tokenClient: TokenClient,
+    private val tokenDao: TokenDao
 ) :
     BalanceRepository {
     override fun getBalance(owner: String, token: Token): Single<Token> {
@@ -32,7 +37,13 @@ class BalanceDataRepository @Inject constructor(
         }
     }
 
-    override fun getChange24h(owner: String): Flowable<Token> {
+    override fun getChange24h(): Flowable<List<Token>> {
+        return tokenDao.all
+
+    }
+
+    override fun getChange24hPolling(owner: String): Flowable<Token> {
+
         val singleEthSource = api.tokenPrice(ETH).map {
             it.data.map { data -> data.symbol to data.price }.toMap()
         }
@@ -51,13 +62,38 @@ class BalanceDataRepository @Inject constructor(
             singleChange24hSource
         ) { eth, usd, change24h ->
             updateRate24h(eth, usd, change24h)
-        }.map { it.values }
+        }
+            .map { it.values }
             .toFlowable()
+            .repeatWhen {
+                it.delay(20, TimeUnit.SECONDS)
+            }.retryWhen { throwable ->
+                throwable.compose(zipWithFlatMap())
+            }
             .flatMapIterable { token -> token }
             .flatMap {
                 getBalance(owner, it).toFlowable()
+            }.doOnNext { token ->
+                val tokenBySymbol = tokenDao.getTokenBySymbol(token.tokenSymbol)
+                if (tokenBySymbol != null) {
+                    token.currentBalance = tokenBySymbol.currentBalance
+                    tokenDao.updateToken(token)
+                } else {
+                    tokenDao.insertToken(token)
+                }
+
             }
     }
+
+    private fun <T> zipWithFlatMap(): FlowableTransformer<T, Long> {
+        return FlowableTransformer { flowable ->
+            flowable.zipWith(
+                Flowable.range(COUNTER_START, ATTEMPTS),
+                BiFunction<T, Int, Int> { _: T, u: Int -> u })
+                .flatMap { t -> Flowable.timer(t * 5L, TimeUnit.SECONDS) }
+        }
+    }
+
 
     private fun updateRate24h(
         eth: Map<String, BigDecimal>,
@@ -75,5 +111,7 @@ class BalanceDataRepository @Inject constructor(
     companion object {
         const val ETH = "ETH"
         const val USD = "USD"
+        private val COUNTER_START = 1
+        private val ATTEMPTS = 5
     }
 }

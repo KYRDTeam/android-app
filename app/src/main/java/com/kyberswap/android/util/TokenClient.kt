@@ -1,6 +1,6 @@
 package com.kyberswap.android.util
 
-import com.kyberswap.android.domain.model.token.Token
+import com.kyberswap.android.domain.model.Token
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.FunctionReturnDecoder
 import org.web3j.abi.TypeReference
