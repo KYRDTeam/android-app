@@ -9,7 +9,7 @@
     <dimen name="ah_bottom_navigation_height">49dp</dimen>
     <dimen name="profile_margin">16</dimen>
     <dimen name="actionbar_size">44dp</dimen>
-    <dimen name="toolbar_height">82dp</dimen>
+    <dimen name="toolbar_height">58dp</dimen>
 
     <dimen name="bottom_navigation_text_size_active">10sp</dimen>
     <dimen name="bottom_navigation_text_size_inactive">10sp</dimen>
@@ -23,5 +23,7 @@
     <dimen name="bottom_navigation_margin_bottom_active">8dp</dimen>
     <dimen name="bottom_navigation_margin_bottom_inactive">8dp</dimen>
     <dimen name="bar_code_dimen">204dp</dimen>
+    <dimen name="statusbar_view_height">0dp</dimen>
+    <dimen name="toolbar_margin_top">20dp</dimen>
 
 </resources>

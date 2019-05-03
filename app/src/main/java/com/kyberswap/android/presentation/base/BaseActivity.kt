@@ -4,9 +4,11 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
+import com.jaeger.library.StatusBarUtil
 import com.kyberswap.android.R
 import dagger.android.support.DaggerAppCompatActivity
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
+
 
 abstract class BaseActivity : DaggerAppCompatActivity() {
 
@@ -17,6 +19,15 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initLoadingDialog()
+    }
+
+    override fun setContentView(layoutResID: Int) {
+        super.setContentView(layoutResID)
+        setStatusBar()
+    }
+
+    protected fun setStatusBar() {
+        StatusBarUtil.setTransparent(this)
     }
 
     companion object {

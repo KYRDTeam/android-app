@@ -82,7 +82,7 @@ class KyberListFragment : BaseFragment() {
         tokenAdapter.mode = Attributes.Mode.Single
         binding.rvToken.adapter = tokenAdapter
 
-        viewModel.getTokenBalance(wallet!!.address)
+        viewModel.getWallet(wallet!!.address)
         viewModel.getWalletCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -105,7 +105,7 @@ class KyberListFragment : BaseFragment() {
     
 )
 
-
+        viewModel.getTokenBalance(wallet!!.address)
         viewModel.getBalanceStateCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == GetBalanceState.Loading)
@@ -114,7 +114,7 @@ class KyberListFragment : BaseFragment() {
                         tokenAdapter.submitList(state.tokens)
                         val isETH = wallet!!.unit == eth
                         val balance = calcBalance(state.tokens, isETH)
-                        if (balance > BigDecimal.ZERO &&
+                        if (balance > BigDecimal(1E-10) &&
                             balance.toDisplayNumber() != wallet!!.balance
                         ) {
                             wallet!!.balance = balance.toDisplayNumber()

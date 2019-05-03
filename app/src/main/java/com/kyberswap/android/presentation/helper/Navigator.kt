@@ -7,8 +7,10 @@ import com.kyberswap.android.R
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.presentation.landing.LandingActivity
+import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.balance.BalanceAddressFragment
-import com.kyberswap.android.presentation.main.balance.MainActivity
+import com.kyberswap.android.presentation.main.swap.SwapFragment
+import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
 import com.kyberswap.android.presentation.wallet.BackupWalletActivity
 import com.kyberswap.android.presentation.wallet.ImportWalletActivity
 import com.kyberswap.android.presentation.wallet.VerifyBackupWordActivity
@@ -44,7 +46,8 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
     fun replaceFragment(
         fragment: Fragment,
         addToBackStack: Boolean = true,
-        customAnimations: Int = WITHOUT_ANIMATION
+        customAnimations: Int = WITHOUT_ANIMATION,
+        container: Int = this.containerId
     ) {
         val transaction = fragmentManager.beginTransaction()
         if (customAnimations == IN_RIGHT_OUT_LEFT) {
@@ -52,7 +55,7 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
  else if (customAnimations == IN_LEFT_OUT_RIGHT) {
             transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right)
 
-        transaction.replace(containerId, fragment, fragment.javaClass.simpleName)
+        transaction.replace(container, fragment, fragment.javaClass.simpleName)
         if (addToBackStack) {
             transaction.addToBackStack(fragment.javaClass.simpleName)
 
@@ -60,13 +63,16 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
     }
 
 
-    fun navigateToBalanceAddressScreen(childFragmentManager: FragmentManager, wallet: Wallet?) {
-        val transaction = childFragmentManager.beginTransaction()
-        val balanceAddress = BalanceAddressFragment.newInstance(wallet)
-        transaction.replace(containerId, balanceAddress, balanceAddress.javaClass.simpleName)
-        transaction.addToBackStack(balanceAddress.javaClass.simpleName)
-        transaction.commitAllowingStateLoss()
-        replaceFragment(balanceAddress, true)
+    fun navigateToBalanceAddressScreen(wallet: Wallet?) {
+        replaceFragment(BalanceAddressFragment.newInstance(wallet))
+    }
+
+    fun navigateToSwap(wallet: Wallet?, container: Int) {
+        replaceFragment(SwapFragment.newInstance(wallet), false, WITHOUT_ANIMATION, container)
+    }
+
+    fun navigateToTokenSearch(container: Int) {
+        replaceFragment(TokenSearchFragment.newInstance(), true, WITHOUT_ANIMATION, container)
     }
 
     companion object {

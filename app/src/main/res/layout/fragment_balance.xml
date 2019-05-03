@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".presentation.main.balance.MainActivity">
+    tools:context=".presentation.main.MainActivity">
 
     <data>
 
@@ -23,11 +23,12 @@
             android:background="@drawable/screen_background">
 
             <ImageView
-                android:id="@+id/imageView3"
+                android:id="@+id/imgMenu"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_marginTop="41dp"
+                android:layout_marginTop="@dimen/toolbar_margin_top"
                 android:layout_marginEnd="16dp"
+                android:scaleType="centerInside"
                 android:src="@drawable/ic_menu"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -37,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="44dp"
+                android:layout_marginTop="@dimen/toolbar_margin_top"
                 android:layout_marginEnd="20dp"
                 android:text="@string/balance"
                 android:textColor="#ffffff"
@@ -52,7 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:singleLine="true"
                 android:text="@string/default_balance"
                 android:textColor="#ffffff"

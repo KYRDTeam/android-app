@@ -30,8 +30,6 @@
 
     <style name="AppThemeTranslucentStatus" parent="AppTheme.NoActionBar">
         <item name="android:windowTranslucentStatus">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
         <item name="colorControlActivated">#acb3c6</item>
         <item name="colorControlHighlight">#acb3c6</item>
     </style>

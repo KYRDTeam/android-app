@@ -17,6 +17,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/screen_background">
 
+
         <include
             android:id="@+id/include"
             layout="@layout/toolbar"
@@ -25,10 +26,11 @@
             app:layout_constraintTop_toTopOf="parent"
             app:title="@{title}" />
 
+
         <View
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="82dp"
+            android:layout_marginTop="58dp"
             android:background="@color/color_bg_gray"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

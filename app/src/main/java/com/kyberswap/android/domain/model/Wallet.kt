@@ -16,7 +16,7 @@ data class Wallet(
     val address: String = "",
     val name: String = "",
     var isSelected: Boolean = false,
-    var unit: String = "",
+    var unit: String = "USD",
     var balance: String = "0"
 ) :
     Parcelable {

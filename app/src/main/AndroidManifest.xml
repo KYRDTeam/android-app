@@ -56,7 +56,7 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".presentation.main.balance.MainActivity"
+            android:name=".presentation.main.MainActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
@@ -70,7 +70,7 @@
         <activity
             android:name=".presentation.wallet.ImportWalletActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
