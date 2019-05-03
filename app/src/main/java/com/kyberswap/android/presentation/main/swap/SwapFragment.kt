@@ -6,11 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import com.kyberswap.android.AppExecutors
+import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentSwapBinding
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.showDrawer
+import net.cachapa.expandablelayout.ExpandableLayout
 import javax.inject.Inject
 
 class SwapFragment : BaseFragment() {
@@ -58,7 +61,25 @@ class SwapFragment : BaseFragment() {
             binding.expandableLayout.collapse()
         }
 
+        binding.lnSource.setOnClickListener {
+            navigator.navigateToTokenSearch(R.id.swap_container)
+        }
 
+        binding.lnDest.setOnClickListener {
+            navigator.navigateToTokenSearch(R.id.swap_container)
+        }
+        binding.expandableLayout.setOnExpansionUpdateListener { _, state ->
+            if (state == ExpandableLayout.State.EXPANDED) {
+                binding.scView.postDelayed(
+                    { binding.scView.fullScroll(View.FOCUS_DOWN) },
+                    300
+                )
+            }
+        }
+
+        binding.imgMenu.setOnClickListener {
+            showDrawer(true)
+        }
     }
 
     companion object {

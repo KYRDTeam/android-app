@@ -2,35 +2,27 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".presentation.main.balance.MainActivity">
+    tools:context=".presentation.main.MainActivity">
 
     <data>
 
         <variable
             name="viewModel"
-            type="com.kyberswap.android.presentation.main.balance.MainViewModel" />
+            type="com.kyberswap.android.presentation.main.MainViewModel" />
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawerLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:openDrawer="start">
+        android:fitsSystemWindows="true"
+        tools:openDrawer="end">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/screen_background">
-
-            <ImageView
-                android:id="@+id/imgMenu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="41dp"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/ic_menu"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            android:background="@drawable/screen_background"
+            android:fitsSystemWindows="true">
 
             <com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager
                 android:id="@+id/vpNavigation"

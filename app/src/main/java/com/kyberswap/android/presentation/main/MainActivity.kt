@@ -1,10 +1,10 @@
-package com.kyberswap.android.presentation.main.balance
+package com.kyberswap.android.presentation.main
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.Gravity
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -18,8 +18,11 @@ import com.kyberswap.android.databinding.ActivityMainBinding
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.balance.GetAllWalletState
+import com.kyberswap.android.presentation.main.balance.WalletAdapter
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.layout_drawer.*
 import kotlinx.android.synthetic.main.layout_drawer.view.*
 import org.consenlabs.tokencore.wallet.KeystoreStorage
 import org.consenlabs.tokencore.wallet.WalletManager
@@ -100,8 +103,16 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             }
         })
 
-        binding.imgMenu.setOnClickListener {
-            binding.drawerLayout.openDrawer(Gravity.RIGHT)
+        imgClose.setOnClickListener {
+            showDrawer(false)
+        }
+    }
+
+    fun showDrawer(isShown: Boolean) {
+        if (isShown) {
+            binding.drawerLayout.openDrawer(GravityCompat.END)
+        } else {
+            binding.drawerLayout.closeDrawer(GravityCompat.END)
         }
     }
 

@@ -2,9 +2,13 @@ package com.kyberswap.android.util.di.module
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
+import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.presentation.main.MainViewModel
 import com.kyberswap.android.presentation.main.balance.*
 import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.main.swap.SwapViewModel
+import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
+import com.kyberswap.android.presentation.main.swap.TokenSearchViewModel
 import com.kyberswap.android.util.di.ViewModelKey
 import com.kyberswap.android.util.di.scope.FragmentScoped
 import dagger.Binds
@@ -33,6 +37,10 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeBalanceAddressFragment(): BalanceAddressFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeTokenSearchFragment(): TokenSearchFragment
 
     @FragmentScoped
     @ContributesAndroidInjector
@@ -78,5 +86,12 @@ interface MainActivityModule {
     @ViewModelKey(SwapViewModel::class)
     fun bindSwapViewModel(
         swapViewModel: SwapViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(TokenSearchViewModel::class)
+    fun bindTokenSearchViewModel(
+        tokenSearchViewModel: TokenSearchViewModel
     ): ViewModel
 }

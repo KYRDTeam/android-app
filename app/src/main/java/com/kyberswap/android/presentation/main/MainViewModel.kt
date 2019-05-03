@@ -1,10 +1,11 @@
-package com.kyberswap.android.presentation.main.balance
+package com.kyberswap.android.presentation.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.usecase.wallet.GetAllWalletUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
