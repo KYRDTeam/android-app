@@ -76,10 +76,24 @@ class TokenAdapter(
             }
         })
 
+
+        val drawable = when (item.change24hStatus()) {
+            Token.UP -> R.drawable.ic_arrow_up
+            Token.DOWN -> R.drawable.ic_arrow_down
+            else -> null
+        }
+
+        val color = when (item.change24hStatus()) {
+            Token.UP -> R.color.token_change24h_up
+            Token.DOWN -> R.color.token_change24h_down
+            else -> R.color.token_change24h_same
+        }
+
         Glide.with(binding.imgState)
-            .load(if (item.isUp()) R.drawable.ic_arrow_up else R.drawable.ic_arrow_down)
+            .load(drawable)
             .into(binding.imgState)
 
+        binding.tvChange24h.setTextColor(ContextCompat.getColor(binding.root.context, color))
         binding.setVariable(BR.showEth, isEth)
         binding.executePendingBindings()
 
