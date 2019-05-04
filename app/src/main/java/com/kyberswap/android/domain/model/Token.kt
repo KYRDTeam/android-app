@@ -74,7 +74,23 @@ data class Token(
 
     }
 
+    fun change24hStatus(): Int {
+        return getChange24hStatus(if (isETH()) changeEth24h else changeUsd24h)
+    }
+
+    private fun getChange24hStatus(value: BigDecimal): Int {
+        return when {
+            value > BigDecimal.ZERO -> UP
+            value < BigDecimal.ZERO -> DOWN
+            else -> SAME
+
+    }
+
+
     companion object {
+        const val UP = 1
+        const val DOWN = -1
+        const val SAME = 0
         const val ETH_SYMBOL = "ETH"
     }
 }

@@ -22,6 +22,7 @@ class BalanceDataRepository @Inject constructor(
     private val tokenDao: TokenDao
 ) :
     BalanceRepository {
+
     override fun getBalance(owner: String, token: Token): Single<Token> {
         return Single.fromCallable {
             tokenClient.getBalance(owner, token)
@@ -39,11 +40,30 @@ class BalanceDataRepository @Inject constructor(
 
     override fun getChange24h(): Flowable<List<Token>> {
         return tokenDao.all
+    }
+
+    override fun getBalance(): Flowable<List<Token>> {
+        return if (tokenDao.all.blockingFirst().isEmpty()) {
+            fetchChange24h().toFlowable()
+                .flatMapIterable { token -> token }
+                .doOnNext { token ->
+                    val tokenBySymbol = tokenDao.getTokenBySymbol(token.tokenSymbol)
+                    if (tokenBySymbol != null) {
+                        token.currentBalance = tokenBySymbol.currentBalance
+                        tokenDao.updateToken(token)
+             else {
+                        tokenDao.insertToken(token)
+            
+
+        
+                .toList()
+                .toFlowable()
+ else {
+            tokenDao.all
 
     }
 
-    override fun getChange24hPolling(owner: String): Flowable<Token> {
-
+    private fun fetchChange24h(): Single<List<Token>> {
         val singleEthSource = api.tokenPrice(ETH).map {
             it.data.map { data -> data.symbol to data.price }.toMap()
 
@@ -63,7 +83,11 @@ class BalanceDataRepository @Inject constructor(
         ) { eth, usd, change24h ->
             updateRate24h(eth, usd, change24h)
 
-            .map { it.values }
+            .map { it.values.toList() }
+    }
+
+    override fun getChange24hPolling(owner: String): Flowable<Token> {
+        return fetchChange24h()
             .toFlowable()
             .repeatWhen {
                 it.delay(20, TimeUnit.SECONDS)
