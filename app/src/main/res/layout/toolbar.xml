@@ -12,13 +12,12 @@
     <FrameLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:background="@color/design_default_color_primary"
         android:layout_height="@dimen/toolbar_height">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="45dp"
+            android:layout_marginTop="@dimen/toolbar_margin_top"
             android:gravity="center"
             android:text="@{title}"
             android:textColor="#ffffff"

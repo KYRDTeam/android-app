@@ -4,10 +4,11 @@
     android:id="@+id/linearLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f6f7fa">
+    android:background="#f6f7fa"
+    android:fitsSystemWindows="true">
 
     <ImageView
-        android:id="@+id/imageView4"
+        android:id="@+id/imgClose"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginTop="29dp"
@@ -25,7 +26,7 @@
         android:background="@color/drawer_divider_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView4" />
+        app:layout_constraintTop_toBottomOf="@+id/imgClose" />
 
 
     <TextView

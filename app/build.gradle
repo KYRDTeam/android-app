@@ -217,6 +217,9 @@ dependencies {
 
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
 
+    implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
+
+    compile 'com.jaeger.statusbarutil:library:1.5.1'
 
 }
 
