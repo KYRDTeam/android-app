@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalanceUseCase
+import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.domain.usecase.wallet.UpdateWalletUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.splash.GetWalletState
@@ -17,7 +18,8 @@ import javax.inject.Inject
 class KyberListViewModel @Inject constructor(
     private val getBalanceUseCase: GetBalanceUseCase,
     private val getBalancePollingUseCase: GetBalancePollingUseCase,
-    private val updateWalletUseCase: UpdateWalletUseCase
+    private val updateWalletUseCase: UpdateWalletUseCase,
+    private val getWalletByAddressUseCase: GetWalletByAddressUseCase
 ) : ViewModel() {
 
     private val _getBalanceStateCallback = MutableLiveData<Event<GetBalanceState>>()
@@ -28,8 +30,20 @@ class KyberListViewModel @Inject constructor(
     val getWalletCallback: LiveData<Event<GetWalletState>>
         get() = _getWalletCallback
 
-    fun getTokenBalance(address: String) {
+    fun getWallet(address: String) {
+        getWalletByAddressUseCase.execute(
+            Consumer {
+                _getWalletCallback.value = Event(GetWalletState.Success(it))
+            },
+            Consumer {
+                it.printStackTrace()
+                _getWalletCallback.value = Event(GetWalletState.ShowError(it.localizedMessage))
+            },
+            address
+        )
+    }
 
+    fun getTokenBalance(address: String) {
         getBalancePollingUseCase.execute(
             Consumer {
 

@@ -9,7 +9,6 @@ import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityImportWalletBinding
 import com.kyberswap.android.presentation.base.BaseActivity
-import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import org.consenlabs.tokencore.wallet.KeystoreStorage
 import org.consenlabs.tokencore.wallet.WalletManager
@@ -23,9 +22,6 @@ class ImportWalletActivity : BaseActivity(), KeystoreStorage {
 
     @Inject
     lateinit var navigator: Navigator
-
-    @Inject
-    lateinit var dialogHelper: DialogHelper
 
     private lateinit var options: List<View>
 
@@ -42,9 +38,7 @@ class ImportWalletActivity : BaseActivity(), KeystoreStorage {
         super.onCreate(savedInstanceState)
         WalletManager.storage = this
         WalletManager.scanWallets()
-
         binding.title = getString(R.string.import_wallet_title)
-
         options = listOf(binding.vJson, binding.vPrivateKey, binding.vSeed)
 
         binding.vJson.isSelected = true

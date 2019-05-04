@@ -15,6 +15,7 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.showDrawer
 import kotlinx.android.synthetic.main.fragment_balance.*
 import javax.inject.Inject
 
@@ -83,7 +84,6 @@ class BalanceFragment : BaseFragment() {
         })
 
         viewModel.getWallet(wallet!!.address)
-
         viewModel.getWalletCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -116,10 +116,15 @@ class BalanceFragment : BaseFragment() {
 
         balanceAddress.forEach { view ->
             view.setOnClickListener {
-                navigator.navigateToBalanceAddressScreen(this.childFragmentManager, wallet)
+                navigator.navigateToBalanceAddressScreen(wallet)
             }
 
         }
+
+        binding.imgMenu.setOnClickListener {
+            showDrawer(true)
+        }
+
 
     }
 
