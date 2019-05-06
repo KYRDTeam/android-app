@@ -47,8 +47,9 @@ class ImportSeedFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.edtSeed.addTextChangeListener {
-            onTextChanged { s, _, _, _ ->
-                val count = s.toString().trim().split(" ").size
+            afterTextChanged {
+                val count = if (it.toString().isEmpty()) 0
+                else it.toString().trim().split(" ").size
                 binding.txtWordCounter.text = getString(
                     R.string.text_counter,
                     count
@@ -73,7 +74,7 @@ class ImportSeedFragment : BaseFragment() {
                         navigator.navigateToHome(Wallet(state.wallet))
                     }
                     is ImportWalletState.ShowError -> {
-                        showMessage(state.message ?: getString(R.string.something_wrong))
+                        showAlert(state.message ?: getString(R.string.something_wrong))
                     }
                 }
             }

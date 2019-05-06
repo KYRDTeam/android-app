@@ -219,8 +219,9 @@ dependencies {
 
     implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
 
-    compile 'com.jaeger.statusbarutil:library:1.5.1'
+    implementation 'com.jaeger.statusbarutil:library:1.5.1'
 
+    implementation 'com.github.florent37:viewtooltip:1.2.0'
 }
 
 detekt {

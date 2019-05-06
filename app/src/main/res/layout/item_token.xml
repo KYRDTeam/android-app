@@ -135,12 +135,13 @@
                     android:src="@drawable/ic_arrow_up" />
 
                 <TextView
+                    android:id="@+id/tvChange24h"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:gravity="end"
                     android:text="@{showEth ? token.displayChangeEth24h + `%` : token.displayChangeUsd24h + `%`}"
-                    android:textColor="#31cb9e"
+                    android:textColor="@color/token_change24h_up"
                     android:textSize="14sp" />
             </LinearLayout>
 
