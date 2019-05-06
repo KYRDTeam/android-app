@@ -32,6 +32,7 @@
         <item name="android:windowTranslucentStatus">true</item>
         <item name="colorControlActivated">#acb3c6</item>
         <item name="colorControlHighlight">#acb3c6</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <style name="TextAppearance.Montserrat.Medium" parent="android:TextAppearance">
@@ -44,6 +45,16 @@
 
     <style name="TextAppearance.Montserrat.Bold" parent="android:TextAppearance">
         <item name="fontPath">fonts/Montserrat-Bold.ttf</item>
+    </style>
+
+    <style name="AlertStyle" parent="AppThemeTranslucentStatus">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowExitAnimation">@null</item>
+        <item name="android:windowHideAnimation">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+
     </style>
 
 </resources>

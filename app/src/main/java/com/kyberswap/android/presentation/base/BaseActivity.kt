@@ -22,12 +22,14 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     }
 
     override fun setContentView(layoutResID: Int) {
-        super.setContentView(layoutResID)
         setStatusBar()
+        super.setContentView(layoutResID)
+
     }
 
     protected fun setStatusBar() {
         StatusBarUtil.setTransparent(this)
+
     }
 
     companion object {

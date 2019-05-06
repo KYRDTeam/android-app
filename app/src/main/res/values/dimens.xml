@@ -25,5 +25,7 @@
     <dimen name="bar_code_dimen">204dp</dimen>
     <dimen name="statusbar_view_height">0dp</dimen>
     <dimen name="toolbar_margin_top">20dp</dimen>
+    <dimen name="dialog_width">339dp</dimen>
+    <dimen name="dialog_height">218dp</dimen>
 
 </resources>

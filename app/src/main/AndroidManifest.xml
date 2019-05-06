@@ -25,10 +25,13 @@
         android:fullBackupContent="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
-
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppThemeTranslucentStatus">
+        <activity
+            android:name=".presentation.common.AlertActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/AlertStyle" />
         <activity
             android:name=".presentation.splash.SplashActivity"
             android:label="@string/app_name"
@@ -40,21 +43,18 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <!--<activity-->
-        <!--android:name=".presentation.main.MainActivity"-->
-        <!--android:label="@string/app_name">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="android.intent.action.MAIN" />-->
-
-        <!--<category android:name="android.intent.category.LAUNCHER" />-->
-        <!--</intent-filter>-->
-        <!--</activity>-->
+        </activity> <!-- <activity -->
+        <!-- android:name=".presentation.main.MainActivity" -->
+        <!-- android:label="@string/app_name"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.intent.action.MAIN" /> -->
+        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+        <!-- </intent-filter> -->
+        <!-- </activity> -->
         <activity
             android:name=".presentation.landing.LandingActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".presentation.main.MainActivity"
             android:screenOrientation="portrait"
@@ -69,9 +69,7 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".presentation.wallet.ImportWalletActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="fullSensor"
@@ -86,6 +84,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
         <service
             android:name=".service.job.SchedulerJobService"
             android:permission="android.permission.BIND_JOB_SERVICE" />

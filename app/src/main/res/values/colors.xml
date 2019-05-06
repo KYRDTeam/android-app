@@ -29,6 +29,7 @@
     <color name="token_change24h_up">#31cb9e</color>
     <color name="token_change24h_down">#f96363</color>
     <color name="token_change24h_same">#4e5063</color>
+    <color name="alert_background_color">#B3111624</color>
 
     <array name="tab_colors">
         <item name="tab_1">#fea34c</item>

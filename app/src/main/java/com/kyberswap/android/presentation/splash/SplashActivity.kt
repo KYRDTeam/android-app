@@ -1,5 +1,6 @@
 package com.kyberswap.android.presentation.splash
 
+import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -10,6 +11,7 @@ import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
+
 
 class SplashActivity : BaseActivity() {
 
@@ -31,6 +33,10 @@ class SplashActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding.viewModel = viewModel
         viewModel.prepareData()
+        binding.imageView.setBackgroundResource(R.drawable.progress_animation)
+        val frameAnimation = binding.imageView.background as AnimationDrawable
+        frameAnimation.start()
+
         viewModel.getWalletStateCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {

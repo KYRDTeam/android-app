@@ -16,6 +16,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.Observables
 import kotlinx.android.synthetic.main.activity_backup_wallet.btnNext
 import kotlinx.android.synthetic.main.activity_verify_backup_word.*
+import kotlinx.android.synthetic.main.toolbar_with_back.*
 import javax.inject.Inject
 
 private const val ARG_PARAM = "arg_param"
@@ -44,6 +45,9 @@ class VerifyBackupWordActivity : BaseActivity() {
         val words = intent.getParcelableArrayListExtra<Word>(ARG_PARAM)
         val wallet = intent.getParcelableExtra<Wallet>(WALLET_PARAM)
         binding.title = getString(R.string.test_wallet_title)
+        imgBack.setOnClickListener {
+            onBackPressed()
+        }
         var first = words.random()
         var second: Word
         do {

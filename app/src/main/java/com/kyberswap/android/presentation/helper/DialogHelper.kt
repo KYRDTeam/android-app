@@ -1,32 +1,59 @@
 package com.kyberswap.android.presentation.helper
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.view.LayoutInflater
+import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import com.kyberswap.android.R
+import com.kyberswap.android.databinding.DialogBackupMessageAgainBinding
+import com.kyberswap.android.databinding.DialogBackupMessageBinding
+import com.kyberswap.android.databinding.DialogConfirmationBinding
 import javax.inject.Inject
 
 class DialogHelper @Inject constructor(private val activity: AppCompatActivity) {
 
     fun showConfirmation(positiveListener: () -> Unit) {
-        AlertDialog.Builder(activity)
-            .setTitle(activity.getString(R.string.title_confirmation))
-            .setMessage(activity.getString(R.string.message_close_app_confirmation))
-            .setPositiveButton(activity.getString(R.string.confirm)) { _, _ ->
-                positiveListener.invoke()
-            }
-            .create()
-            .show()
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogConfirmationBinding>(
+                LayoutInflater.from(activity), R.layout.dialog_confirmation, null, false
+            )
+
+        binding.tvConfirm.setOnClickListener {
+            positiveListener.invoke()
+            dialog.dismiss()
+        }
+
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
     }
 
     private fun showWrongBackup(positiveListener: () -> Unit) {
-        AlertDialog.Builder(activity)
-            .setTitle(activity.getString(R.string.title_wrong_backup))
-            .setMessage(activity.getString(R.string.message_wrong_backup))
-            .setPositiveButton(activity.getString(R.string.try_again)) { _, _ ->
-                positiveListener.invoke()
-            }
-            .create()
-            .show()
+
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogBackupMessageBinding>(
+                LayoutInflater.from(activity), R.layout.dialog_backup_message, null, false
+            )
+
+        binding.tvTryAgain.setOnClickListener {
+            positiveListener.invoke()
+            dialog.dismiss()
+        }
+
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
     }
 
     fun showWrongBackup(
@@ -45,16 +72,43 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         positiveListener: () -> Unit,
         negativeListener: () -> Unit = {}
     ) {
-        AlertDialog.Builder(activity)
-            .setTitle(activity.getString(R.string.title_wrong_backup))
-            .setMessage(activity.getString(R.string.message_wrong_backup))
-            .setNegativeButton(activity.getString(R.string.retry)) { _, _ ->
-                negativeListener.invoke()
-            }
-            .setPositiveButton(activity.getString(R.string.try_again)) { _, _ ->
-                positiveListener.invoke()
-            }
-            .create()
-            .show()
+
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogBackupMessageAgainBinding>(
+                LayoutInflater.from(activity), R.layout.dialog_backup_message_again, null, false
+            )
+
+        binding.tvTryAgain.setOnClickListener {
+            positiveListener.invoke()
+            dialog.dismiss()
+        }
+
+        binding.tvRetry.setOnClickListener {
+            negativeListener.invoke()
+            dialog.dismiss()
+        }
+
+
+
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    }
+
+    private fun setDialogDimens(dialog: AlertDialog, width: Int?, height: Int? = null) {
+        val lp = WindowManager.LayoutParams()
+
+        lp.copyFrom(dialog.window?.attributes)
+        if (width != null) {
+            lp.width = width
+        }
+        if (height != null) {
+            lp.height = height
+        }
+
+        dialog.window?.attributes = lp
     }
 }
