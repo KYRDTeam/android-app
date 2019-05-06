@@ -10,6 +10,7 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityImportWalletBinding
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.helper.Navigator
+import kotlinx.android.synthetic.main.toolbar_with_back.*
 import org.consenlabs.tokencore.wallet.KeystoreStorage
 import org.consenlabs.tokencore.wallet.WalletManager
 import java.io.File
@@ -39,6 +40,9 @@ class ImportWalletActivity : BaseActivity(), KeystoreStorage {
         WalletManager.storage = this
         WalletManager.scanWallets()
         binding.title = getString(R.string.import_wallet_title)
+        imgBack.setOnClickListener {
+            onBackPressed()
+
         options = listOf(binding.vJson, binding.vPrivateKey, binding.vSeed)
 
         binding.vJson.isSelected = true

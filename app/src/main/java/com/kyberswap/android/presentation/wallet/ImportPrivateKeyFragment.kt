@@ -69,7 +69,7 @@ class ImportPrivateKeyFragment : BaseFragment() {
                         navigator.navigateToHome(Wallet(state.wallet))
             
                     is ImportWalletState.ShowError -> {
-                        showMessage(state.message ?: getString(R.string.something_wrong))
+                        showAlert(state.message ?: getString(R.string.something_wrong))
             
         
     
@@ -86,7 +86,7 @@ class ImportPrivateKeyFragment : BaseFragment() {
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null) {
             if (result.contents == null) {
-                showMessage(getString(com.kyberswap.android.R.string.message_cancelled))
+                showAlert(getString(com.kyberswap.android.R.string.message_cancelled))
      else {
                 binding.edtPrivateKey.setText(result.contents.toString())
     

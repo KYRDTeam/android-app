@@ -73,6 +73,7 @@
                         android:backgroundTint="@color/edt_background_tint"
                         android:hint="@string/enter_private_key"
                         android:inputType="textPassword"
+                        android:singleLine="true"
                         android:letterSpacing="0.07"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"

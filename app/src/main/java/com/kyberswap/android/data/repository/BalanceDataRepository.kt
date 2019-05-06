@@ -42,7 +42,7 @@ class BalanceDataRepository @Inject constructor(
         return tokenDao.all
     }
 
-    override fun getBalance(): Flowable<List<Token>> {
+    override fun getBalance(): Single<List<Token>> {
         return if (tokenDao.all.blockingFirst().isEmpty()) {
             fetchChange24h().toFlowable()
                 .flatMapIterable { token -> token }
@@ -57,9 +57,8 @@ class BalanceDataRepository @Inject constructor(
 
         
                 .toList()
-                .toFlowable()
  else {
-            tokenDao.all
+            tokenDao.all.first(listOf())
 
     }
 
@@ -100,7 +99,6 @@ class BalanceDataRepository @Inject constructor(
     .doOnNext { token ->
                 val tokenBySymbol = tokenDao.getTokenBySymbol(token.tokenSymbol)
                 if (tokenBySymbol != null) {
-                    token.currentBalance = tokenBySymbol.currentBalance
                     tokenDao.updateToken(token)
          else {
                     tokenDao.insertToken(token)
@@ -135,7 +133,7 @@ class BalanceDataRepository @Inject constructor(
     companion object {
         const val ETH = "ETH"
         const val USD = "USD"
-        private val COUNTER_START = 1
-        private val ATTEMPTS = 5
+        private const val COUNTER_START = 1
+        private const val ATTEMPTS = 5
     }
 }
