@@ -137,7 +137,9 @@ class KyberListFragment : BaseFragment() {
             val balance = calcBalance(tokenAdapter.getData(), unit == eth)
             tvChangeUnit.text = unit
             wallet!!.unit = unit
-            wallet!!.balance = balance.toDisplayNumber()
+            if (balance > BigDecimal.ZERO) {
+                wallet!!.balance = balance.toDisplayNumber()
+    
             viewModel.updateWallet(wallet!!)
             tokenAdapter.showEth(unit == eth)
 

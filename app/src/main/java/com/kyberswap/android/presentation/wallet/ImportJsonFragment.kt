@@ -4,11 +4,13 @@ import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.github.florent37.viewtooltip.ViewTooltip
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentImportJsonBinding
@@ -20,6 +22,7 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.fragment_import_json.*
 import javax.inject.Inject
+
 
 class ImportJsonFragment : BaseFragment() {
 
@@ -40,6 +43,10 @@ class ImportJsonFragment : BaseFragment() {
         ViewModelProviders.of(this, viewModelFactory).get(ImportJsonViewModel::class.java)
     }
 
+    private val defaultName by lazy {
+        getString(R.string.import_your_json_file)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -58,7 +65,7 @@ class ImportJsonFragment : BaseFragment() {
                     if (granted) {
                         performFileSearch()
              else {
-                        showMessage(getString(R.string.permission_required))
+                        showAlert(getString(R.string.permission_required))
             
         
 
@@ -68,10 +75,13 @@ class ImportJsonFragment : BaseFragment() {
                 showProgress(state == ImportWalletState.Loading)
                 when (state) {
                     is ImportWalletState.Success -> {
-                        navigator.navigateToHome(Wallet(state.wallet))
+
+                        showAlert(getString(R.string.import_wallet_success)) {
+                            navigator.navigateToHome(Wallet(state.wallet))
+                
             
                     is ImportWalletState.ShowError -> {
-                        showMessage(state.message ?: getString(R.string.something_wrong))
+                        showAlert(state.message ?: getString(R.string.something_wrong))
             
         
     
@@ -86,6 +96,17 @@ class ImportJsonFragment : BaseFragment() {
                 )
     
 
+    }
+
+
+    private fun showImportSuccess(state: ImportWalletState.Success) {
+        ViewTooltip.on(this.view).autoHide(true, 1000)
+            .align(ViewTooltip.ALIGN.CENTER)
+            .customView(R.layout.dialog_backup_message)
+            .position(ViewTooltip.Position.TOP)
+            .onHide {
+                navigator.navigateToHome(Wallet(state.wallet))
+    .show()
     }
 
     private fun performFileSearch() {
@@ -106,11 +127,28 @@ class ImportJsonFragment : BaseFragment() {
             READ_REQUEST_CODE -> {
                 resultData?.data?.also { uri ->
                     this.uri = uri
+                    binding.button.text = queryName(uri)
                     binding.btnImportWallet.isEnabled = true
         
     
 
     }
+
+    private fun queryName(uri: Uri): String {
+        val returnCursor = context?.contentResolver?.query(
+            uri,
+            null,
+            null,
+            null,
+            null
+        )!!
+        val nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+        returnCursor.moveToFirst()
+        val name = returnCursor.getString(nameIndex)
+        returnCursor.close()
+        return name
+    }
+
 
     companion object {
         private const val READ_REQUEST_CODE = 1

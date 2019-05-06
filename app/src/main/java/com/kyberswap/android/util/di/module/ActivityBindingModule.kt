@@ -1,5 +1,6 @@
 package com.kyberswap.android.util.di.module
 
+import com.kyberswap.android.presentation.common.AlertActivity
 import com.kyberswap.android.presentation.landing.LandingActivity
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.splash.SplashActivity
@@ -59,4 +60,8 @@ interface ActivityBindingModule {
         ]
     )
     fun contributeImportWalletActivity(): ImportWalletActivity
+
+    @ActivityScoped
+    @ContributesAndroidInjector()
+    fun contributeAlertActivity(): AlertActivity
 }

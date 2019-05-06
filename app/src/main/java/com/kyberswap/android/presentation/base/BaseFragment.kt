@@ -1,13 +1,19 @@
 package com.kyberswap.android.presentation.base
 
+import android.app.Activity
 import android.app.ProgressDialog
+import android.content.Intent
 import android.os.Bundle
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.snackbar.Snackbar
 import com.kyberswap.android.R
+import com.kyberswap.android.presentation.common.AlertActivity
 import dagger.android.support.DaggerFragment
 
 abstract class BaseFragment : DaggerFragment() {
     var dialog: ProgressDialog? = null
+
+    var alertListener: () -> Unit = {}
 
     private fun initLoadingDialog() {
         dialog = ProgressDialog(this.context)
@@ -27,9 +33,20 @@ abstract class BaseFragment : DaggerFragment() {
         if (showProgress) dialog?.show() else dialog?.dismiss()
     }
 
-    fun showMessage(message: String) {
-        if (view != null) {
-            Snackbar.make(view!!, message, Snackbar.LENGTH_SHORT).show()
+    fun showAlert(message: String, listener: () -> Unit = {}) {
+        if (context != null) {
+            this.alertListener = listener
+            val intent = AlertActivity.newIntent(context!!, message)
+            startActivityForResult(intent, SHOW_ALERT)
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == SHOW_ALERT) {
+            if (resultCode == Activity.RESULT_OK) {
+                alertListener.invoke()
+    
 
     }
 
@@ -37,5 +54,24 @@ abstract class BaseFragment : DaggerFragment() {
         if (view != null) {
             Snackbar.make(view!!, message, Snackbar.LENGTH_LONG).show()
 
+    }
+
+    fun displaySnackBarWithBottomMargin(snackbar: Snackbar, marginBottom: Int = 0) {
+        val snackBarView = snackbar.view
+        val params = snackBarView.layoutParams as CoordinatorLayout.LayoutParams
+
+        params.setMargins(
+            params.leftMargin,
+            params.topMargin,
+            params.rightMargin,
+            params.bottomMargin + marginBottom
+        )
+
+        snackBarView.layoutParams = params
+        snackbar.show()
+    }
+
+    companion object {
+        const val SHOW_ALERT = 0
     }
 }

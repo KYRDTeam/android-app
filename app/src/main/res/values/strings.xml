@@ -67,6 +67,7 @@
     <string name="backup_seed">Seeds</string>
     <string name="enter_password_to_decrypt">Enter Password to Decrypt</string>
     <string name="import_your_json_file">Import your JSON file</string>
+    <string name="import_wallet_success">Your Wallet is imported successful</string>
     <string name="name_of_your_wallet">Name of your wallet</string>
     <string name="recover_with_seeds">Recover with seeds</string>
     <string name="please_use_seed">Please use seed, the 12 random words assigned when you create the wallet</string>
@@ -100,6 +101,8 @@
     <string name="swap_regular">10</string>
     <string name="swap_slow">1</string>
     <string name="search">Search</string>
+    <string name="wrong_backup">Wrong Backup</string>
+    <string name="backup_again">Backup again</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>

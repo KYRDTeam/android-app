@@ -75,5 +75,7 @@ ext {
     rxBindingVersion = '3.0.0-alpha2'
     rxKotlinVersion = '2.3.0'
     ahbottomnavigationVersion = '2.3.4'
+    work = "2.0.1"
+
 
 }

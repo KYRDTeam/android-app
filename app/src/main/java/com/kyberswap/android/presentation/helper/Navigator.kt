@@ -39,7 +39,7 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     fun navigateToHome(wallet: Wallet? = null) {
         activity.startActivity(MainActivity.newIntent(activity, wallet))
-        activity.finish()
+        activity.finishAffinity()
     }
 
     @JvmOverloads

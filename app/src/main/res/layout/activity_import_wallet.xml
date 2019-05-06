@@ -15,12 +15,13 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/screen_background">
+        android:background="@drawable/screen_background"
+        android:fitsSystemWindows="true">
 
 
         <include
             android:id="@+id/include"
-            layout="@layout/toolbar"
+            layout="@layout/toolbar_with_back"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
