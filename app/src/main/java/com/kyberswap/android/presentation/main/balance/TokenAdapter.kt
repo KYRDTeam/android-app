@@ -43,6 +43,12 @@ class TokenAdapter(
         notifyDataSetChanged()
     }
 
+    fun submitFilterList(tokens: List<Token>) {
+        submitList(listOf())
+        submitList(tokens)
+    }
+
+
     override fun onBindViewHolder(
         holder: DataBoundViewHolder<ItemTokenBinding>,
         position: Int,

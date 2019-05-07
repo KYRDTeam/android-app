@@ -62,11 +62,12 @@ class ImportSeedFragment : BaseFragment() {
         binding.btnImportWallet.setOnClickListener {
             viewModel.importFromSeed(
                 edtSeed.text?.trim().toString(),
-                edtWalletName.text?.trim().toString()
+                if (edtWalletName.text.isNotEmpty()) edtWalletName.text.trim().toString()
+                else getString(R.string.default_wallet_name)
             )
 
 
-        viewModel.importWalletCallback.observe(this, Observer {
+        viewModel.importWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.let { state ->
                 showProgress(state == ImportWalletState.Loading)
                 when (state) {
