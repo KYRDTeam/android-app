@@ -13,6 +13,7 @@ import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.enable
 import org.consenlabs.tokencore.wallet.KeystoreStorage
 import org.consenlabs.tokencore.wallet.WalletManager
 import java.io.File
@@ -46,11 +47,13 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
 
         binding.btnCreateWallet.setOnClickListener {
             dialogHelper.showConfirmation {
+                it.enable(false)
                 viewModel.createWallet()
     
 
 
         binding.btnImportWallet.setOnClickListener {
+            it.enable(false)
             navigator.navigateToImportWalletPage()
 
 
@@ -60,6 +63,7 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
                 when (state) {
                     is GetMnemonicState.Success -> {
                         showAlert(getString(R.string.create_wallet_success)) {
+                            binding.btnCreateWallet.enable(true)
                             navigator.navigateToBackupWalletPage(state.words, state.wallet)
                 
 
@@ -75,6 +79,14 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
     
 )
     }
+
+    override fun onResume() {
+        super.onResume()
+        if (!binding.btnImportWallet.isEnabled) {
+            binding.btnImportWallet.enable(true)
+
+    }
+
 
     override fun getKeystoreDir(): File {
         return this.filesDir
