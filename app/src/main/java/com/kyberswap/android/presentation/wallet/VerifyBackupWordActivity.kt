@@ -66,9 +66,19 @@ class VerifyBackupWordActivity : BaseActivity() {
             ) {
                 navigator.navigateToHome(wallet)
             } else {
-                dialogHelper.showWrongBackup(numberOfTry, {
-                }, {
-                })
+
+                if (numberOfTry > 0) {
+                    dialogHelper.showWrongBackupAgain({
+                        navigator.navigateToBackupWalletPage(words, wallet)
+                    }, {
+
+                    })
+                } else {
+                    dialogHelper.showWrongBackup {
+
+                    }
+                }
+
                 numberOfTry = numberOfTry.inc()
             }
         }

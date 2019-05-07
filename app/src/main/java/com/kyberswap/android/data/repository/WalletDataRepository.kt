@@ -179,7 +179,7 @@ class WalletDataRepository @Inject constructor(
         return Single.fromCallable {
             val identity =
                 Identity.createIdentity(
-                    "",
+                    param.walletName,
                     param.pinLock,
                     "",
                     Network.MAINNET,
@@ -189,7 +189,7 @@ class WalletDataRepository @Inject constructor(
             walletDao.insertWallet(
                 com.kyberswap.android.domain.model.Wallet(
                     wallet.address.toWalletAddress(),
-                    "",
+                    param.walletName,
                     true
                 )
             )
