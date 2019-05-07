@@ -57,11 +57,12 @@ class ImportPrivateKeyFragment : BaseFragment() {
         binding.btnImportWallet.setOnClickListener {
             viewModel.importFromPrivateKey(
                 binding.edtPrivateKey.text?.trim().toString(),
-                binding.edtWalletName.text?.trim().toString()
+                if (binding.edtWalletName.text.isNotEmpty()) binding.edtWalletName.text.toString()
+                else getString(R.string.default_wallet_name)
             )
 
 
-        viewModel.importWalletCallback.observe(this, Observer {
+        viewModel.importWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.let { state ->
                 showProgress(state == ImportWalletState.Loading)
                 when (state) {

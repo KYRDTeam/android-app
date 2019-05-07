@@ -18,6 +18,8 @@ class CreateWalletUseCase @Inject constructor(
     }
 
     class Param(
-        val pinLock: String
+        val pinLock: String,
+        val walletName: String
+
     )
 }

@@ -70,7 +70,7 @@ class ImportJsonFragment : BaseFragment() {
         
 
 
-        viewModel.importWalletCallback.observe(this, Observer {
+        viewModel.importWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.let { state ->
                 showProgress(state == ImportWalletState.Loading)
                 when (state) {
@@ -92,7 +92,8 @@ class ImportJsonFragment : BaseFragment() {
                 viewModel.importFromJson(
                     it,
                     edtPassword.text?.trim().toString(),
-                    edtWalletName.text?.trim().toString()
+                    if (edtWalletName.text.isNotEmpty()) edtWalletName.text.trim().toString()
+                    else getString(R.string.default_wallet_name)
                 )
     
 

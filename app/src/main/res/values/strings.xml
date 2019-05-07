@@ -103,6 +103,9 @@
     <string name="search">Search</string>
     <string name="wrong_backup">Wrong Backup</string>
     <string name="backup_again">Backup again</string>
+    <string name="address_copy">Address copied</string>
+    <string name="create_wallet_success">You have created successfully a new wallet</string>
+    <string name="default_wallet_name">Untitled</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>

@@ -10,6 +10,7 @@ import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.domain.usecase.wallet.UpdateWalletUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.splash.GetWalletState
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import timber.log.Timber
@@ -29,6 +30,19 @@ class KyberListViewModel @Inject constructor(
     private val _getWalletCallback = MutableLiveData<Event<GetWalletState>>()
     val getWalletCallback: LiveData<Event<GetWalletState>>
         get() = _getWalletCallback
+
+    val searchedKeywordsCallback: LiveData<Event<String>>
+        get() = _searchedKeywords
+
+    private val _searchedKeywords = MutableLiveData<Event<String>>()
+
+    val compositeDisposable by lazy {
+        CompositeDisposable()
+    }
+
+    fun updateSearchKeyword(keyword: String) {
+        _searchedKeywords.value = Event(keyword)
+    }
 
     fun getWallet(address: String) {
         getWalletByAddressUseCase.execute(
@@ -90,5 +104,11 @@ class KyberListViewModel @Inject constructor(
     ,
             wallet
         )
+    }
+
+    override fun onCleared() {
+        getBalancePollingUseCase.dispose()
+        getWalletByAddressUseCase.dispose()
+        super.onCleared()
     }
 }

@@ -59,7 +59,10 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
                 showProgress(state == GetMnemonicState.Loading)
                 when (state) {
                     is GetMnemonicState.Success -> {
-                        navigator.navigateToBackupWalletPage(state.words, state.wallet)
+                        showAlert(getString(R.string.create_wallet_success)) {
+                            navigator.navigateToBackupWalletPage(state.words, state.wallet)
+                
+
             
                     is GetMnemonicState.ShowError -> {
                         Toast.makeText(
