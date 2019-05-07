@@ -35,6 +35,7 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     fun navigateToBackupWalletPage(words: List<Word>, wallet: Wallet) {
         activity.startActivity(BackupWalletActivity.newIntent(activity, words, wallet))
+        activity.finishAffinity()
     }
 
     fun navigateToHome(wallet: Wallet? = null) {

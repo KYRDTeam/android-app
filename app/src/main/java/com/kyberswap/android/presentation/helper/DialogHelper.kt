@@ -35,7 +35,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
     }
 
-    private fun showWrongBackup(positiveListener: () -> Unit) {
+    fun showWrongBackup(positiveListener: () -> Unit) {
 
         val dialog = AlertDialog.Builder(activity).create()
         dialog.setCanceledOnTouchOutside(true)
@@ -68,7 +68,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
     }
 
-    private fun showWrongBackupAgain(
+    fun showWrongBackupAgain(
         positiveListener: () -> Unit,
         negativeListener: () -> Unit = {}
     ) {
