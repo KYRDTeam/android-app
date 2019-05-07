@@ -91,7 +91,7 @@
                 <EditText
                     android:id="@+id/edtWalletName"
                     android:layout_width="match_parent"
-                    android:layout_height="34dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="23dp"
                     android:layout_marginTop="17dp"
                     android:layout_marginEnd="23dp"
