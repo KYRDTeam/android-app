@@ -59,6 +59,7 @@ class KyberListFragment : BaseFragment() {
     }
 
     private var tokenList = mutableListOf<Token>()
+    private var currentSearchString = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -114,7 +115,13 @@ class KyberListFragment : BaseFragment() {
                     is GetBalanceState.Success -> {
                         tokenList.clear()
                         tokenList.addAll(state.tokens)
-                        tokenAdapter.submitList(state.tokens)
+                        tokenAdapter.submitFilterList(
+                            getFilterTokenList(
+                                currentSearchString,
+                                state.tokens
+                            )
+                        )
+
                         val isETH = wallet!!.unit == eth
                         val balance = calcBalance(state.tokens, isETH)
                         if (balance > BigDecimal(1E-10) &&
@@ -149,17 +156,22 @@ class KyberListFragment : BaseFragment() {
 
         viewModel.searchedKeywordsCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { searchedString ->
+                currentSearchString = searchedString
                 if (searchedString.isEmpty()) {
                     tokenAdapter.submitFilterList(tokenList)
          else {
-                    tokenAdapter.submitFilterList(tokenList.toList().filter { token ->
-                        token.tokenSymbol.toLowerCase().contains(searchedString) or
-                            token.tokenName.toLowerCase().contains(searchedString)
-
-            )
+                    tokenAdapter.submitFilterList(getFilterTokenList(searchedString, tokenList))
         
     
 )
+    }
+
+    private fun getFilterTokenList(searchedString: String, tokens: List<Token>): List<Token> {
+        return tokens.filter { token ->
+            token.tokenSymbol.toLowerCase().contains(searchedString) or
+                token.tokenName.toLowerCase().contains(searchedString)
+
+
     }
 
     private fun calcBalance(tokens: List<Token>, isETH: Boolean): BigDecimal {
