@@ -4,20 +4,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
+import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.databinding.FragmentBalanceBinding
+import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.showDrawer
+import com.kyberswap.android.util.ext.showKeyboard
 import kotlinx.android.synthetic.main.fragment_balance.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+
 
 class BalanceFragment : BaseFragment() {
 
@@ -34,10 +40,13 @@ class BalanceFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
+    @Inject
+    lateinit var schedulerProvider: SchedulerProvider
+
     var currentSelectedView: View? = null
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(BalanceViewModel::class.java)
+        ViewModelProviders.of(this, viewModelFactory).get(KyberListViewModel::class.java)
     }
 
     private val options by lazy {
@@ -84,7 +93,7 @@ class BalanceFragment : BaseFragment() {
         })
 
         viewModel.getWallet(wallet!!.address)
-        viewModel.getWalletCallback.observe(this, Observer {
+        viewModel.getWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
@@ -125,7 +134,32 @@ class BalanceFragment : BaseFragment() {
             showDrawer(true)
         }
 
+        listOf(binding.edtSearch, binding.imgSearch).forEach {
+            it.setOnClickListener {
+                binding.edtSearch.requestFocus()
+                it.showKeyboard()
+            }
 
+        }
+
+        viewModel.compositeDisposable.add(
+            binding.edtSearch.textChanges().debounce(
+                250,
+                TimeUnit.MILLISECONDS
+            )
+                .map {
+                    return@map it.trim().toString().toLowerCase()
+                }.observeOn(schedulerProvider.ui())
+                .subscribe {
+                    viewModel.updateSearchKeyword(it)
+                })
+
+        binding.edtSearch.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                binding.edtSearch.clearFocus()
+            }
+            false
+        }
     }
 
     private fun setSelectedOption(view: View) {

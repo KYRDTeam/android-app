@@ -40,9 +40,9 @@ class KyberListFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
-
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(KyberListViewModel::class.java)
+        ViewModelProviders.of(parentFragment!!, viewModelFactory)
+            .get(KyberListViewModel::class.java)
     }
 
     private val usd: String by lazy {
@@ -53,11 +53,12 @@ class KyberListFragment : BaseFragment() {
         getString(R.string.unit_eth)
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         wallet = arguments!!.getParcelable(WALLET_PARAM)
     }
+
+    private var tokenList = mutableListOf<Token>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -83,7 +84,7 @@ class KyberListFragment : BaseFragment() {
         binding.rvToken.adapter = tokenAdapter
 
         viewModel.getWallet(wallet!!.address)
-        viewModel.getWalletCallback.observe(this, Observer {
+        viewModel.getWalletCallback.observe(parentFragment!!.viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
@@ -106,11 +107,13 @@ class KyberListFragment : BaseFragment() {
         })
 
         viewModel.getTokenBalance(wallet!!.address)
-        viewModel.getBalanceStateCallback.observe(this, Observer {
+        viewModel.getBalanceStateCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == GetBalanceState.Loading)
                 when (state) {
                     is GetBalanceState.Success -> {
+                        tokenList.clear()
+                        tokenList.addAll(state.tokens)
                         tokenAdapter.submitList(state.tokens)
                         val isETH = wallet!!.unit == eth
                         val balance = calcBalance(state.tokens, isETH)
@@ -143,6 +146,20 @@ class KyberListFragment : BaseFragment() {
             viewModel.updateWallet(wallet!!)
             tokenAdapter.showEth(unit == eth)
         }
+
+        viewModel.searchedKeywordsCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { searchedString ->
+                if (searchedString.isEmpty()) {
+                    tokenAdapter.submitFilterList(tokenList)
+                } else {
+                    tokenAdapter.submitFilterList(tokenList.toList().filter { token ->
+                        token.tokenSymbol.toLowerCase().contains(searchedString) or
+                            token.tokenName.toLowerCase().contains(searchedString)
+
+                    })
+                }
+            }
+        })
     }
 
     private fun calcBalance(tokens: List<Token>, isETH: Boolean): BigDecimal {

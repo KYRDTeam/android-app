@@ -41,7 +41,6 @@ class BalanceAddressFragment : BaseFragment() {
         ViewModelProviders.of(this, viewModelFactory).get(BalanceAddressViewModel::class.java)
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         wallet = arguments!!.getParcelable(WALLET_PARAM)
@@ -66,6 +65,7 @@ class BalanceAddressFragment : BaseFragment() {
                 context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
             val clip = ClipData.newPlainText("Copy", wallet!!.address)
             clipboard!!.primaryClip = clip
+            showAlert(getString(R.string.address_copy))
         }
         binding.tvShare.setOnClickListener {
             val sendIntent: Intent = Intent().apply {
