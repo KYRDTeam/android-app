@@ -9,8 +9,10 @@ import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
+import com.kyberswap.android.domain.usecase.wallet.SaveSwapUseCase
 import com.kyberswap.android.presentation.common.Event
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
@@ -19,7 +21,8 @@ class SwapViewModel @Inject constructor(
     private val getWalletByAddressUseCase: GetWalletByAddressUseCase,
     private val getExpectedRateUseCase: GetExpectedRateUseCase,
     private val getSwapData: GetSwapDataUseCase,
-    private val getMarketRate: GetMarketRateUseCase
+    private val getMarketRate: GetMarketRateUseCase,
+    private val saveSwapUseCase: SaveSwapUseCase
 ) : ViewModel() {
 
     private val _getSwapCallback = MutableLiveData<Event<GetSwapState>>()
@@ -31,6 +34,7 @@ class SwapViewModel @Inject constructor(
     val getExpectedRateCallback: LiveData<Event<GetExpectedRateState>>
         get() = _getExpectedRateCallback
 
+
     val compositeDisposable by lazy {
         CompositeDisposable()
     }
@@ -40,6 +44,7 @@ class SwapViewModel @Inject constructor(
         get() = _getGetMarketRateStateCallback
 
     fun getMarketRate(srcToken: String, destToken: String) {
+        getMarketRate.dispose()
         if (srcToken.isNotBlank() && destToken.isNotBlank()) {
             getMarketRate.execute(
                 Consumer {
@@ -73,7 +78,7 @@ class SwapViewModel @Inject constructor(
         swap: Swap,
         srcAmount: String
     ) {
-
+        getExpectedRateUseCase.dispose()
         getExpectedRateUseCase.execute(
             Consumer {
                 _getExpectedRateCallback.value = Event(GetExpectedRateState.Success(it))
@@ -92,6 +97,14 @@ class SwapViewModel @Inject constructor(
         getWalletByAddressUseCase.dispose()
         compositeDisposable.dispose()
         super.onCleared()
+    }
+
+    fun saveSwap(swap: Swap) {
+        saveSwapUseCase.execute(
+            Action { },
+            Consumer { it.printStackTrace() },
+            SaveSwapUseCase.Param(swap)
+        )
     }
 
 }
