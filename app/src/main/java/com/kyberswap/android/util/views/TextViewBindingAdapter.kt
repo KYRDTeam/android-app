@@ -5,6 +5,7 @@ import android.text.SpannableString
 import android.widget.RadioButton
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import com.kyberswap.android.R
 import io.github.inflationx.calligraphy3.CalligraphyTypefaceSpan
 import io.github.inflationx.calligraphy3.TypefaceUtils
 
@@ -64,5 +65,20 @@ object TextViewBindingAdapter {
         )
 
         view.setText(spannableString, TextView.BufferType.SPANNABLE)
+    }
+
+    @BindingAdapter("app:percentageRate")
+    @JvmStatic
+    fun setPercentage(view: TextView, percentageRate: Double) {
+        val drawable = when {
+            percentageRate > 0 -> R.drawable.ic_arrow_up
+            percentageRate < 0 -> R.drawable.ic_arrow_down
+            else -> 0
+
+
+
+        view.text =
+            String.format(view.context.getString(R.string.percentage_format), percentageRate)
+        view.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawable, 0)
     }
 }

@@ -5,17 +5,19 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.domain.model.Unit
-import com.kyberswap.android.domain.model.Wallet
 
 @Database(
     entities = [
         Token::class,
         Wallet::class,
-        Unit::class
+        Unit::class,
+        Swap::class,
+        WalletToken::class,
+        Rate::class
     ],
-    version = 2
+    version = 9
 )
 @TypeConverters(DataTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -23,6 +25,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun customerDao(): TokenDao
     abstract fun walletDao(): WalletDao
     abstract fun unitDao(): UnitDao
+    abstract fun swapDao(): SwapDao
+    abstract fun walletTokenDao(): WalletTokenDao
+    abstract fun rateDao(): RateDao
 
     companion object {
         @Volatile

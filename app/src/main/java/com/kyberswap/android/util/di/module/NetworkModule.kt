@@ -3,6 +3,7 @@ package com.kyberswap.android.util.di.module
 import android.content.Context
 import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.R
+import com.kyberswap.android.data.api.home.RateApi
 import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.util.TokenClient
 import dagger.Module
@@ -57,6 +58,17 @@ class NetworkModule {
                 client,
                 false
             )
+        )
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideRateApi(context: Context, client: OkHttpClient): RateApi {
+        return createApiClient(
+            RateApi::class.java,
+            context.getString(R.string.rate_endpoint_url),
+            client
         )
     }
 

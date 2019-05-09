@@ -72,8 +72,17 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         replaceFragment(SwapFragment.newInstance(wallet), false, WITHOUT_ANIMATION, container)
     }
 
-    fun navigateToTokenSearch(container: Int) {
-        replaceFragment(TokenSearchFragment.newInstance(), true, WITHOUT_ANIMATION, container)
+    fun navigateToTokenSearch(
+        container: Int,
+        wallet: Wallet?,
+        isSourceToken: Boolean = false
+    ) {
+        replaceFragment(
+            TokenSearchFragment.newInstance(wallet, isSourceToken),
+            true,
+            WITHOUT_ANIMATION,
+            container
+        )
     }
 
     companion object {

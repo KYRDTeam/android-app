@@ -1,18 +1,14 @@
 package com.kyberswap.android.util.di.module
 
 import android.content.Context
+import com.kyberswap.android.data.api.home.RateApi
 import com.kyberswap.android.data.api.home.TokenApi
-import com.kyberswap.android.data.db.TokenDao
-import com.kyberswap.android.data.db.UnitDao
-import com.kyberswap.android.data.db.WalletDao
+import com.kyberswap.android.data.db.*
+import com.kyberswap.android.data.mapper.RateMapper
 import com.kyberswap.android.data.mapper.TokenMapper
-import com.kyberswap.android.data.repository.BalanceDataRepository
-import com.kyberswap.android.data.repository.MnemonicDataRepository
-import com.kyberswap.android.data.repository.WalletDataRepository
+import com.kyberswap.android.data.repository.*
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
-import com.kyberswap.android.domain.repository.BalanceRepository
-import com.kyberswap.android.domain.repository.MnemonicRepository
-import com.kyberswap.android.domain.repository.WalletRepository
+import com.kyberswap.android.domain.repository.*
 import com.kyberswap.android.util.TokenClient
 import dagger.Module
 import dagger.Provides
@@ -38,12 +34,33 @@ object DataModule {
         api: TokenApi,
         tokenMapper: TokenMapper,
         client: TokenClient,
-        tokenDao: TokenDao
-    ): BalanceRepository = BalanceDataRepository(api, tokenMapper, client, tokenDao)
+        tokenDao: TokenDao,
+        walletTokenDao: WalletTokenDao
+    ): BalanceRepository = BalanceDataRepository(api, tokenMapper, client, tokenDao, walletTokenDao)
+
+    @Singleton
+    @Provides
+    @JvmStatic
+    fun provideTokenRepository(
+        client: TokenClient,
+        api: RateApi,
+        rateMapper: RateMapper,
+        rateDao: RateDao,
+        context: Context
+    ): TokenRepository = TokenDataRepository(client, api, rateMapper, rateDao, context)
 
     @Singleton
     @Provides
     @JvmStatic
     fun provideMnemonicRepository(mnemonicCode: MnemonicCode): MnemonicRepository =
         MnemonicDataRepository(mnemonicCode)
+
+    @Singleton
+    @Provides
+    @JvmStatic
+    fun provideSwapRepository(
+        swapDao: SwapDao,
+        tokenDao: TokenDao
+    ): SwapRepository =
+        SwapDataRepository(swapDao, tokenDao)
 }
