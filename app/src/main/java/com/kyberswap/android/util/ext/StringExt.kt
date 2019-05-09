@@ -12,6 +12,7 @@ fun String.toWalletAddress(): String {
 
 fun String?.percentage(other: String?): Double {
     if (other.isNullOrEmpty() || this.isNullOrEmpty()) return 0.0
+    if (other.toDouble() == 0.0) return 0.0
     return try {
         ((this.toDouble() - other.toDouble()) / other.toDouble() * 100)
     } catch (ex: Exception) {

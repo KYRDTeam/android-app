@@ -95,16 +95,10 @@ class SwapFragment : BaseFragment() {
         binding.imgSwap.setOnClickListener {
             val swap = binding.swap?.switch()
             binding.setVariable(BR.swap, swap)
-            binding.executePendingBindings()
             binding.edtSource.swap(binding.edtDest)
-            marketRate = null
             swap?.let {
-                viewModel.getMarketRate(swap.tokenSource.tokenSymbol, swap.tokenDest.tokenSymbol)
-                getRate(
-                    swap,
-                    if (binding.edtSource.text.isNullOrEmpty()) getString(R.string.default_source_amount)
-                    else binding.edtSource.text.toString()
-                )
+                viewModel.saveSwap(swap)
+                getRate(it)
     
 
 
@@ -116,7 +110,7 @@ class SwapFragment : BaseFragment() {
             .observeOn(schedulerProvider.ui())
             .subscribe { text ->
                 binding.swap?.let { swapData ->
-                    getRate(
+                    getExpectedRate(
                         swapData,
                         if (text.isNullOrEmpty()) getString(R.string.default_source_amount) else text.toString()
                     )
@@ -130,16 +124,11 @@ class SwapFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSwapState.Success -> {
-                        binding.swap = state.swap
-                        viewModel.getMarketRate(
-                            state.swap.tokenSource.tokenSymbol,
-                            state.swap.tokenDest.tokenSymbol
-                        )
-                        getRate(
-                            state.swap,
-                            if (binding.edtSource.text.isNullOrEmpty()) getString(R.string.default_source_amount)
-                            else binding.edtSource.text.toString()
-                        )
+                        if (binding.swap != state.swap) {
+                            binding.swap = state.swap
+                            getRate(state.swap)
+                
+
             
                     is GetSwapState.ShowError -> {
 
@@ -152,13 +141,13 @@ class SwapFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetExpectedRateState.Success -> {
-                        expectedRate = state.list[0]
                         val swap = binding.swap
                         if (swap != null) {
                             swap.expectedRate = state.list[0]
                             swap.slippageRate = state.list[1]
-                            binding.percentageRate = expectedRate.percentage(marketRate)
                 
+                        expectedRate = state.list[0]
+                        binding.percentageRate = expectedRate.percentage(marketRate)
                         binding.swap = swap
             
                     is GetExpectedRateState.ShowError -> {
@@ -174,10 +163,7 @@ class SwapFragment : BaseFragment() {
                     is GetMarketRateState.Success -> {
                         binding.tvRate.text = state.rate
                         marketRate = state.rate
-                        val swap = binding.swap
-                        if (swap != null) {
-                            binding.percentageRate = expectedRate.percentage(marketRate)
-                
+                        binding.percentageRate = expectedRate.percentage(marketRate)
             
                     is GetMarketRateState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -187,12 +173,34 @@ class SwapFragment : BaseFragment() {
 )
     }
 
-    private fun getRate(swapData: Swap, amount: String) {
+    private fun getRate(swap: Swap) {
+        resetRate()
+        getMarketRate(
+            swap.tokenSource.tokenSymbol,
+            swap.tokenDest.tokenSymbol
+        )
+        getExpectedRate(
+            swap,
+            if (binding.edtSource.text.isNullOrEmpty()) getString(R.string.default_source_amount)
+            else binding.edtSource.text.toString()
+        )
+    }
+
+    private fun resetRate() {
+        marketRate = null
+        expectedRate = null
+    }
+
+    private fun getExpectedRate(swapData: Swap, amount: String) {
         viewModel.getExpectedRate(
             swapData.walletAddress,
             swapData,
             amount
         )
+    }
+
+    private fun getMarketRate(source: String, dest: String) {
+        viewModel.getMarketRate(source, dest)
     }
 
     companion object {
