@@ -107,6 +107,7 @@ class KyberListViewModel @Inject constructor(
     }
 
     override fun onCleared() {
+        compositeDisposable.dispose()
         getBalancePollingUseCase.dispose()
         getWalletByAddressUseCase.dispose()
         super.onCleared()

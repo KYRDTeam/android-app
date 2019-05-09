@@ -61,7 +61,6 @@ class TokenAdapter(
 
     override fun bind(binding: ItemTokenBinding, item: Token) {
         binding.setVariable(BR.token, item)
-        binding.executePendingBindings()
         binding.btnBuy.setOnClickListener {
             Toast.makeText(binding.root.context, "Buy", Toast.LENGTH_SHORT).show()
             binding.swipe.close(true)

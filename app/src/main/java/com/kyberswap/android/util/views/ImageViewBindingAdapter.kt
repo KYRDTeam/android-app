@@ -55,7 +55,8 @@ object ImageViewBindingAdapter {
 
     @BindingAdapter("app:identifier")
     @JvmStatic
-    fun loadResource(view: ImageView, identifier: String) {
+    fun loadResource(view: ImageView, identifier: String?) {
+        if (identifier == null) return
         val resourceIcon: Int?
         try {
             resourceIcon = view.context.resources.getIdentifier(

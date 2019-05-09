@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".presentation.main.MainActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
         <variable
-            name="wallet"
-            type="com.kyberswap.android.domain.model.Wallet" />
+            name="walletName"
+            type="String" />
+
+        <variable
+            name="percentageRate"
+            type="Double" />
+
+        <variable
+            name="swap"
+            type="com.kyberswap.android.domain.model.Swap" />
     </data>
 
     <FrameLayout
@@ -65,7 +71,7 @@
                     android:id="@+id/tvName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Satoshi Nakamoto"
+                    android:text="@{walletName}"
                     android:textColor="#ffffff"
                     android:textSize="14sp" />
 
@@ -93,6 +99,7 @@
                     android:paddingEnd="15dp">
 
                     <ImageView
+                        android:id="@+id/imgSwap"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -113,28 +120,37 @@
 
                             <ImageView
                                 android:id="@+id/imgTokenSource"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@drawable/ic_eth" />
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/eth"
+                                app:identifier="@{swap.tokenSource.tokenSymbol}" />
 
                             <TextView
+                                android:id="@+id/tvSource"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="9dp"
-                                android:text="eth"
+                                android:text="@{swap.tokenSource.tokenSymbol}"
                                 android:textAllCaps="true"
                                 android:textColor="#141927"
                                 android:textSize="16sp" />
                         </LinearLayout>
 
 
-                        <TextView
+                        <com.kyberswap.android.presentation.common.ClearableEditText
+                            android:id="@+id/edtSource"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
+                            android:background="@android:color/transparent"
+                            android:backgroundTint="#acb3c6"
+                            android:ellipsize="start"
                             android:gravity="end"
-                            android:text="12"
-                            android:textColor="#141927"
+                            android:hint="@string/default_swap_amount"
+                            android:inputType="numberDecimal"
+                            android:singleLine="true"
+                            android:textColor="#fea34c"
                             android:textSize="24sp" />
                     </LinearLayout>
 
@@ -154,28 +170,38 @@
 
                             <ImageView
                                 android:id="@+id/imgTokenDest"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@drawable/ic_swap_knc" />
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/knc"
+
+                                app:identifier="@{swap.tokenDest.tokenSymbol}" />
 
                             <TextView
+                                android:id="@+id/tvDest"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="9dp"
-                                android:text="KNC"
+                                android:text="@{swap.tokenDest.tokenSymbol}"
                                 android:textAllCaps="true"
                                 android:textColor="#141927"
                                 android:textSize="16sp" />
 
                         </LinearLayout>
 
-                        <TextView
+
+                        <com.kyberswap.android.presentation.common.ClearableEditText
+                            android:id="@+id/edtDest"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:layout_weight="1"
+                            android:background="@android:color/transparent"
+                            android:backgroundTint="#acb3c6"
+                            android:ellipsize="start"
                             android:gravity="end"
-                            android:text="6342.371042"
+                            android:hint="@string/default_swap_amount"
+                            android:inputType="numberDecimal"
+                            android:singleLine="true"
                             android:textColor="#141927"
                             android:textSize="24sp" />
                     </LinearLayout>
@@ -200,13 +226,13 @@
                     android:paddingBottom="40dp">
 
                     <TextView
-                        android:id="@+id/textView14"
+                        android:id="@+id/tvRate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="7dp"
                         android:layout_marginEnd="15dp"
                         android:gravity="end"
-                        android:text="0.001888"
+                        android:text="@{swap.expectedRate}"
                         android:textColor="#141927"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -232,7 +258,8 @@
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="15dp"
                         android:gravity="end"
-                        android:text="Rate"
+                        android:text="@string/rate"
+                        android:textAllCaps="true"
                         android:textColor="#9ea1aa"
                         android:textSize="12sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -243,7 +270,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="15dp"
-                        android:text="ETH Balance"
+                        android:text="@{swap.tokenSource.tokenSymbol +` `+ @string/balance}"
+                        android:textAllCaps="true"
                         android:textColor="#9ea1aa"
                         android:textSize="12sp"
                         app:layout_constraintBaseline_toBaselineOf="@+id/textView7"
@@ -257,7 +285,7 @@
                         android:layout_marginTop="7dp"
                         android:minWidth="48dp"
                         android:minHeight="20dp"
-                        android:text="16.130796"
+                        android:text="@{swap.tokenSource.displayCurrentBalance}"
                         android:textColor="#141927"
                         android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -286,14 +314,14 @@
                         android:gravity="end"
                         android:paddingStart="4dp"
                         android:paddingEnd="4dp"
-                        android:text="1.2%"
                         android:textColor="#f96363"
                         android:textSize="12sp"
+                        app:layout_constraintTop_toBottomOf="@+id/tvRate"
                         app:layout_constraintEnd_toStartOf="@+id/imageView2"
                         app:layout_constraintHorizontal_bias="1.0"
                         app:layout_constraintHorizontal_chainStyle="packed"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView14" />
+                        app:percentageRate="@{percentageRate}" />
 
                     <TextView
                         android:id="@+id/tvAdvanceOption"
@@ -301,7 +329,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="15dp"
                         android:layout_marginTop="73dp"
-                        android:text="Advanced (optional)"
+                        android:text="@string/advanced_optional"
                         android:textColor="#9ea8b3"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"

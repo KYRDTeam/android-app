@@ -106,6 +106,12 @@
     <string name="address_copy">Address copied</string>
     <string name="create_wallet_success">You have created successfully a new wallet</string>
     <string name="default_wallet_name">Untitled</string>
+    <string name="token">Token</string>
+    <string name="default_swap_amount">0.000</string>
+    <string name="advanced_optional">Advanced (optional)</string>
+    <string name="rate">Rate</string>
+    <string name="default_source_amount">0.0001</string>
+    <string name="percentage_format" formatted="false" translatable="false">"%.2f %%"</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>
