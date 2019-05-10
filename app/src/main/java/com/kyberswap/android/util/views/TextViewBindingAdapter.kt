@@ -2,8 +2,10 @@ package com.kyberswap.android.util.views
 
 import android.text.Spannable
 import android.text.SpannableString
+import android.view.View
 import android.widget.RadioButton
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.kyberswap.android.R
 import io.github.inflationx.calligraphy3.CalligraphyTypefaceSpan
@@ -45,37 +47,53 @@ object TextViewBindingAdapter {
 
     @BindingAdapter("app:styleBold", "app:font")
     @JvmStatic
-    fun styleRadioButtonText(view: RadioButton, bold: String, font: String) {
+    fun styleRadioButtonText(view: RadioButton, bold: String?, font: String) {
+        try {
+            val spannableString = SpannableString(view.text.toString())
+            val typeface = TypefaceUtils.load(
+                view.context.assets,
+                font
+            )
 
-        val spannableString = SpannableString(view.text.toString())
-        val typeface = TypefaceUtils.load(
-            view.context.assets,
-            font
-        )
+            val calligraphyTypeface = CalligraphyTypefaceSpan(
+                typeface
+            )
 
-        val calligraphyTypeface = CalligraphyTypefaceSpan(
-            typeface
-        )
+            if (bold.isNullOrEmpty()) return
+            spannableString.setSpan(
+                calligraphyTypeface,
+                spannableString.indexOf(bold),
+                spannableString.indexOf(bold) + bold.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
 
-        spannableString.setSpan(
-            calligraphyTypeface,
-            spannableString.indexOf(bold),
-            spannableString.indexOf(bold) + bold.length,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
+            view.setText(spannableString, TextView.BufferType.SPANNABLE)
+ catch (ex: Exception) {
+            ex.printStackTrace()
 
-        view.setText(spannableString, TextView.BufferType.SPANNABLE)
     }
 
     @BindingAdapter("app:percentageRate")
     @JvmStatic
     fun setPercentage(view: TextView, percentageRate: Double) {
+        if (percentageRate > -0.1) {
+            view.visibility = View.GONE
+            return
+
+        view.visibility = View.VISIBLE
         val drawable = when {
             percentageRate > 0 -> R.drawable.ic_arrow_up
             percentageRate < 0 -> R.drawable.ic_arrow_down
             else -> 0
 
 
+        val color = when {
+            percentageRate > 0 -> R.color.token_change24h_up
+            percentageRate < 0 -> R.color.token_change24h_down
+            else -> R.color.token_change24h_same
+
+
+        view.setTextColor(ContextCompat.getColor(view.context, color))
 
         view.text =
             String.format(view.context.getString(R.string.percentage_format), percentageRate)

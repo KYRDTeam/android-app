@@ -1,9 +1,10 @@
 package com.kyberswap.android.util.di.module
 
 import android.content.Context
-import com.kyberswap.android.data.api.home.RateApi
+import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.db.*
+import com.kyberswap.android.data.mapper.GasMapper
 import com.kyberswap.android.data.mapper.RateMapper
 import com.kyberswap.android.data.mapper.TokenMapper
 import com.kyberswap.android.data.repository.*
@@ -43,7 +44,7 @@ object DataModule {
     @JvmStatic
     fun provideTokenRepository(
         client: TokenClient,
-        api: RateApi,
+        api: SwapApi,
         rateMapper: RateMapper,
         rateDao: RateDao,
         context: Context
@@ -60,7 +61,9 @@ object DataModule {
     @JvmStatic
     fun provideSwapRepository(
         swapDao: SwapDao,
-        tokenDao: TokenDao
+        tokenDao: TokenDao,
+        api: SwapApi,
+        mapper: GasMapper
     ): SwapRepository =
-        SwapDataRepository(swapDao, tokenDao)
+        SwapDataRepository(swapDao, tokenDao, api, mapper)
 }

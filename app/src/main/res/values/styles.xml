@@ -4,6 +4,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@android:color/transparent</item>
         <item name="colorAccent">@color/colorAccent</item>
+
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
@@ -47,6 +48,10 @@
         <item name="fontPath">fonts/Montserrat-Bold.ttf</item>
     </style>
 
+    <style name="TextAppearance.Montserrat.SemiBold.Italic" parent="android:TextAppearance">
+        <item name="fontPath">fonts/Montserrat-SemiBoldItalic.ttf</item>
+    </style>
+
     <style name="AlertStyle" parent="AppThemeTranslucentStatus">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
@@ -55,6 +60,11 @@
         <item name="android:windowHideAnimation">@null</item>
         <item name="android:backgroundDimEnabled">true</item>
 
+    </style>
+
+    <style name="CustomRadioTheme" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">@color/swap_radio_tint_background_normal</item>
+        <item name="colorControlActivated">@color/swap_radio_tint_background</item>
     </style>
 
 </resources>

@@ -90,9 +90,9 @@ class BalanceDataRepository @Inject constructor(
     override fun getChange24hPolling(owner: String): Flowable<Token> {
         return fetchChange24h()
             .toFlowable()
-//            .repeatWhen {
-//                it.delay(20, TimeUnit.SECONDS)
-//    
+            .repeatWhen {
+                it.delay(20, TimeUnit.SECONDS)
+    
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
     
