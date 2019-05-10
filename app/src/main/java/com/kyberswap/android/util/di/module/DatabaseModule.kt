@@ -1,10 +1,7 @@
 package com.kyberswap.android.util.di.module
 
 import android.app.Application
-import com.kyberswap.android.data.db.AppDatabase
-import com.kyberswap.android.data.db.TokenDao
-import com.kyberswap.android.data.db.UnitDao
-import com.kyberswap.android.data.db.WalletDao
+import com.kyberswap.android.data.db.*
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -31,6 +28,24 @@ class DatabaseModule {
     @Singleton
     fun provideUnitDao(appDatabase: AppDatabase): UnitDao {
         return appDatabase.unitDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSwapDao(appDatabase: AppDatabase): SwapDao {
+        return appDatabase.swapDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideWalletTokenDao(appDatabase: AppDatabase): WalletTokenDao {
+        return appDatabase.walletTokenDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRateDao(appDatabase: AppDatabase): RateDao {
+        return appDatabase.rateDao()
     }
 
 }
