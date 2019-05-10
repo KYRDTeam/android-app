@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 2,
-    "identityHash": "85ffeaeb3603f47b91f9655450291462",
+    "version": 4,
+    "identityHash": "8a754aec5e6817118bdc55d6231139c8",
     "entities": [
       {
         "tableName": "tokens",
@@ -144,7 +144,7 @@
       },
       {
         "tableName": "swaps",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`walletAddress` TEXT NOT NULL, `tokenSourceAddress` TEXT NOT NULL, `tokenSourceSymbol` TEXT NOT NULL, `tokenDestAddress` TEXT NOT NULL, `tokenDestSymbol` TEXT NOT NULL, `sourceAmount` TEXT NOT NULL, `expectedRate` TEXT NOT NULL, `slippageRate` TEXT NOT NULL, PRIMARY KEY(`walletAddress`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`walletAddress` TEXT NOT NULL, `tokenSourceAddress` TEXT NOT NULL, `tokenSourceSymbol` TEXT NOT NULL, `tokenDestAddress` TEXT NOT NULL, `tokenDestSymbol` TEXT NOT NULL, `sourceAmount` TEXT NOT NULL, `destAmount` TEXT NOT NULL, `expectedRate` TEXT NOT NULL, `slippageRate` TEXT NOT NULL, PRIMARY KEY(`walletAddress`))",
         "fields": [
           {
             "fieldPath": "walletAddress",
@@ -183,6 +183,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "destAmount",
+            "columnName": "destAmount",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
             "fieldPath": "expectedRate",
             "columnName": "expectedRate",
             "affinity": "TEXT",
@@ -208,7 +214,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"85ffeaeb3603f47b91f9655450291462\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"8a754aec5e6817118bdc55d6231139c8\")"
     ]
   }
 }

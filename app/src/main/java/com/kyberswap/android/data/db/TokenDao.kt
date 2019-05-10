@@ -24,5 +24,6 @@ interface TokenDao {
 
     @get:Query("SELECT * FROM tokens")
     val all: Flowable<List<Token>>
+
 }
 

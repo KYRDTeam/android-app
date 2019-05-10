@@ -152,12 +152,11 @@
                     android:textColor="@color/balance_text_view_color"
                     android:textSize="14sp" />
 
-                <EditText
+                <com.kyberswap.android.presentation.common.ClearFocusEditText
                     android:id="@+id/edtSearch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
                     android:backgroundTint="@color/edt_background_tint"
@@ -169,8 +168,9 @@
 
                 <ImageView
                     android:id="@+id/imgSearch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:scaleType="centerInside"
                     android:src="@drawable/ic_search" />
 
             </LinearLayout>

@@ -16,7 +16,7 @@ import java.math.BigInteger
 import java.util.*
 import javax.inject.Inject
 
-class TokenClient @Inject constructor(private val web3j: Web3j) {
+class SwapClient @Inject constructor(private val web3j: Web3j) {
 
     private fun balanceOf(owner: String): Function {
         return Function(
@@ -30,14 +30,14 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     private fun getExpectedRate(
         srcToken: String,
         destToken: String,
-        srcTokenAmount: BigInteger
+        srcTokenAmount: String
     ): Function {
         return Function(
             "getExpectedRate",
             listOf(
                 Address(srcToken),
                 Address(destToken),
-                Uint256(srcTokenAmount)
+                Uint256(BigInteger(srcTokenAmount))
             ),
             listOf<TypeReference<*>>(
                 object : TypeReference<Uint256>() {
@@ -90,6 +90,29 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         }
     }
 
+
+    @Throws(Exception::class)
+    fun getExpectedRate(
+        walletAddress: String,
+        tokenAddress: String,
+        srcToken: String,
+        destToken: String,
+        srcTokenAmount: String
+    ): List<Uint256> {
+        val function = getExpectedRate(srcToken, destToken, srcTokenAmount)
+        val responseValue = callSmartContractFunction(function, tokenAddress, walletAddress)
+
+        val responses = FunctionReturnDecoder.decode(
+            responseValue, function.outputParameters
+        )
+        val rateResult = ArrayList<Uint256>()
+        for (rates in responses) {
+            val rate = rates as Uint256
+            rateResult.add(rate)
+        }
+        return rateResult
+    }
+
     @Throws(Exception::class)
     fun getBalance(owner: String, token: Token): Token {
         token.currentBalance = if (token.isETH()) {
@@ -101,35 +124,5 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             )
         }
         return token
-    }
-
-    @Throws(Exception::class)
-    fun getExpectedRate(
-        walletAddress: String,
-        contractAddress: String,
-        srcToken: String,
-        destToken: String,
-        srcTokenAmount: BigInteger
-    ): List<String> {
-        val function = getExpectedRate(srcToken, destToken, srcTokenAmount)
-
-        val responseValue = callSmartContractFunction(function, contractAddress, walletAddress)
-
-        val responses = FunctionReturnDecoder.decode(
-            responseValue, function.outputParameters
-        )
-        val rateResult = ArrayList<String>()
-        for (rates in responses) {
-            val rate = rates as Uint256
-            val rateString = Convert.fromWei(
-                BigDecimal(rate.value),
-                Convert.Unit.ETHER
-            ).toPlainString()
-            rateString.toDouble() * 0.97
-            rateResult.add(
-                (rateString.toDouble() * 0.97).toString()
-            )
-        }
-        return rateResult
     }
 }

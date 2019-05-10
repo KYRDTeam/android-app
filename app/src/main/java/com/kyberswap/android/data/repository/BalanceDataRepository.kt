@@ -2,6 +2,7 @@ package com.kyberswap.android.data.repository
 
 import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.db.WalletTokenDao
 import com.kyberswap.android.data.mapper.TokenMapper
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.repository.BalanceRepository
@@ -19,7 +20,8 @@ class BalanceDataRepository @Inject constructor(
     val api: TokenApi,
     private val tokenMapper: TokenMapper,
     private val tokenClient: TokenClient,
-    private val tokenDao: TokenDao
+    private val tokenDao: TokenDao,
+    private val walletTokenDao: WalletTokenDao
 ) :
     BalanceRepository {
 
@@ -88,9 +90,10 @@ class BalanceDataRepository @Inject constructor(
     override fun getChange24hPolling(owner: String): Flowable<Token> {
         return fetchChange24h()
             .toFlowable()
-            .repeatWhen {
-                it.delay(20, TimeUnit.SECONDS)
-            }.retryWhen { throwable ->
+//            .repeatWhen {
+//                it.delay(20, TimeUnit.SECONDS)
+//            }
+            .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
             }
             .flatMapIterable { token -> token }

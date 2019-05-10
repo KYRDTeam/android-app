@@ -2,6 +2,7 @@ package com.kyberswap.android.presentation.splash
 
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
+import android.os.Handler
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -29,13 +30,22 @@ class SplashActivity : BaseActivity() {
         DataBindingUtil.setContentView<ActivitySplashBinding>(this, R.layout.activity_splash)
     }
 
+    private val handler by lazy {
+        Handler()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding.viewModel = viewModel
-        viewModel.prepareData()
-        binding.imageView.setBackgroundResource(R.drawable.progress_animation)
-        val frameAnimation = binding.imageView.background as AnimationDrawable
-        frameAnimation.start()
+        handler.post {
+            binding.imageView.setBackgroundResource(R.drawable.progress_animation)
+            val frameAnimation = binding.imageView.background as AnimationDrawable
+            frameAnimation.start()
+        }
+
+        handler.postDelayed({
+            viewModel.prepareData()
+        }, 300)
 
         viewModel.getWalletStateCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -50,6 +60,11 @@ class SplashActivity : BaseActivity() {
                 }
             }
         })
+    }
+
+    override fun onDestroy() {
+        handler.removeCallbacksAndMessages(null)
+        super.onDestroy()
     }
 
 }
