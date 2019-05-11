@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 9,
-    "identityHash": "aafc056c27e4a930b16df46b6cfadd9c",
+    "identityHash": "14546c824dac68f066091945cdaa4983",
     "entities": [
       {
         "tableName": "tokens",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`timestamp` INTEGER NOT NULL, `tokenSymbol` TEXT NOT NULL, `tokenName` TEXT NOT NULL, `tokenAddress` TEXT NOT NULL, `tokenDecimal` INTEGER NOT NULL, `rateEthNow` TEXT NOT NULL, `changeEth24h` TEXT NOT NULL, `rateUsdNow` TEXT NOT NULL, `changeUsd24h` TEXT NOT NULL, `currentBalance` TEXT NOT NULL, PRIMARY KEY(`tokenSymbol`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`timestamp` INTEGER NOT NULL, `tokenSymbol` TEXT NOT NULL, `tokenName` TEXT NOT NULL, `tokenAddress` TEXT NOT NULL, `tokenDecimal` INTEGER NOT NULL, `rateEthNow` TEXT NOT NULL, `changeEth24h` TEXT NOT NULL, `rateUsdNow` TEXT NOT NULL, `changeUsd24h` TEXT NOT NULL, `currentBalance` TEXT NOT NULL, `cgId` TEXT NOT NULL, `gasApprove` TEXT NOT NULL, `gasLimit` TEXT NOT NULL, `listingTime` INTEGER NOT NULL, `priority` INTEGER NOT NULL, PRIMARY KEY(`tokenSymbol`))",
         "fields": [
           {
             "fieldPath": "timestamp",
@@ -66,6 +66,36 @@
             "fieldPath": "currentBalance",
             "columnName": "currentBalance",
             "affinity": "TEXT",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "cgId",
+            "columnName": "cgId",
+            "affinity": "TEXT",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "gasApprove",
+            "columnName": "gasApprove",
+            "affinity": "TEXT",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "gasLimit",
+            "columnName": "gasLimit",
+            "affinity": "TEXT",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "listingTime",
+            "columnName": "listingTime",
+            "affinity": "INTEGER",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "INTEGER",
             "notNull": true
   
         ],
@@ -144,7 +174,7 @@
       },
       {
         "tableName": "swaps",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`walletAddress` TEXT NOT NULL, `sourceAmount` TEXT NOT NULL, `destAmount` TEXT NOT NULL, `expectedRate` TEXT NOT NULL, `slippageRate` TEXT NOT NULL, `source_timestamp` INTEGER NOT NULL, `source_tokenSymbol` TEXT NOT NULL, `source_tokenName` TEXT NOT NULL, `source_tokenAddress` TEXT NOT NULL, `source_tokenDecimal` INTEGER NOT NULL, `source_rateEthNow` TEXT NOT NULL, `source_changeEth24h` TEXT NOT NULL, `source_rateUsdNow` TEXT NOT NULL, `source_changeUsd24h` TEXT NOT NULL, `source_currentBalance` TEXT NOT NULL, `dest_timestamp` INTEGER NOT NULL, `dest_tokenSymbol` TEXT NOT NULL, `dest_tokenName` TEXT NOT NULL, `dest_tokenAddress` TEXT NOT NULL, `dest_tokenDecimal` INTEGER NOT NULL, `dest_rateEthNow` TEXT NOT NULL, `dest_changeEth24h` TEXT NOT NULL, `dest_rateUsdNow` TEXT NOT NULL, `dest_changeUsd24h` TEXT NOT NULL, `dest_currentBalance` TEXT NOT NULL, PRIMARY KEY(`walletAddress`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`walletAddress` TEXT NOT NULL, `sourceAmount` TEXT NOT NULL, `destAmount` TEXT NOT NULL, `expectedRate` TEXT NOT NULL, `slippageRate` TEXT NOT NULL, `source_timestamp` INTEGER NOT NULL, `source_tokenSymbol` TEXT NOT NULL, `source_tokenName` TEXT NOT NULL, `source_tokenAddress` TEXT NOT NULL, `source_tokenDecimal` INTEGER NOT NULL, `source_rateEthNow` TEXT NOT NULL, `source_changeEth24h` TEXT NOT NULL, `source_rateUsdNow` TEXT NOT NULL, `source_changeUsd24h` TEXT NOT NULL, `source_currentBalance` TEXT NOT NULL, `source_cgId` TEXT NOT NULL, `source_gasApprove` TEXT NOT NULL, `source_gasLimit` TEXT NOT NULL, `source_listingTime` INTEGER NOT NULL, `source_priority` INTEGER NOT NULL, `dest_timestamp` INTEGER NOT NULL, `dest_tokenSymbol` TEXT NOT NULL, `dest_tokenName` TEXT NOT NULL, `dest_tokenAddress` TEXT NOT NULL, `dest_tokenDecimal` INTEGER NOT NULL, `dest_rateEthNow` TEXT NOT NULL, `dest_changeEth24h` TEXT NOT NULL, `dest_rateUsdNow` TEXT NOT NULL, `dest_changeUsd24h` TEXT NOT NULL, `dest_currentBalance` TEXT NOT NULL, `dest_cgId` TEXT NOT NULL, `dest_gasApprove` TEXT NOT NULL, `dest_gasLimit` TEXT NOT NULL, `dest_listingTime` INTEGER NOT NULL, `dest_priority` INTEGER NOT NULL, PRIMARY KEY(`walletAddress`))",
         "fields": [
           {
             "fieldPath": "walletAddress",
@@ -237,6 +267,36 @@
             "notNull": true
   ,
           {
+            "fieldPath": "tokenSource.cgId",
+            "columnName": "source_cgId",
+            "affinity": "TEXT",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "tokenSource.gasApprove",
+            "columnName": "source_gasApprove",
+            "affinity": "TEXT",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "tokenSource.gasLimit",
+            "columnName": "source_gasLimit",
+            "affinity": "TEXT",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "tokenSource.listingTime",
+            "columnName": "source_listingTime",
+            "affinity": "INTEGER",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "tokenSource.priority",
+            "columnName": "source_priority",
+            "affinity": "INTEGER",
+            "notNull": true
+  ,
+          {
             "fieldPath": "tokenDest.timestamp",
             "columnName": "dest_timestamp",
             "affinity": "INTEGER",
@@ -294,6 +354,36 @@
             "fieldPath": "tokenDest.currentBalance",
             "columnName": "dest_currentBalance",
             "affinity": "TEXT",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "tokenDest.cgId",
+            "columnName": "dest_cgId",
+            "affinity": "TEXT",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "tokenDest.gasApprove",
+            "columnName": "dest_gasApprove",
+            "affinity": "TEXT",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "tokenDest.gasLimit",
+            "columnName": "dest_gasLimit",
+            "affinity": "TEXT",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "tokenDest.listingTime",
+            "columnName": "dest_listingTime",
+            "affinity": "INTEGER",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "tokenDest.priority",
+            "columnName": "dest_priority",
+            "affinity": "INTEGER",
             "notNull": true
   
         ],
@@ -405,7 +495,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"aafc056c27e4a930b16df46b6cfadd9c\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"14546c824dac68f066091945cdaa4983\")"
     ]
   }
 }

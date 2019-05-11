@@ -231,7 +231,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/color_bg_gray"
-                    android:paddingBottom="40dp">
+                    android:paddingBottom="80dp">
 
                     <TextView
                         android:id="@+id/tvRate"

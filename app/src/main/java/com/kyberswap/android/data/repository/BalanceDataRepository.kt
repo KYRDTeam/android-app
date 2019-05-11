@@ -77,14 +77,37 @@ class BalanceDataRepository @Inject constructor(
             response.entries.associate { it.key to tokenMapper.transform(it.value) }
 
 
-        return Singles.zip(
-            singleEthSource,
-            singleUsdSource,
-            singleChange24hSource
-        ) { eth, usd, change24h ->
-            updateRate24h(eth, usd, change24h)
-
-            .map { it.values.toList() }
+        return api.internalCurrencies()
+            .map { it.data }
+            .toFlowable()
+            .flatMapIterable { tokenCurrency -> tokenCurrency }
+            .doOnNext { tokenCurrency ->
+                var tokenBySymbol = tokenDao.getTokenBySymbol(tokenCurrency.symbol)
+                tokenBySymbol = tokenBySymbol?.with(tokenCurrency)
+                if (tokenBySymbol != null) {
+                    tokenDao.updateToken(tokenBySymbol)
+         else {
+                    tokenDao.insertToken(Token(tokenCurrency))
+        
+    .toList()
+            .flatMap {
+                Singles.zip(
+                    singleEthSource,
+                    singleUsdSource,
+                    singleChange24hSource
+                ) { eth, usd, change24h ->
+                    updateRate24h(eth, usd, change24h)
+        
+                    .map { it.values.toList() }
+    
+//        return Singles.zip(
+//            singleEthSource,
+//            singleUsdSource,
+//            singleChange24hSource
+//        ) { eth, usd, change24h ->
+//            updateRate24h(eth, usd, change24h)
+//
+//            .map { it.values.toList() }
     }
 
     override fun getChange24hPolling(owner: String): Flowable<Token> {

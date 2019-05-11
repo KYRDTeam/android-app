@@ -1,9 +1,11 @@
 package com.kyberswap.android.presentation.main.swap
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateInterpolator
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.jakewharton.rxbinding3.widget.checkedChanges
@@ -22,6 +24,7 @@ import com.kyberswap.android.util.ext.*
 import net.cachapa.expandablelayout.ExpandableLayout
 import javax.inject.Inject
 import kotlin.math.absoluteValue
+
 
 class SwapFragment : BaseFragment() {
 
@@ -84,10 +87,15 @@ class SwapFragment : BaseFragment() {
 
         binding.expandableLayout.setOnExpansionUpdateListener { _, state ->
             if (state == ExpandableLayout.State.EXPANDED) {
-                binding.scView.postDelayed(
-                    { binding.scView.fullScroll(View.FOCUS_DOWN) },
-                    300
+                val animator = ObjectAnimator.ofInt(
+                    binding.scView,
+                    "scrollY",
+                    binding.tvRevertNotification.bottom
                 )
+
+                animator.duration = 300
+                animator.interpolator = AccelerateInterpolator()
+                animator.start()
     
 
 
@@ -227,7 +235,8 @@ class SwapFragment : BaseFragment() {
             binding.edtCustom.textChanges().skipInitialValue()
                 .observeOn(schedulerProvider.ui())
                 .subscribe {
-                    binding.tvRevertNotification.text = getRevertNotification(R.id.rbCustom)
+                    binding.tvRevertNotification.text =
+                        getRevertNotification(R.id.rbCustom)
         
         )
 

@@ -34,6 +34,7 @@
         <item name="colorControlActivated">#acb3c6</item>
         <item name="colorControlHighlight">#acb3c6</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+
     </style>
 
     <style name="TextAppearance.Montserrat.Medium" parent="android:TextAppearance">

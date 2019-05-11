@@ -46,6 +46,7 @@ class TokenAdapter(
     fun submitFilterList(tokens: List<Token>) {
         submitList(listOf())
         submitList(tokens)
+        notifyDataSetChanged()
     }
 
 
