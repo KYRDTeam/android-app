@@ -1,7 +1,10 @@
 package com.kyberswap.android.data.repository
 
+import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.mapper.GasMapper
+import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.repository.SwapRepository
@@ -10,13 +13,21 @@ import com.kyberswap.android.domain.usecase.wallet.SaveSwapDataTokenUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSwapUseCase
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Single
 import javax.inject.Inject
 
 
 class SwapDataRepository @Inject constructor(
     private val swapDao: SwapDao,
-    private val tokenDao: TokenDao
+    private val tokenDao: TokenDao,
+    private val api: SwapApi,
+    private val mapper: GasMapper
 ) : SwapRepository {
+    override fun getGasPrice(): Single<Gas> {
+        return api.getGasPrice().map { it.data }
+            .map { mapper.transform(it) }
+    }
+
     override fun saveSwap(param: SaveSwapUseCase.Param): Completable {
         return Completable.fromCallable {
             swapDao.insertSwap(param.swap)

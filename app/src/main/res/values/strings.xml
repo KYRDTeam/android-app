@@ -57,9 +57,11 @@
     <string name="verify">Continue</string>
     <string name="word_2">Word #2</string>
     <string name="word_6">Word #6</string>
+    <string name="kyberswap">KyberSwap</string>
     <string name="backup_message">We will give you a list of 12 random words. Please write down on paper and keep safe.\n\n This paper is the only way to restore your Kyber Wallet if you lose your phone or forget your password.</string>
     <string name="bold_font_path">fonts/Montserrat-Bold.ttf</string>
     <string name="semi_bold_font_path">fonts/Montserrat-Bold.ttf</string>
+    <string name="semi_bold_italic_font_path">fonts/Montserrat-SemiBoldItalic.ttf</string>
     <string name="verify_word_description">To make sure you have written down all of your backup words. Please enter the following.</string>
     <string name="backup_success">Backup successfully</string>
     <string name="backup_json">JSON</string>
@@ -82,7 +84,6 @@
     <string name="kyber_list">Kyber List</string>
     <string name="other">Other</string>
     <string name="name">Name</string>
-    <string name="kyberswap">KyberSwap</string>
     <string name="profile">Profile</string>
     <string name="setting">Setting</string>
     <string name="transactions">Transactions</string>
@@ -112,6 +113,19 @@
     <string name="rate">Rate</string>
     <string name="default_source_amount">0.0001</string>
     <string name="percentage_format" formatted="false" translatable="false">"%.2f %%"</string>
+    <string name="dest_balance_usd_format" formatted="false" translatable="false">"%.2f USD"</string>
+    <string name="default_dest_balance_usd">≈ 0.0 USD</string>
+    <string name="gas_fee_gwei">GAS fee (Gwei)</string>
+    <string name="gas_fast">%s\n FAST</string>
+    <string name="gas_regular">%s\n REGULAR</string>
+    <string name="gas_slow">%s\n SLOW</string>
+    <string name="swap_rate_condition">Still proceed if %s-%s rate goes down by:</string>
+    <string name="three_percentage">3%</string>
+    <string name="percentage">%</string>
+    <string name="custom_value">Custom:</string>
+    <string name="rate_revert_notification">Transaction will be reverted if rate of %s-%s is lower than %.2f (Current rate %.2f)</string>
+    <string name="swap_continue">Continue</string>
+    <string name="swap_rate_notification">This rate is %.2f lower than current Market</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
+import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
 import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSwapDataUseCase
@@ -22,7 +23,8 @@ class SwapViewModel @Inject constructor(
     private val getExpectedRateUseCase: GetExpectedRateUseCase,
     private val getSwapData: GetSwapDataUseCase,
     private val getMarketRate: GetMarketRateUseCase,
-    private val saveSwapUseCase: SaveSwapUseCase
+    private val saveSwapUseCase: SaveSwapUseCase,
+    private val getGasPriceUseCase: GetGasPriceUseCase
 ) : ViewModel() {
 
     private val _getSwapCallback = MutableLiveData<Event<GetSwapState>>()
@@ -33,6 +35,11 @@ class SwapViewModel @Inject constructor(
     private val _getExpectedRateCallback = MutableLiveData<Event<GetExpectedRateState>>()
     val getExpectedRateCallback: LiveData<Event<GetExpectedRateState>>
         get() = _getExpectedRateCallback
+
+
+    private val _getGetGasPriceStateCallback = MutableLiveData<Event<GetGasPriceState>>()
+    val getGetGasPriceStateCallback: LiveData<Event<GetGasPriceState>>
+        get() = _getGetGasPriceStateCallback
 
 
     val compositeDisposable by lazy {
@@ -70,6 +77,20 @@ class SwapViewModel @Inject constructor(
                 _getSwapCallback.value = Event(GetSwapState.ShowError(it.localizedMessage))
             },
             GetSwapDataUseCase.Param(address)
+        )
+    }
+
+    fun getGasPrice() {
+        getGasPriceUseCase.execute(
+            Consumer {
+                _getGetGasPriceStateCallback.value = Event(GetGasPriceState.Success(it))
+            },
+            Consumer {
+                it.printStackTrace()
+                _getGetGasPriceStateCallback.value =
+                    Event(GetGasPriceState.ShowError(it.localizedMessage))
+            },
+            null
         )
     }
 

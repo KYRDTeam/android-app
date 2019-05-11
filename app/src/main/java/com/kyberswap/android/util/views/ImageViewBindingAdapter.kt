@@ -2,6 +2,7 @@ package com.kyberswap.android.util.views
 
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.view.View
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
@@ -85,6 +86,17 @@ object ImageViewBindingAdapter {
             ""
         ).error(tokenDrawable).into(view)
 
+
+    }
+
+    @BindingAdapter("app:percentageRate")
+    @JvmStatic
+    fun percentageRate(view: ImageView, double: Double) {
+        if (double > -0.1) {
+            view.visibility = View.GONE
+        } else {
+            view.visibility = View.VISIBLE
+        }
 
     }
 }
