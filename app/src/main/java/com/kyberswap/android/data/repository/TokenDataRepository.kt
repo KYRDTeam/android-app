@@ -2,7 +2,7 @@ package com.kyberswap.android.data.repository
 
 import android.content.Context
 import com.kyberswap.android.R
-import com.kyberswap.android.data.api.home.RateApi
+import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.db.RateDao
 import com.kyberswap.android.data.mapper.RateMapper
 import com.kyberswap.android.domain.model.Rate
@@ -18,7 +18,7 @@ import kotlin.math.pow
 
 class TokenDataRepository @Inject constructor(
     private val tokenClient: TokenClient,
-    private val api: RateApi,
+    private val api: SwapApi,
     private val rateMapper: RateMapper,
     private val rateDao: RateDao,
     private val context: Context

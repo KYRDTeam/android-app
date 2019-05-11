@@ -95,9 +95,10 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         token.currentBalance = if (token.isETH()) {
             Convert.fromWei(BigDecimal(getEthBalance(owner)), Convert.Unit.ETHER)
  else {
-            Convert.fromWei(
-                getBalance(owner, token.tokenAddress) ?: BigDecimal.ZERO,
-                Convert.Unit.ETHER
+            (getBalance(owner, token.tokenAddress) ?: BigDecimal.ZERO).divide(
+                BigDecimal(10).pow(
+                    token.tokenDecimal
+                )
             )
 
         return token

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.BR
@@ -17,11 +18,10 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
-import com.kyberswap.android.util.ext.percentage
-import com.kyberswap.android.util.ext.showDrawer
-import com.kyberswap.android.util.ext.swap
+import com.kyberswap.android.util.ext.*
 import net.cachapa.expandablelayout.ExpandableLayout
 import javax.inject.Inject
+import kotlin.math.absoluteValue
 
 class SwapFragment : BaseFragment() {
 
@@ -65,8 +65,11 @@ class SwapFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        binding.walletName = wallet?.name
         binding.tvAdvanceOption.setOnClickListener {
             binding.expandableLayout.expand()
+            binding.tvRevertNotification.text =
+                getRevertNotification(binding.rgRate.checkedRadioButtonId)
 
         binding.imgClose.setOnClickListener {
             binding.expandableLayout.collapse()
@@ -103,8 +106,6 @@ class SwapFragment : BaseFragment() {
 
 
 
-
-
         viewModel.compositeDisposable.add(binding.edtSource.textChanges()
             .skipInitialValue()
             .observeOn(schedulerProvider.ui())
@@ -128,7 +129,6 @@ class SwapFragment : BaseFragment() {
                             binding.swap = state.swap
                             getRate(state.swap)
                 
-
             
                     is GetSwapState.ShowError -> {
 
@@ -149,6 +149,21 @@ class SwapFragment : BaseFragment() {
                         expectedRate = state.list[0]
                         binding.percentageRate = expectedRate.percentage(marketRate)
                         binding.swap = swap
+                        if (expectedRate != null && !binding.edtSource.text.isNullOrEmpty()) {
+                            val expectedDestAmount =
+                                binding.edtSource.textToDouble() * expectedRate!!.toDouble()
+                            binding.edtDest.setText(
+                                expectedDestAmount.toString()
+                            )
+                            if (swap != null) {
+                                binding.tvValueInUSD.text =
+                                    getString(
+                                        R.string.dest_balance_usd_format,
+                                        expectedDestAmount * swap.tokenDest.rateUsdNow.toDouble()
+                                    )
+                    
+
+                
             
                     is GetExpectedRateState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -171,6 +186,86 @@ class SwapFragment : BaseFragment() {
         
     
 )
+
+        binding.rbFast.isChecked = true
+        binding.rbDefaultRate.isChecked = true
+
+        viewModel.compositeDisposable.add(binding.rbCustom.checkedChanges().skipInitialValue()
+            .observeOn(schedulerProvider.ui())
+            .subscribe {
+                binding.edtCustom.isEnabled = it
+                if (it) {
+                    binding.edtCustom.requestFocus()
+         else {
+                    binding.edtCustom.setText("")
+        
+
+    )
+
+        viewModel.compositeDisposable.add(binding.rgRate.checkedChanges()
+            .observeOn(schedulerProvider.ui())
+            .subscribe { id ->
+                binding.tvRevertNotification.text = getRevertNotification(id)
+    )
+
+        viewModel.getGasPrice()
+
+        viewModel.getGetGasPriceStateCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetGasPriceState.Success -> {
+                        binding.gas = state.gas
+            
+                    is GetGasPriceState.ShowError -> {
+
+            
+        
+    
+)
+
+        viewModel.compositeDisposable.add(
+            binding.edtCustom.textChanges().skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
+                    binding.tvRevertNotification.text = getRevertNotification(R.id.rbCustom)
+        
+        )
+
+        binding.imgInfo.setOnClickListener {
+            showAlert(
+                String.format(
+                    getString(R.string.swap_rate_notification),
+                    expectedRate.percentage(marketRate).absoluteValue
+                )
+            )
+
+
+    }
+
+    private fun getRevertNotification(id: Int): String {
+        return when (id) {
+            R.id.rbDefaultRate -> {
+                String.format(
+                    getString(R.string.rate_revert_notification),
+                    binding.tvSource.text,
+                    binding.tvDest.text,
+                    0.97 * expectedRate.toDoubleOrDefaultZero(),
+                    expectedRate.toDoubleOrDefaultZero()
+                )
+    
+
+            R.id.rbCustom -> {
+                String.format(
+                    getString(R.string.rate_revert_notification),
+                    binding.tvSource.text,
+                    binding.tvDest.text,
+                    (1 - binding.edtCustom.text.toString().toDoubleOrDefaultZero() / 100)
+                        * expectedRate.toDoubleOrDefaultZero(),
+                    expectedRate.toDoubleOrDefaultZero()
+                )
+    
+            else -> ""
+
     }
 
     private fun getRate(swap: Swap) {
@@ -201,6 +296,11 @@ class SwapFragment : BaseFragment() {
 
     private fun getMarketRate(source: String, dest: String) {
         viewModel.getMarketRate(source, dest)
+    }
+
+    override fun onDestroyView() {
+        viewModel.compositeDisposable.dispose()
+        super.onDestroyView()
     }
 
     companion object {

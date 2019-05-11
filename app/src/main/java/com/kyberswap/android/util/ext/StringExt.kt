@@ -21,6 +21,16 @@ fun String?.percentage(other: String?): Double {
     }
 }
 
+fun String?.toDoubleOrDefaultZero(): Double {
+    if (this.isNullOrEmpty()) return 0.0
+    return try {
+        this.toDouble()
+    } catch (ex: Exception) {
+        ex.printStackTrace()
+        0.0
+    }
+}
+
 fun String.updatePrecision(): String {
     return (this.toDouble() / 10.0.pow(18)).toString()
 }

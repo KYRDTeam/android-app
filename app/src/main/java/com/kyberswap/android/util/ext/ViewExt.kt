@@ -16,3 +16,13 @@ fun EditText.swap(other: EditText) {
     this.text = other.text
     other.text = temp
 }
+
+fun EditText.textToDouble(): Double {
+    if (this.text.isNullOrEmpty()) return 0.0
+    return try {
+        text.toString().toDouble()
+    } catch (ex: NumberFormatException) {
+        ex.printStackTrace()
+        0.0
+    }
+}
