@@ -222,6 +222,9 @@ dependencies {
     implementation 'com.jaeger.statusbarutil:library:1.5.1'
 
     implementation 'com.github.florent37:viewtooltip:1.2.0'
+
+    implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.3.0'
+
 }
 
 detekt {

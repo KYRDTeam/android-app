@@ -143,7 +143,7 @@ class BalanceFragment : BaseFragment() {
         }
 
         viewModel.compositeDisposable.add(
-            binding.edtSearch.textChanges().debounce(
+            binding.edtSearch.textChanges().skipInitialValue().debounce(
                 250,
                 TimeUnit.MILLISECONDS
             )
