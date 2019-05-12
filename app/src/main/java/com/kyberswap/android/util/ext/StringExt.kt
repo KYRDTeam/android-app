@@ -1,5 +1,6 @@
 package com.kyberswap.android.util.ext
 
+import java.math.BigDecimal
 import kotlin.math.pow
 
 fun String.toWalletAddress(): String {
@@ -21,13 +22,13 @@ fun String?.percentage(other: String?): Double {
     }
 }
 
-fun String?.toDoubleOrDefaultZero(): Double {
-    if (this.isNullOrEmpty()) return 0.0
+fun String?.toBigDecimalOrDefaultZero(): BigDecimal {
+    if (this.isNullOrEmpty()) return BigDecimal.ZERO
     return try {
-        this.toDouble()
+        BigDecimal(this)
     } catch (ex: Exception) {
         ex.printStackTrace()
-        0.0
+        BigDecimal.ZERO
     }
 }
 

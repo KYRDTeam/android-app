@@ -1,7 +1,9 @@
 package com.kyberswap.android.domain.repository
 
+import com.kyberswap.android.domain.model.Cap
 import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.Swap
+import com.kyberswap.android.domain.usecase.swap.GetCapUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSwapDataTokenUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSwapUseCase
@@ -18,4 +20,6 @@ interface SwapRepository {
     fun saveSwap(param: SaveSwapUseCase.Param): Completable
 
     fun getGasPrice(): Single<Gas>
+
+    fun getCap(param: GetCapUseCase.Param): Single<Cap>
 }

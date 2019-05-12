@@ -74,6 +74,7 @@
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="fullSensor"
             tools:replace="screenOrientation" />
+        <activity android:name=".presentation.main.swap.SwapConfirmActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

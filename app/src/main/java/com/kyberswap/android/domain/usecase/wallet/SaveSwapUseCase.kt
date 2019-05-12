@@ -3,7 +3,6 @@ package com.kyberswap.android.domain.usecase.wallet
 import androidx.annotation.VisibleForTesting
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Swap
-import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.repository.SwapRepository
 import com.kyberswap.android.domain.usecase.CompletableUseCase
 import io.reactivex.Completable

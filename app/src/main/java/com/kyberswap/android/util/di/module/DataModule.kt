@@ -4,6 +4,7 @@ import android.content.Context
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.db.*
+import com.kyberswap.android.data.mapper.CapMapper
 import com.kyberswap.android.data.mapper.GasMapper
 import com.kyberswap.android.data.mapper.RateMapper
 import com.kyberswap.android.data.mapper.TokenMapper
@@ -63,7 +64,8 @@ object DataModule {
         swapDao: SwapDao,
         tokenDao: TokenDao,
         api: SwapApi,
-        mapper: GasMapper
+        mapper: GasMapper,
+        capMapper: CapMapper
     ): SwapRepository =
-        SwapDataRepository(swapDao, tokenDao, api, mapper)
+        SwapDataRepository(swapDao, tokenDao, api, mapper, capMapper)
 }
