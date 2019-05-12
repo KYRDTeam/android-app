@@ -3,11 +3,14 @@ package com.kyberswap.android.data.repository
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.mapper.CapMapper
 import com.kyberswap.android.data.mapper.GasMapper
+import com.kyberswap.android.domain.model.Cap
 import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.repository.SwapRepository
+import com.kyberswap.android.domain.usecase.swap.GetCapUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSwapDataTokenUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSwapUseCase
@@ -21,8 +24,14 @@ class SwapDataRepository @Inject constructor(
     private val swapDao: SwapDao,
     private val tokenDao: TokenDao,
     private val api: SwapApi,
-    private val mapper: GasMapper
+    private val mapper: GasMapper,
+    private val capMapper: CapMapper
 ) : SwapRepository {
+
+    override fun getCap(param: GetCapUseCase.Param): Single<Cap> {
+        return api.getCap(param.walletAddress).map { capMapper.transform(it) }
+    }
+
     override fun getGasPrice(): Single<Gas> {
         return api.getGasPrice().map { it.data }
             .map { mapper.transform(it) }
