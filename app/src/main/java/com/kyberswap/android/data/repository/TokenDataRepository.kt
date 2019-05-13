@@ -5,7 +5,6 @@ import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.db.RateDao
 import com.kyberswap.android.data.mapper.RateMapper
-import com.kyberswap.android.domain.model.Rate
 import com.kyberswap.android.domain.repository.TokenRepository
 import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
@@ -39,48 +38,6 @@ class TokenDataRepository @Inject constructor(
                 rate.source == param.sourceToken && rate.dest == param.destToken
             }.map {
                 it.rate
-            }
-
-//        return if (rateDao.all.blockingGet().isNullOrEmpty()) {
-//            api.getRate()
-//                .map { it.data }
-//                .toFlowable()
-//                .flatMapIterable { token -> token }
-//                .map { rateMapper.transform(it) }
-//                .toList()
-//                .doAfterSuccess {
-//                    rateDao.insertRates(it)
-//                }
-//                .map {
-//                    val first = it.firstOrNull { rate ->
-//                        rate.source == param.sourceToken && rate.dest == param.destToken
-//                    }
-//                    first?.rate ?: "0"
-//                }
-//        } else {
-//            Single.fromCallable {
-//                rateDao.all.filter {
-//
-//                }
-//                rateDao.getRateForTokenPair(param.sourceToken, param.destToken)
-//            }.map {
-//                it.rate
-//            }
-//
-//
-//        }
-
-
-    }
-
-    private fun fetchMarketRate(): Single<List<Rate>> {
-        return api.getRate().map { it.data }
-            .toFlowable()
-            .flatMapIterable { token -> token }
-            .map { rateMapper.transform(it) }
-            .toList()
-            .doAfterSuccess {
-                rateDao.insertRates(it)
             }
     }
 

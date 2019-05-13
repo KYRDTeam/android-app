@@ -4,6 +4,7 @@ import androidx.annotation.NonNull
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.kyberswap.android.data.api.currencies.TokenCurrencyEntity
 import com.kyberswap.android.data.api.token.TokenEntity
 import com.kyberswap.android.data.db.DataTypeConverter
 import com.kyberswap.android.util.ext.toDisplayNumber
@@ -27,7 +28,13 @@ data class Token(
     @TypeConverters(DataTypeConverter::class)
     val changeUsd24h: BigDecimal = BigDecimal.ZERO,
     @TypeConverters(DataTypeConverter::class)
-    var currentBalance: BigDecimal = BigDecimal.ZERO
+    var currentBalance: BigDecimal = BigDecimal.ZERO,
+    val cgId: String = "",
+    @TypeConverters(DataTypeConverter::class)
+    val gasApprove: BigDecimal = BigDecimal.ZERO,
+    val gasLimit: String = "",
+    val listingTime: Long = 0,
+    val priority: Boolean = false
 ) {
     constructor(entity: TokenEntity) : this(
         entity.timestamp,
@@ -41,6 +48,59 @@ data class Token(
         entity.changeUsd24h
     )
 
+    constructor(entity: TokenCurrencyEntity) : this(
+        tokenSymbol = entity.symbol,
+        tokenName = entity.name,
+        tokenAddress = entity.address,
+        tokenDecimal = entity.decimals,
+        cgId = entity.cgId,
+        gasApprove = entity.gasApprove,
+        gasLimit = entity.gasLimit,
+        listingTime = entity.listingTime,
+        priority = entity.priority
+
+    )
+
+    fun with(entity: TokenEntity): Token {
+        return Token(
+            entity.timestamp,
+            entity.tokenSymbol,
+            entity.tokenName,
+            entity.tokenAddress,
+            entity.tokenDecimal,
+            entity.rateEthNow,
+            entity.changeEth24h,
+            entity.rateUsdNow,
+            entity.changeUsd24h,
+            this.currentBalance,
+            this.cgId,
+            this.gasApprove,
+            this.gasLimit,
+            this.listingTime,
+            this.priority
+        )
+    }
+
+    fun with(entity: TokenCurrencyEntity): Token {
+        return Token(
+            this.timestamp,
+            this.tokenSymbol,
+            this.tokenName,
+            this.tokenAddress,
+            this.tokenDecimal,
+            this.rateEthNow,
+            this.changeEth24h,
+            this.rateUsdNow,
+            this.changeUsd24h,
+            this.currentBalance,
+            entity.cgId,
+            entity.gasApprove,
+            entity.gasLimit,
+            entity.listingTime,
+            entity.priority
+        )
+    }
+
     val displayRateEthNow: String
         get() = rateEthNow.toDisplayNumber()
     val displayChangeEth24h: String
@@ -52,6 +112,9 @@ data class Token(
 
     val displayCurrentBalance: String
         get() = currentBalance.toDisplayNumber()
+
+    val displayGasApprove: String
+        get() = gasApprove.toDisplayNumber()
 
     fun isETH(): Boolean {
         return tokenSymbol.toLowerCase() == ETH_SYMBOL.toLowerCase()
