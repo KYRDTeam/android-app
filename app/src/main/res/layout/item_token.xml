@@ -74,7 +74,7 @@
                     android:layout_height="32dp"
                     android:layout_marginStart="14dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/ic_dai"
+                    android:src="@drawable/token_default"
                     app:identifier="@{token.tokenSymbol}"
                     tools:layout_editor_absoluteX="55dp"
                     tools:layout_editor_absoluteY="152dp" />

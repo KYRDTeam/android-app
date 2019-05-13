@@ -60,14 +60,18 @@ object ImageViewBindingAdapter {
         if (identifier == null) return
         val resourceIcon: Int?
         try {
+
             resourceIcon = view.context.resources.getIdentifier(
                 identifier.toLowerCase(),
                 "drawable",
                 view.context.packageName
             )
-            Glide.with(view).load(
-                resourceIcon
-            ).error(R.drawable.token_default).into(view)
+            if (resourceIcon == 0) {
+                Glide.with(view).load(R.drawable.token_default).error(R.drawable.token_default)
+                    .into(view)
+            } else {
+                Glide.with(view).load(resourceIcon).error(R.drawable.token_default).into(view)
+            }
         } catch (exception: Exception) {
             exception.printStackTrace()
         }
