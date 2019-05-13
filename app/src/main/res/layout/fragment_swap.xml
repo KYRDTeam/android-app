@@ -231,7 +231,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/color_bg_gray"
-                    android:paddingBottom="40dp">
+                    android:paddingBottom="80dp">
 
                     <TextView
                         android:id="@+id/tvRate"
@@ -518,7 +518,7 @@
                         </net.cachapa.expandablelayout.ExpandableLayout>
 
                         <TextView
-                            android:id="@+id/textView17"
+                            android:id="@+id/tvContinue"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="15dp"

@@ -9,6 +9,7 @@ import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.presentation.landing.LandingActivity
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.balance.BalanceAddressFragment
+import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
 import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
 import com.kyberswap.android.presentation.wallet.BackupWalletActivity
@@ -83,6 +84,10 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
             WITHOUT_ANIMATION,
             container
         )
+    }
+
+    fun navigateToSwapConfirmationScreen() {
+        activity.startActivity(SwapConfirmActivity.newIntent(activity))
     }
 
     companion object {

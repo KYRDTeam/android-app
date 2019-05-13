@@ -29,6 +29,7 @@ import org.consenlabs.tokencore.wallet.WalletManager
 import java.io.File
 import javax.inject.Inject
 
+
 class MainActivity : BaseActivity(), KeystoreStorage {
     @Inject
     lateinit var navigator: Navigator

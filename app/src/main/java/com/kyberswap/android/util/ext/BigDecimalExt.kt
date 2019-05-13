@@ -3,7 +3,7 @@ package com.kyberswap.android.util.ext
 import java.math.BigDecimal
 
 fun BigDecimal.toDisplayNumber(): String {
-    val stringNumber = this.toString()
+    val stringNumber = this.toPlainString()
     val list = stringNumber.split(".")
     if (list.size == 1) return stringNumber
     else {
