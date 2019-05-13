@@ -18,7 +18,8 @@ import com.kyberswap.android.presentation.base.DataBoundListSwipeAdapter
 import com.kyberswap.android.presentation.base.DataBoundViewHolder
 
 class TokenAdapter(
-    appExecutors: AppExecutors
+    appExecutors: AppExecutors,
+    private val onTokenClick: ((Token) -> Unit)?
 ) : DataBoundListSwipeAdapter<Token, ItemTokenBinding>(
     appExecutors,
     diffCallback = object : DiffUtil.ItemCallback<Token>() {
@@ -62,6 +63,9 @@ class TokenAdapter(
 
     override fun bind(binding: ItemTokenBinding, item: Token) {
         binding.setVariable(BR.token, item)
+        binding.root.setOnClickListener {
+            onTokenClick?.invoke(item)
+
         binding.btnBuy.setOnClickListener {
             Toast.makeText(binding.root.context, "Buy", Toast.LENGTH_SHORT).show()
             binding.swipe.close(true)
@@ -81,7 +85,6 @@ class TokenAdapter(
                 mItemManger.closeAllExcept(layout)
     
 )
-
 
         val drawable = when (item.change24hStatus()) {
             Token.UP -> R.drawable.ic_arrow_up

@@ -1,5 +1,6 @@
 package com.kyberswap.android.domain.model
 
+import android.os.Parcelable
 import androidx.annotation.NonNull
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -8,9 +9,11 @@ import com.kyberswap.android.data.api.currencies.TokenCurrencyEntity
 import com.kyberswap.android.data.api.token.TokenEntity
 import com.kyberswap.android.data.db.DataTypeConverter
 import com.kyberswap.android.util.ext.toDisplayNumber
+import kotlinx.android.parcel.Parcelize
 import java.math.BigDecimal
 
 @Entity(tableName = "tokens")
+@Parcelize
 data class Token(
     val timestamp: Long = 0,
     @NonNull
@@ -35,7 +38,7 @@ data class Token(
     val gasLimit: String = "",
     val listingTime: Long = 0,
     val priority: Boolean = false
-) {
+) : Parcelable {
     constructor(entity: TokenEntity) : this(
         entity.timestamp,
         entity.tokenSymbol,

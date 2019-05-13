@@ -207,8 +207,8 @@ class SwapViewModel @Inject constructor(
     }
 
 
-    fun customRateThreshold(customRate: String) {
-        (1.toBigDecimal() - customRate.toBigDecimalOrDefaultZero() / 100.toBigDecimal())
+    fun customRateThreshold(customRate: String): String {
+        return (1.toBigDecimal() - customRate.toBigDecimalOrDefaultZero() / 100.toBigDecimal())
             .multiply(expectedRate.toBigDecimalOrDefaultZero())
             .setScale(2, BigDecimal.ROUND_UP)
             .toPlainString()

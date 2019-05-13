@@ -27,5 +27,6 @@
     <dimen name="toolbar_margin_top">20dp</dimen>
     <dimen name="dialog_width">339dp</dimen>
     <dimen name="dialog_height">218dp</dimen>
+    <dimen name="tab_letter_spacing">0.86sp</dimen>
 
 </resources>
