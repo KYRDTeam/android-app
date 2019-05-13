@@ -46,6 +46,11 @@ interface MainActivityModule {
     @ContributesAndroidInjector
     fun contributeSwapFragment(): SwapFragment
 
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeChartFragment(): ChartFragment
+
     @Binds
     @IntoMap
     @ViewModelKey(BalanceViewModel::class)
@@ -93,5 +98,12 @@ interface MainActivityModule {
     @ViewModelKey(TokenSearchViewModel::class)
     fun bindTokenSearchViewModel(
         tokenSearchViewModel: TokenSearchViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ChartViewModel::class)
+    fun bindChartViewModel(
+        chartViewModel: ChartViewModel
     ): ViewModel
 }

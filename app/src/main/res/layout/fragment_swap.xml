@@ -240,7 +240,7 @@
                         android:layout_marginTop="7dp"
                         android:layout_marginEnd="15dp"
                         android:gravity="end"
-                        android:text="@{swap.expectedRate}"
+                        android:text="@{swap.displayExpectedRate}"
                         android:textColor="#141927"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
