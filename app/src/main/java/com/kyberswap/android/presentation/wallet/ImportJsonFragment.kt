@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.github.florent37.viewtooltip.ViewTooltip
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentImportJsonBinding
@@ -97,17 +96,6 @@ class ImportJsonFragment : BaseFragment() {
                 )
             }
         }
-    }
-
-
-    private fun showImportSuccess(state: ImportWalletState.Success) {
-        ViewTooltip.on(this.view).autoHide(true, 1000)
-            .align(ViewTooltip.ALIGN.CENTER)
-            .customView(R.layout.dialog_backup_message)
-            .position(ViewTooltip.Position.TOP)
-            .onHide {
-                navigator.navigateToHome(Wallet(state.wallet))
-            }.show()
     }
 
     private fun performFileSearch() {

@@ -80,7 +80,9 @@ class KyberListFragment : BaseFragment() {
             false
         )
         val tokenAdapter =
-            TokenAdapter(appExecutors)
+            TokenAdapter(appExecutors) {
+                navigator.navigateToChartScreen(it)
+            }
         tokenAdapter.mode = Attributes.Mode.Single
         binding.rvToken.adapter = tokenAdapter
 

@@ -4,13 +4,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.kyberswap.android.R
+import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.presentation.landing.LandingActivity
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.balance.BalanceAddressFragment
+import com.kyberswap.android.presentation.main.balance.ChartFragment
 import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
-import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
 import com.kyberswap.android.presentation.wallet.BackupWalletActivity
 import com.kyberswap.android.presentation.wallet.ImportWalletActivity
@@ -69,9 +70,10 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         replaceFragment(BalanceAddressFragment.newInstance(wallet))
     }
 
-    fun navigateToSwap(wallet: Wallet?, container: Int) {
-        replaceFragment(SwapFragment.newInstance(wallet), false, WITHOUT_ANIMATION, container)
+    fun navigateToChartScreen(token: Token?) {
+        replaceFragment(ChartFragment.newInstance(token))
     }
+
 
     fun navigateToTokenSearch(
         container: Int,

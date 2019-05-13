@@ -4,6 +4,7 @@ import androidx.annotation.NonNull
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 
 @Entity(tableName = "swaps")
 data class Swap(
@@ -20,6 +21,9 @@ data class Swap(
     var slippageRate: String = ""
 
 ) {
+
+    val displayExpectedRate: String
+        get() = expectedRate.toBigDecimalOrDefaultZero().toPlainString()
 
     fun switch(): Swap {
         return Swap(
