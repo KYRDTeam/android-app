@@ -1,5 +1,6 @@
 package com.kyberswap.android.data.repository
 
+import com.kyberswap.android.data.api.home.CurrencyApi
 import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.data.db.WalletTokenDao
@@ -17,7 +18,8 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class BalanceDataRepository @Inject constructor(
-    val api: TokenApi,
+    private val api: TokenApi,
+    private val currencyApi: CurrencyApi,
     private val tokenMapper: TokenMapper,
     private val tokenClient: TokenClient,
     private val tokenDao: TokenDao,
@@ -48,17 +50,34 @@ class BalanceDataRepository @Inject constructor(
         return if (tokenDao.all.blockingFirst().isEmpty()) {
             fetchChange24h().toFlowable()
                 .flatMapIterable { token -> token }
-                .doOnNext { token ->
+                .map { token ->
                     val tokenBySymbol = tokenDao.getTokenBySymbol(token.tokenSymbol)
                     if (tokenBySymbol != null) {
-                        token.currentBalance = tokenBySymbol.currentBalance
-                        tokenDao.updateToken(token)
+                        token.copy(
+                            tokenAddress = tokenBySymbol.tokenAddress,
+                            currentBalance = tokenBySymbol.currentBalance
+                        )
              else {
-                        tokenDao.insertToken(token)
+                        token
             
-
         
                 .toList()
+                .flatMap {
+                    tokenDao.insertTokens(it)
+                    currencyApi.internalCurrencies()
+                        .map { currencies -> currencies.data }
+                        .toFlowable()
+                        .flatMapIterable { tokenCurrency -> tokenCurrency }
+                        .map { internalCurrency ->
+                            val tokenBySymbol = tokenDao.getTokenBySymbol(internalCurrency.symbol)
+                            tokenBySymbol?.with(internalCurrency) ?: Token(internalCurrency)
+                
+                        .toList()
+        
+                .doAfterSuccess {
+                    tokenDao.updateTokens(it)
+        
+
  else {
             tokenDao.all.first(listOf())
 
@@ -77,37 +96,14 @@ class BalanceDataRepository @Inject constructor(
             response.entries.associate { it.key to tokenMapper.transform(it.value) }
 
 
-        return api.internalCurrencies()
-            .map { it.data }
-            .toFlowable()
-            .flatMapIterable { tokenCurrency -> tokenCurrency }
-            .doOnNext { tokenCurrency ->
-                var tokenBySymbol = tokenDao.getTokenBySymbol(tokenCurrency.symbol)
-                tokenBySymbol = tokenBySymbol?.with(tokenCurrency)
-                if (tokenBySymbol != null) {
-                    tokenDao.updateToken(tokenBySymbol)
-         else {
-                    tokenDao.insertToken(Token(tokenCurrency))
-        
-    .toList()
-            .flatMap {
-                Singles.zip(
-                    singleEthSource,
-                    singleUsdSource,
-                    singleChange24hSource
-                ) { eth, usd, change24h ->
-                    updateRate24h(eth, usd, change24h)
-        
-                    .map { it.values.toList() }
-    
-//        return Singles.zip(
-//            singleEthSource,
-//            singleUsdSource,
-//            singleChange24hSource
-//        ) { eth, usd, change24h ->
-//            updateRate24h(eth, usd, change24h)
-//
-//            .map { it.values.toList() }
+        return Singles.zip(
+            singleEthSource,
+            singleUsdSource,
+            singleChange24hSource
+        ) { eth, usd, change24h ->
+            updateRate(eth, usd, change24h)
+
+            .map { it.values.toList() }
     }
 
     override fun getChange24hPolling(owner: String): Flowable<Token> {
@@ -120,12 +116,13 @@ class BalanceDataRepository @Inject constructor(
                 throwable.compose(zipWithFlatMap())
     
             .flatMapIterable { token -> token }
-            .flatMap {
-                getBalance(owner, it).toFlowable()
-    .doOnNext { token ->
+            .map { token ->
+                tokenClient.getBalance(owner, token)
+    
+            .doOnNext { token ->
                 val tokenBySymbol = tokenDao.getTokenBySymbol(token.tokenSymbol)
                 if (tokenBySymbol != null) {
-                    tokenDao.updateToken(token)
+                    tokenDao.updateToken(token.copy(tokenAddress = tokenBySymbol.tokenAddress))
          else {
                     tokenDao.insertToken(token)
         
@@ -143,15 +140,16 @@ class BalanceDataRepository @Inject constructor(
     }
 
 
-    private fun updateRate24h(
+    private fun updateRate(
         eth: Map<String, BigDecimal>,
         usd: Map<String, BigDecimal>,
         change24h: Map<String, Token>
     ): Map<String, Token> {
-        change24h.forEach { (key, value) ->
-            value.rateEthNow = eth[value.tokenName] ?: value.rateEthNow
-            value.rateUsdNow = usd[value.tokenName] ?: value.rateUsdNow
-            key to value
+        change24h.map { token ->
+            token.key to token.value.copy(
+                rateEthNow = eth[token.value.tokenSymbol] ?: token.value.rateEthNow,
+                rateUsdNow = usd[token.value.tokenSymbol] ?: token.value.rateUsdNow
+            )
 
         return change24h
     }

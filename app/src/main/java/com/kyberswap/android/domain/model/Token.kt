@@ -23,15 +23,15 @@ data class Token(
     val tokenAddress: String = "",
     val tokenDecimal: Int = 0,
     @TypeConverters(DataTypeConverter::class)
-    var rateEthNow: BigDecimal = BigDecimal.ZERO,
+    val rateEthNow: BigDecimal = BigDecimal.ZERO,
     @TypeConverters(DataTypeConverter::class)
     val changeEth24h: BigDecimal = BigDecimal.ZERO,
     @TypeConverters(DataTypeConverter::class)
-    var rateUsdNow: BigDecimal = BigDecimal.ZERO,
+    val rateUsdNow: BigDecimal = BigDecimal.ZERO,
     @TypeConverters(DataTypeConverter::class)
     val changeUsd24h: BigDecimal = BigDecimal.ZERO,
     @TypeConverters(DataTypeConverter::class)
-    var currentBalance: BigDecimal = BigDecimal.ZERO,
+    val currentBalance: BigDecimal = BigDecimal.ZERO,
     val cgId: String = "",
     @TypeConverters(DataTypeConverter::class)
     val gasApprove: BigDecimal = BigDecimal.ZERO,
@@ -64,33 +64,13 @@ data class Token(
 
     )
 
-    fun with(entity: TokenEntity): Token {
-        return Token(
-            entity.timestamp,
-            entity.tokenSymbol,
-            entity.tokenName,
-            entity.tokenAddress,
-            entity.tokenDecimal,
-            entity.rateEthNow,
-            entity.changeEth24h,
-            entity.rateUsdNow,
-            entity.changeUsd24h,
-            this.currentBalance,
-            this.cgId,
-            this.gasApprove,
-            this.gasLimit,
-            this.listingTime,
-            this.priority
-        )
-    }
-
     fun with(entity: TokenCurrencyEntity): Token {
         return Token(
             this.timestamp,
-            this.tokenSymbol,
-            this.tokenName,
-            this.tokenAddress,
-            this.tokenDecimal,
+            entity.symbol,
+            entity.name,
+            entity.address,
+            entity.decimals,
             this.rateEthNow,
             this.changeEth24h,
             this.rateUsdNow,
@@ -102,6 +82,10 @@ data class Token(
             entity.listingTime,
             entity.priority
         )
+    }
+
+    fun with(tokenAddress: String): Token {
+        return this.copy(tokenAddress = tokenAddress)
     }
 
     val displayRateEthNow: String
@@ -132,8 +116,8 @@ data class Token(
             this.changeEth24h == other.changeEth24h
     }
 
-    fun change24hStatus(): Int {
-        return getChange24hStatus(if (isETH()) changeEth24h else changeUsd24h)
+    fun change24hStatus(isEth: Boolean): Int {
+        return getChange24hStatus(if (isEth) changeEth24h else changeUsd24h)
     }
 
     private fun getChange24hStatus(value: BigDecimal): Int {

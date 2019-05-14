@@ -10,13 +10,16 @@ import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.repository.SwapRepository
+import com.kyberswap.android.domain.usecase.swap.EstimateGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetCapUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSwapDataTokenUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSwapUseCase
+import com.kyberswap.android.util.TokenClient
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
+import org.web3j.protocol.core.methods.response.EthEstimateGas
 import javax.inject.Inject
 
 
@@ -25,8 +28,21 @@ class SwapDataRepository @Inject constructor(
     private val tokenDao: TokenDao,
     private val api: SwapApi,
     private val mapper: GasMapper,
-    private val capMapper: CapMapper
+    private val capMapper: CapMapper,
+    private val tokenClient: TokenClient
 ) : SwapRepository {
+
+    override fun estimateGas(param: EstimateGasUseCase.Param): Single<EthEstimateGas> {
+        return Single.fromCallable {
+            tokenClient.estimateGas(
+                param.walletAddress!!,
+                param.swap.tokenSource.tokenAddress,
+                param.swap.gasPrice,
+                param.swap.tokenDest.tokenAddress,
+                param.swap.sourceAmount
+            )
+
+    }
 
     override fun getCap(param: GetCapUseCase.Param): Single<Cap> {
         return api.getCap(param.walletAddress).map { capMapper.transform(it) }

@@ -3,6 +3,7 @@ package com.kyberswap.android.util.di.module
 import android.content.Context
 import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.R
+import com.kyberswap.android.data.api.home.CurrencyApi
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.util.TokenClient
@@ -68,6 +69,16 @@ class NetworkModule {
         return createApiClient(
             SwapApi::class.java,
             context.getString(R.string.rate_endpoint_url),
+            client
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideChange24hApi(context: Context, client: OkHttpClient): CurrencyApi {
+        return createApiClient(
+            CurrencyApi::class.java,
+            context.getString(R.string.currency_endpoint_url),
             client
         )
     }

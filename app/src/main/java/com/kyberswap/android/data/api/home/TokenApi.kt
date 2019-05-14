@@ -1,6 +1,5 @@
 package com.kyberswap.android.data.api.home
 
-import com.kyberswap.android.data.api.currencies.CurrencyEntity
 import com.kyberswap.android.data.api.token.TokenEntity
 import com.kyberswap.android.data.api.token.TokenPriceEntity
 import io.reactivex.Single
@@ -17,6 +16,4 @@ interface TokenApi {
     ): Single<TokenPriceEntity>
 
 
-    @GET("internal/currencies")
-    fun internalCurrencies(): Single<CurrencyEntity>
 }
