@@ -7,10 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Cap
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Token
-import com.kyberswap.android.domain.usecase.swap.GetCapUseCase
-import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
-import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
-import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
+import com.kyberswap.android.domain.usecase.swap.*
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
@@ -22,6 +19,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import org.web3j.utils.Convert
+import timber.log.Timber
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -33,7 +31,8 @@ class SwapViewModel @Inject constructor(
     private val getMarketRate: GetMarketRateUseCase,
     private val saveSwapUseCase: SaveSwapUseCase,
     private val getGasPriceUseCase: GetGasPriceUseCase,
-    private val getCapUseCase: GetCapUseCase
+    private val getCapUseCase: GetCapUseCase,
+    private val estimateGasUseCase: EstimateGasUseCase
 ) : ViewModel() {
 
     private val _getSwapCallback = MutableLiveData<Event<GetSwapState>>()
@@ -161,7 +160,6 @@ class SwapViewModel @Inject constructor(
         swap: Swap,
         srcAmount: String
     ) {
-        getExpectedRateUseCase.dispose()
         getExpectedRateUseCase.execute(
             Consumer {
                 _getExpectedRateCallback.value = Event(GetExpectedRateState.Success(it))
@@ -214,6 +212,17 @@ class SwapViewModel @Inject constructor(
             .toPlainString()
     }
 
+    fun getGasLimit(walletAddress: String?, swap: Swap) {
+        estimateGasUseCase.execute(
+            Consumer {
+                Timber.e(it.amountUsed.toString())
+            },
+            Consumer {
+                it.printStackTrace()
+            },
+            EstimateGasUseCase.Param(walletAddress, swap)
+        )
+    }
 
     override fun onCleared() {
         getBalancePollingUseCase.dispose()

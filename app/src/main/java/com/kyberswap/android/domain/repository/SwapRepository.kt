@@ -3,6 +3,7 @@ package com.kyberswap.android.domain.repository
 import com.kyberswap.android.domain.model.Cap
 import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.Swap
+import com.kyberswap.android.domain.usecase.swap.EstimateGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetCapUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSwapDataTokenUseCase
@@ -10,6 +11,7 @@ import com.kyberswap.android.domain.usecase.wallet.SaveSwapUseCase
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
+import org.web3j.protocol.core.methods.response.EthEstimateGas
 
 interface SwapRepository {
 
@@ -22,4 +24,6 @@ interface SwapRepository {
     fun getGasPrice(): Single<Gas>
 
     fun getCap(param: GetCapUseCase.Param): Single<Cap>
+
+    fun estimateGas(param: EstimateGasUseCase.Param): Single<EthEstimateGas>
 }

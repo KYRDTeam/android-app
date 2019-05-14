@@ -1,6 +1,7 @@
 package com.kyberswap.android.presentation.main.balance
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -47,7 +48,6 @@ class TokenAdapter(
     fun submitFilterList(tokens: List<Token>) {
         submitList(listOf())
         submitList(tokens)
-        notifyDataSetChanged()
     }
 
 
@@ -56,8 +56,8 @@ class TokenAdapter(
         position: Int,
         payloads: MutableList<Any>
     ) {
-        super.onBindViewHolder(holder, position, payloads)
         mItemManger.bindView(holder.itemView, position)
+        super.onBindViewHolder(holder, position, payloads)
 
     }
 
@@ -86,21 +86,24 @@ class TokenAdapter(
             }
         })
 
-        val drawable = when (item.change24hStatus()) {
+        val drawable = when (item.change24hStatus(isEth)) {
             Token.UP -> R.drawable.ic_arrow_up
             Token.DOWN -> R.drawable.ic_arrow_down
             else -> null
         }
 
-        val color = when (item.change24hStatus()) {
+        val color = when (item.change24hStatus(isEth)) {
             Token.UP -> R.color.token_change24h_up
             Token.DOWN -> R.color.token_change24h_down
             else -> R.color.token_change24h_same
         }
 
+
         Glide.with(binding.imgState)
             .load(drawable)
             .into(binding.imgState)
+
+        binding.imgState.visibility = if (drawable == null) View.GONE else View.VISIBLE
 
         binding.tvChange24h.setTextColor(ContextCompat.getColor(binding.root.context, color))
         binding.setVariable(BR.showEth, isEth)

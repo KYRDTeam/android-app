@@ -1,6 +1,7 @@
 package com.kyberswap.android.util
 
 import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.FunctionReturnDecoder
 import org.web3j.abi.TypeReference
@@ -10,11 +11,14 @@ import org.web3j.abi.datatypes.generated.Uint256
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.DefaultBlockParameterName
 import org.web3j.protocol.core.methods.request.Transaction
+import org.web3j.protocol.core.methods.response.EthEstimateGas
 import org.web3j.utils.Convert
+import java.io.IOException
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
 import javax.inject.Inject
+
 
 class TokenClient @Inject constructor(private val web3j: Web3j) {
 
@@ -92,16 +96,17 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
 
     @Throws(Exception::class)
     fun getBalance(owner: String, token: Token): Token {
-        token.currentBalance = if (token.isETH()) {
-            Convert.fromWei(BigDecimal(getEthBalance(owner)), Convert.Unit.ETHER)
-        } else {
-            (getBalance(owner, token.tokenAddress) ?: BigDecimal.ZERO).divide(
-                BigDecimal(10).pow(
-                    token.tokenDecimal
+        return token.copy(
+            currentBalance = if (token.isETH()) {
+                Convert.fromWei(BigDecimal(getEthBalance(owner)), Convert.Unit.ETHER)
+            } else {
+                (getBalance(owner, token.tokenAddress) ?: BigDecimal.ZERO).divide(
+                    BigDecimal(10).pow(
+                        token.tokenDecimal
+                    )
                 )
-            )
-        }
-        return token
+            }
+        )
     }
 
     @Throws(Exception::class)
@@ -132,5 +137,34 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             )
         }
         return rateResult
+    }
+
+
+    @Throws(java.lang.Exception::class)
+    fun estimateGas(
+        walletAddress: String,
+        fromAddr: String,
+        gasPrice: String,
+        toAddr: String,
+        value: String
+    ): EthEstimateGas? {
+
+        val transaction = Transaction.createEtherTransaction(
+            fromAddr,
+            null,
+            Convert.toWei(gasPrice.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI).toBigInteger(),
+            null,
+            toAddr,
+            Convert.toWei(value.toBigDecimalOrDefaultZero(), Convert.Unit.ETHER).toBigInteger()
+        )
+        return web3j.ethEstimateGas(transaction).send()
+    }
+
+    @Throws(IOException::class)
+    private fun getNonce(addr: String): BigInteger {
+        val getNonce =
+            web3j.ethGetTransactionCount(addr, DefaultBlockParameterName.PENDING).send()
+        return getNonce.transactionCount
+
     }
 }
