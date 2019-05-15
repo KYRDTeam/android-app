@@ -18,22 +18,28 @@ data class Swap(
     var sourceAmount: String = "",
     var destAmount: String = "",
     var expectedRate: String = "",
-    var slippageRate: String = ""
+    var slippageRate: String = "",
+    var gasPrice: String = "",
+    var gasLimit: String = "",
+    var percentageRate: String = ""
 
 ) {
 
     val displayExpectedRate: String
         get() = expectedRate.toBigDecimalOrDefaultZero().toPlainString()
 
-    fun switch(): Swap {
+    fun swapToken(): Swap {
         return Swap(
             this.walletAddress,
             this.tokenDest,
             this.tokenSource,
             this.destAmount,
-            this.sourceAmount,
-            this.expectedRate,
-            this.slippageRate
+            this.sourceAmount
+//            this.expectedRate,
+//            this.slippageRate,
+//            this.gasPrice,
+//            this.gasLimit,
+//            this.percentageRate
 
         )
     }

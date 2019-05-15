@@ -1,6 +1,7 @@
 package com.kyberswap.android.util.di.module
 
 import android.content.Context
+import com.kyberswap.android.data.api.home.CurrencyApi
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.db.*
@@ -34,11 +35,13 @@ object DataModule {
     @JvmStatic
     fun provideBalanceRepository(
         api: TokenApi,
+        currencyApi: CurrencyApi,
         tokenMapper: TokenMapper,
         client: TokenClient,
         tokenDao: TokenDao,
         walletTokenDao: WalletTokenDao
-    ): BalanceRepository = BalanceDataRepository(api, tokenMapper, client, tokenDao, walletTokenDao)
+    ): BalanceRepository =
+        BalanceDataRepository(api, currencyApi, tokenMapper, client, tokenDao, walletTokenDao)
 
     @Singleton
     @Provides
@@ -65,7 +68,8 @@ object DataModule {
         tokenDao: TokenDao,
         api: SwapApi,
         mapper: GasMapper,
-        capMapper: CapMapper
+        capMapper: CapMapper,
+        tokenClient: TokenClient
     ): SwapRepository =
-        SwapDataRepository(swapDao, tokenDao, api, mapper, capMapper)
+        SwapDataRepository(swapDao, tokenDao, api, mapper, capMapper, tokenClient)
 }
