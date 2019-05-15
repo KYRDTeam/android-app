@@ -115,14 +115,15 @@ class SwapClient @Inject constructor(private val web3j: Web3j) {
 
     @Throws(Exception::class)
     fun getBalance(owner: String, token: Token): Token {
-        token.currentBalance = if (token.isETH()) {
-            Convert.fromWei(BigDecimal(getEthBalance(owner)), Convert.Unit.ETHER)
- else {
-            Convert.fromWei(
-                getBalance(owner, token.tokenAddress) ?: BigDecimal.ZERO,
-                Convert.Unit.ETHER
-            )
-
-        return token
+        return token.copy(
+            currentBalance = if (token.isETH()) {
+                Convert.fromWei(BigDecimal(getEthBalance(owner)), Convert.Unit.ETHER)
+     else {
+                Convert.fromWei(
+                    getBalance(owner, token.tokenAddress) ?: BigDecimal.ZERO,
+                    Convert.Unit.ETHER
+                )
+    
+        )
     }
 }

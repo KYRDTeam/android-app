@@ -28,7 +28,10 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
             Timber.plant(Timber.DebugTree())
 
 
-        RxJavaPlugins.setErrorHandler { e -> Timber.e(e.toString()) }
+        RxJavaPlugins.setErrorHandler { e ->
+            e.printStackTrace()
+            Timber.e(e.toString())
+
 
         Hawk.init(this).build()
 
