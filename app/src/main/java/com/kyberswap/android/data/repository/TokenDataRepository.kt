@@ -10,7 +10,9 @@ import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
 import com.kyberswap.android.util.TokenClient
 import io.reactivex.Flowable
-import io.reactivex.Single
+import io.reactivex.FlowableTransformer
+import io.reactivex.functions.BiFunction
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.pow
 
@@ -41,11 +43,11 @@ class TokenDataRepository @Inject constructor(
     
     }
 
-    override fun getExpectedRate(param: GetExpectedRateUseCase.Param): Single<List<String>> {
+    override fun getExpectedRate(param: GetExpectedRateUseCase.Param): Flowable<List<String>> {
         val sourceToken = param.swap.tokenSource
         val amount = 10.0.pow(sourceToken.tokenDecimal).times(param.srcAmount.toDouble())
             .toBigDecimal().toBigInteger()
-        return Single.fromCallable {
+        return Flowable.fromCallable {
             val expectedRate = tokenClient.getExpectedRate(
                 param.walletAddress,
                 context.getString(R.string.kyber_address),
@@ -55,8 +57,23 @@ class TokenDataRepository @Inject constructor(
             )
             expectedRate
 
+            .repeatWhen {
+                it.delay(20, TimeUnit.SECONDS)
+    
+            .retryWhen { throwable ->
+                throwable.compose(zipWithFlatMap())
+    
     }
 
+
+    private fun <T> zipWithFlatMap(): FlowableTransformer<T, Long> {
+        return FlowableTransformer { flowable ->
+            flowable.zipWith(
+                Flowable.range(COUNTER_START, ATTEMPTS),
+                BiFunction<T, Int, Int> { _: T, u: Int -> u })
+                .flatMap { t -> Flowable.timer(t * 5L, TimeUnit.SECONDS) }
+
+    }
 
     companion object {
         const val ETH = "ETH"

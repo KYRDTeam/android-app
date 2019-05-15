@@ -7,12 +7,13 @@ import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Cap
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.swap.*
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSwapUseCase
-import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.common.*
 import com.kyberswap.android.util.ext.percentage
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import io.reactivex.disposables.CompositeDisposable
@@ -21,6 +22,7 @@ import io.reactivex.functions.Consumer
 import org.web3j.utils.Convert
 import timber.log.Timber
 import java.math.BigDecimal
+import java.math.BigInteger
 import javax.inject.Inject
 
 class SwapViewModel @Inject constructor(
@@ -68,11 +70,10 @@ class SwapViewModel @Inject constructor(
     val getEthRateFromSourceTokenCallback: LiveData<Event<GetMarketRateState>>
         get() = _getEthRateFromSourceTokenCallback
 
-
-    var marketRate: String? = null
-    var expectedRate: String? = null
-
-    var cap: Cap? = null
+    private var marketRate: String? = null
+    private var expectedRate: String? = null
+    private var cap: Cap? = null
+    private var gasLimit = BigInteger.ZERO
 
     val defaultRateThreshold: String
         get() = DEFAULT_RATE_PERCENTAGE.multiply(expectedRate.toBigDecimalOrDefaultZero())
@@ -82,11 +83,17 @@ class SwapViewModel @Inject constructor(
         get() = expectedRate.toBigDecimalOrDefaultZero()
             .setScale(2, BigDecimal.ROUND_UP).toPlainString()
 
+    private val _saveSwapCallback = MutableLiveData<Event<SaveSwapState>>()
+    val saveSwapDataCallback: LiveData<Event<SaveSwapState>>
+        get() = _saveSwapCallback
+
     fun getMarketRate(srcToken: String, destToken: String) {
         getMarketRate.dispose()
         if (srcToken.isNotBlank() && destToken.isNotBlank()) {
             getMarketRate.execute(
                 Consumer {
+                    Timber.e(srcToken + " - " + destToken + ": " + it)
+                    marketRate = it
                     _getGetMarketRateCallback.value = Event(GetMarketRateState.Success(it))
         ,
                 Consumer {
@@ -160,8 +167,13 @@ class SwapViewModel @Inject constructor(
         swap: Swap,
         srcAmount: String
     ) {
+        getExpectedRateUseCase.dispose()
         getExpectedRateUseCase.execute(
             Consumer {
+                if (it.isNotEmpty()) {
+                    expectedRate = it[0]
+                    Timber.e(swap.tokenSource.tokenSymbol + " - " + srcAmount + ": " + it[0])
+        
                 _getExpectedRateCallback.value = Event(GetExpectedRateState.Success(it))
     ,
             Consumer {
@@ -179,8 +191,9 @@ class SwapViewModel @Inject constructor(
         expectedRate = null
     }
 
-    fun ratePercentage(): Double {
-        return expectedRate.percentage(marketRate)
+    fun ratePercentage(): String {
+        Timber.e(expectedRate.percentage(marketRate).toPlainString())
+        return expectedRate.percentage(marketRate).toPlainString()
     }
 
     fun verifyCap(amount: BigDecimal): Boolean {
@@ -194,6 +207,7 @@ class SwapViewModel @Inject constructor(
         return if (expectedRate != null && !amount.isNullOrEmpty()) {
             amount.toString().toBigDecimalOrDefaultZero()
                 .multiply(expectedRate.toBigDecimalOrDefaultZero())
+                .setScale(DEFAULT_ROUNDING_NUMBER, BigDecimal.ROUND_UP)
 
  else BigDecimal.ZERO
     }
@@ -212,15 +226,15 @@ class SwapViewModel @Inject constructor(
             .toPlainString()
     }
 
-    fun getGasLimit(walletAddress: String?, swap: Swap) {
+    fun getGasLimit(wallet: Wallet, swap: Swap) {
         estimateGasUseCase.execute(
             Consumer {
-                Timber.e(it.amountUsed.toString())
+                gasLimit = it.amountUsed
     ,
             Consumer {
                 it.printStackTrace()
     ,
-            EstimateGasUseCase.Param(walletAddress, swap)
+            EstimateGasUseCase.Param(wallet, swap)
         )
     }
 
@@ -231,16 +245,26 @@ class SwapViewModel @Inject constructor(
         super.onCleared()
     }
 
-    fun saveSwap(swap: Swap) {
+    fun saveSwap(swap: Swap, fromContinue: Boolean = false) {
         saveSwapUseCase.execute(
-            Action { },
-            Consumer { it.printStackTrace() },
+            Action {
+                if (fromContinue) {
+                    _saveSwapCallback.value = Event(SaveSwapState.Success(""))
+        
+    ,
+            Consumer {
+                it.printStackTrace()
+                _saveSwapCallback.value = Event(SaveSwapState.ShowError(it.localizedMessage))
+    ,
             SaveSwapUseCase.Param(swap)
         )
     }
 
-    companion object {
-        val DEFAULT_RATE_PERCENTAGE = 0.97.toBigDecimal()
+
+    fun updateSwap(swap: Swap) {
+        swap.marketRate = marketRate ?: DEFAULT_MARKET_RATE.toString()
+        swap.expectedRate = expectedRate ?: DEFAULT_EXPECTED_RATE.toString()
+        swap.gasLimit = gasLimit.toString()
     }
 
 }

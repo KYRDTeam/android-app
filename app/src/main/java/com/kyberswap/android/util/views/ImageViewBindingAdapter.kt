@@ -8,6 +8,7 @@ import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.kyberswap.android.R
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.tokenDrawableList
 
 object ImageViewBindingAdapter {
@@ -95,8 +96,8 @@ object ImageViewBindingAdapter {
 
     @BindingAdapter("app:percentageRate")
     @JvmStatic
-    fun percentageRate(view: ImageView, double: Double) {
-        if (double > -0.1) {
+    fun percentageRate(view: ImageView, percentageRate: String?) {
+        if (percentageRate.toBigDecimalOrDefaultZero() > (-0.1).toBigDecimal()) {
             view.visibility = View.GONE
  else {
             view.visibility = View.VISIBLE
