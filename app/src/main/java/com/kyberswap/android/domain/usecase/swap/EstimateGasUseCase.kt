@@ -3,6 +3,7 @@ package com.kyberswap.android.domain.usecase.swap
 import androidx.annotation.VisibleForTesting
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Swap
+import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.SwapRepository
 import com.kyberswap.android.domain.usecase.SequentialUseCase
 import io.reactivex.Single
@@ -19,9 +20,7 @@ class EstimateGasUseCase @Inject constructor(
     }
 
     class Param(
-        val walletAddress: String?,
+        val wallet: Wallet,
         val swap: Swap
     )
-
-
 }

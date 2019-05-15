@@ -64,6 +64,7 @@ object DataModule {
     @Provides
     @JvmStatic
     fun provideSwapRepository(
+        context: Context,
         swapDao: SwapDao,
         tokenDao: TokenDao,
         api: SwapApi,
@@ -71,5 +72,5 @@ object DataModule {
         capMapper: CapMapper,
         tokenClient: TokenClient
     ): SwapRepository =
-        SwapDataRepository(swapDao, tokenDao, api, mapper, capMapper, tokenClient)
+        SwapDataRepository(context, swapDao, tokenDao, api, mapper, capMapper, tokenClient)
 }

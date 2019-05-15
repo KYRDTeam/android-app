@@ -25,7 +25,7 @@ import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.swap
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import net.cachapa.expandablelayout.ExpandableLayout
-import timber.log.Timber
+import java.math.RoundingMode
 import javax.inject.Inject
 
 
@@ -64,6 +64,15 @@ class SwapFragment : BaseFragment() {
     ): View? {
         binding = FragmentSwapBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+        if (isVisibleToUser) {
+            wallet?.let {
+                viewModel.getSwapData(it.address)
+            }
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -125,7 +134,11 @@ class SwapFragment : BaseFragment() {
                         if (text.isNullOrEmpty()) getString(R.string.default_source_amount) else text.toString()
                     )
                     swapData.sourceAmount = text.toString()
-                    viewModel.getGasLimit(wallet?.address, swapData)
+
+                    wallet?.let {
+                        viewModel.getGasLimit(it, swapData)
+                    }
+
 
                 }
             })
@@ -156,7 +169,6 @@ class SwapFragment : BaseFragment() {
                         if (swap != null && state.list.isNotEmpty()) {
                             swap.expectedRate = state.list[0]
                             swap.slippageRate = state.list[1]
-                            viewModel.expectedRate = state.list[0]
                         }
                         binding.percentageRate = viewModel.ratePercentage()
                         binding.swap = swap
@@ -186,8 +198,9 @@ class SwapFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetMarketRateState.Success -> {
-                        binding.tvRate.text = state.rate
-                        viewModel.marketRate = state.rate
+                        binding.tvRate.text =
+                            state.rate.toBigDecimalOrDefaultZero().setScale(2, RoundingMode.UP)
+                                .toPlainString()
                         binding.percentageRate = viewModel.ratePercentage()
                     }
                     is GetMarketRateState.ShowError -> {
@@ -249,21 +262,19 @@ class SwapFragment : BaseFragment() {
                         showAlert(state.message ?: getString(R.string.something_wrong))
                     }
                 }
-
             }
         })
 
-        viewModel.getEthRateFromSourceToken(binding.swap?.tokenSource?.tokenSymbol)
-        viewModel.getEthRateFromSourceTokenCallback.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is GetMarketRateState.Success -> {
-
-                    }
-                }
-
-            }
-        })
+//        viewModel.getEthRateFromSourceToken(binding.swap?.tokenSource?.tokenSymbol)
+//        viewModel.getEthRateFromSourceTokenCallback.observe(viewLifecycleOwner, Observer {
+//            it?.getContentIfNotHandled()?.let { state ->
+//                when (state) {
+//                    is GetMarketRateState.Success -> {
+//
+//                    }
+//                }
+//            }
+//        })
 
         viewModel.compositeDisposable.add(
             binding.edtCustom.textChanges().skipInitialValue()
@@ -283,15 +294,26 @@ class SwapFragment : BaseFragment() {
             )
         }
 
+        viewModel.saveSwapDataCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == SaveSwapState.Loading)
+                when (state) {
+                    is SaveSwapState.Success -> {
+                        navigator.navigateToSwapConfirmationScreen()
+                    }
+                }
+            }
+        })
+
         binding.tvContinue.setOnClickListener {
-            binding.swap?.let {
-                Timber.e(binding.swap?.gasPrice)
+            binding.swap?.let { swap ->
                 if (viewModel.verifyCap(
                         binding.edtSource.text.toString().toBigDecimalOrDefaultZero() *
-                            it.tokenSource.rateEthNow
+                            swap.tokenSource.rateEthNow
                     )
                 ) {
-                    navigator.navigateToSwapConfirmationScreen()
+
+                    viewModel.updateSwap(swap)
                 }
             }
 

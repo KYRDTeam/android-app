@@ -10,7 +10,7 @@
 
         <variable
             name="percentageRate"
-            type="Double" />
+            type="String" />
 
         <variable
             name="swap"

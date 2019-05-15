@@ -189,6 +189,7 @@ class WalletDataRepository @Inject constructor(
             walletDao.insertWallet(
                 com.kyberswap.android.domain.model.Wallet(
                     wallet.address.toWalletAddress(),
+                    wallet.id,
                     param.walletName,
                     true
                 )

@@ -1,7 +1,11 @@
 package com.kyberswap.android.util
 
+import com.kyberswap.android.domain.model.CustomBytes32
 import com.kyberswap.android.domain.model.Token
-import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.presentation.common.DEFAULT_MAX_AMOUNT
+import com.kyberswap.android.presentation.common.DEFAULT_WALLET_ID
+import com.kyberswap.android.presentation.common.PERM
+import com.kyberswap.android.util.ext.toBytes32
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.FunctionReturnDecoder
 import org.web3j.abi.TypeReference
@@ -143,21 +147,58 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     @Throws(java.lang.Exception::class)
     fun estimateGas(
         walletAddress: String,
-        fromAddr: String,
-        gasPrice: String,
-        toAddr: String,
-        value: String
+        contractAddress: String,
+        fromAddress: String,
+        toAddress: String,
+        value: String,
+        isEth: Boolean
     ): EthEstimateGas? {
 
-        val transaction = Transaction.createEtherTransaction(
-            fromAddr,
-            null,
-            Convert.toWei(gasPrice.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI).toBigInteger(),
-            null,
-            toAddr,
-            Convert.toWei(value.toBigDecimalOrDefaultZero(), Convert.Unit.ETHER).toBigInteger()
+        val function = Function(
+            "tradeWithHint",
+            listOf(
+                Address(fromAddress),
+                Uint256(BigInteger(value)),
+                Address(toAddress),
+                Address(walletAddress),
+                Uint256(DEFAULT_MAX_AMOUNT),
+                Uint256(BigInteger.ZERO),
+                Address(DEFAULT_WALLET_ID),
+                PERM.toBytes32()
+            ),
+            listOf<TypeReference<*>>(
+                object : TypeReference<Address>() {
+                },
+                object : TypeReference<Uint256>() {
+                },
+                object : TypeReference<Address>() {
+                },
+                object : TypeReference<Address>() {
+                },
+                object : TypeReference<Uint256>() {
+                },
+                object : TypeReference<Uint256>() {
+                },
+                object : TypeReference<Address>() {
+                },
+                object : TypeReference<CustomBytes32>() {
+                }
+            )
         )
-        return web3j.ethEstimateGas(transaction).send()
+
+        return web3j.ethEstimateGas(
+            Transaction(
+                walletAddress,
+                null,
+                null,
+                null,
+                contractAddress,
+                if (isEth) BigInteger(value) else BigInteger.ZERO,
+                FunctionEncoder.encode(function)
+            )
+        ).send()
+
+
     }
 
     @Throws(IOException::class)

@@ -8,8 +8,10 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.kyberswap.android.R
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import io.github.inflationx.calligraphy3.CalligraphyTypefaceSpan
 import io.github.inflationx.calligraphy3.TypefaceUtils
+import java.math.BigDecimal
 
 object TextViewBindingAdapter {
     @BindingAdapter("app:resourceId")
@@ -75,21 +77,22 @@ object TextViewBindingAdapter {
 
     @BindingAdapter("app:percentageRate")
     @JvmStatic
-    fun setPercentage(view: TextView, percentageRate: Double) {
-        if (percentageRate > -0.1) {
+    fun setPercentage(view: TextView, percent: String?) {
+        val percentageRate = percent.toBigDecimalOrDefaultZero()
+        if (percentageRate > (-0.1).toBigDecimal()) {
             view.visibility = View.GONE
             return
         }
         view.visibility = View.VISIBLE
         val drawable = when {
-            percentageRate > 0 -> R.drawable.ic_arrow_up
-            percentageRate < 0 -> R.drawable.ic_arrow_down
+            percentageRate > BigDecimal.ZERO -> R.drawable.ic_arrow_up
+            percentageRate < BigDecimal.ZERO -> R.drawable.ic_arrow_down
             else -> 0
         }
 
         val color = when {
-            percentageRate > 0 -> R.color.token_change24h_up
-            percentageRate < 0 -> R.color.token_change24h_down
+            percentageRate > BigDecimal.ZERO -> R.color.token_change24h_up
+            percentageRate < BigDecimal.ZERO -> R.color.token_change24h_down
             else -> R.color.token_change24h_same
         }
 
