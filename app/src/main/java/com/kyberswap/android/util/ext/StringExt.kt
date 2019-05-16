@@ -15,10 +15,9 @@ fun String.toWalletAddress(): String {
 
 fun String?.percentage(other: String?): BigDecimal {
     if (other.isNullOrEmpty() || this.isNullOrEmpty()) return BigDecimal.ZERO
-    if (other.toDouble() == 0.0) return BigDecimal.ZERO
+    if (other.toBigDecimal() == BigDecimal.ZERO) return BigDecimal.ZERO
     return try {
-        (this.toBigDecimal() - other.toBigDecimal())
-            .div(other.toBigDecimal())
+        (this.toBigDecimal() - other.toBigDecimal()).div(other.toBigDecimal())
             .multiply(100.toBigDecimal())
             .setScale(2, RoundingMode.UP)
     } catch (ex: Exception) {
@@ -38,7 +37,7 @@ fun String?.toBigDecimalOrDefaultZero(): BigDecimal {
 }
 
 fun String.updatePrecision(): String {
-    return (this.toBigDecimal() / 10.0.pow(18).toBigDecimal()).toPlainString()
+    return (this.toDouble() / 10.0.pow(18)).toBigDecimal().toPlainString()
 }
 
 fun String.toBytes32(): CustomBytes32 {

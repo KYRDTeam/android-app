@@ -20,7 +20,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import org.web3j.utils.Convert
-import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import javax.inject.Inject
@@ -92,7 +91,6 @@ class SwapViewModel @Inject constructor(
         if (srcToken.isNotBlank() && destToken.isNotBlank()) {
             getMarketRate.execute(
                 Consumer {
-                    Timber.e(srcToken + " - " + destToken + ": " + it)
                     marketRate = it
                     _getGetMarketRateCallback.value = Event(GetMarketRateState.Success(it))
                 },
@@ -172,7 +170,6 @@ class SwapViewModel @Inject constructor(
             Consumer {
                 if (it.isNotEmpty()) {
                     expectedRate = it[0]
-                    Timber.e(swap.tokenSource.tokenSymbol + " - " + srcAmount + ": " + it[0])
                 }
                 _getExpectedRateCallback.value = Event(GetExpectedRateState.Success(it))
             },
@@ -192,7 +189,6 @@ class SwapViewModel @Inject constructor(
     }
 
     fun ratePercentage(): String {
-        Timber.e(expectedRate.percentage(marketRate).toPlainString())
         return expectedRate.percentage(marketRate).toPlainString()
     }
 

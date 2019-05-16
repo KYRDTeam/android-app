@@ -131,13 +131,12 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         val rateResult = ArrayList<String>()
         for (rates in responses) {
             val rate = rates as Uint256
-            val rateString = Convert.fromWei(
+            val toEther = Convert.fromWei(
                 BigDecimal(rate.value),
                 Convert.Unit.ETHER
-            ).toPlainString()
-            rateString.toDouble() * 0.97
+            )
             rateResult.add(
-                (rateString.toDouble() * 0.97).toString()
+                (toEther * 0.97.toBigDecimal()).toPlainString()
             )
         }
         return rateResult
