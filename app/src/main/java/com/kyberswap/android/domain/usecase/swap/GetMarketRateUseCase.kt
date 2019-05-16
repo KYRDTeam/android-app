@@ -4,7 +4,6 @@ import androidx.annotation.VisibleForTesting
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.repository.TokenRepository
 import com.kyberswap.android.domain.usecase.MergeDelayErrorUseCase
-import com.kyberswap.android.util.ext.updatePrecision
 import io.reactivex.Flowable
 import javax.inject.Inject
 
@@ -15,7 +14,6 @@ class GetMarketRateUseCase @Inject constructor(
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     override fun buildUseCaseFlowable(param: Param): Flowable<String> {
         return tokenRepository.getMarketRate(param)
-            .map { it.updatePrecision() }
     }
 
     class Param(val sourceToken: String, val destToken: String)

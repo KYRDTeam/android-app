@@ -8,4 +8,10 @@ class RateMapper @Inject constructor() {
     fun transform(entity: RateEntity): Rate {
         return Rate(entity)
     }
+
+    fun transform(entities: List<RateEntity>): List<Rate> {
+        return entities.map {
+            transform(it)
+
+    }
 }

@@ -361,7 +361,11 @@ class SwapFragment : BaseFragment() {
         )
         getExpectedRate(
             swap,
-            if (binding.edtSource.text.isNullOrEmpty()) getString(R.string.default_source_amount)
+            if (binding.edtSource.text.isNullOrEmpty() ||
+                binding.edtSource.text.toString().toDouble() == 0.0
+            ) getString(
+                R.string.default_source_amount
+            )
             else binding.edtSource.text.toString()
         )
     }

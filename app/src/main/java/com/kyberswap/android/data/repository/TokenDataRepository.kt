@@ -9,6 +9,8 @@ import com.kyberswap.android.domain.repository.TokenRepository
 import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
 import com.kyberswap.android.util.TokenClient
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.updatePrecision
 import io.reactivex.Flowable
 import io.reactivex.FlowableTransformer
 import io.reactivex.functions.BiFunction
@@ -26,21 +28,27 @@ class TokenDataRepository @Inject constructor(
 ) :
     TokenRepository {
     override fun getMarketRate(param: GetMarketRateUseCase.Param): Flowable<String> {
-
-        return Flowable.mergeDelayError(rateDao.all, api.getRate().map { it.data }.toFlowable()
-            .flatMapIterable { rate -> rate }
-            .map { rateMapper.transform(it) }
-            .toList()
-            .doAfterSuccess {
-                rateDao.insertRates(it)
-    .toFlowable()
+        return Flowable.mergeDelayError(
+            rateDao.all,
+            api.getRate()
+                .map { it.data }
+                .map { rateMapper.transform(it) }
+                .doAfterSuccess {
+                    rateDao.updateAll(it)
+        
+                .toFlowable()
         )
-            .flatMapIterable { rate -> rate }
-            .filter { rate ->
-                rate.source == param.sourceToken && rate.dest == param.destToken
-    .map {
-                it.rate
+            .map { rates ->
+                val sourceTokenToEtherRate =
+                    rates.firstOrNull { it.source == param.sourceToken && it.dest == ETH }
+                val etherToDestTokenRate =
+                    rates.firstOrNull { it.source == ETH && it.dest == param.destToken }
+                sourceTokenToEtherRate?.rate?.updatePrecision().toBigDecimalOrDefaultZero()
+                    .multiply(
+                        etherToDestTokenRate?.rate?.updatePrecision().toBigDecimalOrDefaultZero()
+                    ).toPlainString()
     
+
     }
 
     override fun getExpectedRate(param: GetExpectedRateUseCase.Param): Flowable<List<String>> {
