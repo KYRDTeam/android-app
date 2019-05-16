@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Cap
+import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.Swap
-import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.swap.*
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
@@ -65,14 +65,14 @@ class SwapViewModel @Inject constructor(
         get() = _getGetMarketRateCallback
 
 
-    private val _getEthRateFromSourceTokenCallback = MutableLiveData<Event<GetMarketRateState>>()
-    val getEthRateFromSourceTokenCallback: LiveData<Event<GetMarketRateState>>
-        get() = _getEthRateFromSourceTokenCallback
-
     private var marketRate: String? = null
     private var expectedRate: String? = null
     private var cap: Cap? = null
     private var gasLimit = BigInteger.ZERO
+
+    private var _gas: Gas? = null
+    val gas: Gas
+        get() = _gas ?: Gas()
 
     val defaultRateThreshold: String
         get() = DEFAULT_RATE_PERCENTAGE.multiply(expectedRate.toBigDecimalOrDefaultZero())
@@ -102,21 +102,6 @@ class SwapViewModel @Inject constructor(
                 GetMarketRateUseCase.Param(srcToken, destToken)
             )
 
-    }
-
-    fun getEthRateFromSourceToken(srcToken: String?) {
-        if (srcToken.isNullOrEmpty()) return
-        getMarketRate.execute(
-            Consumer {
-                _getEthRateFromSourceTokenCallback.value = Event(GetMarketRateState.Success(it))
-    ,
-            Consumer {
-                it.printStackTrace()
-                _getGetMarketRateCallback.value =
-                    Event(GetMarketRateState.ShowError(it.localizedMessage))
-    ,
-            GetMarketRateUseCase.Param(srcToken, Token.ETH)
-        )
     }
 
     fun getCap(address: String?) {
@@ -149,6 +134,7 @@ class SwapViewModel @Inject constructor(
     fun getGasPrice() {
         getGasPriceUseCase.execute(
             Consumer {
+                _gas = it
                 _getGetGasPriceCallback.value = Event(GetGasPriceState.Success(it))
     ,
             Consumer {
@@ -211,12 +197,11 @@ class SwapViewModel @Inject constructor(
     fun getExpectedDestUsdAmount(amount: Editable?, rateUsdNow: BigDecimal): BigDecimal {
         return getExpectedDestAmount(amount)
             .multiply(rateUsdNow)
-            .setScale(2, BigDecimal.ROUND_UP)
     }
 
 
-    fun customRateThreshold(customRate: String): String {
-        return (1.toBigDecimal() - customRate.toBigDecimalOrDefaultZero() / 100.toBigDecimal())
+    fun rateThreshold(customRate: String): String {
+        return (1.toDouble() - customRate.toBigDecimalOrDefaultZero().toDouble() / 100.toDouble()).toBigDecimal()
             .multiply(expectedRate.toBigDecimalOrDefaultZero())
             .setScale(2, BigDecimal.ROUND_UP)
             .toPlainString()
@@ -225,7 +210,10 @@ class SwapViewModel @Inject constructor(
     fun getGasLimit(wallet: Wallet, swap: Swap) {
         estimateGasUseCase.execute(
             Consumer {
-                gasLimit = it.amountUsed
+                if (it.error == null) {
+                    gasLimit = it.amountUsed
+        
+
     ,
             Consumer {
                 it.printStackTrace()
@@ -261,6 +249,8 @@ class SwapViewModel @Inject constructor(
         swap.marketRate = marketRate ?: DEFAULT_MARKET_RATE.toString()
         swap.expectedRate = expectedRate ?: DEFAULT_EXPECTED_RATE.toString()
         swap.gasLimit = gasLimit.toString()
+        saveSwap(swap, true)
+
     }
 
 }

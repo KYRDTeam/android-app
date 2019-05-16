@@ -66,6 +66,11 @@ class SwapDataRepository @Inject constructor(
 
     override fun saveSwap(param: SaveSwapUseCase.Param): Completable {
         return Completable.fromCallable {
+            val swap = param.swap
+            if (swap.gasLimit.isEmpty()) {
+                val sourceToken = tokenDao.getTokenBySymbol(swap.tokenSource.tokenSymbol)
+                swap.gasLimit = sourceToken?.gasLimit ?: swap.gasLimit
+    
             swapDao.insertSwap(param.swap)
 
     }

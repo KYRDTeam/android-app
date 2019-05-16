@@ -99,7 +99,10 @@ object TextViewBindingAdapter {
         view.setTextColor(ContextCompat.getColor(view.context, color))
 
         view.text =
-            String.format(view.context.getString(R.string.percentage_format), percentageRate)
+            String.format(
+                view.context.getString(R.string.percentage_format),
+                percentageRate.abs().toDouble()
+            )
         view.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawable, 0)
     }
 }
