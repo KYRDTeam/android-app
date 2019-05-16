@@ -88,8 +88,8 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         )
     }
 
-    fun navigateToSwapConfirmationScreen() {
-        activity.startActivity(SwapConfirmActivity.newIntent(activity))
+    fun navigateToSwapConfirmationScreen(wallet: Wallet?) {
+        activity.startActivity(SwapConfirmActivity.newIntent(activity, wallet))
     }
 
     companion object {

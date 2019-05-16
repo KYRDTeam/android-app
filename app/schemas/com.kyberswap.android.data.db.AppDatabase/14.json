@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 14,
-    "identityHash": "ac5b7f007caaa39a5123977b4d41cae1",
+    "identityHash": "9bf47fa238e4c392cd71fbfe923ea2de",
     "entities": [
       {
         "tableName": "tokens",
@@ -180,7 +180,7 @@
       },
       {
         "tableName": "swaps",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`walletAddress` TEXT NOT NULL, `sourceAmount` TEXT NOT NULL, `destAmount` TEXT NOT NULL, `expectedRate` TEXT NOT NULL, `slippageRate` TEXT NOT NULL, `gasPrice` TEXT NOT NULL, `gasLimit` TEXT NOT NULL, `marketRate` TEXT NOT NULL, `source_timestamp` INTEGER NOT NULL, `source_tokenSymbol` TEXT NOT NULL, `source_tokenName` TEXT NOT NULL, `source_tokenAddress` TEXT NOT NULL, `source_tokenDecimal` INTEGER NOT NULL, `source_rateEthNow` TEXT NOT NULL, `source_changeEth24h` TEXT NOT NULL, `source_rateUsdNow` TEXT NOT NULL, `source_changeUsd24h` TEXT NOT NULL, `source_currentBalance` TEXT NOT NULL, `source_cgId` TEXT NOT NULL, `source_gasApprove` TEXT NOT NULL, `source_gasLimit` TEXT NOT NULL, `source_listingTime` INTEGER NOT NULL, `source_priority` INTEGER NOT NULL, `dest_timestamp` INTEGER NOT NULL, `dest_tokenSymbol` TEXT NOT NULL, `dest_tokenName` TEXT NOT NULL, `dest_tokenAddress` TEXT NOT NULL, `dest_tokenDecimal` INTEGER NOT NULL, `dest_rateEthNow` TEXT NOT NULL, `dest_changeEth24h` TEXT NOT NULL, `dest_rateUsdNow` TEXT NOT NULL, `dest_changeUsd24h` TEXT NOT NULL, `dest_currentBalance` TEXT NOT NULL, `dest_cgId` TEXT NOT NULL, `dest_gasApprove` TEXT NOT NULL, `dest_gasLimit` TEXT NOT NULL, `dest_listingTime` INTEGER NOT NULL, `dest_priority` INTEGER NOT NULL, PRIMARY KEY(`walletAddress`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`walletAddress` TEXT NOT NULL, `sourceAmount` TEXT NOT NULL, `destAmount` TEXT NOT NULL, `expectedRate` TEXT NOT NULL, `slippageRate` TEXT NOT NULL, `gasPrice` TEXT NOT NULL, `gasLimit` TEXT NOT NULL, `marketRate` TEXT NOT NULL, `minAcceptedRatePercent` TEXT NOT NULL, `source_timestamp` INTEGER NOT NULL, `source_tokenSymbol` TEXT NOT NULL, `source_tokenName` TEXT NOT NULL, `source_tokenAddress` TEXT NOT NULL, `source_tokenDecimal` INTEGER NOT NULL, `source_rateEthNow` TEXT NOT NULL, `source_changeEth24h` TEXT NOT NULL, `source_rateUsdNow` TEXT NOT NULL, `source_changeUsd24h` TEXT NOT NULL, `source_currentBalance` TEXT NOT NULL, `source_cgId` TEXT NOT NULL, `source_gasApprove` TEXT NOT NULL, `source_gasLimit` TEXT NOT NULL, `source_listingTime` INTEGER NOT NULL, `source_priority` INTEGER NOT NULL, `dest_timestamp` INTEGER NOT NULL, `dest_tokenSymbol` TEXT NOT NULL, `dest_tokenName` TEXT NOT NULL, `dest_tokenAddress` TEXT NOT NULL, `dest_tokenDecimal` INTEGER NOT NULL, `dest_rateEthNow` TEXT NOT NULL, `dest_changeEth24h` TEXT NOT NULL, `dest_rateUsdNow` TEXT NOT NULL, `dest_changeUsd24h` TEXT NOT NULL, `dest_currentBalance` TEXT NOT NULL, `dest_cgId` TEXT NOT NULL, `dest_gasApprove` TEXT NOT NULL, `dest_gasLimit` TEXT NOT NULL, `dest_listingTime` INTEGER NOT NULL, `dest_priority` INTEGER NOT NULL, PRIMARY KEY(`walletAddress`))",
         "fields": [
           {
             "fieldPath": "walletAddress",
@@ -227,6 +227,12 @@
           {
             "fieldPath": "marketRate",
             "columnName": "marketRate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minAcceptedRatePercent",
+            "columnName": "minAcceptedRatePercent",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -519,7 +525,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"ac5b7f007caaa39a5123977b4d41cae1\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"9bf47fa238e4c392cd71fbfe923ea2de\")"
     ]
   }
 }

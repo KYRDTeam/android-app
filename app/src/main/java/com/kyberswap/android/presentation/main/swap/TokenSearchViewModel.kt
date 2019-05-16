@@ -12,7 +12,6 @@ import com.kyberswap.android.presentation.main.balance.GetBalanceState
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
-import timber.log.Timber
 import javax.inject.Inject
 
 class TokenSearchViewModel @Inject constructor(
@@ -65,7 +64,6 @@ class TokenSearchViewModel @Inject constructor(
         saveSwapDataTokenUseCase.execute(
             Action {
                 _saveSwapDataStateStateCallback.value = Event(SaveSwapDataState.Success())
-                Timber.e("Success")
             },
             Consumer {
                 it.printStackTrace()

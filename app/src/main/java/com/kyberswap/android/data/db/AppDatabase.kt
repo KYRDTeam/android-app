@@ -17,7 +17,7 @@ import com.kyberswap.android.domain.model.Unit
         WalletToken::class,
         Rate::class
     ],
-    version = 14
+    version = 15
 )
 @TypeConverters(DataTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
