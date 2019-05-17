@@ -16,6 +16,7 @@ data class Wallet(
     val address: String = "",
     val walletId: String = "",
     val name: String = "",
+    val cipher: String = "",
     var isSelected: Boolean = false,
     var unit: String = "USD",
     var balance: String = "0"

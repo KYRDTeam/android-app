@@ -1,6 +1,8 @@
 package com.kyberswap.android.presentation.main.swap
 
 import android.animation.ObjectAnimator
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +23,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.DEFAULT_ACCEPT_RATE_PERCENTAGE
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.helper.Navigator.Companion.SWAP_COMFIRMATION
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.swap
@@ -175,9 +178,10 @@ class SwapFragment : BaseFragment() {
                         binding.swap = swap
                         binding.edtDest.setText(
                             viewModel.getExpectedDestAmount(binding.edtSource.text)
-                                .toPlainString()
+                                .toDisplayNumber()
                         )
                         if (swap != null) {
+                            viewModel.saveSwap(swap)
                             binding.tvValueInUSD.text =
                                 getString(
                                     R.string.dest_balance_usd_format,
@@ -298,7 +302,7 @@ class SwapFragment : BaseFragment() {
                 showProgress(state == SaveSwapState.Loading)
                 when (state) {
                     is SaveSwapState.Success -> {
-                        navigator.navigateToSwapConfirmationScreen(wallet)
+                        navigator.navigateToSwapConfirmationScreen(wallet, this)
                     }
                 }
             }
@@ -328,6 +332,18 @@ class SwapFragment : BaseFragment() {
             viewModel.rateThreshold(getMinAcceptedRatePercent(id)),
             viewModel.expectedRateDisplay
         )
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == SWAP_COMFIRMATION) {
+            if (resultCode == Activity.RESULT_OK) {
+                wallet?.let {
+                    viewModel.getSwapData(it.address)
+                }
+
+            }
+        }
     }
 
     private fun getMinAcceptedRatePercent(id: Int): String {

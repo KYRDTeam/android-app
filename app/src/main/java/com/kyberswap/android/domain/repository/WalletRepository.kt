@@ -5,18 +5,17 @@ import com.kyberswap.android.domain.usecase.wallet.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
-import org.consenlabs.tokencore.wallet.Wallet
 
 interface WalletRepository {
-    fun createWallet(param: CreateWalletUseCase.Param): Single<Wallet>
+    fun createWallet(param: CreateWalletUseCase.Param): Single<com.kyberswap.android.domain.model.Wallet>
 
     fun getMnemonic(param: GetMnemonicUseCase.Param): Single<List<Word>>
 
-    fun importWallet(param: ImportWalletFromJsonUseCase.Param): Single<Wallet>
+    fun importWallet(param: ImportWalletFromJsonUseCase.Param): Single<com.kyberswap.android.domain.model.Wallet>
 
-    fun importWallet(param: ImportWalletFromPrivateKeyUseCase.Param): Single<Wallet>
+    fun importWallet(param: ImportWalletFromPrivateKeyUseCase.Param): Single<com.kyberswap.android.domain.model.Wallet>
 
-    fun importWallet(param: ImportWalletFromSeedUseCase.Param): Single<Wallet>
+    fun importWallet(param: ImportWalletFromSeedUseCase.Param): Single<com.kyberswap.android.domain.model.Wallet>
 
     fun getSelectedWallet(): Single<com.kyberswap.android.domain.model.Wallet>
 

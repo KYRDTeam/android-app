@@ -19,6 +19,9 @@ interface WalletDao {
     @Query("SELECT * from wallets where address = :address")
     fun loadWalletByAddress(address: String): Flowable<Wallet>
 
+    @Query("SELECT * from wallets where address = :address")
+    fun findWalletByAddress(address: String): Wallet
+
     @Query("DELETE FROM wallets")
     fun deleteAllWallets()
 

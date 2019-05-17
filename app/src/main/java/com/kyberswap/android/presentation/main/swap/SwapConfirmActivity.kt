@@ -13,10 +13,13 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
+import org.consenlabs.tokencore.wallet.KeystoreStorage
+import org.consenlabs.tokencore.wallet.WalletManager
+import java.io.File
 import javax.inject.Inject
 
 
-class SwapConfirmActivity : BaseActivity() {
+class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
     @Inject
     lateinit var navigator: Navigator
     @Inject
@@ -40,6 +43,8 @@ class SwapConfirmActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WalletManager.storage = this
+        WalletManager.scanWallets()
         wallet = intent.getParcelableExtra(WALLET_PARAM)
         wallet?.apply {
             viewModel.getSwapData(this.address)
@@ -59,6 +64,22 @@ class SwapConfirmActivity : BaseActivity() {
             }
         })
 
+        viewModel.getSwapTokenTransactionCallback.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == SwapTokenTransactionState.Loading)
+                when (state) {
+                    is SwapTokenTransactionState.Success -> {
+                        showAlert(getString(R.string.swap_done))
+                        onBackPressed()
+                    }
+                    is SwapTokenTransactionState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                    }
+                }
+            }
+        })
+
+
         binding.imgBack.setOnClickListener {
             onBackPressed()
         }
@@ -66,6 +87,14 @@ class SwapConfirmActivity : BaseActivity() {
         binding.tvCancel.setOnClickListener {
             onBackPressed()
         }
+
+        binding.tvConfirm.setOnClickListener {
+            viewModel.swap(wallet, binding.swap)
+        }
+    }
+
+    override fun getKeystoreDir(): File {
+        return this.filesDir
     }
 
 
