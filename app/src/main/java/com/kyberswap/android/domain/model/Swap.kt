@@ -110,6 +110,17 @@ data class Swap(
         )
     }
 
+    fun reset() {
+        this.sourceAmount = ""
+        this.destAmount = ""
+        this.expectedRate = ""
+        this.slippageRate = ""
+        this.gasPrice = ""
+        this.gasLimit = ""
+        this.marketRate = ""
+        this.minAcceptedRatePercent = ""
+    }
+
     fun getExpectedDestAmount(expectedRate: String?, amount: String?): BigDecimal {
         return amount.toBigDecimalOrDefaultZero()
             .multiply(expectedRate.toBigDecimalOrDefaultZero())

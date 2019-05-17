@@ -10,7 +10,6 @@ import com.kyberswap.android.data.mapper.GasMapper
 import com.kyberswap.android.data.mapper.RateMapper
 import com.kyberswap.android.data.mapper.TokenMapper
 import com.kyberswap.android.data.repository.*
-import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.domain.repository.*
 import com.kyberswap.android.util.TokenClient
 import dagger.Module
@@ -26,9 +25,8 @@ object DataModule {
     fun provideWalletRepository(
         context: Context,
         walletDao: WalletDao,
-        unitDao: UnitDao,
-        mediator: StorageMediator
-    ): WalletRepository = WalletDataRepository(context, walletDao, unitDao, mediator)
+        unitDao: UnitDao
+    ): WalletRepository = WalletDataRepository(context, walletDao, unitDao)
 
     @Singleton
     @Provides
@@ -72,5 +70,13 @@ object DataModule {
         capMapper: CapMapper,
         tokenClient: TokenClient
     ): SwapRepository =
-        SwapDataRepository(context, swapDao, tokenDao, api, mapper, capMapper, tokenClient)
+        SwapDataRepository(
+            context,
+            swapDao,
+            tokenDao,
+            api,
+            mapper,
+            capMapper,
+            tokenClient
+        )
 }

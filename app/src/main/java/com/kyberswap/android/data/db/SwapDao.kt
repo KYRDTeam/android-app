@@ -25,6 +25,9 @@ interface SwapDao {
     @Query("DELETE FROM swaps")
     fun deleteAllSwaps()
 
+    @Delete
+    fun delete(model: Swap)
+
     @get:Query("SELECT * FROM swaps")
     val all: Flowable<List<Swap>>
 }

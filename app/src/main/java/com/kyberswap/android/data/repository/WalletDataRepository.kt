@@ -1,10 +1,12 @@
 package com.kyberswap.android.data.repository
 
 import android.content.Context
+import android.util.Base64
+import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.data.db.UnitDao
 import com.kyberswap.android.data.db.WalletDao
-import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.domain.model.Unit
+import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.domain.repository.WalletRepository
 import com.kyberswap.android.domain.usecase.wallet.*
@@ -13,28 +15,27 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import org.consenlabs.tokencore.wallet.Identity
-import org.consenlabs.tokencore.wallet.Wallet
 import org.consenlabs.tokencore.wallet.WalletManager
 import org.consenlabs.tokencore.wallet.model.BIP44Util
 import org.consenlabs.tokencore.wallet.model.ChainType
 import org.consenlabs.tokencore.wallet.model.Metadata
 import org.consenlabs.tokencore.wallet.model.Network
+import java.security.SecureRandom
 import javax.inject.Inject
 
 class WalletDataRepository @Inject constructor(
     val context: Context,
     private val walletDao: WalletDao,
-    private val unitDao: UnitDao,
-    private val mediator: StorageMediator
+    private val unitDao: UnitDao
 ) : WalletRepository {
 
-    override fun updateWallet(param: com.kyberswap.android.domain.model.Wallet): Completable {
+    override fun updateWallet(param: Wallet): Completable {
         return Completable.fromCallable {
             walletDao.updateWallet(param)
 
     }
 
-    override fun getWalletByAddress(param: String): Flowable<com.kyberswap.android.domain.model.Wallet> {
+    override fun getWalletByAddress(param: String): Flowable<Wallet> {
         return walletDao.loadWalletByAddress(param)
     }
 
@@ -48,14 +49,14 @@ class WalletDataRepository @Inject constructor(
         return unitDao.unit.map { it.unit }
     }
 
-    override fun getAllWallet(): Single<List<com.kyberswap.android.domain.model.Wallet>> {
+    override fun getAllWallet(): Single<List<Wallet>> {
         return Single.fromCallable {
             walletDao.all
 
 
     }
 
-    override fun getSelectedWallet(): Single<com.kyberswap.android.domain.model.Wallet> {
+    override fun getSelectedWallet(): Single<Wallet> {
         return Single.fromCallable {
             val all = walletDao.all
             var selectedWallet = all.firstOrNull { wallet -> wallet.isSelected }
@@ -76,20 +77,27 @@ class WalletDataRepository @Inject constructor(
                     param.walletName,
                     null
                 )
-            createIdentityWhenNull(param.walletName, "")
+
+            val generatedPassword = generatePassword()
+            createIdentityWhenNull(param.walletName, generatedPassword)
             val importWalletFromMnemonic = WalletManager.importWalletFromMnemonic(
                 metadata,
                 param.seed,
                 BIP44Util.ETHEREUM_PATH,
-                "",
+                generatedPassword,
                 false
             )
-            walletDao.insertWallet(
-                com.kyberswap.android.domain.model.Wallet(
-                    importWalletFromMnemonic.address.toWalletAddress(), param.walletName
-                )
+
+            val wallet = Wallet(
+                importWalletFromMnemonic.address.toWalletAddress(),
+                importWalletFromMnemonic.id,
+                param.walletName,
+                cipher(generatedPassword)
             )
-            importWalletFromMnemonic
+            walletDao.insertWallet(
+                wallet
+            )
+            wallet
 
     }
 
@@ -103,19 +111,27 @@ class WalletDataRepository @Inject constructor(
                     null
                 )
             metadata.source = Metadata.FROM_PRIVATE
-            createIdentityWhenNull(param.walletName, "")
+
+            val generatedPassword = generatePassword()
+
+            createIdentityWhenNull(param.walletName, generatedPassword)
             val importWalletFromPrivateKey = WalletManager.importWalletFromPrivateKey(
                 metadata,
                 param.privateKey,
-                "",
+                generatedPassword,
                 false
             )
-            walletDao.insertWallet(
-                com.kyberswap.android.domain.model.Wallet(
-                    importWalletFromPrivateKey.address.toWalletAddress(), param.walletName
-                )
+
+            val wallet = Wallet(
+                importWalletFromPrivateKey.address.toWalletAddress(),
+                importWalletFromPrivateKey.id,
+                param.walletName,
+                cipher(generatedPassword)
             )
-            importWalletFromPrivateKey
+            walletDao.insertWallet(
+                wallet
+            )
+            wallet
 
     }
 
@@ -139,13 +155,29 @@ class WalletDataRepository @Inject constructor(
                 false
             )
 
-            walletDao.insertWallet(
-                com.kyberswap.android.domain.model.Wallet(
-                    importWalletFromKeystore.address.toWalletAddress(), param.walletName
-                )
+            val cipher = cipher(param.password)
+            val wallet = Wallet(
+                importWalletFromKeystore.address.toWalletAddress(),
+                importWalletFromKeystore.id,
+                param.walletName,
+                cipher
             )
-            importWalletFromKeystore
+            walletDao.insertWallet(wallet)
+            wallet
 
+    }
+
+    @Throws(Exception::class)
+    private fun cipher(password: String): String {
+        if (context is KyberSwapApplication) {
+            return Base64.encodeToString(
+                context.aead.encrypt(
+                    password.toByteArray(Charsets.UTF_8),
+                    ByteArray(0)
+                ), Base64.DEFAULT
+            )
+
+        return ""
     }
 
     private fun createIdentityWhenNull(name: String, password: String) {
@@ -174,25 +206,38 @@ class WalletDataRepository @Inject constructor(
 
     }
 
+    private fun generatePassword(): String {
+        val bytes = ByteArray(256)
+        val random = SecureRandom()
+        random.nextBytes(bytes)
+        return String(bytes)
+    }
+
     override fun createWallet(param: CreateWalletUseCase.Param): Single<Wallet> {
 
         return Single.fromCallable {
+
+            val generatedPassword = generatePassword()
+
             val identity =
                 Identity.createIdentity(
                     param.walletName,
-                    param.pinLock,
+                    generatedPassword,
                     "",
                     Network.MAINNET,
                     Metadata.P2WPKH
                 )
-            val wallet = identity.wallets[0]
+            val ethereumWallet = identity.wallets[0]
+            val wallet = Wallet(
+                ethereumWallet.address.toWalletAddress(),
+                ethereumWallet.id,
+                param.walletName,
+                cipher(generatedPassword),
+                true
+            )
+
             walletDao.insertWallet(
-                com.kyberswap.android.domain.model.Wallet(
-                    wallet.address.toWalletAddress(),
-                    wallet.id,
-                    param.walletName,
-                    true
-                )
+                wallet
             )
             wallet
 

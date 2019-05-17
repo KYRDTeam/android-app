@@ -8,6 +8,7 @@ import com.kyberswap.android.domain.usecase.swap.GetCapUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSwapDataTokenUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSwapUseCase
+import com.kyberswap.android.domain.usecase.wallet.SwapTokenUseCase
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -26,4 +27,6 @@ interface SwapRepository {
     fun getCap(param: GetCapUseCase.Param): Single<Cap>
 
     fun estimateGas(param: EstimateGasUseCase.Param): Single<EthEstimateGas>
+
+    fun swapToken(param: SwapTokenUseCase.Param): Single<String>
 }

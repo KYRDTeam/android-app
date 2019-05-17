@@ -5,6 +5,7 @@ buildscript {
             repositories {
                 google()
                 jcenter()
+                mavenCentral()
                 maven { url "https://jitpack.io" }
                 maven { url "https://plugins.gradle.org/m2/" }
     
@@ -20,6 +21,7 @@ allprojects {
     repositories {
         google()
         jcenter()
+        mavenCentral()
         maven { url "https://jitpack.io" }
         maven { url "https://plugins.gradle.org/m2/" }
     }
@@ -76,6 +78,13 @@ ext {
     rxKotlinVersion = '2.3.0'
     ahbottomnavigationVersion = '2.3.4'
     work = "2.0.1"
+    swipeLayoutVersion = '1.2.0@aar'
+    priorityJobVersion = '2.0.1'
+    debugDbVersion = '1.0.6'
+    expandableLayoutVersion = '2.9.2'
+    statusBarUtilVersion = '1.5.1'
+    androidMPChartVersion = 'v3.1.0'
+    androidTinkVersion = '1.2.2'
 
 
 }

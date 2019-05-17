@@ -191,12 +191,13 @@ class SwapViewModel @Inject constructor(
                 .multiply(expectedRate.toBigDecimalOrDefaultZero())
                 .setScale(DEFAULT_ROUNDING_NUMBER, BigDecimal.ROUND_UP)
 
- else BigDecimal.ZERO
+ else BigDecimal.ZERO.setScale(2, BigDecimal.ROUND_UP)
     }
 
     fun getExpectedDestUsdAmount(amount: Editable?, rateUsdNow: BigDecimal): BigDecimal {
         return getExpectedDestAmount(amount)
             .multiply(rateUsdNow)
+            .setScale(2, BigDecimal.ROUND_UP)
     }
 
 
