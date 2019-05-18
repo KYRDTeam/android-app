@@ -88,13 +88,17 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         )
     }
 
-    fun navigateToSwapConfirmationScreen() {
-        activity.startActivity(SwapConfirmActivity.newIntent(activity))
+    fun navigateToSwapConfirmationScreen(wallet: Wallet?, fragment: Fragment) {
+        fragment.startActivityForResult(
+            SwapConfirmActivity.newIntent(activity, wallet),
+            SWAP_COMFIRMATION
+        )
     }
 
     companion object {
         const val IN_RIGHT_OUT_LEFT = 1
         const val IN_LEFT_OUT_RIGHT = -1
         const val WITHOUT_ANIMATION = 0
+        const val SWAP_COMFIRMATION = 1010
     }
 }

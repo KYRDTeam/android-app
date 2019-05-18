@@ -1,6 +1,8 @@
 package com.kyberswap.android.util.ext
 
+import com.kyberswap.android.domain.model.CustomBytes32
 import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.math.pow
 
 fun String.toWalletAddress(): String {
@@ -11,14 +13,16 @@ fun String.toWalletAddress(): String {
     }
 }
 
-fun String?.percentage(other: String?): Double {
-    if (other.isNullOrEmpty() || this.isNullOrEmpty()) return 0.0
-    if (other.toDouble() == 0.0) return 0.0
+fun String?.percentage(other: String?): BigDecimal {
+    if (other.isNullOrEmpty() || this.isNullOrEmpty()) return BigDecimal.ZERO
+    if (other.toBigDecimal() == BigDecimal.ZERO) return BigDecimal.ZERO
     return try {
-        ((this.toDouble() - other.toDouble()) / other.toDouble() * 100)
+        (this.toBigDecimal() - other.toBigDecimal()).div(other.toBigDecimal())
+            .multiply(100.toBigDecimal())
+            .setScale(2, RoundingMode.UP)
     } catch (ex: Exception) {
         ex.printStackTrace()
-        0.0
+        BigDecimal.ZERO
     }
 }
 
@@ -33,5 +37,12 @@ fun String?.toBigDecimalOrDefaultZero(): BigDecimal {
 }
 
 fun String.updatePrecision(): String {
-    return (this.toDouble() / 10.0.pow(18)).toString()
+    return (this.toDouble() / 10.0.pow(18)).toBigDecimal().toPlainString()
+}
+
+fun String.toBytes32(): CustomBytes32 {
+    val byteValue = toByteArray()
+    val byteValueLen32 = ByteArray(32)
+    System.arraycopy(byteValue, 0, byteValueLen32, 0, byteValue.size)
+    return CustomBytes32(byteValueLen32)
 }

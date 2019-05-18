@@ -122,7 +122,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     }
 
     companion object {
-        private const val WALLET_PARAM = "customer"
+        private const val WALLET_PARAM = "wallet_param"
         fun newIntent(context: Context, wallet: Wallet?) =
             Intent(context, MainActivity::class.java).apply {
                 putExtra(WALLET_PARAM, wallet)

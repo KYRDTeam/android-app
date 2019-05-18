@@ -4,6 +4,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.google.crypto.tink.Aead
+import com.google.crypto.tink.KeysetHandle
+import com.google.crypto.tink.aead.AeadConfig
+import com.google.crypto.tink.aead.AeadFactory
+import com.google.crypto.tink.aead.AeadKeyTemplates
+import com.google.crypto.tink.integration.android.AndroidKeysetManager
 import com.kyberswap.android.util.di.AppComponent
 import com.kyberswap.android.util.di.DaggerAppComponent
 import com.kyberswap.android.util.di.module.DatabaseModule
@@ -16,10 +22,17 @@ import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.viewpump.ViewPump
 import io.reactivex.plugins.RxJavaPlugins
 import timber.log.Timber
+import java.io.IOException
+import java.security.GeneralSecurityException
 
 
 class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
     private lateinit var applicationComponent: AppComponent
+
+    private val PREF_FILE_NAME = "kyber_swap_pref"
+    private val TINK_KEYSET_NAME = "kyber_swap_keyset"
+    private val MASTER_KEY_URI = "android-keystore://kyber_swap_master_key"
+    lateinit var aead: Aead
 
     override fun onCreate() {
         super.onCreate()
@@ -48,6 +61,26 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
                 )
                 .build()
         )
+
+        try {
+            AeadConfig.register()
+            aead = AeadFactory.getPrimitive(getOrGenerateNewKeysetHandle())
+        } catch (e: GeneralSecurityException) {
+            throw RuntimeException(e)
+        } catch (e: IOException) {
+            throw RuntimeException(e)
+        }
+
+    }
+
+    @Throws(IOException::class, GeneralSecurityException::class)
+    private fun getOrGenerateNewKeysetHandle(): KeysetHandle {
+        return AndroidKeysetManager.Builder()
+            .withSharedPref(applicationContext, TINK_KEYSET_NAME, PREF_FILE_NAME)
+            .withKeyTemplate(AeadKeyTemplates.AES256_GCM)
+            .withMasterKeyUri(MASTER_KEY_URI)
+            .build()
+            .keysetHandle
     }
 
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> {

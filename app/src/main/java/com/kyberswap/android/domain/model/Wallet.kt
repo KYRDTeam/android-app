@@ -14,13 +14,19 @@ data class Wallet(
     @PrimaryKey
     @NotNull
     val address: String = "",
+    val walletId: String = "",
     val name: String = "",
+    val cipher: String = "",
     var isSelected: Boolean = false,
     var unit: String = "USD",
     var balance: String = "0"
 ) :
     Parcelable {
-    constructor(wallet: Wallet) : this(wallet.address.toWalletAddress(), wallet.metadata.name)
+    constructor(wallet: Wallet) : this(
+        wallet.address.toWalletAddress(),
+        wallet.id,
+        wallet.metadata.name
+    )
 
     fun display(): String {
         val displayBuilder = StringBuilder()

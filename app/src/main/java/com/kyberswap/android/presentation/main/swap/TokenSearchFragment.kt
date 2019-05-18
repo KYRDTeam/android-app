@@ -68,6 +68,7 @@ class TokenSearchFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        viewModel.getTokenBalance(wallet!!.address)
         binding.imgBack.setOnClickListener {
             activity!!.onBackPressed()
         }
@@ -84,8 +85,6 @@ class TokenSearchFragment : BaseFragment() {
             }
         binding.rvToken.adapter = tokenAdapter
 
-
-        viewModel.getTokenBalance(wallet!!.address)
         viewModel.getTokenBalanceCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == GetBalanceState.Loading)
