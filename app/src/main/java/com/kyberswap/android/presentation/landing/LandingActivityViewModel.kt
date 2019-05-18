@@ -3,7 +3,6 @@ package com.kyberswap.android.presentation.landing
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.wallet.CreateWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetMnemonicUseCase
 import com.kyberswap.android.presentation.common.Event
@@ -26,13 +25,13 @@ class LandingActivityViewModel @Inject constructor(
                 getMnemonicUseCase.execute(
                     Consumer {
                         _getMnemonicCallback.value =
-                            Event(GetMnemonicState.Success(it, Wallet(wallet)))
+                            Event(GetMnemonicState.Success(it, wallet))
             ,
                     Consumer {
                         _getMnemonicCallback.value =
                             Event(GetMnemonicState.ShowError(it.localizedMessage))
             ,
-                    GetMnemonicUseCase.Param(pinLock, wallet.id)
+                    GetMnemonicUseCase.Param(pinLock, wallet.walletId)
                 )
     ,
             Consumer {

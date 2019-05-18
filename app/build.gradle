@@ -197,7 +197,9 @@ dependencies {
     // web3j
     implementation "org.web3j:core:$web3jVersion"
 
-    implementation "com.github.consenlabs:token-core-android:$tokenCoreVersion"
+    implementation("com.github.consenlabs:token-core-android:$tokenCoreVersion") {
+        exclude group: 'com.google.protobuf', module: 'protobuf-java'
+    }
 
     implementation "com.github.tbruyelle:rxpermissions:$rxPermissionVersion"
 
@@ -211,17 +213,21 @@ dependencies {
     implementation "com.jakewharton.rxbinding3:rxbinding-appcompat:3.0.0-alpha2"
     implementation "me.relex:circleindicator:$indicatorVersion"
 
-    implementation "com.daimajia.swipelayout:library:1.2.0@aar"
+    implementation "com.daimajia.swipelayout:library:$swipeLayoutVersion"
 
-    implementation 'com.birbit:android-priority-jobqueue:2.0.1'
+    implementation "com.birbit:android-priority-jobqueue:$priorityJobVersion"
 
-    debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
+    debugImplementation "com.amitshekhar.android:debug-db:$debugDbVersion"
 
-    implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
+    implementation "net.cachapa.expandablelayout:expandablelayout:$expandableLayoutVersion"
 
-    implementation 'com.jaeger.statusbarutil:library:1.5.1'
+    implementation "com.jaeger.statusbarutil:library:$statusBarUtilVersion"
 
-    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    implementation "com.github.PhilJay:MPAndroidChart:$androidMPChartVersion"
+
+    implementation("com.google.crypto.tink:tink-android:$androidTinkVersion") {
+        exclude group: 'com.google.protobuf', module: 'protobuf-java'
+    }
 
 
 }

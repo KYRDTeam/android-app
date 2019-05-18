@@ -112,7 +112,7 @@
     <string name="rate">Rate</string>
     <string name="default_source_amount">0.0001</string>
     <string name="percentage_format" formatted="false" translatable="false">"%.2f %%"</string>
-    <string name="dest_balance_usd_format" formatted="false" translatable="false">"%s USD"</string>
+    <string name="dest_balance_usd_format" formatted="false" translatable="false">"≈ %s USD"</string>
     <string name="default_dest_balance_usd">≈ 0.0 USD</string>
     <string name="gas_fee_gwei">GAS fee (Gwei)</string>
     <string name="gas_fast">%s\n FAST</string>
@@ -124,13 +124,18 @@
     <string name="custom_value">Custom:</string>
     <string name="rate_revert_notification">Transaction will be reverted if rate of %s-%s is lower than %s (Current rate %s)</string>
     <string name="swap_continue">Continue</string>
-    <string name="swap_rate_notification">This rate is %.2f lower than current Market</string>
+    <string name="swap_rate_notification">This rate is %s%% lower than current Market</string>
     <string name="tab_day">24H</string>
     <string name="tab_week">7 Days</string>
     <string name="tab_month">Month</string>
     <string name="tab_year">Year</string>
     <string name="tab_all">All </string>
     <string name="send">Send</string>
+    <string name="min_acceptable_rate">Min Acceptable Rate</string>
+    <string name="cancel">Cancel</string>
+    <string name="swap_to">To:</string>
+    <string name="gas_fee_eth">GAS fee (ETH)</string>
+    <string name="swap_done">Your Swap is Done</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>

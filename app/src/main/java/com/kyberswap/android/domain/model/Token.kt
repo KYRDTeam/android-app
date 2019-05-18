@@ -128,7 +128,6 @@ data class Token(
 
     }
 
-
     companion object {
         const val UP = 1
         const val DOWN = -1

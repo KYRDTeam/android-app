@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModelProviders
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentImportSeedBinding
-import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.landing.ImportWalletState
@@ -72,7 +71,7 @@ class ImportSeedFragment : BaseFragment() {
                 showProgress(state == ImportWalletState.Loading)
                 when (state) {
                     is ImportWalletState.Success -> {
-                        navigator.navigateToHome(Wallet(state.wallet))
+                        navigator.navigateToHome(state.wallet)
             
                     is ImportWalletState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))

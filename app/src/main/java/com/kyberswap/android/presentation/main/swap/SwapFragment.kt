@@ -1,6 +1,8 @@
 package com.kyberswap.android.presentation.main.swap
 
 import android.animation.ObjectAnimator
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,13 +21,16 @@ import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.DEFAULT_ACCEPT_RATE_PERCENTAGE
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.helper.Navigator.Companion.SWAP_COMFIRMATION
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.swap
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toDisplayNumber
 import net.cachapa.expandablelayout.ExpandableLayout
-import timber.log.Timber
+import java.math.RoundingMode
 import javax.inject.Inject
 
 
@@ -64,6 +69,15 @@ class SwapFragment : BaseFragment() {
     ): View? {
         binding = FragmentSwapBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+        if (isVisibleToUser) {
+            wallet?.let {
+                viewModel.getSwapData(it.address)
+    
+
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -125,8 +139,10 @@ class SwapFragment : BaseFragment() {
                         if (text.isNullOrEmpty()) getString(R.string.default_source_amount) else text.toString()
                     )
                     swapData.sourceAmount = text.toString()
-                    viewModel.getGasLimit(wallet?.address, swapData)
 
+                    wallet?.let {
+                        viewModel.getGasLimit(it, swapData)
+            
         
     )
 
@@ -138,6 +154,7 @@ class SwapFragment : BaseFragment() {
                     is GetSwapState.Success -> {
                         if (binding.swap != state.swap) {
                             binding.swap = state.swap
+                            binding.edtSource.setText(state.swap.sourceAmount)
                             getRate(state.swap)
                 
             
@@ -156,22 +173,22 @@ class SwapFragment : BaseFragment() {
                         if (swap != null && state.list.isNotEmpty()) {
                             swap.expectedRate = state.list[0]
                             swap.slippageRate = state.list[1]
-                            viewModel.expectedRate = state.list[0]
                 
                         binding.percentageRate = viewModel.ratePercentage()
                         binding.swap = swap
                         binding.edtDest.setText(
                             viewModel.getExpectedDestAmount(binding.edtSource.text)
-                                .toPlainString()
+                                .toDisplayNumber()
                         )
                         if (swap != null) {
+                            viewModel.saveSwap(swap)
                             binding.tvValueInUSD.text =
                                 getString(
                                     R.string.dest_balance_usd_format,
                                     viewModel.getExpectedDestUsdAmount(
                                         binding.edtSource.text,
                                         swap.tokenDest.rateUsdNow
-                                    ).toPlainString()
+                                    ).toDisplayNumber()
                                 )
                 
             
@@ -186,8 +203,9 @@ class SwapFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetMarketRateState.Success -> {
-                        binding.tvRate.text = state.rate
-                        viewModel.marketRate = state.rate
+                        binding.tvRate.text =
+                            state.rate.toBigDecimalOrDefaultZero().setScale(2, RoundingMode.UP)
+                                .toPlainString()
                         binding.percentageRate = viewModel.ratePercentage()
             
                     is GetMarketRateState.ShowError -> {
@@ -222,8 +240,11 @@ class SwapFragment : BaseFragment() {
         viewModel.compositeDisposable.add(binding.rgGas.checkedChanges()
             .observeOn(schedulerProvider.ui())
             .subscribe { id ->
+                binding.swap?.let { swap ->
+                    swap.gasPrice = getSelectedGasPrice(viewModel.gas)
+                    viewModel.saveSwap(swap)
 
-
+        
     )
 
         viewModel.getGasPrice()
@@ -231,8 +252,11 @@ class SwapFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetGasPriceState.Success -> {
+                        binding.swap?.let { swap ->
+                            swap.gasPrice = getSelectedGasPrice(state.gas)
+                            viewModel.saveSwap(swap)
+                
                         binding.gas = state.gas
-                        binding.swap?.gasPrice = getSelectedGasPrice(state.gas)
             
                     is GetGasPriceState.ShowError -> {
 
@@ -249,24 +273,11 @@ class SwapFragment : BaseFragment() {
                         showAlert(state.message ?: getString(R.string.something_wrong))
             
         
-
-    
-)
-
-        viewModel.getEthRateFromSourceToken(binding.swap?.tokenSource?.tokenSymbol)
-        viewModel.getEthRateFromSourceTokenCallback.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is GetMarketRateState.Success -> {
-
-            
-        
-
     
 )
 
         viewModel.compositeDisposable.add(
-            binding.edtCustom.textChanges().skipInitialValue()
+            binding.edtCustom.textChanges()
                 .observeOn(schedulerProvider.ui())
                 .subscribe {
                     binding.tvRevertNotification.text =
@@ -279,47 +290,68 @@ class SwapFragment : BaseFragment() {
                 String.format(
                     getString(R.string.swap_rate_notification),
                     viewModel.ratePercentage()
+                        .toBigDecimalOrDefaultZero()
+                        .abs()
+                        .toDisplayNumber()
                 )
             )
 
 
-        binding.tvContinue.setOnClickListener {
-            binding.swap?.let {
-                Timber.e(binding.swap?.gasPrice)
-                if (viewModel.verifyCap(
-                        binding.edtSource.text.toString().toBigDecimalOrDefaultZero() *
-                            it.tokenSource.rateEthNow
-                    )
-                ) {
-                    navigator.navigateToSwapConfirmationScreen()
+        viewModel.saveSwapDataCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == SaveSwapState.Loading)
+                when (state) {
+                    is SaveSwapState.Success -> {
+                        navigator.navigateToSwapConfirmationScreen(wallet, this)
+            
         
     
+)
 
+        binding.tvContinue.setOnClickListener {
+            binding.swap?.let { swap ->
+                if (viewModel.verifyCap(
+                        binding.edtSource.text.toString().toBigDecimalOrDefaultZero() *
+                            swap.tokenSource.rateEthNow
+                    )
+                ) {
+                    swap.minAcceptedRatePercent =
+                        getMinAcceptedRatePercent(binding.rgRate.checkedRadioButtonId)
+                    viewModel.updateSwap(swap)
+        
+    
 
 
     }
 
     private fun getRevertNotification(id: Int): String {
-        return when (id) {
-            R.id.rbDefaultRate -> {
-                String.format(
-                    getString(R.string.rate_revert_notification),
-                    binding.tvSource.text,
-                    binding.tvDest.text,
-                    viewModel.defaultRateThreshold,
-                    viewModel.expectedRateDisplay
-                )
+        return String.format(
+            getString(R.string.rate_revert_notification),
+            binding.tvSource.text,
+            binding.tvDest.text,
+            viewModel.rateThreshold(getMinAcceptedRatePercent(id)),
+            viewModel.expectedRateDisplay
+        )
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == SWAP_COMFIRMATION) {
+            if (resultCode == Activity.RESULT_OK) {
+                wallet?.let {
+                    viewModel.getSwapData(it.address)
+        
+
     
 
+    }
+
+    private fun getMinAcceptedRatePercent(id: Int): String {
+        return when (id) {
             R.id.rbCustom -> {
-                String.format(
-                    getString(R.string.rate_revert_notification),
-                    binding.tvSource.text,
-                    binding.tvDest.text,
-                    viewModel.customRateThreshold(binding.edtCustom.text.toString())
-                )
+                binding.edtCustom.text.toString()
     
-            else -> ""
+            else -> DEFAULT_ACCEPT_RATE_PERCENTAGE.toString()
 
     }
 
@@ -339,7 +371,11 @@ class SwapFragment : BaseFragment() {
         )
         getExpectedRate(
             swap,
-            if (binding.edtSource.text.isNullOrEmpty()) getString(R.string.default_source_amount)
+            if (binding.edtSource.text.isNullOrEmpty() ||
+                binding.edtSource.text.toString().toDouble() == 0.0
+            ) getString(
+                R.string.default_source_amount
+            )
             else binding.edtSource.text.toString()
         )
     }

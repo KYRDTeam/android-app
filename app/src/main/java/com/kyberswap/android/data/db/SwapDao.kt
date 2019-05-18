@@ -19,8 +19,14 @@ interface SwapDao {
     @Query("SELECT * from swaps where walletAddress = :address")
     fun findSwapDataByAddress(address: String): Flowable<Swap>
 
+    @Query("SELECT * from swaps where walletAddress = :address LIMIT 1")
+    fun findSwapByAddress(address: String): Swap?
+
     @Query("DELETE FROM swaps")
     fun deleteAllSwaps()
+
+    @Delete
+    fun delete(model: Swap)
 
     @get:Query("SELECT * FROM swaps")
     val all: Flowable<List<Swap>>

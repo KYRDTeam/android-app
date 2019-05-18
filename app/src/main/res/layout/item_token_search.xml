@@ -19,7 +19,7 @@
         android:layout_height="64dp"
         android:background="?selectableItemBackground"
         android:elevation="5dp"
-        android:gravity="center_vertical"
+        android:gravity="center"
         android:orientation="horizontal"
         android:paddingStart="16dp"
         android:paddingEnd="16dp">
@@ -47,9 +47,10 @@
             tools:text="ADX" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="44dp"
+            android:layout_marginStart="24dp"
+            android:layout_weight="1"
             android:text="@{token.tokenName}"
             android:textColor="#9ea1aa"
             android:textSize="14sp"
@@ -57,10 +58,9 @@
 
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="4dp"
             android:gravity="center|end"
             android:text="@{token.displayCurrentBalance}"
             android:textColor="#1d303a"

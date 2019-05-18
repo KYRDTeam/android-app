@@ -9,7 +9,7 @@ fun BigDecimal.toDisplayNumber(): String {
     else {
         val s = list[1]
         if (s[0] != '0') {
-            return list[0] + '.' + s.substring(0, 4)
+            return list[0] + '.' + s.substring(0, if (s.length > 4) 4 else s.length)
  else {
             var index = 0
             s.forEach { c ->

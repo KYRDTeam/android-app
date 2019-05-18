@@ -1,6 +1,7 @@
 package com.kyberswap.android.presentation.landing
 
-import org.consenlabs.tokencore.wallet.Wallet
+import com.kyberswap.android.domain.model.Wallet
+
 
 sealed class ImportWalletState {
     object Loading : ImportWalletState()
