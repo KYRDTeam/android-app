@@ -179,9 +179,9 @@ class SwapViewModel @Inject constructor(
     }
 
     fun verifyCap(amount: BigDecimal): Boolean {
-        return cap != null && amount <= Convert.fromWei(
+        return cap != null && Convert.toWei(amount, Convert.Unit.ETHER) <= Convert.toWei(
             cap!!.cap,
-            Convert.Unit.ETHER
+            Convert.Unit.GWEI
         ) && !cap!!.rich
     }
 

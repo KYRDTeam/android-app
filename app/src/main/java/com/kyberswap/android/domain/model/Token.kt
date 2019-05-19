@@ -100,6 +100,17 @@ data class Token(
     val displayCurrentBalance: String
         get() = currentBalance.toDisplayNumber()
 
+    val displayCurrentBalanceInEth: String
+        get() = StringBuilder()
+            .append(if (isETH()) "" else "≈ ")
+            .append(
+                if (currentBalance > BigDecimal.ZERO) currentBalance
+                    .multiply(rateEthNow)
+                    .toDisplayNumber() else "0"
+            )
+            .append("ETH")
+            .toString()
+
     val displayGasApprove: String
         get() = gasApprove.toDisplayNumber()
 

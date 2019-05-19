@@ -6,5 +6,5 @@ import com.kyberswap.android.domain.model.Word
 sealed class GetMnemonicState {
     object Loading : GetMnemonicState()
     class ShowError(val message: String?) : GetMnemonicState()
-    class Success(val words: List<Word>, val wallet: Wallet) : GetMnemonicState()
+    class Success(val wallet: Wallet, val words: List<Word>) : GetMnemonicState()
 }

@@ -51,6 +51,10 @@ interface MainActivityModule {
     @ContributesAndroidInjector
     fun contributeChartFragment(): ChartFragment
 
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeLineChartFragment(): LineChartFragment
+
     @Binds
     @IntoMap
     @ViewModelKey(BalanceViewModel::class)
@@ -105,5 +109,12 @@ interface MainActivityModule {
     @ViewModelKey(ChartViewModel::class)
     fun bindChartViewModel(
         chartViewModel: ChartViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LineChartViewModel::class)
+    fun bindLineChartViewModel(
+        chartViewModel: LineChartViewModel
     ): ViewModel
 }

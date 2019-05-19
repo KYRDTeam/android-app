@@ -14,30 +14,21 @@ class LandingActivityViewModel @Inject constructor(
     private val getMnemonicUseCase: GetMnemonicUseCase
 ) : ViewModel() {
 
-    private val _getMnemonicCallback = MutableLiveData<Event<GetMnemonicState>>()
-    val getMnemonicCallback: LiveData<Event<GetMnemonicState>>
+    private val _getMnemonicCallback = MutableLiveData<Event<CreateWalletState>>()
+    val createWalletCallback: LiveData<Event<CreateWalletState>>
         get() = _getMnemonicCallback
 
     fun createWallet(pinLock: String = "", walletName: String = "Untitled") {
-        _getMnemonicCallback.postValue(Event(GetMnemonicState.Loading))
+        _getMnemonicCallback.postValue(Event(CreateWalletState.Loading))
         createWalletUseCase.execute(
-            Consumer { wallet ->
-                getMnemonicUseCase.execute(
-                    Consumer {
-                        _getMnemonicCallback.value =
-                            Event(GetMnemonicState.Success(it, wallet))
-                    },
-                    Consumer {
-                        _getMnemonicCallback.value =
-                            Event(GetMnemonicState.ShowError(it.localizedMessage))
-                    },
-                    GetMnemonicUseCase.Param(pinLock, wallet.walletId)
-                )
+            Consumer {
+                _getMnemonicCallback.value =
+                    Event(CreateWalletState.Success(it.first, it.second))
             },
             Consumer {
                 it.printStackTrace()
                 _getMnemonicCallback.value =
-                    Event(GetMnemonicState.ShowError(it.localizedMessage))
+                    Event(CreateWalletState.ShowError(it.localizedMessage))
             },
             CreateWalletUseCase.Param(pinLock, walletName)
         )

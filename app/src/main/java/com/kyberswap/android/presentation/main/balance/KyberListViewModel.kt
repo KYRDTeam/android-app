@@ -3,12 +3,15 @@ package com.kyberswap.android.presentation.main.balance
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalanceUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
+import com.kyberswap.android.domain.usecase.wallet.SaveSwapDataTokenUseCase
 import com.kyberswap.android.domain.usecase.wallet.UpdateWalletUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
@@ -20,7 +23,8 @@ class KyberListViewModel @Inject constructor(
     private val getBalanceUseCase: GetBalanceUseCase,
     private val getBalancePollingUseCase: GetBalancePollingUseCase,
     private val updateWalletUseCase: UpdateWalletUseCase,
-    private val getWalletByAddressUseCase: GetWalletByAddressUseCase
+    private val getWalletByAddressUseCase: GetWalletByAddressUseCase,
+    private val saveSwapDataTokenUseCase: SaveSwapDataTokenUseCase
 ) : ViewModel() {
 
     private val _getBalanceStateCallback = MutableLiveData<Event<GetBalanceState>>()
@@ -35,6 +39,10 @@ class KyberListViewModel @Inject constructor(
         get() = _searchedKeywords
 
     private val _searchedKeywords = MutableLiveData<Event<String>>()
+
+    private val _saveSwapDataStateStateCallback = MutableLiveData<Event<SaveSwapDataState>>()
+    val saveTokenSelectionCallback: LiveData<Event<SaveSwapDataState>>
+        get() = _saveSwapDataStateStateCallback
 
     val compositeDisposable by lazy {
         CompositeDisposable()
@@ -90,17 +98,17 @@ class KyberListViewModel @Inject constructor(
             },
             null
         )
-
-
     }
 
     fun updateWallet(wallet: Wallet) {
         updateWalletUseCase.execute(
             Action {
-
+                _saveSwapDataStateStateCallback.value = Event(SaveSwapDataState.Success())
             },
             Consumer {
                 it.printStackTrace()
+                _saveSwapDataStateStateCallback.value =
+                    Event(SaveSwapDataState.ShowError(it.localizedMessage))
             },
             wallet
         )
@@ -111,5 +119,19 @@ class KyberListViewModel @Inject constructor(
         getBalancePollingUseCase.dispose()
         getWalletByAddressUseCase.dispose()
         super.onCleared()
+    }
+
+    fun save(walletAddress: String, token: Token, isSell: Boolean = false) {
+        saveSwapDataTokenUseCase.execute(
+            Action {
+                _saveSwapDataStateStateCallback.value = Event(SaveSwapDataState.Success())
+            },
+            Consumer {
+                it.printStackTrace()
+                _saveSwapDataStateStateCallback.value =
+                    Event(SaveSwapDataState.ShowError(it.localizedMessage))
+            },
+            SaveSwapDataTokenUseCase.Param(walletAddress, token, isSell)
+        )
     }
 }

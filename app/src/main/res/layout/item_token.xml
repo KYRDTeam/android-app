@@ -14,18 +14,20 @@
             type="Boolean" />
     </data>
 
-    <com.daimajia.swipe.SwipeLayout xmlns:swipe="http://schemas.android.com/apk/res-auto"
+    <com.daimajia.swipe.SwipeLayout
         android:id="@+id/swipe"
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        swipe:clickToClose="true"
-        swipe:drag_edge="right">
+        android:layout_width="match_parent"
+        app:clickToClose="true"
+        app:drag_edge="right">
 
         <LinearLayout
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="match_parent">
 
             <Button
+                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/btnBuy"
                 android:layout_width="72dp"
                 android:layout_height="match_parent"
@@ -36,6 +38,7 @@
                 android:textSize="16sp" />
 
             <Button
+                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/btnSell"
                 android:layout_width="72dp"
                 android:layout_height="match_parent"
@@ -46,6 +49,7 @@
                 android:textSize="16sp" />
 
             <Button
+                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/btnSend"
                 android:layout_width="72dp"
                 android:layout_height="match_parent"
@@ -57,6 +61,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/lnItem"
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:elevation="5dp"

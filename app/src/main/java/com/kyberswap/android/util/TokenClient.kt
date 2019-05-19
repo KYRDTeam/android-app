@@ -5,6 +5,7 @@ import com.kyberswap.android.domain.usecase.wallet.SwapTokenUseCase
 import com.kyberswap.android.presentation.common.DEFAULT_MAX_AMOUNT
 import com.kyberswap.android.presentation.common.DEFAULT_WALLET_ID
 import com.kyberswap.android.presentation.common.PERM
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBytes32
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.FunctionReturnDecoder
@@ -224,13 +225,13 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         contractAddress: String
     ): String? {
         val gasPrice = Convert.toWei(
-            param.swap.gasPrice,
+            param.swap.gasPrice.toBigDecimalOrDefaultZero(),
             Convert.Unit.GWEI
         ).toBigInteger()
         val gasLimit = param.swap.gasLimit.toBigInteger()
 
         val amount = if (param.swap.tokenSource.isETH()) Convert.toWei(
-            param.swap.sourceAmount,
+            param.swap.sourceAmount.toBigDecimalOrDefaultZero(),
             Convert.Unit.ETHER
         ).toBigIntegerExact() else BigInteger.ZERO
 

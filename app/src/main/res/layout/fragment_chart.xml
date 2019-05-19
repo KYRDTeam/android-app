@@ -101,13 +101,28 @@
                     app:layout_constraintStart_toEndOf="@+id/tvTokenSymbol" />
 
                 <TextView
-                    android:id="@+id/tvTokenBalanceEth"
+                    android:id="@+id/tvTokenName"
                     android:layout_width="wrap_content"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="57dp"
+                    android:layout_marginTop="4dp"
+                    android:text="@{token.tokenName}"
+                    android:textColor="#8b8e93"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@+id/tvTokenBalanceEth"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvTokenSymbol" />
+
+                <TextView
+                    android:id="@+id/tvTokenBalanceEth"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:gravity="end"
                     android:letterSpacing="0.07"
-                    android:text="≈ 0.57 ETH"
+                    android:text="@{token.displayCurrentBalanceInEth}"
                     android:textColor="#838894"
                     android:textSize="14sp"
                     app:layout_constraintBaseline_toBaselineOf="@+id/tvTokenName"
@@ -122,7 +137,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="32dp"
                     android:layout_marginEnd="16dp"
-                    android:text="0.00023 ETH"
+                    android:text="@{token.displayRateEthNow}"
                     android:textColor="#2e3957"
                     android:textSize="24sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -142,28 +157,13 @@
                     android:minHeight="30dp"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
-                    android:text="9.238 %"
+                    android:text="@{token.displayChangeEth24h + `%` }"
                     android:textColor="#ffffff"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.461"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView27" />
-
-                <TextView
-                    android:id="@+id/tvTokenName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="15dp"
-                    android:layout_marginStart="57dp"
-                    android:layout_marginTop="4dp"
-                    android:text="@{token.tokenName}"
-                    android:textColor="#8b8e93"
-                    android:textSize="12sp"
-                    app:layout_constraintEnd_toStartOf="@+id/tvTokenBalanceEth"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintHorizontal_chainStyle="spread_inside"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvTokenSymbol" />
 
                 <com.google.android.material.tabs.TabLayout
                     android:id="@+id/tabLayout"

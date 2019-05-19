@@ -1,9 +1,9 @@
 package com.kyberswap.android.presentation.main.balance
 
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
@@ -20,7 +20,12 @@ import com.kyberswap.android.presentation.base.DataBoundViewHolder
 
 class TokenAdapter(
     appExecutors: AppExecutors,
-    private val onTokenClick: ((Token) -> Unit)?
+    private val handler: Handler,
+    private val onTokenClick: ((Token) -> Unit)?,
+    private val onBuyClick: ((Token) -> Unit)?,
+    private val onSellClick: ((Token) -> Unit)?,
+    private val onSendClick: ((Token) -> Unit)?
+
 ) : DataBoundListSwipeAdapter<Token, ItemTokenBinding>(
     appExecutors,
     diffCallback = object : DiffUtil.ItemCallback<Token>() {
@@ -63,21 +68,31 @@ class TokenAdapter(
 
     override fun bind(binding: ItemTokenBinding, item: Token) {
         binding.setVariable(BR.token, item)
-        binding.root.setOnClickListener {
+        binding.lnItem.setOnClickListener {
             onTokenClick?.invoke(item)
         }
         binding.btnBuy.setOnClickListener {
-            Toast.makeText(binding.root.context, "Buy", Toast.LENGTH_SHORT).show()
+
             binding.swipe.close(true)
+            handler.postDelayed({
+                onBuyClick?.invoke(item)
+            }, 250)
 
         }
         binding.btnSell.setOnClickListener {
-            Toast.makeText(binding.root.context, "Sell", Toast.LENGTH_SHORT).show()
             binding.swipe.close(true)
+            handler.postDelayed({
+                onSellClick?.invoke(item)
+            }, 250)
         }
         binding.btnSend.setOnClickListener {
-            Toast.makeText(binding.root.context, "Send", Toast.LENGTH_SHORT).show()
             binding.swipe.close(true)
+            handler.postDelayed(
+                {
+                    onSendClick?.invoke(item)
+                }, 250
+            )
+
         }
 
         binding.swipe.addSwipeListener(object : SimpleSwipeListener() {
