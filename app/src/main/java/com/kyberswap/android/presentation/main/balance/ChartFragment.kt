@@ -59,23 +59,23 @@ class ChartFragment : BaseFragment() {
         val chartPagerAdapter = ChartPagerAdapter(childFragmentManager)
 
         chartPagerAdapter.addFragment(
-            LineChartFragment.newInstance(token),
+            LineChartFragment.newInstance(token, ChartType.DAY),
             getString(R.string.tab_day)
         )
         chartPagerAdapter.addFragment(
-            LineChartFragment.newInstance(token),
+            LineChartFragment.newInstance(token, ChartType.WEEK),
             getString(R.string.tab_week)
         )
         chartPagerAdapter.addFragment(
-            LineChartFragment.newInstance(token),
+            LineChartFragment.newInstance(token, ChartType.MONTH),
             getString(R.string.tab_month)
         )
         chartPagerAdapter.addFragment(
-            LineChartFragment.newInstance(token),
+            LineChartFragment.newInstance(token, ChartType.YEAR),
             getString(R.string.tab_year)
         )
         chartPagerAdapter.addFragment(
-            LineChartFragment.newInstance(token),
+            LineChartFragment.newInstance(token, ChartType.ALL),
             getString(R.string.tab_all)
         )
 

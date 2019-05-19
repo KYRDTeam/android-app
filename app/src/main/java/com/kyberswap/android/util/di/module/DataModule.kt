@@ -5,10 +5,7 @@ import com.kyberswap.android.data.api.home.CurrencyApi
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.db.*
-import com.kyberswap.android.data.mapper.CapMapper
-import com.kyberswap.android.data.mapper.GasMapper
-import com.kyberswap.android.data.mapper.RateMapper
-import com.kyberswap.android.data.mapper.TokenMapper
+import com.kyberswap.android.data.mapper.*
 import com.kyberswap.android.data.repository.*
 import com.kyberswap.android.domain.repository.*
 import com.kyberswap.android.util.TokenClient
@@ -47,10 +44,13 @@ object DataModule {
     fun provideTokenRepository(
         client: TokenClient,
         api: SwapApi,
-        rateMapper: RateMapper,
+        tokenApi: TokenApi,
         rateDao: RateDao,
+        rateMapper: RateMapper,
+        chartMapper: ChartMapper,
         context: Context
-    ): TokenRepository = TokenDataRepository(client, api, rateMapper, rateDao, context)
+    ): TokenRepository =
+        TokenDataRepository(client, api, tokenApi, rateDao, rateMapper, chartMapper, context)
 
     @Singleton
     @Provides

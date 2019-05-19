@@ -1,6 +1,7 @@
 package com.kyberswap.android.presentation.main.balance
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,9 +18,12 @@ import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.toDisplayNumber
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_token_header.*
 import kotlinx.android.synthetic.main.layout_token_header.view.*
 import java.math.BigDecimal
@@ -39,6 +43,10 @@ class KyberListFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    private val handler by lazy {
+        Handler()
+    }
 
     private val viewModel by lazy {
         ViewModelProviders.of(parentFragment!!, viewModelFactory)
@@ -80,9 +88,20 @@ class KyberListFragment : BaseFragment() {
             false
         )
         val tokenAdapter =
-            TokenAdapter(appExecutors) {
-                navigator.navigateToChartScreen(it)
-    
+            TokenAdapter(appExecutors, handler,
+                {
+                    navigator.navigateToChartScreen(it)
+        ,
+                {
+                    viewModel.save(wallet!!.address, it, true)
+        ,
+                {
+                    viewModel.save(wallet!!.address, it, false)
+        ,
+                {
+
+        
+            )
         tokenAdapter.mode = Attributes.Mode.Single
         binding.rvToken.adapter = tokenAdapter
 
@@ -166,6 +185,25 @@ class KyberListFragment : BaseFragment() {
         
     
 )
+
+        viewModel.saveTokenSelectionCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == SaveSwapDataState.Loading)
+                when (state) {
+                    is SaveSwapDataState.Success -> {
+                        moveToSwapTab()
+            
+                    is SaveSwapDataState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        Toast.makeText(
+                            activity,
+                            state.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+            
+        
+    
+)
     }
 
     private fun getFilterTokenList(searchedString: String, tokens: List<Token>): List<Token> {
@@ -188,6 +226,19 @@ class KyberListFragment : BaseFragment() {
             )
 
         return balance
+
+    }
+
+    override fun onDestroyView() {
+        handler.removeCallbacksAndMessages(null)
+        super.onDestroyView()
+    }
+
+    private fun moveToSwapTab() {
+        if (activity is MainActivity) {
+            handler.post {
+                activity!!.bottomNavigation.currentItem = 1
+    
 
     }
 

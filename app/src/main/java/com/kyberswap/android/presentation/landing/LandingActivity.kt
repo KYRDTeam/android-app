@@ -57,18 +57,18 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
             navigator.navigateToImportWalletPage()
 
 
-        viewModel.getMnemonicCallback.observe(this, Observer {
+        viewModel.createWalletCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
-                showProgress(state == GetMnemonicState.Loading)
+                showProgress(state == CreateWalletState.Loading)
                 when (state) {
-                    is GetMnemonicState.Success -> {
+                    is CreateWalletState.Success -> {
                         showAlert(getString(R.string.create_wallet_success)) {
                             binding.btnCreateWallet.enable(true)
                             navigator.navigateToBackupWalletPage(state.words, state.wallet)
                 
 
             
-                    is GetMnemonicState.ShowError -> {
+                    is CreateWalletState.ShowError -> {
                         Toast.makeText(
                             this,
                             state.message,
@@ -84,6 +84,11 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
         super.onResume()
         if (!binding.btnImportWallet.isEnabled) {
             binding.btnImportWallet.enable(true)
+
+
+        if (!binding.btnCreateWallet.isEnabled) {
+            binding.btnCreateWallet.enable(true)
+
 
     }
 

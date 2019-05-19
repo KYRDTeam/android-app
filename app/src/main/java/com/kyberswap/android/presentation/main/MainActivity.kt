@@ -41,6 +41,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     private var wallet: Wallet? = null
 
+    private lateinit var bottomBar: AHBottomNavigation
+
     private val mainViewModel: MainViewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
     }
@@ -78,6 +80,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         bottomNavigation.setOnTabSelectedListener { position, wasSelected ->
             binding.vpNavigation.setCurrentItem(position, false)
             return@setOnTabSelectedListener true
+
 
 
         binding.navView.rvWallet.layoutManager = LinearLayoutManager(

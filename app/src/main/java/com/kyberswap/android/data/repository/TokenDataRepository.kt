@@ -3,17 +3,23 @@ package com.kyberswap.android.data.repository
 import android.content.Context
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.SwapApi
+import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.db.RateDao
+import com.kyberswap.android.data.mapper.ChartMapper
 import com.kyberswap.android.data.mapper.RateMapper
+import com.kyberswap.android.domain.model.Chart
 import com.kyberswap.android.domain.repository.TokenRepository
 import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
+import com.kyberswap.android.domain.usecase.token.GetChartDataForTokenUseCase
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.updatePrecision
 import io.reactivex.Flowable
 import io.reactivex.FlowableTransformer
+import io.reactivex.Single
 import io.reactivex.functions.BiFunction
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.pow
@@ -22,11 +28,14 @@ import kotlin.math.pow
 class TokenDataRepository @Inject constructor(
     private val tokenClient: TokenClient,
     private val api: SwapApi,
-    private val rateMapper: RateMapper,
+    private val tokenApi: TokenApi,
     private val rateDao: RateDao,
+    private val rateMapper: RateMapper,
+    private val chartMapper: ChartMapper,
     private val context: Context
 ) :
     TokenRepository {
+
     override fun getMarketRate(param: GetMarketRateUseCase.Param): Flowable<String> {
         return Flowable.mergeDelayError(
             rateDao.all,
@@ -81,6 +90,20 @@ class TokenDataRepository @Inject constructor(
                 BiFunction<T, Int, Int> { _: T, u: Int -> u })
                 .flatMap { t -> Flowable.timer(t * 5L, TimeUnit.SECONDS) }
 
+    }
+
+    override fun getChartData(param: GetChartDataForTokenUseCase.Param): Single<Chart> {
+        val to = Date().time / 1000
+        val from = param.charType.fromTime(to) / 1000
+
+        return tokenApi.getChartHistory(
+            param.token.tokenSymbol,
+            param.charType.resolution,
+            param.rateType,
+            from,
+            to
+        )
+            .map { chartMapper.transform(it) }
     }
 
     companion object {

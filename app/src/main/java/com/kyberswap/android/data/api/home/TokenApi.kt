@@ -1,5 +1,6 @@
 package com.kyberswap.android.data.api.home
 
+import com.kyberswap.android.data.api.chart.ChartResponseEntity
 import com.kyberswap.android.data.api.token.TokenEntity
 import com.kyberswap.android.data.api.token.TokenPriceEntity
 import io.reactivex.Single
@@ -15,5 +16,18 @@ interface TokenApi {
         @Query("currency") currency: String
     ): Single<TokenPriceEntity>
 
+    @GET("chart/history")
+    fun getChartHistory(
+        @Query("symbol")
+        tokenSymbol: String,
+        @Query("resolution")
+        resolution: String,
+        @Query("rateType")
+        rateType: String,
+        @Query("from")
+        from: Long,
+        @Query("to")
+        to: Long
+    ): Single<ChartResponseEntity>
 
 }

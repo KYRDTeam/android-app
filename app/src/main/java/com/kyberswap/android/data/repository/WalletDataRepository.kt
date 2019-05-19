@@ -207,13 +207,14 @@ class WalletDataRepository @Inject constructor(
     }
 
     private fun generatePassword(): String {
-        val bytes = ByteArray(256)
+        val bytes = ByteArray(16)
         val random = SecureRandom()
         random.nextBytes(bytes)
-        return String(bytes)
+        Base64.encodeToString(bytes, Base64.DEFAULT)
+        return Base64.encodeToString(bytes, Base64.DEFAULT)
     }
 
-    override fun createWallet(param: CreateWalletUseCase.Param): Single<Wallet> {
+    override fun createWallet(param: CreateWalletUseCase.Param): Single<Pair<Wallet, List<Word>>> {
 
         return Single.fromCallable {
 
@@ -239,7 +240,17 @@ class WalletDataRepository @Inject constructor(
             walletDao.insertWallet(
                 wallet
             )
-            wallet
+
+
+            val words = mutableListOf<Word>()
+            WalletManager.exportMnemonic(
+                ethereumWallet.id,
+                generatedPassword
+            ).mnemonic.split(" ").forEachIndexed { index, s ->
+                words.add(Word(index + 1, s))
+    
+
+            Pair(wallet, words)
 
     }
 }
