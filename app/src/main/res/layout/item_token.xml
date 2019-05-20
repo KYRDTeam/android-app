@@ -16,19 +16,18 @@
 
     <com.daimajia.swipe.SwipeLayout
         android:id="@+id/swipe"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:clickToClose="true"
         app:drag_edge="right">
 
         <LinearLayout
-            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="match_parent">
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/btnBuy"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="72dp"
                 android:layout_height="match_parent"
                 android:background="#31cb9e"
@@ -38,8 +37,8 @@
                 android:textSize="16sp" />
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/btnSell"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="72dp"
                 android:layout_height="match_parent"
                 android:background="#1e89c1"
@@ -49,8 +48,8 @@
                 android:textSize="16sp" />
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/btnSend"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="72dp"
                 android:layout_height="match_parent"
                 android:background="#edab2f"
@@ -131,7 +130,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="16dp"
                 android:gravity="center|end"
-                android:minWidth="60dp">
+                android:minWidth="72dp">
 
                 <ImageView
                     android:id="@+id/imgState"
@@ -145,7 +144,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:gravity="end"
-                    android:text="@{showEth ? token.displayChangeEth24h + `%` : token.displayChangeUsd24h + `%`}"
                     android:textColor="@color/token_change24h_up"
                     android:textSize="14sp" />
             </LinearLayout>
