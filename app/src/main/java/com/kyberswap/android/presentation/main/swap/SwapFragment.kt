@@ -93,13 +93,18 @@ class SwapFragment : BaseFragment() {
             binding.expandableLayout.collapse()
         }
 
-        binding.lnSource.setOnClickListener {
-            navigator.navigateToTokenSearch(R.id.swap_container, wallet, true)
+        listOf(binding.imgTokenSource, binding.tvSource).forEach {
+            it.setOnClickListener {
+                navigator.navigateToTokenSearch(R.id.swap_container, wallet, true)
+            }
         }
 
-        binding.lnDest.setOnClickListener {
-            navigator.navigateToTokenSearch(R.id.swap_container, wallet, false)
+        listOf(binding.imgTokenDest, binding.tvDest).forEach {
+            it.setOnClickListener {
+                navigator.navigateToTokenSearch(R.id.swap_container, wallet, false)
+            }
         }
+
         binding.expandableLayout.setOnExpansionUpdateListener { _, state ->
             if (state == ExpandableLayout.State.EXPANDED) {
                 val animator = ObjectAnimator.ofInt(

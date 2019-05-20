@@ -13,7 +13,10 @@ import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSwapUseCase
-import com.kyberswap.android.presentation.common.*
+import com.kyberswap.android.presentation.common.DEFAULT_EXPECTED_RATE
+import com.kyberswap.android.presentation.common.DEFAULT_MARKET_RATE
+import com.kyberswap.android.presentation.common.DEFAULT_ROUNDING_NUMBER
+import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.util.ext.percentage
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import io.reactivex.disposables.CompositeDisposable
@@ -74,10 +77,6 @@ class SwapViewModel @Inject constructor(
     val gas: Gas
         get() = _gas ?: Gas()
 
-    val defaultRateThreshold: String
-        get() = DEFAULT_RATE_PERCENTAGE.multiply(expectedRate.toBigDecimalOrDefaultZero())
-            .setScale(2, BigDecimal.ROUND_UP).toPlainString()
-
     val expectedRateDisplay: String
         get() = expectedRate.toBigDecimalOrDefaultZero()
             .setScale(2, BigDecimal.ROUND_UP).toPlainString()
@@ -121,6 +120,7 @@ class SwapViewModel @Inject constructor(
     fun getSwapData(address: String) {
         getSwapData.execute(
             Consumer {
+                gasLimit = it.tokenSource.gasLimit.toBigDecimalOrDefaultZero().toBigInteger()
                 _getSwapCallback.value = Event(GetSwapState.Success(it))
             },
             Consumer {
@@ -212,7 +212,7 @@ class SwapViewModel @Inject constructor(
         estimateGasUseCase.execute(
             Consumer {
                 if (it.error == null) {
-                    gasLimit = it.amountUsed
+                    gasLimit = (it.amountUsed.toBigDecimal() * 1.2.toBigDecimal()).toBigInteger()
                 }
 
             },
