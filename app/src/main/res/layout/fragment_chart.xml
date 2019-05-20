@@ -141,6 +141,7 @@
                     android:textColor="#2e3957"
                     android:textSize="24sp"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvTokenBalanceEth" />
 
@@ -161,7 +162,7 @@
                     android:textColor="#ffffff"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.461"
+                    app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView27" />
 
@@ -185,6 +186,7 @@
                     android:id="@+id/vpChart"
                     android:layout_width="match_parent"
                     android:layout_height="190dp"
+                    android:layout_marginTop="32dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tabLayout">
@@ -198,6 +200,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
+                    android:layout_marginTop="28dp"
                     android:background="@drawable/rounded_corner_buy_sell_send_background"
                     android:gravity="center"
                     android:minWidth="110dp"

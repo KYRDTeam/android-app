@@ -26,8 +26,8 @@ enum class ChartType : Parcelable {
         return when (this) {
             DAY -> toTime - 24 * 60 * 60
             WEEK -> toTime - 7 * 24 * 60 * 60
-            MONTH -> 30 * 24 * 60 * 60
-            YEAR -> 365 * 24 * 60 * 60
+            MONTH -> toTime - 30 * 24 * 60 * 60
+            YEAR -> toTime - 365 * 24 * 60 * 60
             ALL -> 1
         }
     }

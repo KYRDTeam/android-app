@@ -33,6 +33,10 @@
     <color name="swap_radio_tint_background">#fea34c</color>
     <color name="swap_radio_tint_background_normal">#e9e9e9</color>
     <color name="color_green">#31cb9e</color>
+    <color name="line_chart_color">#1e89c1</color>
+    <color name="line_chart_fill_color">#def2fd</color>
+    <color name="limit_line_color">#d5d9e1</color>
+    <color name="limit_line_text_color">#2e3957</color>
 
     <array name="tab_colors">
         <item name="tab_1">#fea34c</item>
