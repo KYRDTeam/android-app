@@ -136,6 +136,8 @@
     <string name="swap_to">To:</string>
     <string name="gas_fee_eth">GAS fee (ETH)</string>
     <string name="swap_done">Your Swap is Done</string>
+    <string name="maker_time">Time: %s</string>
+    <string name="maker_price">Price: %s</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>

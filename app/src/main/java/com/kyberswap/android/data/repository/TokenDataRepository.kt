@@ -19,7 +19,6 @@ import io.reactivex.Flowable
 import io.reactivex.FlowableTransformer
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
-import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.pow
@@ -93,8 +92,8 @@ class TokenDataRepository @Inject constructor(
     }
 
     override fun getChartData(param: GetChartDataForTokenUseCase.Param): Single<Chart> {
-        val to = Date().time / 1000
-        val from = param.charType.fromTime(to) / 1000
+        val to = System.currentTimeMillis() / 1000
+        val from = param.charType.fromTime(to)
 
         return tokenApi.getChartHistory(
             param.token.tokenSymbol,

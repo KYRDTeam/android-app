@@ -28,5 +28,8 @@
     <dimen name="dialog_width">339dp</dimen>
     <dimen name="dialog_height">218dp</dimen>
     <dimen name="tab_letter_spacing">0.86sp</dimen>
+    <dimen name="line_chart_width">0.5dp</dimen>
+    <dimen name="line_limit_text_size">12sp</dimen>
+    <dimen name="marker_height">76dp</dimen>
 
 </resources>
