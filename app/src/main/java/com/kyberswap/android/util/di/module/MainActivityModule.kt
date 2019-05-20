@@ -46,6 +46,10 @@ interface MainActivityModule {
     @ContributesAndroidInjector
     fun contributeSwapFragment(): SwapFragment
 
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeSendFragment(): SendFragment
+
 
     @FragmentScoped
     @ContributesAndroidInjector
@@ -95,6 +99,13 @@ interface MainActivityModule {
     @ViewModelKey(SwapViewModel::class)
     fun bindSwapViewModel(
         swapViewModel: SwapViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SendViewModel::class)
+    fun bindSendViewModel(
+        sendViewModel: SendViewModel
     ): ViewModel
 
     @Binds

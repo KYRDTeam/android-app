@@ -93,10 +93,10 @@ class KyberListFragment : BaseFragment() {
                     navigator.navigateToChartScreen(it)
         ,
                 {
-                    viewModel.save(wallet!!.address, it, true)
+                    viewModel.save(wallet!!.address, it, false)
         ,
                 {
-                    viewModel.save(wallet!!.address, it, false)
+                    viewModel.save(wallet!!.address, it, true)
         ,
                 {
 
