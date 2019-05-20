@@ -44,6 +44,11 @@ class KyberListViewModel @Inject constructor(
     val saveTokenSelectionCallback: LiveData<Event<SaveSwapDataState>>
         get() = _saveSwapDataStateStateCallback
 
+
+    private val _callback = MutableLiveData<Event<SaveSwapDataState>>()
+    val callback: LiveData<Event<SaveSwapDataState>>
+        get() = _callback
+
     val compositeDisposable by lazy {
         CompositeDisposable()
     }
@@ -124,11 +129,11 @@ class KyberListViewModel @Inject constructor(
     fun save(walletAddress: String, token: Token, isSell: Boolean = false) {
         saveSwapDataTokenUseCase.execute(
             Action {
-                _saveSwapDataStateStateCallback.value = Event(SaveSwapDataState.Success())
+                _callback.value = Event(SaveSwapDataState.Success())
     ,
             Consumer {
                 it.printStackTrace()
-                _saveSwapDataStateStateCallback.value =
+                _callback.value =
                     Event(SaveSwapDataState.ShowError(it.localizedMessage))
     ,
             SaveSwapDataTokenUseCase.Param(walletAddress, token, isSell)

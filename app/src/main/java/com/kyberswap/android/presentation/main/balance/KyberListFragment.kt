@@ -191,6 +191,25 @@ class KyberListFragment : BaseFragment() {
                 showProgress(state == SaveSwapDataState.Loading)
                 when (state) {
                     is SaveSwapDataState.Success -> {
+            
+                    is SaveSwapDataState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        Toast.makeText(
+                            activity,
+                            state.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+            
+        
+    
+)
+
+
+        viewModel.callback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == SaveSwapDataState.Loading)
+                when (state) {
+                    is SaveSwapDataState.Success -> {
                         moveToSwapTab()
             
                     is SaveSwapDataState.ShowError -> {
@@ -204,6 +223,7 @@ class KyberListFragment : BaseFragment() {
         
     
 )
+
     }
 
     private fun getFilterTokenList(searchedString: String, tokens: List<Token>): List<Token> {

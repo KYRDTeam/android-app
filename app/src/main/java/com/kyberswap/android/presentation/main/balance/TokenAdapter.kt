@@ -17,6 +17,7 @@ import com.kyberswap.android.databinding.ItemTokenBinding
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.presentation.base.DataBoundListSwipeAdapter
 import com.kyberswap.android.presentation.base.DataBoundViewHolder
+import java.math.RoundingMode
 
 class TokenAdapter(
     appExecutors: AppExecutors,
@@ -122,6 +123,13 @@ class TokenAdapter(
 
         binding.tvChange24h.setTextColor(ContextCompat.getColor(binding.root.context, color))
         binding.setVariable(BR.showEth, isEth)
+
+        val rate24h = StringBuilder().append(
+            if (isEth) item.changeEth24h.setScale(2, RoundingMode.UP).toPlainString() else
+                item.changeUsd24h.setScale(2, RoundingMode.UP).toPlainString()
+        ).append("%").toString()
+        binding.tvChange24h.text = rate24h
+
         binding.executePendingBindings()
 
     }
