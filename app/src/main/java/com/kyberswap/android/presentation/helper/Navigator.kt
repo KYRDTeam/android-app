@@ -11,6 +11,8 @@ import com.kyberswap.android.presentation.landing.LandingActivity
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.balance.BalanceAddressFragment
 import com.kyberswap.android.presentation.main.balance.ChartFragment
+import com.kyberswap.android.presentation.main.balance.SendFragment
+import com.kyberswap.android.presentation.main.setting.AddContactFragment
 import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
 import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
 import com.kyberswap.android.presentation.wallet.BackupWalletActivity
@@ -70,15 +72,17 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         replaceFragment(BalanceAddressFragment.newInstance(wallet))
     }
 
-    fun navigateToChartScreen(token: Token?) {
-        replaceFragment(ChartFragment.newInstance(token))
+    fun navigateToChartScreen(wallet: Wallet?, token: Token?) {
+        replaceFragment(ChartFragment.newInstance(wallet, token))
     }
 
 
-    fun navigateToTokenSearch(
+    private fun navigateToTokenSearch(
         container: Int,
         wallet: Wallet?,
+        isSend: Boolean = false,
         isSourceToken: Boolean = false
+
     ) {
         replaceFragment(
             TokenSearchFragment.newInstance(wallet, isSourceToken),
@@ -88,17 +92,42 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         )
     }
 
+    fun navigateToTokenSearchFromSwapTokenScreen(
+        container: Int,
+        wallet: Wallet?,
+        isSourceToken: Boolean = false
+    ) {
+        navigateToTokenSearch(container, wallet, false, isSourceToken)
+    }
+
+
+    fun navigateToTokenSearchFromSendTokenScreen(
+        container: Int,
+        wallet: Wallet?
+    ) {
+        navigateToTokenSearch(container, wallet, true)
+    }
+
+
     fun navigateToSwapConfirmationScreen(wallet: Wallet?, fragment: Fragment) {
         fragment.startActivityForResult(
             SwapConfirmActivity.newIntent(activity, wallet),
-            SWAP_COMFIRMATION
+            SWAP_CONFIRMATION
         )
+    }
+
+    fun navigateToSendScreen(wallet: Wallet?, token: Token?) {
+        replaceFragment(SendFragment.newInstance(wallet, token))
+    }
+
+    fun navigateToAddContactScreen(container: Int, tab: Int) {
+        replaceFragment(AddContactFragment.newInstance(tab), true, WITHOUT_ANIMATION, container)
     }
 
     companion object {
         const val IN_RIGHT_OUT_LEFT = 1
         const val IN_LEFT_OUT_RIGHT = -1
         const val WITHOUT_ANIMATION = 0
-        const val SWAP_COMFIRMATION = 1010
+        const val SWAP_CONFIRMATION = 1010
     }
 }

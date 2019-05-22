@@ -75,7 +75,6 @@ class SwapDataRepository @Inject constructor(
 
     override fun estimateGas(param: EstimateGasUseCase.Param): Single<EthEstimateGas> {
         return Single.fromCallable {
-
             param.swap.tokenSource.tokenDecimal
             tokenClient.estimateGas(
                 param.wallet.address,

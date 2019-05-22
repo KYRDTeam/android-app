@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -33,7 +34,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true" />
 
-        <FrameLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -49,42 +50,49 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:id="@+id/lnTitle"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/toolbar_margin_top"
-                android:layout_marginEnd="48dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="@string/app_name"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@+id/view3"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/view3"
+                android:layout_width="1dp"
+                android:layout_height="14dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="6dp"
+                android:background="#ffffff"
+                app:layout_constraintBottom_toBottomOf="@+id/textView3"
+                app:layout_constraintEnd_toStartOf="@+id/tvName"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/textView3"
+                app:layout_constraintTop_toTopOf="@+id/textView3" />
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="56dp"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:text="@string/app_name"
-                    android:textColor="#ffffff"
-                    android:textSize="18sp" />
-
-                <View
-                    android:id="@+id/view3"
-                    android:layout_width="1dp"
-                    android:layout_height="14dp"
-                    android:layout_marginStart="11dp"
-                    android:layout_marginEnd="11dp"
-                    android:background="#ffffff" />
-
-                <TextView
-                    android:id="@+id/tvName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{walletName}"
-                    android:textColor="#ffffff"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
+                android:text="@{walletName}"
+                android:textColor="#ffffff"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/view3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/view3"
+                app:layout_constraintTop_toTopOf="@+id/view3"
+                tools:text="Satoshi " />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView"
@@ -101,120 +109,129 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <FrameLayout
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/frameLayout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingStart="15dp"
-                    android:paddingEnd="15dp">
+                    android:paddingTop="20dp"
+                    android:paddingEnd="15dp"
+                    android:paddingBottom="20dp">
 
                     <ImageView
                         android:id="@+id/imgSwap"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_exchange" />
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_exchange"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+
+                    <ImageView
+                        android:id="@+id/imgTokenSource"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/eth"
+                        app:identifier="@{swap.tokenSource.tokenSymbol}"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvSource"
+                        app:layout_constraintEnd_toStartOf="@+id/tvSource"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintHorizontal_chainStyle="spread_inside"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/tvSource" />
+
+                    <TextView
+                        android:id="@+id/tvSource"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="21dp"
-                        android:gravity="center_vertical">
-
-                        <LinearLayout
-                            android:id="@+id/lnSource"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:id="@+id/imgTokenSource"
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:scaleType="centerInside"
-                                android:src="@drawable/eth"
-                                app:identifier="@{swap.tokenSource.tokenSymbol}" />
-
-                            <TextView
-                                android:id="@+id/tvSource"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="9dp"
-                                android:text="@{swap.tokenSource.tokenSymbol}"
-                                android:textAllCaps="true"
-                                android:textColor="#141927"
-                                android:textSize="16sp" />
-                        </LinearLayout>
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="@{swap.tokenSource.tokenSymbol}"
+                        android:textAllCaps="true"
+                        android:textColor="#141927"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/edtSource"
+                        app:layout_constraintEnd_toStartOf="@+id/edtSource"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/imgTokenSource"
+                        app:layout_constraintTop_toTopOf="@+id/edtSource" />
 
 
-                        <com.kyberswap.android.presentation.common.ClearableEditText
-                            android:id="@+id/edtSource"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:background="@android:color/transparent"
-                            android:backgroundTint="#acb3c6"
-                            android:ellipsize="start"
-                            android:gravity="end"
-                            android:hint="@string/default_swap_amount"
-                            android:inputType="numberDecimal"
-                            android:singleLine="true"
-                            android:textColor="#fea34c"
-                            android:textSize="24sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <com.kyberswap.android.presentation.common.ClearableEditText
+                        android:id="@+id/edtSource"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="bottom"
-                        android:layout_marginBottom="21dp"
-                        android:gravity="center_vertical">
-
-                        <LinearLayout
-                            android:id="@+id/lnDest"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:id="@+id/imgTokenDest"
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:scaleType="centerInside"
-                                android:src="@drawable/knc"
-
-                                app:identifier="@{swap.tokenDest.tokenSymbol}" />
-
-                            <TextView
-                                android:id="@+id/tvDest"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="9dp"
-                                android:text="@{swap.tokenDest.tokenSymbol}"
-                                android:textAllCaps="true"
-                                android:textColor="#141927"
-                                android:textSize="16sp" />
-
-                        </LinearLayout>
+                        android:background="@android:color/transparent"
+                        android:backgroundTint="#acb3c6"
+                        android:ellipsize="start"
+                        android:gravity="end"
+                        android:hint="@string/default_swap_amount"
+                        android:inputType="numberDecimal"
+                        android:singleLine="true"
+                        android:textColor="#fea34c"
+                        android:textSize="24sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/tvSource"
+                        app:layout_constraintTop_toTopOf="parent" />
 
 
-                        <com.kyberswap.android.presentation.common.ClearableEditText
-                            android:id="@+id/edtDest"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:background="@android:color/transparent"
-                            android:backgroundTint="#acb3c6"
-                            android:ellipsize="start"
-                            android:gravity="end"
-                            android:hint="@string/default_swap_amount"
-                            android:inputType="numberDecimal"
-                            android:singleLine="true"
-                            android:textColor="#141927"
-                            android:textSize="24sp" />
-                    </LinearLayout>
-                </FrameLayout>
+                    <ImageView
+                        android:id="@+id/imgTokenDest"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/knc"
+                        app:identifier="@{swap.tokenDest.tokenSymbol}"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvDest"
+                        app:layout_constraintEnd_toStartOf="@+id/tvDest"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintHorizontal_chainStyle="spread_inside"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/tvDest" />
+
+                    <TextView
+                        android:id="@+id/tvDest"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="@{swap.tokenDest.tokenSymbol}"
+                        android:textAllCaps="true"
+                        android:textColor="#141927"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/edtDest"
+                        app:layout_constraintEnd_toStartOf="@+id/edtDest"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/imgTokenDest"
+                        app:layout_constraintTop_toTopOf="@+id/edtDest" />
+
+
+                    <com.kyberswap.android.presentation.common.ClearableEditText
+                        android:id="@+id/edtDest"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:backgroundTint="#acb3c6"
+                        android:ellipsize="start"
+                        android:gravity="end"
+                        android:hint="@string/default_swap_amount"
+                        android:inputType="numberDecimal"
+                        android:singleLine="true"
+                        android:textColor="#141927"
+                        android:textSize="24sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/tvDest" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
 
@@ -538,7 +555,7 @@
 
             </androidx.core.widget.NestedScrollView>
 
-        </FrameLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
 
 </layout>

@@ -1,7 +1,15 @@
 package com.kyberswap.android.presentation.main.balance
 
 import android.os.Parcelable
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.usecase.wallet.SaveSwapDataTokenUseCase
+import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
+import io.reactivex.functions.Action
+import io.reactivex.functions.Consumer
 import kotlinx.android.parcel.Parcelize
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -9,7 +17,27 @@ import java.util.*
 import javax.inject.Inject
 
 class ChartViewModel @Inject constructor(
-) : ViewModel()
+    private val saveSwapDataTokenUseCase: SaveSwapDataTokenUseCase
+) : ViewModel() {
+
+    private val _callback = MutableLiveData<Event<SaveSwapDataState>>()
+    val callback: LiveData<Event<SaveSwapDataState>>
+        get() = _callback
+
+    fun save(walletAddress: String, token: Token, isSell: Boolean = false) {
+        saveSwapDataTokenUseCase.execute(
+            Action {
+                _callback.value = Event(SaveSwapDataState.Success())
+            },
+            Consumer {
+                it.printStackTrace()
+                _callback.value =
+                    Event(SaveSwapDataState.ShowError(it.localizedMessage))
+            },
+            SaveSwapDataTokenUseCase.Param(walletAddress, token, isSell)
+        )
+    }
+}
 
 @Parcelize
 enum class ChartType : Parcelable {

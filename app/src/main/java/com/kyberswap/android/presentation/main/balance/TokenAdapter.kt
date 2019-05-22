@@ -125,8 +125,8 @@ class TokenAdapter(
         binding.setVariable(BR.showEth, isEth)
 
         val rate24h = StringBuilder().append(
-            if (isEth) item.changeEth24h.setScale(2, RoundingMode.UP).toPlainString() else
-                item.changeUsd24h.setScale(2, RoundingMode.UP).toPlainString()
+            if (isEth) item.changeEth24h.abs().setScale(2, RoundingMode.UP).toPlainString() else
+                item.changeUsd24h.abs().setScale(2, RoundingMode.UP).toPlainString()
         ).append("%").toString()
         binding.tvChange24h.text = rate24h
 

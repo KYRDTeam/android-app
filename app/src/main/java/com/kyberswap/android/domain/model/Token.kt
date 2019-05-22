@@ -108,14 +108,35 @@ data class Token(
                     .multiply(rateEthNow)
                     .toDisplayNumber() else "0"
             )
+            .append("USD")
+            .toString()
+
+
+    val displayCurrentBalanceInUSD: String
+        get() = StringBuilder()
+            .append("≈ ")
+            .append(
+                if (currentBalance > BigDecimal.ZERO) currentBalance
+                    .multiply(rateUsdNow)
+                    .toDisplayNumber() else "0"
+            )
             .append("ETH")
             .toString()
+
 
     val displayGasApprove: String
         get() = gasApprove.toDisplayNumber()
 
     fun isETH(): Boolean {
         return tokenSymbol.toLowerCase() == ETH_SYMBOL.toLowerCase()
+    }
+
+    fun isDAI(): Boolean {
+        return tokenSymbol.toLowerCase() == DAI.toLowerCase()
+    }
+
+    fun isTUSD(): Boolean {
+        return tokenSymbol.toLowerCase() == TUSD.toLowerCase()
     }
 
     fun areContentsTheSame(other: Token): Boolean {
@@ -146,5 +167,7 @@ data class Token(
         const val ETH_SYMBOL = "ETH"
         const val ETH = "ETH"
         const val KNC = "KNC"
+        const val DAI = "DAI"
+        const val TUSD = "TUSD"
     }
 }

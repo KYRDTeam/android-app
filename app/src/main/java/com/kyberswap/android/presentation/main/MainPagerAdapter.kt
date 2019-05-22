@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.main.balance.BalanceFragment
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
+import com.kyberswap.android.presentation.main.setting.SettingFragment
 import com.kyberswap.android.presentation.main.swap.SwapFragment
 
 class MainPagerAdapter constructor(
@@ -19,17 +20,17 @@ class MainPagerAdapter constructor(
                 wallet
             )
             SWAP -> SwapFragment.newInstance(wallet)
+            SETTING -> SettingFragment.newInstance()
             else -> ProfileFragment.newInstance()
         }
-
     }
 
     override fun getCount() = 4
 
     companion object {
-        private const val BALANCE = 0
-        private const val SWAP = 1
-        private const val PROFILE = 2
-        private const val SETTING = 2
+        const val BALANCE = 0
+        const val SWAP = 1
+        const val PROFILE = 2
+        const val SETTING = 3
     }
 }

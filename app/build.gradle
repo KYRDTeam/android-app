@@ -229,7 +229,9 @@ dependencies {
         exclude group: 'com.google.protobuf', module: 'protobuf-java'
     }
 
-    implementation "com.jakewharton.threetenabp:threetenabp:$threeTenAbpVersion"
+    implementation 'com.github.WycliffeAssociates:jdenticon-kotlin:-SNAPSHOT'
+
+
 
 
 
