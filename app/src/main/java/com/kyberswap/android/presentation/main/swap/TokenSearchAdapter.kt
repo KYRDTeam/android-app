@@ -28,8 +28,13 @@ class TokenSearchAdapter(
 ) {
 
     fun submitFilterList(tokens: List<Token>) {
-        submitList(listOf())
-        submitList(tokens)
+        if (itemCount > 0) {
+            submitList(listOf())
+            submitList(tokens)
+ else {
+            submitList(tokens)
+
+
     }
 
     override fun bind(binding: ItemTokenSearchBinding, item: Token) {

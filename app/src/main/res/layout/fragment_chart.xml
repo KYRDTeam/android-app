@@ -137,7 +137,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="32dp"
                     android:layout_marginEnd="16dp"
-                    android:text="@{token.displayRateEthNow}"
+                    android:text="@{token.displayRateEthNow + ` ETH`}"
                     android:textColor="#2e3957"
                     android:textSize="24sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -158,13 +158,13 @@
                     android:minHeight="30dp"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
-                    android:text="@{token.displayChangeEth24h + `%` }"
                     android:textColor="#ffffff"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView27" />
+                    app:layout_constraintTop_toBottomOf="@+id/textView27"
+                    app:rate="@{token.changeEth24h}" />
 
                 <com.google.android.material.tabs.TabLayout
                     android:id="@+id/tabLayout"
@@ -196,7 +196,7 @@
 
 
                 <TextView
-                    android:id="@+id/textView30"
+                    android:id="@+id/tvBuy"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -209,14 +209,14 @@
                     android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#5a5e67"
                     android:textSize="16sp"
-                    app:layout_constraintEnd_toStartOf="@+id/textView29"
+                    app:layout_constraintEnd_toStartOf="@+id/tvSell"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintHorizontal_chainStyle="spread"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/vpChart" />
 
                 <TextView
-                    android:id="@+id/textView31"
+                    android:id="@+id/tvSend"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
@@ -228,13 +228,13 @@
                     android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#5a5e67"
                     android:textSize="16sp"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/textView29"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/tvSell"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/textView29" />
+                    app:layout_constraintStart_toEndOf="@+id/tvSell" />
 
                 <TextView
-                    android:id="@+id/textView29"
+                    android:id="@+id/tvSell"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -247,10 +247,10 @@
                     android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#5a5e67"
                     android:textSize="16sp"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/textView30"
-                    app:layout_constraintEnd_toStartOf="@+id/textView31"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/tvBuy"
+                    app:layout_constraintEnd_toStartOf="@+id/tvSend"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/textView30" />
+                    app:layout_constraintStart_toEndOf="@+id/tvBuy" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

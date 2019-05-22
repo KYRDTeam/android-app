@@ -212,7 +212,19 @@ class SwapViewModel @Inject constructor(
         estimateGasUseCase.execute(
             Consumer {
                 if (it.error == null) {
-                    gasLimit = (it.amountUsed.toBigDecimal() * 1.2.toBigDecimal()).toBigInteger()
+                    gasLimit =
+                        if (swap.tokenSource.isDAI() ||
+                            swap.tokenSource.isTUSD() ||
+                            swap.tokenDest.isDAI() ||
+                            swap.tokenDest.isTUSD()
+                        ) {
+                            gasLimit.max(
+                                (it.amountUsed.toBigDecimal() * 1.2.toBigDecimal())
+                                    .toBigInteger()
+                            )
+                 else {
+                            it.amountUsed
+                
         
 
     ,
