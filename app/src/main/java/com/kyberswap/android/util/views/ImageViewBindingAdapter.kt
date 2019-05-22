@@ -9,7 +9,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.kyberswap.android.R
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
-import com.kyberswap.android.util.tokenDrawableList
 
 object ImageViewBindingAdapter {
     @BindingAdapter("app:imageUrl")
@@ -76,20 +75,6 @@ object ImageViewBindingAdapter {
  catch (exception: Exception) {
             exception.printStackTrace()
 
-
-
-    }
-
-    @BindingAdapter("app:tokenSymbol")
-    @JvmStatic
-    fun loadTokenResource(view: ImageView, tokenSymbol: String) {
-        var tokenDrawable = tokenDrawableList[tokenSymbol]
-        if (tokenDrawable == null) {
-            tokenDrawable = R.drawable.token_default
-
-        Glide.with(view).load(
-            ""
-        ).error(tokenDrawable).into(view)
 
 
     }

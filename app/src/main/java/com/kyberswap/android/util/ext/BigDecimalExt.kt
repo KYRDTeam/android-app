@@ -1,6 +1,7 @@
 package com.kyberswap.android.util.ext
 
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 fun BigDecimal.toDisplayNumber(): String {
     val stringNumber = this.toPlainString()
@@ -9,7 +10,9 @@ fun BigDecimal.toDisplayNumber(): String {
     else {
         val s = list[1]
         if (s[0] != '0') {
-            return list[0] + '.' + s.substring(0, if (s.length > 4) 4 else s.length)
+            val scaleString = list[0] + '.' + s.substring(0, if (s.length > 4) 4 else s.length)
+            return scaleString.toBigDecimal().setScale(scaleString.length, RoundingMode.UP)
+                .stripTrailingZeros().toPlainString()
  else {
             var index = 0
             s.forEach { c ->
@@ -22,8 +25,8 @@ fun BigDecimal.toDisplayNumber(): String {
                     )
         
     
+            return s.toBigDecimal().setScale(s.length, RoundingMode.UP).stripTrailingZeros()
+                .toString()
 
     }
-
-    return stringNumber
 }

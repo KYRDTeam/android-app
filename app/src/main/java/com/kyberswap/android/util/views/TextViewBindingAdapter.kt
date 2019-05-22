@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.kyberswap.android.R
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toDisplayNumber
 import io.github.inflationx.calligraphy3.CalligraphyTypefaceSpan
 import io.github.inflationx.calligraphy3.TypefaceUtils
 import java.math.BigDecimal
@@ -104,5 +105,28 @@ object TextViewBindingAdapter {
                 percentageRate.abs().toDouble()
             )
         view.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawable, 0)
+    }
+
+
+    @BindingAdapter("app:rate")
+    @JvmStatic
+    fun setPercentage(view: TextView, rate: BigDecimal) {
+
+        val color = when {
+            rate > BigDecimal.ZERO -> android.R.color.white
+            else -> R.color.rate_down_text_color
+
+
+        view.setTextColor(ContextCompat.getColor(view.context, color))
+
+        val drawable = when {
+            rate > BigDecimal.ZERO -> R.drawable.rounded_corner_green_background
+            else -> R.drawable.rounded_corner_red_background
+
+
+        view.setBackgroundResource(drawable)
+
+        view.text = StringBuilder().append(rate.abs().toDisplayNumber()).append(" %").toString()
+
     }
 }

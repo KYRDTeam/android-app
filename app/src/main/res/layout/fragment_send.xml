@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="walletName"
+            type="String" />
+
+        <variable
+            name="token"
+            type="com.kyberswap.android.domain.model.Token" />
+
+        <variable
+            name="gas"
+            type="com.kyberswap.android.domain.model.Gas" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/screen_background">
+
+        <ImageView
+            android:id="@+id/imgBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="9dp"
+            android:src="@drawable/ic_arrow_back"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView26"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="21dp"
+            android:layout_marginEnd="8dp"
+            android:gravity="center"
+            android:text="@string/send"
+            android:textAllCaps="true"
+            android:textColor="#ffffff"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imgBack"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/view6"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="64dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/rounded_corner_white_background"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imgTokenSource"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="85dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/eth"
+            app:identifier="@{token.tokenSymbol}"
+            app:layout_constraintEnd_toStartOf="@+id/tvSource"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvSource"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="9dp"
+            android:layout_marginEnd="12dp"
+            android:text="@{token.tokenSymbol}"
+            android:textAllCaps="true"
+            android:textColor="#141927"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/imgTokenSource"
+            app:layout_constraintEnd_toStartOf="@+id/edtSource"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imgTokenSource"
+            app:layout_constraintTop_toTopOf="@+id/imgTokenSource" />
+
+        <com.kyberswap.android.presentation.common.ClearableEditText
+            android:id="@+id/edtSource"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="30dp"
+            android:background="@android:color/transparent"
+            android:backgroundTint="#acb3c6"
+            android:ellipsize="start"
+            android:gravity="end"
+            android:hint="@string/default_swap_amount"
+            android:inputType="numberDecimal"
+            android:singleLine="true"
+            android:textColor="#fea34c"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvSource"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tvSource"
+            app:layout_constraintTop_toTopOf="@+id/tvSource" />
+
+        <TextView
+            android:id="@+id/tvTokenBalance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="16dp"
+            android:text="@{token.tokenSymbol +` `+ @string/balance}"
+            android:textColor="#ffffff"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@+id/tvBalance"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view6"
+            tools:text="DAI Balance" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@{token.displayCurrentBalance}"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvTokenBalance"
+            tools:text="63000" />
+
+        <TextView
+            android:id="@+id/tvBalance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:gravity="end"
+            android:text="@{token.displayCurrentBalanceInUSD}"
+            android:textColor="#ffffff"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvTokenBalance"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tvTokenBalance"
+            app:layout_constraintTop_toTopOf="@+id/tvTokenBalance"
+            tools:text="≈ 30 USD" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="206dp"
+            android:fillViewport="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/placeHolder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/color_bg_gray"
+                android:paddingBottom="80dp">
+
+                <EditText
+                    android:id="@+id/edtAddress"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="38dp"
+                    android:backgroundTint="@color/edt_background_tint"
+                    android:hint="@string/recipient_address"
+                    android:singleLine="true"
+                    android:textColor="#9ea1aa"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/imgQRCode"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/imgQRCode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="24dp"
+                    android:src="@drawable/ic_qr_code_send"
+                    app:layout_constraintBottom_toBottomOf="@+id/edtAddress"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/edtAddress"
+                    app:layout_constraintTop_toTopOf="@+id/edtAddress" />
+
+                <TextView
+                    android:id="@+id/tvAddContact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="24dp"
+                    android:gravity="end"
+                    android:text="@string/add_contact"
+                    android:textColor="#ff9008"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/imgQRCode" />
+
+                <TextView
+                    android:id="@+id/textView25"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:text="@string/recent_contact"
+                    android:textColor="#9ea1aa"
+                    android:textSize="12sp"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/tvMore"
+                    app:layout_constraintEnd_toStartOf="@+id/tvMore"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+
+                <TextView
+                    android:id="@+id/tvMore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="24dp"
+                    android:gravity="end"
+                    android:text="@string/more"
+                    android:textAllCaps="true"
+                    android:textColor="#ff9008"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/textView25"
+                    app:layout_constraintTop_toBottomOf="@+id/tvAddContact" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvContact"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="24dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView25" />
+
+
+                <TextView
+                    android:id="@+id/tvAdvanceOption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/advanced_optional"
+                    android:textColor="#9ea8b3"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/rvContact" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayout3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="17dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvAdvanceOption">
+
+                    <net.cachapa.expandablelayout.ExpandableLayout
+                        android:id="@+id/expandableLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:background="@drawable/rounded_corner_background"
+                        app:el_duration="1000"
+                        app:el_expanded="false">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:paddingTop="8dp"
+                            android:paddingBottom="14dp">
+
+                            <ImageView
+                                android:id="@+id/imgClose"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="end"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/ic_icon_24_px" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="20dp"
+                                android:lineSpacingExtra="8sp"
+                                android:text="@string/gas_fee_gwei"
+                                android:textColor="#5a5e67"
+                                android:textSize="12sp" />
+
+                            <RadioGroup
+                                android:id="@+id/rgGas"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="20dp"
+                                android:layout_marginEnd="20dp"
+                                android:orientation="horizontal">
+
+                                <RadioButton
+                                    android:id="@+id/rbFast"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:backgroundTint="#fea34c"
+                                    android:text="@{String.format(@string/gas_fast, gas.fast)}"
+                                    android:textSize="12sp"
+                                    android:theme="@style/CustomRadioTheme"
+                                    app:font="@{@string/semi_bold_font_path}"
+                                    app:styleBold="@{gas.fast}" />
+
+                                <RadioButton
+                                    android:id="@+id/rbRegular"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:backgroundTint="#fea34c"
+                                    android:text="@{String.format(@string/gas_regular, gas.standard)}"
+                                    android:textSize="12sp"
+                                    android:theme="@style/CustomRadioTheme"
+                                    app:font="@{@string/semi_bold_font_path}"
+                                    app:styleBold="@{gas.standard}" />
+
+                                <RadioButton
+                                    android:id="@+id/rbSlow"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:backgroundTint="#fea34c"
+                                    android:text="@{String.format(@string/gas_slow, gas.low)}"
+                                    android:textSize="12sp"
+                                    android:theme="@style/CustomRadioTheme"
+                                    app:font="@{@string/semi_bold_font_path}"
+                                    app:styleBold="@{gas.low}" />
+                            </RadioGroup>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginStart="20dp"
+                                android:layout_marginTop="11dp"
+                                android:layout_marginEnd="20dp"
+                                android:layout_marginBottom="11dp"
+                                android:background="#e1e4eb" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="20dp"
+                                android:layout_marginEnd="20dp"
+                                android:lineSpacingExtra="8sp"
+                                android:text="@{String.format(@string/swap_rate_condition, token.tokenSymbol, token.tokenSymbol)}"
+                                android:textColor="#5a5e67"
+                                android:textSize="12sp" />
+
+                            <RadioGroup
+                                android:id="@+id/rgRate"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="20dp"
+                                android:layout_marginTop="20dp"
+                                android:layout_marginEnd="20dp"
+                                android:layout_marginBottom="17dp"
+                                android:orientation="horizontal">
+
+                                <RadioButton
+                                    android:id="@+id/rbDefaultRate"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:backgroundTint="#fea34c"
+                                    android:text="@string/three_percentage"
+                                    android:theme="@style/CustomRadioTheme" />
+
+                                <RadioButton
+                                    android:id="@+id/rbCustom"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:backgroundTint="#fea34c"
+                                    android:text="@string/custom_value"
+                                    android:theme="@style/CustomRadioTheme" />
+
+                                <EditText
+                                    android:id="@+id/edtCustom"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="15dp"
+                                    android:background="@drawable/rounded_corner_editext"
+                                    android:enabled="false"
+                                    android:gravity="center|end"
+                                    android:hint="@string/three_percentage"
+                                    android:inputType="numberDecimal"
+                                    android:minWidth="92dp"
+                                    android:minHeight="36dp"
+                                    android:paddingStart="10dp"
+                                    android:paddingEnd="10dp"
+                                    android:textColor="#5a5e67"
+                                    android:textSize="12sp" />
+                            </RadioGroup>
+
+                            <TextView
+                                android:id="@+id/tvRevertNotification"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="20dp"
+                                android:layout_marginEnd="20dp"
+                                android:lineSpacingExtra="10sp"
+                                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold.Italic"
+                                android:textColor="#5a5e67"
+                                android:textSize="12sp"
+                                android:textStyle="italic" />
+                        </LinearLayout>
+
+
+                    </net.cachapa.expandablelayout.ExpandableLayout>
+
+                    <TextView
+                        android:id="@+id/tvContinue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginTop="25dp"
+                        android:layout_marginEnd="15dp"
+                        android:background="@drawable/default_button"
+                        android:gravity="center"
+                        android:minHeight="45dp"
+                        android:text="@string/swap_continue"
+                        android:textColor="#ffffff"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

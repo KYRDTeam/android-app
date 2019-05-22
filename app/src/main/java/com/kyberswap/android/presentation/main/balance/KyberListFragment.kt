@@ -90,16 +90,16 @@ class KyberListFragment : BaseFragment() {
         val tokenAdapter =
             TokenAdapter(appExecutors, handler,
                 {
-                    navigator.navigateToChartScreen(it)
-        ,
-                {
-                    viewModel.save(wallet!!.address, it, true)
+                    navigator.navigateToChartScreen(wallet, it)
         ,
                 {
                     viewModel.save(wallet!!.address, it, false)
         ,
                 {
-
+                    viewModel.save(wallet!!.address, it, true)
+        ,
+                {
+                    navigator.navigateToSendScreen(wallet, it)
         
             )
         tokenAdapter.mode = Attributes.Mode.Single

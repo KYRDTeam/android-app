@@ -48,4 +48,11 @@ class DatabaseModule {
         return appDatabase.rateDao()
     }
 
+
+    @Provides
+    @Singleton
+    fun provideContactDao(appDatabase: AppDatabase): ContactDao {
+        return appDatabase.contactDao()
+    }
+
 }
