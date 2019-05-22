@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main.balance
+package com.kyberswap.android.presentation.main.balance.chart
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

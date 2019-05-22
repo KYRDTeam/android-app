@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main.balance
+package com.kyberswap.android.presentation.main.balance.other
 
 import android.os.Bundle
 import android.view.LayoutInflater

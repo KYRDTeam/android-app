@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main.balance
+package com.kyberswap.android.presentation.main.balance.kyberlist
 
 import android.os.Bundle
 import android.os.Handler
@@ -19,6 +19,9 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.presentation.main.balance.GetBalanceState
+import com.kyberswap.android.presentation.main.balance.TokenAdapter
+import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
@@ -99,7 +102,7 @@ class KyberListFragment : BaseFragment() {
                     viewModel.save(wallet!!.address, it, true)
                 },
                 {
-                    navigator.navigateToSendScreen(wallet, it)
+                    viewModel.saveSendToken(wallet!!.address, it)
                 }
             )
         tokenAdapter.mode = Attributes.Mode.Single
@@ -213,6 +216,26 @@ class KyberListFragment : BaseFragment() {
                         moveToSwapTab()
                     }
                     is SaveSwapDataState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        Toast.makeText(
+                            activity,
+                            state.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        })
+
+
+        viewModel.callbackSaveSend.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == SaveSendState.Loading)
+                when (state) {
+                    is SaveSendState.Success -> {
+                        navigator.navigateToSendScreen(wallet)
+                    }
+                    is SaveSendState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
                         Toast.makeText(
                             activity,

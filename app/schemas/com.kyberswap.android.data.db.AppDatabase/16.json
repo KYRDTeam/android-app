@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 16,
-    "identityHash": "779d8d13994ffde8f1c951ced1413f07",
+    "identityHash": "2aaddc00eb835f84595e6ae760aef970",
     "entities": [
       {
         "tableName": "tokens",
@@ -433,6 +433,164 @@
         "foreignKeys": []
       },
       {
+        "tableName": "sends",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`walletAddress` TEXT NOT NULL, `sourceAmount` TEXT NOT NULL, `gasPrice` TEXT NOT NULL, `gasLimit` TEXT NOT NULL, `token_timestamp` INTEGER NOT NULL, `token_tokenSymbol` TEXT NOT NULL, `token_tokenName` TEXT NOT NULL, `token_tokenAddress` TEXT NOT NULL, `token_tokenDecimal` INTEGER NOT NULL, `token_rateEthNow` TEXT NOT NULL, `token_changeEth24h` TEXT NOT NULL, `token_rateUsdNow` TEXT NOT NULL, `token_changeUsd24h` TEXT NOT NULL, `token_currentBalance` TEXT NOT NULL, `token_cgId` TEXT NOT NULL, `token_gasApprove` TEXT NOT NULL, `token_gasLimit` TEXT NOT NULL, `token_listingTime` INTEGER NOT NULL, `token_priority` INTEGER NOT NULL, `fast` TEXT NOT NULL, `standard` TEXT NOT NULL, `low` TEXT NOT NULL, `contact_address` TEXT NOT NULL, `contact_name` TEXT NOT NULL, PRIMARY KEY(`walletAddress`))",
+        "fields": [
+          {
+            "fieldPath": "walletAddress",
+            "columnName": "walletAddress",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceAmount",
+            "columnName": "sourceAmount",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gasPrice",
+            "columnName": "gasPrice",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gasLimit",
+            "columnName": "gasLimit",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenSource.timestamp",
+            "columnName": "token_timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenSource.tokenSymbol",
+            "columnName": "token_tokenSymbol",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenSource.tokenName",
+            "columnName": "token_tokenName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenSource.tokenAddress",
+            "columnName": "token_tokenAddress",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenSource.tokenDecimal",
+            "columnName": "token_tokenDecimal",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenSource.rateEthNow",
+            "columnName": "token_rateEthNow",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenSource.changeEth24h",
+            "columnName": "token_changeEth24h",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenSource.rateUsdNow",
+            "columnName": "token_rateUsdNow",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenSource.changeUsd24h",
+            "columnName": "token_changeUsd24h",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenSource.currentBalance",
+            "columnName": "token_currentBalance",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenSource.cgId",
+            "columnName": "token_cgId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenSource.gasApprove",
+            "columnName": "token_gasApprove",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenSource.gasLimit",
+            "columnName": "token_gasLimit",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenSource.listingTime",
+            "columnName": "token_listingTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenSource.priority",
+            "columnName": "token_priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gas.fast",
+            "columnName": "fast",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gas.standard",
+            "columnName": "standard",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gas.low",
+            "columnName": "low",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contact.address",
+            "columnName": "contact_address",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contact.name",
+            "columnName": "contact_name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "walletAddress"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
         "tableName": "wallet_token",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`walletAddress` TEXT NOT NULL, `tokenSymbol` TEXT NOT NULL, `currentBalance` TEXT NOT NULL, PRIMARY KEY(`walletAddress`, `tokenSymbol`), FOREIGN KEY(`walletAddress`) REFERENCES `wallets`(`address`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`tokenSymbol`) REFERENCES `tokens`(`tokenSymbol`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
@@ -557,7 +715,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"779d8d13994ffde8f1c951ced1413f07\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"2aaddc00eb835f84595e6ae760aef970\")"
     ]
   }
 }

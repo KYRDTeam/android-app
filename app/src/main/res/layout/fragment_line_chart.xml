@@ -1,6 +1,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.kyberswap.android.presentation.main.balance.LineChartFragment">
+    tools:context="com.kyberswap.android.presentation.main.balance.chart.LineChartFragment">
 
     <data>
 

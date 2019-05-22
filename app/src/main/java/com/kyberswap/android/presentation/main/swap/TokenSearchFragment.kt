@@ -42,6 +42,8 @@ class TokenSearchFragment : BaseFragment() {
 
     private var isSourceToken: Boolean? = null
 
+    private var isSend: Boolean? = null
+
     private var currentSearchString = ""
 
     private var tokenList = mutableListOf<Token>()
@@ -54,6 +56,7 @@ class TokenSearchFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         wallet = arguments?.getParcelable(WALLET_PARAM)
+        isSend = arguments?.getBoolean(SEND_PARAM, false)
         isSourceToken = arguments?.getBoolean(TARGET_PARAM, false)
     }
 
@@ -81,7 +84,12 @@ class TokenSearchFragment : BaseFragment() {
 
         val tokenAdapter =
             TokenSearchAdapter(appExecutors) { token ->
-                viewModel.saveTokenSelection(wallet!!.address, token, isSourceToken ?: false)
+                if (isSend == true) {
+                    viewModel.saveSendTokenSelection(wallet!!.address, token)
+                } else {
+                    viewModel.saveTokenSelection(wallet!!.address, token, isSourceToken ?: false)
+                }
+
             }
         binding.rvToken.adapter = tokenAdapter
 
@@ -114,6 +122,25 @@ class TokenSearchFragment : BaseFragment() {
                         onSelectionComplete()
                     }
                     is SaveSwapDataState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        Toast.makeText(
+                            activity,
+                            state.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        })
+
+        viewModel.saveSendCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == SaveSendState.Loading)
+                when (state) {
+                    is SaveSendState.Success -> {
+                        onSelectionComplete()
+                    }
+                    is SaveSendState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
                         Toast.makeText(
                             activity,
@@ -171,10 +198,12 @@ class TokenSearchFragment : BaseFragment() {
     companion object {
         private const val WALLET_PARAM = "wallet_param"
         private const val TARGET_PARAM = "target_param"
-        fun newInstance(wallet: Wallet?, isSourceToken: Boolean) =
+        private const val SEND_PARAM = "send_param"
+        fun newInstance(wallet: Wallet?, isSend: Boolean, isSourceToken: Boolean) =
             TokenSearchFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(WALLET_PARAM, wallet)
+                    putBoolean(SEND_PARAM, isSend)
                     putBoolean(TARGET_PARAM, isSourceToken)
 
                 }

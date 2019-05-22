@@ -3,6 +3,7 @@ package com.kyberswap.android.util.di.module
 import com.kyberswap.android.presentation.common.AlertActivity
 import com.kyberswap.android.presentation.landing.LandingActivity
 import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.presentation.main.balance.send.SendConfirmActivity
 import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
 import com.kyberswap.android.presentation.splash.SplashActivity
 import com.kyberswap.android.presentation.wallet.BackupWalletActivity
@@ -73,4 +74,13 @@ interface ActivityBindingModule {
         ]
     )
     fun contributeSwapConfirmActivity(): SwapConfirmActivity
+
+
+    @ActivityScoped
+    @ContributesAndroidInjector(
+        modules = [
+            SendConfirmActivityModule::class
+        ]
+    )
+    fun contributeSendConfirmActivity(): SendConfirmActivity
 }

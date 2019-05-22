@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main.balance
+package com.kyberswap.android.presentation.main.balance.chart
 
 import android.os.Bundle
 import android.os.Handler
@@ -70,26 +70,44 @@ class ChartFragment : BaseFragment() {
 
         binding.token = token
 
-        val chartPagerAdapter = ChartPagerAdapter(childFragmentManager)
+        val chartPagerAdapter =
+            ChartPagerAdapter(
+                childFragmentManager
+            )
 
         chartPagerAdapter.addFragment(
-            LineChartFragment.newInstance(token, ChartType.DAY),
+            LineChartFragment.newInstance(
+                token,
+                ChartType.DAY
+            ),
             getString(R.string.tab_day)
         )
         chartPagerAdapter.addFragment(
-            LineChartFragment.newInstance(token, ChartType.WEEK),
+            LineChartFragment.newInstance(
+                token,
+                ChartType.WEEK
+            ),
             getString(R.string.tab_week)
         )
         chartPagerAdapter.addFragment(
-            LineChartFragment.newInstance(token, ChartType.MONTH),
+            LineChartFragment.newInstance(
+                token,
+                ChartType.MONTH
+            ),
             getString(R.string.tab_month)
         )
         chartPagerAdapter.addFragment(
-            LineChartFragment.newInstance(token, ChartType.YEAR),
+            LineChartFragment.newInstance(
+                token,
+                ChartType.YEAR
+            ),
             getString(R.string.tab_year)
         )
         chartPagerAdapter.addFragment(
-            LineChartFragment.newInstance(token, ChartType.ALL),
+            LineChartFragment.newInstance(
+                token,
+                ChartType.ALL
+            ),
             getString(R.string.tab_all)
         )
 
@@ -114,7 +132,7 @@ class ChartFragment : BaseFragment() {
         }
 
         binding.tvSend.setOnClickListener {
-            navigator.navigateToSendScreen(wallet, token)
+            navigator.navigateToSendScreen(wallet)
         }
 
         viewModel.callback.observe(viewLifecycleOwner, Observer {

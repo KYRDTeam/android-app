@@ -1,8 +1,6 @@
 package com.kyberswap.android.presentation.main.swap
 
 import android.animation.ObjectAnimator
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,7 +21,6 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.DEFAULT_ACCEPT_RATE_PERCENTAGE
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.presentation.helper.Navigator.Companion.SWAP_CONFIRMATION
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.swap
@@ -315,22 +312,26 @@ class SwapFragment : BaseFragment() {
                 showProgress(state == SaveSwapState.Loading)
                 when (state) {
                     is SaveSwapState.Success -> {
-                        navigator.navigateToSwapConfirmationScreen(wallet, this)
+                        navigator.navigateToSwapConfirmationScreen(wallet)
                     }
                 }
             }
         })
 
         binding.tvContinue.setOnClickListener {
-            binding.swap?.let { swap ->
-                if (viewModel.verifyCap(
-                        binding.edtSource.text.toString().toBigDecimalOrDefaultZero() *
-                            swap.tokenSource.rateEthNow
-                    )
-                ) {
-                    swap.minAcceptedRatePercent =
-                        getMinAcceptedRatePercent(binding.rgRate.checkedRadioButtonId)
-                    viewModel.updateSwap(swap)
+            if (binding.edtSource.text.isNullOrEmpty()) {
+                showAlert(getString(R.string.specify_amount))
+            } else {
+                binding.swap?.let { swap ->
+                    if (viewModel.verifyCap(
+                            binding.edtSource.text.toString().toBigDecimalOrDefaultZero() *
+                                swap.tokenSource.rateEthNow
+                        )
+                    ) {
+                        swap.minAcceptedRatePercent =
+                            getMinAcceptedRatePercent(binding.rgRate.checkedRadioButtonId)
+                        viewModel.updateSwap(swap)
+                    }
                 }
             }
 
@@ -345,18 +346,6 @@ class SwapFragment : BaseFragment() {
             viewModel.rateThreshold(getMinAcceptedRatePercent(id)),
             viewModel.expectedRateDisplay
         )
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == SWAP_CONFIRMATION) {
-            if (resultCode == Activity.RESULT_OK) {
-                wallet?.let {
-                    viewModel.getSwapData(it.address)
-                }
-
-            }
-        }
     }
 
     private fun getMinAcceptedRatePercent(id: Int): String {

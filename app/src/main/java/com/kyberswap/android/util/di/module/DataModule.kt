@@ -65,6 +65,7 @@ object DataModule {
         context: Context,
         swapDao: SwapDao,
         tokenDao: TokenDao,
+        sendDao: SendDao,
         api: SwapApi,
         mapper: GasMapper,
         capMapper: CapMapper,
@@ -74,9 +75,18 @@ object DataModule {
             context,
             swapDao,
             tokenDao,
+            sendDao,
             api,
             mapper,
             capMapper,
             tokenClient
         )
+
+    @Singleton
+    @Provides
+    @JvmStatic
+    fun provideContactRepository(
+        contactDao: ContactDao
+    ): ContactRepository =
+        ContactDataRepository(contactDao)
 }
