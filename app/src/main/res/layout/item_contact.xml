@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="contact"
+            type="com.kyberswap.android.domain.model.Contact" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/lnItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:minHeight="64dp">
+
+        <ImageView
+            android:id="@+id/imgToken"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/token_default" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="7dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#2e3957"
+                android:textSize="14sp"
+                tools:text="Angel Boone" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="#9ea1aa"
+                android:textSize="14sp"
+                tools:text="gtyioskjfoisuf97676tuỵnk891…7uhyt8" />
+
+        </LinearLayout>
+    </LinearLayout>
+</layout>

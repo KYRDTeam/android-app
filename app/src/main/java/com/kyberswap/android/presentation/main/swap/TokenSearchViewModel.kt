@@ -15,27 +15,27 @@ import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class TokenSearchViewModel @Inject constructor(
-    private val getBalanceUseCase: GetBalanceUseCase,
+    private val getTokenListUseCase: GetBalanceUseCase,
     private val getWalletByAddressUseCase: GetWalletByAddressUseCase,
     private val saveSwapDataTokenUseCase: SaveSwapDataTokenUseCase
 ) : ViewModel() {
 
-    private val _getBalanceStateCallback = MutableLiveData<Event<GetBalanceState>>()
-    val getTokenBalanceCallback: LiveData<Event<GetBalanceState>>
-        get() = _getBalanceStateCallback
+    private val _getTokenListCallback = MutableLiveData<Event<GetBalanceState>>()
+    val getTokenListCallback: LiveData<Event<GetBalanceState>>
+        get() = _getTokenListCallback
 
-    private val _saveSwapDataStateStateCallback = MutableLiveData<Event<SaveSwapDataState>>()
-    val saveTokenSelectionCallback: LiveData<Event<SaveSwapDataState>>
-        get() = _saveSwapDataStateStateCallback
+    private val _saveSwapCallback = MutableLiveData<Event<SaveSwapDataState>>()
+    val saveSwapCallback: LiveData<Event<SaveSwapDataState>>
+        get() = _saveSwapCallback
 
     val compositeDisposable by lazy {
         CompositeDisposable()
     }
 
     fun getTokenBalance(address: String) {
-        getBalanceUseCase.execute(
+        getTokenListUseCase.execute(
             Consumer {
-                _getBalanceStateCallback.value = Event(
+                _getTokenListCallback.value = Event(
                     GetBalanceState.Success(
                         it
                     )
@@ -43,7 +43,7 @@ class TokenSearchViewModel @Inject constructor(
             },
             Consumer {
                 it.printStackTrace()
-                _getBalanceStateCallback.value =
+                _getTokenListCallback.value =
                     Event(
                         GetBalanceState.ShowError(
                             it.localizedMessage
@@ -57,17 +57,18 @@ class TokenSearchViewModel @Inject constructor(
     override fun onCleared() {
         getWalletByAddressUseCase.dispose()
         saveSwapDataTokenUseCase.dispose()
+        getTokenListUseCase.dispose()
         super.onCleared()
     }
 
     fun saveTokenSelection(walletAddress: String, token: Token, sourceToken: Boolean) {
         saveSwapDataTokenUseCase.execute(
             Action {
-                _saveSwapDataStateStateCallback.value = Event(SaveSwapDataState.Success())
+                _saveSwapCallback.value = Event(SaveSwapDataState.Success())
             },
             Consumer {
                 it.printStackTrace()
-                _saveSwapDataStateStateCallback.value =
+                _saveSwapCallback.value =
                     Event(SaveSwapDataState.ShowError(it.localizedMessage))
             },
             SaveSwapDataTokenUseCase.Param(walletAddress, token, sourceToken)

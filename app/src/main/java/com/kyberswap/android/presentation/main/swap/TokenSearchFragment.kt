@@ -85,7 +85,7 @@ class TokenSearchFragment : BaseFragment() {
             }
         binding.rvToken.adapter = tokenAdapter
 
-        viewModel.getTokenBalanceCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getTokenListCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == GetBalanceState.Loading)
                 when (state) {
@@ -106,7 +106,7 @@ class TokenSearchFragment : BaseFragment() {
             }
         })
 
-        viewModel.saveTokenSelectionCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.saveSwapCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == SaveSwapDataState.Loading)
                 when (state) {
@@ -126,10 +126,12 @@ class TokenSearchFragment : BaseFragment() {
         })
 
         viewModel.compositeDisposable.add(
-            binding.edtSearch.textChanges().debounce(
-                250,
-                TimeUnit.MILLISECONDS
-            )
+            binding.edtSearch.textChanges()
+                .skipInitialValue()
+                .debounce(
+                    250,
+                    TimeUnit.MILLISECONDS
+                )
                 .map {
                     return@map it.trim().toString().toLowerCase()
                 }.observeOn(schedulerProvider.ui())

@@ -5,6 +5,10 @@ import androidx.lifecycle.ViewModel
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainViewModel
 import com.kyberswap.android.presentation.main.balance.*
+import com.kyberswap.android.presentation.main.setting.AddContactFragment
+import com.kyberswap.android.presentation.main.setting.AddContactViewModel
+import com.kyberswap.android.presentation.main.setting.SettingFragment
+import com.kyberswap.android.presentation.main.setting.SettingViewModel
 import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.main.swap.SwapViewModel
 import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
@@ -58,6 +62,17 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeLineChartFragment(): LineChartFragment
+
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeSettingFragment(): SettingFragment
+
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeAddContactFragment(): AddContactFragment
+
 
     @Binds
     @IntoMap
@@ -127,5 +142,19 @@ interface MainActivityModule {
     @ViewModelKey(LineChartViewModel::class)
     fun bindLineChartViewModel(
         chartViewModel: LineChartViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SettingViewModel::class)
+    fun bindSettingViewModel(
+        settingViewModel: SettingViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(AddContactViewModel::class)
+    fun bindAddContactViewModel(
+        addContactViewModel: AddContactViewModel
     ): ViewModel
 }

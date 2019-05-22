@@ -130,7 +130,6 @@
     <string name="tab_month">Month</string>
     <string name="tab_year">Year</string>
     <string name="tab_all">All </string>
-    <string name="send">Send</string>
     <string name="min_acceptable_rate">Min Acceptable Rate</string>
     <string name="cancel">Cancel</string>
     <string name="swap_to">To:</string>
@@ -139,6 +138,23 @@
     <string name="maker_time">Time: %s</string>
     <string name="maker_price">Price: %s</string>
     <string name="change_24h">24h ch%</string>
+    <string name="recipient_address">Recipient address</string>
+    <string name="recent_contact">Recent Contact</string>
+    <string name="more">more</string>
+    <string name="send">Send</string>
+    <string name="add_contact">Add Contact</string>
+    <string name="manage_walllet">Manage Walllet</string>
+    <string name="manage_alert">Manage Alert</string>
+    <string name="alert_method">Alert Method</string>
+    <string name="setting_contact">Contact</string>
+    <string name="setting_support">Support</string>
+    <string name="change_pin">Change PIN</string>
+    <string name="setting_about">About</string>
+    <string name="setting_community">Community</string>
+    <string name="share_with_friends">Share with friends</string>
+    <string name="rate_app">Rate my App</string>
+    <string name="contact_address">Address</string>
+    <string name="add_contacts">Add Contacts</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>

@@ -23,7 +23,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.DEFAULT_ACCEPT_RATE_PERCENTAGE
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.presentation.helper.Navigator.Companion.SWAP_COMFIRMATION
+import com.kyberswap.android.presentation.helper.Navigator.Companion.SWAP_CONFIRMATION
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.swap
@@ -95,13 +95,21 @@ class SwapFragment : BaseFragment() {
 
         listOf(binding.imgTokenSource, binding.tvSource).forEach {
             it.setOnClickListener {
-                navigator.navigateToTokenSearch(R.id.swap_container, wallet, true)
+                navigator.navigateToTokenSearchFromSwapTokenScreen(
+                    R.id.swap_container,
+                    wallet,
+                    true
+                )
             }
         }
 
         listOf(binding.imgTokenDest, binding.tvDest).forEach {
             it.setOnClickListener {
-                navigator.navigateToTokenSearch(R.id.swap_container, wallet, false)
+                navigator.navigateToTokenSearchFromSwapTokenScreen(
+                    R.id.swap_container,
+                    wallet,
+                    false
+                )
             }
         }
 
@@ -341,7 +349,7 @@ class SwapFragment : BaseFragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == SWAP_COMFIRMATION) {
+        if (requestCode == SWAP_CONFIRMATION) {
             if (resultCode == Activity.RESULT_OK) {
                 wallet?.let {
                     viewModel.getSwapData(it.address)
