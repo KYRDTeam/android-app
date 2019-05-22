@@ -31,5 +31,6 @@
     <dimen name="line_chart_width">0.5dp</dimen>
     <dimen name="line_limit_text_size">12sp</dimen>
     <dimen name="marker_height">76dp</dimen>
+    <dimen name="contact_size">32dp</dimen>
 
 </resources>

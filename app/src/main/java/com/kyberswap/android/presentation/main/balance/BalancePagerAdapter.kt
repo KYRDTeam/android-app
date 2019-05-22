@@ -4,6 +4,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.presentation.main.balance.kyberlist.KyberListFragment
+import com.kyberswap.android.presentation.main.balance.other.OtherFragment
 
 class BalancePagerAdapter constructor(
     fm: FragmentManager,

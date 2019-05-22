@@ -75,6 +75,7 @@
             android:screenOrientation="fullSensor"
             tools:replace="screenOrientation" />
         <activity android:name=".presentation.main.swap.SwapConfirmActivity" />
+        <activity android:name=".presentation.main.balance.send.SendConfirmActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

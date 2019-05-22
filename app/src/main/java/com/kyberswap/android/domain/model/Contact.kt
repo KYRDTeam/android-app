@@ -2,15 +2,15 @@ package com.kyberswap.android.domain.model
 
 import android.os.Parcelable
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import kotlinx.android.parcel.Parcelize
-import org.jetbrains.annotations.NotNull
 
 @Parcelize
-@Entity(tableName = "contacts")
+@Entity(
+    tableName = "contacts",
+    primaryKeys = ["walletAddress", "address"]
+)
 data class Contact(
-    @PrimaryKey
-    @NotNull
+    val walletAddress: String = "",
     val address: String = "",
     val name: String = ""
 ) : Parcelable {
@@ -18,4 +18,18 @@ data class Contact(
         return this.address == other.address &&
             this.name == other.name
     }
+
+    val displayAddress: String
+        get() = StringBuilder()
+            .append(if (address.length > 5) address.substring(0, 5) else address.length)
+            .append("...")
+            .append(
+                address.substring(
+                    if (address.length > 6) {
+                        address.length - 6
+             else address.length
+                )
+            ).toString()
+
+
 }

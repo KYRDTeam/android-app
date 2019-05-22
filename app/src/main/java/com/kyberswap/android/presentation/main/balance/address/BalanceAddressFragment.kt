@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main.balance
+package com.kyberswap.android.presentation.main.balance.address
 
 import android.content.ClipData
 import android.content.ClipboardManager

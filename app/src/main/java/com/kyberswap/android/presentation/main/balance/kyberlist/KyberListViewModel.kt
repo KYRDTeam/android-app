@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main.balance
+package com.kyberswap.android.presentation.main.balance.kyberlist
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,9 +8,12 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalanceUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
+import com.kyberswap.android.domain.usecase.wallet.SaveSendTokenUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSwapDataTokenUseCase
 import com.kyberswap.android.domain.usecase.wallet.UpdateWalletUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.main.balance.GetBalanceState
+import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import io.reactivex.disposables.CompositeDisposable
@@ -24,7 +27,8 @@ class KyberListViewModel @Inject constructor(
     private val getBalancePollingUseCase: GetBalancePollingUseCase,
     private val updateWalletUseCase: UpdateWalletUseCase,
     private val getWalletByAddressUseCase: GetWalletByAddressUseCase,
-    private val saveSwapDataTokenUseCase: SaveSwapDataTokenUseCase
+    private val saveSwapDataTokenUseCase: SaveSwapDataTokenUseCase,
+    private val saveSendTokenUseCase: SaveSendTokenUseCase
 ) : ViewModel() {
 
     private val _getBalanceStateCallback = MutableLiveData<Event<GetBalanceState>>()
@@ -48,6 +52,11 @@ class KyberListViewModel @Inject constructor(
     private val _callback = MutableLiveData<Event<SaveSwapDataState>>()
     val callback: LiveData<Event<SaveSwapDataState>>
         get() = _callback
+
+
+    private val _callbackSaveSend = MutableLiveData<Event<SaveSendState>>()
+    val callbackSaveSend: LiveData<Event<SaveSendState>>
+        get() = _callbackSaveSend
 
     val compositeDisposable by lazy {
         CompositeDisposable()
@@ -123,6 +132,10 @@ class KyberListViewModel @Inject constructor(
         compositeDisposable.dispose()
         getBalancePollingUseCase.dispose()
         getWalletByAddressUseCase.dispose()
+        getBalanceUseCase.dispose()
+        updateWalletUseCase.dispose()
+        saveSendTokenUseCase.dispose()
+        saveSwapDataTokenUseCase.dispose()
         super.onCleared()
     }
 
@@ -137,6 +150,18 @@ class KyberListViewModel @Inject constructor(
                     Event(SaveSwapDataState.ShowError(it.localizedMessage))
     ,
             SaveSwapDataTokenUseCase.Param(walletAddress, token, isSell)
+        )
+    }
+
+    fun saveSendToken(address: String, token: Token) {
+        saveSendTokenUseCase.execute(
+            Action {
+                _callbackSaveSend.value = Event(SaveSendState.Success())
+    ,
+            Consumer {
+                _callbackSaveSend.value = Event(SaveSendState.Success())
+    ,
+            SaveSendTokenUseCase.Param(address, token)
         )
     }
 }

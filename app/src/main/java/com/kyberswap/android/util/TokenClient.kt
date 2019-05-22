@@ -2,6 +2,7 @@ package com.kyberswap.android.util
 
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.usecase.wallet.SwapTokenUseCase
+import com.kyberswap.android.domain.usecase.wallet.TransferTokenUseCase
 import com.kyberswap.android.presentation.common.DEFAULT_MAX_AMOUNT
 import com.kyberswap.android.presentation.common.DEFAULT_WALLET_ID
 import com.kyberswap.android.presentation.common.PERM
@@ -188,6 +189,43 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
 
     }
 
+    fun transfer(
+        walletAddress: String,
+        value: String
+    ): Function {
+        return Function(
+            "transfer",
+            Arrays.asList(
+                Address(walletAddress),
+                Uint256(BigInteger(value))
+            ),
+            emptyList()
+        )
+    }
+
+    @Throws(java.lang.Exception::class)
+    fun estimateGasForTransfer(
+        walletAddress: String,
+        contractAddress: String,
+        value: String,
+        isEth: Boolean
+    ): EthEstimateGas? {
+
+        return web3j.ethEstimateGas(
+            Transaction(
+                walletAddress,
+                null,
+                null,
+                null,
+                contractAddress,
+                if (isEth) BigInteger(value) else BigInteger.ZERO,
+                FunctionEncoder.encode(transfer(walletAddress, value))
+            )
+        ).send()
+
+
+    }
+
     @Throws(IOException::class)
     private fun getNonce(addr: String): BigInteger {
         val getNonce =
@@ -266,6 +304,48 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             )
 
 
+    }
+
+
+    @Throws(IOException::class)
+    fun doTransferTransaction(
+        param: TransferTokenUseCase.Param, credentials: Credentials
+    ): String? {
+        val gasPrice = Convert.toWei(
+            param.send.gasPrice.toBigDecimalOrDefaultZero(),
+            Convert.Unit.GWEI
+        ).toBigInteger()
+        val gasLimit = param.send.gasLimit.toBigInteger()
+
+        val isEth = param.send.tokenSource.isETH()
+        val amount = if (isEth) Convert.toWei(
+            param.send.sourceAmount.toBigDecimalOrDefaultZero(),
+            Convert.Unit.ETHER
+        ).toBigIntegerExact() else BigInteger.ZERO
+
+        val txManager = RawTransactionManager(web3j, credentials)
+
+        val transactionResponse = txManager.sendTransaction(
+            gasPrice,
+            gasLimit,
+            if (isEth) param.wallet.address else param.send.tokenSource.tokenAddress,
+            if (isEth) "" else
+                FunctionEncoder.encode(
+                    transfer(
+                        param.wallet.address,
+                        amount.toString()
+                    )
+                ),
+            if (isEth) amount else BigInteger.ZERO
+        )
+
+        if (transactionResponse.hasError()) run {
+            throw RuntimeException(
+                "Error processing transaction request: " +
+                    transactionResponse.error.message
+            )
+
+        return transactionResponse.transactionHash
     }
 
     private fun executeTradeWithHint(
