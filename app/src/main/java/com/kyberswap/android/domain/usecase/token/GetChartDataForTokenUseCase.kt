@@ -6,7 +6,7 @@ import com.kyberswap.android.domain.model.Chart
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.repository.TokenRepository
 import com.kyberswap.android.domain.usecase.SequentialUseCase
-import com.kyberswap.android.presentation.main.balance.ChartType
+import com.kyberswap.android.presentation.main.balance.chart.ChartType
 import io.reactivex.Single
 import javax.inject.Inject
 

@@ -25,7 +25,10 @@ interface ContactDao {
     @Query("DELETE FROM contacts")
     fun deleteAllContacts()
 
+    @Query("SELECT * from contacts where walletAddress = :walletAddress")
+    fun loadContactByWalletAddress(walletAddress: String): Flowable<List<Contact>>
+
     @get:Query("SELECT * FROM contacts")
-    val all: List<Contact>
+    val all: Flowable<List<Contact>>
 }
 

@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main.balance
+package com.kyberswap.android.presentation.main.balance.chart
 
 import com.kyberswap.android.domain.model.Chart
 

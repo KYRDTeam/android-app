@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main.balance
+package com.kyberswap.android.presentation.main.balance.chart
 
 
 import android.graphics.Color
@@ -116,8 +116,12 @@ class LineChartFragment : BaseFragment() {
         lineChart.description.isEnabled = false
         lineChart.setViewPortOffsets(0f, 0f, 0f, 0f)
 
-        val formatter = XAxisValueFormatter(chart)
-        val markerView = CustomMarkerView(context!!, formatter)
+        val formatter =
+            XAxisValueFormatter(chart)
+        val markerView = CustomMarkerView(
+            context!!,
+            formatter
+        )
         markerView.chartView = lineChart
         lineChart.marker = markerView
         lineChart.invalidate()

@@ -1,7 +1,6 @@
 package com.kyberswap.android.presentation.main.setting
 
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,20 +8,24 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.google.zxing.integration.android.IntentIntegrator
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
-import com.kyberswap.android.databinding.FragmentAddContactBinding
+import com.kyberswap.android.databinding.FragmentContactBinding
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.balance.send.ContactAdapter
+import com.kyberswap.android.presentation.main.swap.GetContactState
 import com.kyberswap.android.presentation.main.swap.SaveContactState
 import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
 
 
-class AddContactFragment : BaseFragment() {
+class ContactFragment : BaseFragment() {
 
-    private lateinit var binding: FragmentAddContactBinding
+    private lateinit var binding: FragmentContactBinding
 
     @Inject
     lateinit var navigator: Navigator
@@ -32,49 +35,52 @@ class AddContactFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelFactory
 
     private var wallet: Wallet? = null
-    private var address: String? = null
+
+    @Inject
+    lateinit var appExecutors: AppExecutors
 
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(AddContactViewModel::class.java)
+        ViewModelProviders.of(this, viewModelFactory).get(ContactViewModel::class.java)
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         wallet = arguments!!.getParcelable(WALLET_PARAM)
-        address = arguments!!.getString(ADDRESS_PARAM)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentAddContactBinding.inflate(inflater, container, false)
+        binding = FragmentContactBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        binding.imgQRCode.setOnClickListener {
-            IntentIntegrator.forSupportFragment(this)
-                .setBeepEnabled(false)
-                .initiateScan()
+        binding.imgAddContact.setOnClickListener {
+            navigator.navigateToAddContactScreen(wallet)
         }
-        binding.edtAddress.setText(address)
+
         binding.imgBack.setOnClickListener {
             activity!!.onBackPressed()
         }
 
-        binding.tvSave.setOnClickListener {
-            if (binding.edtAddress.text.isNullOrEmpty()) showAlert(getString(R.string.provide_receive_address))
-            viewModel.save(
-                wallet!!.address,
-                binding.edtName.text.toString(),
-                binding.edtAddress.text.toString()
-            )
-        }
+
+        binding.rvContact.layoutManager = LinearLayoutManager(
+            activity,
+            RecyclerView.VERTICAL,
+            false
+        )
+
+        val contactAdapter =
+            ContactAdapter(appExecutors) { contact ->
+                viewModel.saveSendContact(wallet!!.address, contact)
+            }
+        binding.rvContact.adapter = contactAdapter
 
         viewModel.saveContactCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -95,29 +101,30 @@ class AddContactFragment : BaseFragment() {
             }
         })
 
+
+        viewModel.getContact(wallet!!.address)
+        viewModel.getContactCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetContactState.Success -> {
+                        contactAdapter.submitList(state.contacts)
+                    }
+                    is GetContactState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                    }
+                }
+            }
+        })
+
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-        if (result != null) {
-            if (result.contents == null) {
-                showAlert(getString(R.string.message_cancelled))
-            } else {
-                binding.edtAddress.setText(result.contents.toString())
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
-        }
-    }
 
     companion object {
         private const val WALLET_PARAM = "param_wallet"
-        private const val ADDRESS_PARAM = "param_address"
-        fun newInstance(wallet: Wallet?, address: String) =
-            AddContactFragment().apply {
+        fun newInstance(wallet: Wallet?) =
+            ContactFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(WALLET_PARAM, wallet)
-                    putString(ADDRESS_PARAM, address)
                 }
             }
     }

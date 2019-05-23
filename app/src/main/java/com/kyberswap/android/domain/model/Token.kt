@@ -108,7 +108,7 @@ data class Token(
                     .multiply(rateEthNow)
                     .toDisplayNumber() else "0"
             )
-            .append("USD")
+            .append(" ETH")
             .toString()
 
 
@@ -120,7 +120,7 @@ data class Token(
                     .multiply(rateUsdNow)
                     .toDisplayNumber() else "0"
             )
-            .append("ETH")
+            .append(" USD")
             .toString()
 
 
