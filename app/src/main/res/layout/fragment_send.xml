@@ -10,12 +10,8 @@
             type="String" />
 
         <variable
-            name="token"
-            type="com.kyberswap.android.domain.model.Token" />
-
-        <variable
-            name="gas"
-            type="com.kyberswap.android.domain.model.Gas" />
+            name="send"
+            type="com.kyberswap.android.domain.model.Send" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -72,8 +68,7 @@
             android:layout_marginStart="30dp"
             android:layout_marginTop="85dp"
             android:scaleType="centerInside"
-            android:src="@drawable/eth"
-            app:identifier="@{token.tokenSymbol}"
+            app:identifier="@{send.tokenSource.tokenSymbol}"
             app:layout_constraintEnd_toStartOf="@+id/tvSource"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
@@ -85,7 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="9dp"
             android:layout_marginEnd="12dp"
-            android:text="@{token.tokenSymbol}"
+            android:text="@{send.tokenSource.tokenSymbol}"
             android:textAllCaps="true"
             android:textColor="#141927"
             android:textSize="16sp"
@@ -122,7 +117,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="15dp"
             android:layout_marginEnd="16dp"
-            android:text="@{token.tokenSymbol +` `+ @string/balance}"
+            android:text="@{send.tokenSource.tokenSymbol +` `+ @string/balance}"
             android:textColor="#ffffff"
             android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@+id/tvBalance"
@@ -137,7 +132,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:text="@{token.displayCurrentBalance}"
+            android:text="@{send.tokenSource.displayCurrentBalance}"
             android:textColor="#ffffff"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -150,7 +145,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:gravity="end"
-            android:text="@{token.displayCurrentBalanceInUSD}"
+            android:text="@{send.tokenSource.displayCurrentBalanceInUSD}"
             android:textColor="#ffffff"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@+id/tvTokenBalance"
@@ -259,6 +254,7 @@
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="24dp"
                     android:layout_marginEnd="24dp"
+                    android:nestedScrollingEnabled="false"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView25" />
@@ -294,6 +290,7 @@
                         android:layout_marginStart="12dp"
                         android:layout_marginEnd="12dp"
                         android:background="@drawable/rounded_corner_background"
+                        android:elevation="4dp"
                         app:el_duration="1000"
                         app:el_expanded="false">
 
@@ -301,7 +298,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="vertical"
-                            android:paddingTop="8dp"
                             android:paddingBottom="14dp">
 
                             <ImageView
@@ -337,11 +333,11 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:backgroundTint="#fea34c"
-                                    android:text="@{String.format(@string/gas_fast, gas.fast)}"
+                                    android:text="@{String.format(@string/gas_fast, send.gas.fast)}"
                                     android:textSize="12sp"
                                     android:theme="@style/CustomRadioTheme"
                                     app:font="@{@string/semi_bold_font_path}"
-                                    app:styleBold="@{gas.fast}" />
+                                    app:styleBold="@{send.gas.fast}" />
 
                                 <RadioButton
                                     android:id="@+id/rbRegular"
@@ -349,11 +345,11 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:backgroundTint="#fea34c"
-                                    android:text="@{String.format(@string/gas_regular, gas.standard)}"
+                                    android:text="@{String.format(@string/gas_regular, send.gas.standard)}"
                                     android:textSize="12sp"
                                     android:theme="@style/CustomRadioTheme"
                                     app:font="@{@string/semi_bold_font_path}"
-                                    app:styleBold="@{gas.standard}" />
+                                    app:styleBold="@{send.gas.standard}" />
 
                                 <RadioButton
                                     android:id="@+id/rbSlow"
@@ -361,88 +357,13 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:backgroundTint="#fea34c"
-                                    android:text="@{String.format(@string/gas_slow, gas.low)}"
+                                    android:text="@{String.format(@string/gas_slow, send.gas.low)}"
                                     android:textSize="12sp"
                                     android:theme="@style/CustomRadioTheme"
                                     app:font="@{@string/semi_bold_font_path}"
-                                    app:styleBold="@{gas.low}" />
+                                    app:styleBold="@{send.gas.low}" />
                             </RadioGroup>
 
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:layout_marginStart="20dp"
-                                android:layout_marginTop="11dp"
-                                android:layout_marginEnd="20dp"
-                                android:layout_marginBottom="11dp"
-                                android:background="#e1e4eb" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="20dp"
-                                android:layout_marginEnd="20dp"
-                                android:lineSpacingExtra="8sp"
-                                android:text="@{String.format(@string/swap_rate_condition, token.tokenSymbol, token.tokenSymbol)}"
-                                android:textColor="#5a5e67"
-                                android:textSize="12sp" />
-
-                            <RadioGroup
-                                android:id="@+id/rgRate"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="20dp"
-                                android:layout_marginTop="20dp"
-                                android:layout_marginEnd="20dp"
-                                android:layout_marginBottom="17dp"
-                                android:orientation="horizontal">
-
-                                <RadioButton
-                                    android:id="@+id/rbDefaultRate"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:backgroundTint="#fea34c"
-                                    android:text="@string/three_percentage"
-                                    android:theme="@style/CustomRadioTheme" />
-
-                                <RadioButton
-                                    android:id="@+id/rbCustom"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:backgroundTint="#fea34c"
-                                    android:text="@string/custom_value"
-                                    android:theme="@style/CustomRadioTheme" />
-
-                                <EditText
-                                    android:id="@+id/edtCustom"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="15dp"
-                                    android:background="@drawable/rounded_corner_editext"
-                                    android:enabled="false"
-                                    android:gravity="center|end"
-                                    android:hint="@string/three_percentage"
-                                    android:inputType="numberDecimal"
-                                    android:minWidth="92dp"
-                                    android:minHeight="36dp"
-                                    android:paddingStart="10dp"
-                                    android:paddingEnd="10dp"
-                                    android:textColor="#5a5e67"
-                                    android:textSize="12sp" />
-                            </RadioGroup>
-
-                            <TextView
-                                android:id="@+id/tvRevertNotification"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="20dp"
-                                android:layout_marginEnd="20dp"
-                                android:lineSpacingExtra="10sp"
-                                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold.Italic"
-                                android:textColor="#5a5e67"
-                                android:textSize="12sp"
-                                android:textStyle="italic" />
                         </LinearLayout>
 
 

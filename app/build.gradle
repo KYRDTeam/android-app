@@ -229,7 +229,9 @@ dependencies {
         exclude group: 'com.google.protobuf', module: 'protobuf-java'
     }
 
-    implementation 'com.github.WycliffeAssociates:jdenticon-kotlin:-SNAPSHOT'
+    implementation 'com.github.WycliffeAssociates:jdenticon-kotlin:7a4bbbd77e'
+    implementation 'com.caverock:androidsvg-aar:1.3'
+
 
 
 

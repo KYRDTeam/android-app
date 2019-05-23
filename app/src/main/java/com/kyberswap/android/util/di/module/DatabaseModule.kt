@@ -38,6 +38,12 @@ class DatabaseModule {
 
     @Provides
     @Singleton
+    fun provideSendDao(appDatabase: AppDatabase): SendDao {
+        return appDatabase.sendDao()
+    }
+
+    @Provides
+    @Singleton
     fun provideWalletTokenDao(appDatabase: AppDatabase): WalletTokenDao {
         return appDatabase.walletTokenDao()
     }
@@ -47,7 +53,6 @@ class DatabaseModule {
     fun provideRateDao(appDatabase: AppDatabase): RateDao {
         return appDatabase.rateDao()
     }
-
 
     @Provides
     @Singleton

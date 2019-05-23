@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.usecase.token.GetBalanceUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
+import com.kyberswap.android.domain.usecase.wallet.SaveSendTokenUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSwapDataTokenUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.balance.GetBalanceState
@@ -17,7 +18,8 @@ import javax.inject.Inject
 class TokenSearchViewModel @Inject constructor(
     private val getTokenListUseCase: GetBalanceUseCase,
     private val getWalletByAddressUseCase: GetWalletByAddressUseCase,
-    private val saveSwapDataTokenUseCase: SaveSwapDataTokenUseCase
+    private val saveSwapDataTokenUseCase: SaveSwapDataTokenUseCase,
+    private val saveSendTokenUseCase: SaveSendTokenUseCase
 ) : ViewModel() {
 
     private val _getTokenListCallback = MutableLiveData<Event<GetBalanceState>>()
@@ -27,6 +29,10 @@ class TokenSearchViewModel @Inject constructor(
     private val _saveSwapCallback = MutableLiveData<Event<SaveSwapDataState>>()
     val saveSwapCallback: LiveData<Event<SaveSwapDataState>>
         get() = _saveSwapCallback
+
+    private val _saveSendCallback = MutableLiveData<Event<SaveSendState>>()
+    val saveSendCallback: LiveData<Event<SaveSendState>>
+        get() = _saveSendCallback
 
     val compositeDisposable by lazy {
         CompositeDisposable()
@@ -72,6 +78,20 @@ class TokenSearchViewModel @Inject constructor(
                     Event(SaveSwapDataState.ShowError(it.localizedMessage))
     ,
             SaveSwapDataTokenUseCase.Param(walletAddress, token, sourceToken)
+        )
+    }
+
+    fun saveSendTokenSelection(address: String, token: Token) {
+        saveSendTokenUseCase.execute(
+            Action {
+                _saveSendCallback.value = Event(SaveSendState.Success())
+    ,
+            Consumer {
+                it.printStackTrace()
+                _saveSendCallback.value =
+                    Event(SaveSendState.ShowError(it.localizedMessage))
+    ,
+            SaveSendTokenUseCase.Param(address, token)
         )
     }
 

@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main.balance
+package com.kyberswap.android.presentation.main.balance.other
 
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.usecase.token.GetBalanceUseCase

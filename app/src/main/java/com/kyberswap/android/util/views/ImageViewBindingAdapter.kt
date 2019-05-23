@@ -1,14 +1,17 @@
 package com.kyberswap.android.util.views
 
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.View
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.caverock.androidsvg.SVG
 import com.kyberswap.android.R
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import jdenticon.Jdenticon
 
 object ImageViewBindingAdapter {
     @BindingAdapter("app:imageUrl")
@@ -86,6 +89,25 @@ object ImageViewBindingAdapter {
             view.visibility = View.GONE
  else {
             view.visibility = View.VISIBLE
+
+
+    }
+
+    @BindingAdapter("app:address")
+    @JvmStatic
+    fun generateImage(view: ImageView, address: String?) {
+        if (address.isNullOrEmpty()) return
+        try {
+            val svg = SVG.getFromString(
+                Jdenticon.toSvg(
+                    address.removePrefix("0x"),
+                    view.layoutParams.width
+                )
+            )
+            val drawable = PictureDrawable(svg.renderToPicture())
+            Glide.with(view).load(drawable).into(view)
+ catch (ex: Exception) {
+            ex.printStackTrace()
 
 
     }

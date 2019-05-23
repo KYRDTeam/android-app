@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -13,6 +13,7 @@
         android:id="@+id/lnItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
         android:gravity="center"
         android:minHeight="64dp">
 
@@ -21,7 +22,8 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:scaleType="fitXY"
-            android:src="@drawable/token_default" />
+            android:src="@drawable/token_default"
+            app:address="@{contact.address}" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,17 +34,17 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@{contact.name}"
                 android:textColor="#2e3957"
-                android:textSize="14sp"
-                tools:text="Angel Boone" />
+                android:textSize="14sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
+                android:text="@{contact.displayAddress}"
                 android:textColor="#9ea1aa"
-                android:textSize="14sp"
-                tools:text="gtyioskjfoisuf97676tuỵnk891…7uhyt8" />
+                android:textSize="14sp" />
 
         </LinearLayout>
     </LinearLayout>

@@ -4,11 +4,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainViewModel
-import com.kyberswap.android.presentation.main.balance.*
-import com.kyberswap.android.presentation.main.setting.AddContactFragment
-import com.kyberswap.android.presentation.main.setting.AddContactViewModel
-import com.kyberswap.android.presentation.main.setting.SettingFragment
-import com.kyberswap.android.presentation.main.setting.SettingViewModel
+import com.kyberswap.android.presentation.main.balance.BalanceFragment
+import com.kyberswap.android.presentation.main.balance.BalanceViewModel
+import com.kyberswap.android.presentation.main.balance.address.BalanceAddressFragment
+import com.kyberswap.android.presentation.main.balance.address.BalanceAddressViewModel
+import com.kyberswap.android.presentation.main.balance.chart.ChartFragment
+import com.kyberswap.android.presentation.main.balance.chart.ChartViewModel
+import com.kyberswap.android.presentation.main.balance.chart.LineChartFragment
+import com.kyberswap.android.presentation.main.balance.chart.LineChartViewModel
+import com.kyberswap.android.presentation.main.balance.kyberlist.KyberListFragment
+import com.kyberswap.android.presentation.main.balance.kyberlist.KyberListViewModel
+import com.kyberswap.android.presentation.main.balance.other.OtherFragment
+import com.kyberswap.android.presentation.main.balance.other.OtherViewModel
+import com.kyberswap.android.presentation.main.balance.send.SendFragment
+import com.kyberswap.android.presentation.main.balance.send.SendViewModel
+import com.kyberswap.android.presentation.main.setting.*
 import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.main.swap.SwapViewModel
 import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
@@ -72,6 +82,10 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeAddContactFragment(): AddContactFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeContactFragment(): ContactFragment
 
 
     @Binds
@@ -156,5 +170,12 @@ interface MainActivityModule {
     @ViewModelKey(AddContactViewModel::class)
     fun bindAddContactViewModel(
         addContactViewModel: AddContactViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ContactViewModel::class)
+    fun bindContactViewModel(
+        contactViewModel: ContactViewModel
     ): ViewModel
 }
