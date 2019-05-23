@@ -2,6 +2,7 @@ package com.kyberswap.android.util.ext
 
 import com.kyberswap.android.domain.model.CustomBytes32
 import java.math.BigDecimal
+import java.math.BigInteger
 import java.math.RoundingMode
 import kotlin.math.pow
 
@@ -33,6 +34,17 @@ fun String?.toBigDecimalOrDefaultZero(): BigDecimal {
     } catch (ex: Exception) {
         ex.printStackTrace()
         BigDecimal.ZERO
+    }
+}
+
+
+fun String?.toBigIntegerOrDefaultZero(): BigInteger {
+    if (this.isNullOrEmpty()) return BigInteger.ZERO
+    return try {
+        BigInteger(this)
+    } catch (ex: Exception) {
+        ex.printStackTrace()
+        BigInteger.ZERO
     }
 }
 

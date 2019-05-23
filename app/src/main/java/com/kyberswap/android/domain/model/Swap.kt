@@ -6,11 +6,13 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.kyberswap.android.presentation.common.DEFAULT_ROUNDING_NUMBER
+import com.kyberswap.android.util.ext.percentage
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.parcel.Parcelize
 import org.web3j.utils.Convert
 import java.math.BigDecimal
+import java.math.BigInteger
 
 @Entity(tableName = "swaps")
 @Parcelize
@@ -35,8 +37,9 @@ data class Swap(
 
 
     val displayExpectedRate: String
-        get() = expectedRate.toBigDecimalOrDefaultZero()
-            .toDisplayNumber()
+        get() = if (samePair) BigDecimal.ONE.toDisplayNumber() else
+            expectedRate.toBigDecimalOrDefaultZero()
+                .toDisplayNumber()
 
     val displaySourceAmount: String
         get() = StringBuilder().append(sourceAmount).append(" ").append(tokenSource.tokenSymbol).toString()
@@ -61,18 +64,21 @@ data class Swap(
                     sourceAmount
                 ).multiply(tokenDest.rateUsdNow).toDisplayNumber()
             )
-            .append("USD")
+            .append(" USD")
             .toString()
+
+    val samePair: Boolean
+        get() = tokenSource.tokenSymbol == tokenDest.tokenSymbol
 
 
     val displayDestRateEthUsd: String
         get() = StringBuilder()
-            .append("1")
+            .append("1 ")
             .append(tokenDest.tokenSymbol)
             .append(" = ")
-            .append(tokenDest.rateEthNow.toDisplayNumber() + "ETH")
+            .append(tokenDest.rateEthNow.toDisplayNumber() + " ETH")
             .append(" = ")
-            .append(tokenDest.rateUsdNow.toDisplayNumber() + "USD")
+            .append(tokenDest.rateUsdNow.toDisplayNumber() + " USD")
             .toString()
 
     val displayGasFee: String
@@ -84,15 +90,23 @@ data class Swap(
                         .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
                 ).toPlainString()
             )
-            .append("ETH")
+            .append(" ETH")
             .toString()
 
     val displayMinAcceptedRate: String
-        get() = ((1.0 - minAcceptedRatePercent.toBigDecimalOrDefaultZero()
-            .toDouble() / 100).toBigDecimal()
+        get() = ((BigDecimal.ONE - minAcceptedRatePercent.toBigDecimalOrDefaultZero() / 100.toBigDecimal())
             * expectedRate.toBigDecimalOrDefaultZero())
             .toDisplayNumber()
 
+    val minConversionRate: BigInteger
+        get() = ((BigDecimal.ONE - minAcceptedRatePercent.toBigDecimalOrDefaultZero() / 100.toBigDecimal())
+            * expectedRate.toBigDecimalOrDefaultZero()).toBigInteger()
+
+    val ratePercentage: String
+        get() = expectedRate.percentage(marketRate).toDisplayNumber()
+
+    val ratePercentageAbs: String
+        get() = expectedRate.percentage(marketRate).abs().toDisplayNumber()
 
     fun swapToken(): Swap {
         return Swap(

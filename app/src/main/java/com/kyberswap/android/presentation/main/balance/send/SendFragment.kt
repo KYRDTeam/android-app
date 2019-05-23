@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,6 +25,7 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.swap.GetContactState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.main.swap.GetSendState
+import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_send.*
 import net.cachapa.expandablelayout.ExpandableLayout
@@ -201,13 +203,31 @@ class SendFragment : BaseFragment() {
     )
 
         binding.tvContinue.setOnClickListener {
-            if (edtSource.text.isNullOrEmpty()) {
-                showAlert(getString(R.string.specify_amount))
-
-     else {
-                navigator.navigateToSendConfirmationScreen(wallet)
+            when {
+                edtSource.text.isNullOrEmpty() -> showAlert(getString(R.string.specify_amount))
+                edtAddress.text.isNullOrEmpty() -> showAlert(getString(R.string.specify_contact_address))
+                else -> viewModel.saveSend(binding.send, binding.edtAddress.text.toString())
     
 
+
+        viewModel.saveSendCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == SaveSendState.Loading)
+                when (state) {
+                    is SaveSendState.Success -> {
+                        navigator.navigateToSendConfirmationScreen(wallet)
+            
+                    is SaveSendState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        Toast.makeText(
+                            activity,
+                            state.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+            
+        
+    
+)
 
     }
 
@@ -232,6 +252,7 @@ class SendFragment : BaseFragment() {
                 showAlert(getString(R.string.message_cancelled))
      else {
                 binding.edtAddress.setText(result.contents.toString())
+                viewModel
     
  else {
             super.onActivityResult(requestCode, resultCode, data)

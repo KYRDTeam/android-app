@@ -13,12 +13,11 @@ import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSwapUseCase
-import com.kyberswap.android.presentation.common.DEFAULT_EXPECTED_RATE
-import com.kyberswap.android.presentation.common.DEFAULT_MARKET_RATE
-import com.kyberswap.android.presentation.common.DEFAULT_ROUNDING_NUMBER
-import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.common.*
 import com.kyberswap.android.util.ext.percentage
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
+import com.kyberswap.android.util.ext.toDisplayNumber
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -85,6 +84,10 @@ class SwapViewModel @Inject constructor(
     val saveSwapDataCallback: LiveData<Event<SaveSwapState>>
         get() = _saveSwapCallback
 
+    val ratePercentage: String
+        get() = expectedRate.percentage(marketRate).toDisplayNumber()
+
+
     fun getMarketRate(srcToken: String, destToken: String) {
         getMarketRate.dispose()
         if (srcToken.isNotBlank() && destToken.isNotBlank()) {
@@ -120,7 +123,10 @@ class SwapViewModel @Inject constructor(
     fun getSwapData(address: String) {
         getSwapData.execute(
             Consumer {
-                gasLimit = it.tokenSource.gasLimit.toBigDecimalOrDefaultZero().toBigInteger()
+                gasLimit = if (it.tokenSource.gasLimit.toBigIntegerOrDefaultZero()
+                    == BigInteger.ZERO
+                ) DEFAULT_GAS_LIMIT
+                else it.tokenSource.gasLimit.toBigIntegerOrDefaultZero()
                 _getSwapCallback.value = Event(GetSwapState.Success(it))
     ,
             Consumer {
@@ -172,10 +178,6 @@ class SwapViewModel @Inject constructor(
     fun resetRate() {
         marketRate = null
         expectedRate = null
-    }
-
-    fun ratePercentage(): String {
-        return expectedRate.percentage(marketRate).toPlainString()
     }
 
     fun verifyCap(amount: BigDecimal): Boolean {

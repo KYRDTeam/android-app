@@ -82,9 +82,15 @@ object ImageViewBindingAdapter {
 
     }
 
-    @BindingAdapter("app:percentageRate")
+    @BindingAdapter("app:percentageRate", "app:samePair")
     @JvmStatic
-    fun percentageRate(view: ImageView, percentageRate: String?) {
+    fun percentageRate(view: ImageView, percentageRate: String?, samePair: Boolean?) {
+
+        if (samePair != null && samePair) {
+            view.visibility = View.GONE
+            return
+
+
         if (percentageRate.toBigDecimalOrDefaultZero() > (-0.1).toBigDecimal()) {
             view.visibility = View.GONE
  else {

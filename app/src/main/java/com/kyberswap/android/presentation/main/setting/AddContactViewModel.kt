@@ -27,7 +27,7 @@ class AddContactViewModel @Inject constructor(
                 it.printStackTrace()
                 _saveContactCallback.value = Event(SaveContactState.ShowError(it.localizedMessage))
     ,
-            SaveContactUseCase.Param(walletAddress, name, address)
+            SaveContactUseCase.Param(walletAddress, address, name)
         )
     }
 }

@@ -160,6 +160,10 @@
     <string name="provide_receive_address">Please provide received address</string>
     <string name="amount_to_send">Amount to Send</string>
     <string name="specify_amount">Please specify amount</string>
+    <string name="payment_send_success">Payment sent to %s</string>
+    <string name="same_token_alert">Can not create order with same token pair</string>
+    <string name="exceed_balance">Source amount exceeds token balance</string>
+    <string name="specify_contact_address">Please specify contact address</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>
