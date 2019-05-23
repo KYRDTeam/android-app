@@ -82,7 +82,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             return@setOnTabSelectedListener true
         }
 
-
         binding.navView.rvWallet.layoutManager = LinearLayoutManager(
             this,
             RecyclerView.VERTICAL,
@@ -98,7 +97,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                 when (state) {
                     is GetAllWalletState.Success -> {
                         walletAdapter.submitList(state.wallets)
-
                     }
                     is GetAllWalletState.ShowError -> {
                         navigator.navigateToLandingPage()
@@ -108,6 +106,11 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         })
 
         imgClose.setOnClickListener {
+            showDrawer(false)
+        }
+
+        tvTransaction.setOnClickListener {
+            navigator.navigateToTransactionScreen(wallet)
             showDrawer(false)
         }
     }

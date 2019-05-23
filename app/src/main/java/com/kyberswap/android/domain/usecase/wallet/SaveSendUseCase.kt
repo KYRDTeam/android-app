@@ -18,5 +18,5 @@ class SaveSendUseCase @Inject constructor(
         return swapRepository.saveSend(param)
     }
 
-    class Param(val send: Send)
+    class Param(val send: Send, val address: String)
 }

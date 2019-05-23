@@ -26,6 +26,7 @@ import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.swap
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
+import kotlinx.android.synthetic.main.fragment_swap.*
 import net.cachapa.expandablelayout.ExpandableLayout
 import java.math.RoundingMode
 import javax.inject.Inject
@@ -110,6 +111,12 @@ class SwapFragment : BaseFragment() {
             }
         }
 
+        listOf(binding.tvTokenBalance, binding.tvTokenBalanceValue).forEach {
+            it.setOnClickListener {
+                binding.edtSource.setText(binding.tvTokenBalanceValue.text)
+            }
+        }
+
         binding.expandableLayout.setOnExpansionUpdateListener { _, state ->
             if (state == ExpandableLayout.State.EXPANDED) {
                 val animator = ObjectAnimator.ofInt(
@@ -144,28 +151,46 @@ class SwapFragment : BaseFragment() {
             .observeOn(schedulerProvider.ui())
             .subscribe { text ->
                 binding.swap?.let { swapData ->
-                    getExpectedRate(
-                        swapData,
-                        if (text.isNullOrEmpty()) getString(R.string.default_source_amount) else text.toString()
-                    )
-                    swapData.sourceAmount = text.toString()
+                    if (swapData.samePair) {
+                        edtDest.setText(text)
+                    } else {
 
-                    wallet?.let {
-                        viewModel.getGasLimit(it, swapData)
+                        if (text.toString().toBigDecimalOrDefaultZero() > binding.swap?.tokenSource?.currentBalance) {
+                            showAlert(getString(R.string.exceed_balance))
+                        } else {
+                            getExpectedRate(
+                                swapData,
+                                if (text.isNullOrEmpty()) getString(R.string.default_source_amount) else text.toString()
+                            )
+                            swapData.sourceAmount = text.toString()
+
+                            wallet?.let {
+                                viewModel.getGasLimit(it, swapData)
+                            }
+                        }
                     }
                 }
             })
-
-        viewModel.getSwapData(wallet!!.address)
 
         viewModel.getSwapDataCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSwapState.Success -> {
                         if (binding.swap != state.swap) {
+                            if (state.swap.tokenSource.tokenSymbol == state.swap.tokenDest.tokenSymbol) {
+                                showAlert(getString(R.string.same_token_alert))
+                            }
                             binding.swap = state.swap
+                            binding.executePendingBindings()
                             binding.edtSource.setText(state.swap.sourceAmount)
+                            binding.tvRevertNotification.text =
+                                getRevertNotification(binding.rgRate.checkedRadioButtonId)
                             getRate(state.swap)
+
+                            binding.swap?.let { swap ->
+                                swap.gasPrice = getSelectedGasPrice(viewModel.gas)
+                                viewModel.saveSwap(swap)
+                            }
                         }
                     }
                     is GetSwapState.ShowError -> {
@@ -184,12 +209,14 @@ class SwapFragment : BaseFragment() {
                             swap.expectedRate = state.list[0]
                             swap.slippageRate = state.list[1]
                         }
-                        binding.percentageRate = viewModel.ratePercentage()
+                        binding.percentageRate = viewModel.ratePercentage
                         binding.swap = swap
-                        binding.edtDest.setText(
-                            viewModel.getExpectedDestAmount(binding.edtSource.text)
-                                .toDisplayNumber()
-                        )
+                        if (binding.edtSource.text.isNotBlank()) {
+                            binding.edtDest.setText(
+                                viewModel.getExpectedDestAmount(binding.edtSource.text)
+                                    .toDisplayNumber()
+                            )
+                        }
                         if (swap != null) {
                             viewModel.saveSwap(swap)
                             binding.tvValueInUSD.text =
@@ -216,7 +243,7 @@ class SwapFragment : BaseFragment() {
                         binding.tvRate.text =
                             state.rate.toBigDecimalOrDefaultZero().setScale(2, RoundingMode.UP)
                                 .toPlainString()
-                        binding.percentageRate = viewModel.ratePercentage()
+                        binding.percentageRate = viewModel.ratePercentage
                     }
                     is GetMarketRateState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -262,10 +289,6 @@ class SwapFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetGasPriceState.Success -> {
-                        binding.swap?.let { swap ->
-                            swap.gasPrice = getSelectedGasPrice(state.gas)
-                            viewModel.saveSwap(swap)
-                        }
                         binding.gas = state.gas
                     }
                     is GetGasPriceState.ShowError -> {
@@ -299,7 +322,7 @@ class SwapFragment : BaseFragment() {
             showAlert(
                 String.format(
                     getString(R.string.swap_rate_notification),
-                    viewModel.ratePercentage()
+                    viewModel.ratePercentage
                         .toBigDecimalOrDefaultZero()
                         .abs()
                         .toDisplayNumber()
@@ -319,10 +342,13 @@ class SwapFragment : BaseFragment() {
         })
 
         binding.tvContinue.setOnClickListener {
-            if (binding.edtSource.text.isNullOrEmpty()) {
-                showAlert(getString(R.string.specify_amount))
-            } else {
-                binding.swap?.let { swap ->
+            when {
+                binding.edtSource.text.isNullOrEmpty() -> showAlert(getString(R.string.specify_amount))
+                binding.edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.swap?.tokenSource?.currentBalance -> {
+                    showAlert(getString(R.string.exceed_balance))
+                }
+                binding.swap?.samePair == true -> showAlert(getString(R.string.same_token_alert))
+                else -> binding.swap?.let { swap ->
                     if (viewModel.verifyCap(
                             binding.edtSource.text.toString().toBigDecimalOrDefaultZero() *
                                 swap.tokenSource.rateEthNow
@@ -336,6 +362,7 @@ class SwapFragment : BaseFragment() {
             }
 
         }
+
     }
 
     private fun getRevertNotification(id: Int): String {
@@ -366,6 +393,7 @@ class SwapFragment : BaseFragment() {
     }
 
     private fun getRate(swap: Swap) {
+        if (swap.samePair) return
         viewModel.resetRate()
         getMarketRate(
             swap.tokenSource.tokenSymbol,

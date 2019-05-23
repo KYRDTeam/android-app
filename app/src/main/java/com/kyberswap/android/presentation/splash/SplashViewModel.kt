@@ -42,7 +42,7 @@ class SplashViewModel @Inject constructor(
                 error.printStackTrace()
                 getWallet()
             },
-            null
+            PrepareBalanceUseCase.Param()
         )
     }
 

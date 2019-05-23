@@ -50,7 +50,6 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
             viewModel.getSwapData(this.address)
         }
 
-
         viewModel.getSwapDataCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {

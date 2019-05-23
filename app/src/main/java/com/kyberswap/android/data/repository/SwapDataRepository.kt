@@ -5,6 +5,7 @@ import android.util.Base64
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.SwapApi
+import com.kyberswap.android.data.db.ContactDao
 import com.kyberswap.android.data.db.SendDao
 import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.db.TokenDao
@@ -16,6 +17,7 @@ import com.kyberswap.android.domain.usecase.swap.EstimateGasUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetCapUseCase
 import com.kyberswap.android.domain.usecase.wallet.*
+import com.kyberswap.android.presentation.common.DEFAULT_NAME
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import io.reactivex.Completable
@@ -33,6 +35,7 @@ class SwapDataRepository @Inject constructor(
     private val swapDao: SwapDao,
     private val tokenDao: TokenDao,
     private val sendTokenDao: SendDao,
+    private val contactDao: ContactDao,
     private val api: SwapApi,
     private val mapper: GasMapper,
     private val capMapper: CapMapper,
@@ -41,7 +44,18 @@ class SwapDataRepository @Inject constructor(
 
     override fun saveSend(param: SaveSendUseCase.Param): Completable {
         return Completable.fromCallable {
-            sendTokenDao.updateSend(param.send)
+            if (param.address.isNotBlank()) {
+                val findContactByAddress = contactDao.findContactByAddress(param.address)
+                val contact = findContactByAddress?.copy(
+                    walletAddress = param.send.walletAddress,
+                    address = param.address
+                ) ?: Contact(param.send.walletAddress, param.address, DEFAULT_NAME)
+//                contactDao.insertContact(contact)
+                sendTokenDao.updateSend(param.send.copy(contact = contact))
+
+            } else {
+                sendTokenDao.updateSend(param.send)
+            }
         }
     }
 
@@ -120,7 +134,8 @@ class SwapDataRepository @Inject constructor(
                 param.swap.sourceAmount.toBigDecimalOrDefaultZero().times(
                     10.0.pow(param.swap.tokenSource.tokenDecimal)
                         .toBigDecimal()
-                ).toPlainString(),
+                ).toBigInteger(),
+                param.swap.minConversionRate,
                 param.swap.tokenSource.isETH()
             )
         }

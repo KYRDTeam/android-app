@@ -17,6 +17,7 @@ import com.kyberswap.android.presentation.main.setting.AddContactFragment
 import com.kyberswap.android.presentation.main.setting.ContactFragment
 import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
 import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
+import com.kyberswap.android.presentation.main.transaction.TransactionFragment
 import com.kyberswap.android.presentation.wallet.BackupWalletActivity
 import com.kyberswap.android.presentation.wallet.ImportWalletActivity
 import com.kyberswap.android.presentation.wallet.VerifyBackupWordActivity
@@ -139,6 +140,10 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         replaceFragment(
             ContactFragment.newInstance(wallet)
         )
+    }
+
+    fun navigateToTransactionScreen(wallet: Wallet?) {
+        replaceFragment(TransactionFragment.newInstance(wallet))
     }
 
     companion object {
