@@ -18,8 +18,9 @@ fun String?.percentage(other: String?): BigDecimal {
     if (other.isNullOrEmpty() || this.isNullOrEmpty()) return BigDecimal.ZERO
     if (other.toBigDecimal() == BigDecimal.ZERO) return BigDecimal.ZERO
     return try {
-        (this.toBigDecimal() - other.toBigDecimal()).div(other.toBigDecimal())
-            .multiply(100.toBigDecimal())
+        (this.toDouble() - other.toDouble()).div(other.toDouble())
+            .times(100f)
+            .toBigDecimal()
             .setScale(2, RoundingMode.UP)
     } catch (ex: Exception) {
         ex.printStackTrace()

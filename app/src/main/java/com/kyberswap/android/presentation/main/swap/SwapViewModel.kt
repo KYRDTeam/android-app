@@ -1,6 +1,5 @@
 package com.kyberswap.android.presentation.main.swap
 
-import android.text.Editable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,9 +12,11 @@ import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSwapUseCase
-import com.kyberswap.android.presentation.common.*
+import com.kyberswap.android.presentation.common.DEFAULT_EXPECTED_RATE
+import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
+import com.kyberswap.android.presentation.common.DEFAULT_MARKET_RATE
+import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.util.ext.percentage
-import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import io.reactivex.disposables.CompositeDisposable
@@ -76,17 +77,12 @@ class SwapViewModel @Inject constructor(
     val gas: Gas
         get() = _gas ?: Gas()
 
-    val expectedRateDisplay: String
-        get() = expectedRate.toBigDecimalOrDefaultZero()
-            .setScale(2, BigDecimal.ROUND_UP).toPlainString()
-
     private val _saveSwapCallback = MutableLiveData<Event<SaveSwapState>>()
     val saveSwapDataCallback: LiveData<Event<SaveSwapState>>
         get() = _saveSwapCallback
 
     val ratePercentage: String
         get() = expectedRate.percentage(marketRate).toDisplayNumber()
-
 
     fun getMarketRate(srcToken: String, destToken: String) {
         getMarketRate.dispose()
@@ -187,29 +183,6 @@ class SwapViewModel @Inject constructor(
         ) && !cap!!.rich
     }
 
-    fun getExpectedDestAmount(amount: Editable?): BigDecimal {
-        return if (expectedRate != null && !amount.isNullOrEmpty()) {
-            amount.toString().toBigDecimalOrDefaultZero()
-                .multiply(expectedRate.toBigDecimalOrDefaultZero())
-                .setScale(DEFAULT_ROUNDING_NUMBER, BigDecimal.ROUND_UP)
-
- else BigDecimal.ZERO.setScale(2, BigDecimal.ROUND_UP)
-    }
-
-    fun getExpectedDestUsdAmount(amount: Editable?, rateUsdNow: BigDecimal): BigDecimal {
-        return getExpectedDestAmount(amount)
-            .multiply(rateUsdNow)
-            .setScale(2, BigDecimal.ROUND_UP)
-    }
-
-
-    fun rateThreshold(customRate: String): String {
-        return (1.toDouble() - customRate.toBigDecimalOrDefaultZero().toDouble() / 100.toDouble()).toBigDecimal()
-            .multiply(expectedRate.toBigDecimalOrDefaultZero())
-            .setScale(2, BigDecimal.ROUND_UP)
-            .toPlainString()
-    }
-
     fun getGasLimit(wallet: Wallet, swap: Swap) {
         estimateGasUseCase.execute(
             Consumer {
@@ -233,7 +206,7 @@ class SwapViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
     ,
-            EstimateGasUseCase.Param(wallet, swap)
+            EstimateGasUseCase.Param(wallet, updateSwapRate(swap))
         )
     }
 
@@ -261,11 +234,16 @@ class SwapViewModel @Inject constructor(
 
 
     fun updateSwap(swap: Swap) {
-        swap.marketRate = marketRate ?: DEFAULT_MARKET_RATE.toString()
-        swap.expectedRate = expectedRate ?: DEFAULT_EXPECTED_RATE.toString()
-        swap.gasLimit = gasLimit.toString()
-        saveSwap(swap, true)
+        saveSwap(updateSwapRate(swap), true)
 
+    }
+
+    private fun updateSwapRate(swap: Swap): Swap {
+        return swap.copy(
+            marketRate = marketRate ?: DEFAULT_MARKET_RATE.toString(),
+            expectedRate = expectedRate ?: DEFAULT_EXPECTED_RATE.toString(),
+            gasLimit = gasLimit.toString()
+        )
     }
 
 }

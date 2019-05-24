@@ -26,7 +26,7 @@ fun BigDecimal.toDisplayNumber(): String {
         
     
             return s.toBigDecimal().setScale(s.length, RoundingMode.UP).stripTrailingZeros()
-                .toString()
+                .toPlainString()
 
     }
 }

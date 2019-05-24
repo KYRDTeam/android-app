@@ -27,6 +27,8 @@ import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.main.swap.GetSendState
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.setAllOnClickListener
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import kotlinx.android.synthetic.main.fragment_send.*
 import net.cachapa.expandablelayout.ExpandableLayout
 import java.util.concurrent.TimeUnit
@@ -206,9 +208,16 @@ class SendFragment : BaseFragment() {
             when {
                 edtSource.text.isNullOrEmpty() -> showAlert(getString(R.string.specify_amount))
                 edtAddress.text.isNullOrEmpty() -> showAlert(getString(R.string.specify_contact_address))
+                binding.edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.send?.tokenSource?.currentBalance -> {
+                    showAlert(getString(R.string.exceed_balance))
+        
                 else -> viewModel.saveSend(binding.send, binding.edtAddress.text.toString())
     
 
+
+        binding.grBalance.setAllOnClickListener(View.OnClickListener {
+            binding.edtSource.setText(binding.send?.tokenSource?.currentBalance?.toPlainString())
+)
 
         viewModel.saveSendCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -252,7 +261,6 @@ class SendFragment : BaseFragment() {
                 showAlert(getString(R.string.message_cancelled))
      else {
                 binding.edtAddress.setText(result.contents.toString())
-                viewModel
     
  else {
             super.onActivityResult(requestCode, resultCode, data)

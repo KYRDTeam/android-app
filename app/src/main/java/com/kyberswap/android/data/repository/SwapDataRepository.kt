@@ -78,7 +78,7 @@ class SwapDataRepository @Inject constructor(
                 WalletManager.storage.keystoreDir.toString() + "/wallets/" + param.wallet.walletId + ".json"
             )
 
-            val hash = tokenClient.doTransaction(
+            val hash = tokenClient.doSwap(
                 param,
                 credentials,
                 context.getString(R.string.kyber_address)
