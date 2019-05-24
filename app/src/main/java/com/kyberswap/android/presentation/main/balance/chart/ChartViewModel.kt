@@ -5,8 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.usecase.wallet.SaveSendTokenUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSwapDataTokenUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -17,12 +19,17 @@ import java.util.*
 import javax.inject.Inject
 
 class ChartViewModel @Inject constructor(
-    private val saveSwapDataTokenUseCase: SaveSwapDataTokenUseCase
+    private val saveSwapDataTokenUseCase: SaveSwapDataTokenUseCase,
+    private val saveSendTokenUseCase: SaveSendTokenUseCase
 ) : ViewModel() {
 
     private val _callback = MutableLiveData<Event<SaveSwapDataState>>()
     val callback: LiveData<Event<SaveSwapDataState>>
         get() = _callback
+
+    private val _callbackSaveSend = MutableLiveData<Event<SaveSendState>>()
+    val callbackSaveSend: LiveData<Event<SaveSendState>>
+        get() = _callbackSaveSend
 
     fun save(walletAddress: String, token: Token, isSell: Boolean = false) {
         saveSwapDataTokenUseCase.execute(
@@ -35,6 +42,19 @@ class ChartViewModel @Inject constructor(
                     Event(SaveSwapDataState.ShowError(it.localizedMessage))
             },
             SaveSwapDataTokenUseCase.Param(walletAddress, token, isSell)
+        )
+    }
+
+
+    fun saveSendToken(address: String, token: Token) {
+        saveSendTokenUseCase.execute(
+            Action {
+                _callbackSaveSend.value = Event(SaveSendState.Success())
+            },
+            Consumer {
+                _callbackSaveSend.value = Event(SaveSendState.Success())
+            },
+            SaveSendTokenUseCase.Param(address, token)
         )
     }
 }

@@ -5,7 +5,6 @@ import androidx.annotation.NonNull
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.kyberswap.android.presentation.common.DEFAULT_ROUNDING_NUMBER
 import com.kyberswap.android.util.ext.percentage
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
@@ -13,6 +12,7 @@ import kotlinx.android.parcel.Parcelize
 import org.web3j.utils.Convert
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.math.RoundingMode
 
 @Entity(tableName = "swaps")
 @Parcelize
@@ -35,10 +35,12 @@ data class Swap(
 
 ) : Parcelable {
 
+    private val rate: String?
+        get() = if (expectedRate.isEmpty()) marketRate else expectedRate
 
     val displayExpectedRate: String
         get() = if (samePair) BigDecimal.ONE.toDisplayNumber() else
-            expectedRate.toBigDecimalOrDefaultZero()
+            rate.toBigDecimalOrDefaultZero()
                 .toDisplayNumber()
 
     val displaySourceAmount: String
@@ -94,13 +96,22 @@ data class Swap(
             .toString()
 
     val displayMinAcceptedRate: String
-        get() = ((BigDecimal.ONE - minAcceptedRatePercent.toBigDecimalOrDefaultZero() / 100.toBigDecimal())
-            * expectedRate.toBigDecimalOrDefaultZero())
+        get() = ((BigDecimal.ONE - minAcceptedRatePercent
+            .toBigDecimalOrDefaultZero()
+            .divide(100.toBigDecimal())).multiply(
+            expectedRate.toBigDecimalOrDefaultZero()
+        ))
             .toDisplayNumber()
 
     val minConversionRate: BigInteger
-        get() = ((BigDecimal.ONE - minAcceptedRatePercent.toBigDecimalOrDefaultZero() / 100.toBigDecimal())
-            * expectedRate.toBigDecimalOrDefaultZero()).toBigInteger()
+        get() = Convert.toWei(
+            (BigDecimal.ONE - minAcceptedRatePercent
+                .toBigDecimalOrDefaultZero()
+                .divide(100.toBigDecimal()))
+                .multiply(expectedRate.toBigDecimalOrDefaultZero()),
+            Convert.Unit.ETHER
+        )
+            .toBigInteger()
 
     val ratePercentage: String
         get() = expectedRate.percentage(marketRate).toDisplayNumber()
@@ -114,13 +125,12 @@ data class Swap(
             this.tokenDest,
             this.tokenSource,
             this.destAmount,
-            this.sourceAmount
-//            this.expectedRate,
-//            this.slippageRate,
-//            this.gasPrice,
-//            this.gasLimit,
-//            this.percentageRate
-
+            this.sourceAmount,
+            if (tokenSource.rateEthNow.toDouble() != 0.0)
+                this.tokenDest.rateEthNow.toDouble().div(
+                    tokenSource.rateEthNow.toDouble()
+                ).toBigDecimal().toDisplayNumber()
+            else 0.toString()
         )
     }
 
@@ -135,9 +145,24 @@ data class Swap(
         this.minAcceptedRatePercent = ""
     }
 
-    fun getExpectedDestAmount(expectedRate: String?, amount: String?): BigDecimal {
+    private fun getExpectedDestAmount(expectedRate: String?, amount: String?): BigDecimal {
         return amount.toBigDecimalOrDefaultZero()
             .multiply(expectedRate.toBigDecimalOrDefaultZero())
-            .setScale(DEFAULT_ROUNDING_NUMBER, BigDecimal.ROUND_UP)
+    }
+
+
+    fun getExpectedDestAmount(amount: BigDecimal): BigDecimal {
+        return amount.multiply(displayExpectedRate.toBigDecimalOrDefaultZero())
+    }
+
+    fun getExpectedDestUsdAmount(amount: BigDecimal): BigDecimal {
+        return getExpectedDestAmount(amount)
+            .multiply(tokenDest.rateUsdNow)
+            .setScale(2, RoundingMode.UP)
+    }
+
+    fun rateThreshold(customRate: String): BigDecimal {
+        return (1.toDouble() - customRate.toBigDecimalOrDefaultZero().toDouble() / 100.toDouble()).toBigDecimal()
+            .multiply(displayExpectedRate.toBigDecimalOrDefaultZero())
     }
 }
