@@ -5,6 +5,7 @@ import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.db.RateDao
+import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.mapper.ChartMapper
 import com.kyberswap.android.data.mapper.RateMapper
 import com.kyberswap.android.domain.model.Chart
@@ -27,6 +28,7 @@ import kotlin.math.pow
 class TokenDataRepository @Inject constructor(
     private val tokenClient: TokenClient,
     private val api: SwapApi,
+    private val swapDao: SwapDao,
     private val tokenApi: TokenApi,
     private val rateDao: RateDao,
     private val rateMapper: RateMapper,
@@ -36,6 +38,8 @@ class TokenDataRepository @Inject constructor(
     TokenRepository {
 
     override fun getMarketRate(param: GetMarketRateUseCase.Param): Flowable<String> {
+
+
         return Flowable.mergeDelayError(
             rateDao.all,
             api.getRate()
@@ -48,9 +52,9 @@ class TokenDataRepository @Inject constructor(
         )
             .map { rates ->
                 val sourceTokenToEtherRate =
-                    rates.firstOrNull { it.source == param.sourceToken && it.dest == ETH }
+                    rates.firstOrNull { it.source == param.swap.tokenSource.tokenSymbol && it.dest == ETH }
                 val etherToDestTokenRate =
-                    rates.firstOrNull { it.source == ETH && it.dest == param.destToken }
+                    rates.firstOrNull { it.source == ETH && it.dest == param.swap.tokenDest.tokenSymbol }
                 sourceTokenToEtherRate?.rate?.updatePrecision().toBigDecimalOrDefaultZero()
                     .multiply(
                         etherToDestTokenRate?.rate?.updatePrecision().toBigDecimalOrDefaultZero()

@@ -3,6 +3,7 @@ package com.kyberswap.android.util
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.usecase.wallet.SwapTokenUseCase
 import com.kyberswap.android.domain.usecase.wallet.TransferTokenUseCase
+import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
 import com.kyberswap.android.presentation.common.DEFAULT_MAX_AMOUNT
 import com.kyberswap.android.presentation.common.DEFAULT_WALLET_ID
 import com.kyberswap.android.presentation.common.PERM
@@ -142,7 +143,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                 Convert.Unit.ETHER
             )
             rateResult.add(
-                (toEther * 0.97.toBigDecimal()).toPlainString()
+                toEther.toPlainString()
             )
 
         return rateResult
@@ -155,23 +156,18 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         contractAddress: String,
         fromAddress: String,
         toAddress: String,
-        value: String,
+        amount: BigInteger,
+        minConversionRate: BigInteger,
         isEth: Boolean
     ): EthEstimateGas? {
 
-        val function = Function(
-            "tradeWithHint",
-            listOf(
-                Address(fromAddress),
-                Uint256(BigInteger(value)),
-                Address(toAddress),
-                Address(walletAddress),
-                Uint256(DEFAULT_MAX_AMOUNT),
-                Uint256(BigInteger.ZERO),
-                Address(DEFAULT_WALLET_ID),
-                PERM.toBytes32()
-            ),
-            listOf<TypeReference<*>>()
+
+        val function = tradeWithHint(
+            fromAddress,
+            toAddress,
+            amount,
+            minConversionRate,
+            walletAddress
         )
 
         return web3j.ethEstimateGas(
@@ -181,15 +177,13 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                 null,
                 null,
                 contractAddress,
-                if (isEth) BigInteger(value) else BigInteger.ZERO,
+                if (isEth) amount else BigInteger.ZERO,
                 FunctionEncoder.encode(function)
             )
         ).send()
-
-
     }
 
-    fun transfer(
+    private fun transfer(
         walletAddress: String,
         value: String
     ): Function {
@@ -237,19 +231,20 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     @Throws(IOException::class)
     private fun tradeWithHint(
         fromAddress: String,
-        value: String,
         toAddress: String,
+        value: BigInteger,
+        minConversionRate: BigInteger,
         walletAddress: String
     ): Function {
         return Function(
             "tradeWithHint",
             listOf(
                 Address(fromAddress),
-                Uint256(BigInteger(value)),
+                Uint256(value),
                 Address(toAddress),
                 Address(walletAddress),
                 Uint256(DEFAULT_MAX_AMOUNT),
-                Uint256(BigInteger.ZERO),
+                Uint256(minConversionRate),
                 Address(DEFAULT_WALLET_ID),
                 PERM.toBytes32()
             ),
@@ -258,7 +253,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     }
 
     @Throws(IOException::class)
-    fun doTransaction(
+    fun doSwap(
         param: SwapTokenUseCase.Param, credentials: Credentials,
         contractAddress: String
     ): String? {
@@ -266,12 +261,19 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             param.swap.gasPrice.toBigDecimalOrDefaultZero(),
             Convert.Unit.GWEI
         ).toBigInteger()
-        val gasLimit = param.swap.gasLimit.toBigInteger()
+        val gasLimit =
+            if (param.swap.gasLimit.toBigInteger() == BigInteger.ZERO) DEFAULT_GAS_LIMIT
+            else param.swap.gasLimit.toBigInteger()
 
-        val amount = if (param.swap.tokenSource.isETH()) Convert.toWei(
+        val tradeWithHintAmount = Convert.toWei(
             param.swap.sourceAmount.toBigDecimalOrDefaultZero(),
             Convert.Unit.ETHER
-        ).toBigIntegerExact() else BigInteger.ZERO
+        ).toBigIntegerExact()
+
+        val transactionAmount =
+            if (param.swap.tokenSource.isETH()) tradeWithHintAmount else BigInteger.ZERO
+
+        val minConversionRate = param.swap.minConversionRate
 
         val fromAddress = param.swap.tokenSource.tokenAddress
 
@@ -284,7 +286,9 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             executeTradeWithHint(
                 fromAddress,
                 toAddress,
-                amount,
+                transactionAmount,
+                tradeWithHintAmount,
+                minConversionRate,
                 gasPrice,
                 gasLimit,
                 contractAddress,
@@ -292,9 +296,11 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                 txManager
             )
  else {
-            handleTransferToken(
+            handleSwapERC20Token(
                 fromAddress,
-                amount,
+                transactionAmount,
+                tradeWithHintAmount,
+                minConversionRate,
                 gasPrice,
                 gasLimit,
                 toAddress,
@@ -318,25 +324,28 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         val gasLimit = param.send.gasLimit.toBigInteger()
 
         val isEth = param.send.tokenSource.isETH()
-        val amount = if (isEth) Convert.toWei(
+
+        val amount = Convert.toWei(
             param.send.sourceAmount.toBigDecimalOrDefaultZero(),
             Convert.Unit.ETHER
-        ).toBigIntegerExact() else BigInteger.ZERO
+        ).toBigInteger()
+
+        val transactionAmount = if (isEth) amount else BigInteger.ZERO
 
         val txManager = RawTransactionManager(web3j, credentials)
 
         val transactionResponse = txManager.sendTransaction(
             gasPrice,
             gasLimit,
-            if (isEth) param.wallet.address else param.send.tokenSource.tokenAddress,
+            if (isEth) param.send.contact.address else param.send.tokenSource.tokenAddress,
             if (isEth) "" else
                 FunctionEncoder.encode(
                     transfer(
-                        param.wallet.address,
-                        amount.toString()
+                        param.send.contact.address,
+                        transactionAmount.toString()
                     )
                 ),
-            if (isEth) amount else BigInteger.ZERO
+            if (isEth) transactionAmount else BigInteger.ZERO
         )
 
         if (transactionResponse.hasError()) run {
@@ -352,6 +361,8 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         fromAddress: String,
         toAddress: String,
         amount: BigInteger,
+        tradeWithHintAmount: BigInteger,
+        minConversionRate: BigInteger,
         gasPrice: BigInteger,
         gasLimit: BigInteger,
         contractAddress: String,
@@ -366,8 +377,9 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             FunctionEncoder.encode(
                 tradeWithHint(
                     fromAddress,
-                    amount.toString(),
                     toAddress,
+                    tradeWithHintAmount,
+                    minConversionRate,
                     walletAddress
                 )
             ),
@@ -383,9 +395,11 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         return transactionResponse.transactionHash
     }
 
-    private fun handleTransferToken(
+    private fun handleSwapERC20Token(
         fromAddress: String,
         amount: BigInteger,
+        tradeWithHintAmount: BigInteger,
+        minConversionRate: BigInteger,
         gasPrice: BigInteger,
         gasLimit: BigInteger,
         toAddress: String,
@@ -409,6 +423,8 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             fromAddress,
             toAddress,
             amount,
+            tradeWithHintAmount,
+            minConversionRate,
             gasPrice,
             gasLimit,
             contractAddress,

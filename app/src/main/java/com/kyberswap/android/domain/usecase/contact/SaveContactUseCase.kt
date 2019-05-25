@@ -17,5 +17,5 @@ class SaveContactUseCase @Inject constructor(
         return contactRepository.saveContact(param)
     }
 
-    class Param(val walletAddress: String, val name: String, val address: String)
+    class Param(val walletAddress: String, val address: String, val name: String = "")
 }

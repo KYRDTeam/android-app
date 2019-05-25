@@ -2,6 +2,7 @@ package com.kyberswap.android.util.ext
 
 import com.kyberswap.android.domain.model.CustomBytes32
 import java.math.BigDecimal
+import java.math.BigInteger
 import java.math.RoundingMode
 import kotlin.math.pow
 
@@ -17,8 +18,9 @@ fun String?.percentage(other: String?): BigDecimal {
     if (other.isNullOrEmpty() || this.isNullOrEmpty()) return BigDecimal.ZERO
     if (other.toBigDecimal() == BigDecimal.ZERO) return BigDecimal.ZERO
     return try {
-        (this.toBigDecimal() - other.toBigDecimal()).div(other.toBigDecimal())
-            .multiply(100.toBigDecimal())
+        (this.toDouble() - other.toDouble()).div(other.toDouble())
+            .times(100f)
+            .toBigDecimal()
             .setScale(2, RoundingMode.UP)
     } catch (ex: Exception) {
         ex.printStackTrace()
@@ -33,6 +35,27 @@ fun String?.toBigDecimalOrDefaultZero(): BigDecimal {
     } catch (ex: Exception) {
         ex.printStackTrace()
         BigDecimal.ZERO
+    }
+}
+
+
+fun String?.toBigIntegerOrDefaultZero(): BigInteger {
+    if (this.isNullOrEmpty()) return BigInteger.ZERO
+    return try {
+        BigInteger(this)
+    } catch (ex: Exception) {
+        ex.printStackTrace()
+        BigInteger.ZERO
+    }
+}
+
+fun String?.toDoubleOrDefaultZero(): Double {
+    if (this.isNullOrEmpty()) return 0.0
+    return try {
+        toDouble()
+    } catch (ex: Exception) {
+        ex.printStackTrace()
+        0.0
     }
 }
 

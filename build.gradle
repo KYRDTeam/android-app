@@ -11,9 +11,12 @@ buildscript {
     
     dependencies {
         classpath "gradle.plugin.io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.0.0.RC8"
-        classpath 'com.android.tools.build:gradle:3.4.0'
+        classpath 'com.android.tools.build:gradle:3.4.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'com.deploygate:gradle:1.1.5'
+    }
+    repositories {
+        google()
     }
 }
 

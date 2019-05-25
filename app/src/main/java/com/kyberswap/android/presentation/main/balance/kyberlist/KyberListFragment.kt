@@ -137,6 +137,7 @@ class KyberListFragment : BaseFragment() {
                 showProgress(state == GetBalanceState.Loading)
                 when (state) {
                     is GetBalanceState.Success -> {
+                        binding.swipeLayout.isRefreshing = false
                         tokenList.clear()
                         tokenList.addAll(state.tokens)
                         tokenAdapter.submitFilterList(
@@ -188,6 +189,10 @@ class KyberListFragment : BaseFragment() {
         
     
 )
+
+        binding.swipeLayout.setOnRefreshListener {
+            viewModel.refresh()
+
 
         viewModel.saveTokenSelectionCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
