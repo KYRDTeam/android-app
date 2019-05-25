@@ -20,7 +20,13 @@ class ContactDataRepository @Inject constructor(
             val name = if (param.name.isEmpty()) {
                 DEFAULT_NAME
             } else param.name
-            contactDao.insertContact(Contact(param.walletAddress, param.address, name))
+
+            val findContactByAddress = contactDao.findContactByAddress(param.address)
+            val contact = findContactByAddress?.copy(
+                walletAddress = param.walletAddress,
+                address = param.address
+            ) ?: Contact(param.walletAddress, param.address, name)
+            contactDao.insertContact(contact)
         }
     }
 

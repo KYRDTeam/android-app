@@ -5,12 +5,15 @@ import androidx.annotation.NonNull
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.kyberswap.android.presentation.common.DEFAULT_ROUNDING_NUMBER
+import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
+import com.kyberswap.android.util.ext.percentage
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.parcel.Parcelize
 import org.web3j.utils.Convert
 import java.math.BigDecimal
+import java.math.BigInteger
 
 @Entity(tableName = "swaps")
 @Parcelize
@@ -27,16 +30,21 @@ data class Swap(
     var expectedRate: String = "",
     var slippageRate: String = "",
     var gasPrice: String = "",
-    var gasLimit: String = "",
+    var gasLimit: String =
+        if (tokenSource.gasLimit.toBigIntegerOrDefaultZero()
+            == BigInteger.ZERO
+        ) DEFAULT_GAS_LIMIT.toString()
+        else tokenSource.gasLimit,
     var marketRate: String = "",
     var minAcceptedRatePercent: String = ""
 
 ) : Parcelable {
 
+    val hasSamePair: Boolean
+        get() = tokenSource.tokenSymbol == tokenDest.tokenSymbol
 
-    val displayExpectedRate: String
-        get() = expectedRate.toBigDecimalOrDefaultZero()
-            .toDisplayNumber()
+    val hasTokenPair: Boolean
+        get() = tokenSource.tokenSymbol.isNotBlank() && tokenDest.tokenSymbol.isNotBlank()
 
     val displaySourceAmount: String
         get() = StringBuilder().append(sourceAmount).append(" ").append(tokenSource.tokenSymbol).toString()
@@ -61,18 +69,21 @@ data class Swap(
                     sourceAmount
                 ).multiply(tokenDest.rateUsdNow).toDisplayNumber()
             )
-            .append("USD")
+            .append(" USD")
             .toString()
+
+    val samePair: Boolean
+        get() = tokenSource.tokenSymbol == tokenDest.tokenSymbol
 
 
     val displayDestRateEthUsd: String
         get() = StringBuilder()
-            .append("1")
+            .append("1 ")
             .append(tokenDest.tokenSymbol)
             .append(" = ")
-            .append(tokenDest.rateEthNow.toDisplayNumber() + "ETH")
+            .append(tokenDest.rateEthNow.toDisplayNumber() + " ETH")
             .append(" = ")
-            .append(tokenDest.rateUsdNow.toDisplayNumber() + "USD")
+            .append(tokenDest.rateUsdNow.toDisplayNumber() + " USD")
             .toString()
 
     val displayGasFee: String
@@ -84,29 +95,45 @@ data class Swap(
                         .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
                 ).toPlainString()
             )
-            .append("ETH")
+            .append(" ETH")
             .toString()
 
     val displayMinAcceptedRate: String
-        get() = ((1.0 - minAcceptedRatePercent.toBigDecimalOrDefaultZero()
-            .toDouble() / 100).toBigDecimal()
-            * expectedRate.toBigDecimalOrDefaultZero())
+        get() = ((BigDecimal.ONE - minAcceptedRatePercent
+            .toBigDecimalOrDefaultZero()
+            .divide(100.toBigDecimal())).multiply(
+            expectedRate.toBigDecimalOrDefaultZero()
+        ))
             .toDisplayNumber()
 
+    val minConversionRate: BigInteger
+        get() = Convert.toWei(
+            (BigDecimal.ONE - minAcceptedRatePercent
+                .toBigDecimalOrDefaultZero()
+                .divide(100.toBigDecimal()))
+                .multiply(expectedRate.toBigDecimalOrDefaultZero()),
+            Convert.Unit.ETHER
+        )
+            .toBigInteger()
+
+    val ratePercentage: String
+        get() = expectedRate.percentage(marketRate).toDisplayNumber()
+
+    val ratePercentageAbs: String
+        get() = expectedRate.percentage(marketRate).abs().toDisplayNumber()
 
     fun swapToken(): Swap {
         return Swap(
             this.walletAddress,
             this.tokenDest,
             this.tokenSource,
-            this.destAmount,
-            this.sourceAmount
-//            this.expectedRate,
-//            this.slippageRate,
-//            this.gasPrice,
-//            this.gasLimit,
-//            this.percentageRate
-
+            "",
+            "",
+            if (tokenSource.rateEthNow.toDouble() != 0.0)
+                this.tokenDest.rateEthNow.toDouble().div(
+                    tokenSource.rateEthNow.toDouble()
+                ).toBigDecimal().toDisplayNumber()
+            else 0.toString()
         )
     }
 
@@ -121,9 +148,8 @@ data class Swap(
         this.minAcceptedRatePercent = ""
     }
 
-    fun getExpectedDestAmount(expectedRate: String?, amount: String?): BigDecimal {
+    private fun getExpectedDestAmount(expectedRate: String?, amount: String?): BigDecimal {
         return amount.toBigDecimalOrDefaultZero()
             .multiply(expectedRate.toBigDecimalOrDefaultZero())
-            .setScale(DEFAULT_ROUNDING_NUMBER, BigDecimal.ROUND_UP)
     }
 }

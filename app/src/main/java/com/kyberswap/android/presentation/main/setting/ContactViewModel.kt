@@ -36,7 +36,7 @@ class ContactViewModel @Inject constructor(
                 _saveContactCallback.value =
                     Event(SaveContactState.ShowError(it.localizedMessage))
             },
-            SaveContactUseCase.Param(walletAddress, contact.name, contact.address)
+            SaveContactUseCase.Param(walletAddress, contact.address, contact.name)
         )
     }
 

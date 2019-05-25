@@ -71,7 +71,13 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
                 showProgress(state == TransferTokenTransactionState.Loading)
                 when (state) {
                     is TransferTokenTransactionState.Success -> {
-                        showAlert(getString(R.string.swap_done))
+
+                        showAlert(
+                            String.format(
+                                getString(R.string.payment_send_success),
+                                binding.send?.contact?.name
+                            )
+                        )
                         onBackPressed()
                     }
                     is TransferTokenTransactionState.ShowError -> {

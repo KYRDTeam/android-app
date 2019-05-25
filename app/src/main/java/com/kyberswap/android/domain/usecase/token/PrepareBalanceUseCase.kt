@@ -11,10 +11,12 @@ import javax.inject.Inject
 class PrepareBalanceUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val balanceRepository: BalanceRepository
-) : SequentialUseCase<String?, List<Token>>(schedulerProvider) {
+) : SequentialUseCase<PrepareBalanceUseCase.Param, List<Token>>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    override fun buildUseCaseSingle(param: String?): Single<List<Token>> {
-        return balanceRepository.getBalance()
+    override fun buildUseCaseSingle(param: Param): Single<List<Token>> {
+        return balanceRepository.getBalance(param)
     }
+
+    class Param(val forceUpdate: Boolean = false)
 
 }

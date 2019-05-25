@@ -22,12 +22,10 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.DEFAULT_ACCEPT_RATE_PERCENTAGE
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
-import com.kyberswap.android.util.ext.showDrawer
-import com.kyberswap.android.util.ext.swap
-import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
-import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.*
+import kotlinx.android.synthetic.main.fragment_swap.*
+import kotlinx.android.synthetic.main.layout_expanable.*
 import net.cachapa.expandablelayout.ExpandableLayout
-import java.math.RoundingMode
 import javax.inject.Inject
 
 
@@ -81,41 +79,43 @@ class SwapFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
         binding.walletName = wallet?.name
 
-        binding.tvAdvanceOption.setOnClickListener {
-            binding.expandableLayout.expand()
-            binding.tvRevertNotification.text =
-                getRevertNotification(binding.rgRate.checkedRadioButtonId)
-        }
-        binding.imgClose.setOnClickListener {
-            binding.expandableLayout.collapse()
-        }
+        grTokenSource.setAllOnClickListener(View.OnClickListener {
+            navigator.navigateToTokenSearchFromSwapTokenScreen(
+                R.id.swap_container,
+                wallet,
+                true
+            )
+        })
 
-        listOf(binding.imgTokenSource, binding.tvSource).forEach {
-            it.setOnClickListener {
-                navigator.navigateToTokenSearchFromSwapTokenScreen(
-                    R.id.swap_container,
-                    wallet,
-                    true
-                )
+        grTokenDest.setAllOnClickListener(View.OnClickListener {
+            navigator.navigateToTokenSearchFromSwapTokenScreen(
+                R.id.swap_container,
+                wallet,
+                false
+            )
+        })
+
+        grBalance.setAllOnClickListener(
+            View.OnClickListener {
+                binding.edtSource.setAmount(tvTokenBalanceValue.text.toString())
             }
+        )
+
+        tvAdvanceOption.setOnClickListener {
+            expandableLayout.expand()
+            tvRevertNotification.text =
+                getRevertNotification(rgRate.checkedRadioButtonId)
+        }
+        imgClose.setOnClickListener {
+            expandableLayout.collapse()
         }
 
-        listOf(binding.imgTokenDest, binding.tvDest).forEach {
-            it.setOnClickListener {
-                navigator.navigateToTokenSearchFromSwapTokenScreen(
-                    R.id.swap_container,
-                    wallet,
-                    false
-                )
-            }
-        }
-
-        binding.expandableLayout.setOnExpansionUpdateListener { _, state ->
+        expandableLayout.setOnExpansionUpdateListener { _, state ->
             if (state == ExpandableLayout.State.EXPANDED) {
                 val animator = ObjectAnimator.ofInt(
                     binding.scView,
                     "scrollY",
-                    binding.tvRevertNotification.bottom
+                    tvRevertNotification.bottom
                 )
 
                 animator.duration = 300
@@ -124,49 +124,63 @@ class SwapFragment : BaseFragment() {
             }
         }
 
-        binding.imgMenu.setOnClickListener {
+        imgMenu.setOnClickListener {
             showDrawer(true)
         }
 
-        binding.imgSwap.setOnClickListener {
+        imgSwap.setOnClickListener {
+            resetAmount()
             val swap = binding.swap?.swapToken()
-            binding.setVariable(BR.swap, swap)
-            binding.edtSource.swap(binding.edtDest)
             swap?.let {
                 viewModel.saveSwap(swap)
                 getRate(it)
             }
+            binding.setVariable(BR.swap, swap)
+            binding.executePendingBindings()
 
         }
 
-        viewModel.compositeDisposable.add(binding.edtSource.textChanges()
-            .skipInitialValue()
-            .observeOn(schedulerProvider.ui())
-            .subscribe { text ->
-                binding.swap?.let { swapData ->
-                    getExpectedRate(
-                        swapData,
-                        if (text.isNullOrEmpty()) getString(R.string.default_source_amount) else text.toString()
-                    )
-                    swapData.sourceAmount = text.toString()
-
-                    wallet?.let {
-                        viewModel.getGasLimit(it, swapData)
+        viewModel.compositeDisposable.add(
+            edtSource.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe { text ->
+                    if (text.isNullOrEmpty()) {
+                        binding.edtDest.setText("")
                     }
-                }
-            })
-
-        viewModel.getSwapData(wallet!!.address)
+                    binding.swap?.let { swapData ->
+                        if (swapData.samePair) {
+                            edtDest.setText(text)
+                        } else {
+                            viewModel.getExpectedRate(
+                                swapData,
+                                if (text.isNullOrEmpty()) getString(R.string.default_source_amount) else text.toString()
+                            )
+                            wallet?.let {
+                                viewModel.getGasLimit(it, swapData)
+                            }
+                        }
+                    }
+                })
 
         viewModel.getSwapDataCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSwapState.Success -> {
                         if (binding.swap != state.swap) {
-                            binding.swap = state.swap
-                            binding.edtSource.setText(state.swap.sourceAmount)
+                            if (state.swap.tokenSource.tokenSymbol == state.swap.tokenDest.tokenSymbol) {
+                                showAlert(getString(R.string.same_token_alert))
+                            }
+
+                            edtSource.setAmount(state.swap.sourceAmount)
                             getRate(state.swap)
+
+                            binding.swap = state.swap
+                            binding.executePendingBindings()
+
                         }
+                        viewModel.getGasPrice()
+                        viewModel.getGasLimit(wallet!!, binding.swap!!)
                     }
                     is GetSwapState.ShowError -> {
 
@@ -180,26 +194,25 @@ class SwapFragment : BaseFragment() {
                 when (state) {
                     is GetExpectedRateState.Success -> {
                         val swap = binding.swap
-                        if (swap != null && state.list.isNotEmpty()) {
-                            swap.expectedRate = state.list[0]
-                            swap.slippageRate = state.list[1]
-                        }
-                        binding.percentageRate = viewModel.ratePercentage()
-                        binding.swap = swap
-                        binding.edtDest.setText(
-                            viewModel.getExpectedDestAmount(binding.edtSource.text)
-                                .toDisplayNumber()
-                        )
                         if (swap != null) {
-                            viewModel.saveSwap(swap)
+                            binding.percentageRate = viewModel.ratePercentage
+                            binding.rate = viewModel.combineRate
+                            edtDest.setAmount(
+                                viewModel.getExpectedDestAmount(
+                                    edtSource.toBigDecimalOrDefaultZero()
+                                ).toDisplayNumber()
+                            )
                             binding.tvValueInUSD.text =
                                 getString(
                                     R.string.dest_balance_usd_format,
                                     viewModel.getExpectedDestUsdAmount(
-                                        binding.edtSource.text,
+                                        edtSource.toBigDecimalOrDefaultZero(),
                                         swap.tokenDest.rateUsdNow
                                     ).toDisplayNumber()
                                 )
+
+                            tvRevertNotification.text =
+                                getRevertNotification(rgRate.checkedRadioButtonId)
                         }
                     }
                     is GetExpectedRateState.ShowError -> {
@@ -213,10 +226,10 @@ class SwapFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetMarketRateState.Success -> {
-                        binding.tvRate.text =
-                            state.rate.toBigDecimalOrDefaultZero().setScale(2, RoundingMode.UP)
-                                .toPlainString()
-                        binding.percentageRate = viewModel.ratePercentage()
+                        binding.percentageRate = viewModel.ratePercentage
+                        binding.rate = viewModel.combineRate
+                        tvRevertNotification.text =
+                            getRevertNotification(rgRate.checkedRadioButtonId)
                     }
                     is GetMarketRateState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -225,46 +238,53 @@ class SwapFragment : BaseFragment() {
             }
         })
 
-        binding.rbFast.isChecked = true
-        binding.rbDefaultRate.isChecked = true
+        rbFast.isChecked = true
+        rbDefaultRate.isChecked = true
 
-        viewModel.compositeDisposable.add(binding.rbCustom.checkedChanges().skipInitialValue()
+        viewModel.compositeDisposable.add(
+            rbCustom.checkedChanges().skipInitialValue()
             .observeOn(schedulerProvider.ui())
             .subscribe {
-                binding.edtCustom.isEnabled = it
+                edtCustom.isEnabled = it
                 if (it) {
-                    binding.edtCustom.requestFocus()
+                    edtCustom.requestFocus()
                 } else {
-                    binding.edtCustom.setText("")
+                    edtCustom.setText("")
                 }
 
             })
 
-        viewModel.compositeDisposable.add(binding.rgRate.checkedChanges()
+        viewModel.compositeDisposable.add(
+            rgRate.checkedChanges()
             .observeOn(schedulerProvider.ui())
             .subscribe { id ->
-                binding.tvRevertNotification.text = getRevertNotification(id)
+                tvRevertNotification.text = getRevertNotification(id)
             })
 
 
-        viewModel.compositeDisposable.add(binding.rgGas.checkedChanges()
+        viewModel.compositeDisposable.add(
+            rgGas.checkedChanges()
             .observeOn(schedulerProvider.ui())
-            .subscribe { id ->
+                .subscribe { _ ->
                 binding.swap?.let { swap ->
-                    swap.gasPrice = getSelectedGasPrice(viewModel.gas)
-                    viewModel.saveSwap(swap)
-
+                    binding.gas?.let {
+                        viewModel.saveSwap(swap.copy(gasPrice = getSelectedGasPrice(it)))
+                    }
                 }
             })
 
-        viewModel.getGasPrice()
         viewModel.getGetGasPriceCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetGasPriceState.Success -> {
                         binding.swap?.let { swap ->
-                            swap.gasPrice = getSelectedGasPrice(state.gas)
-                            viewModel.saveSwap(swap)
+                            val updatedSwap = swap.copy(
+                                gasPrice = getSelectedGasPrice(state.gas),
+                                minAcceptedRatePercent = getMinAcceptedRatePercent(rgRate.checkedRadioButtonId)
+                            )
+                            if (updatedSwap != swap) {
+                                viewModel.saveSwap(updatedSwap)
+                            }
                         }
                         binding.gas = state.gas
                     }
@@ -287,10 +307,10 @@ class SwapFragment : BaseFragment() {
         })
 
         viewModel.compositeDisposable.add(
-            binding.edtCustom.textChanges()
+            edtCustom.textChanges()
                 .observeOn(schedulerProvider.ui())
                 .subscribe {
-                    binding.tvRevertNotification.text =
+                    tvRevertNotification.text =
                         getRevertNotification(R.id.rbCustom)
                 }
         )
@@ -299,7 +319,7 @@ class SwapFragment : BaseFragment() {
             showAlert(
                 String.format(
                     getString(R.string.swap_rate_notification),
-                    viewModel.ratePercentage()
+                    viewModel.ratePercentage
                         .toBigDecimalOrDefaultZero()
                         .abs()
                         .toDisplayNumber()
@@ -319,23 +339,34 @@ class SwapFragment : BaseFragment() {
         })
 
         binding.tvContinue.setOnClickListener {
-            if (binding.edtSource.text.isNullOrEmpty()) {
-                showAlert(getString(R.string.specify_amount))
-            } else {
-                binding.swap?.let { swap ->
-                    if (viewModel.verifyCap(
-                            binding.edtSource.text.toString().toBigDecimalOrDefaultZero() *
-                                swap.tokenSource.rateEthNow
-                        )
-                    ) {
-                        swap.minAcceptedRatePercent =
-                            getMinAcceptedRatePercent(binding.rgRate.checkedRadioButtonId)
-                        viewModel.updateSwap(swap)
+            when {
+                binding.edtSource.text.isNullOrEmpty() -> showAlert(getString(R.string.specify_amount))
+                binding.edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.swap?.tokenSource?.currentBalance -> {
+                    showAlert(getString(R.string.exceed_balance))
+                }
+                binding.swap?.samePair == true -> showAlert(getString(R.string.same_token_alert))
+                else -> binding.swap?.let { swap ->
+                    wallet?.let {
+                        if (it.verifyCap(binding.edtSource.toBigDecimalOrDefaultZero() * swap.tokenSource.rateEthNow)) {
+                            viewModel.updateSwap(
+                                swap.copy(
+                                    minAcceptedRatePercent =
+                                    getMinAcceptedRatePercent(rgRate.checkedRadioButtonId)
+                                )
+                            )
+                        }
                     }
+
                 }
             }
 
         }
+
+    }
+
+    private fun resetAmount() {
+        edtSource.setText("")
+        edtDest.setText("")
     }
 
     private fun getRevertNotification(id: Int): String {
@@ -344,21 +375,21 @@ class SwapFragment : BaseFragment() {
             binding.tvSource.text,
             binding.tvDest.text,
             viewModel.rateThreshold(getMinAcceptedRatePercent(id)),
-            viewModel.expectedRateDisplay
+            viewModel.combineRate
         )
     }
 
     private fun getMinAcceptedRatePercent(id: Int): String {
         return when (id) {
             R.id.rbCustom -> {
-                binding.edtCustom.text.toString()
+                edtCustom.text.toString()
             }
             else -> DEFAULT_ACCEPT_RATE_PERCENTAGE.toString()
         }
     }
 
     private fun getSelectedGasPrice(gas: Gas): String {
-        return when (binding.rgGas.checkedRadioButtonId) {
+        return when (rgGas.checkedRadioButtonId) {
             R.id.rbRegular -> gas.standard
             R.id.rbSlow -> gas.low
             else -> gas.fast
@@ -366,33 +397,13 @@ class SwapFragment : BaseFragment() {
     }
 
     private fun getRate(swap: Swap) {
-        viewModel.resetRate()
-        getMarketRate(
-            swap.tokenSource.tokenSymbol,
-            swap.tokenDest.tokenSymbol
-        )
-        getExpectedRate(
-            swap,
-            if (binding.edtSource.text.isNullOrEmpty() ||
-                binding.edtSource.text.toString().toDouble() == 0.0
-            ) getString(
-                R.string.default_source_amount
-            )
-            else binding.edtSource.text.toString()
-        )
-    }
-
-
-    private fun getExpectedRate(swapData: Swap, amount: String) {
+        if (swap.samePair) return
+        viewModel.setDefaultRate(swap)
+        viewModel.getMarketRate(swap)
         viewModel.getExpectedRate(
-            swapData.walletAddress,
-            swapData,
-            amount
+            swap,
+            edtSource.getAmountOrDefaultValue()
         )
-    }
-
-    private fun getMarketRate(source: String, dest: String) {
-        viewModel.getMarketRate(source, dest)
     }
 
     override fun onDestroyView() {

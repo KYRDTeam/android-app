@@ -20,7 +20,7 @@ interface ContactDao {
     fun loadContactByAddress(address: String): Flowable<Contact>
 
     @Query("SELECT * from contacts where address = :address")
-    fun findContactByAddress(address: String): Contact
+    fun findContactByAddress(address: String): Contact?
 
     @Query("DELETE FROM contacts")
     fun deleteAllContacts()

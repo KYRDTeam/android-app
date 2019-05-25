@@ -118,9 +118,10 @@
             android:layout_marginTop="15dp"
             android:layout_marginEnd="16dp"
             android:text="@{send.tokenSource.tokenSymbol +` `+ @string/balance}"
+            android:textAllCaps="true"
             android:textColor="#ffffff"
             android:textSize="12sp"
-            app:layout_constraintEnd_toStartOf="@+id/tvBalance"
+            app:layout_constraintEnd_toStartOf="@+id/tvBalanceUsd"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
@@ -128,6 +129,7 @@
             tools:text="DAI Balance" />
 
         <TextView
+            android:id="@+id/tvBalanceDetail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -140,7 +142,7 @@
             tools:text="63000" />
 
         <TextView
-            android:id="@+id/tvBalance"
+            android:id="@+id/tvBalanceUsd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
@@ -389,6 +391,12 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.core.widget.NestedScrollView>
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/grBalance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="tvTokenBalance,tvBalanceDetail" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -7,6 +7,7 @@ import com.kyberswap.android.data.db.WalletTokenDao
 import com.kyberswap.android.data.mapper.TokenMapper
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.repository.BalanceRepository
+import com.kyberswap.android.domain.usecase.token.PrepareBalanceUseCase
 import com.kyberswap.android.util.TokenClient
 import io.reactivex.Flowable
 import io.reactivex.FlowableTransformer
@@ -46,8 +47,8 @@ class BalanceDataRepository @Inject constructor(
         return tokenDao.all
     }
 
-    override fun getBalance(): Single<List<Token>> {
-        return if (tokenDao.all.blockingFirst().isEmpty()) {
+    override fun getBalance(param: PrepareBalanceUseCase.Param): Single<List<Token>> {
+        return if (tokenDao.all.blockingFirst().isEmpty() || param.forceUpdate) {
             fetchChange24h().toFlowable()
                 .flatMapIterable { token -> token }
                 .map { token ->
@@ -145,13 +146,14 @@ class BalanceDataRepository @Inject constructor(
         usd: Map<String, BigDecimal>,
         change24h: Map<String, Token>
     ): Map<String, Token> {
-        change24h.map { token ->
+
+        return change24h.map { token ->
             token.key to token.value.copy(
                 rateEthNow = eth[token.value.tokenSymbol] ?: token.value.rateEthNow,
                 rateUsdNow = usd[token.value.tokenSymbol] ?: token.value.rateUsdNow
             )
-        }
-        return change24h
+
+        }.toMap()
     }
 
     companion object {

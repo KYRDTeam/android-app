@@ -23,6 +23,10 @@ import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.main.swap.SwapViewModel
 import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
 import com.kyberswap.android.presentation.main.swap.TokenSearchViewModel
+import com.kyberswap.android.presentation.main.transaction.TransactionFragment
+import com.kyberswap.android.presentation.main.transaction.TransactionStatusFragment
+import com.kyberswap.android.presentation.main.transaction.TransactionStatusViewModel
+import com.kyberswap.android.presentation.main.transaction.TransactionViewModel
 import com.kyberswap.android.util.di.ViewModelKey
 import com.kyberswap.android.util.di.scope.FragmentScoped
 import dagger.Binds
@@ -86,6 +90,14 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeContactFragment(): ContactFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeTransactionFragment(): TransactionFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeTransactionStatusFragment(): TransactionStatusFragment
 
 
     @Binds
@@ -177,5 +189,19 @@ interface MainActivityModule {
     @ViewModelKey(ContactViewModel::class)
     fun bindContactViewModel(
         contactViewModel: ContactViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(TransactionViewModel::class)
+    fun bindTransactionViewModel(
+        transactionViewModel: TransactionViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(TransactionStatusViewModel::class)
+    fun bindTransactionStatusViewModel(
+        transactionStatusViewModel: TransactionStatusViewModel
     ): ViewModel
 }

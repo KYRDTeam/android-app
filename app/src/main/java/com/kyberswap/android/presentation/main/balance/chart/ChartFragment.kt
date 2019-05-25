@@ -16,6 +16,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
@@ -132,8 +133,31 @@ class ChartFragment : BaseFragment() {
         }
 
         binding.tvSend.setOnClickListener {
-            navigator.navigateToSendScreen(wallet)
+            wallet?.let {
+                token?.let {
+                    viewModel.saveSendToken(wallet!!.address, it)
+                }
+            }
         }
+
+        viewModel.callbackSaveSend.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == SaveSendState.Loading)
+                when (state) {
+                    is SaveSendState.Success -> {
+                        navigator.navigateToSendScreen(wallet)
+                    }
+                    is SaveSendState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        Toast.makeText(
+                            activity,
+                            state.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        })
 
         viewModel.callback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
