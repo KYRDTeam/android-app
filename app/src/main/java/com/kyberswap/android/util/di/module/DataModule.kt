@@ -44,13 +44,23 @@ object DataModule {
     fun provideTokenRepository(
         client: TokenClient,
         api: SwapApi,
+        swapDao: SwapDao,
         tokenApi: TokenApi,
         rateDao: RateDao,
         rateMapper: RateMapper,
         chartMapper: ChartMapper,
         context: Context
     ): TokenRepository =
-        TokenDataRepository(client, api, tokenApi, rateDao, rateMapper, chartMapper, context)
+        TokenDataRepository(
+            client,
+            api,
+            swapDao,
+            tokenApi,
+            rateDao,
+            rateMapper,
+            chartMapper,
+            context
+        )
 
     @Singleton
     @Provides
@@ -63,6 +73,7 @@ object DataModule {
     @JvmStatic
     fun provideSwapRepository(
         context: Context,
+        walletDao: WalletDao,
         swapDao: SwapDao,
         tokenDao: TokenDao,
         sendDao: SendDao,
@@ -74,6 +85,7 @@ object DataModule {
     ): SwapRepository =
         SwapDataRepository(
             context,
+            walletDao,
             swapDao,
             tokenDao,
             sendDao,

@@ -5,10 +5,7 @@ import android.util.Base64
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.SwapApi
-import com.kyberswap.android.data.db.ContactDao
-import com.kyberswap.android.data.db.SendDao
-import com.kyberswap.android.data.db.SwapDao
-import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.db.*
 import com.kyberswap.android.data.mapper.CapMapper
 import com.kyberswap.android.data.mapper.GasMapper
 import com.kyberswap.android.domain.model.*
@@ -32,6 +29,7 @@ import kotlin.math.pow
 
 class SwapDataRepository @Inject constructor(
     private val context: Context,
+    private val walletDao: WalletDao,
     private val swapDao: SwapDao,
     private val tokenDao: TokenDao,
     private val sendTokenDao: SendDao,
@@ -157,6 +155,12 @@ class SwapDataRepository @Inject constructor(
 
     override fun getCap(param: GetCapUseCase.Param): Single<Cap> {
         return api.getCap(param.walletAddress).map { capMapper.transform(it) }
+            .doAfterSuccess { cap ->
+                param.walletAddress?.let {
+                    val wallet = walletDao.findWalletByAddress(it)
+                    walletDao.updateWallet(wallet.copy(cap = cap))
+                }
+            }
     }
 
     override fun getGasPrice(): Single<Gas> {

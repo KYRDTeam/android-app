@@ -19,7 +19,7 @@ import com.kyberswap.android.domain.model.Unit
         Rate::class,
         Contact::class
     ],
-    version = 18
+    version = 19
 )
 @TypeConverters(DataTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
