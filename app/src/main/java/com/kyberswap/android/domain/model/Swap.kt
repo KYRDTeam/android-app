@@ -5,14 +5,15 @@ import androidx.annotation.NonNull
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
 import com.kyberswap.android.util.ext.percentage
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.parcel.Parcelize
 import org.web3j.utils.Convert
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.math.RoundingMode
 
 @Entity(tableName = "swaps")
 @Parcelize
@@ -29,19 +30,21 @@ data class Swap(
     var expectedRate: String = "",
     var slippageRate: String = "",
     var gasPrice: String = "",
-    var gasLimit: String = "",
+    var gasLimit: String =
+        if (tokenSource.gasLimit.toBigIntegerOrDefaultZero()
+            == BigInteger.ZERO
+        ) DEFAULT_GAS_LIMIT.toString()
+        else tokenSource.gasLimit,
     var marketRate: String = "",
     var minAcceptedRatePercent: String = ""
 
 ) : Parcelable {
 
-    private val rate: String?
-        get() = if (expectedRate.isEmpty()) marketRate else expectedRate
+    val hasSamePair: Boolean
+        get() = tokenSource.tokenSymbol == tokenDest.tokenSymbol
 
-    val displayExpectedRate: String
-        get() = if (samePair) BigDecimal.ONE.toDisplayNumber() else
-            rate.toBigDecimalOrDefaultZero()
-                .toDisplayNumber()
+    val hasTokenPair: Boolean
+        get() = tokenSource.tokenSymbol.isNotBlank() && tokenDest.tokenSymbol.isNotBlank()
 
     val displaySourceAmount: String
         get() = StringBuilder().append(sourceAmount).append(" ").append(tokenSource.tokenSymbol).toString()
@@ -124,8 +127,8 @@ data class Swap(
             this.walletAddress,
             this.tokenDest,
             this.tokenSource,
-            this.destAmount,
-            this.sourceAmount,
+            "",
+            "",
             if (tokenSource.rateEthNow.toDouble() != 0.0)
                 this.tokenDest.rateEthNow.toDouble().div(
                     tokenSource.rateEthNow.toDouble()
@@ -148,21 +151,5 @@ data class Swap(
     private fun getExpectedDestAmount(expectedRate: String?, amount: String?): BigDecimal {
         return amount.toBigDecimalOrDefaultZero()
             .multiply(expectedRate.toBigDecimalOrDefaultZero())
-    }
-
-
-    fun getExpectedDestAmount(amount: BigDecimal): BigDecimal {
-        return amount.multiply(displayExpectedRate.toBigDecimalOrDefaultZero())
-    }
-
-    fun getExpectedDestUsdAmount(amount: BigDecimal): BigDecimal {
-        return getExpectedDestAmount(amount)
-            .multiply(tokenDest.rateUsdNow)
-            .setScale(2, RoundingMode.UP)
-    }
-
-    fun rateThreshold(customRate: String): BigDecimal {
-        return (1.toDouble() - customRate.toBigDecimalOrDefaultZero().toDouble() / 100.toDouble()).toBigDecimal()
-            .multiply(displayExpectedRate.toBigDecimalOrDefaultZero())
     }
 }

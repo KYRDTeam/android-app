@@ -1,12 +1,15 @@
 package com.kyberswap.android.domain.model
 
 import android.os.Parcelable
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.kyberswap.android.util.ext.toWalletAddress
 import kotlinx.android.parcel.Parcelize
 import org.consenlabs.tokencore.wallet.Wallet
 import org.jetbrains.annotations.NotNull
+import org.web3j.utils.Convert
+import java.math.BigDecimal
 
 @Parcelize
 @Entity(tableName = "wallets")
@@ -19,7 +22,9 @@ data class Wallet(
     val cipher: String = "",
     var isSelected: Boolean = false,
     var unit: String = "USD",
-    var balance: String = "0"
+    var balance: String = "0",
+    @Embedded
+    var cap: Cap = Cap()
 ) :
     Parcelable {
     constructor(wallet: Wallet) : this(
@@ -43,5 +48,13 @@ data class Wallet(
                 )
             )
         return displayBuilder.toString()
+    }
+
+
+    fun verifyCap(amount: BigDecimal): Boolean {
+        return Convert.toWei(amount, Convert.Unit.ETHER) <= Convert.toWei(
+            cap.cap,
+            Convert.Unit.GWEI
+        ) && !cap.rich
     }
 }

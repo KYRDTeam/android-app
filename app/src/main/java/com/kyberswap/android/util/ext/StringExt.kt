@@ -49,6 +49,16 @@ fun String?.toBigIntegerOrDefaultZero(): BigInteger {
     }
 }
 
+fun String?.toDoubleOrDefaultZero(): Double {
+    if (this.isNullOrEmpty()) return 0.0
+    return try {
+        toDouble()
+    } catch (ex: Exception) {
+        ex.printStackTrace()
+        0.0
+    }
+}
+
 fun String.updatePrecision(): String {
     return (this.toDouble() / 10.0.pow(18)).toBigDecimal().toPlainString()
 }
