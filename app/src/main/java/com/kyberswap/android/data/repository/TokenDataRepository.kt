@@ -39,7 +39,6 @@ class TokenDataRepository @Inject constructor(
 
     override fun getMarketRate(param: GetMarketRateUseCase.Param): Flowable<String> {
 
-
         return Flowable.mergeDelayError(
             rateDao.all,
             api.getRate()

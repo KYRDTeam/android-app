@@ -19,6 +19,7 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.balance.kyberlist.KyberListViewModel
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.setAllOnClickListener
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.showKeyboard
 import kotlinx.android.synthetic.main.fragment_balance.*
@@ -53,8 +54,6 @@ class BalanceFragment : BaseFragment() {
     private val options by lazy {
         listOf(binding.tvKyberList, binding.tvOther)
     }
-
-    private val balanceAddress by lazy { listOf(binding.tvAddress, binding.tvQr) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -124,12 +123,9 @@ class BalanceFragment : BaseFragment() {
             }
         }
 
-        balanceAddress.forEach { view ->
-            view.setOnClickListener {
-                navigator.navigateToBalanceAddressScreen(wallet)
-            }
-
-        }
+        grAddress.setAllOnClickListener(View.OnClickListener {
+            navigator.navigateToBalanceAddressScreen(wallet)
+        })
 
         binding.imgMenu.setOnClickListener {
             showDrawer(true)

@@ -14,11 +14,11 @@ data class Chart(
 ) {
     constructor(chartResponseEntity: ChartResponseEntity) :
         this(
-            chartResponseEntity.t,
-            chartResponseEntity.o,
-            chartResponseEntity.h,
-            chartResponseEntity.l,
-            chartResponseEntity.c,
-            chartResponseEntity.s
+            chartResponseEntity.t ?: listOf(),
+            chartResponseEntity.o ?: listOf(),
+            chartResponseEntity.h ?: listOf(),
+            chartResponseEntity.l ?: listOf(),
+            chartResponseEntity.c ?: listOf(),
+            chartResponseEntity.s ?: ""
         )
 }

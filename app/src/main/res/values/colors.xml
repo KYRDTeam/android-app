@@ -39,6 +39,7 @@
     <color name="limit_line_text_color">#2e3957</color>
     <color name="rate_down_background_color">#ffeeee</color>
     <color name="rate_down_text_color">#f96363</color>
+    <color name="rate_up_text_color">@color/color_green</color>
 
     <array name="tab_colors">
         <item name="tab_1">#fea34c</item>

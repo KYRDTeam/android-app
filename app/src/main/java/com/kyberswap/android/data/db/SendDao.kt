@@ -13,6 +13,12 @@ interface SendDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertSend(send: Send)
 
+    @Transaction
+    fun add(send: Send) {
+        deleteAllSends()
+        insertSend(send)
+    }
+
     @Update
     fun updateSend(send: Send)
 
