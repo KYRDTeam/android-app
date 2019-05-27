@@ -28,10 +28,10 @@ import com.kyberswap.android.presentation.main.swap.GetSendState
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.setAllOnClickListener
+import com.kyberswap.android.util.ext.setAmount
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import kotlinx.android.synthetic.main.fragment_send.*
 import net.cachapa.expandablelayout.ExpandableLayout
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -73,23 +73,23 @@ class SendFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        binding.edtSource.setText("")
         binding.walletName = wallet?.name
         wallet?.let {
             viewModel.getSendInfo(wallet!!.address)
-
-
 
         viewModel.getGasPrice()
         viewModel.getGetGasPriceCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetGasPriceState.Success -> {
-                        var send = binding.send
-                        send = send?.copy(
+                        val send = binding.send?.copy(
                             gasPrice = getSelectedGasPrice(state.gas),
                             gas = state.gas
                         )
-                        viewModel.saveSend(send)
+                        if (send != binding.send) {
+                            viewModel.saveSend(send)
+                
                         binding.send = send
             
                     is GetGasPriceState.ShowError -> {
@@ -107,12 +107,9 @@ class SendFragment : BaseFragment() {
             binding.expandableLayout.collapse()
 
 
-        listOf(binding.imgTokenSource, binding.tvSource).forEach {
-            it.setOnClickListener {
-                navigator.navigateToTokenSearchFromSendTokenScreen(R.id.container, wallet)
-    
-
-
+        grTokenSource.setAllOnClickListener(View.OnClickListener {
+            navigator.navigateToTokenSearchFromSendTokenScreen(R.id.send_container, wallet)
+)
 
         binding.tvAddContact.setOnClickListener {
             navigator.navigateToAddContactScreen(wallet, edtAddress.text.toString())
@@ -180,6 +177,7 @@ class SendFragment : BaseFragment() {
                 when (state) {
                     is GetSendState.Success -> {
                         binding.send = state.send
+                        edtSource.setAmount(state.send.sourceAmount)
             
                     is GetSendState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -190,14 +188,9 @@ class SendFragment : BaseFragment() {
 )
 
         viewModel.compositeDisposable.add(binding.edtSource.textChanges().skipInitialValue()
-            .debounce(
-                250,
-                TimeUnit.MILLISECONDS
-            )
             .observeOn(schedulerProvider.ui())
             .subscribe { amount ->
                 val copy = binding.send?.copy(sourceAmount = amount.toString())
-                viewModel.saveSend(copy)
                 viewModel.getGasLimit(
                     copy,
                     wallet
@@ -211,7 +204,11 @@ class SendFragment : BaseFragment() {
                 binding.edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.send?.tokenSource?.currentBalance -> {
                     showAlert(getString(R.string.exceed_balance))
         
-                else -> viewModel.saveSend(binding.send, binding.edtAddress.text.toString())
+                viewModel.inValidAddress(edtAddress.text.toString()) -> showAlert(getString(R.string.invalid_contact_address))
+                else -> viewModel.saveSend(
+                    binding.send?.copy(sourceAmount = edtSource.text.toString()),
+                    binding.edtAddress.text.toString()
+                )
     
 
 

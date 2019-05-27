@@ -184,9 +184,7 @@ class SwapDataRepository @Inject constructor(
         return Completable.fromCallable {
             val address = param.walletAddress
             val token = param.token
-            var send = sendTokenDao.findSendByAddress(address)
-            send = send?.copy(tokenSource = token) ?: Send(address, token)
-            sendTokenDao.insertSend(send)
+            sendTokenDao.add(Send(address, token))
 
 
     }

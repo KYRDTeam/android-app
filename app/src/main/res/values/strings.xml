@@ -110,7 +110,7 @@
     <string name="default_swap_amount">0.000</string>
     <string name="advanced_optional">Advanced (optional)</string>
     <string name="rate">Rate</string>
-    <string name="default_source_amount">0.0001</string>
+    <string name="default_source_amount">0.001</string>
     <string name="percentage_format" formatted="false" translatable="false">"%.2f %%"</string>
     <string name="dest_balance_usd_format" formatted="false" translatable="false">"≈ %s USD"</string>
     <string name="default_dest_balance_usd">≈ 0.0 USD</string>
@@ -162,8 +162,12 @@
     <string name="specify_amount">Please specify amount</string>
     <string name="payment_send_success">Payment sent to %s</string>
     <string name="same_token_alert">Can not create order with same token pair</string>
+    <string name="swap_amount_small">The swap value is too small. Minimum supported value is 0.001 ETH</string>
     <string name="exceed_balance">Source amount exceeds token balance</string>
     <string name="specify_contact_address">Please specify contact address</string>
+    <string name="invalid_contact_address">Invalid contact address</string>
+    <string name="chart_no_token_data">There is no data for this token</string>
+    <string name="chart_updating_data">Updating data…</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>

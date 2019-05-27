@@ -191,6 +191,12 @@
                 android:layout_height="wrap_content"
                 app:constraint_referenced_ids="tvQr,tvAddress" />
 
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/grAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="tvAddress,tvQr" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
 </layout>

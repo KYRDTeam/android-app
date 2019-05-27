@@ -3,15 +3,15 @@ package com.kyberswap.android.presentation.main.balance.send
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.Send
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.contact.GetContactUseCase
-import com.kyberswap.android.domain.usecase.contact.SaveContactUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSendTokenUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSendUseCase
+import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT_SEND_ETH
+import com.kyberswap.android.presentation.common.DEFAULT_GA_LIMIT_SEND_TOKEN
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.swap.GetContactState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
@@ -20,6 +20,7 @@ import com.kyberswap.android.presentation.main.swap.SaveSendState
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
+import java.math.BigInteger
 import javax.inject.Inject
 
 class SendViewModel @Inject constructor(
@@ -27,8 +28,7 @@ class SendViewModel @Inject constructor(
     private val getGasPriceUseCase: GetGasPriceUseCase,
     private val saveSendUseCase: SaveSendUseCase,
     private val getContactUseCase: GetContactUseCase,
-    private val estimateTransferGasUseCase: EstimateTransferGasUseCase,
-    private val saveContactUseCase: SaveContactUseCase
+    private val estimateTransferGasUseCase: EstimateTransferGasUseCase
 ) : ViewModel() {
     val compositeDisposable = CompositeDisposable()
     private val _getGetGasPriceCallback = MutableLiveData<Event<GetGasPriceState>>()
@@ -51,6 +51,8 @@ class SendViewModel @Inject constructor(
     fun getSendInfo(address: String) {
         getSendTokenUseCase.execute(
             Consumer {
+                gasLimit =
+                    if (it.tokenSource.isETH()) DEFAULT_GAS_LIMIT_SEND_ETH else DEFAULT_GA_LIMIT_SEND_TOKEN
                 _getSendCallback.value = Event(GetSendState.Success(it))
     ,
             Consumer {
@@ -61,14 +63,12 @@ class SendViewModel @Inject constructor(
         )
     }
 
-    private var _gas: Gas? = null
-    val gas: Gas
-        get() = _gas ?: Gas()
+
+    private var gasLimit = BigInteger.ZERO
 
     fun getGasPrice() {
         getGasPriceUseCase.execute(
             Consumer {
-                _gas = it
                 _getGetGasPriceCallback.value = Event(GetGasPriceState.Success(it))
     ,
             Consumer {
@@ -79,6 +79,11 @@ class SendViewModel @Inject constructor(
             null
         )
     }
+
+    fun inValidAddress(address: String?): Boolean {
+        return !(address != null && address.startsWith("0x") && address.length == 42)
+    }
+
 
     fun saveSend(send: Send?, address: String = "") {
         send?.let {
@@ -92,7 +97,7 @@ class SendViewModel @Inject constructor(
                     error.printStackTrace()
                     _saveSendCallback.value = Event(SaveSendState.ShowError(error.localizedMessage))
         ,
-                SaveSendUseCase.Param(it, address)
+                SaveSendUseCase.Param(it.copy(gasLimit = gasLimit.toString()), address)
             )
 
 
@@ -115,7 +120,13 @@ class SendViewModel @Inject constructor(
         if (send == null || wallet == null) return
         estimateTransferGasUseCase.execute(
             Consumer {
-                saveSend(send.copy(gasLimit = it.amountUsed.toString()))
+                gasLimit = it.amountUsed.toBigDecimal()
+                    .multiply(1.2.toBigDecimal()).toBigIntegerExact()
+                saveSend(
+                    send.copy(
+                        gasLimit = gasLimit.toString()
+                    )
+                )
     ,
             Consumer { },
             EstimateTransferGasUseCase.Param(wallet, send)

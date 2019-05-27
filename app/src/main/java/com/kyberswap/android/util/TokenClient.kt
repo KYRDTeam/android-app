@@ -342,10 +342,10 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                 FunctionEncoder.encode(
                     transfer(
                         param.send.contact.address,
-                        transactionAmount.toString()
+                        amount.toString()
                     )
                 ),
-            if (isEth) transactionAmount else BigInteger.ZERO
+            transactionAmount
         )
 
         if (transactionResponse.hasError()) run {

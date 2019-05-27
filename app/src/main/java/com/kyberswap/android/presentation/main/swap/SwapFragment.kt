@@ -147,6 +147,8 @@ class SwapFragment : BaseFragment() {
                 .subscribe { text ->
                     if (text.isNullOrEmpty()) {
                         binding.edtDest.setText("")
+                        binding.imgInfo.visibility = View.GONE
+                        binding.tvPercentageRate.visibility = View.GONE
             
                     binding.swap?.let { swapData ->
                         if (swapData.samePair) {
@@ -243,35 +245,35 @@ class SwapFragment : BaseFragment() {
 
         viewModel.compositeDisposable.add(
             rbCustom.checkedChanges().skipInitialValue()
-            .observeOn(schedulerProvider.ui())
-            .subscribe {
-                edtCustom.isEnabled = it
-                if (it) {
-                    edtCustom.requestFocus()
-         else {
-                    edtCustom.setText("")
-        
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
+                    edtCustom.isEnabled = it
+                    if (it) {
+                        edtCustom.requestFocus()
+             else {
+                        edtCustom.setText("")
+            
 
-    )
+        )
 
         viewModel.compositeDisposable.add(
             rgRate.checkedChanges()
-            .observeOn(schedulerProvider.ui())
-            .subscribe { id ->
-                tvRevertNotification.text = getRevertNotification(id)
-    )
+                .observeOn(schedulerProvider.ui())
+                .subscribe { id ->
+                    tvRevertNotification.text = getRevertNotification(id)
+        )
 
 
         viewModel.compositeDisposable.add(
             rgGas.checkedChanges()
-            .observeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.ui())
                 .subscribe { _ ->
-                binding.swap?.let { swap ->
-                    binding.gas?.let {
-                        viewModel.saveSwap(swap.copy(gasPrice = getSelectedGasPrice(it)))
+                    binding.swap?.let { swap ->
+                        binding.gas?.let {
+                            viewModel.saveSwap(swap.copy(gasPrice = getSelectedGasPrice(it)))
+                
             
-        
-    )
+        )
 
         viewModel.getGetGasPriceCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -340,16 +342,20 @@ class SwapFragment : BaseFragment() {
 
         binding.tvContinue.setOnClickListener {
             when {
-                binding.edtSource.text.isNullOrEmpty() -> showAlert(getString(R.string.specify_amount))
-                binding.edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.swap?.tokenSource?.currentBalance -> {
+                edtSource.text.isNullOrEmpty() -> showAlert(getString(R.string.specify_amount))
+                edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.swap?.tokenSource?.currentBalance -> {
                     showAlert(getString(R.string.exceed_balance))
         
                 binding.swap?.samePair == true -> showAlert(getString(R.string.same_token_alert))
+                binding.swap?.amountTooSmall(edtSource.text.toString()) == true -> showAlert(
+                    getString(R.string.swap_amount_small)
+                )
                 else -> binding.swap?.let { swap ->
                     wallet?.let {
                         if (it.verifyCap(binding.edtSource.toBigDecimalOrDefaultZero() * swap.tokenSource.rateEthNow)) {
                             viewModel.updateSwap(
                                 swap.copy(
+                                    sourceAmount = binding.edtSource.text.toString(),
                                     minAcceptedRatePercent =
                                     getMinAcceptedRatePercent(rgRate.checkedRadioButtonId)
                                 )

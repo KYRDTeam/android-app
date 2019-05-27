@@ -130,19 +130,11 @@ object TextViewBindingAdapter {
     fun setPercentage(view: TextView, rate: BigDecimal) {
 
         val color = when {
-            rate > BigDecimal.ZERO -> android.R.color.white
+            rate >= BigDecimal.ZERO -> R.color.rate_up_text_color
             else -> R.color.rate_down_text_color
 
 
         view.setTextColor(ContextCompat.getColor(view.context, color))
-
-        val drawable = when {
-            rate > BigDecimal.ZERO -> R.drawable.rounded_corner_green_background
-            else -> R.drawable.rounded_corner_red_background
-
-
-        view.setBackgroundResource(drawable)
-
         view.text = StringBuilder().append(rate.abs().toDisplayNumber()).append(" %").toString()
 
     }
