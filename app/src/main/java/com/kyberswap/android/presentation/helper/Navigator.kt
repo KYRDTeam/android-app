@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.kyberswap.android.R
 import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.presentation.landing.LandingActivity
@@ -17,6 +18,9 @@ import com.kyberswap.android.presentation.main.setting.AddContactFragment
 import com.kyberswap.android.presentation.main.setting.ContactFragment
 import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
 import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
+import com.kyberswap.android.presentation.main.transaction.TransactionDetailReceiveFragment
+import com.kyberswap.android.presentation.main.transaction.TransactionDetailSendFragment
+import com.kyberswap.android.presentation.main.transaction.TransactionDetailSwapFragment
 import com.kyberswap.android.presentation.main.transaction.TransactionFragment
 import com.kyberswap.android.presentation.wallet.BackupWalletActivity
 import com.kyberswap.android.presentation.wallet.ImportWalletActivity
@@ -144,6 +148,18 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     fun navigateToTransactionScreen(wallet: Wallet?) {
         replaceFragment(TransactionFragment.newInstance(wallet))
+    }
+
+    fun navigateToSwapTransactionScreen(wallet: Wallet?, transaction: Transaction?) {
+        replaceFragment(TransactionDetailSwapFragment.newInstance(wallet, transaction))
+    }
+
+    fun navigateToSendTransactionScreen(wallet: Wallet?, transaction: Transaction?) {
+        replaceFragment(TransactionDetailSendFragment.newInstance(wallet, transaction))
+    }
+
+    fun navigateToReceivedTransactionScreen(wallet: Wallet?, transaction: Transaction?) {
+        replaceFragment(TransactionDetailReceiveFragment.newInstance(wallet, transaction))
     }
 
     companion object {

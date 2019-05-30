@@ -169,6 +169,14 @@
     <string name="chart_updating_data">Updating data…</string>
     <string name="tab_pending">Pending</string>
     <string name="tab_mined">Completed</string>
+    <string name="transaction_from">From</string>
+    <string name="txhash">TxHash</string>
+    <string name="transaction_view_on">View on</string>
+    <string name="transaction_fee">Fee</string>
+    <string name="transaction_to">To</string>
+    <string name="transaction_details">Transaction Details</string>
+    <string name="transaction_rate">Rate %s/%s</string>
+    <string name="txhash_copy">Hash copied</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>

@@ -8,6 +8,7 @@ import com.kyberswap.android.data.db.TransactionTypeConverter
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.parcel.Parcelize
+import org.web3j.utils.Convert
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
@@ -142,8 +143,12 @@ data class Transaction(
                     .toString()
 
     companion object {
+        const val SWAP_TRANSACTION = "SWAP"
+        const val SEND_TRANSACTION = "SEND"
+        const val RECEIVE_TRANSACTION = "RECEIVE"
         val formatterShort = SimpleDateFormat("dd MMM yyyy", Locale.US)
-        val formatterFull = SimpleDateFormat("EEEE, dd MMM yyyy'T'HH:mm:ssZZ", Locale.US)
+        val formatterFull = SimpleDateFormat("EEEE, dd MMM yyyy'T'HH:mm:ssZZZZZ", Locale.ENGLISH)
+
     }
 
     val shortedDateTimeFormat: String
@@ -154,8 +159,8 @@ data class Transaction(
 
     val displayTransactionType: String
         get() = if (isTransfer)
-            if (type == TransactionType.SEND) "SEND" else "RECEIVE"
-        else "SWAP"
+            if (type == TransactionType.SEND) SEND_TRANSACTION else RECEIVE_TRANSACTION
+        else SWAP_TRANSACTION
 
 
     private val isTransfer: Boolean
@@ -171,16 +176,23 @@ data class Transaction(
                     .append(" ")
                     .append(tokenSource)
                     .append(" = ")
-                    .append(
-                        if (sourceAmount.toBigDecimalOrDefaultZero() == BigDecimal.ZERO) "0" else
-                            (destAmount.toBigDecimalOrDefaultZero()
-                                .div(sourceAmount.toBigDecimalOrDefaultZero()))
-                                .toDisplayNumber()
-                    )
+                    .append(rate)
                     .append(" ")
                     .append(tokenDest)
                     .toString()
 
+
+    val rate: String
+        get() = if (sourceAmount.toBigDecimalOrDefaultZero() == BigDecimal.ZERO) "0" else
+            (destAmount.toBigDecimalOrDefaultZero()
+                .div(sourceAmount.toBigDecimalOrDefaultZero()))
+                .toDisplayNumber()
+
+    val fee: String
+        get() = Convert.fromWei(
+            gasPrice.toBigDecimalOrDefaultZero().multiply(gasUsed.toBigDecimalOrDefaultZero())
+            , Convert.Unit.ETHER
+        ).toDisplayNumber()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
