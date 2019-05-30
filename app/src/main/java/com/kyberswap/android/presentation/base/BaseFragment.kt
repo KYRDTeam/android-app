@@ -29,7 +29,7 @@ abstract class BaseFragment : DaggerFragment() {
         initLoadingDialog()
     }
 
-    fun showProgress(showProgress: Boolean) {
+    open fun showProgress(showProgress: Boolean) {
         if (showProgress) dialog?.show() else dialog?.dismiss()
     }
 

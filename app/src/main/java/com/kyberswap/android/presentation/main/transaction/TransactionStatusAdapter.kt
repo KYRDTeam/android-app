@@ -1,127 +1,106 @@
 package com.kyberswap.android.presentation.main.transaction
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
-import com.bumptech.glide.Glide
-import com.daimajia.swipe.SimpleSwipeListener
-import com.daimajia.swipe.SwipeLayout
 import com.kyberswap.android.AppExecutors
-import com.kyberswap.android.BR
 import com.kyberswap.android.R
-import com.kyberswap.android.databinding.ItemTokenBinding
-import com.kyberswap.android.domain.model.Token
-import com.kyberswap.android.presentation.base.DataBoundListSwipeAdapter
+import com.kyberswap.android.databinding.HeaderTransactionBinding
+import com.kyberswap.android.databinding.ItemTransactionBinding
+import com.kyberswap.android.presentation.base.DataBoundListAdapter
 import com.kyberswap.android.presentation.base.DataBoundViewHolder
-import java.math.RoundingMode
 
 class TransactionStatusAdapter(
     appExecutors: AppExecutors,
-    private val onTokenClick: ((Token) -> Unit)?
+    private val onTransactionClick: ((TransactionItem) -> Unit)?
 
-) : DataBoundListSwipeAdapter<Token, ItemTokenBinding>(
+) : DataBoundListAdapter<TransactionItem, ViewDataBinding>(
     appExecutors,
-    diffCallback = object : DiffUtil.ItemCallback<Token>() {
-        override fun areItemsTheSame(oldItem: Token, newItem: Token): Boolean {
-            return oldItem.tokenSymbol == newItem.tokenSymbol
+    diffCallback = object : DiffUtil.ItemCallback<TransactionItem>() {
+        override fun areItemsTheSame(oldItem: TransactionItem, newItem: TransactionItem): Boolean {
+            return false
 
 
-        override fun areContentsTheSame(oldItem: Token, newItem: Token): Boolean {
-            return oldItem.areContentsTheSame(newItem)
+        override fun areContentsTheSame(
+            oldItem: TransactionItem, newItem: TransactionItem
+        ): Boolean {
+            return false
 
     }
 ) {
-    private var isEth = false
 
 
-    override fun getSwipeLayoutResourceId(position: Int): Int {
-        return R.id.swipe
+    override fun bind(binding: ViewDataBinding, item: TransactionItem) {
+        when (item) {
+            is TransactionItem.Header -> {
+                binding as HeaderTransactionBinding
+                binding.tvDate.text = item.date
+
+    
+
+            is TransactionItem.ItemEven -> {
+                binding as ItemTransactionBinding
+                binding.tvTransactionDetail.text = item.transaction.displayTransaction
+                binding.tvRate.text = item.transaction.displayRate
+                binding.tvTransactionType.text = item.transaction.displayTransactionType
+    
+
+            is TransactionItem.ItemOdd -> {
+                binding as ItemTransactionBinding
+                binding.tvTransactionDetail.text = item.transaction.displayTransaction
+                binding.tvRate.text = item.transaction.displayRate
+                binding.tvTransactionType.text = item.transaction.displayTransactionType
+    
+
+
     }
 
-    fun showEth(boolean: Boolean) {
-        isEth = boolean
-        notifyDataSetChanged()
-    }
+    override fun getItemViewType(position: Int): Int {
 
-    fun submitFilterList(tokens: List<Token>) {
-        submitList(listOf())
-        submitList(tokens)
+        return when (getData()[position]) {
+            is TransactionItem.Header -> TYPE_HEADER
+            else -> TYPE_ITEM
+
     }
 
 
     override fun onBindViewHolder(
-        holder: DataBoundViewHolder<ItemTokenBinding>,
-        position: Int,
-        payloads: MutableList<Any>
+        holder: DataBoundViewHolder<ViewDataBinding>,
+        position: Int
     ) {
-        mItemManger.bindView(holder.itemView, position)
-        super.onBindViewHolder(holder, position, payloads)
-
-    }
-
-    override fun bind(binding: ItemTokenBinding, item: Token) {
-        binding.setVariable(BR.token, item)
-        binding.lnItem.setOnClickListener {
-            onTokenClick?.invoke(item)
-
-
-        binding.swipe.addSwipeListener(object : SimpleSwipeListener() {
-            override fun onStartOpen(layout: SwipeLayout?) {
-                mItemManger.closeAllExcept(layout)
-    
-)
-
-        val drawable = when (item.change24hStatus(isEth)) {
-            Token.UP -> R.drawable.ic_arrow_up
-            Token.DOWN -> R.drawable.ic_arrow_down
-            else -> null
-
-
-        val color = when (item.change24hStatus(isEth)) {
-            Token.UP -> R.color.token_change24h_up
-            Token.DOWN -> R.color.token_change24h_down
-            else -> R.color.token_change24h_same
-
-
-
-        Glide.with(binding.imgState)
-            .load(drawable)
-            .into(binding.imgState)
-
-        binding.imgState.visibility = if (drawable == null) View.GONE else View.VISIBLE
-
-        binding.tvChange24h.setTextColor(ContextCompat.getColor(binding.root.context, color))
-        binding.setVariable(BR.showEth, isEth)
-
-        val rate24h = StringBuilder().append(
-            if (isEth) item.changeEth24h.abs().setScale(2, RoundingMode.UP).toPlainString() else
-                item.changeUsd24h.abs().setScale(2, RoundingMode.UP).toPlainString()
-        ).append("%").toString()
-        binding.tvChange24h.text = rate24h
-
-        binding.executePendingBindings()
-
-    }
-
-
-    override fun onBindViewHolder(holder: DataBoundViewHolder<ItemTokenBinding>, position: Int) {
         super.onBindViewHolder(holder, position)
+
+        val color = when (getData()[position]) {
+            is TransactionItem.Header -> R.color.transaction_header_color
+            is TransactionItem.ItemEven -> R.color.transaction_item_even_color
+            is TransactionItem.ItemOdd -> R.color.transaction_item_odd_color
+
+
         val root = holder.binding.root
         val background = ContextCompat.getColor(
             root.context,
-            if (position % 2 == 0) R.color.token_item_even_bg else R.color.token_item_odd_bg
+            color
         )
         root.setBackgroundColor(background)
     }
 
-    override fun createBinding(parent: ViewGroup, viewType: Int): ItemTokenBinding =
-        DataBindingUtil.inflate(
+    override fun createBinding(parent: ViewGroup, viewType: Int): ViewDataBinding {
+        val layout =
+            if (viewType == TYPE_HEADER) R.layout.header_transaction else R.layout.item_transaction
+        return DataBindingUtil.inflate(
             LayoutInflater.from(parent.context),
-            R.layout.item_transaction,
+            layout,
             parent,
             false
         )
+    }
+
+
+    companion object {
+        private val TYPE_HEADER = 1
+        private val TYPE_ITEM = 2
+    }
 }

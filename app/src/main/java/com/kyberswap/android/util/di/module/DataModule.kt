@@ -4,6 +4,7 @@ import android.content.Context
 import com.kyberswap.android.data.api.home.CurrencyApi
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.api.home.TokenApi
+import com.kyberswap.android.data.api.home.TransactionApi
 import com.kyberswap.android.data.db.*
 import com.kyberswap.android.data.mapper.*
 import com.kyberswap.android.data.repository.*
@@ -103,4 +104,15 @@ object DataModule {
         contactDao: ContactDao
     ): ContactRepository =
         ContactDataRepository(contactDao)
+
+
+    @Singleton
+    @Provides
+    @JvmStatic
+    fun provideTransactionRepository(
+        api: TransactionApi,
+        transactionDao: TransactionDao,
+        mapper: TransactionMapper
+    ): TransactionRepository =
+        TransactionDataRepository(api, transactionDao, mapper)
 }

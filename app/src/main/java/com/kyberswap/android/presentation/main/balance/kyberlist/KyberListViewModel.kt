@@ -20,7 +20,6 @@ import com.kyberswap.android.presentation.splash.GetWalletState
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
-import timber.log.Timber
 import javax.inject.Inject
 
 class KyberListViewModel @Inject constructor(
@@ -89,7 +88,6 @@ class KyberListViewModel @Inject constructor(
     ,
             Consumer {
                 it.printStackTrace()
-                Timber.e(it.localizedMessage)
     ,
             GetBalancePollingUseCase.Param(address)
         )
