@@ -41,8 +41,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     private var wallet: Wallet? = null
 
-    private lateinit var bottomBar: AHBottomNavigation
-
     private val mainViewModel: MainViewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
     }
@@ -112,6 +110,13 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         tvTransaction.setOnClickListener {
             navigator.navigateToTransactionScreen(wallet)
             showDrawer(false)
+        }
+    }
+
+    private fun clearBackstack() {
+        val fm = supportFragmentManager
+        for (i in 0 until fm.backStackEntryCount) {
+            fm.popBackStack()
         }
     }
 
