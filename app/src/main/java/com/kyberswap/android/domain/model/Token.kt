@@ -165,6 +165,8 @@ data class Token(
         const val DOWN = -1
         const val SAME = 0
         const val ETH_SYMBOL = "ETH"
+        const val ETH_NAME = "Ethereum"
+        const val ETH_DECIMAL = 18
         const val ETH = "ETH"
         const val KNC = "KNC"
         const val DAI = "DAI"
