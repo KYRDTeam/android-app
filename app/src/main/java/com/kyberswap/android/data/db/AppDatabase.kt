@@ -17,11 +17,12 @@ import com.kyberswap.android.domain.model.Unit
         Send::class,
         WalletToken::class,
         Rate::class,
-        Contact::class
+        Contact::class,
+        Transaction::class
     ],
-    version = 19
+    version = 20
 )
-@TypeConverters(DataTypeConverter::class)
+@TypeConverters(DataTypeConverter::class, TransactionTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun customerDao(): TokenDao
@@ -32,6 +33,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun rateDao(): RateDao
     abstract fun contactDao(): ContactDao
     abstract fun sendDao(): SendDao
+    abstract fun transactionDao(): TransactionDao
 
     companion object {
         @Volatile

@@ -60,4 +60,10 @@ class DatabaseModule {
         return appDatabase.contactDao()
     }
 
+    @Provides
+    @Singleton
+    fun provideTransactinoDao(appDatabase: AppDatabase): TransactionDao {
+        return appDatabase.transactionDao()
+    }
+
 }

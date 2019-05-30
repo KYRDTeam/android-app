@@ -5,17 +5,17 @@
 
     <data>
 
-        <variable
-            name="viewModel"
-            type="com.kyberswap.android.presentation.main.MainViewModel" />
-
-        <variable
-            name="wallet"
-            type="com.kyberswap.android.domain.model.Wallet" />
     </data>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeLayout"
+    <!--<androidx.swiperefreshlayout.widget.SwipeRefreshLayout-->
+    <!--android:id="@+id/swipeLayout"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent">-->
+
+    <!---->
+    <!--</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -24,5 +24,18 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/white" />
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <ProgressBar
+
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@color/colorAccent" />
+    </FrameLayout>
 </layout>

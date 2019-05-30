@@ -39,7 +39,12 @@
     <color name="limit_line_text_color">#2e3957</color>
     <color name="rate_down_background_color">#ffeeee</color>
     <color name="rate_down_text_color">#f96363</color>
-
+    <color name="rate_up_text_color">@color/color_green</color>
+    <color name="transaction_header_color">#e4e7fd</color>
+    <color name="transaction_item_even_color">#ffffff</color>
+    <color name="transaction_item_odd_color">#f6f7fa</color>
+    <color name="transaction_tab_color_active">#fb795d</color>
+    <color name="transaction_tab_color_normal">#ffffff</color>
     <array name="tab_colors">
         <item name="tab_1">#fea34c</item>
         <item name="tab_2">#fea34c</item>

@@ -57,7 +57,5 @@ class ImportButtonView : LinearLayout {
         text?.apply {
             binding.text.text = this
 
-
-        binding.test = "abc"
     }
 }
