@@ -38,5 +38,12 @@ data class TransactionEntity(
     @SerializedName("txreceipt_status")
     val txreceiptStatus: String = "",
     @SerializedName("value")
-    val value: String = ""
+    val value: String = "",
+    @SerializedName("tokenName")
+    val tokenName: String = "",
+    @SerializedName("tokenSymbol")
+    val tokenSymbol: String = "",
+    @SerializedName("tokenDecimal")
+    val tokenDecimal: String = ""
+
 )

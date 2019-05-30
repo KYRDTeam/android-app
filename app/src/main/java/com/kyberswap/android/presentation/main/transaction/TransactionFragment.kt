@@ -17,6 +17,7 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_balance.*
+import kotlinx.android.synthetic.main.fragment_transaction.*
 import javax.inject.Inject
 
 
@@ -66,8 +67,6 @@ class TransactionFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.wallet = wallet
-
-
         val adapter = TransactionPagerAdapter(
             childFragmentManager,
             wallet
@@ -83,6 +82,7 @@ class TransactionFragment : BaseFragment() {
             }
 
             override fun onPageSelected(position: Int) {
+                setSelectedOption(status[position])
             }
         })
 
@@ -115,6 +115,10 @@ class TransactionFragment : BaseFragment() {
                 setSelectedOption(it)
                 binding.vpTransaction.currentItem = index
             }
+        }
+
+        imgBack.setOnClickListener {
+            activity?.onBackPressed()
         }
     }
 

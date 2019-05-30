@@ -19,8 +19,6 @@ class TransactionViewModel @Inject constructor(
     val getWalletCallback: LiveData<Event<GetWalletState>>
         get() = _getWalletCallback
 
-    val searchedKeywords = MutableLiveData<String>()
-
 
     fun getWallet(address: String) {
         getWalletByAddressUseCase.execute(

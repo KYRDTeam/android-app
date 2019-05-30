@@ -6,6 +6,7 @@ import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.CurrencyApi
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.api.home.TokenApi
+import com.kyberswap.android.data.api.home.TransactionApi
 import com.kyberswap.android.util.TokenClient
 import dagger.Module
 import dagger.Provides
@@ -62,6 +63,16 @@ class NetworkModule {
         )
     }
 
+
+    @Provides
+    @Singleton
+    fun provideTransactionApi(context: Context, client: OkHttpClient): TransactionApi {
+        return createApiClient(
+            TransactionApi::class.java,
+            context.getString(R.string.transaction_endpoint_url),
+            client
+        )
+    }
 
     @Provides
     @Singleton

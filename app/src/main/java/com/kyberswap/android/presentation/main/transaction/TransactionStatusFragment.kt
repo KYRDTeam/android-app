@@ -1,7 +1,6 @@
 package com.kyberswap.android.presentation.main.transaction
 
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,16 +9,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.daimajia.swipe.util.Attributes
 import com.kyberswap.android.AppExecutors
-import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentTransactionStatusBinding
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
-import kotlinx.android.synthetic.main.layout_token_header.*
+import kotlinx.android.synthetic.main.fragment_transaction_status.*
 import javax.inject.Inject
 
 class TransactionStatusFragment : BaseFragment() {
@@ -37,21 +33,9 @@ class TransactionStatusFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
-    private val handler by lazy {
-        Handler()
-    }
-
     private val viewModel by lazy {
-        ViewModelProviders.of(parentFragment!!, viewModelFactory)
+        ViewModelProviders.of(this, viewModelFactory)
             .get(TransactionStatusViewModel::class.java)
-    }
-
-    private val usd: String by lazy {
-        getString(R.string.unit_usd)
-    }
-
-    private val eth: String by lazy {
-        getString(R.string.unit_eth)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,7 +55,6 @@ class TransactionStatusFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        binding.wallet = wallet
 
         binding.rvTransaction.layoutManager = LinearLayoutManager(
             activity,
@@ -79,25 +62,21 @@ class TransactionStatusFragment : BaseFragment() {
             false
         )
         val transactionStatusAdapter =
-            TransactionStatusAdapter(appExecutors, {
+            TransactionStatusAdapter(appExecutors) {
 
-            })
-        transactionStatusAdapter.mode = Attributes.Mode.Single
+            }
         binding.rvTransaction.adapter = transactionStatusAdapter
 
-        viewModel.getWallet(wallet!!.address)
-        viewModel.getWalletCallback.observe(parentFragment!!.viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is GetWalletState.Success -> {
-                        this.wallet = state.wallet
-                        if (state.wallet.unit != tvChangeUnit.text.toString()) {
-                            tvChangeUnit.text = state.wallet.unit
-                            transactionStatusAdapter.showEth(tvChangeUnit.text.toString() == eth)
-                        }
+        viewModel.getTransaction(wallet!!.address)
 
+        viewModel.getTransactionCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == GetTransactionState.Loading)
+                when (state) {
+                    is GetTransactionState.Success -> {
+                        transactionStatusAdapter.submitList(state.transactions)
                     }
-                    is GetWalletState.ShowError -> {
+                    is GetTransactionState.ShowError -> {
                         Toast.makeText(
                             activity,
                             state.message,
@@ -110,12 +89,9 @@ class TransactionStatusFragment : BaseFragment() {
 
     }
 
-
-    override fun onDestroyView() {
-        handler.removeCallbacksAndMessages(null)
-        super.onDestroyView()
+    override fun showProgress(showProgress: Boolean) {
+        progressBar.visibility = if (showProgress) View.VISIBLE else View.GONE
     }
-
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"

@@ -81,7 +81,7 @@ enum class ChartType : Parcelable {
     }
 
 
-    val dateFormatter: DateFormat
+    private val dateFormatter: DateFormat
         get() {
             val pattern = when (this) {
                 DAY -> "HH:mm"

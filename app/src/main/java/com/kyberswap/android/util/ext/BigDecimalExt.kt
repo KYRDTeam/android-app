@@ -4,7 +4,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 fun BigDecimal.toDisplayNumber(): String {
-    val stringNumber = this.toPlainString()
+    val stringNumber = this.stripTrailingZeros().toPlainString()
     val list = stringNumber.split(".")
     if (list.size == 1) return stringNumber
     else {
@@ -25,7 +25,11 @@ fun BigDecimal.toDisplayNumber(): String {
                     )
                 }
             }
-            return s.toBigDecimal().setScale(s.length, RoundingMode.UP).stripTrailingZeros()
+            val scaleString = list[0] + '.' + s.substring(0, if (s.length > 4) 4 else s.length)
+            return scaleString
+                .toBigDecimal()
+                .setScale(s.length, RoundingMode.UP)
+                .stripTrailingZeros()
                 .toPlainString()
         }
     }
