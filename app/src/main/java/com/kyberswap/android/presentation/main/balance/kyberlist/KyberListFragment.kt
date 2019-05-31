@@ -257,22 +257,16 @@ class KyberListFragment : BaseFragment() {
     }
 
     private fun navigateToSendScreen() {
-        (activity as MainActivity).getCurrentFragment()?.let { fragment ->
-            fragment.view?.findViewById<View>(R.id.container)?.let { view ->
-                navigator.navigateToSendScreen(fragmentManager!!, view.id, wallet)
-    
-
-
+        navigator.navigateToSendScreen((activity as MainActivity).getCurrentFragment(), wallet)
     }
 
 
     private fun navigateToChartScreen(token: Token?) {
-        (activity as MainActivity).getCurrentFragment()?.let { fragment ->
-            fragment.view?.findViewById<View>(R.id.container)?.let { view ->
-                navigator.navigateToChartScreen(fragmentManager!!, view.id, wallet, token)
-    
-
-
+        navigator.navigateToChartScreen(
+            (activity as MainActivity).getCurrentFragment(),
+            wallet,
+            token
+        )
     }
 
     private fun getFilterTokenList(searchedString: String, tokens: List<Token>): List<Token> {

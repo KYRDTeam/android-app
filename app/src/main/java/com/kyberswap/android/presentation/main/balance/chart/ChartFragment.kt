@@ -146,11 +146,10 @@ class ChartFragment : BaseFragment() {
                 showProgress(state == SaveSendState.Loading)
                 when (state) {
                     is SaveSendState.Success -> {
-                        parentFragment?.view?.id.let {
-                            navigator.navigateToSendScreen(fragmentManager!!, it!!, wallet)
-                
-
-//                        navigator.navigateToSendScreen(childFragmentManager, R.id.container, wallet)
+                        navigator.navigateToSendScreen(
+                            (activity as MainActivity).getCurrentFragment(),
+                            wallet
+                        )
             
                     is SaveSendState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
