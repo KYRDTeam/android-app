@@ -6,12 +6,14 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/screen_background"
         android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/screen_background">
+            android:clickable="true"
+            android:focusable="true">
 
             <FrameLayout
                 android:id="@+id/toolbar"
@@ -163,7 +165,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:backgroundTint="@color/edt_background_tint"
-                android:hint="@string/login_email_address"
+                android:hint="@string/signup_display_name"
                 android:inputType="textEmailAddress"
                 android:letterSpacing="0.07"
                 android:minHeight="60dp"
@@ -179,13 +181,12 @@
 
 
             <Button
-                android:id="@+id/btnImportWallet"
+                android:id="@+id/btnRegister"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="36dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/default_button"
-                android:enabled="false"
                 android:gravity="center"
                 android:text="@string/register"
                 android:textAllCaps="false"
@@ -195,7 +196,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
                 app:layout_constraintStart_toStartOf="@+id/textInputLayout"
-                app:layout_constraintTop_toBottomOf="@+id/checkBox2" />
+                app:layout_constraintTop_toBottomOf="@+id/cbTermCondition" />
 
 
             <TextView
@@ -210,7 +211,7 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnImportWallet" />
+                app:layout_constraintTop_toBottomOf="@+id/btnRegister" />
 
             <TextView
                 android:id="@+id/tvSignUp"
@@ -257,7 +258,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <CheckBox
-                android:id="@+id/checkBox"
+                android:id="@+id/cbSubscription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="44dp"
@@ -270,20 +271,23 @@
                 app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
 
             <CheckBox
-                android:id="@+id/checkBox2"
+                android:id="@+id/cbTermCondition"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
                 android:backgroundTint="#fea34c"
                 android:text="@string/terms_conditions"
+                android:textColor="#fea34c"
                 android:theme="@style/CustomRadioTheme"
                 app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/checkBox"
-                app:layout_constraintTop_toBottomOf="@+id/checkBox" />
+                app:layout_constraintStart_toStartOf="@+id/cbSubscription"
+                app:layout_constraintTop_toBottomOf="@+id/cbSubscription" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+
     </androidx.core.widget.NestedScrollView>
 
 
