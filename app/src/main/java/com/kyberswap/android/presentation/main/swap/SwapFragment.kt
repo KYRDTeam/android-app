@@ -66,22 +66,17 @@ class SwapFragment : BaseFragment() {
         return binding.root
     }
 
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        super.setUserVisibleHint(isVisibleToUser)
-        if (isVisibleToUser) {
-            wallet?.let {
-                viewModel.getSwapData(it.address)
-            }
-        }
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.walletName = wallet?.name
 
+        wallet?.let {
+            viewModel.getSwapData(it.address)
+        }
         grTokenSource.setAllOnClickListener(View.OnClickListener {
             navigator.navigateToTokenSearchFromSwapTokenScreen(
-                R.id.swap_container,
+                fragmentManager!!,
+                R.id.container,
                 wallet,
                 true
             )
@@ -89,7 +84,8 @@ class SwapFragment : BaseFragment() {
 
         grTokenDest.setAllOnClickListener(View.OnClickListener {
             navigator.navigateToTokenSearchFromSwapTokenScreen(
-                R.id.swap_container,
+                fragmentManager!!,
+                R.id.container,
                 wallet,
                 false
             )
@@ -243,35 +239,35 @@ class SwapFragment : BaseFragment() {
 
         viewModel.compositeDisposable.add(
             rbCustom.checkedChanges().skipInitialValue()
-            .observeOn(schedulerProvider.ui())
-            .subscribe {
-                edtCustom.isEnabled = it
-                if (it) {
-                    edtCustom.requestFocus()
-                } else {
-                    edtCustom.setText("")
-                }
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
+                    edtCustom.isEnabled = it
+                    if (it) {
+                        edtCustom.requestFocus()
+                    } else {
+                        edtCustom.setText("")
+                    }
 
-            })
+                })
 
         viewModel.compositeDisposable.add(
             rgRate.checkedChanges()
-            .observeOn(schedulerProvider.ui())
-            .subscribe { id ->
-                tvRevertNotification.text = getRevertNotification(id)
-            })
+                .observeOn(schedulerProvider.ui())
+                .subscribe { id ->
+                    tvRevertNotification.text = getRevertNotification(id)
+                })
 
 
         viewModel.compositeDisposable.add(
             rgGas.checkedChanges()
-            .observeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.ui())
                 .subscribe { _ ->
-                binding.swap?.let { swap ->
-                    binding.gas?.let {
-                        viewModel.saveSwap(swap.copy(gasPrice = getSelectedGasPrice(it)))
+                    binding.swap?.let { swap ->
+                        binding.gas?.let {
+                            viewModel.saveSwap(swap.copy(gasPrice = getSelectedGasPrice(it)))
+                        }
                     }
-                }
-            })
+                })
 
         viewModel.getGetGasPriceCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -347,14 +343,13 @@ class SwapFragment : BaseFragment() {
                 binding.swap?.samePair == true -> showAlert(getString(R.string.same_token_alert))
                 else -> binding.swap?.let { swap ->
                     wallet?.let {
-                        if (it.verifyCap(binding.edtSource.toBigDecimalOrDefaultZero() * swap.tokenSource.rateEthNow)) {
-                            viewModel.updateSwap(
-                                swap.copy(
-                                    minAcceptedRatePercent =
-                                    getMinAcceptedRatePercent(rgRate.checkedRadioButtonId)
-                                )
+                        viewModel.updateSwap(
+                            swap.copy(
+                                sourceAmount = edtSource.text.toString(),
+                                minAcceptedRatePercent =
+                                getMinAcceptedRatePercent(rgRate.checkedRadioButtonId)
                             )
-                        }
+                        )
                     }
 
                 }

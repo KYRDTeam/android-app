@@ -5,14 +5,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.kyberswap.android.AppExecutors
+import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentSignupBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
+import kotlinx.android.synthetic.main.fragment_signup.*
 import javax.inject.Inject
 
 
@@ -49,6 +53,38 @@ class SignUpFragment : BaseFragment() {
     ): View? {
         binding = FragmentSignupBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        binding.btnRegister.setOnClickListener {
+            viewModel.signUp(
+                edtEmail.text.toString(),
+                edtDisplayName.text.toString(),
+                edtPassword.text.toString(),
+                cbSubscription.isChecked
+            )
+        }
+
+        viewModel.signUpCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == SignUpState.Loading)
+                when (state) {
+                    is SignUpState.Success -> {
+                        showAlert(state.registerStatus.message)
+                    }
+                    is SignUpState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        Toast.makeText(
+                            activity,
+                            state.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        })
+
     }
 
     companion object {

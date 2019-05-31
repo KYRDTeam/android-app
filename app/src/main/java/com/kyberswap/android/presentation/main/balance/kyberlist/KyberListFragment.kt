@@ -93,7 +93,7 @@ class KyberListFragment : BaseFragment() {
         val tokenAdapter =
             TokenAdapter(appExecutors, handler,
                 {
-                    navigator.navigateToChartScreen(wallet, it)
+                    navigateToChartScreen(it)
                 },
                 {
                     viewModel.save(wallet!!.address, it, false)
@@ -238,7 +238,9 @@ class KyberListFragment : BaseFragment() {
                 showProgress(state == SaveSendState.Loading)
                 when (state) {
                     is SaveSendState.Success -> {
-                        navigator.navigateToSendScreen(wallet)
+
+                        navigateToSendScreen()
+
                     }
                     is SaveSendState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -252,6 +254,25 @@ class KyberListFragment : BaseFragment() {
             }
         })
 
+    }
+
+    private fun navigateToSendScreen() {
+        (activity as MainActivity).getCurrentFragment()?.let { fragment ->
+            fragment.view?.findViewById<View>(R.id.container)?.let { view ->
+                navigator.navigateToSendScreen(fragmentManager!!, view.id, wallet)
+            }
+
+        }
+    }
+
+
+    private fun navigateToChartScreen(token: Token?) {
+        (activity as MainActivity).getCurrentFragment()?.let { fragment ->
+            fragment.view?.findViewById<View>(R.id.container)?.let { view ->
+                navigator.navigateToChartScreen(fragmentManager!!, view.id, wallet, token)
+            }
+
+        }
     }
 
     private fun getFilterTokenList(searchedString: String, tokens: List<Token>): List<Token> {

@@ -109,7 +109,14 @@ class SendFragment : BaseFragment() {
 
         listOf(binding.imgTokenSource, binding.tvSource).forEach {
             it.setOnClickListener {
-                navigator.navigateToTokenSearchFromSendTokenScreen(R.id.container, wallet)
+                parentFragment?.view?.id?.let {
+                    navigator.navigateToTokenSearchFromSendTokenScreen(
+                        fragmentManager!!,
+                        it,
+                        wallet
+                    )
+                }
+
             }
         }
 

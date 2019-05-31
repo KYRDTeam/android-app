@@ -4,6 +4,7 @@
     <string name="currency_endpoint_url" formatted="false" translatable="false">https://api.kyber.network/</string>
     <string name="base_rpc_url">https://mainnet.infura.io/v3/1b9c2fe6f5fa424cb1304b67fee3e71e</string>
     <string name="rate_endpoint_url" formatted="false" translatable="false">https://production-cache.kyber.network/</string>
+    <string name="user_endpoint_url" formatted="false" translatable="false">https://staging-kyberswap.knstats.com/</string>
     <string name="transaction_endpoint_url" formatted="false" translatable="false">https://api.etherscan.io</string>
     <string name="transaction_etherscan_endpoint_url" formatted="false" translatable="false">https://etherscan.io/tx/</string>
     <string name="transaction_kyber_endpoint_url" formatted="false" translatable="false">https://kyber.enjinx.io/eth/transaction/</string>

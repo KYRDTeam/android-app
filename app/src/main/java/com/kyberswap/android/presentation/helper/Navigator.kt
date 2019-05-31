@@ -80,8 +80,13 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         replaceFragment(BalanceAddressFragment.newInstance(wallet))
     }
 
-    fun navigateToChartScreen(wallet: Wallet?, token: Token?) {
-        replaceFragment(ChartFragment.newInstance(wallet, token))
+    fun navigateToChartScreen(
+        fragmentManager: FragmentManager,
+        container: Int,
+        wallet: Wallet?,
+        token: Token?
+    ) {
+        replaceFragment(fragmentManager, container, ChartFragment.newInstance(wallet, token))
     }
 
 
@@ -101,19 +106,32 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
     }
 
     fun navigateToTokenSearchFromSwapTokenScreen(
+        fragmentManager: FragmentManager,
         container: Int,
         wallet: Wallet?,
         isSourceToken: Boolean = false
     ) {
-        navigateToTokenSearch(container, wallet, false, isSourceToken)
+        replaceFragment(
+            fragmentManager,
+            container,
+            TokenSearchFragment.newInstance(wallet, false, isSourceToken)
+        )
+
+
     }
 
 
     fun navigateToTokenSearchFromSendTokenScreen(
+        fragmentManager: FragmentManager,
         container: Int,
         wallet: Wallet?
     ) {
-        navigateToTokenSearch(container, wallet, true)
+
+        replaceFragment(
+            fragmentManager,
+            container,
+            TokenSearchFragment.newInstance(wallet, true, false)
+        )
     }
 
 
@@ -126,8 +144,17 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         activity.startActivity(SendConfirmActivity.newIntent(activity, wallet))
     }
 
-    fun navigateToSendScreen(wallet: Wallet?) {
-        replaceFragment(SendFragment.newInstance(wallet))
+    fun navigateToSendScreen(
+        fragmentManager: FragmentManager,
+        container: Int,
+        wallet: Wallet?
+    ) {
+        replaceFragment(
+            fragmentManager,
+            container,
+            SendFragment.newInstance(wallet)
+        )
+
     }
 
     fun navigateToAddContactScreen(
@@ -169,7 +196,7 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     fun navigateToSignUpScreen(fragmentManager: FragmentManager, container: Int, wallet: Wallet?) {
         val fragment = SignUpFragment.newInstance(wallet)
-        replaceFragment(fragmentManager, containerId, fragment)
+        replaceFragment(fragmentManager, container, fragment)
 
     }
 
