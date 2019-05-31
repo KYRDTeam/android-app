@@ -5,20 +5,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.kyberswap.android.AppExecutors
-import com.kyberswap.android.databinding.FragmentProfileBinding
+import com.kyberswap.android.databinding.FragmentSignupBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
 
 
-class SignUpFragment : Fragment() {
+class SignUpFragment : BaseFragment() {
 
-    private lateinit var binding: FragmentProfileBinding
+    private lateinit var binding: FragmentSignupBinding
 
     @Inject
     lateinit var navigator: Navigator
@@ -35,7 +35,7 @@ class SignUpFragment : Fragment() {
     lateinit var schedulerProvider: SchedulerProvider
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(ProfileViewModel::class.java)
+        ViewModelProviders.of(this, viewModelFactory).get(SignUpViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,16 +47,8 @@ class SignUpFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        binding = FragmentProfileBinding.inflate(inflater, container, false)
+        binding = FragmentSignupBinding.inflate(inflater, container, false)
         return binding.root
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        binding.tvSignUp.setOnClickListener {
-            navigator.navigateToSignUpScreen()
-
     }
 
     companion object {

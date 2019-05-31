@@ -79,4 +79,7 @@
         <item name="colorControlActivated">@color/swap_radio_tint_background</item>
     </style>
 
+    <style name="CustomCheckTheme" parent="CustomRadioTheme">
+    </style>
+
 </resources>

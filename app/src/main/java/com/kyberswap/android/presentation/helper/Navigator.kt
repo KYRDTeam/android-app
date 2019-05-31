@@ -14,6 +14,7 @@ import com.kyberswap.android.presentation.main.balance.address.BalanceAddressFra
 import com.kyberswap.android.presentation.main.balance.chart.ChartFragment
 import com.kyberswap.android.presentation.main.balance.send.SendConfirmActivity
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
+import com.kyberswap.android.presentation.main.profile.SignUpFragment
 import com.kyberswap.android.presentation.main.setting.AddContactFragment
 import com.kyberswap.android.presentation.main.setting.ContactFragment
 import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
@@ -146,8 +147,12 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         )
     }
 
-    fun navigateToTransactionScreen(wallet: Wallet?) {
-        replaceFragment(TransactionFragment.newInstance(wallet))
+    fun navigateToTransactionScreen(
+        fragmentManager: FragmentManager,
+        container: Int,
+        wallet: Wallet?
+    ) {
+        replaceFragment(fragmentManager, container, TransactionFragment.newInstance(wallet))
     }
 
     fun navigateToSwapTransactionScreen(wallet: Wallet?, transaction: Transaction?) {
@@ -160,6 +165,23 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     fun navigateToReceivedTransactionScreen(wallet: Wallet?, transaction: Transaction?) {
         replaceFragment(TransactionDetailReceiveFragment.newInstance(wallet, transaction))
+    }
+
+    fun navigateToSignUpScreen(fragmentManager: FragmentManager, container: Int, wallet: Wallet?) {
+        val fragment = SignUpFragment.newInstance(wallet)
+        replaceFragment(fragmentManager, containerId, fragment)
+
+    }
+
+    private fun replaceFragment(
+        fragmentManager: FragmentManager,
+        container: Int,
+        fragment: Fragment
+    ) {
+        val transaction = fragmentManager.beginTransaction()
+        transaction.replace(container, fragment, fragment.javaClass.simpleName)
+        transaction.addToBackStack(fragment.javaClass.simpleName)
+        transaction.commitAllowingStateLoss()
     }
 
     companion object {

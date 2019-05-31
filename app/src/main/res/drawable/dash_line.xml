@@ -7,4 +7,6 @@
         android:color="#5a5e67"
         android:dashWidth="4dp"
         android:dashGap="4dp" />
+
+    <size android:height="3dp" />
 </shape>
