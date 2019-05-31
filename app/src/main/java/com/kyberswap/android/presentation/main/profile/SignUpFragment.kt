@@ -85,6 +85,10 @@ class SignUpFragment : BaseFragment() {
             }
         })
 
+        binding.imgBack.setOnClickListener {
+            activity?.onBackPressed()
+        }
+
     }
 
     companion object {

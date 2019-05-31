@@ -15,6 +15,7 @@ import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_profile.*
 import javax.inject.Inject
@@ -59,9 +60,9 @@ class ProfileFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.tvSignUp.setOnClickListener {
-            binding.root.id.let {
-                navigator.navigateToSignUpScreen(childFragmentManager, it, wallet)
-            }
+            navigator.navigateToSignUpScreen(
+                (activity as MainActivity).getCurrentFragment(), wallet
+            )
         }
         binding.btnLogin.setOnClickListener {
             viewModel.login(edtEmail.text.toString(), edtPassword.text.toString())
@@ -89,6 +90,10 @@ class ProfileFragment : BaseFragment() {
                 }
             }
         })
+
+        binding.imgBack.setOnClickListener {
+            activity?.onBackPressed()
+        }
 
     }
 

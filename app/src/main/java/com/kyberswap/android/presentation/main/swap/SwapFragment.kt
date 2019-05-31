@@ -21,6 +21,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.DEFAULT_ACCEPT_RATE_PERCENTAGE
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.*
 import kotlinx.android.synthetic.main.fragment_swap.*
@@ -75,8 +76,7 @@ class SwapFragment : BaseFragment() {
         }
         grTokenSource.setAllOnClickListener(View.OnClickListener {
             navigator.navigateToTokenSearchFromSwapTokenScreen(
-                fragmentManager!!,
-                R.id.container,
+                (activity as MainActivity).getCurrentFragment(),
                 wallet,
                 true
             )
@@ -84,8 +84,7 @@ class SwapFragment : BaseFragment() {
 
         grTokenDest.setAllOnClickListener(View.OnClickListener {
             navigator.navigateToTokenSearchFromSwapTokenScreen(
-                fragmentManager!!,
-                R.id.container,
+                (activity as MainActivity).getCurrentFragment(),
                 wallet,
                 false
             )

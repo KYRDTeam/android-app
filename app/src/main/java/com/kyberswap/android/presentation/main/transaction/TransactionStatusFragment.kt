@@ -15,6 +15,7 @@ import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_transaction_status.*
 import javax.inject.Inject
@@ -67,19 +68,27 @@ class TransactionStatusFragment : BaseFragment() {
             transactionStatusAdapter =
                 TransactionStatusAdapter(appExecutors) {
 
+                    val currentFragment = (activity as MainActivity).getCurrentFragment()
+
                     when {
-                        it.displayTransactionType == Transaction.SWAP_TRANSACTION -> navigator.navigateToSwapTransactionScreen(
-                            wallet,
-                            it
-                        )
-                        it.displayTransactionType == Transaction.SEND_TRANSACTION -> navigator.navigateToSendTransactionScreen(
-                            wallet,
-                            it
-                        )
-                        it.displayTransactionType == Transaction.RECEIVE_TRANSACTION -> navigator.navigateToReceivedTransactionScreen(
-                            wallet,
-                            it
-                        )
+                        it.displayTransactionType == Transaction.SWAP_TRANSACTION ->
+                            navigator.navigateToSwapTransactionScreen(
+                                currentFragment,
+                                wallet,
+                                it
+                            )
+                        it.displayTransactionType == Transaction.SEND_TRANSACTION ->
+                            navigator.navigateToSendTransactionScreen(
+                                currentFragment,
+                                wallet,
+                                it
+                            )
+                        it.displayTransactionType == Transaction.RECEIVE_TRANSACTION ->
+                            navigator.navigateToReceivedTransactionScreen(
+                                currentFragment,
+                                wallet,
+                                it
+                            )
                     }
 
                 }

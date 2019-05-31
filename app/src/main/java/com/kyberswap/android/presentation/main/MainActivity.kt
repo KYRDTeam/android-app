@@ -3,7 +3,6 @@ package com.kyberswap.android.presentation.main
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
@@ -141,13 +140,10 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         }
 
         tvTransaction.setOnClickListener {
-            currentFragment?.view?.findViewById<View>(R.id.container)?.let {
-                navigator.navigateToTransactionScreen(
-                    currentFragment!!.childFragmentManager,
-                    it.id,
-                    wallet
-                )
-            }
+            navigator.navigateToTransactionScreen(
+                currentFragment,
+                wallet
+            )
             showDrawer(false)
         }
     }

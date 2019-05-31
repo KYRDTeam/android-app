@@ -18,7 +18,9 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/screen_background">
+        android:background="@drawable/screen_background"
+        android:clickable="true"
+        android:focusable="true">
 
         <ImageView
             android:id="@+id/imgBack"
@@ -182,6 +184,7 @@
                     android:layout_marginTop="38dp"
                     android:backgroundTint="@color/edt_background_tint"
                     android:hint="@string/recipient_address"
+                    android:inputType="text"
                     android:singleLine="true"
                     android:textColor="#9ea1aa"
                     android:textSize="14sp"
@@ -397,6 +400,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:constraint_referenced_ids="tvTokenBalance,tvBalanceDetail" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/grTokenSource"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="tvSource,imgTokenSource" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
