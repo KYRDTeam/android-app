@@ -113,19 +113,26 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         }
     }
 
-    private fun clearBackstack() {
-        val fm = supportFragmentManager
-        for (i in 0 until fm.backStackEntryCount) {
-            fm.popBackStack()
-        }
-    }
-
     fun showDrawer(isShown: Boolean) {
         if (isShown) {
             binding.drawerLayout.openDrawer(GravityCompat.END)
         } else {
             binding.drawerLayout.closeDrawer(GravityCompat.END)
         }
+    }
+
+    override fun onBackPressed() {
+        val fm = supportFragmentManager
+        for (frag in fm.fragments) {
+            if (frag.isVisible) {
+                val childFm = frag.childFragmentManager
+                if (childFm.backStackEntryCount > 0) {
+                    childFm.popBackStack()
+                    return
+                }
+            }
+        }
+        super.onBackPressed()
     }
 
     override fun getKeystoreDir(): File {

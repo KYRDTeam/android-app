@@ -21,7 +21,7 @@ class MainPagerAdapter constructor(
             )
             SWAP -> SwapFragment.newInstance(wallet)
             SETTING -> SettingFragment.newInstance()
-            else -> ProfileFragment.newInstance()
+            else -> ProfileFragment.newInstance(wallet)
         }
     }
 

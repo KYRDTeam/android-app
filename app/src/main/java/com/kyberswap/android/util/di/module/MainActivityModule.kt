@@ -18,6 +18,10 @@ import com.kyberswap.android.presentation.main.balance.other.OtherFragment
 import com.kyberswap.android.presentation.main.balance.other.OtherViewModel
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.balance.send.SendViewModel
+import com.kyberswap.android.presentation.main.profile.ProfileFragment
+import com.kyberswap.android.presentation.main.profile.ProfileViewModel
+import com.kyberswap.android.presentation.main.profile.SignUpFragment
+import com.kyberswap.android.presentation.main.profile.SignUpViewModel
 import com.kyberswap.android.presentation.main.setting.*
 import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.main.swap.SwapViewModel
@@ -40,6 +44,10 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeBalanceFragment(): BalanceFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeProfileFragment(): ProfileFragment
 
     @FragmentScoped
     @ContributesAndroidInjector
@@ -108,6 +116,10 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeSendTransactionFragment(): TransactionDetailSendFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeSignUpFragment(): SignUpFragment
 
     @Binds
     @IntoMap
@@ -212,5 +224,19 @@ interface MainActivityModule {
     @ViewModelKey(TransactionStatusViewModel::class)
     fun bindTransactionStatusViewModel(
         transactionStatusViewModel: TransactionStatusViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ProfileViewModel::class)
+    fun bindProfileViewModel(
+        profileViewModel: ProfileViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SignUpViewModel::class)
+    fun bindSignUpViewModel(
+        signUpViewModel: SignUpViewModel
     ): ViewModel
 }
