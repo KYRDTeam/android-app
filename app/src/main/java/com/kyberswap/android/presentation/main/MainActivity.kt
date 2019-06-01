@@ -6,10 +6,12 @@ import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.ViewPager
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter
 import com.kyberswap.android.AppExecutors
@@ -41,7 +43,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     private var wallet: Wallet? = null
 
-    private lateinit var bottomBar: AHBottomNavigation
+    private var currentFragment: Fragment? = null
 
     private val mainViewModel: MainViewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
@@ -62,6 +64,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             supportFragmentManager,
             wallet
         )
+        binding.vpNavigation.offscreenPageLimit = 4
         binding.vpNavigation.adapter = adapter
 
         val tabColors =
@@ -76,11 +79,38 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             ContextCompat.getColor(this, R.color.bottom_item_color_active)
         bottomNavigation.inactiveColor =
             ContextCompat.getColor(this, R.color.bottom_item_color_normal)
-
         bottomNavigation.setOnTabSelectedListener { position, wasSelected ->
-            binding.vpNavigation.setCurrentItem(position, false)
+            binding.vpNavigation.setCurrentItem(position, true)
             return@setOnTabSelectedListener true
         }
+
+        val listener = object : ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {
+
+            }
+
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+
+            }
+
+            override fun onPageSelected(position: Int) {
+                currentFragment = adapter.getRegisteredFragment(position)
+            }
+
+        }
+
+        binding.vpNavigation.addOnPageChangeListener(listener)
+
+        binding.vpNavigation.post {
+            listener.onPageSelected(MainPagerAdapter.SWAP)
+        }
+
+        bottomNavigation.currentItem = MainPagerAdapter.SWAP
+        binding.vpNavigation.currentItem = MainPagerAdapter.SWAP
 
         binding.navView.rvWallet.layoutManager = LinearLayoutManager(
             this,
@@ -110,9 +140,16 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         }
 
         tvTransaction.setOnClickListener {
-            navigator.navigateToTransactionScreen(wallet)
+            navigator.navigateToTransactionScreen(
+                currentFragment,
+                wallet
+            )
             showDrawer(false)
         }
+    }
+
+    fun getCurrentFragment(): Fragment? {
+        return currentFragment
     }
 
     fun showDrawer(isShown: Boolean) {
@@ -120,6 +157,14 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             binding.drawerLayout.openDrawer(GravityCompat.END)
         } else {
             binding.drawerLayout.closeDrawer(GravityCompat.END)
+        }
+    }
+
+    override fun onBackPressed() {
+        if (currentFragment != null && currentFragment!!.childFragmentManager.backStackEntryCount > 0) {
+            currentFragment!!.childFragmentManager.popBackStack()
+        } else {
+            super.onBackPressed()
         }
     }
 

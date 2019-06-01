@@ -18,15 +18,16 @@ import com.kyberswap.android.presentation.main.balance.other.OtherFragment
 import com.kyberswap.android.presentation.main.balance.other.OtherViewModel
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.balance.send.SendViewModel
+import com.kyberswap.android.presentation.main.profile.ProfileFragment
+import com.kyberswap.android.presentation.main.profile.ProfileViewModel
+import com.kyberswap.android.presentation.main.profile.SignUpFragment
+import com.kyberswap.android.presentation.main.profile.SignUpViewModel
 import com.kyberswap.android.presentation.main.setting.*
 import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.main.swap.SwapViewModel
 import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
 import com.kyberswap.android.presentation.main.swap.TokenSearchViewModel
-import com.kyberswap.android.presentation.main.transaction.TransactionFragment
-import com.kyberswap.android.presentation.main.transaction.TransactionStatusFragment
-import com.kyberswap.android.presentation.main.transaction.TransactionStatusViewModel
-import com.kyberswap.android.presentation.main.transaction.TransactionViewModel
+import com.kyberswap.android.presentation.main.transaction.*
 import com.kyberswap.android.util.di.ViewModelKey
 import com.kyberswap.android.util.di.scope.FragmentScoped
 import dagger.Binds
@@ -43,6 +44,10 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeBalanceFragment(): BalanceFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeProfileFragment(): ProfileFragment
 
     @FragmentScoped
     @ContributesAndroidInjector
@@ -99,6 +104,22 @@ interface MainActivityModule {
     @ContributesAndroidInjector
     fun contributeTransactionStatusFragment(): TransactionStatusFragment
 
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeSwapTransactionFragment(): TransactionDetailSwapFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeReceivedTransactionFragment(): TransactionDetailReceiveFragment
+
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeSendTransactionFragment(): TransactionDetailSendFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeSignUpFragment(): SignUpFragment
 
     @Binds
     @IntoMap
@@ -203,5 +224,19 @@ interface MainActivityModule {
     @ViewModelKey(TransactionStatusViewModel::class)
     fun bindTransactionStatusViewModel(
         transactionStatusViewModel: TransactionStatusViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ProfileViewModel::class)
+    fun bindProfileViewModel(
+        profileViewModel: ProfileViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SignUpViewModel::class)
+    fun bindSignUpViewModel(
+        signUpViewModel: SignUpViewModel
     ): ViewModel
 }

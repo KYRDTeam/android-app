@@ -45,4 +45,9 @@ class TransactionStatusViewModel @Inject constructor(
         )
     }
 
+    public override fun onCleared() {
+        getTransactionsUseCase.dispose()
+        super.onCleared()
+    }
+
 }

@@ -16,6 +16,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.presentation.main.MainPagerAdapter
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.util.di.ViewModelFactory
@@ -145,7 +146,10 @@ class ChartFragment : BaseFragment() {
                 showProgress(state == SaveSendState.Loading)
                 when (state) {
                     is SaveSendState.Success -> {
-                        navigator.navigateToSendScreen(wallet)
+                        navigator.navigateToSendScreen(
+                            (activity as MainActivity).getCurrentFragment(),
+                            wallet
+                        )
                     }
                     is SaveSendState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -183,7 +187,7 @@ class ChartFragment : BaseFragment() {
     private fun moveToSwapTab() {
         if (activity is MainActivity) {
             handler.post {
-                activity!!.bottomNavigation.currentItem = 1
+                activity!!.bottomNavigation.currentItem = MainPagerAdapter.SWAP
             }
         }
     }

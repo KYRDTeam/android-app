@@ -39,16 +39,13 @@ class TransactionFragment : BaseFragment() {
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
-    var currentSelectedView: View? = null
+    var selectedIndex: Int = 0
+
+    val status = mutableListOf<View>()
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(TransactionViewModel::class.java)
     }
-
-    private val status by lazy {
-        listOf(binding.tvPending, binding.tvMined)
-    }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +63,8 @@ class TransactionFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        status.addAll(listOf(binding.tvPending, binding.tvMined))
         binding.wallet = wallet
         val adapter = TransactionPagerAdapter(
             childFragmentManager,
@@ -82,7 +81,7 @@ class TransactionFragment : BaseFragment() {
             }
 
             override fun onPageSelected(position: Int) {
-                setSelectedOption(status[position])
+                setSelectedOption(position)
             }
         })
 
@@ -107,12 +106,11 @@ class TransactionFragment : BaseFragment() {
             }
         })
 
-        binding.tvPending.isSelected = true
-        currentSelectedView = binding.tvPending
+        setSelectedOption(selectedIndex)
 
         status.forEachIndexed { index, view ->
             view.setOnClickListener {
-                setSelectedOption(it)
+                setSelectedOption(index)
                 binding.vpTransaction.currentItem = index
             }
         }
@@ -122,10 +120,17 @@ class TransactionFragment : BaseFragment() {
         }
     }
 
-    private fun setSelectedOption(view: View) {
-        currentSelectedView?.isSelected = false
-        view.isSelected = true
-        currentSelectedView = view
+    private fun setSelectedOption(index: Int) {
+        if (index != selectedIndex) {
+            status[selectedIndex].isSelected = false
+            selectedIndex = index
+        }
+        status[selectedIndex].isSelected = true
+    }
+
+    override fun onDestroyView() {
+        status.clear()
+        super.onDestroyView()
     }
 
     companion object {

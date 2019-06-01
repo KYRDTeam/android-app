@@ -16,6 +16,7 @@ import com.kyberswap.android.databinding.FragmentContactBinding
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.balance.send.ContactAdapter
 import com.kyberswap.android.presentation.main.swap.GetContactState
 import com.kyberswap.android.presentation.main.swap.SaveContactState
@@ -62,11 +63,14 @@ class ContactFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
 
         binding.imgAddContact.setOnClickListener {
-            navigator.navigateToAddContactScreen(wallet)
+            navigator.navigateToAddContactScreen(
+                (activity as MainActivity).getCurrentFragment(),
+                wallet
+            )
         }
 
         binding.imgBack.setOnClickListener {
-            activity!!.onBackPressed()
+            activity?.onBackPressed()
         }
 
 

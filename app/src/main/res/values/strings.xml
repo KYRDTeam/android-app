@@ -169,6 +169,27 @@
     <string name="chart_updating_data">Updating data…</string>
     <string name="tab_pending">Pending</string>
     <string name="tab_mined">Completed</string>
+    <string name="transaction_from">From</string>
+    <string name="txhash">TxHash</string>
+    <string name="transaction_view_on">View on</string>
+    <string name="transaction_fee">Fee</string>
+    <string name="transaction_to">To</string>
+    <string name="transaction_details">Transaction Details</string>
+    <string name="transaction_rate">Rate %s/%s</string>
+    <string name="txhash_copy">Hash copied</string>
+    <string name="login_email_address">Email Address</string>
+    <string name="login_password">Password</string>
+    <string name="login">Log In</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="sign_up_now">Sign Up Now</string>
+    <string name="dont_have_an_account">Don’t have an account.</string>
+    <string name="register_or">or</string>
+    <string name="terms_conditions"><![CDATA[Agree to Terms & Conditions]]></string>
+    <string name="subscribe_newsletters">Subscribe to Newsletters</string>
+    <string name="already_member">Already a member?</string>
+    <string name="register">Register</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="signup_display_name">Display Name</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>

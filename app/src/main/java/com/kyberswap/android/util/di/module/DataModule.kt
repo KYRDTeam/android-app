@@ -1,10 +1,7 @@
 package com.kyberswap.android.util.di.module
 
 import android.content.Context
-import com.kyberswap.android.data.api.home.CurrencyApi
-import com.kyberswap.android.data.api.home.SwapApi
-import com.kyberswap.android.data.api.home.TokenApi
-import com.kyberswap.android.data.api.home.TransactionApi
+import com.kyberswap.android.data.api.home.*
 import com.kyberswap.android.data.db.*
 import com.kyberswap.android.data.mapper.*
 import com.kyberswap.android.data.repository.*
@@ -115,4 +112,14 @@ object DataModule {
         mapper: TransactionMapper
     ): TransactionRepository =
         TransactionDataRepository(api, transactionDao, mapper)
+
+
+    @Singleton
+    @Provides
+    @JvmStatic
+    fun provideUserRepository(
+        api: UserApi,
+        userMapper: UserMapper
+    ): UserRepository =
+        UserDataRepository(api, userMapper)
 }

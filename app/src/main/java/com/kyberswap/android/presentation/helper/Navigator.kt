@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.kyberswap.android.R
 import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.presentation.landing.LandingActivity
@@ -13,10 +14,14 @@ import com.kyberswap.android.presentation.main.balance.address.BalanceAddressFra
 import com.kyberswap.android.presentation.main.balance.chart.ChartFragment
 import com.kyberswap.android.presentation.main.balance.send.SendConfirmActivity
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
+import com.kyberswap.android.presentation.main.profile.SignUpFragment
 import com.kyberswap.android.presentation.main.setting.AddContactFragment
 import com.kyberswap.android.presentation.main.setting.ContactFragment
 import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
 import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
+import com.kyberswap.android.presentation.main.transaction.TransactionDetailReceiveFragment
+import com.kyberswap.android.presentation.main.transaction.TransactionDetailSendFragment
+import com.kyberswap.android.presentation.main.transaction.TransactionDetailSwapFragment
 import com.kyberswap.android.presentation.main.transaction.TransactionFragment
 import com.kyberswap.android.presentation.wallet.BackupWalletActivity
 import com.kyberswap.android.presentation.wallet.ImportWalletActivity
@@ -71,44 +76,43 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
     }
 
 
-    fun navigateToBalanceAddressScreen(wallet: Wallet?) {
-        replaceFragment(BalanceAddressFragment.newInstance(wallet))
-    }
-
-    fun navigateToChartScreen(wallet: Wallet?, token: Token?) {
-        replaceFragment(ChartFragment.newInstance(wallet, token))
-    }
-
-
-    private fun navigateToTokenSearch(
-        container: Int,
-        wallet: Wallet?,
-        isSend: Boolean = false,
-        isSourceToken: Boolean = false
-
+    fun navigateToBalanceAddressScreen(
+        currentFragment: Fragment?,
+        wallet: Wallet?
     ) {
-        replaceFragment(
-            TokenSearchFragment.newInstance(wallet, isSend, isSourceToken),
-            true,
-            WITHOUT_ANIMATION,
-            container
-        )
+
+        navigateByChildFragmentManager(currentFragment, BalanceAddressFragment.newInstance(wallet))
+    }
+
+    fun navigateToChartScreen(
+        currentFragment: Fragment?,
+        wallet: Wallet?,
+        token: Token?
+    ) {
+        navigateByChildFragmentManager(currentFragment, ChartFragment.newInstance(wallet, token))
     }
 
     fun navigateToTokenSearchFromSwapTokenScreen(
-        container: Int,
+        currentFragment: Fragment?,
         wallet: Wallet?,
         isSourceToken: Boolean = false
     ) {
-        navigateToTokenSearch(container, wallet, false, isSourceToken)
+        navigateByChildFragmentManager(
+            currentFragment,
+            TokenSearchFragment.newInstance(wallet, false, isSourceToken)
+        )
     }
 
 
     fun navigateToTokenSearchFromSendTokenScreen(
-        container: Int,
+        currentFragment: Fragment?,
         wallet: Wallet?
     ) {
-        navigateToTokenSearch(container, wallet, true)
+
+        navigateByChildFragmentManager(
+            currentFragment,
+            TokenSearchFragment.newInstance(wallet, true, false)
+        )
     }
 
 
@@ -121,29 +125,128 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         activity.startActivity(SendConfirmActivity.newIntent(activity, wallet))
     }
 
-    fun navigateToSendScreen(wallet: Wallet?) {
-        replaceFragment(SendFragment.newInstance(wallet))
+    fun navigateToSendScreen(
+        currentFragment: Fragment?,
+        wallet: Wallet?
+    ) {
+        navigateByChildFragmentManager(currentFragment, SendFragment.newInstance(wallet))
     }
 
     fun navigateToAddContactScreen(
+        currentFragment: Fragment?,
         wallet: Wallet?,
         address: String = ""
     ) {
-        replaceFragment(
+        navigateByChildFragmentManager(
+            currentFragment,
             AddContactFragment.newInstance(wallet, address)
         )
     }
 
     fun navigateToContactScreen(
+        currentFragment: Fragment?,
         wallet: Wallet?
     ) {
-        replaceFragment(
+        navigateByChildFragmentManager(
+            currentFragment,
             ContactFragment.newInstance(wallet)
         )
     }
 
-    fun navigateToTransactionScreen(wallet: Wallet?) {
-        replaceFragment(TransactionFragment.newInstance(wallet))
+    fun navigateToTransactionScreen(
+        currentFragment: Fragment?,
+        wallet: Wallet?
+    ) {
+
+        navigateByChildFragmentManager(currentFragment, TransactionFragment.newInstance(wallet))
+    }
+
+
+    fun navigateToSwapTransactionScreen(
+        currentFragment: Fragment?,
+        wallet: Wallet?,
+        transaction: Transaction?
+    ) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            TransactionDetailSwapFragment.newInstance(wallet, transaction)
+        )
+
+
+    }
+
+    fun navigateToSendTransactionScreen(
+        currentFragment: Fragment?,
+        wallet: Wallet?,
+        transaction: Transaction?
+    ) {
+
+        navigateByChildFragmentManager(
+            currentFragment,
+            TransactionDetailSendFragment.newInstance(wallet, transaction)
+        )
+
+    }
+
+    fun navigateToReceivedTransactionScreen(
+        currentFragment: Fragment?,
+        wallet: Wallet?,
+        transaction: Transaction?
+    ) {
+
+        navigateByChildFragmentManager(
+            currentFragment,
+            TransactionDetailReceiveFragment.newInstance(wallet, transaction)
+        )
+    }
+
+    private fun navigateByChildFragmentManager(
+        currentFragment: Fragment?,
+        newFragment: Fragment
+    ) {
+        currentFragment?.let {
+            currentFragment.view?.id?.let { id ->
+                replaceFragment(
+                    currentFragment.childFragmentManager,
+                    id,
+                    newFragment
+                )
+            }
+
+        }
+    }
+
+
+    private fun navigateByFragmentManager(
+        currentFragment: Fragment?,
+        newFragment: Fragment
+    ) {
+        currentFragment?.fragmentManager?.let { fragmentManager ->
+            currentFragment.view?.id?.let { id ->
+                replaceFragment(
+                    fragmentManager,
+                    id,
+                    newFragment
+                )
+            }
+
+        }
+    }
+
+    fun navigateToSignUpScreen(currentFragment: Fragment?, wallet: Wallet?) {
+        navigateByChildFragmentManager(currentFragment, SignUpFragment.newInstance(wallet))
+
+    }
+
+    private fun replaceFragment(
+        fragmentManager: FragmentManager,
+        container: Int,
+        fragment: Fragment
+    ) {
+        val transaction = fragmentManager.beginTransaction()
+        transaction.replace(container, fragment, fragment.javaClass.simpleName)
+        transaction.addToBackStack(fragment.javaClass.simpleName)
+        transaction.commitAllowingStateLoss()
     }
 
     companion object {
