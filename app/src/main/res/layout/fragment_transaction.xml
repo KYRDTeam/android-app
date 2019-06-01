@@ -77,7 +77,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/tab_view_state_drawable_left"
-                android:checked="true"
                 android:gravity="center"
                 android:minHeight="46dp"
                 android:text="@string/tab_pending"

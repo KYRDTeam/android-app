@@ -16,6 +16,7 @@ import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.balance.kyberlist.KyberListViewModel
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
@@ -126,7 +127,11 @@ class BalanceFragment : BaseFragment() {
 
         balanceAddress.forEach { view ->
             view.setOnClickListener {
-                navigator.navigateToBalanceAddressScreen(wallet)
+                (activity as MainActivity).getCurrentFragment()
+                navigator.navigateToBalanceAddressScreen(
+                    (activity as MainActivity).getCurrentFragment(),
+                    wallet
+                )
     
 
 

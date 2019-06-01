@@ -10,24 +10,33 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.HeaderTransactionBinding
 import com.kyberswap.android.databinding.ItemTransactionBinding
+import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.presentation.base.DataBoundListAdapter
 import com.kyberswap.android.presentation.base.DataBoundViewHolder
 
 class TransactionStatusAdapter(
     appExecutors: AppExecutors,
-    private val onTransactionClick: ((TransactionItem) -> Unit)?
+    private val onTransactionClick: ((Transaction) -> Unit)?
 
 ) : DataBoundListAdapter<TransactionItem, ViewDataBinding>(
     appExecutors,
     diffCallback = object : DiffUtil.ItemCallback<TransactionItem>() {
         override fun areItemsTheSame(oldItem: TransactionItem, newItem: TransactionItem): Boolean {
-            return false
+            return when {
+                oldItem is TransactionItem.Header && newItem is TransactionItem.Header && oldItem.date == newItem.date -> true
+                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemOdd && oldItem.transaction == newItem.transaction -> true
+                else -> oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemEven && oldItem.transaction == newItem.transaction
+    
 
 
         override fun areContentsTheSame(
             oldItem: TransactionItem, newItem: TransactionItem
         ): Boolean {
-            return false
+            return when {
+                oldItem is TransactionItem.Header && newItem is TransactionItem.Header && oldItem.date == newItem.date -> true
+                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemOdd && oldItem.transaction == newItem.transaction -> true
+                else -> oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemEven && oldItem.transaction == newItem.transaction
+    
 
     }
 ) {
@@ -46,6 +55,9 @@ class TransactionStatusAdapter(
                 binding.tvTransactionDetail.text = item.transaction.displayTransaction
                 binding.tvRate.text = item.transaction.displayRate
                 binding.tvTransactionType.text = item.transaction.displayTransactionType
+                binding.root.setOnClickListener {
+                    onTransactionClick?.invoke(item.transaction)
+        
     
 
             is TransactionItem.ItemOdd -> {
@@ -53,6 +65,9 @@ class TransactionStatusAdapter(
                 binding.tvTransactionDetail.text = item.transaction.displayTransaction
                 binding.tvRate.text = item.transaction.displayRate
                 binding.tvTransactionType.text = item.transaction.displayTransactionType
+                binding.root.setOnClickListener {
+                    onTransactionClick?.invoke(item.transaction)
+        
     
 
 

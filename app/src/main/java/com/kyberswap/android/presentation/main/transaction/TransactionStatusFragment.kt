@@ -11,9 +11,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.databinding.FragmentTransactionStatusBinding
+import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_transaction_status.*
 import javax.inject.Inject
@@ -33,6 +35,8 @@ class TransactionStatusFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
+    private var transactionStatusAdapter: TransactionStatusAdapter? = null
+
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory)
             .get(TransactionStatusViewModel::class.java)
@@ -42,7 +46,6 @@ class TransactionStatusFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
         wallet = arguments!!.getParcelable(WALLET_PARAM)
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,10 +64,34 @@ class TransactionStatusFragment : BaseFragment() {
             RecyclerView.VERTICAL,
             false
         )
-        val transactionStatusAdapter =
-            TransactionStatusAdapter(appExecutors) {
+        if (transactionStatusAdapter == null)
+            transactionStatusAdapter =
+                TransactionStatusAdapter(appExecutors) {
 
-    
+                    val currentFragment = (activity as MainActivity).getCurrentFragment()
+
+                    when {
+                        it.displayTransactionType == Transaction.SWAP_TRANSACTION ->
+                            navigator.navigateToSwapTransactionScreen(
+                                currentFragment,
+                                wallet,
+                                it
+                            )
+                        it.displayTransactionType == Transaction.SEND_TRANSACTION ->
+                            navigator.navigateToSendTransactionScreen(
+                                currentFragment,
+                                wallet,
+                                it
+                            )
+                        it.displayTransactionType == Transaction.RECEIVE_TRANSACTION ->
+                            navigator.navigateToReceivedTransactionScreen(
+                                currentFragment,
+                                wallet,
+                                it
+                            )
+            
+
+        
         binding.rvTransaction.adapter = transactionStatusAdapter
 
         viewModel.getTransaction(wallet!!.address)
@@ -74,7 +101,7 @@ class TransactionStatusFragment : BaseFragment() {
                 showProgress(state == GetTransactionState.Loading)
                 when (state) {
                     is GetTransactionState.Success -> {
-                        transactionStatusAdapter.submitList(state.transactions)
+                        updateTransactionList(state.transactions)
             
                     is GetTransactionState.ShowError -> {
                         Toast.makeText(
@@ -87,6 +114,11 @@ class TransactionStatusFragment : BaseFragment() {
     
 )
 
+    }
+
+    private fun updateTransactionList(transactions: List<TransactionItem>) {
+        transactionStatusAdapter?.submitList(listOf())
+        transactionStatusAdapter?.submitList(transactions)
     }
 
     override fun showProgress(showProgress: Boolean) {

@@ -11,6 +11,7 @@ import com.kyberswap.android.util.ext.toDisplayNumber
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
+import timber.log.Timber
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -21,6 +22,7 @@ class TransactionDataRepository @Inject constructor(
     private val transactionMapper: TransactionMapper
 ) : TransactionRepository {
     override fun fetchERC20TokenTransactions(address: String): Single<List<Transaction>> {
+        Timber.e("fetchERC20TokenTransactions")
         return transactionApi.getTransaction(
             DEFAULT_MODULE,
             TOKEN_TRANSACTION,
@@ -37,6 +39,7 @@ class TransactionDataRepository @Inject constructor(
     }
 
     override fun fetchInternalTransactions(address: String): Single<List<Transaction>> {
+        Timber.e("fetchInternalTransactions")
         return transactionApi.getTransaction(
             DEFAULT_MODULE,
             INTERNAL_TRANSACTION,
@@ -57,6 +60,7 @@ class TransactionDataRepository @Inject constructor(
     }
 
     override fun fetchNormalTransaction(address: String): Single<List<Transaction>> {
+        Timber.e("fetchNormalTransaction")
         return transactionApi.getTransaction(
             DEFAULT_MODULE,
             NORMAL_TRANSACTION,
@@ -153,14 +157,13 @@ class TransactionDataRepository @Inject constructor(
                  else {
                             transactionList.addAll(transactions)
                 
-
-
             
                     transactionList.toList()
-        .toFlowable()
-                .doOnNext {
+        .doAfterSuccess {
+                    Timber.e("transactionDao.insertTransactionBatch(it)")
                     transactionDao.insertTransactionBatch(it)
         
+                .toFlowable()
         )
 
     }

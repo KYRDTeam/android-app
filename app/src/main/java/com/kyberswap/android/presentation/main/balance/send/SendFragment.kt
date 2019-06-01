@@ -22,6 +22,7 @@ import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.swap.GetContactState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.main.swap.GetSendState
@@ -109,17 +110,26 @@ class SendFragment : BaseFragment() {
 
         listOf(binding.imgTokenSource, binding.tvSource).forEach {
             it.setOnClickListener {
-                navigator.navigateToTokenSearchFromSendTokenScreen(R.id.container, wallet)
+                navigator.navigateToTokenSearchFromSendTokenScreen(
+                    (activity as MainActivity).getCurrentFragment(),
+                    wallet
+                )
     
 
 
-
         binding.tvAddContact.setOnClickListener {
-            navigator.navigateToAddContactScreen(wallet, edtAddress.text.toString())
+            navigator.navigateToAddContactScreen(
+                (activity as MainActivity).getCurrentFragment(),
+                wallet,
+                edtAddress.text.toString()
+            )
 
 
         binding.tvMore.setOnClickListener {
-            navigator.navigateToContactScreen(wallet)
+            navigator.navigateToContactScreen(
+                (activity as MainActivity).getCurrentFragment(),
+                wallet
+            )
 
 
         binding.expandableLayout.setOnExpansionUpdateListener { _, state ->
