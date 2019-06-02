@@ -1,5 +1,6 @@
 package com.kyberswap.android
 
+import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -15,6 +16,10 @@ import com.kyberswap.android.util.di.DaggerAppComponent
 import com.kyberswap.android.util.di.module.DatabaseModule
 import com.kyberswap.android.util.di.module.NetworkModule
 import com.orhanobut.hawk.Hawk
+import com.twitter.sdk.android.core.DefaultLogger
+import com.twitter.sdk.android.core.Twitter
+import com.twitter.sdk.android.core.TwitterAuthConfig
+import com.twitter.sdk.android.core.TwitterConfig
 import dagger.android.AndroidInjector
 import dagger.android.support.DaggerApplication
 import io.github.inflationx.calligraphy3.CalligraphyConfig
@@ -70,6 +75,18 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
  catch (e: IOException) {
             throw RuntimeException(e)
 
+
+        val config = TwitterConfig.Builder(this)
+            .logger(DefaultLogger(Log.DEBUG))
+            .twitterAuthConfig(
+                TwitterAuthConfig(
+                    resources.getString(R.string.twitter_consumer_key),
+                    resources.getString(R.string.twitter_consumer_secret)
+                )
+            )
+            .debug(true)
+            .build()
+        Twitter.initialize(config)
 
     }
 

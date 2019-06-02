@@ -9,5 +9,10 @@ data class LoginUserEntity(
     @SerializedName("success")
     val success: Boolean = false,
     @SerializedName("user_info")
-    val userInfo: UserInfoEntity = UserInfoEntity()
+    val userInfo: UserInfoEntity = UserInfoEntity(),
+    @SerializedName("message")
+    val message: String = "",
+    @SerializedName("confirm_signup_required")
+    val confirmSignUpRequired: Boolean = false
+
 )

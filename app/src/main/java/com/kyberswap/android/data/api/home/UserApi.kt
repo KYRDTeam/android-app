@@ -25,4 +25,18 @@ interface UserApi {
         @Field("email") email: String,
         @Field("password") password: String
     ): Single<LoginUserEntity>
+
+
+    @FormUrlEncoded
+    @POST("api/users/social_login")
+    fun socialLogin(
+        @Field("type") type: String,
+        @Field("access_token") accessToken: String?,
+        @Field("subscription") subscription: Boolean,
+        @Field("photo_url") photoUrl: String?,
+        @Field("two_factor_code") twoFa: String?,
+        @Field("display_name") displayName: String?,
+        @Field("oauth_token") oauthToken: String?,
+        @Field("oauth_token_secret") oauthTokenSecret: String?
+    ): Single<LoginUserEntity>
 }
