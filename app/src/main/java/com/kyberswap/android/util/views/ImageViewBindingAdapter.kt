@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.caverock.androidsvg.SVG
 import com.kyberswap.android.R
+import com.kyberswap.android.presentation.main.profile.LoginType
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import jdenticon.Jdenticon
 
@@ -115,6 +116,26 @@ object ImageViewBindingAdapter {
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
+
+    }
+
+    @BindingAdapter("app:loginType")
+    @JvmStatic
+    fun generateImage(view: ImageView, loginType: LoginType) {
+        val drawable = when (loginType) {
+            LoginType.GOOGLE -> {
+                R.drawable.ic_google_plus_register
+            }
+            LoginType.FACEBOOK -> {
+                R.drawable.ic_facebook_register
+            }
+            LoginType.TWITTER -> {
+                R.drawable.ic_twitter_register
+            }
+            LoginType.NORMAL -> 0
+        }
+
+        Glide.with(view).load(drawable).into(view)
 
     }
 }

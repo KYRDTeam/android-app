@@ -37,7 +37,8 @@ class ProfileViewModel @Inject constructor(
     }
 
 
-    fun loginWithGoogle(socialInfo: SocialInfo) {
+    fun login(socialInfo: SocialInfo) {
+        _loginCallback.postValue(Event(LoginState.Loading))
         loginSocialUseCase.execute(
             Consumer {
                 _loginCallback.value = Event(LoginState.Success(it, socialInfo))
@@ -51,24 +52,6 @@ class ProfileViewModel @Inject constructor(
                 socialInfo
             )
         )
-    }
-
-
-    fun loginWithFacebook(socialInfo: SocialInfo) {
-        loginSocialUseCase.execute(
-            Consumer {
-                _loginCallback.value = Event(LoginState.Success(it, socialInfo))
-            },
-            Consumer {
-                it.printStackTrace()
-                _loginCallback.value =
-                    Event(LoginState.ShowError(it.localizedMessage))
-            },
-            LoginSocialUseCase.Param(
-                socialInfo
-            )
-        )
-
     }
 
 }

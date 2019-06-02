@@ -101,7 +101,7 @@ class ProfileFragment : BaseFragment() {
                         result?.accessToken
                     ) { me, response ->
                         if (response?.error != null) {
-                            // handle error
+                            showAlert(response.error.errorMessage)
                         } else {
                             val email = me?.optString("email")
                             val name = me?.optString("name")
@@ -114,14 +114,14 @@ class ProfileFragment : BaseFragment() {
                                 profileUrl,
                                 email
                             )
-                            viewModel.loginWithFacebook(socialInfo)
+                            viewModel.login(socialInfo)
                         }
                     }
 
                     val parameters = Bundle()
                     parameters.putString(
                         "fields",
-                        "id, name, email, gender,birthday,picture.type(large)"
+                        "id, name, email, gender, birthday, picture.type(large)"
                     )
                     request.parameters = parameters
                     request.executeAsync()
@@ -152,12 +152,16 @@ class ProfileFragment : BaseFragment() {
                     is LoginState.Success -> {
                         if (state.login.success) {
                             if (state.login.confirmSignUpRequired) {
-                                showAlert(state.socialInfo.type.value)
+                                navigator.navigateToSignUpConfirmScreen(
+                                    (activity as MainActivity).getCurrentFragment(),
+                                    wallet,
+                                    state.socialInfo
+                                )
                             } else {
                                 showAlert(state.login.userInfo.name)
                             }
                         } else {
-                            showAlert("Login fail")
+                            showAlert(state.login.message)
                         }
                     }
                     is LoginState.ShowError -> {
@@ -187,7 +191,7 @@ class ProfileFragment : BaseFragment() {
                     account.photoUrl.toString(),
                     account.email
                 )
-                viewModel.loginWithGoogle(socialInfo)
+                viewModel.login(socialInfo)
             }
         }
 
@@ -243,8 +247,15 @@ class ProfileFragment : BaseFragment() {
             .enqueue(object : Callback<User>() {
                 override fun success(result: com.twitter.sdk.android.core.Result<User>?) {
                     val name = result?.data?.name
+
                     val profileImageUrl = result?.data?.profileImageUrl?.replace("_normal", "")
-                    Timber.e(name)
+                    val socialInfo = SocialInfo(
+                        LoginType.TWITTER,
+                        name,
+                        getString(R.string.twitter_consumer_key),
+                        profileImageUrl
+                    )
+                    viewModel.login(socialInfo)
                 }
 
 
@@ -276,7 +287,7 @@ class ProfileFragment : BaseFragment() {
                     account.photoUrl.toString(),
                     account.email
                 )
-                viewModel.loginWithGoogle(socialInfo)
+                viewModel.login(socialInfo)
             }
 
         } catch (e: ApiException) {
