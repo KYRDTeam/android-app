@@ -192,6 +192,18 @@
     <string name="signup_display_name">Display Name</string>
     <string name="confirm_sign_up_with">Confirm Sign Up with</string>
     <string name="reset_my_password">Reset my password</string>
+    <string name="transaction_filter">Filter</string>
+    <string name="filter_time">Time</string>
+    <string name="filter_from">From</string>
+    <string name="filter_to">To</string>
+    <string name="filter_transaction_type">Transaction Type</string>
+    <string name="filter_send">Send</string>
+    <string name="filter_receive">Receive</string>
+    <string name="filter_swap">Swap</string>
+    <string name="filter_token">Token</string>
+    <string name="filter_see_more">see more</string>
+    <string name="filter_reset">Reset</string>
+    <string name="filter_apply">Apply</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>
