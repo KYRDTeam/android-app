@@ -99,6 +99,10 @@ interface MainActivityModule {
 
     @FragmentScoped
     @ContributesAndroidInjector
+    fun contributeTransactionFilterFragment(): TransactionFilterFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
     fun contributeTransactionStatusFragment(): TransactionStatusFragment
 
     @FragmentScoped
