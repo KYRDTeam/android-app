@@ -35,6 +35,27 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
     }
 
+
+    fun showResetPassword(positiveListener: (email: String) -> Unit) {
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<com.kyberswap.android.databinding.DialogForgotPasswordBinding>(
+                LayoutInflater.from(activity), R.layout.dialog_forgot_password, null, false
+            )
+
+        binding.tvSend.setOnClickListener {
+            positiveListener.invoke(binding.edtEmail.text.toString())
+            dialog.dismiss()
+
+
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+    }
+
     fun showWrongBackup(positiveListener: () -> Unit) {
 
         val dialog = AlertDialog.Builder(activity).create()

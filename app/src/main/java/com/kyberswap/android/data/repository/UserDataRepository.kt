@@ -3,10 +3,11 @@ package com.kyberswap.android.data.repository
 import com.kyberswap.android.data.api.home.UserApi
 import com.kyberswap.android.data.mapper.UserMapper
 import com.kyberswap.android.domain.model.LoginUser
-import com.kyberswap.android.domain.model.RegisterStatus
+import com.kyberswap.android.domain.model.UserStatus
 import com.kyberswap.android.domain.repository.UserRepository
-import com.kyberswap.android.domain.usecase.wallet.LoginSocialUseCase
-import com.kyberswap.android.domain.usecase.wallet.LoginUseCase
+import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
+import com.kyberswap.android.domain.usecase.profile.LoginUseCase
+import com.kyberswap.android.domain.usecase.profile.ResetPasswordUseCase
 import com.kyberswap.android.domain.usecase.wallet.SignUpUseCase
 import io.reactivex.Single
 import javax.inject.Inject
@@ -16,6 +17,12 @@ class UserDataRepository @Inject constructor(
     private val userApi: UserApi,
     private val userMapper: UserMapper
 ) : UserRepository {
+    override fun resetPassword(param: ResetPasswordUseCase.Param): Single<UserStatus> {
+        return userApi.resetPassword(param.email).map {
+            userMapper.transform(it)
+
+    }
+
     override fun loginSocial(param: LoginSocialUseCase.Param): Single<LoginUser> {
         return userApi.socialLogin(
             param.socialInfo.type.value,
@@ -36,7 +43,7 @@ class UserDataRepository @Inject constructor(
             .map { userMapper.transform(it) }
     }
 
-    override fun signUp(param: SignUpUseCase.Param): Single<RegisterStatus> {
+    override fun signUp(param: SignUpUseCase.Param): Single<UserStatus> {
         return userApi.register(
             param.email,
             param.password,
