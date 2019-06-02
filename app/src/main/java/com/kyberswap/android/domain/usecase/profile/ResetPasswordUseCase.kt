@@ -1,24 +1,23 @@
-package com.kyberswap.android.domain.usecase.wallet
+package com.kyberswap.android.domain.usecase.profile
 
 import androidx.annotation.VisibleForTesting
 import com.kyberswap.android.domain.SchedulerProvider
-import com.kyberswap.android.domain.model.LoginUser
-import com.kyberswap.android.domain.model.SocialInfo
+import com.kyberswap.android.domain.model.UserStatus
 import com.kyberswap.android.domain.repository.UserRepository
 import com.kyberswap.android.domain.usecase.SequentialUseCase
 import io.reactivex.Single
 import javax.inject.Inject
 
-class LoginSocialUseCase @Inject constructor(
+class ResetPasswordUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val userRepository: UserRepository
-) : SequentialUseCase<LoginSocialUseCase.Param, LoginUser>(schedulerProvider) {
+) : SequentialUseCase<ResetPasswordUseCase.Param, UserStatus>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public override fun buildUseCaseSingle(param: Param): Single<LoginUser> {
-        return userRepository.loginSocial(param)
+    public override fun buildUseCaseSingle(param: Param): Single<UserStatus> {
+        return userRepository.resetPassword(param)
     }
 
     class Param(
-        val socialInfo: SocialInfo
+        val email: String
     )
 }

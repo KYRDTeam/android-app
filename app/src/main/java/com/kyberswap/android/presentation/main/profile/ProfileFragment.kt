@@ -24,6 +24,7 @@ import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.SocialInfo
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.util.di.ViewModelFactory
@@ -45,6 +46,9 @@ class ProfileFragment : BaseFragment() {
 
     @Inject
     lateinit var navigator: Navigator
+
+    @Inject
+    lateinit var dialogHelper: DialogHelper
 
     @Inject
     lateinit var appExecutors: AppExecutors
@@ -176,6 +180,26 @@ class ProfileFragment : BaseFragment() {
             }
         })
 
+
+        viewModel.resetPasswordCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == ResetPasswordState.Loading)
+                when (state) {
+                    is ResetPasswordState.Success -> {
+                        showAlert(state.status.message)
+                    }
+                    is ResetPasswordState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        Toast.makeText(
+                            activity,
+                            state.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        })
+
         binding.imgGooglePlus.setOnClickListener {
             val googleSignInClient = GoogleSignIn.getClient(this.activity!!, gso)
             val account = GoogleSignIn.getLastSignedInAccount(this.activity)
@@ -233,6 +257,12 @@ class ProfileFragment : BaseFragment() {
 
             } else {
                 getTwitterUserProfileWthTwitterCoreApi(twitterSession)
+            }
+        }
+
+        binding.tvForgotPassword.setOnClickListener {
+            dialogHelper.showResetPassword {
+                viewModel.resetPassword(it)
             }
         }
 

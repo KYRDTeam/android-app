@@ -191,6 +191,7 @@
     <string name="sign_up">Sign Up</string>
     <string name="signup_display_name">Display Name</string>
     <string name="confirm_sign_up_with">Confirm Sign Up with</string>
+    <string name="reset_my_password">Reset my password</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>

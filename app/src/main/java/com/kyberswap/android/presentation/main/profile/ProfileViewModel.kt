@@ -5,8 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.SocialInfo
-import com.kyberswap.android.domain.usecase.wallet.LoginSocialUseCase
-import com.kyberswap.android.domain.usecase.wallet.LoginUseCase
+import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
+import com.kyberswap.android.domain.usecase.profile.LoginUseCase
+import com.kyberswap.android.domain.usecase.profile.ResetPasswordUseCase
 import com.kyberswap.android.presentation.common.Event
 import io.reactivex.functions.Consumer
 import kotlinx.android.parcel.Parcelize
@@ -14,11 +15,17 @@ import javax.inject.Inject
 
 class ProfileViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val loginSocialUseCase: LoginSocialUseCase
+    private val loginSocialUseCase: LoginSocialUseCase,
+    private val resetPasswordUseCase: ResetPasswordUseCase
 ) : ViewModel() {
     private val _loginCallback = MutableLiveData<Event<LoginState>>()
     val loginCallback: LiveData<Event<LoginState>>
         get() = _loginCallback
+
+
+    private val _resetPasswordCallback = MutableLiveData<Event<ResetPasswordState>>()
+    val resetPasswordCallback: LiveData<Event<ResetPasswordState>>
+        get() = _resetPasswordCallback
 
     fun login(email: String, password: String) {
         _loginCallback.postValue(Event(LoginState.Loading))
@@ -51,6 +58,21 @@ class ProfileViewModel @Inject constructor(
             LoginSocialUseCase.Param(
                 socialInfo
             )
+        )
+    }
+
+    fun resetPassword(email: String) {
+        _resetPasswordCallback.postValue(Event(ResetPasswordState.Loading))
+        resetPasswordUseCase.execute(
+            Consumer {
+                _resetPasswordCallback.value = Event(ResetPasswordState.Success(it))
+            },
+            Consumer {
+                it.printStackTrace()
+                _resetPasswordCallback.value =
+                    Event(ResetPasswordState.ShowError(it.localizedMessage))
+            },
+            ResetPasswordUseCase.Param(email)
         )
     }
 
