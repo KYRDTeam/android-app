@@ -4,16 +4,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.kyberswap.android.R
-import com.kyberswap.android.domain.model.Token
-import com.kyberswap.android.domain.model.Transaction
-import com.kyberswap.android.domain.model.Wallet
-import com.kyberswap.android.domain.model.Word
+import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.presentation.landing.LandingActivity
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.balance.address.BalanceAddressFragment
 import com.kyberswap.android.presentation.main.balance.chart.ChartFragment
 import com.kyberswap.android.presentation.main.balance.send.SendConfirmActivity
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
+import com.kyberswap.android.presentation.main.profile.SignUpConfirmFragment
 import com.kyberswap.android.presentation.main.profile.SignUpFragment
 import com.kyberswap.android.presentation.main.setting.AddContactFragment
 import com.kyberswap.android.presentation.main.setting.ContactFragment
@@ -235,6 +233,17 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     fun navigateToSignUpScreen(currentFragment: Fragment?, wallet: Wallet?) {
         navigateByChildFragmentManager(currentFragment, SignUpFragment.newInstance(wallet))
+    }
+
+    fun navigateToSignUpConfirmScreen(
+        currentFragment: Fragment?,
+        wallet: Wallet?,
+        socialInfo: SocialInfo?
+    ) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            SignUpConfirmFragment.newInstance(wallet, socialInfo)
+        )
 
     }
 
