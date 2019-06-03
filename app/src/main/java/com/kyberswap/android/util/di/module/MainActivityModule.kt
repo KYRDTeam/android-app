@@ -18,10 +18,7 @@ import com.kyberswap.android.presentation.main.balance.other.OtherFragment
 import com.kyberswap.android.presentation.main.balance.other.OtherViewModel
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.balance.send.SendViewModel
-import com.kyberswap.android.presentation.main.profile.ProfileFragment
-import com.kyberswap.android.presentation.main.profile.ProfileViewModel
-import com.kyberswap.android.presentation.main.profile.SignUpFragment
-import com.kyberswap.android.presentation.main.profile.SignUpViewModel
+import com.kyberswap.android.presentation.main.profile.*
 import com.kyberswap.android.presentation.main.setting.*
 import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.main.swap.SwapViewModel
@@ -102,6 +99,10 @@ interface MainActivityModule {
 
     @FragmentScoped
     @ContributesAndroidInjector
+    fun contributeTransactionFilterFragment(): TransactionFilterFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
     fun contributeTransactionStatusFragment(): TransactionStatusFragment
 
     @FragmentScoped
@@ -120,6 +121,10 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeSignUpFragment(): SignUpFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeSignUpConfirmFragment(): SignUpConfirmFragment
 
     @Binds
     @IntoMap

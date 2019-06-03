@@ -14,6 +14,7 @@ import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_balance.*
@@ -84,6 +85,13 @@ class TransactionFragment : BaseFragment() {
                 setSelectedOption(position)
             }
         })
+
+        binding.imgFilter.setOnClickListener {
+            navigator.navigateToTransactionFilterScreen(
+                (activity as MainActivity).getCurrentFragment(),
+                wallet
+            )
+        }
 
         viewModel.getWallet(wallet!!.address)
         viewModel.getWalletCallback.observe(viewLifecycleOwner, Observer {

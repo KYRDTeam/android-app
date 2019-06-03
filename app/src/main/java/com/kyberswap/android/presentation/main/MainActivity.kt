@@ -22,6 +22,7 @@ import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.WalletAdapter
+import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_drawer.*
@@ -165,6 +166,16 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             currentFragment!!.childFragmentManager.popBackStack()
         } else {
             super.onBackPressed()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val allFragments = supportFragmentManager.fragments
+        allFragments.forEach {
+            if (it is ProfileFragment) {
+                it.onActivityResult(requestCode, resultCode, data)
+            }
         }
     }
 
