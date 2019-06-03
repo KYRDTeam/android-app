@@ -1,7 +1,7 @@
 package com.kyberswap.android.data.api.home
 
 import com.kyberswap.android.data.api.user.LoginUserEntity
-import com.kyberswap.android.data.api.user.RegisterStatusEnity
+import com.kyberswap.android.data.api.user.UserStatusEnity
 import io.reactivex.Single
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -16,7 +16,14 @@ interface UserApi {
         @Field("password_confirmation") passwordConfirmation: String,
         @Field("display_name") displayName: String,
         @Field("subscription") subscription: Boolean
-    ): Single<RegisterStatusEnity>
+    ): Single<UserStatusEnity>
+
+
+    @FormUrlEncoded
+    @POST("api/users/reset_password")
+    fun resetPassword(
+        @Field("email") email: String
+    ): Single<UserStatusEnity>
 
 
     @FormUrlEncoded
@@ -24,5 +31,19 @@ interface UserApi {
     fun login(
         @Field("email") email: String,
         @Field("password") password: String
+    ): Single<LoginUserEntity>
+
+
+    @FormUrlEncoded
+    @POST("api/users/social_login")
+    fun socialLogin(
+        @Field("type") type: String,
+        @Field("access_token") accessToken: String?,
+        @Field("subscription") subscription: Boolean,
+        @Field("photo_url") photoUrl: String?,
+        @Field("two_factor_code") twoFa: String?,
+        @Field("display_name") displayName: String?,
+        @Field("oauth_token") oauthToken: String?,
+        @Field("oauth_token_secret") oauthTokenSecret: String?
     ): Single<LoginUserEntity>
 }
