@@ -17,7 +17,7 @@ abstract class ListDifferAdapter<T, VH : RecyclerView.ViewHolder> : RecyclerView
         helper = AsyncListDiffer<T>(AdapterListUpdateCallback(this), config)
     }
 
-    fun submitList(list: List<T>) {
+    fun submitList(list: List<T>?) {
         helper.submitList(list)
     }
 

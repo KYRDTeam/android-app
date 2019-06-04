@@ -29,20 +29,21 @@ class TokenSearchAdapter(
 
     fun submitFilterList(tokens: List<Token>) {
         if (itemCount > 0) {
-            submitList(listOf())
+            submitList(null)
             submitList(tokens)
         } else {
             submitList(tokens)
         }
+        notifyDataSetChanged()
 
     }
 
     override fun bind(binding: ItemTokenSearchBinding, item: Token) {
-        binding.setVariable(BR.token, item)
-        binding.executePendingBindings()
         binding.root.setOnClickListener {
             onTokenClick?.invoke(item)
         }
+        binding.setVariable(BR.token, item)
+        binding.executePendingBindings()
     }
 
     override fun createBinding(parent: ViewGroup, viewType: Int): ItemTokenSearchBinding =

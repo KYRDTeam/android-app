@@ -84,6 +84,7 @@
     <string name="kyber_list">Kyber List</string>
     <string name="other">Other</string>
     <string name="name">Name</string>
+    <string name="limit_order">Limit Order</string>
     <string name="profile">Profile</string>
     <string name="setting">Setting</string>
     <string name="transactions">Transactions</string>
@@ -202,6 +203,7 @@
     <string name="filter_swap">Swap</string>
     <string name="filter_token">Token</string>
     <string name="filter_see_more">see more</string>
+    <string name="filter_see_less">see less</string>
     <string name="filter_reset">Reset</string>
     <string name="filter_apply">Apply</string>
     <string-array name="backup_wallet_description_bold">

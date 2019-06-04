@@ -20,7 +20,7 @@
     <color name="import_text_view_normal_color">#141927</color>
     <color name="color_import_button_bg_stroke">#b8babe</color>
     <color name="bottom_item_color_active">#fea34c</color>
-    <color name="bottom_item_color_normal">#141927</color>
+    <color name="bottom_item_color_normal">#9ea1aa</color>
     <color name="drawer_divider_color">#edeef2</color>
     <color name="token_item_odd_bg">#f8f9ff</color>
     <color name="token_item_even_bg">#ffffff</color>
