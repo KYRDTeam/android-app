@@ -5,24 +5,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.GridLayoutManager
 import com.kyberswap.android.AppExecutors
-import com.kyberswap.android.databinding.FragmentLimitOrderSuggestionBinding
+import com.kyberswap.android.databinding.FragmentLimitOrderFilterBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.swap.SwapViewModel
 import com.kyberswap.android.util.di.ViewModelFactory
-import com.kyberswap.android.util.ext.setAllOnClickListener
-import com.kyberswap.android.util.ext.showDrawer
-import kotlinx.android.synthetic.main.fragment_swap.*
 import javax.inject.Inject
 
 
-class LimitOrderSuggestionFragment : BaseFragment() {
+class FilterLimitOrderFragment : BaseFragment() {
 
-    private lateinit var binding: FragmentLimitOrderSuggestionBinding
+    private lateinit var binding: FragmentLimitOrderFilterBinding
 
     @Inject
     lateinit var navigator: Navigator
@@ -53,47 +50,77 @@ class LimitOrderSuggestionFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentLimitOrderSuggestionBinding.inflate(inflater, container, false)
+        binding = FragmentLimitOrderFilterBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        binding.walletName = wallet?.name
-
-        wallet?.let {
-            viewModel.getSwapData(it.address)
-        }
-        grTokenSource.setAllOnClickListener(View.OnClickListener {
-            navigator.navigateToTokenSearchFromSwapTokenScreen(
-                (activity as MainActivity).getCurrentFragment(),
-                wallet,
-                true
-            )
-        })
-
-        grTokenDest.setAllOnClickListener(View.OnClickListener {
-            navigator.navigateToTokenSearchFromSwapTokenScreen(
-                (activity as MainActivity).getCurrentFragment(),
-                wallet,
-                false
-            )
-        })
-
-        imgMenu.setOnClickListener {
-            showDrawer(true)
-        }
-
-        imgSwap.setOnClickListener {
-
+        val tokenPairAdapter = FilterItemAdapter(appExecutors) {
 
         }
 
-        binding.tvConfirm.setOnClickListener {
-            navigator.navigateToOrderConfirmScreen(
-                (activity as MainActivity).getCurrentFragment(),
-                wallet
+        binding.rvTokenPair.layoutManager = GridLayoutManager(
+            activity,
+            2
+        )
+
+        binding.rvTokenPair.adapter = tokenPairAdapter
+        tokenPairAdapter.submitList(
+            listOf(
+                "ETH  ➞  KNC",
+                "ETH  ➞  DAI",
+                "KNC  ➞  DAI",
+                "KNC  ➞  ETH",
+                "DAI  ➞  KNC"
             )
+        )
+
+
+        val addressAdapter = FilterItemAdapter(appExecutors) {
+
+        }
+
+        binding.rvAddress.layoutManager = GridLayoutManager(
+            activity,
+            2
+        )
+
+        binding.rvAddress.adapter = addressAdapter
+        addressAdapter.submitList(
+            listOf(
+                "0xb2745…fa232",
+                "0xb2745…fa392",
+                "0xb2745…fa445",
+                "0xb2745…f5644"
+
+
+            )
+        )
+
+
+        val statusAdapter = FilterItemAdapter(appExecutors) {
+
+        }
+
+        binding.rvStatus.layoutManager = GridLayoutManager(
+            activity,
+            2
+        )
+
+        binding.rvStatus.adapter = statusAdapter
+        statusAdapter.submitList(
+            listOf(
+                "Open",
+                "In progress",
+                "Filled",
+                "Canceled",
+                "Invalidated"
+            )
+        )
+
+        binding.imgBack.setOnClickListener {
+            activity?.onBackPressed()
         }
 
 
@@ -102,7 +129,7 @@ class LimitOrderSuggestionFragment : BaseFragment() {
     companion object {
         private const val WALLET_PARAM = "wallet_param"
         fun newInstance(wallet: Wallet?) =
-            LimitOrderSuggestionFragment().apply {
+            FilterLimitOrderFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(WALLET_PARAM, wallet)
                 }

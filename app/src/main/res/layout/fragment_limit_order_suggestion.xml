@@ -455,7 +455,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/textView65" />
 
                     <TextView
-                        android:id="@+id/textView66"
+                        android:id="@+id/tvConfirm"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
@@ -481,9 +481,9 @@
                         android:text="Change Rate"
                         android:textColor="#141927"
                         android:textSize="16sp"
-                        app:layout_constraintEnd_toEndOf="@+id/textView66"
-                        app:layout_constraintStart_toStartOf="@+id/textView66"
-                        app:layout_constraintTop_toBottomOf="@+id/textView66" />
+                        app:layout_constraintEnd_toEndOf="@+id/tvConfirm"
+                        app:layout_constraintStart_toStartOf="@+id/tvConfirm"
+                        app:layout_constraintTop_toBottomOf="@+id/tvConfirm" />
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>

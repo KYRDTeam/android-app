@@ -206,6 +206,17 @@
     <string name="filter_see_less">see less</string>
     <string name="filter_reset">Reset</string>
     <string name="filter_apply">Apply</string>
+    <string name="manage_orders">Manage Orders</string>
+    <string name="related_orders">Related Orders</string>
+    <string name="submit_order">Submit Order</string>
+    <string name="condition">Condition</string>
+    <string name="filter_address">Address</string>
+    <string name="filter_status">Status</string>
+    <string name="limit_order_filter">Filter</string>
+    <string name="manage_order_filter">FILTER</string>
+    <string name="a_to_z"><![CDATA[A —> Z]]></string>
+    <string name="z_to_a"><![CDATA[A —> Z]]></string>
+    <string name="order_confirm">Order Confirm</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>

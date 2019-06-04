@@ -18,8 +18,7 @@ import com.kyberswap.android.presentation.main.balance.other.OtherFragment
 import com.kyberswap.android.presentation.main.balance.other.OtherViewModel
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.balance.send.SendViewModel
-import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
-import com.kyberswap.android.presentation.main.limitorder.LimitOrderSuggestionFragment
+import com.kyberswap.android.presentation.main.limitorder.*
 import com.kyberswap.android.presentation.main.profile.*
 import com.kyberswap.android.presentation.main.setting.*
 import com.kyberswap.android.presentation.main.swap.SwapFragment
@@ -75,6 +74,18 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeLimitOrderSuggestionFragment(): LimitOrderSuggestionFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeManageOrderFragment(): ManageOrderFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeFilterLimitOrderFragment(): FilterLimitOrderFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeOrderConfirmFragment(): OrderConfirmFragment
 
     @FragmentScoped
     @ContributesAndroidInjector
