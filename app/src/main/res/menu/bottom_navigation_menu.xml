@@ -9,6 +9,10 @@
         android:title="@string/kyberswap" />
 
     <item
+        android:icon="@drawable/ic_limit_order_toggle"
+        android:title="@string/limit_order" />
+
+    <item
         android:icon="@drawable/ic_person_toggle"
         android:title="@string/profile" />
 

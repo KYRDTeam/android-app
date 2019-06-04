@@ -18,6 +18,8 @@ import com.kyberswap.android.presentation.main.balance.other.OtherFragment
 import com.kyberswap.android.presentation.main.balance.other.OtherViewModel
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.balance.send.SendViewModel
+import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
+import com.kyberswap.android.presentation.main.limitorder.LimitOrderSuggestionFragment
 import com.kyberswap.android.presentation.main.profile.*
 import com.kyberswap.android.presentation.main.setting.*
 import com.kyberswap.android.presentation.main.swap.SwapFragment
@@ -65,6 +67,14 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeSwapFragment(): SwapFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeLimitOrderFragment(): LimitOrderFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeLimitOrderSuggestionFragment(): LimitOrderSuggestionFragment
 
     @FragmentScoped
     @ContributesAndroidInjector
@@ -222,6 +232,20 @@ interface MainActivityModule {
     @ViewModelKey(TransactionViewModel::class)
     fun bindTransactionViewModel(
         transactionViewModel: TransactionViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(TransactionDetailViewModel::class)
+    fun bindTransactionDetailViewModel(
+        transactionDetailViewModel: TransactionDetailViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(TransactionFilterViewModel::class)
+    fun bindTransactionFilterViewModel(
+        transactionFilterViewModel: TransactionFilterViewModel
     ): ViewModel
 
     @Binds
