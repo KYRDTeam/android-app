@@ -5,6 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.daimajia.swipe.util.Attributes
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.databinding.FragmentLimitOrderBinding
 import com.kyberswap.android.domain.SchedulerProvider
@@ -95,6 +98,26 @@ class LimitOrderFragment : BaseFragment() {
                 wallet
             )
 
+
+        binding.rvRelatedOrder.layoutManager = LinearLayoutManager(
+            activity,
+            RecyclerView.VERTICAL,
+            false
+        )
+        val tokenAdapter =
+            OrderAdapter(
+                appExecutors
+            ) {
+
+    
+        tokenAdapter.mode = Attributes.Mode.Single
+        binding.rvRelatedOrder.adapter = tokenAdapter
+
+        binding.tvManageOrder.setOnClickListener {
+            navigator.navigateToManageOrder(
+                (activity as MainActivity).getCurrentFragment(),
+                wallet
+            )
 
 
     }

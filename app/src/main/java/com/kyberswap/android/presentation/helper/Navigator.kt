@@ -11,7 +11,10 @@ import com.kyberswap.android.presentation.main.balance.address.BalanceAddressFra
 import com.kyberswap.android.presentation.main.balance.chart.ChartFragment
 import com.kyberswap.android.presentation.main.balance.send.SendConfirmActivity
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
+import com.kyberswap.android.presentation.main.limitorder.FilterLimitOrderFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderSuggestionFragment
+import com.kyberswap.android.presentation.main.limitorder.ManageOrderFragment
+import com.kyberswap.android.presentation.main.limitorder.OrderConfirmFragment
 import com.kyberswap.android.presentation.main.profile.SignUpConfirmFragment
 import com.kyberswap.android.presentation.main.profile.SignUpFragment
 import com.kyberswap.android.presentation.main.setting.AddContactFragment
@@ -274,6 +277,35 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         transaction.replace(container, fragment, fragment.javaClass.simpleName)
         transaction.addToBackStack(fragment.javaClass.simpleName)
         transaction.commitAllowingStateLoss()
+    }
+
+    fun navigateToManageOrder(currentFragment: Fragment?, wallet: Wallet?) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            ManageOrderFragment.newInstance(wallet)
+        )
+    }
+
+    fun navigateToLimitOrderFilterScreen(
+        currentFragment: Fragment?,
+        wallet: Wallet?
+    ) {
+
+        navigateByChildFragmentManager(
+            currentFragment,
+            FilterLimitOrderFragment.newInstance(wallet)
+        )
+    }
+
+    fun navigateToOrderConfirmScreen(
+        currentFragment: Fragment?,
+        wallet: Wallet?
+    ) {
+
+        navigateByChildFragmentManager(
+            currentFragment,
+            OrderConfirmFragment.newInstance(wallet)
+        )
     }
 
     companion object {
