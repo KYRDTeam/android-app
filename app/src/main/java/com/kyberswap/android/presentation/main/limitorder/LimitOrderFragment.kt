@@ -91,7 +91,6 @@ class LimitOrderFragment : BaseFragment() {
 
 
 
-
         binding.tvSubmitOrder.setOnClickListener {
             navigator.navigateToLimitOrderSuggestionScreen(
                 (activity as MainActivity).getCurrentFragment(),

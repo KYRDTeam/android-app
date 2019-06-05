@@ -145,13 +145,13 @@
                     android:textColor="#7e7e7e"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="@+id/textView85"
-                    app:layout_constraintEnd_toStartOf="@+id/imageView4"
+                    app:layout_constraintEnd_toStartOf="@+id/imgInfo"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/textView85"
                     app:layout_constraintTop_toTopOf="@+id/textView85" />
 
                 <ImageView
-                    android:id="@+id/imageView4"
+                    android:id="@+id/imgInfo"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginEnd="24dp"
@@ -164,7 +164,7 @@
 
 
                 <TextView
-                    android:id="@+id/textView86"
+                    android:id="@+id/tvContinue"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
@@ -183,6 +183,7 @@
 
 
                 <TextView
+                    android:id="@+id/tvCancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
@@ -195,7 +196,7 @@
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView86" />
+                    app:layout_constraintTop_toBottomOf="@+id/tvContinue" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
 

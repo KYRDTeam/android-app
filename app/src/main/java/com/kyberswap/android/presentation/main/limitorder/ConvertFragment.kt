@@ -6,20 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import com.kyberswap.android.AppExecutors
-import com.kyberswap.android.databinding.FragmentOrderConfirmBinding
+import com.kyberswap.android.databinding.FragmentConvertBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.swap.SwapViewModel
 import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
 
 
-class OrderConfirmFragment : BaseFragment() {
+class ConvertFragment : BaseFragment() {
 
-    private lateinit var binding: FragmentOrderConfirmBinding
+    private lateinit var binding: FragmentConvertBinding
 
     @Inject
     lateinit var navigator: Navigator
@@ -50,29 +49,14 @@ class OrderConfirmFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentOrderConfirmBinding.inflate(inflater, container, false)
+        binding = FragmentConvertBinding.inflate(inflater, container, false)
         return binding.root
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        binding.imgBack.setOnClickListener {
-            activity?.onBackPressed()
-
-
-        binding.tvContinue.setOnClickListener {
-            navigator.navigateToConvertFragment(
-                (activity as MainActivity).getCurrentFragment(),
-                wallet
-            )
-
-
     }
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"
         fun newInstance(wallet: Wallet?) =
-            OrderConfirmFragment().apply {
+            ConvertFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(WALLET_PARAM, wallet)
         
