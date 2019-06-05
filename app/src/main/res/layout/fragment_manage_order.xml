@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/screen_background">
+
+        <View
+            android:id="@+id/view9"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/toolbar_height"
+            android:background="@color/color_bg_gray" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scFilter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/toolbar_height"
+            android:fillViewport="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingBottom="40dp">
+
+
+                <TextView
+                    android:id="@+id/tvFilter"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/manage_order_filter"
+                    android:textColor="#5a5e67"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/textView62"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView62"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:padding="8dp"
+                    android:text="1 Day"
+                    android:textColor="#ff9008"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvFilter"
+                    app:layout_constraintEnd_toStartOf="@+id/textView75"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/tvFilter"
+                    app:layout_constraintTop_toTopOf="@+id/tvFilter" />
+
+                <TextView
+                    android:id="@+id/textView75"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:padding="8dp"
+
+                    android:text="1 Week"
+                    android:textColor="#5a5e67"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView62"
+                    app:layout_constraintEnd_toStartOf="@+id/textView76"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/textView62"
+                    app:layout_constraintTop_toTopOf="@+id/textView62" />
+
+                <TextView
+                    android:id="@+id/textView76"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:padding="8dp"
+
+                    android:text="1 Month"
+                    android:textColor="#5a5e67"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView75"
+                    app:layout_constraintEnd_toStartOf="@+id/textView77"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/textView75"
+                    app:layout_constraintTop_toTopOf="@+id/textView75" />
+
+                <TextView
+                    android:id="@+id/textView77"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="24dp"
+                    android:gravity="center_horizontal"
+
+                    android:padding="8dp"
+                    android:text="3 Month"
+                    android:textColor="#5a5e67"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView76"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/textView76"
+                    app:layout_constraintTop_toTopOf="@+id/textView76" />
+
+
+                <View
+                    android:id="@+id/view12"
+                    android:layout_width="0dp"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="11dp"
+                    android:background="@drawable/dash_line"
+                    app:layout_constraintEnd_toEndOf="@+id/textView77"
+                    app:layout_constraintStart_toStartOf="@+id/tvFilter"
+                    app:layout_constraintTop_toBottomOf="@+id/tvFilter" />
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvOrder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="8dp"
+                    android:nestedScrollingEnabled="false"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/view12" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <FrameLayout
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/toolbar_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/imgBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="9dp"
+                android:src="@drawable/ic_arrow_back" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:text="@string/manage_orders"
+                android:textColor="#ffffff"
+                android:textSize="18sp" />
+        </FrameLayout>
+
+    </FrameLayout>
+
+</layout>

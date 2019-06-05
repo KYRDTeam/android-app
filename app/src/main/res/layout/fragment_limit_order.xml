@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="walletName"
+            type="String" />
+
+        <variable
+            name="percentageRate"
+            type="String" />
+
+        <variable
+            name="rate"
+            type="String" />
+
+        <variable
+            name="swap"
+            type="com.kyberswap.android.domain.model.Swap" />
+
+        <variable
+            name="gas"
+            type="com.kyberswap.android.domain.model.Gas" />
+    </data>
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/screen_background">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imgMenu"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end"
+                android:layout_marginTop="@dimen/toolbar_margin_top"
+                android:layout_marginEnd="16dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_menu"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="@string/limit_order"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@+id/view3"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/view3"
+                android:layout_width="1dp"
+                android:layout_height="14dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="6dp"
+                android:background="#ffffff"
+                app:layout_constraintBottom_toBottomOf="@+id/textView3"
+                app:layout_constraintEnd_toStartOf="@+id/tvName"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/textView3"
+                app:layout_constraintTop_toTopOf="@+id/textView3" />
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="56dp"
+                android:gravity="center_vertical"
+                android:text="@{walletName}"
+                android:textColor="#ffffff"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/view3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/view3"
+                app:layout_constraintTop_toTopOf="@+id/view3"
+                tools:text="Satoshi " />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView"
+                android:layout_width="match_parent"
+                android:layout_height="148dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="64dp"
+                android:layout_marginEnd="12dp"
+                app:cardBackgroundColor="#f5ffffff"
+                app:cardCornerRadius="4dp"
+                app:cardElevation="4dp"
+                app:cardUseCompatPadding="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/frameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingStart="15dp"
+                    android:paddingTop="20dp"
+                    android:paddingEnd="15dp"
+                    android:paddingBottom="20dp">
+
+                    <ImageView
+                        android:id="@+id/imgSwap"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_exchange"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                    <ImageView
+                        android:id="@+id/imgTokenSource"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_eth"
+                        app:identifier="@{swap.tokenSource.tokenSymbol}"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvSource"
+                        app:layout_constraintEnd_toStartOf="@+id/tvSource"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintHorizontal_chainStyle="spread_inside"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/tvSource" />
+
+                    <TextView
+                        android:id="@+id/tvSource"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="@{swap.tokenSource.tokenSymbol}"
+                        android:textAllCaps="true"
+                        android:textColor="#141927"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/edtSource"
+                        app:layout_constraintEnd_toStartOf="@+id/edtSource"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/imgTokenSource"
+                        app:layout_constraintTop_toTopOf="@+id/edtSource" />
+
+
+                    <com.kyberswap.android.presentation.common.ClearableEditText
+                        android:id="@+id/edtSource"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:backgroundTint="#acb3c6"
+                        android:ellipsize="start"
+                        android:gravity="end"
+                        android:hint="@string/default_swap_amount"
+                        android:inputType="numberDecimal"
+                        android:singleLine="true"
+                        android:textColor="#fea34c"
+                        android:textSize="24sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/tvSource"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                    <ImageView
+                        android:id="@+id/imgTokenDest"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/knc"
+                        app:identifier="@{swap.tokenDest.tokenSymbol}"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvDest"
+                        app:layout_constraintEnd_toStartOf="@+id/tvDest"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintHorizontal_chainStyle="spread_inside"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/tvDest" />
+
+                    <TextView
+                        android:id="@+id/tvDest"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="@{swap.tokenDest.tokenSymbol}"
+                        android:textAllCaps="true"
+                        android:textColor="#141927"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/edtDest"
+                        app:layout_constraintEnd_toStartOf="@+id/edtDest"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/imgTokenDest"
+                        app:layout_constraintTop_toTopOf="@+id/edtDest" />
+
+
+                    <com.kyberswap.android.presentation.common.ClearableEditText
+                        android:id="@+id/edtDest"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:backgroundTint="#acb3c6"
+                        android:ellipsize="start"
+                        android:gravity="end"
+                        android:hint="@string/default_swap_amount"
+                        android:inputType="numberDecimal"
+                        android:singleLine="true"
+                        android:textColor="#141927"
+                        android:textSize="24sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/tvDest" />
+
+                    <androidx.constraintlayout.widget.Group
+                        android:id="@+id/grTokenSource"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:constraint_referenced_ids="tvSource,imgTokenSource"
+                        tools:layout_editor_absoluteX="14dp"
+                        tools:layout_editor_absoluteY="20dp" />
+
+                    <androidx.constraintlayout.widget.Group
+                        android:id="@+id/grTokenDest"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:constraint_referenced_ids="tvDest,imgTokenDest"
+                        tools:layout_editor_absoluteX="14dp"
+                        tools:layout_editor_absoluteY="20dp" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/scView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="135dp"
+                android:fillViewport="true">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/placeHolder"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/color_bg_gray"
+                    android:paddingBottom="80dp">
+
+                    <TextView
+                        android:id="@+id/textView47"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="96dp"
+                        android:text="ETH* Available"
+                        android:textColor="#9ea1aa"
+                        android:textSize="12sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                    <TextView
+                        android:id="@+id/tvBalance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="16.130796"
+                        android:textColor="#141927"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toStartOf="@+id/textView47"
+                        app:layout_constraintTop_toBottomOf="@+id/textView47" />
+
+                    <androidx.constraintlayout.widget.Barrier
+                        android:id="@+id/barrier"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:barrierDirection="right"
+                        app:constraint_referenced_ids="textView47,tvBalance"
+                        tools:layout_editor_absoluteX="411dp" />
+
+                    <TextView
+                        android:id="@+id/tv25Percent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="61dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/rounded_corner_percent_background"
+                        android:gravity="center"
+                        android:minWidth="50dp"
+                        android:minHeight="36dp"
+                        android:text="25%"
+                        android:textColor="#8690ad"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvBalance"
+                        app:layout_constraintEnd_toStartOf="@+id/tv50Percent"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintHorizontal_chainStyle="packed"
+                        app:layout_constraintStart_toEndOf="@+id/barrier"
+                        app:layout_constraintTop_toTopOf="@+id/textView47" />
+
+                    <TextView
+                        android:id="@+id/tv50Percent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/rounded_corner_percent_background"
+                        android:gravity="center"
+                        android:minWidth="50dp"
+                        android:minHeight="36dp"
+                        android:text="50%"
+                        android:textColor="#8690ad"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/tv25Percent"
+                        app:layout_constraintEnd_toStartOf="@+id/tv100Percent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/tv25Percent"
+                        app:layout_constraintTop_toTopOf="@+id/tv25Percent" />
+
+                    <TextView
+                        android:id="@+id/tv100Percent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="24dp"
+                        android:background="@drawable/rounded_corner_percent_background"
+                        android:gravity="center"
+                        android:minWidth="50dp"
+                        android:minHeight="36dp"
+                        android:text="100%"
+                        android:textColor="#8690ad"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/tv50Percent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/tv50Percent"
+                        app:layout_constraintTop_toTopOf="@+id/tv50Percent" />
+
+
+                    <View
+                        android:id="@+id/view11"
+                        android:layout_width="0dp"
+                        android:layout_height="74dp"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginTop="24dp"
+                        android:layout_marginEnd="12dp"
+                        android:background="@drawable/rounded_corner_rate_background"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tv25Percent" />
+
+                    <TextView
+                        android:id="@+id/textView56"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="Rate of"
+                        android:textColor="#2a2a2a"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toTopOf="@+id/tvPair"
+                        app:layout_constraintStart_toStartOf="@+id/view11"
+                        app:layout_constraintTop_toTopOf="@+id/edtRate"
+                        app:layout_constraintVertical_chainStyle="packed" />
+
+                    <TextView
+                        android:id="@+id/tvPair"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="KNC  ➞ ETH"
+                        android:textColor="#2a2a2a"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/edtRate"
+                        app:layout_constraintStart_toStartOf="@+id/textView56"
+                        app:layout_constraintTop_toBottomOf="@+id/textView56" />
+
+                    <androidx.constraintlayout.widget.Barrier
+                        android:id="@+id/barrier2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:barrierDirection="end"
+                        app:constraint_referenced_ids="tvPair,textView56"
+
+                        tools:layout_editor_absoluteX="121dp" />
+
+                    <TextView
+                        android:id="@+id/edtRate"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginEnd="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@android:color/white"
+                        android:gravity="center|end"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:text="0.0013"
+                        android:textColor="#141927"
+                        android:textSize="24sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/view11"
+                        app:layout_constraintEnd_toEndOf="@+id/view11"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toEndOf="@+id/barrier2"
+                        app:layout_constraintTop_toTopOf="@+id/view11" />
+
+                    <TextView
+                        android:id="@+id/textView58"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="24dp"
+                        android:layout_marginEnd="24dp"
+                        android:text="Current Rate: 1 KNC = 0.001559 ETH"
+                        android:textColor="#626b86"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/edtRate" />
+
+                    <TextView
+                        android:id="@+id/textView59"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Your price is 5% lower than current Market"
+                        android:textColor="#626b86"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="@+id/textView58"
+                        app:layout_constraintStart_toStartOf="@+id/textView58"
+                        app:layout_constraintTop_toBottomOf="@+id/textView58" />
+
+                    <View
+                        android:id="@+id/view12"
+                        android:layout_width="0dp"
+                        android:layout_height="2dp"
+                        android:layout_marginTop="24dp"
+                        android:background="@drawable/dash_line"
+                        app:layout_constraintEnd_toEndOf="@+id/textView59"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toStartOf="@+id/textView59"
+                        app:layout_constraintTop_toBottomOf="@+id/textView59" />
+
+                    <TextView
+                        android:id="@+id/textView60"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="Fee: 23 KNC (0.1% of 2340 KNC)"
+                        android:textColor="#626b86"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="@+id/view12"
+                        app:layout_constraintStart_toStartOf="@+id/view12"
+                        app:layout_constraintTop_toBottomOf="@+id/view12" />
+
+                    <TextView
+                        android:id="@+id/textView61"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Buy 3000KNC to discount 50% for 20 orders"
+                        android:textColor="#00a2f7"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="@+id/textView60"
+                        app:layout_constraintStart_toStartOf="@+id/textView60"
+                        app:layout_constraintTop_toBottomOf="@+id/textView60" />
+
+                    <TextView
+                        android:id="@+id/tvSubmitOrder"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="32dp"
+                        android:background="@drawable/default_button"
+                        android:gravity="center"
+                        android:minHeight="45dp"
+                        android:text="@string/submit_order"
+                        android:textColor="#ffffff"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toEndOf="@+id/textView61"
+                        app:layout_constraintStart_toStartOf="@+id/textView61"
+                        app:layout_constraintTop_toBottomOf="@+id/textView61" />
+
+
+                    <TextView
+                        android:id="@+id/tvRelatedOrder"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="24dp"
+                        android:gravity="center|start"
+                        android:text="@string/related_orders"
+                        android:textColor="#5a5e67"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toStartOf="@+id/tvManageOrder"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toStartOf="@+id/tvSubmitOrder"
+                        app:layout_constraintTop_toBottomOf="@+id/tvSubmitOrder" />
+
+                    <TextView
+
+                        android:id="@+id/tvManageOrder"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:gravity="center|end"
+                        android:text="@string/manage_orders"
+                        android:textColor="#ff9008"
+                        android:textSize="14sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvRelatedOrder"
+                        app:layout_constraintEnd_toEndOf="@+id/tvSubmitOrder"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/tvRelatedOrder"
+                        app:layout_constraintTop_toTopOf="@+id/tvRelatedOrder" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvRelatedOrder"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvRelatedOrder" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+
+</layout>

@@ -11,6 +11,7 @@ import com.kyberswap.android.presentation.main.balance.address.BalanceAddressFra
 import com.kyberswap.android.presentation.main.balance.chart.ChartFragment
 import com.kyberswap.android.presentation.main.balance.send.SendConfirmActivity
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
+import com.kyberswap.android.presentation.main.limitorder.*
 import com.kyberswap.android.presentation.main.profile.SignUpConfirmFragment
 import com.kyberswap.android.presentation.main.profile.SignUpFragment
 import com.kyberswap.android.presentation.main.setting.AddContactFragment
@@ -244,6 +245,14 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         navigateByChildFragmentManager(currentFragment, SignUpFragment.newInstance(wallet))
     }
 
+
+    fun navigateToLimitOrderSuggestionScreen(currentFragment: Fragment?, wallet: Wallet?) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            LimitOrderSuggestionFragment.newInstance(wallet)
+        )
+    }
+
     fun navigateToSignUpConfirmScreen(
         currentFragment: Fragment?,
         wallet: Wallet?,
@@ -265,6 +274,45 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         transaction.replace(container, fragment, fragment.javaClass.simpleName)
         transaction.addToBackStack(fragment.javaClass.simpleName)
         transaction.commitAllowingStateLoss()
+    }
+
+    fun navigateToManageOrder(currentFragment: Fragment?, wallet: Wallet?) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            ManageOrderFragment.newInstance(wallet)
+        )
+    }
+
+    fun navigateToLimitOrderFilterScreen(
+        currentFragment: Fragment?,
+        wallet: Wallet?
+    ) {
+
+        navigateByChildFragmentManager(
+            currentFragment,
+            FilterLimitOrderFragment.newInstance(wallet)
+        )
+    }
+
+    fun navigateToOrderConfirmScreen(
+        currentFragment: Fragment?,
+        wallet: Wallet?
+    ) {
+
+        navigateByChildFragmentManager(
+            currentFragment,
+            OrderConfirmFragment.newInstance(wallet)
+        )
+    }
+
+    fun navigateToConvertFragment(
+        currentFragment: Fragment?,
+        wallet: Wallet?
+    ) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            ConvertFragment.newInstance(wallet)
+        )
     }
 
     companion object {

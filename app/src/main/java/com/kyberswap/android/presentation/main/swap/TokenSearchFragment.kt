@@ -71,10 +71,6 @@ class TokenSearchFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel.getTokenBalance(wallet!!.address)
-        binding.imgBack.setOnClickListener {
-            activity!!.onBackPressed()
-        }
 
         binding.rvToken.layoutManager = LinearLayoutManager(
             activity,
@@ -92,6 +88,7 @@ class TokenSearchFragment : BaseFragment() {
 
             }
         binding.rvToken.adapter = tokenAdapter
+        viewModel.getTokenList(wallet!!.address)
 
         viewModel.getTokenListCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -166,6 +163,10 @@ class TokenSearchFragment : BaseFragment() {
                     currentSearchString = searchedText
                     updateFilterListToken(currentSearchString, tokenAdapter)
                 })
+
+        binding.imgBack.setOnClickListener {
+            activity!!.onBackPressed()
+        }
 
     }
 
