@@ -89,7 +89,6 @@ class LimitOrderFragment : BaseFragment() {
 
         imgSwap.setOnClickListener {
 
-
         }
 
         binding.tvSubmitOrder.setOnClickListener {

@@ -89,6 +89,10 @@ interface MainActivityModule {
 
     @FragmentScoped
     @ContributesAndroidInjector
+    fun contributeConvertFragment(): ConvertFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
     fun contributeSendFragment(): SendFragment
 
 
