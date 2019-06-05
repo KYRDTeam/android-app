@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Token
-import com.kyberswap.android.domain.usecase.token.GetBalanceUseCase
+import com.kyberswap.android.domain.usecase.token.GetTokenUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSendTokenUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveSwapDataTokenUseCase
@@ -16,7 +16,7 @@ import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class TokenSearchViewModel @Inject constructor(
-    private val getTokenListUseCase: GetBalanceUseCase,
+    private val getTokenListUseCase: GetTokenUseCase,
     private val getWalletByAddressUseCase: GetWalletByAddressUseCase,
     private val saveSwapDataTokenUseCase: SaveSwapDataTokenUseCase,
     private val saveSendTokenUseCase: SaveSendTokenUseCase
@@ -38,7 +38,7 @@ class TokenSearchViewModel @Inject constructor(
         CompositeDisposable()
     }
 
-    fun getTokenBalance(address: String) {
+    fun getTokenList(address: String) {
         getTokenListUseCase.execute(
             Consumer {
                 _getTokenListCallback.value = Event(

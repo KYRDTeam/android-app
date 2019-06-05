@@ -13,7 +13,7 @@ data class SocialInfo(
     val photoUrl: String? = null,
     val email: String? = null,
     val subscription: Boolean = false,
-    val twoFa: String? = null,
     val oAuthToken: String? = null,
-    val oAuthTokenSecret: String? = null
+    val oAuthTokenSecret: String? = null,
+    val twoFa: String? = null
 ) : Parcelable

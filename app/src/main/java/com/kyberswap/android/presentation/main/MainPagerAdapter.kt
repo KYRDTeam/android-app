@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.main.balance.BalanceFragment
+import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.setting.SettingFragment
 import com.kyberswap.android.presentation.main.swap.SwapFragment
@@ -25,6 +26,7 @@ class MainPagerAdapter constructor(
             BALANCE -> BalanceFragment.newInstance(
                 wallet
             )
+            LIMIT_ORDER -> LimitOrderFragment.newInstance(wallet)
             SWAP -> SwapFragment.newInstance(wallet)
             SETTING -> SettingFragment.newInstance()
             else -> ProfileFragment.newInstance(wallet)
@@ -52,7 +54,8 @@ class MainPagerAdapter constructor(
     companion object {
         const val BALANCE = 0
         const val SWAP = 1
-        const val PROFILE = 2
-        const val SETTING = 3
+        const val LIMIT_ORDER = 2
+        const val PROFILE = 3
+        const val SETTING = 4
     }
 }

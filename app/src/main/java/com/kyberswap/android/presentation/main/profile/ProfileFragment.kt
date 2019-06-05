@@ -282,12 +282,17 @@ class ProfileFragment : BaseFragment() {
                     val socialInfo = SocialInfo(
                         LoginType.TWITTER,
                         name,
-                        getString(R.string.twitter_consumer_key),
-                        profileImageUrl
+                        session?.authToken?.token,
+                        profileImageUrl,
+                        null,
+                        false,
+                        session?.authToken?.token,
+                        session?.authToken?.secret
                     )
+
+
                     viewModel.login(socialInfo)
         
-
 
                 override fun failure(exception: TwitterException) {
                     Toast.makeText(context, exception.localizedMessage, Toast.LENGTH_SHORT).show()
