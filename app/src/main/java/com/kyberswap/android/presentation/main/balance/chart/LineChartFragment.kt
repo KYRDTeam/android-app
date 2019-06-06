@@ -84,6 +84,7 @@ class LineChartFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.getChartData(token, chartType)
+        binding.lineChart.setNoDataText(getString(R.string.chart_updating_data))
         viewModel.getChartCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -115,7 +116,6 @@ class LineChartFragment : BaseFragment() {
         lineChart.axisLeft.setDrawLabels(false)
         lineChart.description.isEnabled = false
         lineChart.setViewPortOffsets(0f, 0f, 0f, 0f)
-
         val formatter =
             XAxisValueFormatter(chart)
         val markerView = CustomMarkerView(
@@ -130,6 +130,10 @@ class LineChartFragment : BaseFragment() {
 
     private fun setData(chart: Chart, lineChart: LineChart) {
         val chartEntries = mutableListOf<Entry>()
+        if (chart.c.isEmpty()) {
+            lineChart.setNoDataText(getString(R.string.chart_no_token_data))
+            return
+
         chart.c.forEachIndexed { index, bigDecimal ->
             chartEntries.add(Entry(index.toFloat(), bigDecimal.toFloat()))
 

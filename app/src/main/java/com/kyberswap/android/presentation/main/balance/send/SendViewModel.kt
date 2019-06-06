@@ -12,6 +12,7 @@ import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
+import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT_TRANSFER
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.swap.GetContactState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
@@ -39,6 +40,7 @@ class SendViewModel @Inject constructor(
     val getSendCallback: LiveData<Event<GetSendState>>
         get() = _getSendCallback
 
+    private var gasLimit = DEFAULT_GAS_LIMIT_TRANSFER
 
     private val _getContactCallback = MutableLiveData<Event<GetContactState>>()
     val getContactCallback: LiveData<Event<GetContactState>>
@@ -92,7 +94,7 @@ class SendViewModel @Inject constructor(
                     error.printStackTrace()
                     _saveSendCallback.value = Event(SaveSendState.ShowError(error.localizedMessage))
         ,
-                SaveSendUseCase.Param(it, address)
+                SaveSendUseCase.Param(it.copy(gasLimit = gasLimit.toString()), address)
             )
 
 
@@ -115,7 +117,8 @@ class SendViewModel @Inject constructor(
         if (send == null || wallet == null) return
         estimateTransferGasUseCase.execute(
             Consumer {
-                saveSend(send.copy(gasLimit = it.amountUsed.toString()))
+                gasLimit = it.amountUsed
+                saveSend(send.copy(gasLimit = gasLimit.toString()))
     ,
             Consumer { },
             EstimateTransferGasUseCase.Param(wallet, send)

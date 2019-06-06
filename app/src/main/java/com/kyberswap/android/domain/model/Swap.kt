@@ -75,6 +75,21 @@ data class Swap(
     val samePair: Boolean
         get() = tokenSource.tokenSymbol == tokenDest.tokenSymbol
 
+    val displayRateConversion: String
+        get() = StringBuilder()
+            .append("1 ")
+            .append(tokenSource.tokenSymbol)
+            .append(" = ")
+            .append(getExpectedDestAmount(expectedRate, 1.toString()).toDisplayNumber())
+            .append(" ")
+            .append(tokenDest.tokenSymbol)
+            .append(" = ")
+            .append(
+                tokenSource.rateUsdNow.toDisplayNumber()
+            )
+            .append(" USD")
+            .toString()
+
 
     val displayDestRateEthUsd: String
         get() = StringBuilder()
