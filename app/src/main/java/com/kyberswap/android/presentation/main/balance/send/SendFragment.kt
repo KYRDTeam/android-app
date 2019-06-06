@@ -28,6 +28,7 @@ import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.main.swap.GetSendState
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.isContact
 import com.kyberswap.android.util.ext.setAllOnClickListener
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import kotlinx.android.synthetic.main.fragment_send.*
@@ -221,6 +222,7 @@ class SendFragment : BaseFragment() {
                 binding.edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.send?.tokenSource?.currentBalance -> {
                     showAlert(getString(R.string.exceed_balance))
                 }
+                !edtAddress.text.toString().isContact() -> showAlert(getString(R.string.invalid_contact_address))
                 else -> viewModel.saveSend(binding.send, binding.edtAddress.text.toString())
             }
         }
@@ -271,6 +273,9 @@ class SendFragment : BaseFragment() {
                 showAlert(getString(R.string.message_cancelled))
             } else {
                 binding.edtAddress.setText(result.contents.toString())
+                if (!result.contents.toString().isContact()) {
+                    binding.edtAddress.error = getString(R.string.invalid_contact_address)
+                }
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data)

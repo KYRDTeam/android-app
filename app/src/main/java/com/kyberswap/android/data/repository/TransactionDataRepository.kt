@@ -22,7 +22,6 @@ class TransactionDataRepository @Inject constructor(
     private val transactionMapper: TransactionMapper
 ) : TransactionRepository {
     override fun fetchERC20TokenTransactions(address: String): Single<List<Transaction>> {
-        Timber.e("fetchERC20TokenTransactions")
         return transactionApi.getTransaction(
             DEFAULT_MODULE,
             TOKEN_TRANSACTION,
@@ -39,7 +38,6 @@ class TransactionDataRepository @Inject constructor(
     }
 
     override fun fetchInternalTransactions(address: String): Single<List<Transaction>> {
-        Timber.e("fetchInternalTransactions")
         return transactionApi.getTransaction(
             DEFAULT_MODULE,
             INTERNAL_TRANSACTION,
@@ -60,7 +58,6 @@ class TransactionDataRepository @Inject constructor(
     }
 
     override fun fetchNormalTransaction(address: String): Single<List<Transaction>> {
-        Timber.e("fetchNormalTransaction")
         return transactionApi.getTransaction(
             DEFAULT_MODULE,
             NORMAL_TRANSACTION,
@@ -102,6 +99,17 @@ class TransactionDataRepository @Inject constructor(
             }
             .toList()
         val receivedTransaction = fetchInternalTransactions(address)
+            .toFlowable().flatMapIterable { transactions ->
+                transactions
+            }
+            .map {
+                it.copy(
+                    tokenSymbol = Token.ETH,
+                    tokenName = Token.ETH_NAME,
+                    tokenDecimal = Token.ETH_DECIMAL.toString()
+                )
+            }.toList()
+
         val erc20Transaction = fetchERC20TokenTransactions(address)
         return Flowable.mergeDelayError(
             transactionDao.all,

@@ -69,3 +69,7 @@ fun String.toBytes32(): CustomBytes32 {
     System.arraycopy(byteValue, 0, byteValueLen32, 0, byteValue.size)
     return CustomBytes32(byteValueLen32)
 }
+
+fun String.isContact(): Boolean {
+    return (startsWith("0x") && length == 42)
+}

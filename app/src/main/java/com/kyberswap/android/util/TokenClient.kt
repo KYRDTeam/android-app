@@ -8,6 +8,7 @@ import com.kyberswap.android.presentation.common.DEFAULT_MAX_AMOUNT
 import com.kyberswap.android.presentation.common.DEFAULT_WALLET_ID
 import com.kyberswap.android.presentation.common.PERM
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toBytes32
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.FunctionReturnDecoder
@@ -321,7 +322,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             param.send.gasPrice.toBigDecimalOrDefaultZero(),
             Convert.Unit.GWEI
         ).toBigInteger()
-        val gasLimit = param.send.gasLimit.toBigInteger()
+        val gasLimit = param.send.gasLimit.toBigIntegerOrDefaultZero()
 
         val isEth = param.send.tokenSource.isETH()
 
@@ -342,7 +343,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                 FunctionEncoder.encode(
                     transfer(
                         param.send.contact.address,
-                        transactionAmount.toString()
+                        amount.toString()
                     )
                 ),
             if (isEth) transactionAmount else BigInteger.ZERO

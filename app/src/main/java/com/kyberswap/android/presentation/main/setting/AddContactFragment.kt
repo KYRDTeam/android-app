@@ -17,6 +17,7 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.swap.SaveContactState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.isContact
 import javax.inject.Inject
 
 
@@ -68,12 +69,17 @@ class AddContactFragment : BaseFragment() {
         }
 
         binding.tvSave.setOnClickListener {
-            if (binding.edtAddress.text.isNullOrEmpty()) showAlert(getString(R.string.provide_receive_address))
-            viewModel.save(
-                wallet!!.address,
-                binding.edtName.text.toString(),
-                binding.edtAddress.text.toString()
-            )
+            if (binding.edtAddress.text.isNullOrEmpty())
+                showAlert(getString(R.string.provide_receive_address))
+            else if (!binding.edtAddress.text.toString().isContact()) {
+                binding.edtAddress.error = getString(R.string.invalid_contact_address)
+            } else {
+                viewModel.save(
+                    wallet!!.address,
+                    binding.edtName.text.toString(),
+                    binding.edtAddress.text.toString()
+                )
+            }
         }
 
         viewModel.saveContactCallback.observe(viewLifecycleOwner, Observer {

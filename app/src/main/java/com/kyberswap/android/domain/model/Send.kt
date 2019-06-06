@@ -37,7 +37,7 @@ data class Send(
             .append(
                 sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateUsdNow).toDisplayNumber()
             )
-            .append("USD")
+            .append(" USD")
             .toString()
 
     val transactionFeeEth: String
@@ -69,7 +69,7 @@ data class Send(
                     tokenSource.rateUsdNow
                 ).toDisplayNumber()
             )
-            .append("USD")
+            .append(" USD")
             .toString()
 
 
