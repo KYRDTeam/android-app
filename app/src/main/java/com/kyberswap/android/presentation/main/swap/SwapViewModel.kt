@@ -86,6 +86,7 @@ class SwapViewModel @Inject constructor(
             expectedRate = BigDecimal.ONE.toDisplayNumber()
             return
         }
+
         getMarketRate.dispose()
         if (swap.hasTokenPair) {
             getMarketRate.execute(
@@ -119,10 +120,7 @@ class SwapViewModel @Inject constructor(
     fun getSwapData(address: String) {
         getSwapData.execute(
             Consumer {
-                gasLimit = if (it.tokenSource.gasLimit.toBigIntegerOrDefaultZero()
-                    == BigInteger.ZERO
-                ) DEFAULT_GAS_LIMIT
-                else it.tokenSource.gasLimit.toBigIntegerOrDefaultZero()
+                gasLimit = calculateGasLimit(it)
                 _getSwapCallback.value = Event(GetSwapState.Success(it))
             },
             Consumer {
@@ -131,6 +129,21 @@ class SwapViewModel @Inject constructor(
             },
             GetSwapDataUseCase.Param(address)
         )
+    }
+
+    private fun calculateGasLimit(swap: Swap): BigInteger {
+        val gasLimitSourceToEth =
+            if (swap.tokenSource.gasLimit.toBigIntegerOrDefaultZero()
+                == BigInteger.ZERO
+            )
+                DEFAULT_GAS_LIMIT
+            else swap.tokenSource.gasLimit.toBigIntegerOrDefaultZero()
+        val gasLimitEthToSource =
+            if (swap.tokenDest.gasLimit.toBigIntegerOrDefaultZero() == BigInteger.ZERO)
+                DEFAULT_GAS_LIMIT
+            else swap.tokenDest.gasLimit.toBigIntegerOrDefaultZero()
+
+        return gasLimitSourceToEth + gasLimitEthToSource
     }
 
     fun getGasPrice() {

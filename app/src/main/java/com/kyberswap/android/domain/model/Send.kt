@@ -75,9 +75,5 @@ data class Send(
 
     fun reset() {
         this.sourceAmount = ""
-        this.gasPrice = ""
-        this.gasLimit = ""
-        this.gas = Gas()
-        this.contact = Contact()
     }
 }

@@ -110,6 +110,9 @@ class AddContactFragment : BaseFragment() {
                 showAlert(getString(R.string.message_cancelled))
             } else {
                 binding.edtAddress.setText(result.contents.toString())
+                if (!result.contents.toString().isContact()) {
+                    binding.edtAddress.error = getString(R.string.invalid_contact_address)
+                }
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data)

@@ -83,6 +83,7 @@ class LineChartFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        binding.lineChart.setNoDataText(getString(R.string.chart_updating_data))
         viewModel.getChartData(token, chartType)
         binding.lineChart.setNoDataText(getString(R.string.chart_updating_data))
         viewModel.getChartCallback.observe(viewLifecycleOwner, Observer {
@@ -129,6 +130,10 @@ class LineChartFragment : BaseFragment() {
     }
 
     private fun setData(chart: Chart, lineChart: LineChart) {
+        if (chart.c.isEmpty()) {
+            lineChart.setNoDataText(getString(R.string.chart_no_token_data))
+            return
+        }
         val chartEntries = mutableListOf<Entry>()
         if (chart.c.isEmpty()) {
             lineChart.setNoDataText(getString(R.string.chart_no_token_data))
