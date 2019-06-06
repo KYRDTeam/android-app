@@ -19,5 +19,5 @@ data class UserInfoEntity(
     @SerializedName("name")
     val name: String = "",
     @SerializedName("uid")
-    val uid: Int = 0
+    val uid: Long = 0
 )

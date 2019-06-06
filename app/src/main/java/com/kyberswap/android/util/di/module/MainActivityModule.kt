@@ -283,4 +283,11 @@ interface MainActivityModule {
     fun bindSignUpViewModel(
         signUpViewModel: SignUpViewModel
     ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LimitOrderViewModel::class)
+    fun bindLimitOrderViewModel(
+        limitOrderViewModel: LimitOrderViewModel
+    ): ViewModel
 }

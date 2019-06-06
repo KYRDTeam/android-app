@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 20,
-    "identityHash": "6abf03c9d58b6add8cf69904db6424a7",
+    "version": 22,
+    "identityHash": "ce67c26bf275c83e560703043b41c43d",
     "entities": [
       {
         "tableName": "tokens",
@@ -1011,12 +1011,68 @@
 ,
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "users",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`avatarUrl` TEXT NOT NULL, `contactId` TEXT NOT NULL, `contactType` TEXT NOT NULL, `kycStatus` TEXT NOT NULL, `kycStep` INTEGER NOT NULL, `name` TEXT NOT NULL, `uid` INTEGER NOT NULL, PRIMARY KEY(`uid`))",
+        "fields": [
+          {
+            "fieldPath": "avatarUrl",
+            "columnName": "avatarUrl",
+            "affinity": "TEXT",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "contactId",
+            "columnName": "contactId",
+            "affinity": "TEXT",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "contactType",
+            "columnName": "contactType",
+            "affinity": "TEXT",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "kycStatus",
+            "columnName": "kycStatus",
+            "affinity": "TEXT",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "kycStep",
+            "columnName": "kycStep",
+            "affinity": "INTEGER",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "INTEGER",
+            "notNull": true
+  
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "uid"
+          ],
+          "autoGenerate": false
+,
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"6abf03c9d58b6add8cf69904db6424a7\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"ce67c26bf275c83e560703043b41c43d\")"
     ]
   }
 }

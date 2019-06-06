@@ -8,10 +8,10 @@ import com.kyberswap.android.domain.model.Send
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.contact.GetContactUseCase
 import com.kyberswap.android.domain.usecase.contact.SaveContactUseCase
+import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
+import com.kyberswap.android.domain.usecase.send.SaveSendUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
-import com.kyberswap.android.domain.usecase.wallet.GetSendTokenUseCase
-import com.kyberswap.android.domain.usecase.wallet.SaveSendUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.swap.GetContactState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState

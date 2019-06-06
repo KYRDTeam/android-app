@@ -1,8 +1,8 @@
 package com.kyberswap.android.util
 
 import com.kyberswap.android.domain.model.Token
-import com.kyberswap.android.domain.usecase.wallet.SwapTokenUseCase
-import com.kyberswap.android.domain.usecase.wallet.TransferTokenUseCase
+import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
+import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
 import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
 import com.kyberswap.android.presentation.common.DEFAULT_MAX_AMOUNT
 import com.kyberswap.android.presentation.common.DEFAULT_WALLET_ID
