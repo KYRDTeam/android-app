@@ -2,7 +2,6 @@ package com.kyberswap.android.domain.model
 
 import com.kyberswap.android.data.api.user.LoginUserEntity
 
-
 data class LoginUser(
     val authInfo: AuthInfo = AuthInfo(),
     val success: Boolean = false,

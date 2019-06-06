@@ -7,9 +7,7 @@ import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.swap.*
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
-import com.kyberswap.android.domain.usecase.wallet.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
-import com.kyberswap.android.domain.usecase.wallet.SaveSwapUseCase
 import com.kyberswap.android.presentation.common.DEFAULT_EXPECTED_RATE
 import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
 import com.kyberswap.android.presentation.common.DEFAULT_MARKET_RATE

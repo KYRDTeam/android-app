@@ -1,4 +1,4 @@
-package com.kyberswap.android.domain.usecase.wallet
+package com.kyberswap.android.domain.usecase.send
 
 import androidx.annotation.VisibleForTesting
 import com.kyberswap.android.domain.SchedulerProvider

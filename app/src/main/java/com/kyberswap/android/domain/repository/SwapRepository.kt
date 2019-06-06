@@ -4,10 +4,11 @@ import com.kyberswap.android.domain.model.Cap
 import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.Send
 import com.kyberswap.android.domain.model.Swap
-import com.kyberswap.android.domain.usecase.swap.EstimateGasUseCase
-import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
-import com.kyberswap.android.domain.usecase.swap.GetCapUseCase
-import com.kyberswap.android.domain.usecase.wallet.*
+import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
+import com.kyberswap.android.domain.usecase.send.SaveSendTokenUseCase
+import com.kyberswap.android.domain.usecase.send.SaveSendUseCase
+import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
+import com.kyberswap.android.domain.usecase.swap.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single

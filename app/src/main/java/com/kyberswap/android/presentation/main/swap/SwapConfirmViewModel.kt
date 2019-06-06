@@ -5,11 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Wallet
-import com.kyberswap.android.domain.usecase.wallet.GetSwapDataUseCase
-import com.kyberswap.android.domain.usecase.wallet.SwapTokenUseCase
+import com.kyberswap.android.domain.usecase.swap.GetSwapDataUseCase
+import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
 import com.kyberswap.android.presentation.common.Event
 import io.reactivex.functions.Consumer
-import timber.log.Timber
 import javax.inject.Inject
 
 class SwapConfirmViewModel @Inject constructor(
@@ -48,7 +47,6 @@ class SwapConfirmViewModel @Inject constructor(
                 Consumer {
                     _getSwapTokenTransactionCallback.value =
                         Event(SwapTokenTransactionState.Success(it))
-                    Timber.e("txhash: " + it)
                 },
                 Consumer {
                     it.printStackTrace()
