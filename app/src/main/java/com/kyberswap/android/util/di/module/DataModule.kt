@@ -5,6 +5,7 @@ import com.kyberswap.android.data.api.home.*
 import com.kyberswap.android.data.db.*
 import com.kyberswap.android.data.mapper.*
 import com.kyberswap.android.data.repository.*
+import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.domain.repository.*
 import com.kyberswap.android.util.TokenClient
 import dagger.Module
@@ -119,7 +120,24 @@ object DataModule {
     @JvmStatic
     fun provideUserRepository(
         api: UserApi,
+        userDao: UserDao,
+        storageMediator: StorageMediator,
         userMapper: UserMapper
     ): UserRepository =
-        UserDataRepository(api, userMapper)
+        UserDataRepository(api, userDao, storageMediator, userMapper)
+
+
+    @Singleton
+    @Provides
+    @JvmStatic
+    fun provideLimitOrderRepository(
+        dao: LimitOrderDao,
+        api: LimitOrderApi,
+        mapper: OrderMapper
+    ): LimitOrderRepository =
+        LimitOrderDataRepository(
+            dao,
+            api,
+            mapper
+        )
 }

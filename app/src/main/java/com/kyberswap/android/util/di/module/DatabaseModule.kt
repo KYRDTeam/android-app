@@ -62,8 +62,21 @@ class DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideTransactinoDao(appDatabase: AppDatabase): TransactionDao {
+    fun provideTransactionDao(appDatabase: AppDatabase): TransactionDao {
         return appDatabase.transactionDao()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideOrderDao(appDatabase: AppDatabase): LimitOrderDao {
+        return appDatabase.limitOrderDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserrDao(appDatabase: AppDatabase): UserDao {
+        return appDatabase.userDao()
     }
 
 }

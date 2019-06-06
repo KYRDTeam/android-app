@@ -5,7 +5,7 @@ import com.kyberswap.android.domain.model.UserStatus
 import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
 import com.kyberswap.android.domain.usecase.profile.LoginUseCase
 import com.kyberswap.android.domain.usecase.profile.ResetPasswordUseCase
-import com.kyberswap.android.domain.usecase.wallet.SignUpUseCase
+import com.kyberswap.android.domain.usecase.profile.SignUpUseCase
 import io.reactivex.Single
 
 interface UserRepository {

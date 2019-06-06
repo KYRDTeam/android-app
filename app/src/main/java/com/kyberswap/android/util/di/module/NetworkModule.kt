@@ -4,6 +4,7 @@ import android.content.Context
 import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.*
+import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.util.TokenClient
 import dagger.Module
 import dagger.Provides
@@ -21,11 +22,20 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(storageMediator: StorageMediator): OkHttpClient {
         val client = OkHttpClient().newBuilder()
         client.addInterceptor {
             val original = it.request()
             val builder = original.newBuilder()
+
+            val accessToken = storageMediator.getAccessToken()
+            if (!accessToken.isNullOrEmpty()) {
+                builder.header(
+                    "Authorization", accessToken
+
+                )
+    
+
             val request = builder.method(original.method(), original.body())
                 .build()
             it.proceed(request)
@@ -81,12 +91,21 @@ class NetworkModule {
         )
     }
 
-
     @Provides
     @Singleton
     fun provideUserApi(context: Context, client: OkHttpClient): UserApi {
         return createApiClient(
             UserApi::class.java,
+            context.getString(R.string.user_endpoint_url),
+            client
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideLimitOrderApi(context: Context, client: OkHttpClient): LimitOrderApi {
+        return createApiClient(
+            LimitOrderApi::class.java,
             context.getString(R.string.user_endpoint_url),
             client
         )

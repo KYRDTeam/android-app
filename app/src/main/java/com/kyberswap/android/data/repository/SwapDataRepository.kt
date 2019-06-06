@@ -10,10 +10,11 @@ import com.kyberswap.android.data.mapper.CapMapper
 import com.kyberswap.android.data.mapper.GasMapper
 import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.domain.repository.SwapRepository
-import com.kyberswap.android.domain.usecase.swap.EstimateGasUseCase
-import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
-import com.kyberswap.android.domain.usecase.swap.GetCapUseCase
-import com.kyberswap.android.domain.usecase.wallet.*
+import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
+import com.kyberswap.android.domain.usecase.send.SaveSendTokenUseCase
+import com.kyberswap.android.domain.usecase.send.SaveSendUseCase
+import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
+import com.kyberswap.android.domain.usecase.swap.*
 import com.kyberswap.android.presentation.common.DEFAULT_NAME
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
@@ -48,7 +49,6 @@ class SwapDataRepository @Inject constructor(
                     walletAddress = param.send.walletAddress,
                     address = param.address
                 ) ?: Contact(param.send.walletAddress, param.address, DEFAULT_NAME)
-//                contactDao.insertContact(contact)
                 sendTokenDao.updateSend(param.send.copy(contact = contact))
 
      else {
@@ -184,9 +184,7 @@ class SwapDataRepository @Inject constructor(
         return Completable.fromCallable {
             val address = param.walletAddress
             val token = param.token
-            var send = sendTokenDao.findSendByAddress(address)
-            send = send?.copy(tokenSource = token) ?: Send(address, token)
-            sendTokenDao.insertSend(send)
+            sendTokenDao.add(Send(address, token))
 
 
     }

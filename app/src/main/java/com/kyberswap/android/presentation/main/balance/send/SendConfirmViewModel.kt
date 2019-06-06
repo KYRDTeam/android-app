@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Send
 import com.kyberswap.android.domain.model.Wallet
-import com.kyberswap.android.domain.usecase.wallet.GetSendTokenUseCase
-import com.kyberswap.android.domain.usecase.wallet.TransferTokenUseCase
+import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
+import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.swap.GetSendState
 import com.kyberswap.android.presentation.main.swap.TransferTokenTransactionState

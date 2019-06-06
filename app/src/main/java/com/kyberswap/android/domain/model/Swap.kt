@@ -6,6 +6,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
+import com.kyberswap.android.presentation.common.MIN_SUPPORT_SWAP_SOURCE_AMOUNT
 import com.kyberswap.android.util.ext.percentage
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
@@ -60,6 +61,13 @@ data class Swap(
             .append(tokenDest.tokenSymbol)
             .toString()
 
+    val displaySourceToDestAmount: String
+        get() = StringBuilder().append("1 ")
+            .append(tokenSource.tokenSymbol)
+            .append(" = ")
+            .append(displayDestAmount)
+            .toString()
+
     val displayDestAmountUsd: String
         get() = StringBuilder()
             .append("≈ ")
@@ -74,6 +82,21 @@ data class Swap(
 
     val samePair: Boolean
         get() = tokenSource.tokenSymbol == tokenDest.tokenSymbol
+
+    val displayRateConversion: String
+        get() = StringBuilder()
+            .append("1 ")
+            .append(tokenSource.tokenSymbol)
+            .append(" = ")
+            .append(getExpectedDestAmount(expectedRate, 1.toString()).toDisplayNumber())
+            .append(" ")
+            .append(tokenDest.tokenSymbol)
+            .append(" = ")
+            .append(
+                tokenSource.rateUsdNow.toDisplayNumber()
+            )
+            .append(" USD")
+            .toString()
 
 
     val displayDestRateEthUsd: String
@@ -122,6 +145,7 @@ data class Swap(
     val ratePercentageAbs: String
         get() = expectedRate.percentage(marketRate).abs().toDisplayNumber()
 
+
     fun swapToken(): Swap {
         return Swap(
             this.walletAddress,
@@ -135,6 +159,16 @@ data class Swap(
                 ).toBigDecimal().toDisplayNumber()
             else 0.toString()
         )
+    }
+
+    fun amountTooSmall(sourceAmount: String?): Boolean {
+        val amount =
+            sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateEthNow)
+        return if (tokenSource.isETH()) {
+            amount <= MIN_SUPPORT_SWAP_SOURCE_AMOUNT.toBigDecimal()
+ else {
+            amount < MIN_SUPPORT_SWAP_SOURCE_AMOUNT.toBigDecimal()
+
     }
 
     fun reset() {
