@@ -25,7 +25,8 @@ class TransactionStatusViewModel @Inject constructor(
                     .flatMap { item ->
                         val items = mutableListOf<TransactionItem>()
                         items.add(TransactionItem.Header(item.key))
-                        item.value.forEachIndexed { index, transaction ->
+                        val list = item.value.sortedByDescending { it.timeStamp.toLong() }
+                        list.forEachIndexed { index, transaction ->
                             if (index % 2 == 0) {
                                 items.add(TransactionItem.ItemEven(transaction))
                             } else {

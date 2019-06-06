@@ -142,6 +142,8 @@ class SwapFragment : BaseFragment() {
                 .subscribe { text ->
                     if (text.isNullOrEmpty()) {
                         binding.edtDest.setText("")
+                        binding.imgInfo.visibility = View.GONE
+                        binding.tvPercentageRate.visibility = View.GONE
                     }
                     binding.swap?.let { swapData ->
                         if (swapData.samePair) {
@@ -335,11 +337,14 @@ class SwapFragment : BaseFragment() {
 
         binding.tvContinue.setOnClickListener {
             when {
-                binding.edtSource.text.isNullOrEmpty() -> showAlert(getString(R.string.specify_amount))
-                binding.edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.swap?.tokenSource?.currentBalance -> {
+                edtSource.text.isNullOrEmpty() -> showAlert(getString(R.string.specify_amount))
+                edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.swap?.tokenSource?.currentBalance -> {
                     showAlert(getString(R.string.exceed_balance))
                 }
                 binding.swap?.samePair == true -> showAlert(getString(R.string.same_token_alert))
+                binding.swap?.amountTooSmall(edtSource.text.toString()) == true -> showAlert(
+                    getString(R.string.swap_amount_small)
+                )
                 else -> binding.swap?.let { swap ->
                     wallet?.let {
                         viewModel.updateSwap(
@@ -347,6 +352,7 @@ class SwapFragment : BaseFragment() {
                                 sourceAmount = edtSource.text.toString(),
                                 minAcceptedRatePercent =
                                 getMinAcceptedRatePercent(rgRate.checkedRadioButtonId)
+
                             )
                         )
                     }

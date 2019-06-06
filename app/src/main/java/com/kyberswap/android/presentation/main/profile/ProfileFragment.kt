@@ -269,7 +269,7 @@ class ProfileFragment : BaseFragment() {
     }
 
 
-    fun getTwitterUserProfileWthTwitterCoreApi(
+    private fun getTwitterUserProfileWthTwitterCoreApi(
         session: TwitterSession?
     ) {
         TwitterCore.getInstance().getApiClient(session).accountService
@@ -300,7 +300,6 @@ class ProfileFragment : BaseFragment() {
             })
     }
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         callbackManager.onActivityResult(requestCode, resultCode, data)
         twitterAuthClient.onActivityResult(requestCode, resultCode, data)
@@ -329,7 +328,6 @@ class ProfileFragment : BaseFragment() {
             e.printStackTrace()
             Timber.e(e.localizedMessage)
         }
-
     }
 
     companion object {

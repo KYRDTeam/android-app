@@ -1,20 +1,24 @@
 package com.kyberswap.android.data.repository
 
 import com.kyberswap.android.data.api.home.UserApi
+import com.kyberswap.android.data.db.UserDao
 import com.kyberswap.android.data.mapper.UserMapper
+import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.domain.model.LoginUser
 import com.kyberswap.android.domain.model.UserStatus
 import com.kyberswap.android.domain.repository.UserRepository
 import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
 import com.kyberswap.android.domain.usecase.profile.LoginUseCase
 import com.kyberswap.android.domain.usecase.profile.ResetPasswordUseCase
-import com.kyberswap.android.domain.usecase.wallet.SignUpUseCase
+import com.kyberswap.android.domain.usecase.profile.SignUpUseCase
 import io.reactivex.Single
 import javax.inject.Inject
 
 
 class UserDataRepository @Inject constructor(
     private val userApi: UserApi,
+    private val userDao: UserDao,
+    private val storageMediator: StorageMediator,
     private val userMapper: UserMapper
 ) : UserRepository {
     override fun resetPassword(param: ResetPasswordUseCase.Param): Single<UserStatus> {
@@ -41,6 +45,10 @@ class UserDataRepository @Inject constructor(
     override fun login(param: LoginUseCase.Param): Single<LoginUser> {
         return userApi.login(param.email, param.password)
             .map { userMapper.transform(it) }
+            .doAfterSuccess {
+                userDao.insertUserInfo(it.userInfo)
+                storageMediator.applyToken(it.authInfo)
+            }
     }
 
     override fun signUp(param: SignUpUseCase.Param): Single<UserStatus> {

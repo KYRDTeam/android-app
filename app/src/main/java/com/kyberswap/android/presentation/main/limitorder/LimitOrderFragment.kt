@@ -15,7 +15,6 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
-import com.kyberswap.android.presentation.main.swap.SwapViewModel
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.setAllOnClickListener
 import com.kyberswap.android.util.ext.showDrawer
@@ -39,7 +38,7 @@ class LimitOrderFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(SwapViewModel::class.java)
+        ViewModelProviders.of(this, viewModelFactory).get(LimitOrderViewModel::class.java)
     }
 
     @Inject
@@ -90,6 +89,8 @@ class LimitOrderFragment : BaseFragment() {
         imgSwap.setOnClickListener {
 
         }
+
+        viewModel.getLimitOrders(wallet?.address!!)
 
         binding.tvSubmitOrder.setOnClickListener {
             navigator.navigateToLimitOrderSuggestionScreen(
