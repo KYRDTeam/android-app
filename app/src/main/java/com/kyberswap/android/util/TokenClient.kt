@@ -346,7 +346,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                         amount.toString()
                     )
                 ),
-            if (isEth) transactionAmount else BigInteger.ZERO
+            transactionAmount
         )
 
         if (transactionResponse.hasError()) run {
