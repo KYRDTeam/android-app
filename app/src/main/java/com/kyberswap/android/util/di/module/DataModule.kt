@@ -135,13 +135,15 @@ object DataModule {
         localLimitOrderDao: LocalLimitOrderDao,
         dao: LimitOrderDao,
         api: LimitOrderApi,
-        mapper: OrderMapper
+        mapper: OrderMapper,
+        feeMapper: FeeMapper
     ): LimitOrderRepository =
         LimitOrderDataRepository(
             dao,
             localLimitOrderDao,
             tokenDao,
             api,
-            mapper
+            mapper,
+            feeMapper
         )
 }

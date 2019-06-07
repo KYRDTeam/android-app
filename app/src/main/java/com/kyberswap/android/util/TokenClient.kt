@@ -205,7 +205,6 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         value: String,
         isEth: Boolean
     ): EthEstimateGas? {
-
         return web3j.ethEstimateGas(
             Transaction(
                 walletAddress,
@@ -217,8 +216,6 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                 FunctionEncoder.encode(transfer(walletAddress, value))
             )
         ).send()
-
-
     }
 
     @Throws(IOException::class)
@@ -326,10 +323,12 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
 
         val isEth = param.send.tokenSource.isETH
 
-        val amount = Convert.toWei(
-            param.send.sourceAmount.toBigDecimalOrDefaultZero(),
-            Convert.Unit.ETHER
-        ).toBigInteger()
+
+        val amount = param.send
+            .sourceAmount
+            .toBigDecimalOrDefaultZero().multiply(
+                10.toBigDecimal().pow(param.send.tokenSource.tokenDecimal)
+            ).toBigInteger()
 
         val transactionAmount = if (isEth) amount else BigInteger.ZERO
 

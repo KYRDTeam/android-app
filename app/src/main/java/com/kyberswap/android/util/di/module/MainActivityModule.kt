@@ -301,4 +301,11 @@ interface MainActivityModule {
     fun bindLimitOrderViewModel(
         limitOrderViewModel: LimitOrderViewModel
     ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ManageOrderViewModel::class)
+    fun bindManageOrderViewModel(
+        manageOrderViewModel: ManageOrderViewModel
+    ): ViewModel
 }

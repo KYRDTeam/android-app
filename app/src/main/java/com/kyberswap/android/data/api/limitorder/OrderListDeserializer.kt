@@ -6,23 +6,27 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonParseException
 import java.lang.reflect.Type
 
-class OrderListDeserializer : JsonDeserializer<List<OrderEntity>> {
+class OrderListDeserializer : JsonDeserializer<LimitOrderResponse> {
     @Throws(JsonParseException::class)
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type,
         context: JsonDeserializationContext
-    ): List<OrderEntity>? {
+    ): LimitOrderResponse? {
         val entities = mutableListOf<OrderEntity>()
         val jsonObject = json.asJsonObject
         val fields = jsonObject.getAsJsonArray("fields")
         val orders = jsonObject.getAsJsonArray("orders")
+        orders?.let {
+            for (i in 0 until it.size()) {
+                val jsonOrder = it.get(i).asJsonArray
+                entities.add(jsonOrder.toOrderEntity(fields))
+    
 
-        for (i in 0 until orders.size()) {
-            val jsonOrder = orders.get(i).asJsonArray
-            entities.add(jsonOrder.toOrderEntity(fields))
 
+        return LimitOrderResponse(fields.toList().map {
+            it.asString
+, entities)
 
-        return entities
     }
 }

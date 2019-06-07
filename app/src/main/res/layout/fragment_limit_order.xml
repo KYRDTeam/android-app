@@ -327,6 +327,7 @@
                         android:minWidth="50dp"
                         android:minHeight="36dp"
                         android:text="@string/percent_25"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#8690ad"
                         android:textSize="12sp"
                         app:layout_constraintBottom_toBottomOf="@+id/tvBalance"
@@ -347,6 +348,7 @@
                         android:minWidth="50dp"
                         android:minHeight="36dp"
                         android:text="@string/percent_50"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#8690ad"
                         android:textSize="12sp"
                         app:layout_constraintBottom_toBottomOf="@+id/tv25Percent"
@@ -365,6 +367,7 @@
                         android:minWidth="50dp"
                         android:minHeight="36dp"
                         android:text="@string/percent_100"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#8690ad"
                         android:textSize="12sp"
                         app:layout_constraintBottom_toBottomOf="@+id/tv50Percent"
@@ -392,6 +395,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:text="@string/limit_order_rate_of"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#2a2a2a"
                         android:textSize="16sp"
                         app:layout_constraintBottom_toTopOf="@+id/tvPair"
@@ -404,6 +408,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@{order.tokenPair}"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#2a2a2a"
                         android:textSize="16sp"
                         app:layout_constraintBottom_toBottomOf="@+id/edtRate"
@@ -426,10 +431,10 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginEnd="2dp"
-                        android:hint="@string/default_swap_amount"
                         android:layout_marginBottom="2dp"
                         android:background="@android:color/white"
                         android:gravity="center|end"
+                        android:hint="@string/default_swap_amount"
                         android:inputType="numberDecimal"
                         android:paddingStart="20dp"
                         android:paddingEnd="20dp"
@@ -477,11 +482,11 @@
                         app:layout_constraintTop_toBottomOf="@+id/tvRateWarning" />
 
                     <TextView
-                        android:id="@+id/textView60"
+                        android:id="@+id/tvFee"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
-                        android:text="Fee: 23 KNC (0.1% of 2340 KNC)"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#626b86"
                         android:textSize="14sp"
                         app:layout_constraintEnd_toEndOf="@+id/view12"
@@ -489,16 +494,18 @@
                         app:layout_constraintTop_toBottomOf="@+id/view12" />
 
                     <TextView
-                        android:id="@+id/textView61"
+                        android:id="@+id/tvDiscount"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
+                        android:background="?selectableItemBackground"
                         android:text="@string/limit_order_discount"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#00a2f7"
                         android:textSize="14sp"
-                        app:layout_constraintEnd_toEndOf="@+id/textView60"
-                        app:layout_constraintStart_toStartOf="@+id/textView60"
-                        app:layout_constraintTop_toBottomOf="@+id/textView60" />
+                        app:layout_constraintEnd_toEndOf="@+id/tvFee"
+                        app:layout_constraintStart_toStartOf="@+id/tvFee"
+                        app:layout_constraintTop_toBottomOf="@+id/tvFee" />
 
                     <TextView
                         android:id="@+id/tvSubmitOrder"
@@ -509,11 +516,12 @@
                         android:gravity="center"
                         android:minHeight="45dp"
                         android:text="@string/submit_order"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#ffffff"
                         android:textSize="16sp"
-                        app:layout_constraintEnd_toEndOf="@+id/textView61"
-                        app:layout_constraintStart_toStartOf="@+id/textView61"
-                        app:layout_constraintTop_toBottomOf="@+id/textView61" />
+                        app:layout_constraintEnd_toEndOf="@+id/tvDiscount"
+                        app:layout_constraintStart_toStartOf="@+id/tvDiscount"
+                        app:layout_constraintTop_toBottomOf="@+id/tvDiscount" />
 
 
                     <TextView
@@ -524,6 +532,7 @@
                         android:layout_marginTop="24dp"
                         android:gravity="center|start"
                         android:text="@string/related_orders"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#5a5e67"
                         android:textSize="14sp"
                         app:layout_constraintEnd_toStartOf="@+id/tvManageOrder"
@@ -539,6 +548,7 @@
                         android:layout_marginEnd="8dp"
                         android:gravity="center|end"
                         android:text="@string/manage_orders"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#ff9008"
                         android:textSize="14sp"
                         app:layout_constraintBottom_toBottomOf="@+id/tvRelatedOrder"
