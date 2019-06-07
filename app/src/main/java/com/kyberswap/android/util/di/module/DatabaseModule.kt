@@ -79,4 +79,10 @@ class DatabaseModule {
         return appDatabase.userDao()
     }
 
+    @Provides
+    @Singleton
+    fun provideLocalLimitOrderDao(appDatabase: AppDatabase): LocalLimitOrderDao {
+        return appDatabase.localLimitOrderDao()
+    }
+
 }

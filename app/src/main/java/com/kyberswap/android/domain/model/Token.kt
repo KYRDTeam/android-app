@@ -102,7 +102,7 @@ data class Token(
 
     val displayCurrentBalanceInEth: String
         get() = StringBuilder()
-            .append(if (isETH()) "" else "≈ ")
+            .append(if (isETH) "" else "≈ ")
             .append(
                 if (currentBalance > BigDecimal.ZERO) currentBalance
                     .multiply(rateEthNow)
@@ -127,17 +127,18 @@ data class Token(
     val displayGasApprove: String
         get() = gasApprove.toDisplayNumber()
 
-    fun isETH(): Boolean {
-        return tokenSymbol.toLowerCase() == ETH_SYMBOL.toLowerCase()
-    }
+    val isETH: Boolean
+        get() = tokenSymbol.toLowerCase() == ETH_SYMBOL.toLowerCase()
 
-    fun isDAI(): Boolean {
-        return tokenSymbol.toLowerCase() == DAI.toLowerCase()
-    }
+    val isWETH: Boolean
+        get() = tokenSymbol.toLowerCase() == WETH_SYMBOL.toLowerCase()
 
-    fun isTUSD(): Boolean {
-        return tokenSymbol.toLowerCase() == TUSD.toLowerCase()
-    }
+    val isDAI: Boolean
+        get() = tokenSymbol.toLowerCase() == DAI.toLowerCase()
+
+
+    val isTUSD: Boolean
+        get() = tokenSymbol.toLowerCase() == TUSD.toLowerCase()
 
     fun areContentsTheSame(other: Token): Boolean {
         return this.tokenSymbol == other.tokenSymbol &&
@@ -165,6 +166,8 @@ data class Token(
         const val DOWN = -1
         const val SAME = 0
         const val ETH_SYMBOL = "ETH"
+        const val ETH_SYMBOL_STAR = "ETH*"
+        const val WETH_SYMBOL = "WETH"
         const val ETH_NAME = "Ethereum"
         const val ETH_DECIMAL = 18
         const val ETH = "ETH"

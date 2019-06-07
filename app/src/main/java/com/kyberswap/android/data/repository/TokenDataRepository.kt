@@ -51,9 +51,9 @@ class TokenDataRepository @Inject constructor(
         )
             .map { rates ->
                 val sourceTokenToEtherRate =
-                    rates.firstOrNull { it.source == param.swap.tokenSource.tokenSymbol && it.dest == ETH }
+                    rates.firstOrNull { it.source == param.src && it.dest == ETH }
                 val etherToDestTokenRate =
-                    rates.firstOrNull { it.source == ETH && it.dest == param.swap.tokenDest.tokenSymbol }
+                    rates.firstOrNull { it.source == ETH && it.dest == param.dest }
                 sourceTokenToEtherRate?.rate?.updatePrecision().toBigDecimalOrDefaultZero()
                     .multiply(
                         etherToDestTokenRate?.rate?.updatePrecision().toBigDecimalOrDefaultZero()
@@ -63,7 +63,7 @@ class TokenDataRepository @Inject constructor(
     }
 
     override fun getExpectedRate(param: GetExpectedRateUseCase.Param): Flowable<List<String>> {
-        val sourceToken = param.swap.tokenSource
+        val sourceToken = param.tokenSource
         val amount = 10.0.pow(sourceToken.tokenDecimal).times(param.srcAmount.toDouble())
             .toBigDecimal().toBigInteger()
         return Flowable.fromCallable {
@@ -71,7 +71,7 @@ class TokenDataRepository @Inject constructor(
                 param.walletAddress,
                 context.getString(R.string.kyber_address),
                 sourceToken.tokenAddress,
-                param.swap.tokenDest.tokenAddress,
+                param.tokenDest.tokenAddress,
                 amount
             )
             expectedRate

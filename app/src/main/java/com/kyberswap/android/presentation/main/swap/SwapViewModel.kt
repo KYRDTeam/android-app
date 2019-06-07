@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.swap.*
-import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.DEFAULT_EXPECTED_RATE
 import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
@@ -22,7 +21,6 @@ import java.math.RoundingMode
 import javax.inject.Inject
 
 class SwapViewModel @Inject constructor(
-    private val getBalancePollingUseCase: GetBalancePollingUseCase,
     private val getWalletByAddressUseCase: GetWalletByAddressUseCase,
     private val getExpectedRateUseCase: GetExpectedRateUseCase,
     private val getSwapData: GetSwapDataUseCase,
@@ -99,7 +97,7 @@ class SwapViewModel @Inject constructor(
                     _getGetMarketRateCallback.value =
                         Event(GetMarketRateState.ShowError(it.localizedMessage))
                 },
-                GetMarketRateUseCase.Param(swap)
+                GetMarketRateUseCase.Param(swap.tokenSource.tokenSymbol, swap.tokenDest.tokenSymbol)
             )
         }
     }
@@ -184,19 +182,24 @@ class SwapViewModel @Inject constructor(
                 _getExpectedRateCallback.value =
                     Event(GetExpectedRateState.ShowError(it.localizedMessage))
             },
-            GetExpectedRateUseCase.Param(swap.walletAddress, swap, srcAmount)
+            GetExpectedRateUseCase.Param(
+                swap.walletAddress,
+                swap.tokenSource,
+                swap.tokenDest, srcAmount
+            )
         )
     }
 
     fun getGasLimit(wallet: Wallet, swap: Swap) {
+        val updatedSwap = updateSwapRate(swap)
         estimateGasUseCase.execute(
             Consumer {
                 if (it.error == null) {
                     gasLimit =
-                        if (swap.tokenSource.isDAI() ||
-                            swap.tokenSource.isTUSD() ||
-                            swap.tokenDest.isDAI() ||
-                            swap.tokenDest.isTUSD()
+                        if (swap.tokenSource.isDAI ||
+                            swap.tokenSource.isTUSD ||
+                            swap.tokenDest.isDAI ||
+                            swap.tokenDest.isTUSD
                         ) {
                             gasLimit.max(
                                 (it.amountUsed.toBigDecimal() * 1.2.toBigDecimal())
@@ -211,12 +214,17 @@ class SwapViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
             },
-            EstimateGasUseCase.Param(wallet, updateSwapRate(swap))
+            EstimateGasUseCase.Param(
+                wallet,
+                updatedSwap.tokenSource,
+                updatedSwap.tokenDest,
+                updatedSwap.sourceAmount,
+                updatedSwap.minConversionRate
+            )
         )
     }
 
     override fun onCleared() {
-        getBalancePollingUseCase.dispose()
         getWalletByAddressUseCase.dispose()
         compositeDisposable.dispose()
         super.onCleared()

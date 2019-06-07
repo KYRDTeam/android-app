@@ -1,4 +1,4 @@
-package com.kyberswap.android.presentation.main.swap
+package com.kyberswap.android.presentation.main.limitorder
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -19,11 +19,14 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.balance.GetBalanceState
+import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
+import com.kyberswap.android.presentation.main.swap.TokenSearchAdapter
 import com.kyberswap.android.util.di.ViewModelFactory
+import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class TokenSearchFragment : BaseFragment() {
+class LimitOrderTokenSearchFragment : BaseFragment() {
     private lateinit var binding: FragmentTokenSearchBinding
 
     @Inject
@@ -42,21 +45,19 @@ class TokenSearchFragment : BaseFragment() {
 
     private var isSourceToken: Boolean? = null
 
-    private var isSend: Boolean? = null
-
     private var currentSearchString = ""
 
     private var tokenList = mutableListOf<Token>()
 
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(TokenSearchViewModel::class.java)
+        ViewModelProviders.of(this, viewModelFactory)
+            .get(LimitOrderTokenSearchViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         wallet = arguments?.getParcelable(WALLET_PARAM)
-        isSend = arguments?.getBoolean(SEND_PARAM, false)
         isSourceToken = arguments?.getBoolean(TARGET_PARAM, false)
     }
 
@@ -80,13 +81,9 @@ class TokenSearchFragment : BaseFragment() {
 
         val tokenAdapter =
             TokenSearchAdapter(appExecutors) { token ->
-                if (isSend == true) {
-                    viewModel.saveSendTokenSelection(wallet!!.address, token)
-                } else {
-                    viewModel.saveTokenSelection(wallet!!.address, token, isSourceToken ?: false)
-                }
-            }
+                viewModel.saveTokenSelection(wallet!!.address, token, isSourceToken ?: false)
 
+            }
         binding.rvToken.adapter = tokenAdapter
         viewModel.getTokenList(wallet!!.address)
 
@@ -95,8 +92,25 @@ class TokenSearchFragment : BaseFragment() {
                 showProgress(state == GetBalanceState.Loading)
                 when (state) {
                     is GetBalanceState.Success -> {
+                        val combineList = state.tokens.toMutableList()
+                        val ethToken = combineList.find { it.isETH }
+                        val wethToken = combineList.find { it.isWETH }
+
+                        val ethBalance = ethToken?.currentBalance ?: BigDecimal.ZERO
+                        val wethBalance = wethToken?.currentBalance ?: BigDecimal.ZERO
+
+                        combineList.remove(ethToken)
+                        combineList.remove(wethToken)
+
+                        val combineToken = ethToken?.copy(
+                            tokenSymbol = getString(R.string.token_eth_star),
+                            tokenName = getString(R.string.token_eth_star_name),
+                            currentBalance = (ethBalance.plus(wethBalance))
+                        )
+
+                        combineToken?.let { token -> combineList.add(0, token) }
                         tokenList.clear()
-                        tokenList.addAll(state.tokens)
+                        tokenList.addAll(combineList)
                         updateFilterListToken(currentSearchString, tokenAdapter)
 
                     }
@@ -111,7 +125,7 @@ class TokenSearchFragment : BaseFragment() {
             }
         })
 
-        viewModel.saveSwapCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.saveLimitOrderCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == SaveSwapDataState.Loading)
                 when (state) {
@@ -119,25 +133,6 @@ class TokenSearchFragment : BaseFragment() {
                         onSelectionComplete()
                     }
                     is SaveSwapDataState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
-                        Toast.makeText(
-                            activity,
-                            state.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            }
-        })
-
-        viewModel.saveSendCallback.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                showProgress(state == SaveSendState.Loading)
-                when (state) {
-                    is SaveSendState.Success -> {
-                        onSelectionComplete()
-                    }
-                    is SaveSendState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
                         Toast.makeText(
                             activity,
@@ -167,7 +162,6 @@ class TokenSearchFragment : BaseFragment() {
         binding.imgBack.setOnClickListener {
             activity!!.onBackPressed()
         }
-
 
     }
 
@@ -200,12 +194,10 @@ class TokenSearchFragment : BaseFragment() {
     companion object {
         private const val WALLET_PARAM = "wallet_param"
         private const val TARGET_PARAM = "target_param"
-        private const val SEND_PARAM = "send_param"
-        fun newInstance(wallet: Wallet?, isSend: Boolean, isSourceToken: Boolean) =
-            TokenSearchFragment().apply {
+        fun newInstance(wallet: Wallet?, isSourceToken: Boolean) =
+            LimitOrderTokenSearchFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(WALLET_PARAM, wallet)
-                    putBoolean(SEND_PARAM, isSend)
                     putBoolean(TARGET_PARAM, isSourceToken)
 
                 }

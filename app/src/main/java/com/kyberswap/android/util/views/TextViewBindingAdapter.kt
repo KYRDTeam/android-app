@@ -76,7 +76,7 @@ object TextViewBindingAdapter {
         }
     }
 
-    @BindingAdapter("app:percentageRate", "app:samePair")
+    @BindingAdapter("app:percentageRate", "app:hasSamePair")
     @JvmStatic
     fun setPercentage(view: TextView, percent: String?, samePair: Boolean?) {
 

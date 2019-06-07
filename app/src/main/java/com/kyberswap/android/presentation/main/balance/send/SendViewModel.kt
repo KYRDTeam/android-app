@@ -11,8 +11,8 @@ import com.kyberswap.android.domain.usecase.send.SaveSendUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
 import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT_SEND_ETH
+import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT_SEND_TOKEN
 import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT_TRANSFER
-import com.kyberswap.android.presentation.common.DEFAULT_GA_LIMIT_SEND_TOKEN
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.swap.GetContactState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
@@ -53,7 +53,7 @@ class SendViewModel @Inject constructor(
         getSendTokenUseCase.execute(
             Consumer {
                 gasLimit =
-                    if (it.tokenSource.isETH()) DEFAULT_GAS_LIMIT_SEND_ETH else DEFAULT_GA_LIMIT_SEND_TOKEN
+                    if (it.tokenSource.isETH) DEFAULT_GAS_LIMIT_SEND_ETH else DEFAULT_GAS_LIMIT_SEND_TOKEN
                 _getSendCallback.value = Event(GetSendState.Success(it))
             },
             Consumer {

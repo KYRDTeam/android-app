@@ -127,14 +127,14 @@ class SwapDataRepository @Inject constructor(
             tokenClient.estimateGas(
                 param.wallet.address,
                 context.getString(R.string.kyber_address),
-                param.swap.tokenSource.tokenAddress,
-                param.swap.tokenDest.tokenAddress,
-                param.swap.sourceAmount.toBigDecimalOrDefaultZero().times(
-                    10.0.pow(param.swap.tokenSource.tokenDecimal)
+                param.tokenSource.tokenAddress,
+                param.tokenDest.tokenAddress,
+                param.sourceAmount.toBigDecimalOrDefaultZero().times(
+                    10.0.pow(param.tokenSource.tokenDecimal)
                         .toBigDecimal()
                 ).toBigInteger(),
-                param.swap.minConversionRate,
-                param.swap.tokenSource.isETH()
+                param.minConversionRate,
+                param.tokenSource.isETH
             )
         }
     }
@@ -148,7 +148,7 @@ class SwapDataRepository @Inject constructor(
                     10.0.pow(param.send.tokenSource.tokenDecimal)
                         .toBigDecimal()
                 ).toPlainString(),
-                param.send.tokenSource.isETH()
+                param.send.tokenSource.isETH
             )
         }
     }
@@ -175,7 +175,7 @@ class SwapDataRepository @Inject constructor(
                 val sourceToken = tokenDao.getTokenBySymbol(swap.tokenSource.tokenSymbol)
                 swap.gasLimit = sourceToken?.gasLimit ?: swap.gasLimit
             }
-            swapDao.insertSwap(param.swap)
+            swapDao.insertSwap(swap)
         }
     }
 
@@ -194,12 +194,12 @@ class SwapDataRepository @Inject constructor(
             val currentSwapForWalletAddress =
                 swapDao.findSwapDataByAddress(param.walletAddress).blockingFirst()
             val tokenBySymbol = tokenDao.getTokenBySymbol(param.token.tokenSymbol)
-            val token = if (param.isSourceToken) {
+            val swap = if (param.isSourceToken) {
                 currentSwapForWalletAddress.copy(tokenSource = tokenBySymbol ?: Token())
             } else {
                 currentSwapForWalletAddress.copy(tokenDest = tokenBySymbol ?: Token())
             }
-            swapDao.updateSwap(token)
+            swapDao.updateSwap(swap)
         }
     }
 

@@ -52,7 +52,7 @@ data class Swap(
 
     val displayDestAmount: String
         get() = StringBuilder().append(
-            getExpectedDestAmount(
+            getExpectedAmount(
                 expectedRate,
                 sourceAmount
             ).toDisplayNumber()
@@ -65,14 +65,30 @@ data class Swap(
         get() = StringBuilder().append("1 ")
             .append(tokenSource.tokenSymbol)
             .append(" = ")
-            .append(displayDestAmount)
+            .append(
+                getExpectedAmount(
+                    expectedRate,
+                    1.toString()
+                ).toDisplayNumber()
+            )
+            .append(" ")
+            .append(tokenDest.tokenSymbol)
+            .append(" = ")
+            .append(
+                getExpectedAmount(
+                    expectedRate,
+                    1.toString()
+                ).multiply(tokenDest.rateUsdNow).toDisplayNumber()
+            )
+            .append(" USD")
             .toString()
+
 
     val displayDestAmountUsd: String
         get() = StringBuilder()
             .append("≈ ")
             .append(
-                getExpectedDestAmount(
+                getExpectedAmount(
                     expectedRate,
                     sourceAmount
                 ).multiply(tokenDest.rateUsdNow).toDisplayNumber()
@@ -80,15 +96,12 @@ data class Swap(
             .append(" USD")
             .toString()
 
-    val samePair: Boolean
-        get() = tokenSource.tokenSymbol == tokenDest.tokenSymbol
-
     val displayRateConversion: String
         get() = StringBuilder()
             .append("1 ")
             .append(tokenSource.tokenSymbol)
             .append(" = ")
-            .append(getExpectedDestAmount(expectedRate, 1.toString()).toDisplayNumber())
+            .append(getExpectedAmount(expectedRate, 1.toString()).toDisplayNumber())
             .append(" ")
             .append(tokenDest.tokenSymbol)
             .append(" = ")
@@ -164,7 +177,7 @@ data class Swap(
     fun amountTooSmall(sourceAmount: String?): Boolean {
         val amount =
             sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateEthNow)
-        return if (tokenSource.isETH()) {
+        return if (tokenSource.isETH) {
             amount <= MIN_SUPPORT_SWAP_SOURCE_AMOUNT.toBigDecimal()
         } else {
             amount < MIN_SUPPORT_SWAP_SOURCE_AMOUNT.toBigDecimal()
@@ -182,7 +195,7 @@ data class Swap(
         this.minAcceptedRatePercent = ""
     }
 
-    private fun getExpectedDestAmount(expectedRate: String?, amount: String?): BigDecimal {
+    private fun getExpectedAmount(expectedRate: String?, amount: String?): BigDecimal {
         return amount.toBigDecimalOrDefaultZero()
             .multiply(expectedRate.toBigDecimalOrDefaultZero())
     }
