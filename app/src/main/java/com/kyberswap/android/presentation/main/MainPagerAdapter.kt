@@ -28,8 +28,8 @@ class MainPagerAdapter constructor(
             )
             LIMIT_ORDER -> LimitOrderFragment.newInstance(wallet)
             SWAP -> SwapFragment.newInstance(wallet)
-            SETTING -> SettingFragment.newInstance()
-            else -> ProfileFragment.newInstance(wallet)
+            PROFILE -> ProfileFragment.newInstance(wallet)
+            else -> SettingFragment.newInstance()
 
     }
 
@@ -49,7 +49,7 @@ class MainPagerAdapter constructor(
         return registeredFragments.get(position)
     }
 
-    override fun getCount() = 4
+    override fun getCount() = 5
 
     companion object {
         const val BALANCE = 0

@@ -73,6 +73,10 @@ interface MainActivityModule {
 
     @FragmentScoped
     @ContributesAndroidInjector
+    fun contributeLimitOrderTokenSearchFragment(): LimitOrderTokenSearchFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
     fun contributeLimitOrderSuggestionFragment(): LimitOrderSuggestionFragment
 
     @FragmentScoped
@@ -205,6 +209,13 @@ interface MainActivityModule {
     @ViewModelKey(TokenSearchViewModel::class)
     fun bindTokenSearchViewModel(
         tokenSearchViewModel: TokenSearchViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LimitOrderTokenSearchViewModel::class)
+    fun bindLimitOrderTokenSearchViewModel(
+        imitOrderTokenSearchViewModel: LimitOrderTokenSearchViewModel
     ): ViewModel
 
     @Binds

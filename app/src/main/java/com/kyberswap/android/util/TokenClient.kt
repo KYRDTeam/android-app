@@ -109,7 +109,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     @Throws(Exception::class)
     fun getBalance(owner: String, token: Token): Token {
         return token.copy(
-            currentBalance = if (token.isETH()) {
+            currentBalance = if (token.isETH) {
                 Convert.fromWei(BigDecimal(getEthBalance(owner)), Convert.Unit.ETHER)
      else {
                 (getBalance(owner, token.tokenAddress) ?: BigDecimal.ZERO).divide(
@@ -272,7 +272,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         ).toBigIntegerExact()
 
         val transactionAmount =
-            if (param.swap.tokenSource.isETH()) tradeWithHintAmount else BigInteger.ZERO
+            if (param.swap.tokenSource.isETH) tradeWithHintAmount else BigInteger.ZERO
 
         val minConversionRate = param.swap.minConversionRate
 
@@ -283,7 +283,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         val walletAddress = param.wallet.address
         val txManager = RawTransactionManager(web3j, credentials)
 
-        return if (param.swap.tokenSource.isETH()) {
+        return if (param.swap.tokenSource.isETH) {
             executeTradeWithHint(
                 fromAddress,
                 toAddress,
@@ -324,7 +324,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         ).toBigInteger()
         val gasLimit = param.send.gasLimit.toBigIntegerOrDefaultZero()
 
-        val isEth = param.send.tokenSource.isETH()
+        val isEth = param.send.tokenSource.isETH
 
         val amount = Convert.toWei(
             param.send.sourceAmount.toBigDecimalOrDefaultZero(),

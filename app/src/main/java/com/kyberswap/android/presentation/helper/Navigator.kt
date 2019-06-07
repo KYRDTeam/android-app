@@ -100,6 +100,18 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
     }
 
 
+    fun navigateToTokenSearchFromLimitOrder(
+        currentFragment: Fragment?,
+        wallet: Wallet?,
+        isSourceToken: Boolean = false
+    ) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            LimitOrderTokenSearchFragment.newInstance(wallet, isSourceToken)
+        )
+    }
+
+
     fun navigateToTokenSearchFromSendTokenScreen(
         currentFragment: Fragment?,
         wallet: Wallet?

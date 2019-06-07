@@ -62,7 +62,7 @@ object ImageViewBindingAdapter {
     @JvmStatic
     fun loadResource(view: ImageView, identifier: String?) {
         if (identifier == null) return
-        val resourceIcon: Int?
+        var resourceIcon: Int?
         try {
 
             resourceIcon = view.context.resources.getIdentifier(
@@ -70,6 +70,11 @@ object ImageViewBindingAdapter {
                 "drawable",
                 view.context.packageName
             )
+
+            if (identifier.toLowerCase() == view.context.getString(R.string.token_eth_star).toLowerCase()) {
+                resourceIcon = R.drawable.eth
+    
+
             if (resourceIcon == 0) {
                 Glide.with(view).load(R.drawable.token_default).error(R.drawable.token_default)
                     .into(view)
@@ -83,7 +88,7 @@ object ImageViewBindingAdapter {
 
     }
 
-    @BindingAdapter("app:percentageRate", "app:samePair")
+    @BindingAdapter("app:percentageRate", "app:hasSamePair")
     @JvmStatic
     fun percentageRate(view: ImageView, percentageRate: String?, samePair: Boolean?) {
 
@@ -100,6 +105,18 @@ object ImageViewBindingAdapter {
 
     }
 
+    @BindingAdapter("app:tokenSymbol")
+    @JvmStatic
+    fun tokenSymbol(view: ImageView, tokenSymbol: String?) {
+        if (tokenSymbol != null && tokenSymbol.toLowerCase() == view.context.getString(R.string.token_eth_star).toLowerCase()) {
+            view.visibility = View.VISIBLE
+ else {
+            view.visibility = View.GONE
+
+
+    }
+
+
     @BindingAdapter("app:address")
     @JvmStatic
     fun generateImage(view: ImageView, address: String?) {
@@ -115,7 +132,6 @@ object ImageViewBindingAdapter {
             Glide.with(view).load(drawable).into(view)
  catch (ex: Exception) {
             ex.printStackTrace()
-
 
     }
 

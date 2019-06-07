@@ -2,7 +2,6 @@ package com.kyberswap.android.domain.usecase.swap
 
 import androidx.annotation.VisibleForTesting
 import com.kyberswap.android.domain.SchedulerProvider
-import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.repository.TokenRepository
 import com.kyberswap.android.domain.usecase.MergeDelayErrorUseCase
 import io.reactivex.Flowable
@@ -17,7 +16,7 @@ class GetMarketRateUseCase @Inject constructor(
         return tokenRepository.getMarketRate(param)
     }
 
-    class Param(val swap: Swap)
+    class Param(val src: String, val dest: String)
 
 
 }

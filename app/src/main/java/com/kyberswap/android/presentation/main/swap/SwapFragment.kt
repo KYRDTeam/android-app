@@ -146,7 +146,7 @@ class SwapFragment : BaseFragment() {
                         binding.tvPercentageRate.visibility = View.GONE
             
                     binding.swap?.let { swapData ->
-                        if (swapData.samePair) {
+                        if (swapData.hasSamePair) {
                             edtDest.setText(text)
                  else {
                             viewModel.getExpectedRate(
@@ -337,14 +337,22 @@ class SwapFragment : BaseFragment() {
 
         binding.tvContinue.setOnClickListener {
             when {
-                edtSource.text.isNullOrEmpty() -> showAlert(getString(R.string.specify_amount))
-                edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.swap?.tokenSource?.currentBalance -> {
-                    showAlert(getString(R.string.exceed_balance))
+                edtSource.text.isNullOrEmpty() -> {
+                    val erorAmount = getString(R.string.specify_amount)
+                    showAlert(erorAmount)
+                    binding.edtSource.error = erorAmount
         
-                binding.swap?.samePair == true -> showAlert(getString(R.string.same_token_alert))
-                binding.swap?.amountTooSmall(edtSource.text.toString()) == true -> showAlert(
-                    getString(R.string.swap_amount_small)
-                )
+                edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.swap?.tokenSource?.currentBalance -> {
+                    val errorExceedBalance = getString(R.string.exceed_balance)
+                    showAlert(errorExceedBalance)
+                    binding.edtSource.error = errorExceedBalance
+        
+                binding.swap?.hasSamePair == true -> showAlert(getString(R.string.same_token_alert))
+                binding.swap?.amountTooSmall(edtSource.text.toString()) == true -> {
+                    val amountError = getString(R.string.swap_amount_small)
+                    showAlert(amountError)
+                    binding.edtSource.error = amountError
+        
                 else -> binding.swap?.let { swap ->
                     wallet?.let {
                         viewModel.updateSwap(
@@ -397,7 +405,7 @@ class SwapFragment : BaseFragment() {
     }
 
     private fun getRate(swap: Swap) {
-        if (swap.samePair) return
+        if (swap.hasSamePair) return
         viewModel.setDefaultRate(swap)
         viewModel.getMarketRate(swap)
         viewModel.getExpectedRate(
