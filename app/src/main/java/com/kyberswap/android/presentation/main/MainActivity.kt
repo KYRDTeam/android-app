@@ -80,7 +80,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             ContextCompat.getColor(this, R.color.bottom_item_color_active)
         bottomNavigation.inactiveColor =
             ContextCompat.getColor(this, R.color.bottom_item_color_normal)
-        bottomNavigation.setOnTabSelectedListener { position, wasSelected ->
+        bottomNavigation.setOnTabSelectedListener { position, _ ->
             binding.vpNavigation.setCurrentItem(position, true)
             return@setOnTabSelectedListener true
         }
