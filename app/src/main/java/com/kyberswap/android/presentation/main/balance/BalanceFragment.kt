@@ -160,7 +160,7 @@ class BalanceFragment : BaseFragment() {
                     viewModel.updateSearchKeyword(it)
         )
 
-        binding.edtSearch.setOnEditorActionListener { v, actionId, event ->
+        binding.edtSearch.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 binding.edtSearch.clearFocus()
     
