@@ -38,6 +38,18 @@ fun String?.toBigDecimalOrDefaultZero(): BigDecimal {
     }
 }
 
+fun String.displayWalletAddress(): String {
+    return StringBuilder()
+        .append(substring(0, 5))
+        .append(
+            substring(
+                if (length > 6) {
+                    length - 6
+                } else length
+            )
+        ).toString()
+}
+
 
 fun String?.toBigIntegerOrDefaultZero(): BigInteger {
     if (this.isNullOrEmpty()) return BigInteger.ZERO

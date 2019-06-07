@@ -4,8 +4,12 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.kyberswap.android.data.api.limitorder.OrderEntity
+import com.kyberswap.android.util.ext.displayWalletAddress
+import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.parcel.Parcelize
 import java.math.BigDecimal
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Entity(tableName = "orders")
 @Parcelize
@@ -17,7 +21,6 @@ data class Order(
     val dst: String = "",
     val srcAmount: BigDecimal = BigDecimal.ZERO,
     val minRate: BigDecimal = BigDecimal.ZERO,
-    val destAddr: String = "",
     val nonce: String = "",
     val fee: BigDecimal = BigDecimal.ZERO,
     val status: String = "",
@@ -33,7 +36,6 @@ data class Order(
         entity.dst,
         entity.srcAmount,
         entity.minRate,
-        entity.destAddr,
         entity.nonce,
         entity.fee,
         entity.status,
@@ -41,4 +43,49 @@ data class Order(
         entity.createdAt,
         entity.updatedAt
     )
+
+    val receivedSource: BigDecimal
+        get() = (BigDecimal.ONE - fee).multiply(srcAmount)
+
+    val displayTokenPair: String
+        get() = StringBuilder()
+            .append(src)
+            .append("/")
+            .append(dst)
+            .append(">=")
+            .append(minRate.toDisplayNumber())
+            .toString()
+
+    val sourceDisplay: String
+        get() = StringBuilder()
+            .append(receivedSource.toDisplayNumber())
+            .append(" ")
+            .append(src)
+            .toString()
+
+    val destDisplay: String
+        get() = StringBuilder()
+            .append(receivedSource.multiply(minRate).toDisplayNumber())
+            .append(" ")
+            .append(dst)
+            .toString()
+
+
+    val destDisplayFee: String
+        get() = StringBuilder()
+            .append(fee.multiply(srcAmount).toDisplayNumber())
+            .append(" ")
+            .append(src)
+            .toString()
+
+    val displayedDate: String
+        get() = formatterShort.format(Date(createdAt * 1000L))
+
+    val displayAddress: String
+        get() = userAddr.displayWalletAddress()
+
+    companion object {
+        val formatterShort = SimpleDateFormat("dd MMM yyyy", Locale.US)
+    }
+
 }

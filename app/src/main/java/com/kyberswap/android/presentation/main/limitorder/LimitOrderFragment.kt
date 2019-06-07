@@ -1,6 +1,7 @@
 package com.kyberswap.android.presentation.main.limitorder
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,17 +19,17 @@ import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.LocalLimitOrder
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
-import com.kyberswap.android.presentation.common.DEFAULT_ACCEPT_RATE_PERCENTAGE
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.presentation.main.MainPagerAdapter
 import com.kyberswap.android.presentation.main.swap.GetExpectedRateState
 import com.kyberswap.android.presentation.main.swap.GetMarketRateState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.*
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_limit_order.*
 import kotlinx.android.synthetic.main.fragment_swap.edtDest
 import kotlinx.android.synthetic.main.fragment_swap.edtSource
-import kotlinx.android.synthetic.main.layout_expanable.*
 import java.math.BigDecimal
 import javax.inject.Inject
 import kotlin.math.absoluteValue
@@ -52,6 +53,8 @@ class LimitOrderFragment : BaseFragment() {
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(LimitOrderViewModel::class.java)
     }
+
+    private val handler by lazy { Handler() }
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
@@ -94,6 +97,16 @@ class LimitOrderFragment : BaseFragment() {
 
                             binding.order = state.order
                             binding.executePendingBindings()
+
+                            wallet?.let { wallet ->
+                                binding.order?.let { order ->
+                                    viewModel.getRelatedOrders(
+                                        order,
+                                        wallet
+                                    )
+                                }
+                            }
+
 
                         }
                     }
@@ -144,10 +157,6 @@ class LimitOrderFragment : BaseFragment() {
             showDrawer(true)
         }
 
-        binding.imgSwap.setOnClickListener {
-
-        }
-
         viewModel.getLimitOrders(wallet?.address!!)
 
         binding.tvSubmitOrder.setOnClickListener {
@@ -158,7 +167,6 @@ class LimitOrderFragment : BaseFragment() {
                     )
                 )
             }
-
 
             navigator.navigateToLimitOrderSuggestionScreen(
                 (activity as MainActivity).getCurrentFragment(),
@@ -201,23 +209,42 @@ class LimitOrderFragment : BaseFragment() {
             }
             binding.setVariable(BR.order, limitOrder)
             binding.executePendingBindings()
+            viewModel.getFee(
+                binding.order,
+                binding.edtSource.text.toString(),
+                binding.edtDest.text.toString(),
+                wallet
+            )
 
         }
-
 
         binding.rvRelatedOrder.layoutManager = LinearLayoutManager(
             activity,
             RecyclerView.VERTICAL,
             false
         )
-        val tokenAdapter =
+        val orderAdapter =
             OrderAdapter(
                 appExecutors
             ) {
 
             }
-        tokenAdapter.mode = Attributes.Mode.Single
-        binding.rvRelatedOrder.adapter = tokenAdapter
+        orderAdapter.mode = Attributes.Mode.Single
+        binding.rvRelatedOrder.adapter = orderAdapter
+
+
+        viewModel.getRelatedOrderCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetRelatedOrdersState.Success -> {
+                        orderAdapter.submitList(state.orders)
+                    }
+                    is GetRelatedOrdersState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                    }
+                }
+            }
+        })
 
         binding.tvManageOrder.setOnClickListener {
             navigator.navigateToManageOrder(
@@ -225,7 +252,6 @@ class LimitOrderFragment : BaseFragment() {
                 wallet
             )
         }
-
 
         viewModel.getGetMarketRateCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -281,7 +307,72 @@ class LimitOrderFragment : BaseFragment() {
             }
         })
 
+        viewModel.compositeDisposable.add(binding.edtSource.textChanges()
+            .observeOn(schedulerProvider.ui())
+            .subscribe { text ->
+                if (text.isNullOrEmpty()) {
+                    binding.edtDest.setText("")
+                }
 
+                binding.order?.let { order ->
+                    if (order.hasSamePair) {
+                        edtDest.setText(text)
+                    } else {
+                        viewModel.getExpectedRate(
+                            order,
+                            if (text.isNullOrEmpty()) getString(R.string.default_source_amount) else text.toString()
+                        )
+                        viewModel.getFee(
+                            binding.order,
+                            binding.edtSource.text.toString(),
+                            binding.edtDest.text.toString(),
+                            wallet
+                        )
+                    }
+                }
+            })
+
+
+
+        viewModel.getFee(
+            binding.order,
+            binding.edtSource.text.toString(),
+            binding.edtDest.text.toString(),
+            wallet
+        )
+
+        viewModel.getFeeCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetFeeState.Success -> {
+                        binding.tvFee.text = String.format(
+                            getString(R.string.limit_order_fee),
+                            edtSource.textToDouble().times(state.fee.fee),
+                            binding.order?.tokenSource?.tokenSymbol,
+                            state.fee.fee.times(100),
+                            edtSource.text,
+                            binding.order?.tokenSource?.tokenSymbol
+                        )
+                    }
+                    is GetFeeState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                    }
+                }
+            }
+        })
+
+        binding.tvDiscount.setOnClickListener {
+            moveToSwapTab()
+        }
+
+    }
+
+    private fun moveToSwapTab() {
+        if (activity is MainActivity) {
+            handler.post {
+                activity!!.bottomNavigation.currentItem = MainPagerAdapter.SWAP
+            }
+        }
     }
 
     private fun resetAmount() {
@@ -289,17 +380,10 @@ class LimitOrderFragment : BaseFragment() {
         edtDest.setText("")
     }
 
-    private fun getMinAcceptedRatePercent(id: Int): String {
-        return when (id) {
-            R.id.rbCustom -> {
-                edtCustom.text.toString()
-            }
-            else -> DEFAULT_ACCEPT_RATE_PERCENTAGE.toString()
-        }
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        handler.removeCallbacksAndMessages(null)
         viewModel.compositeDisposable.dispose()
     }
 

@@ -45,6 +45,8 @@
     <color name="transaction_item_odd_color">#f6f7fa</color>
     <color name="transaction_tab_color_active">#fb795d</color>
     <color name="transaction_tab_color_normal">#ffffff</color>
+    <color name="manage_order_color_active">#ff9008</color>
+    <color name="manage_order_color_normal">#5a5e67</color>
 
     <array name="tab_colors">
         <item name="tab_1">#fea34c</item>

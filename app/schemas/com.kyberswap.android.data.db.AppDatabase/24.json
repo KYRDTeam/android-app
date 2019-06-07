@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 24,
-    "identityHash": "69a76cd426bb7fad5af69b00f2c37b52",
+    "identityHash": "fba1a9ad6f43b74fd1beb9609dc51a3b",
     "entities": [
       {
         "tableName": "tokens",
@@ -922,7 +922,7 @@
       },
       {
         "tableName": "orders",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `userAddr` TEXT NOT NULL, `src` TEXT NOT NULL, `dst` TEXT NOT NULL, `srcAmount` TEXT NOT NULL, `minRate` TEXT NOT NULL, `destAddr` TEXT NOT NULL, `nonce` TEXT NOT NULL, `fee` TEXT NOT NULL, `status` TEXT NOT NULL, `txHash` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `userAddr` TEXT NOT NULL, `src` TEXT NOT NULL, `dst` TEXT NOT NULL, `srcAmount` TEXT NOT NULL, `minRate` TEXT NOT NULL, `nonce` TEXT NOT NULL, `fee` TEXT NOT NULL, `status` TEXT NOT NULL, `txHash` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -957,12 +957,6 @@
           {
             "fieldPath": "minRate",
             "columnName": "minRate",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "destAddr",
-            "columnName": "destAddr",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -1338,7 +1332,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"69a76cd426bb7fad5af69b00f2c37b52\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"fba1a9ad6f43b74fd1beb9609dc51a3b\")"
     ]
   }
 }
