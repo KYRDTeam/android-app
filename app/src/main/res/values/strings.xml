@@ -235,6 +235,7 @@
     <string name="week_1">1 Week</string>
     <string name="month_1">1 Month</string>
     <string name="month_3">3 Month</string>
+    <string name="transaction_failed">failed</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>

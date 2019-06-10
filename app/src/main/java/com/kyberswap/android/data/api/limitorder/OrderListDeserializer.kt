@@ -17,11 +17,11 @@ class OrderListDeserializer : JsonDeserializer<LimitOrderResponse> {
         val jsonObject = json.asJsonObject
         val fields = jsonObject.getAsJsonArray("fields")
         val orders = jsonObject.getAsJsonArray("orders")
-        orders?.let {
-            for (i in 0 until it.size()) {
-                val jsonOrder = it.get(i).asJsonArray
-                entities.add(jsonOrder.toOrderEntity(fields))
-            }
+        if (fields == null || orders == null) return LimitOrderResponse()
+
+        for (i in 0 until orders.size()) {
+            val jsonOrder = orders.get(i).asJsonArray
+            entities.add(jsonOrder.toOrderEntity(fields))
         }
 
         return LimitOrderResponse(fields.toList().map {

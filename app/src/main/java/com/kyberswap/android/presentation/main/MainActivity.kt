@@ -3,6 +3,7 @@ package com.kyberswap.android.presentation.main
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
@@ -21,6 +22,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
+import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
 import com.kyberswap.android.presentation.main.balance.WalletAdapter
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.util.di.ViewModelFactory
@@ -147,6 +149,30 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             )
             showDrawer(false)
         }
+
+        wallet?.let {
+            mainViewModel.getPendingTransaction(it)
+        }
+
+        mainViewModel.getPendingTransactionStateCallback.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetPendingTransactionState.Success -> {
+                        setPendingTransaction(state.transactions.size)
+                    }
+                    is GetPendingTransactionState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                    }
+                }
+            }
+        })
+
+    }
+
+    private fun setPendingTransaction(numOfPendingTransaction: Int) {
+        tvPendingTransaction.visibility =
+            if (numOfPendingTransaction > 0) View.VISIBLE else View.INVISIBLE
+        tvPendingTransaction.text = numOfPendingTransaction.toString()
     }
 
     fun getCurrentFragment(): Fragment? {

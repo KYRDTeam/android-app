@@ -17,7 +17,7 @@ class TransactionStatusViewModel @Inject constructor(
         get() = _getTransactionCallback
 
 
-    fun getTransaction(address: String) {
+    fun getTransaction(type: Int, address: String) {
         _getTransactionCallback.postValue(Event(GetTransactionState.Loading))
         getTransactionsUseCase.execute(
             Consumer { transactions ->
@@ -42,7 +42,7 @@ class TransactionStatusViewModel @Inject constructor(
                 _getTransactionCallback.value =
                     Event(GetTransactionState.ShowError(it.localizedMessage))
             },
-            address
+            GetTransactionsUseCase.Param(type, address)
         )
     }
 

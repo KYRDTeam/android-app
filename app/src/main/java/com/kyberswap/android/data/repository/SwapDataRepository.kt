@@ -38,7 +38,8 @@ class SwapDataRepository @Inject constructor(
     private val api: SwapApi,
     private val mapper: GasMapper,
     private val capMapper: CapMapper,
-    private val tokenClient: TokenClient
+    private val tokenClient: TokenClient,
+    private val transactionDao: TransactionDao
 ) : SwapRepository {
 
     override fun saveSend(param: SaveSendUseCase.Param): Completable {
@@ -86,6 +87,14 @@ class SwapDataRepository @Inject constructor(
                 it.reset()
                 swapDao.updateSwap(it)
             }
+            hash?.let {
+                transactionDao.insertTransaction(
+                    Transaction(
+                        hash = it,
+                        transactionStatus = Transaction.PENDING_TRANSACTION_STATUS
+                    )
+                )
+            }
 
             hash
 
@@ -115,6 +124,15 @@ class SwapDataRepository @Inject constructor(
             resetSend?.let {
                 it.reset()
                 sendTokenDao.updateSend(it)
+            }
+
+            hash?.let {
+                transactionDao.insertTransaction(
+                    Transaction(
+                        hash = it,
+                        transactionStatus = Transaction.PENDING_TRANSACTION_STATUS
+                    )
+                )
             }
 
             hash

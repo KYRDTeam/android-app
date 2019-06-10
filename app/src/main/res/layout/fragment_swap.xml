@@ -10,20 +10,9 @@
             type="String" />
 
         <variable
-            name="percentageRate"
-            type="String" />
-
-        <variable
-            name="rate"
-            type="String" />
-
-        <variable
             name="swap"
             type="com.kyberswap.android.domain.model.Swap" />
 
-        <variable
-            name="gas"
-            type="com.kyberswap.android.domain.model.Gas" />
     </data>
 
     <FrameLayout
@@ -277,7 +266,7 @@
                         android:layout_marginTop="7dp"
                         android:layout_marginEnd="15dp"
                         android:gravity="end"
-                        android:text="@{swap.hasSamePair ? `1` : rate}"
+                        android:text="@{swap.hasSamePair ? `1` : swap.combineRate}"
                         android:textColor="#141927"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -350,7 +339,8 @@
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toEndOf="@+id/tvPercentageRate"
                         app:layout_constraintTop_toTopOf="@+id/tvPercentageRate"
-                        app:percentageRate="@{percentageRate}" />
+                        app:ratePercentage="@{swap.ratePercentage}"
+                        app:warning="@{swap.warning}" />
 
                     <TextView
                         android:id="@+id/tvPercentageRate"
@@ -365,13 +355,14 @@
                         android:textColor="#f96363"
                         android:textSize="12sp"
                         android:visibility="gone"
+                        app:hasSamePair="@{swap.hasSamePair}"
                         app:layout_constraintEnd_toStartOf="@+id/imgInfo"
                         app:layout_constraintHorizontal_bias="1.0"
                         app:layout_constraintHorizontal_chainStyle="packed"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tvRate"
-                        app:percentageRate="@{percentageRate}"
-                        app:hasSamePair="@{swap.hasSamePair}" />
+                        app:ratePercentage="@{swap.ratePercentage}"
+                        app:warning="@{swap.warning}" />
 
                     <TextView
                         android:id="@+id/tvAdvanceOption"
@@ -398,7 +389,7 @@
                         <include
                             layout="@layout/layout_expanable"
                             app:dest="@{swap.tokenDest.tokenSymbol}"
-                            app:gas="@{gas}"
+                            app:gas="@{swap.gas}"
                             app:source="@{swap.tokenSource.tokenSymbol}" />
 
                         <TextView

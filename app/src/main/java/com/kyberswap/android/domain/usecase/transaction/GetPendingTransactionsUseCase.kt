@@ -8,17 +8,12 @@ import com.kyberswap.android.domain.usecase.MergeDelayErrorUseCase
 import io.reactivex.Flowable
 import javax.inject.Inject
 
-class GetTransactionsUseCase @Inject constructor(
+class GetPendingTransactionsUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val transactionRepository: TransactionRepository
-) : MergeDelayErrorUseCase<GetTransactionsUseCase.Param, List<Transaction>>(schedulerProvider) {
+) : MergeDelayErrorUseCase<String, List<Transaction>>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    override fun buildUseCaseFlowable(param: Param): Flowable<List<Transaction>> {
-        return transactionRepository.fetchAllTransactions(param)
+    override fun buildUseCaseFlowable(param: String): Flowable<List<Transaction>> {
+        return transactionRepository.fetchPendingTransaction(param)
     }
-
-    class Param(
-        val transactionType: Int,
-        val walletAddress: String
-    )
 }

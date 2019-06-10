@@ -23,7 +23,7 @@ import com.kyberswap.android.domain.model.Unit
         UserInfo::class,
         LocalLimitOrder::class
     ],
-    version = 25
+    version = 29
 )
 @TypeConverters(DataTypeConverter::class, TransactionTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
