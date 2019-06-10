@@ -147,7 +147,6 @@ class SwapViewModel @Inject constructor(
     fun getGasPrice() {
         getGasPriceUseCase.execute(
             Consumer {
-                //                _gas = it
                 _getGetGasPriceCallback.value = Event(GetGasPriceState.Success(it))
     ,
             Consumer {
@@ -174,8 +173,9 @@ class SwapViewModel @Inject constructor(
             Consumer {
                 if (it.isNotEmpty()) {
                     expectedRate = it[0]
+                    _getExpectedRateCallback.value = Event(GetExpectedRateState.Success(it))
         
-                _getExpectedRateCallback.value = Event(GetExpectedRateState.Success(it))
+
     ,
             Consumer {
                 it.printStackTrace()
@@ -206,7 +206,7 @@ class SwapViewModel @Inject constructor(
                                     .toBigInteger()
                             )
                  else {
-                            it.amountUsed
+                            (it.amountUsed.toBigDecimal() * 1.2.toBigDecimal()).toBigInteger() + 100000.toBigInteger()
                 
         
 

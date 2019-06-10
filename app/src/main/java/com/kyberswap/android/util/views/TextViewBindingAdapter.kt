@@ -76,9 +76,9 @@ object TextViewBindingAdapter {
 
     }
 
-    @BindingAdapter("app:percentageRate", "app:hasSamePair")
+    @BindingAdapter("app:ratePercentage", "app:hasSamePair", "app:warning")
     @JvmStatic
-    fun setPercentage(view: TextView, percent: String?, samePair: Boolean?) {
+    fun setPercentage(view: TextView, percent: String?, samePair: Boolean?, warning: Boolean?) {
 
         if (samePair != null && samePair) {
             view.visibility = View.GONE
@@ -88,27 +88,32 @@ object TextViewBindingAdapter {
                 view.visibility = View.GONE
                 return
     
-            view.visibility = View.VISIBLE
-            val drawable = when {
-                percentageRate > BigDecimal.ZERO -> R.drawable.ic_arrow_up
-                percentageRate < BigDecimal.ZERO -> R.drawable.ic_arrow_down
-                else -> 0
+
+            if (warning != null && warning) {
+                view.visibility = View.VISIBLE
+                val drawable = when {
+                    percentageRate > BigDecimal.ZERO -> R.drawable.ic_arrow_up
+                    percentageRate < BigDecimal.ZERO -> R.drawable.ic_arrow_down
+                    else -> 0
+        
+
+                val color = when {
+                    percentageRate > BigDecimal.ZERO -> R.color.token_change24h_up
+                    percentageRate < BigDecimal.ZERO -> R.color.token_change24h_down
+                    else -> R.color.token_change24h_same
+        
+
+                view.setTextColor(ContextCompat.getColor(view.context, color))
+
+                view.text =
+                    String.format(
+                        view.context.getString(R.string.percentage_format),
+                        percentageRate.abs().toDouble()
+                    )
+                view.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawable, 0)
+     else {
+                View.GONE
     
-
-            val color = when {
-                percentageRate > BigDecimal.ZERO -> R.color.token_change24h_up
-                percentageRate < BigDecimal.ZERO -> R.color.token_change24h_down
-                else -> R.color.token_change24h_same
-    
-
-            view.setTextColor(ContextCompat.getColor(view.context, color))
-
-            view.text =
-                String.format(
-                    view.context.getString(R.string.percentage_format),
-                    percentageRate.abs().toDouble()
-                )
-            view.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawable, 0)
 
     }
 

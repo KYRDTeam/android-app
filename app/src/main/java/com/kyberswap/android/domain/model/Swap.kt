@@ -37,9 +37,16 @@ data class Swap(
         ) DEFAULT_GAS_LIMIT.toString()
         else tokenSource.gasLimit,
     var marketRate: String = "",
-    var minAcceptedRatePercent: String = ""
-
+    var minAcceptedRatePercent: String = "",
+    @Embedded(prefix = "gas_")
+    val gas: Gas = Gas()
 ) : Parcelable {
+
+    private val _rate: String?
+        get() = if (expectedRate.isEmpty()) marketRate else expectedRate
+
+    val combineRate: String?
+        get() = _rate.toBigDecimalOrDefaultZero().toDisplayNumber()
 
     val hasSamePair: Boolean
         get() = tokenSource.tokenSymbol == tokenDest.tokenSymbol
@@ -60,6 +67,9 @@ data class Swap(
             .append(" ")
             .append(tokenDest.tokenSymbol)
             .toString()
+
+    val warning: Boolean
+        get() = sourceAmount.isNotEmpty() && expectedRate.isNotEmpty()
 
     val displaySourceToDestAmount: String
         get() = StringBuilder().append("1 ")
@@ -153,7 +163,9 @@ data class Swap(
             .toBigInteger()
 
     val ratePercentage: String
-        get() = expectedRate.percentage(marketRate).toDisplayNumber()
+        get() = if (sourceAmount.isEmpty()) 0.toString() else expectedRate.percentage(
+            marketRate
+        ).toDisplayNumber()
 
     val ratePercentageAbs: String
         get() = expectedRate.percentage(marketRate).abs().toDisplayNumber()
@@ -189,7 +201,6 @@ data class Swap(
         this.destAmount = ""
         this.expectedRate = ""
         this.slippageRate = ""
-        this.gasPrice = ""
         this.gasLimit = ""
         this.marketRate = ""
         this.minAcceptedRatePercent = ""

@@ -9,6 +9,7 @@ import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.mapper.ChartMapper
 import com.kyberswap.android.data.mapper.RateMapper
 import com.kyberswap.android.domain.model.Chart
+import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.repository.TokenRepository
 import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
@@ -51,9 +52,9 @@ class TokenDataRepository @Inject constructor(
         )
             .map { rates ->
                 val sourceTokenToEtherRate =
-                    rates.firstOrNull { it.source == param.src && it.dest == ETH }
+                    rates.firstOrNull { it.source == param.src && it.dest == Token.ETH }
                 val etherToDestTokenRate =
-                    rates.firstOrNull { it.source == ETH && it.dest == param.dest }
+                    rates.firstOrNull { it.source == Token.ETH && it.dest == param.dest }
                 sourceTokenToEtherRate?.rate?.updatePrecision().toBigDecimalOrDefaultZero()
                     .multiply(
                         etherToDestTokenRate?.rate?.updatePrecision().toBigDecimalOrDefaultZero()
@@ -77,7 +78,7 @@ class TokenDataRepository @Inject constructor(
             expectedRate
 
             .repeatWhen {
-                it.delay(20, TimeUnit.SECONDS)
+                it.delay(15, TimeUnit.SECONDS)
     
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
@@ -109,8 +110,6 @@ class TokenDataRepository @Inject constructor(
     }
 
     companion object {
-        const val ETH = "ETH"
-        const val USD = "USD"
         private const val COUNTER_START = 1
         private const val ATTEMPTS = 5
     }

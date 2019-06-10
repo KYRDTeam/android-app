@@ -31,6 +31,7 @@ class TransactionStatusFragment : BaseFragment() {
     lateinit var appExecutors: AppExecutors
 
     private var wallet: Wallet? = null
+    private var transactionType: Int = Transaction.PENDING
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -45,6 +46,7 @@ class TransactionStatusFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         wallet = arguments!!.getParcelable(WALLET_PARAM)
+        transactionType = arguments!!.getInt(TRANSACTION_TYPE)
     }
 
     override fun onCreateView(
@@ -94,7 +96,7 @@ class TransactionStatusFragment : BaseFragment() {
         
         binding.rvTransaction.adapter = transactionStatusAdapter
 
-        viewModel.getTransaction(wallet!!.address)
+        viewModel.getTransaction(transactionType, wallet!!.address)
 
         viewModel.getTransactionCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -127,10 +129,12 @@ class TransactionStatusFragment : BaseFragment() {
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"
-        fun newInstance(wallet: Wallet?) =
+        private const val TRANSACTION_TYPE = "transaction_type"
+        fun newInstance(type: Int, wallet: Wallet?) =
             TransactionStatusFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(WALLET_PARAM, wallet)
+                    putInt(TRANSACTION_TYPE, type)
         
     
     }
