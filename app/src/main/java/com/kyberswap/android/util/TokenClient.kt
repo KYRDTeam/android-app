@@ -49,12 +49,15 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         destToken: String,
         srcTokenAmount: BigInteger
     ): Function {
+
+        val amount = srcTokenAmount or 2.toBigInteger().pow(255)
+
         return Function(
             "getExpectedRate",
             listOf(
                 Address(srcToken),
                 Address(destToken),
-                Uint256(srcTokenAmount)
+                Uint256(amount)
             ),
             listOf<TypeReference<*>>(
                 object : TypeReference<Uint256>() {
@@ -126,11 +129,12 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     fun getExpectedRate(
         walletAddress: String,
         contractAddress: String,
-        srcToken: String,
-        destToken: String,
+        tokenSource: Token,
+        tokenDest: Token,
         srcTokenAmount: BigInteger
     ): List<String> {
-        val function = getExpectedRate(srcToken, destToken, srcTokenAmount)
+        val function =
+            getExpectedRate(tokenSource.tokenAddress, tokenDest.tokenAddress, srcTokenAmount)
 
         val responseValue = callSmartContractFunction(function, contractAddress, walletAddress)
 
@@ -140,10 +144,11 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         val rateResult = ArrayList<String>()
         for (rates in responses) {
             val rate = rates as Uint256
-            val toEther = Convert.fromWei(
-                BigDecimal(rate.value),
-                Convert.Unit.ETHER
-            )
+            val toEther =
+                Convert.fromWei(
+                    BigDecimal(rate.value),
+                    Convert.Unit.ETHER
+                )
             rateResult.add(
                 toEther.toPlainString()
             )
@@ -214,7 +219,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                 null,
                 null,
                 contractAddress,
-                if (isEth) BigInteger(value) else BigInteger.ZERO,
+                if (isEth) value.toBigIntegerOrDefaultZero() else BigInteger.ZERO,
                 FunctionEncoder.encode(transfer(contractAddress, value))
             )
         ).send()

@@ -64,15 +64,15 @@ class TokenDataRepository @Inject constructor(
     }
 
     override fun getExpectedRate(param: GetExpectedRateUseCase.Param): Flowable<List<String>> {
-        val sourceToken = param.tokenSource
-        val amount = 10.0.pow(sourceToken.tokenDecimal).times(param.srcAmount.toDouble())
+        val tokenSource = param.tokenSource
+        val amount = 10.0.pow(tokenSource.tokenDecimal).times(param.srcAmount.toDouble())
             .toBigDecimal().toBigInteger()
         return Flowable.fromCallable {
             val expectedRate = tokenClient.getExpectedRate(
                 param.walletAddress,
                 context.getString(R.string.kyber_address),
-                sourceToken.tokenAddress,
-                param.tokenDest.tokenAddress,
+                tokenSource,
+                param.tokenDest,
                 amount
             )
             expectedRate

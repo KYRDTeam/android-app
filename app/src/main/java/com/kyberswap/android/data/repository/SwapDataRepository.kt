@@ -24,6 +24,7 @@ import io.reactivex.Single
 import org.consenlabs.tokencore.wallet.WalletManager
 import org.web3j.crypto.WalletUtils
 import org.web3j.protocol.core.methods.response.EthEstimateGas
+import java.math.BigDecimal
 import javax.inject.Inject
 import kotlin.math.pow
 
@@ -44,17 +45,19 @@ class SwapDataRepository @Inject constructor(
 
     override fun saveSend(param: SaveSendUseCase.Param): Completable {
         return Completable.fromCallable {
-            if (param.address.isNotBlank()) {
+            val send = if (param.address.isNotBlank()) {
                 val findContactByAddress = contactDao.findContactByAddress(param.address)
                 val contact = findContactByAddress?.copy(
                     walletAddress = param.send.walletAddress,
                     address = param.address
                 ) ?: Contact(param.send.walletAddress, param.address, DEFAULT_NAME)
-                sendTokenDao.updateSend(param.send.copy(contact = contact))
+                param.send.copy(contact = contact)
 
      else {
-                sendTokenDao.updateSend(param.send)
+                param.send
     
+            val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL) ?: Token()
+            sendTokenDao.updateSend(send.copy(ethToken = ethToken))
 
     }
 
@@ -163,9 +166,8 @@ class SwapDataRepository @Inject constructor(
                 param.wallet.address,
                 param.send.tokenSource.tokenAddress,
                 param.send.sourceAmount.toBigDecimalOrDefaultZero().times(
-                    10.0.pow(param.send.tokenSource.tokenDecimal)
-                        .toBigDecimal()
-                ).toPlainString(),
+                    BigDecimal.TEN.pow(param.send.tokenSource.tokenDecimal)
+                ).toBigInteger().toString(),
                 param.send.tokenSource.isETH
             )
 

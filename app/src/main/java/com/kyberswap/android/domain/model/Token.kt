@@ -11,6 +11,7 @@ import com.kyberswap.android.data.db.DataTypeConverter
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.parcel.Parcelize
 import java.math.BigDecimal
+import java.math.BigInteger
 
 @Entity(tableName = "tokens")
 @Parcelize
@@ -159,6 +160,10 @@ data class Token(
             value < BigDecimal.ZERO -> DOWN
             else -> SAME
 
+    }
+
+    fun updatePrecision(value: BigInteger): BigInteger {
+        return value.divide(BigInteger.TEN.pow(tokenDecimal))
     }
 
     companion object {

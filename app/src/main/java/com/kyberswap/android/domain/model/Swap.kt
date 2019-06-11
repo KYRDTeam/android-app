@@ -7,14 +7,12 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
 import com.kyberswap.android.presentation.common.MIN_SUPPORT_SWAP_SOURCE_AMOUNT
-import com.kyberswap.android.util.ext.percentage
-import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
-import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
-import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.*
 import kotlinx.android.parcel.Parcelize
 import org.web3j.utils.Convert
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.math.RoundingMode
 
 @Entity(tableName = "swaps")
 @Parcelize
@@ -196,6 +194,11 @@ data class Swap(
 
     }
 
+    fun getDefaultSourceAmount(ethAmount: String): BigDecimal {
+        return if (tokenSource.rateEthNow == BigDecimal.ZERO) BigDecimal.ZERO
+        else ethAmount.toBigDecimalOrDefaultZero().div(tokenSource.rateEthNow)
+    }
+
     fun reset() {
         this.sourceAmount = ""
         this.destAmount = ""
@@ -209,5 +212,22 @@ data class Swap(
     private fun getExpectedAmount(expectedRate: String?, amount: String?): BigDecimal {
         return amount.toBigDecimalOrDefaultZero()
             .multiply(expectedRate.toBigDecimalOrDefaultZero())
+    }
+
+    fun getExpectedDestAmount(amount: BigDecimal): BigDecimal {
+        return amount.multiply(_rate.toBigDecimalOrDefaultZero())
+    }
+
+    fun getExpectedDestUsdAmount(amount: BigDecimal, rateUsdNow: BigDecimal): BigDecimal {
+        return getExpectedDestAmount(amount)
+            .multiply(rateUsdNow)
+            .setScale(2, RoundingMode.UP)
+    }
+
+    fun rateThreshold(customRate: String): String {
+        return (1.toDouble() - customRate.toDoubleOrDefaultZero() / 100.toDouble())
+            .toBigDecimal()
+            .multiply(_rate.toBigDecimalOrDefaultZero())
+            .toDisplayNumber()
     }
 }
