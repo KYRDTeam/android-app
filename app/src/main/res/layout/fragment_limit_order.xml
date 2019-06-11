@@ -18,8 +18,8 @@
             type="String" />
 
         <variable
-            name="swap"
-            type="com.kyberswap.android.domain.model.Swap" />
+            name="order"
+            type="com.kyberswap.android.domain.model.LocalLimitOrder" />
 
         <variable
             name="gas"
@@ -142,7 +142,7 @@
                         android:layout_height="32dp"
                         android:scaleType="centerInside"
                         android:src="@drawable/eth"
-                        app:identifier="@{swap.tokenSource.tokenSymbol}"
+                        app:identifier="@{order.tokenSource.tokenSymbol}"
                         app:layout_constraintBottom_toBottomOf="@+id/tvSource"
                         app:layout_constraintEnd_toStartOf="@+id/tvSource"
                         app:layout_constraintHorizontal_bias="0.5"
@@ -156,15 +156,28 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"
-                        android:text="@{swap.tokenSource.tokenSymbol}"
+                        android:text="@{order.tokenSource.tokenSymbol}"
                         android:textAllCaps="true"
                         android:textColor="#141927"
                         android:textSize="16sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/edtSource"
-                        app:layout_constraintEnd_toStartOf="@+id/edtSource"
+                        app:layout_constraintBottom_toBottomOf="@+id/imgInfo"
+                        app:layout_constraintEnd_toStartOf="@+id/imgInfo"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toEndOf="@+id/imgTokenSource"
-                        app:layout_constraintTop_toTopOf="@+id/edtSource" />
+                        app:layout_constraintTop_toTopOf="@+id/imgInfo" />
+
+                    <ImageView
+                        android:id="@+id/imgInfo"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="8dp"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_limit_order_info"
+                        app:layout_constraintBottom_toBottomOf="@+id/edtSource"
+                        app:layout_constraintEnd_toStartOf="@+id/edtSource"
+                        app:layout_constraintStart_toEndOf="@+id/tvSource"
+                        app:layout_constraintTop_toTopOf="@+id/edtSource"
+                        app:tokenSymbol="@{order.tokenSource.tokenSymbol}" />
 
 
                     <com.kyberswap.android.presentation.common.ClearableEditText
@@ -182,7 +195,7 @@
                         android:textSize="24sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toEndOf="@+id/tvSource"
+                        app:layout_constraintStart_toEndOf="@+id/imgInfo"
                         app:layout_constraintTop_toTopOf="parent" />
 
 
@@ -192,7 +205,7 @@
                         android:layout_height="32dp"
                         android:scaleType="centerInside"
                         android:src="@drawable/knc"
-                        app:identifier="@{swap.tokenDest.tokenSymbol}"
+                        app:identifier="@{order.tokenDest.tokenSymbol}"
                         app:layout_constraintBottom_toBottomOf="@+id/tvDest"
                         app:layout_constraintEnd_toStartOf="@+id/tvDest"
                         app:layout_constraintHorizontal_bias="0.5"
@@ -206,7 +219,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"
-                        android:text="@{swap.tokenDest.tokenSymbol}"
+                        android:text="@{order.tokenDest.tokenSymbol}"
                         android:textAllCaps="true"
                         android:textColor="#141927"
                         android:textSize="16sp"
@@ -276,7 +289,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="96dp"
-                        android:text="ETH* Available"
+                        android:text="@{String.format(@string/token_amount_available, order.tokenSource.tokenSymbol)}"
                         android:textColor="#9ea1aa"
                         android:textSize="12sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -288,7 +301,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="16.130796"
+                        android:text="@{order.tokenSource.displayCurrentBalance}"
                         android:textColor="#141927"
                         android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="@+id/textView47"
@@ -313,7 +326,8 @@
                         android:gravity="center"
                         android:minWidth="50dp"
                         android:minHeight="36dp"
-                        android:text="25%"
+                        android:text="@string/percent_25"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#8690ad"
                         android:textSize="12sp"
                         app:layout_constraintBottom_toBottomOf="@+id/tvBalance"
@@ -333,7 +347,8 @@
                         android:gravity="center"
                         android:minWidth="50dp"
                         android:minHeight="36dp"
-                        android:text="50%"
+                        android:text="@string/percent_50"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#8690ad"
                         android:textSize="12sp"
                         app:layout_constraintBottom_toBottomOf="@+id/tv25Percent"
@@ -351,7 +366,8 @@
                         android:gravity="center"
                         android:minWidth="50dp"
                         android:minHeight="36dp"
-                        android:text="100%"
+                        android:text="@string/percent_100"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#8690ad"
                         android:textSize="12sp"
                         app:layout_constraintBottom_toBottomOf="@+id/tv50Percent"
@@ -378,7 +394,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:text="Rate of"
+                        android:text="@string/limit_order_rate_of"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#2a2a2a"
                         android:textSize="16sp"
                         app:layout_constraintBottom_toTopOf="@+id/tvPair"
@@ -390,7 +407,8 @@
                         android:id="@+id/tvPair"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="KNC  ➞ ETH"
+                        android:text="@{order.tokenPair}"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#2a2a2a"
                         android:textSize="16sp"
                         app:layout_constraintBottom_toBottomOf="@+id/edtRate"
@@ -406,7 +424,7 @@
 
                         tools:layout_editor_absoluteX="121dp" />
 
-                    <TextView
+                    <EditText
                         android:id="@+id/edtRate"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
@@ -416,9 +434,10 @@
                         android:layout_marginBottom="2dp"
                         android:background="@android:color/white"
                         android:gravity="center|end"
+                        android:hint="@string/default_swap_amount"
+                        android:inputType="numberDecimal"
                         android:paddingStart="20dp"
                         android:paddingEnd="20dp"
-                        android:text="0.0013"
                         android:textColor="#141927"
                         android:textSize="24sp"
                         app:layout_constraintBottom_toBottomOf="@+id/view11"
@@ -428,13 +447,12 @@
                         app:layout_constraintTop_toTopOf="@+id/view11" />
 
                     <TextView
-                        android:id="@+id/textView58"
+                        android:id="@+id/tvRate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="24dp"
                         android:layout_marginEnd="24dp"
-                        android:text="Current Rate: 1 KNC = 0.001559 ETH"
                         android:textColor="#626b86"
                         android:textSize="14sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -442,16 +460,15 @@
                         app:layout_constraintTop_toBottomOf="@+id/edtRate" />
 
                     <TextView
-                        android:id="@+id/textView59"
+                        android:id="@+id/tvRateWarning"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Your price is 5% lower than current Market"
                         android:textColor="#626b86"
                         android:textSize="14sp"
-                        app:layout_constraintEnd_toEndOf="@+id/textView58"
-                        app:layout_constraintStart_toStartOf="@+id/textView58"
-                        app:layout_constraintTop_toBottomOf="@+id/textView58" />
+                        app:layout_constraintEnd_toEndOf="@+id/tvRate"
+                        app:layout_constraintStart_toStartOf="@+id/tvRate"
+                        app:layout_constraintTop_toBottomOf="@+id/tvRate" />
 
                     <View
                         android:id="@+id/view12"
@@ -459,17 +476,17 @@
                         android:layout_height="2dp"
                         android:layout_marginTop="24dp"
                         android:background="@drawable/dash_line"
-                        app:layout_constraintEnd_toEndOf="@+id/textView59"
+                        app:layout_constraintEnd_toEndOf="@+id/tvRateWarning"
                         app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toStartOf="@+id/textView59"
-                        app:layout_constraintTop_toBottomOf="@+id/textView59" />
+                        app:layout_constraintStart_toStartOf="@+id/tvRateWarning"
+                        app:layout_constraintTop_toBottomOf="@+id/tvRateWarning" />
 
                     <TextView
-                        android:id="@+id/textView60"
+                        android:id="@+id/tvFee"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
-                        android:text="Fee: 23 KNC (0.1% of 2340 KNC)"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#626b86"
                         android:textSize="14sp"
                         app:layout_constraintEnd_toEndOf="@+id/view12"
@@ -477,16 +494,18 @@
                         app:layout_constraintTop_toBottomOf="@+id/view12" />
 
                     <TextView
-                        android:id="@+id/textView61"
+                        android:id="@+id/tvDiscount"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Buy 3000KNC to discount 50% for 20 orders"
+                        android:background="?selectableItemBackground"
+                        android:text="@string/limit_order_discount"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#00a2f7"
                         android:textSize="14sp"
-                        app:layout_constraintEnd_toEndOf="@+id/textView60"
-                        app:layout_constraintStart_toStartOf="@+id/textView60"
-                        app:layout_constraintTop_toBottomOf="@+id/textView60" />
+                        app:layout_constraintEnd_toEndOf="@+id/tvFee"
+                        app:layout_constraintStart_toStartOf="@+id/tvFee"
+                        app:layout_constraintTop_toBottomOf="@+id/tvFee" />
 
                     <TextView
                         android:id="@+id/tvSubmitOrder"
@@ -497,11 +516,12 @@
                         android:gravity="center"
                         android:minHeight="45dp"
                         android:text="@string/submit_order"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#ffffff"
                         android:textSize="16sp"
-                        app:layout_constraintEnd_toEndOf="@+id/textView61"
-                        app:layout_constraintStart_toStartOf="@+id/textView61"
-                        app:layout_constraintTop_toBottomOf="@+id/textView61" />
+                        app:layout_constraintEnd_toEndOf="@+id/tvDiscount"
+                        app:layout_constraintStart_toStartOf="@+id/tvDiscount"
+                        app:layout_constraintTop_toBottomOf="@+id/tvDiscount" />
 
 
                     <TextView
@@ -512,6 +532,7 @@
                         android:layout_marginTop="24dp"
                         android:gravity="center|start"
                         android:text="@string/related_orders"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#5a5e67"
                         android:textSize="14sp"
                         app:layout_constraintEnd_toStartOf="@+id/tvManageOrder"
@@ -527,6 +548,7 @@
                         android:layout_marginEnd="8dp"
                         android:gravity="center|end"
                         android:text="@string/manage_orders"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#ff9008"
                         android:textSize="14sp"
                         app:layout_constraintBottom_toBottomOf="@+id/tvRelatedOrder"

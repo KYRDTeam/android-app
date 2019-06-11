@@ -13,11 +13,17 @@ interface LimitOrderDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrder(order: Order)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertOrders(orders: List<Order>)
+
     @Update
     fun updateOrder(order: Order)
 
     @Query("SELECT * from orders where userAddr = :address")
     fun findOrderByAddressFlowable(address: String): Flowable<Order>
+
+    @Query("SELECT * from orders where userAddr = :address")
+    fun findOrdersByAddressFlowable(address: String): Flowable<List<Order>>
 
     @Query("SELECT * from orders where userAddr = :address LIMIT 1")
     fun findOrderByAddress(address: String): Order?

@@ -171,7 +171,6 @@
     <string name="chart_updating_data">Updating data…</string>
     <string name="tab_pending">Pending</string>
     <string name="tab_mined">Completed</string>
-    <string name="transaction_from">From</string>
     <string name="txhash">TxHash</string>
     <string name="transaction_view_on">View on</string>
     <string name="transaction_fee">Fee</string>
@@ -218,6 +217,25 @@
     <string name="a_to_z"><![CDATA[A —> Z]]></string>
     <string name="z_to_a"><![CDATA[A —> Z]]></string>
     <string name="order_confirm">Order Confirm</string>
+    <string name="token_eth_star">ETH*</string>
+    <string name="token_eth_star_name">Ether that is compatible to ERC20 standard. 1 WETH is equal to 1 ETH. Limit Order works with WETH (not ETH).</string>
+    <string name="token_amount_available">%s Available</string>
+    <string name="limit_order_current_rate">Current Rate: 1 %s = %s</string>
+    <string name="limit_order_rate_lower_market">Your price is %s%% lower than current market</string>
+    <string name="limit_order_rate_higher_market">Your price is %s%% higher than current market</string>
+    <string name="limit_order_rate_equal_market">Your price is same with current market</string>
+    <string name="percent_25">25%</string>
+    <string name="percent_50">50%</string>
+    <string name="percent_100">100%</string>
+    <string name="limit_order_rate_of">Rate of</string>
+    <string name="limit_order_discount">Buy 3000KNC to discount 50% for 20 orders</string>
+    <string name="limit_order_fee">Fee: %s %s (%s%% of %s %s)</string>
+    <string name="transaction_from">From</string>
+    <string name="day_1">1 Day</string>
+    <string name="week_1">1 Week</string>
+    <string name="month_1">1 Month</string>
+    <string name="month_3">3 Month</string>
+    <string name="transaction_failed">failed</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>

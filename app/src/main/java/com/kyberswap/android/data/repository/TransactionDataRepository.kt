@@ -6,21 +6,44 @@ import com.kyberswap.android.data.mapper.TransactionMapper
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.repository.TransactionRepository
+import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
+import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import io.reactivex.Flowable
+import io.reactivex.FlowableTransformer
 import io.reactivex.Single
+import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.Singles
-import timber.log.Timber
 import java.math.BigDecimal
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
 class TransactionDataRepository @Inject constructor(
     private val transactionApi: TransactionApi,
     private val transactionDao: TransactionDao,
-    private val transactionMapper: TransactionMapper
+    private val transactionMapper: TransactionMapper,
+    private val tokenClient: TokenClient
 ) : TransactionRepository {
+    override fun monitorPendingTransactionsPolling(transactions: List<Transaction>): Flowable<List<Transaction>> {
+        return Flowable.fromCallable {
+            val pendingTransactions = tokenClient.monitorPendingTransactions(transactions)
+            transactionDao.insertTransactionBatch(pendingTransactions)
+            pendingTransactions
+
+            .repeatWhen {
+                it.delay(10, TimeUnit.SECONDS)
+    
+            .retryWhen { throwable ->
+                throwable.compose(zipWithFlatMap())
+    
+    }
+
+    override fun fetchPendingTransaction(address: String): Flowable<List<Transaction>> {
+        return transactionDao.getTransactionByStatus(Transaction.PENDING_TRANSACTION_STATUS)
+    }
+
     override fun fetchERC20TokenTransactions(address: String): Single<List<Transaction>> {
         return transactionApi.getTransaction(
             DEFAULT_MODULE,
@@ -77,8 +100,21 @@ class TransactionDataRepository @Inject constructor(
     
     }
 
-    override fun fetchAllTransactions(address: String): Flowable<List<Transaction>> {
-        return getTransactions(address)
+
+    private fun <T> zipWithFlatMap(): FlowableTransformer<T, Long> {
+        return FlowableTransformer { flowable ->
+            flowable.zipWith(
+                Flowable.range(COUNTER_START, ATTEMPTS),
+                BiFunction<T, Int, Int> { _: T, u: Int -> u })
+                .flatMap { t -> Flowable.timer(t * 5L, TimeUnit.SECONDS) }
+
+    }
+
+    override fun fetchAllTransactions(param: GetTransactionsUseCase.Param): Flowable<List<Transaction>> {
+        if (param.transactionType == Transaction.PENDING) {
+            return fetchPendingTransaction(param.walletAddress)
+
+        return getTransactions(param.walletAddress)
 
     }
 
@@ -89,7 +125,7 @@ class TransactionDataRepository @Inject constructor(
     
             .filter {
                 it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO &&
-                    it.from == address
+                    it.from == address || it.isTransactionFail
     .map {
                 it.copy(
                     tokenSymbol = Token.ETH,
@@ -112,14 +148,17 @@ class TransactionDataRepository @Inject constructor(
 
         val erc20Transaction = fetchERC20TokenTransactions(address)
         return Flowable.mergeDelayError(
-            transactionDao.all,
+            transactionDao.getCompletedTransactions(),
             Singles.zip(
                 sendTransaction,
                 receivedTransaction,
                 erc20Transaction
             )
             { send, received, erc20 ->
-                send.union(received).union(erc20)
+                val transactions = send.toMutableList()
+                transactions.addAll(received)
+                transactions.addAll(erc20)
+                transactions.toList().sortedByDescending { it.timeStamp.toLong() }
     
                 .map {
                     it.groupBy { transaction -> transaction.hash }
@@ -168,7 +207,6 @@ class TransactionDataRepository @Inject constructor(
             
                     transactionList.toList()
         .doAfterSuccess {
-                    Timber.e("transactionDao.insertTransactionBatch(it)")
                     transactionDao.insertTransactionBatch(it)
         
                 .toFlowable()
@@ -177,6 +215,8 @@ class TransactionDataRepository @Inject constructor(
     }
 
     companion object {
+        private const val COUNTER_START = 1
+        private const val ATTEMPTS = 5
         const val DEFAULT_MODULE = "account"
         const val NORMAL_TRANSACTION = "txlist"
         const val INTERNAL_TRANSACTION = "txlistinternal"
@@ -184,5 +224,6 @@ class TransactionDataRepository @Inject constructor(
         const val DEFAULT_SORT = "desc"
         const val API_KEY = "7V3E6JSF7941JCB6448FNRI3FSH9HI7HYH"
     }
+
 
 }

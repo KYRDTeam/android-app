@@ -11,9 +11,14 @@ import javax.inject.Inject
 class GetTransactionsUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val transactionRepository: TransactionRepository
-) : MergeDelayErrorUseCase<String, List<Transaction>>(schedulerProvider) {
+) : MergeDelayErrorUseCase<GetTransactionsUseCase.Param, List<Transaction>>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    override fun buildUseCaseFlowable(param: String): Flowable<List<Transaction>> {
+    override fun buildUseCaseFlowable(param: Param): Flowable<List<Transaction>> {
         return transactionRepository.fetchAllTransactions(param)
     }
+
+    class Param(
+        val transactionType: Int,
+        val walletAddress: String
+    )
 }

@@ -46,15 +46,9 @@ class OrderAdapter(
                 mItemManger.closeAllExcept(layout)
     
 )
+        binding.order = item
+        binding.executePendingBindings()
 
-    }
-
-    override fun getItemCount(): Int {
-        return 4
-    }
-
-    override fun getItem(position: Int): Order {
-        return Order()
     }
 
     override fun getSwipeLayoutResourceId(position: Int): Int {

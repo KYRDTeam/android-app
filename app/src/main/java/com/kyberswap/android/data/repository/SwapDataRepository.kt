@@ -24,6 +24,7 @@ import io.reactivex.Single
 import org.consenlabs.tokencore.wallet.WalletManager
 import org.web3j.crypto.WalletUtils
 import org.web3j.protocol.core.methods.response.EthEstimateGas
+import java.math.BigDecimal
 import javax.inject.Inject
 import kotlin.math.pow
 
@@ -38,22 +39,25 @@ class SwapDataRepository @Inject constructor(
     private val api: SwapApi,
     private val mapper: GasMapper,
     private val capMapper: CapMapper,
-    private val tokenClient: TokenClient
+    private val tokenClient: TokenClient,
+    private val transactionDao: TransactionDao
 ) : SwapRepository {
 
     override fun saveSend(param: SaveSendUseCase.Param): Completable {
         return Completable.fromCallable {
-            if (param.address.isNotBlank()) {
+            val send = if (param.address.isNotBlank()) {
                 val findContactByAddress = contactDao.findContactByAddress(param.address)
                 val contact = findContactByAddress?.copy(
                     walletAddress = param.send.walletAddress,
                     address = param.address
                 ) ?: Contact(param.send.walletAddress, param.address, DEFAULT_NAME)
-                sendTokenDao.updateSend(param.send.copy(contact = contact))
+                param.send.copy(contact = contact)
 
      else {
-                sendTokenDao.updateSend(param.send)
+                param.send
     
+            val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL) ?: Token()
+            sendTokenDao.updateSend(send.copy(ethToken = ethToken))
 
     }
 
@@ -86,6 +90,14 @@ class SwapDataRepository @Inject constructor(
                 it.reset()
                 swapDao.updateSwap(it)
     
+            hash?.let {
+                transactionDao.insertTransaction(
+                    Transaction(
+                        hash = it,
+                        transactionStatus = Transaction.PENDING_TRANSACTION_STATUS
+                    )
+                )
+    
 
             hash
 
@@ -117,6 +129,15 @@ class SwapDataRepository @Inject constructor(
                 sendTokenDao.updateSend(it)
     
 
+            hash?.let {
+                transactionDao.insertTransaction(
+                    Transaction(
+                        hash = it,
+                        transactionStatus = Transaction.PENDING_TRANSACTION_STATUS
+                    )
+                )
+    
+
             hash
 
 
@@ -127,14 +148,14 @@ class SwapDataRepository @Inject constructor(
             tokenClient.estimateGas(
                 param.wallet.address,
                 context.getString(R.string.kyber_address),
-                param.swap.tokenSource.tokenAddress,
-                param.swap.tokenDest.tokenAddress,
-                param.swap.sourceAmount.toBigDecimalOrDefaultZero().times(
-                    10.0.pow(param.swap.tokenSource.tokenDecimal)
+                param.tokenSource.tokenAddress,
+                param.tokenDest.tokenAddress,
+                param.sourceAmount.toBigDecimalOrDefaultZero().times(
+                    10.0.pow(param.tokenSource.tokenDecimal)
                         .toBigDecimal()
                 ).toBigInteger(),
-                param.swap.minConversionRate,
-                param.swap.tokenSource.isETH()
+                param.minConversionRate,
+                param.tokenSource.isETH
             )
 
     }
@@ -145,10 +166,9 @@ class SwapDataRepository @Inject constructor(
                 param.wallet.address,
                 param.send.tokenSource.tokenAddress,
                 param.send.sourceAmount.toBigDecimalOrDefaultZero().times(
-                    10.0.pow(param.send.tokenSource.tokenDecimal)
-                        .toBigDecimal()
-                ).toPlainString(),
-                param.send.tokenSource.isETH()
+                    BigDecimal.TEN.pow(param.send.tokenSource.tokenDecimal)
+                ).toBigInteger().toString(),
+                param.send.tokenSource.isETH
             )
 
     }
@@ -175,7 +195,7 @@ class SwapDataRepository @Inject constructor(
                 val sourceToken = tokenDao.getTokenBySymbol(swap.tokenSource.tokenSymbol)
                 swap.gasLimit = sourceToken?.gasLimit ?: swap.gasLimit
     
-            swapDao.insertSwap(param.swap)
+            swapDao.insertSwap(swap)
 
     }
 
@@ -194,12 +214,12 @@ class SwapDataRepository @Inject constructor(
             val currentSwapForWalletAddress =
                 swapDao.findSwapDataByAddress(param.walletAddress).blockingFirst()
             val tokenBySymbol = tokenDao.getTokenBySymbol(param.token.tokenSymbol)
-            val token = if (param.isSourceToken) {
+            val swap = if (param.isSourceToken) {
                 currentSwapForWalletAddress.copy(tokenSource = tokenBySymbol ?: Token())
      else {
                 currentSwapForWalletAddress.copy(tokenDest = tokenBySymbol ?: Token())
     
-            swapDao.updateSwap(token)
+            swapDao.updateSwap(swap)
 
     }
 

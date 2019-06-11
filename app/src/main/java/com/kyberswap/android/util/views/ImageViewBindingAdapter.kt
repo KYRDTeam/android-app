@@ -62,7 +62,7 @@ object ImageViewBindingAdapter {
     @JvmStatic
     fun loadResource(view: ImageView, identifier: String?) {
         if (identifier == null) return
-        val resourceIcon: Int?
+        var resourceIcon: Int?
         try {
 
             resourceIcon = view.context.resources.getIdentifier(
@@ -70,6 +70,11 @@ object ImageViewBindingAdapter {
                 "drawable",
                 view.context.packageName
             )
+
+            if (identifier.toLowerCase() == view.context.getString(R.string.token_eth_star).toLowerCase()) {
+                resourceIcon = R.drawable.eth
+    
+
             if (resourceIcon == 0) {
                 Glide.with(view).load(R.drawable.token_default).error(R.drawable.token_default)
                     .into(view)
@@ -83,9 +88,14 @@ object ImageViewBindingAdapter {
 
     }
 
-    @BindingAdapter("app:percentageRate", "app:samePair")
+    @BindingAdapter("app:ratePercentage", "app:hasSamePair", "app:warning")
     @JvmStatic
-    fun percentageRate(view: ImageView, percentageRate: String?, samePair: Boolean?) {
+    fun percentageRate(
+        view: ImageView,
+        percentageRate: String?,
+        samePair: Boolean?,
+        warning: Boolean?
+    ) {
 
         if (samePair != null && samePair) {
             view.visibility = View.GONE
@@ -95,10 +105,25 @@ object ImageViewBindingAdapter {
         if (percentageRate.toBigDecimalOrDefaultZero() > (-0.1).toBigDecimal()) {
             view.visibility = View.GONE
  else {
+            if (warning != null && warning) {
+                view.visibility = View.VISIBLE
+     else {
+                View.GONE
+    
+
+    }
+
+    @BindingAdapter("app:tokenSymbol")
+    @JvmStatic
+    fun tokenSymbol(view: ImageView, tokenSymbol: String?) {
+        if (tokenSymbol != null && tokenSymbol.toLowerCase() == view.context.getString(R.string.token_eth_star).toLowerCase()) {
             view.visibility = View.VISIBLE
+ else {
+            view.visibility = View.GONE
 
 
     }
+
 
     @BindingAdapter("app:address")
     @JvmStatic
@@ -115,7 +140,6 @@ object ImageViewBindingAdapter {
             Glide.with(view).load(drawable).into(view)
  catch (ex: Exception) {
             ex.printStackTrace()
-
 
     }
 

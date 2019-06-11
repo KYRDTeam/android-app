@@ -85,8 +85,8 @@ class TokenSearchFragment : BaseFragment() {
          else {
                     viewModel.saveTokenSelection(wallet!!.address, token, isSourceToken ?: false)
         
-
     
+
         binding.rvToken.adapter = tokenAdapter
         viewModel.getTokenList(wallet!!.address)
 
@@ -166,6 +166,7 @@ class TokenSearchFragment : BaseFragment() {
 
         binding.imgBack.setOnClickListener {
             activity!!.onBackPressed()
+
 
 
     }

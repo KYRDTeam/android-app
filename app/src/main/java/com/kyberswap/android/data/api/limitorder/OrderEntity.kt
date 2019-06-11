@@ -8,7 +8,7 @@ import java.math.BigDecimal
 data class OrderEntity(
     @SerializedName("id")
     val id: Int = 0,
-    @SerializedName("user_addr")
+    @SerializedName("addr")
     val userAddr: String = "",
     @SerializedName("src")
     val src: String = "",
@@ -18,8 +18,6 @@ data class OrderEntity(
     val srcAmount: BigDecimal = BigDecimal.ZERO,
     @SerializedName("min_rate")
     val minRate: BigDecimal = BigDecimal.ZERO,
-    @SerializedName("dest_addr")
-    val destAddr: String = "",
     @SerializedName("nonce")
     val nonce: String = "",
     @SerializedName("fee")
@@ -40,20 +38,44 @@ fun JsonArray.toOrderEntity(jsonArray: JsonArray): OrderEntity {
         it.asString
     }
 
-    val id = get(keys.indexOf("id"))?.asInt ?: 0
-    val userAddr = get(keys.indexOf("addr"))?.asString ?: ""
-    val src = get(keys.indexOf("src"))?.asString ?: ""
-    val dst = get(keys.indexOf("dst"))?.asString ?: ""
+    val id = if (get(keys.indexOf("id")).isJsonNull) {
+        0
+    } else {
+        get(keys.indexOf("id"))?.asInt ?: 0
+    }
+
+
+    val userAddr =
+        if (get(keys.indexOf("addr")).isJsonNull) "" else get(keys.indexOf("addr"))?.asString ?: ""
+    val src =
+        if (get(keys.indexOf("src")).isJsonNull) "" else get(keys.indexOf("src"))?.asString ?: ""
+    val dst =
+        if (get(keys.indexOf("dst")).isJsonNull) "" else get(keys.indexOf("dst"))?.asString ?: ""
     val srcAmount =
         get(keys.indexOf("src_amount"))?.asBigDecimal ?: BigDecimal.ZERO
-    val minRate = get(keys.indexOf("min_rate"))?.asBigDecimal ?: BigDecimal.ZERO
-    val destAddr = get(keys.indexOf("dest_addr"))?.asString ?: ""
-    val nonce = get(keys.indexOf("nonce"))?.asString ?: ""
-    val fee = get(keys.indexOf("fee"))?.asBigDecimal ?: BigDecimal.ZERO
-    val status = get(keys.indexOf("status"))?.asString ?: ""
-    val txHash = get(keys.indexOf("tx_hash"))?.asString ?: ""
-    val createdAt = get(keys.indexOf("created_at"))?.asLong ?: 0
-    val updatedAt = get(keys.indexOf("updated_at"))?.asLong ?: 0
+    val minRate =
+        if (get(keys.indexOf("min_rate")).isJsonNull) BigDecimal.ZERO else get(keys.indexOf("min_rate"))?.asBigDecimal
+            ?: BigDecimal.ZERO
+    val nonce =
+        if (get(keys.indexOf("nonce")).isJsonNull) "" else get(keys.indexOf("nonce"))?.asString
+            ?: ""
+    val fee =
+        if (get(keys.indexOf("fee")).isJsonNull) BigDecimal.ZERO else get(keys.indexOf("fee"))?.asBigDecimal
+            ?: BigDecimal.ZERO
+    val status =
+        if (get(keys.indexOf("status")).isJsonNull) "" else get(keys.indexOf("status"))?.asString
+            ?: ""
+    val txHash = if (get(keys.indexOf("tx_hash")).isJsonNull) {
+        ""
+    } else {
+        get(keys.indexOf("tx_hash"))?.asString ?: ""
+    }
+    val createdAt =
+        if (get(keys.indexOf("created_at")).isJsonNull) 0 else get(keys.indexOf("created_at"))?.asLong
+            ?: 0
+    val updatedAt =
+        if (get(keys.indexOf("updated_at")).isJsonNull) 0 else get(keys.indexOf("updated_at"))?.asLong
+            ?: 0
 
     return OrderEntity(
         id,
@@ -62,7 +84,6 @@ fun JsonArray.toOrderEntity(jsonArray: JsonArray): OrderEntity {
         dst,
         srcAmount,
         minRate,
-        destAddr,
         nonce,
         fee,
         status,

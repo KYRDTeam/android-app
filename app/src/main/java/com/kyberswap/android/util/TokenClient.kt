@@ -9,11 +9,11 @@ import com.kyberswap.android.presentation.common.DEFAULT_WALLET_ID
 import com.kyberswap.android.presentation.common.PERM
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
-import com.kyberswap.android.util.ext.toBytes32
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.FunctionReturnDecoder
 import org.web3j.abi.TypeReference
 import org.web3j.abi.datatypes.Address
+import org.web3j.abi.datatypes.DynamicBytes
 import org.web3j.abi.datatypes.Function
 import org.web3j.abi.datatypes.generated.Uint256
 import org.web3j.crypto.Credentials
@@ -30,6 +30,7 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
 import javax.inject.Inject
+import kotlin.math.pow
 
 
 class TokenClient @Inject constructor(private val web3j: Web3j) {
@@ -48,12 +49,15 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         destToken: String,
         srcTokenAmount: BigInteger
     ): Function {
+
+        val amount = srcTokenAmount or 2.toBigInteger().pow(255)
+
         return Function(
             "getExpectedRate",
             listOf(
                 Address(srcToken),
                 Address(destToken),
-                Uint256(srcTokenAmount)
+                Uint256(amount)
             ),
             listOf<TypeReference<*>>(
                 object : TypeReference<Uint256>() {
@@ -109,7 +113,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     @Throws(Exception::class)
     fun getBalance(owner: String, token: Token): Token {
         return token.copy(
-            currentBalance = if (token.isETH()) {
+            currentBalance = if (token.isETH) {
                 Convert.fromWei(BigDecimal(getEthBalance(owner)), Convert.Unit.ETHER)
      else {
                 (getBalance(owner, token.tokenAddress) ?: BigDecimal.ZERO).divide(
@@ -125,11 +129,12 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     fun getExpectedRate(
         walletAddress: String,
         contractAddress: String,
-        srcToken: String,
-        destToken: String,
+        tokenSource: Token,
+        tokenDest: Token,
         srcTokenAmount: BigInteger
     ): List<String> {
-        val function = getExpectedRate(srcToken, destToken, srcTokenAmount)
+        val function =
+            getExpectedRate(tokenSource.tokenAddress, tokenDest.tokenAddress, srcTokenAmount)
 
         val responseValue = callSmartContractFunction(function, contractAddress, walletAddress)
 
@@ -139,10 +144,11 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         val rateResult = ArrayList<String>()
         for (rates in responses) {
             val rate = rates as Uint256
-            val toEther = Convert.fromWei(
-                BigDecimal(rate.value),
-                Convert.Unit.ETHER
-            )
+            val toEther =
+                Convert.fromWei(
+                    BigDecimal(rate.value),
+                    Convert.Unit.ETHER
+                )
             rateResult.add(
                 toEther.toPlainString()
             )
@@ -167,7 +173,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             fromAddress,
             toAddress,
             amount,
-            minConversionRate,
+            BigInteger.ZERO,
             walletAddress
         )
 
@@ -213,12 +219,10 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                 null,
                 null,
                 contractAddress,
-                if (isEth) BigInteger(value) else BigInteger.ZERO,
-                FunctionEncoder.encode(transfer(walletAddress, value))
+                if (isEth) value.toBigIntegerOrDefaultZero() else BigInteger.ZERO,
+                FunctionEncoder.encode(transfer(contractAddress, value))
             )
         ).send()
-
-
     }
 
     @Throws(IOException::class)
@@ -237,6 +241,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         minConversionRate: BigInteger,
         walletAddress: String
     ): Function {
+
         return Function(
             "tradeWithHint",
             listOf(
@@ -247,7 +252,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                 Uint256(DEFAULT_MAX_AMOUNT),
                 Uint256(minConversionRate),
                 Address(DEFAULT_WALLET_ID),
-                PERM.toBytes32()
+                DynamicBytes(PERM.toByteArray())
             ),
             listOf<TypeReference<*>>()
         )
@@ -266,13 +271,11 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             if (param.swap.gasLimit.toBigInteger() == BigInteger.ZERO) DEFAULT_GAS_LIMIT
             else param.swap.gasLimit.toBigInteger()
 
-        val tradeWithHintAmount = Convert.toWei(
-            param.swap.sourceAmount.toBigDecimalOrDefaultZero(),
-            Convert.Unit.ETHER
-        ).toBigIntegerExact()
+        val tradeWithHintAmount = param.swap.sourceAmount.toBigDecimalOrDefaultZero()
+            .times(10.0.pow(param.swap.tokenSource.tokenDecimal).toBigDecimal()).toBigInteger()
 
         val transactionAmount =
-            if (param.swap.tokenSource.isETH()) tradeWithHintAmount else BigInteger.ZERO
+            if (param.swap.tokenSource.isETH) tradeWithHintAmount else BigInteger.ZERO
 
         val minConversionRate = param.swap.minConversionRate
 
@@ -283,7 +286,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         val walletAddress = param.wallet.address
         val txManager = RawTransactionManager(web3j, credentials)
 
-        return if (param.swap.tokenSource.isETH()) {
+        return if (param.swap.tokenSource.isETH) {
             executeTradeWithHint(
                 fromAddress,
                 toAddress,
@@ -324,12 +327,14 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         ).toBigInteger()
         val gasLimit = param.send.gasLimit.toBigIntegerOrDefaultZero()
 
-        val isEth = param.send.tokenSource.isETH()
+        val isEth = param.send.tokenSource.isETH
 
-        val amount = Convert.toWei(
-            param.send.sourceAmount.toBigDecimalOrDefaultZero(),
-            Convert.Unit.ETHER
-        ).toBigInteger()
+
+        val amount = param.send
+            .sourceAmount
+            .toBigDecimalOrDefaultZero().multiply(
+                10.toBigDecimal().pow(param.send.tokenSource.tokenDecimal)
+            ).toBigInteger()
 
         val transactionAmount = if (isEth) amount else BigInteger.ZERO
 
@@ -361,7 +366,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     private fun executeTradeWithHint(
         fromAddress: String,
         toAddress: String,
-        amount: BigInteger,
+        transactionAmount: BigInteger,
         tradeWithHintAmount: BigInteger,
         minConversionRate: BigInteger,
         gasPrice: BigInteger,
@@ -384,7 +389,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                     walletAddress
                 )
             ),
-            amount
+            transactionAmount
         )
 
         if (transactionResponse.hasError()) run {
@@ -398,7 +403,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
 
     private fun handleSwapERC20Token(
         fromAddress: String,
-        amount: BigInteger,
+        transactionAmount: BigInteger,
         tradeWithHintAmount: BigInteger,
         minConversionRate: BigInteger,
         gasPrice: BigInteger,
@@ -410,7 +415,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     ): String? {
         val allowanceAmount =
             getContractAllowanceAmount(walletAddress, fromAddress, contractAddress, txManager)
-        if (allowanceAmount < amount) {
+        if (allowanceAmount < tradeWithHintAmount) {
             sendContractApproveTransferWithCondition(
                 allowanceAmount,
                 fromAddress,
@@ -423,7 +428,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         return executeTradeWithHint(
             fromAddress,
             toAddress,
-            amount,
+            transactionAmount,
             tradeWithHintAmount,
             minConversionRate,
             gasPrice,
@@ -530,5 +535,29 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             throw RuntimeException("Error processing transaction request: " + transactionResponse.error.message)
 
         Timber.e(transactionResponse.transactionHash)
+    }
+
+    fun monitorPendingTransactions(transactions: List<com.kyberswap.android.domain.model.Transaction>): List<com.kyberswap.android.domain.model.Transaction> {
+        val ethTransactions = mutableListOf<com.kyberswap.android.domain.model.Transaction>()
+        for (s in transactions.map {
+            it.hash
+) {
+
+            val transaction = web3j.ethGetTransactionByHash(s).send().transaction
+            if (transaction.isPresent) {
+                val tx = transaction.get()
+                if (tx.hash.isNotEmpty()) {
+                    val ethGetTransactionReceipt =
+                        web3j.ethGetTransactionReceipt(tx.hash).send().transactionReceipt
+                    if (ethGetTransactionReceipt.isPresent) {
+                        val txReceipt = ethGetTransactionReceipt.get()
+                        ethTransactions.add(com.kyberswap.android.domain.model.Transaction(txReceipt))
+            
+         else {
+                    ethTransactions.add(com.kyberswap.android.domain.model.Transaction(tx))
+        
+    
+
+        return ethTransactions.toList()
     }
 }

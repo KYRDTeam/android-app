@@ -1,6 +1,7 @@
 package com.kyberswap.android.presentation.main.transaction
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -52,23 +53,24 @@ class TransactionStatusAdapter(
 
             is TransactionItem.ItemEven -> {
                 binding as ItemTransactionBinding
-                binding.tvTransactionDetail.text = item.transaction.displayTransaction
-                binding.tvRate.text = item.transaction.displayRate
-                binding.tvTransactionType.text = item.transaction.displayTransactionType
-                binding.root.setOnClickListener {
-                    onTransactionClick?.invoke(item.transaction)
-        
+                binding(binding, item.transaction)
     
 
             is TransactionItem.ItemOdd -> {
                 binding as ItemTransactionBinding
-                binding.tvTransactionDetail.text = item.transaction.displayTransaction
-                binding.tvRate.text = item.transaction.displayRate
-                binding.tvTransactionType.text = item.transaction.displayTransactionType
-                binding.root.setOnClickListener {
-                    onTransactionClick?.invoke(item.transaction)
-        
+                binding(binding, item.transaction)
     
+
+
+    }
+
+    private fun binding(binding: ItemTransactionBinding, transaction: Transaction) {
+        binding.tvTransactionDetail.text = transaction.displayTransaction
+        binding.tvRate.text = transaction.displayRate
+        binding.tvTransactionType.text = transaction.displayTransactionType
+        binding.tvFail.visibility = if (transaction.isTransactionFail) View.VISIBLE else View.GONE
+        binding.root.setOnClickListener {
+            onTransactionClick?.invoke(transaction)
 
 
     }
@@ -115,7 +117,7 @@ class TransactionStatusAdapter(
 
 
     companion object {
-        private val TYPE_HEADER = 1
-        private val TYPE_ITEM = 2
+        private const val TYPE_HEADER = 1
+        private const val TYPE_ITEM = 2
     }
 }

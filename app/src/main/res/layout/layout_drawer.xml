@@ -37,15 +37,15 @@
         android:textAllCaps="true"
         android:textColor="#2e3957"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView10"
-        app:layout_constraintEnd_toStartOf="@+id/textView10"
+        app:layout_constraintBottom_toBottomOf="@+id/tvPendingTransaction"
+        app:layout_constraintEnd_toStartOf="@+id/tvPendingTransaction"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView10" />
+        app:layout_constraintTop_toTopOf="@+id/tvPendingTransaction" />
 
     <TextView
-        android:id="@+id/textView10"
+        android:id="@+id/tvPendingTransaction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="83dp"

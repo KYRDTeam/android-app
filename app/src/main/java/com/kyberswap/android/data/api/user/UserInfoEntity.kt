@@ -7,17 +7,17 @@ data class UserInfoEntity(
     @SerializedName("active_wallets")
     val activeWallets: List<String> = listOf(),
     @SerializedName("avatar_url")
-    val avatarUrl: String = "",
+    val avatarUrl: String? = "",
     @SerializedName("contact_id")
-    val contactId: String = "",
+    val contactId: String? = "",
     @SerializedName("contact_type")
-    val contactType: String = "",
+    val contactType: String? = "",
     @SerializedName("kyc_status")
-    val kycStatus: String = "",
+    val kycStatus: String? = "",
     @SerializedName("kyc_step")
     val kycStep: Int = 0,
     @SerializedName("name")
-    val name: String = "",
+    val name: String? = "",
     @SerializedName("uid")
     val uid: Long = 0
 )
