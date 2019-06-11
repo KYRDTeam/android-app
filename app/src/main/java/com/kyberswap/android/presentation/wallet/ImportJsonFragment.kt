@@ -109,11 +109,11 @@ class ImportJsonFragment : BaseFragment() {
         )
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
-        super.onActivityResult(requestCode, resultCode, resultData)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             READ_REQUEST_CODE -> {
-                resultData?.data?.also { uri ->
+                data?.data?.also { uri ->
                     this.uri = uri
                     binding.button.text = queryName(uri)
                     binding.btnImportWallet.isEnabled = true

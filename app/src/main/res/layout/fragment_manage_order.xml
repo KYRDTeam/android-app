@@ -40,77 +40,88 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="24dp"
                     android:text="@string/manage_order_filter"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#5a5e67"
                     android:textSize="14sp"
-                    app:layout_constraintEnd_toStartOf="@+id/textView62"
+                    app:layout_constraintEnd_toStartOf="@+id/tv1Day"
                     app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintHorizontal_chainStyle="packed"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/textView62"
+                    android:id="@+id/tv1Day"
+                    android:checked="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:gravity="center_horizontal"
                     android:padding="8dp"
-                    android:text="1 Day"
-                    android:textColor="#ff9008"
+                    android:text="@string/day_1"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="@color/manage_order_text_color"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="@+id/tvFilter"
-                    app:layout_constraintEnd_toStartOf="@+id/textView75"
+                    app:layout_constraintEnd_toStartOf="@+id/tv1Week"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/tvFilter"
                     app:layout_constraintTop_toTopOf="@+id/tvFilter" />
 
                 <TextView
-                    android:id="@+id/textView75"
+                    android:id="@+id/tv1Week"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="@string/week_1"
                     android:gravity="center_horizontal"
                     android:padding="8dp"
-
-                    android:text="1 Week"
-                    android:textColor="#5a5e67"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="@color/manage_order_text_color"
                     android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView62"
-                    app:layout_constraintEnd_toStartOf="@+id/textView76"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv1Day"
+                    app:layout_constraintEnd_toStartOf="@+id/tv1Month"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/textView62"
-                    app:layout_constraintTop_toTopOf="@+id/textView62" />
+                    app:layout_constraintStart_toEndOf="@+id/tv1Day"
+                    app:layout_constraintTop_toTopOf="@+id/tv1Day" />
 
                 <TextView
-                    android:id="@+id/textView76"
+                    android:id="@+id/tv1Month"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:gravity="center_horizontal"
                     android:padding="8dp"
-
-                    android:text="1 Month"
-                    android:textColor="#5a5e67"
+                    android:text="@string/month_1"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="@color/manage_order_text_color"
                     android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView75"
-                    app:layout_constraintEnd_toStartOf="@+id/textView77"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv1Week"
+                    app:layout_constraintEnd_toStartOf="@+id/tv3Month"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/textView75"
-                    app:layout_constraintTop_toTopOf="@+id/textView75" />
+                    app:layout_constraintStart_toEndOf="@+id/tv1Week"
+                    app:layout_constraintTop_toTopOf="@+id/tv1Week" />
 
                 <TextView
-                    android:id="@+id/textView77"
+                    android:id="@+id/tv3Month"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="24dp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:gravity="center_horizontal"
-
                     android:padding="8dp"
-                    android:text="3 Month"
-                    android:textColor="#5a5e67"
+                    android:text="@string/month_3"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="@color/manage_order_text_color"
                     android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView76"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv1Month"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/textView76"
-                    app:layout_constraintTop_toTopOf="@+id/textView76" />
+                    app:layout_constraintStart_toEndOf="@+id/tv1Month"
+                    app:layout_constraintTop_toTopOf="@+id/tv1Month" />
 
 
                 <View
@@ -119,7 +130,7 @@
                     android:layout_height="2dp"
                     android:layout_marginTop="11dp"
                     android:background="@drawable/dash_line"
-                    app:layout_constraintEnd_toEndOf="@+id/textView77"
+                    app:layout_constraintEnd_toEndOf="@+id/tv3Month"
                     app:layout_constraintStart_toStartOf="@+id/tvFilter"
                     app:layout_constraintTop_toBottomOf="@+id/tvFilter" />
 

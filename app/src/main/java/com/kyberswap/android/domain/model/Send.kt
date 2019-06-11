@@ -24,7 +24,9 @@ data class Send(
     @Embedded
     var gas: Gas = Gas(),
     @Embedded(prefix = "contact_")
-    var contact: Contact = Contact()
+    var contact: Contact = Contact(),
+    @Embedded(prefix = "eth_")
+    val ethToken: Token = Token()
 
 ) : Parcelable {
 
@@ -49,8 +51,6 @@ data class Send(
                         gasPrice.toBigDecimalOrDefaultZero(),
                         Convert.Unit.GWEI
                     ).multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
-                ).multiply(
-                    tokenSource.rateEthNow
                 ).toDisplayNumber()
             )
             .append(" ETH")
@@ -66,7 +66,7 @@ data class Send(
                         Convert.Unit.GWEI
                     ).multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
                 ).multiply(
-                    tokenSource.rateUsdNow
+                    ethToken.rateUsdNow
                 ).toDisplayNumber()
             )
             .append(" USD")

@@ -21,12 +21,12 @@ data class UserInfo(
 ) {
     constructor(entity: UserInfoEntity) : this(
         entity.activeWallets,
-        entity.avatarUrl,
-        entity.contactId,
-        entity.contactType,
-        entity.kycStatus,
+        entity.avatarUrl ?: "",
+        entity.contactId ?: "",
+        entity.contactType ?: "",
+        entity.kycStatus ?: "",
         entity.kycStep,
-        entity.name,
+        entity.name ?: "",
         entity.uid
     )
 }

@@ -2,7 +2,7 @@ package com.kyberswap.android.domain.usecase.swap
 
 import androidx.annotation.VisibleForTesting
 import com.kyberswap.android.domain.SchedulerProvider
-import com.kyberswap.android.domain.model.Swap
+import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.repository.TokenRepository
 import com.kyberswap.android.domain.usecase.FlowableUseCase
 import io.reactivex.Flowable
@@ -19,7 +19,8 @@ class GetExpectedRateUseCase @Inject constructor(
 
     class Param(
         val walletAddress: String,
-        val swap: Swap,
+        val tokenSource: Token,
+        val tokenDest: Token,
         val srcAmount: String
     )
 

@@ -80,7 +80,8 @@ object DataModule {
         api: SwapApi,
         mapper: GasMapper,
         capMapper: CapMapper,
-        tokenClient: TokenClient
+        tokenClient: TokenClient,
+        transactionDao: TransactionDao
     ): SwapRepository =
         SwapDataRepository(
             context,
@@ -92,7 +93,8 @@ object DataModule {
             api,
             mapper,
             capMapper,
-            tokenClient
+            tokenClient,
+            transactionDao
         )
 
     @Singleton
@@ -110,9 +112,10 @@ object DataModule {
     fun provideTransactionRepository(
         api: TransactionApi,
         transactionDao: TransactionDao,
-        mapper: TransactionMapper
+        mapper: TransactionMapper,
+        tokenClient: TokenClient
     ): TransactionRepository =
-        TransactionDataRepository(api, transactionDao, mapper)
+        TransactionDataRepository(api, transactionDao, mapper, tokenClient)
 
 
     @Singleton
@@ -131,13 +134,19 @@ object DataModule {
     @Provides
     @JvmStatic
     fun provideLimitOrderRepository(
+        tokenDao: TokenDao,
+        localLimitOrderDao: LocalLimitOrderDao,
         dao: LimitOrderDao,
         api: LimitOrderApi,
-        mapper: OrderMapper
+        mapper: OrderMapper,
+        feeMapper: FeeMapper
     ): LimitOrderRepository =
         LimitOrderDataRepository(
             dao,
+            localLimitOrderDao,
+            tokenDao,
             api,
-            mapper
+            mapper,
+            feeMapper
         )
 }

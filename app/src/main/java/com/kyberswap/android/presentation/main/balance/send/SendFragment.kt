@@ -23,10 +23,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
-import com.kyberswap.android.presentation.main.swap.GetContactState
-import com.kyberswap.android.presentation.main.swap.GetGasPriceState
-import com.kyberswap.android.presentation.main.swap.GetSendState
-import com.kyberswap.android.presentation.main.swap.SaveSendState
+import com.kyberswap.android.presentation.main.swap.*
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.isContact
 import com.kyberswap.android.util.ext.setAllOnClickListener
@@ -89,9 +86,6 @@ class SendFragment : BaseFragment() {
                             gasPrice = getSelectedGasPrice(state.gas),
                             gas = state.gas
                         )
-                        if (send != binding.send) {
-                            viewModel.saveSend(send)
-                        }
                         binding.send = send
                     }
                     is GetGasPriceState.ShowError -> {
@@ -117,7 +111,6 @@ class SendFragment : BaseFragment() {
                 )
             }
         }
-
 
         binding.tvAddContact.setOnClickListener {
             navigator.navigateToAddContactScreen(
@@ -162,7 +155,8 @@ class SendFragment : BaseFragment() {
 
         val contactAdapter =
             ContactAdapter(appExecutors) { contact ->
-                viewModel.saveSend(binding.send?.copy(contact = contact))
+                val send = binding.send?.copy(contact = contact)
+                binding.send = send
                 binding.edtAddress.setText(contact.address)
             }
         binding.rvContact.adapter = contactAdapter
@@ -181,6 +175,23 @@ class SendFragment : BaseFragment() {
             }
         })
 
+        viewModel.getGetGasLimitCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetGasLimitState.Success -> {
+                        val send = binding.send?.copy(
+                            gasLimit = state.gasLimit.toString()
+                        )
+
+                        binding.send = send
+                    }
+                    is GetGasLimitState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                    }
+                }
+            }
+        })
+
         binding.imgQRCode.setOnClickListener {
             IntentIntegrator.forSupportFragment(this)
                 .setBeepEnabled(false)
@@ -193,6 +204,10 @@ class SendFragment : BaseFragment() {
                     is GetSendState.Success -> {
                         binding.send = state.send
                         edtSource.setAmount(state.send.sourceAmount)
+                        viewModel.getGasLimit(
+                            state.send,
+                            wallet
+                        )
                     }
                     is GetSendState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))

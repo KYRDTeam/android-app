@@ -8,12 +8,12 @@ import com.kyberswap.android.domain.usecase.FlowableUseCase
 import io.reactivex.Flowable
 import javax.inject.Inject
 
-class GetLimitOrderDataUseCase @Inject constructor(
+class GetLimitOrdersUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val limitOrderRepository: LimitOrderRepository
-) : FlowableUseCase<GetLimitOrderDataUseCase.Param, Order>(schedulerProvider) {
+) : FlowableUseCase<GetLimitOrdersUseCase.Param, List<Order>>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    override fun buildUseCaseFlowable(param: Param): Flowable<Order> {
+    override fun buildUseCaseFlowable(param: Param): Flowable<List<Order>> {
         return limitOrderRepository.getLimitOrders(param)
     }
 

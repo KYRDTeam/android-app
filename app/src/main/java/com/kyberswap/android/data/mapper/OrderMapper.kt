@@ -8,4 +8,12 @@ class OrderMapper @Inject constructor() {
     fun transform(entity: OrderEntity): Order {
         return Order(entity)
     }
+
+    fun transform(entities: List<OrderEntity>): List<Order> {
+        return entities.map {
+            transform(it)
+        }
+    }
+
+
 }

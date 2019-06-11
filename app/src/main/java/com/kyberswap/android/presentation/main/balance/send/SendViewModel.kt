@@ -11,13 +11,9 @@ import com.kyberswap.android.domain.usecase.send.SaveSendUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
 import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT_SEND_ETH
-import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT_TRANSFER
-import com.kyberswap.android.presentation.common.DEFAULT_GA_LIMIT_SEND_TOKEN
+import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT_SEND_TOKEN
 import com.kyberswap.android.presentation.common.Event
-import com.kyberswap.android.presentation.main.swap.GetContactState
-import com.kyberswap.android.presentation.main.swap.GetGasPriceState
-import com.kyberswap.android.presentation.main.swap.GetSendState
-import com.kyberswap.android.presentation.main.swap.SaveSendState
+import com.kyberswap.android.presentation.main.swap.*
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -39,8 +35,6 @@ class SendViewModel @Inject constructor(
     val getSendCallback: LiveData<Event<GetSendState>>
         get() = _getSendCallback
 
-    private var gasLimit = DEFAULT_GAS_LIMIT_TRANSFER
-
     private val _getContactCallback = MutableLiveData<Event<GetContactState>>()
     val getContactCallback: LiveData<Event<GetContactState>>
         get() = _getContactCallback
@@ -49,11 +43,15 @@ class SendViewModel @Inject constructor(
     val saveSendCallback: LiveData<Event<SaveSendState>>
         get() = _saveSendCallback
 
+    private val _getGetGasLimitCallback = MutableLiveData<Event<GetGasLimitState>>()
+    val getGetGasLimitCallback: LiveData<Event<GetGasLimitState>>
+        get() = _getGetGasLimitCallback
+
     fun getSendInfo(address: String) {
         getSendTokenUseCase.execute(
             Consumer {
-                gasLimit =
-                    if (it.tokenSource.isETH()) DEFAULT_GAS_LIMIT_SEND_ETH else DEFAULT_GA_LIMIT_SEND_TOKEN
+                it.gasLimit =
+                    if (it.tokenSource.isETH) DEFAULT_GAS_LIMIT_SEND_ETH.toString() else DEFAULT_GAS_LIMIT_SEND_TOKEN.toString()
                 _getSendCallback.value = Event(GetSendState.Success(it))
             },
             Consumer {
@@ -91,7 +89,7 @@ class SendViewModel @Inject constructor(
                     error.printStackTrace()
                     _saveSendCallback.value = Event(SaveSendState.ShowError(error.localizedMessage))
                 },
-                SaveSendUseCase.Param(it.copy(gasLimit = gasLimit.toString()), address)
+                SaveSendUseCase.Param(it, address)
             )
         }
 
@@ -114,11 +112,10 @@ class SendViewModel @Inject constructor(
         if (send == null || wallet == null) return
         estimateTransferGasUseCase.execute(
             Consumer {
-                gasLimit = it.amountUsed.toBigDecimal()
-                    .multiply(1.2.toBigDecimal()).toBigIntegerExact()
-                saveSend(
-                    send.copy(
-                        gasLimit = gasLimit.toString()
+                _getGetGasLimitCallback.value = Event(
+                    GetGasLimitState.Success(
+                        it.amountUsed.toBigDecimal()
+                            .multiply(1.2.toBigDecimal()).toBigInteger()
                     )
                 )
             },

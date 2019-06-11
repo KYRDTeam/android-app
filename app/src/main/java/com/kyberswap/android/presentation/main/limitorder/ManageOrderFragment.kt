@@ -4,18 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
 import com.kyberswap.android.AppExecutors
+import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentManageOrderBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
-import com.kyberswap.android.presentation.main.swap.SwapViewModel
 import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
 
@@ -36,8 +37,10 @@ class ManageOrderFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(SwapViewModel::class.java)
+        ViewModelProviders.of(this, viewModelFactory).get(ManageOrderViewModel::class.java)
     }
+
+    private var currentSelectedView: View? = null
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
@@ -65,14 +68,14 @@ class ManageOrderFragment : BaseFragment() {
             RecyclerView.VERTICAL,
             false
         )
-        val tokenAdapter =
+        val orderAdapter =
             OrderAdapter(
                 appExecutors
             ) {
 
             }
-        tokenAdapter.mode = Attributes.Mode.Single
-        binding.rvOrder.adapter = tokenAdapter
+        orderAdapter.mode = Attributes.Mode.Single
+        binding.rvOrder.adapter = orderAdapter
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
@@ -84,6 +87,34 @@ class ManageOrderFragment : BaseFragment() {
                 wallet
             )
         }
+
+
+        binding.tv1Day.isSelected = true
+        currentSelectedView = binding.tv1Day
+        listOf(binding.tv1Day, binding.tv1Week, binding.tv1Month, binding.tv3Month)
+            .forEach {
+                it.setOnClickListener {
+                    if (currentSelectedView != it) {
+                        currentSelectedView?.isSelected = false
+                        currentSelectedView = it
+                    }
+                    it.isSelected = true
+                }
+            }
+
+        wallet?.let { viewModel.getRelatedOrders(it) }
+        viewModel.getRelatedOrderCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetRelatedOrdersState.Success -> {
+                        orderAdapter.submitList(state.orders)
+                    }
+                    is GetRelatedOrdersState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                    }
+                }
+            }
+        })
 
     }
 

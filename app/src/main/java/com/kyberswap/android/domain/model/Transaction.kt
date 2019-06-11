@@ -8,6 +8,7 @@ import com.kyberswap.android.data.db.TransactionTypeConverter
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.parcel.Parcelize
+import org.web3j.protocol.core.methods.response.TransactionReceipt
 import org.web3j.utils.Convert
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
@@ -46,7 +47,8 @@ data class Transaction(
     val tokenSource: String = "",
     val sourceAmount: String = "",
     val tokenDest: String = "",
-    val destAmount: String = ""
+    val destAmount: String = "",
+    val transactionStatus: String = ""
 
 ) : Parcelable {
     constructor(entity: TransactionEntity, transactionType: TransactionType, txType: String) : this(
@@ -63,7 +65,6 @@ data class Transaction(
         entity.input,
         entity.isError,
         entity.nonce,
-//        formatter.format(Date(entity.timeStamp.toLong() * 1000L)),
         entity.timeStamp,
         entity.to,
         entity.transactionIndex,
@@ -91,7 +92,6 @@ data class Transaction(
         entity.input,
         entity.isError,
         entity.nonce,
-//        formatter.format(Date(entity.timeStamp.toLong() * 1000L)),
         entity.timeStamp,
         entity.to,
         entity.transactionIndex,
@@ -104,9 +104,54 @@ data class Transaction(
         txType
     )
 
+    constructor(tx: org.web3j.protocol.core.methods.response.Transaction) : this(
+        tx.blockHash,
+        tx.blockNumber.toString(),
+        "",
+        "",
+        "",
+        tx.from,
+        tx.gas.toString(),
+        tx.gasPrice.toString(),
+        "",
+        tx.hash,
+        tx.input,
+        "0",
+        tx.nonce.toString(),
+        "0",
+        tx.to,
+        tx.transactionIndex.toString(),
+        "",
+        tx.value.toString()
+
+    )
+
+    constructor(tx: TransactionReceipt) : this(
+        tx.blockHash,
+        tx.blockNumber.toString(),
+        "",
+        tx.contractAddress,
+        tx.cumulativeGasUsed.toString(),
+        tx.from,
+        "",
+        "",
+        tx.gasUsed.toString(),
+        tx.transactionHash,
+        "",
+        if (tx.isStatusOK) "0" else "1",
+        "",
+        "0",
+        tx.to,
+        tx.transactionIndex.toString(),
+        tx.status
+    )
+
     enum class TransactionType {
         SEND, RECEIVED
     }
+
+    val isTransactionFail: Boolean
+        get() = isError == "1"
 
     val displayTransaction: String
         get() =
@@ -143,6 +188,9 @@ data class Transaction(
                     .toString()
 
     companion object {
+        const val PENDING = 0
+        const val MINED = 1
+        const val PENDING_TRANSACTION_STATUS = "pending"
         const val SWAP_TRANSACTION = "SWAP"
         const val SEND_TRANSACTION = "SEND"
         const val RECEIVE_TRANSACTION = "RECEIVE"
@@ -152,10 +200,10 @@ data class Transaction(
     }
 
     val shortedDateTimeFormat: String
-        get() = formatterShort.format(Date(timeStamp.toLong() * 1000L))
+        get() = if (timeStamp.isNotEmpty()) formatterShort.format(Date(timeStamp.toLong() * 1000L)) else "0"
 
     val longDateTimeFormat: String
-        get() = formatterFull.format(Date(timeStamp.toLong() * 1000L))
+        get() = if (timeStamp.isNotEmpty()) formatterFull.format(Date(timeStamp.toLong() * 1000L)) else "0"
 
     val displayTransactionType: String
         get() = if (isTransfer)
