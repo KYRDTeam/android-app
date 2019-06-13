@@ -19,8 +19,8 @@ class GetRelatedLimitOrdersUseCase @Inject constructor(
 
     class Param(
         val walletAddress: String,
-        val srcToken: String,
-        val dstToken: String,
-        val status: String = "open"
+        val srcTokenAddress: String,
+        val dstTokenAddress: String,
+        val status: String? = null
     )
 }

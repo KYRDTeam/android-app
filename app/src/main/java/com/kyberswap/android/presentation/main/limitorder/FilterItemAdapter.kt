@@ -7,26 +7,31 @@ import androidx.recyclerview.widget.DiffUtil
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ItemFilterBinding
+import com.kyberswap.android.domain.model.FilterItem
 import com.kyberswap.android.presentation.base.DataBoundListAdapter
 
 class FilterItemAdapter(
     appExecutors: AppExecutors,
-    private val onCancelClick: ((String) -> Unit)?
+    private val onCancelClick: ((FilterItem) -> Unit)?
 
-) : DataBoundListAdapter<String, ItemFilterBinding>(
+) : DataBoundListAdapter<FilterItem, ItemFilterBinding>(
     appExecutors,
-    diffCallback = object : DiffUtil.ItemCallback<String>() {
-        override fun areItemsTheSame(oldItem: String, newItem: String): Boolean {
+    diffCallback = object : DiffUtil.ItemCallback<FilterItem>() {
+        override fun areItemsTheSame(oldItem: FilterItem, newItem: FilterItem): Boolean {
             return oldItem == newItem
         }
 
-        override fun areContentsTheSame(oldItem: String, newItem: String): Boolean {
+        override fun areContentsTheSame(oldItem: FilterItem, newItem: FilterItem): Boolean {
             return oldItem == newItem
         }
     }
 ) {
-    override fun bind(binding: ItemFilterBinding, item: String) {
-        binding.name = item
+    override fun bind(binding: ItemFilterBinding, item: FilterItem) {
+        binding.cb.setOnCheckedChangeListener { _, isChecked ->
+            item.isSelected = isChecked
+        }
+        binding.name = item.name
+        binding.isSelected = item.isSelected
         binding.executePendingBindings()
     }
 

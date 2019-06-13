@@ -53,7 +53,6 @@ class SwapViewModel @Inject constructor(
     val getCapCallback: LiveData<Event<GetCapState>>
         get() = _getCapCallback
 
-
     val compositeDisposable by lazy {
         CompositeDisposable()
     }
@@ -63,22 +62,9 @@ class SwapViewModel @Inject constructor(
         get() = _getGetMarketRateCallback
 
 
-//    private var marketRate: String? = null
-//    private var expectedRate: String? = null
-//    private var gasLimit = BigInteger.ZERO
-
-//    private val _rate: String?
-//        get() = if (expectedRate.isNullOrEmpty()) marketRate else expectedRate
-
-//    val combineRate: String?
-//        get() = _rate.toBigDecimalOrDefaultZero().toDisplayNumber()
-
     private val _saveSwapCallback = MutableLiveData<Event<SaveSwapState>>()
     val saveSwapDataCallback: LiveData<Event<SaveSwapState>>
         get() = _saveSwapCallback
-
-//    val ratePercentage: String
-//        get() = expectedRate.percentage(marketRate).toDisplayNumber()
 
     fun getMarketRate(swap: Swap) {
 

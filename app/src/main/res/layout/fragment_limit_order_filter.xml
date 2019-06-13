@@ -34,7 +34,7 @@
                 android:paddingBottom="40dp">
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cardView2"
+                    android:id="@+id/cvDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="12dp"
@@ -48,7 +48,79 @@
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:minHeight="217dp"
+                        android:padding="25dp">
+
+                        <TextView
+                            android:id="@+id/tvDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:text="@string/date"
+                            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                            android:textColor="#5a5e67"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.0"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <RadioGroup
+                            android:id="@+id/rgOrder"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+
+                            android:layout_marginTop="8dp"
+                            android:orientation="horizontal"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tvDate">
+
+                            <RadioButton
+                                android:id="@+id/rbLatest"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/sort_latest"
+                                android:textColor="#5a5e67"
+                                android:textSize="14sp"
+                                android:theme="@style/CustomRadioTheme"
+                                app:layout_constraintStart_toStartOf="parent"
+                                tools:layout_editor_absoluteY="45dp" />
+
+                            <RadioButton
+                                android:id="@+id/rbOldest"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/sort_oldest"
+                                android:textColor="#5a5e67"
+                                android:textSize="14sp"
+                                android:theme="@style/CustomRadioTheme"
+                                tools:layout_editor_absoluteX="182dp"
+                                tools:layout_editor_absoluteY="45dp" />
+                        </RadioGroup>
+
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="12dp"
+                    app:cardCornerRadius="4dp"
+                    app:cardElevation="2dp"
+                    app:cardUseCompatPadding="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/cvDate"
+                    tools:layout_editor_absoluteY="12dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:padding="25dp">
 
                         <TextView
@@ -65,50 +137,6 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <RadioGroup
-                            android:id="@+id/radioGroup"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-
-                            android:layout_marginTop="8dp"
-                            android:orientation="horizontal"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/textView78">
-
-                            <RadioButton
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/a_to_z"
-                                android:textColor="#5a5e67"
-                                android:textSize="14sp"
-                                android:theme="@style/CustomRadioTheme"
-                                app:layout_constraintStart_toStartOf="parent"
-                                tools:layout_editor_absoluteY="45dp" />
-
-                            <RadioButton
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/z_to_a"
-                                android:textColor="#5a5e67"
-                                android:textSize="14sp"
-                                android:theme="@style/CustomRadioTheme"
-                                tools:layout_editor_absoluteX="182dp"
-                                tools:layout_editor_absoluteY="45dp" />
-                        </RadioGroup>
-
-                        <View
-                            android:id="@+id/view10"
-                            android:layout_width="match_parent"
-                            android:layout_height="2dp"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginEnd="16dp"
-                            android:background="@drawable/dash_line"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
-
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvTokenPair"
                             android:layout_width="match_parent"
@@ -116,7 +144,7 @@
                             android:layout_marginTop="12dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/view10" />
+                            app:layout_constraintTop_toBottomOf="@+id/textView78" />
 
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -177,7 +205,6 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="12dp"
                     android:layout_marginEnd="8dp"
-                    android:minHeight="141dp"
                     app:cardCornerRadius="4dp"
                     app:cardElevation="2dp"
                     app:cardUseCompatPadding="true"

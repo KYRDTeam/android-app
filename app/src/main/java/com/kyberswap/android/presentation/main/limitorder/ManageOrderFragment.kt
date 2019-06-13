@@ -102,11 +102,33 @@ class ManageOrderFragment : BaseFragment() {
                 }
             }
 
-        wallet?.let { viewModel.getRelatedOrders(it) }
+        binding.tvDate.setOnClickListener {
+
+            val orderList = orderAdapter.getData()
+            if (orderList.size <= 1) return@setOnClickListener
+            val first = orderList.first()
+            val last = orderList.last()
+            val list = if (first.createdAt >= last.createdAt) {
+                orderList.sortedBy {
+                    it.createdAt
+                }
+            } else {
+                orderList.sortedByDescending {
+                    it.createdAt
+                }
+            }
+            orderAdapter.submitList(null)
+            orderAdapter.submitList(list)
+
+
+        }
+
+        wallet?.let { viewModel.getFilter(it) }
         viewModel.getRelatedOrderCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetRelatedOrdersState.Success -> {
+                        orderAdapter.submitList(null)
                         orderAdapter.submitList(state.orders)
                     }
                     is GetRelatedOrdersState.ShowError -> {

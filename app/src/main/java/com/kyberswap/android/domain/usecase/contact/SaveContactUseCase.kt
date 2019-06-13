@@ -10,7 +10,7 @@ import javax.inject.Inject
 class SaveContactUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val contactRepository: ContactRepository
-) : CompletableUseCase<SaveContactUseCase.Param>(schedulerProvider) {
+) : CompletableUseCase<SaveContactUseCase.Param, Any?>(schedulerProvider) {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     override fun buildUseCaseCompletable(param: Param): Completable {

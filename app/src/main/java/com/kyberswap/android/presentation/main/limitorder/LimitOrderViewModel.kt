@@ -4,18 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.LocalLimitOrder
+import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.limitorder.*
 import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
-import com.kyberswap.android.presentation.common.DEFAULT_EXPECTED_RATE
-import com.kyberswap.android.presentation.common.DEFAULT_MARKET_RATE
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.swap.GetExpectedRateState
 import com.kyberswap.android.presentation.main.swap.GetMarketRateState
-import com.kyberswap.android.presentation.main.swap.SaveSwapState
-import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.display
 import com.kyberswap.android.util.ext.toDisplayNumber
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
@@ -24,25 +22,29 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 class LimitOrderViewModel @Inject constructor(
-    private val getLimitOrdersUseCase: GetLimitOrdersUseCase,
     private val getRelatedLimitOrdersUseCase: GetRelatedLimitOrdersUseCase,
     private val getLocalLimitOrderDataUseCase: GetLocalLimitOrderDataUseCase,
     private val getWalletByAddressUseCase: GetWalletByAddressUseCase,
     private val getExpectedRateUseCase: GetExpectedRateUseCase,
     private val getMarketRate: GetMarketRateUseCase,
     private val saveLimitOrderUseCase: SaveLimitOrderUseCase,
-    private val getLimitOrderFee: GetLimitOrderFeeUseCase
+    private val getLimitOrderFee: GetLimitOrderFeeUseCase,
+    private val submitOrderUseCase: SubmitOrderUseCase,
+    private val getNonceUseCase: GetNonceUseCase
 ) : ViewModel() {
-
-    private var marketRate: String? = null
-    private var expectedRate: String? = null
-
-    private val _rate: String?
-        get() = if (expectedRate.isNullOrEmpty()) marketRate else expectedRate
 
     private val _getLocalLimitOrderCallback = MutableLiveData<Event<GetLocalLimitOrderState>>()
     val getLocalLimitOrderCallback: LiveData<Event<GetLocalLimitOrderState>>
         get() = _getLocalLimitOrderCallback
+
+    private val _submitOrderCallback = MutableLiveData<Event<SubmitOrderState>>()
+    val submitOrderCallback: LiveData<Event<SubmitOrderState>>
+        get() = _submitOrderCallback
+
+
+    private val _getGetNonceStateCallback = MutableLiveData<Event<GetNonceState>>()
+    val getGetNonceStateCallback: LiveData<Event<GetNonceState>>
+        get() = _getGetNonceStateCallback
 
     private val _getRelatedOrderCallback = MutableLiveData<Event<GetRelatedOrdersState>>()
     val getRelatedOrderCallback: LiveData<Event<GetRelatedOrdersState>>
@@ -66,24 +68,41 @@ class LimitOrderViewModel @Inject constructor(
     val getFeeCallback: LiveData<Event<GetFeeState>>
         get() = _getFeeCallback
 
-    val combineRate: String?
-        get() = _rate.toBigDecimalOrDefaultZero().toDisplayNumber()
-
-    private val _saveOrderCallback = MutableLiveData<Event<SaveSwapState>>()
-    val saveOrderCallback: LiveData<Event<SaveSwapState>>
+    private val _saveOrderCallback = MutableLiveData<Event<SaveLimitOrderState>>()
+    val saveOrderCallback: LiveData<Event<SaveLimitOrderState>>
         get() = _saveOrderCallback
 
-    fun getLimitOrders(walletAddress: String) {
-        getLocalLimitOrderDataUseCase.execute(
+    fun getLimitOrders(wallet: Wallet?) {
+        wallet?.let {
+            getLocalLimitOrderDataUseCase.execute(
+                Consumer {
+                    _getLocalLimitOrderCallback.value = Event(GetLocalLimitOrderState.Success(it))
+                    getRelatedOrders(it, wallet)
+                    getNonce(it, wallet)
+                },
+                Consumer {
+                    it.printStackTrace()
+                    _getLocalLimitOrderCallback.value =
+                        Event(GetLocalLimitOrderState.ShowError(it.localizedMessage))
+                },
+                GetLocalLimitOrderDataUseCase.Param(wallet.address)
+            )
+        }
+
+    }
+
+    fun getNonce(order: LocalLimitOrder, wallet: Wallet) {
+        getNonceUseCase.execute(
             Consumer {
-                _getLocalLimitOrderCallback.value = Event(GetLocalLimitOrderState.Success(it))
+                _getGetNonceStateCallback.value = Event(GetNonceState.Success(it))
+
             },
             Consumer {
                 it.printStackTrace()
-                _getLocalLimitOrderCallback.value =
-                    Event(GetLocalLimitOrderState.ShowError(it.localizedMessage))
+                _getGetNonceStateCallback.value =
+                    Event(GetNonceState.ShowError(it.localizedMessage))
             },
-            GetLocalLimitOrderDataUseCase.Param(walletAddress)
+            GetNonceUseCase.Param(order, wallet)
         )
     }
 
@@ -101,7 +120,7 @@ class LimitOrderViewModel @Inject constructor(
             },
             GetRelatedLimitOrdersUseCase.Param(
                 wallet.address,
-                order.tokenSource.tokenSymbol, order.tokenDest.tokenSymbol
+                order.tokenSource.tokenAddress, order.tokenDest.tokenAddress
             )
         )
 
@@ -110,15 +129,14 @@ class LimitOrderViewModel @Inject constructor(
     fun getMarketRate(order: LocalLimitOrder) {
 
         if (order.hasSamePair) {
-            marketRate = BigDecimal.ONE.toDisplayNumber()
-            expectedRate = BigDecimal.ONE.toDisplayNumber()
+            _getGetMarketRateCallback.value =
+                Event(GetMarketRateState.Success(BigDecimal.ONE.toDisplayNumber()))
             return
         }
         getMarketRate.dispose()
         if (order.hasSamePair) {
             getMarketRate.execute(
                 Consumer {
-                    marketRate = it
                     _getGetMarketRateCallback.value = Event(GetMarketRateState.Success(it))
                 },
                 Consumer {
@@ -139,8 +157,8 @@ class LimitOrderViewModel @Inject constructor(
         srcAmount: String
     ) {
         if (order.hasSamePair) {
-            marketRate = BigDecimal.ONE.toDisplayNumber()
-            expectedRate = BigDecimal.ONE.toDisplayNumber()
+            _getExpectedRateCallback.value =
+                Event(GetExpectedRateState.Success(listOf(BigDecimal.ONE.toDisplayNumber())))
             return
         }
 
@@ -148,7 +166,7 @@ class LimitOrderViewModel @Inject constructor(
         getExpectedRateUseCase.execute(
             Consumer {
                 if (it.isNotEmpty()) {
-                    expectedRate = it[0]
+                    _getExpectedRateCallback.value = Event(GetExpectedRateState.Success(it))
                 }
                 _getExpectedRateCallback.value = Event(GetExpectedRateState.Success(it))
             },
@@ -172,42 +190,21 @@ class LimitOrderViewModel @Inject constructor(
         super.onCleared()
     }
 
+
     fun saveLimitOrder(order: LocalLimitOrder, fromContinue: Boolean = false) {
+
         saveLimitOrderUseCase.execute(
             Action {
                 if (fromContinue) {
-                    _saveOrderCallback.value = Event(SaveSwapState.Success(""))
+                    _saveOrderCallback.value = Event(SaveLimitOrderState.Success(""))
                 }
             },
             Consumer {
                 it.printStackTrace()
-                _saveOrderCallback.value = Event(SaveSwapState.ShowError(it.localizedMessage))
+                _saveOrderCallback.value = Event(SaveLimitOrderState.ShowError(it.localizedMessage))
             },
             SaveLimitOrderUseCase.Param(order)
         )
-    }
-
-    fun setDefaultRate(order: LocalLimitOrder) {
-        marketRate = order.marketRate
-        expectedRate = order.expectedRate
-    }
-
-
-    fun updateOrder(order: LocalLimitOrder) {
-        saveLimitOrder(updateLimitOrderRate(order), true)
-
-    }
-
-    private fun updateLimitOrderRate(order: LocalLimitOrder): LocalLimitOrder {
-        return order.copy(
-            marketRate = marketRate ?: DEFAULT_MARKET_RATE.toString(),
-            expectedRate = expectedRate ?: DEFAULT_EXPECTED_RATE.toString()
-        )
-    }
-
-
-    fun getExpectedDestAmount(amount: BigDecimal): BigDecimal {
-        return amount.multiply(_rate.toBigDecimalOrDefaultZero())
     }
 
     fun getFee(
@@ -236,5 +233,39 @@ class LimitOrderViewModel @Inject constructor(
         )
     }
 
+    fun validate(order: LocalLimitOrder?, pendingOrders: List<Order>): Boolean {
+        if (order == null) return false
+        pendingOrders.forEach {
+            if (order.minRate < it.minRate) {
+                return false
+            }
+        }
+        return true
+    }
 
+    private fun validateBalance(order: LocalLimitOrder, pendingOrders: List<Order>): Boolean {
+        order.tokenSource
+        return false
+    }
+
+    fun submitOrder(order: LocalLimitOrder?, wallet: Wallet?) {
+        if (order == null || wallet == null) return
+        _submitOrderCallback.postValue(Event(SubmitOrderState.Loading))
+        submitOrderUseCase.execute(
+            Consumer {
+                if (it.success) {
+                    _submitOrderCallback.value = Event(SubmitOrderState.Success(it.order))
+                } else {
+                    _submitOrderCallback.value =
+                        Event(SubmitOrderState.ShowError(it.message.display()))
+                }
+            },
+            Consumer {
+                it.printStackTrace()
+                _submitOrderCallback.value = Event(SubmitOrderState.ShowError(it.localizedMessage))
+            },
+            SubmitOrderUseCase.Param(order, wallet)
+        )
+
+    }
 }

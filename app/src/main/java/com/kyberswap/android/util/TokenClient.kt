@@ -1,5 +1,6 @@
 package com.kyberswap.android.util
 
+import com.kyberswap.android.domain.model.LocalLimitOrder
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
 import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
@@ -9,6 +10,7 @@ import com.kyberswap.android.presentation.common.DEFAULT_WALLET_ID
 import com.kyberswap.android.presentation.common.PERM
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
+import com.kyberswap.android.util.ext.toDisplayNumber
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.FunctionReturnDecoder
 import org.web3j.abi.TypeReference
@@ -17,6 +19,8 @@ import org.web3j.abi.datatypes.DynamicBytes
 import org.web3j.abi.datatypes.Function
 import org.web3j.abi.datatypes.generated.Uint256
 import org.web3j.crypto.Credentials
+import org.web3j.crypto.Hash
+import org.web3j.crypto.Sign
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.DefaultBlockParameterName
 import org.web3j.protocol.core.methods.request.Transaction
@@ -24,7 +28,7 @@ import org.web3j.protocol.core.methods.response.EthEstimateGas
 import org.web3j.tx.RawTransactionManager
 import org.web3j.tx.TransactionManager
 import org.web3j.utils.Convert
-import timber.log.Timber
+import org.web3j.utils.Numeric
 import java.io.IOException
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -150,7 +154,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                     Convert.Unit.ETHER
                 )
             rateResult.add(
-                toEther.toPlainString()
+                toEther.toDisplayNumber()
             )
         }
         return rateResult
@@ -301,13 +305,13 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             )
         } else {
             handleSwapERC20Token(
-                fromAddress,
+                param.swap.tokenSource,
                 transactionAmount,
                 tradeWithHintAmount,
                 minConversionRate,
                 gasPrice,
                 gasLimit,
-                toAddress,
+                param.swap.tokenDest,
                 walletAddress,
                 contractAddress,
                 txManager
@@ -402,23 +406,28 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     }
 
     private fun handleSwapERC20Token(
-        fromAddress: String,
+        fromToken: Token,
         transactionAmount: BigInteger,
         tradeWithHintAmount: BigInteger,
         minConversionRate: BigInteger,
         gasPrice: BigInteger,
         gasLimit: BigInteger,
-        toAddress: String,
+        toToken: Token,
         walletAddress: String,
         contractAddress: String,
         txManager: TransactionManager
     ): String? {
         val allowanceAmount =
-            getContractAllowanceAmount(walletAddress, fromAddress, contractAddress, txManager)
+            getContractAllowanceAmount(
+                walletAddress,
+                fromToken.tokenAddress,
+                contractAddress,
+                txManager
+            )
         if (allowanceAmount < tradeWithHintAmount) {
             sendContractApproveTransferWithCondition(
                 allowanceAmount,
-                fromAddress,
+                fromToken,
                 contractAddress,
                 gasPrice,
                 gasLimit,
@@ -426,8 +435,8 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             )
         }
         return executeTradeWithHint(
-            fromAddress,
-            toAddress,
+            fromToken.tokenAddress,
+            toToken.tokenAddress,
             transactionAmount,
             tradeWithHintAmount,
             minConversionRate,
@@ -488,7 +497,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
 
     private fun sendContractApproveTransferWithCondition(
         allowanceAmount: BigInteger,
-        tokenAddress: String,
+        token: Token,
         contractAddress: String,
         gasPriceWei: BigInteger,
         gasLimit: BigInteger,
@@ -497,17 +506,17 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         if (allowanceAmount > BigInteger.ZERO) {
             sendContractApproveTransfer(
                 BigInteger.ZERO,
-                tokenAddress,
+                token,
                 contractAddress,
                 gasPriceWei,
-                gasLimit,
+                if (token.gasApprove > BigDecimal.ZERO) token.gasApprove.toBigInteger() else gasLimit,
                 transactionManager
             )
 
         }
         sendContractApproveTransfer(
             DEFAULT_MAX_AMOUNT,
-            tokenAddress,
+            token,
             contractAddress,
             gasPriceWei,
             gasLimit,
@@ -517,7 +526,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
 
     private fun sendContractApproveTransfer(
         allowanceAmount: BigInteger,
-        tokenAddress: String,
+        token: Token,
         contractAddress: String,
         gasPriceWei: BigInteger,
         gasLimit: BigInteger,
@@ -527,14 +536,13 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         val encodedFunction = FunctionEncoder.encode(function)
 
         val transactionResponse = transactionManager.sendTransaction(
-            gasPriceWei, gasLimit, tokenAddress,
+            gasPriceWei, gasLimit, token.tokenAddress,
             encodedFunction, BigInteger.ZERO
         )
 
         if (transactionResponse.hasError()) {
             throw RuntimeException("Error processing transaction request: " + transactionResponse.error.message)
         }
-        Timber.e(transactionResponse.transactionHash)
     }
 
     fun monitorPendingTransactions(transactions: List<com.kyberswap.android.domain.model.Transaction>): List<com.kyberswap.android.domain.model.Transaction> {
@@ -559,5 +567,22 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             }
         }
         return ethTransactions.toList()
+    }
+
+    fun signOrder(order: LocalLimitOrder, credentials: Credentials): String {
+        val signValue = StringBuilder()
+            .append(order.userAddr.removePrefix("0x"))
+            .append(order.nonce.removePrefix("0x"))
+            .append(order.tokenSource.tokenAddress.removePrefix("0x"))
+            .append(String.format("%064x", order.sourceAmountWithPrecision))
+            .append(order.tokenDest.tokenAddress.removePrefix("0x"))
+            .append(order.userAddr.removePrefix("0x"))
+            .append(String.format("%064x", order.minRateWithPrecision))
+            .append(String.format("%064x", order.feeAmountWithPrecision))
+            .toString()
+        val hash = Hash.sha3(signValue)
+        val data = Numeric.hexStringToByteArray(hash)
+        val sign: Sign.SignatureData = Sign.signPrefixedMessage(data, credentials.ecKeyPair)
+        return Numeric.toHexString(sign.r.plus(sign.s).plus(sign.v))
     }
 }

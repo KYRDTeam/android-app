@@ -6,11 +6,17 @@
         <variable
             name="name"
             type="String" />
+
+        <variable
+            name="isSelected"
+            type="Boolean" />
     </data>
 
     <CheckBox
+        android:id="@+id/cb"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:checked="@{isSelected}"
         android:minHeight="22dp"
         android:text="@{name}"
         android:textColor="#5a5e67"

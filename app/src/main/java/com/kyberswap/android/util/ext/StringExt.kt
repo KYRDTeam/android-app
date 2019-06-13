@@ -14,6 +14,15 @@ fun String.toWalletAddress(): String {
     }
 }
 
+fun String.hexWithPrefix(): String {
+    return if (this.startsWith("0x")) {
+        this
+    } else {
+        "0x$this"
+    }
+}
+
+
 fun String?.percentage(other: String?): BigDecimal {
     if (other.isNullOrEmpty() || this.isNullOrEmpty()) return BigDecimal.ZERO
     if (other.toBigDecimal() == BigDecimal.ZERO) return BigDecimal.ZERO
@@ -40,7 +49,8 @@ fun String?.toBigDecimalOrDefaultZero(): BigDecimal {
 
 fun String.displayWalletAddress(): String {
     return StringBuilder()
-        .append(substring(0, 5))
+        .append(substring(0, if (length > 5) 5 else length))
+        .append("...")
         .append(
             substring(
                 if (length > 6) {
