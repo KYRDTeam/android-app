@@ -1,8 +1,6 @@
 package com.kyberswap.android.domain.repository
 
-import com.kyberswap.android.domain.model.Fee
-import com.kyberswap.android.domain.model.LocalLimitOrder
-import com.kyberswap.android.domain.model.Order
+import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.domain.usecase.limitorder.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -21,4 +19,12 @@ interface LimitOrderRepository {
     fun saveLimitOrder(param: SaveLimitOrderUseCase.Param): Completable
 
     fun getLimitOrderFee(param: GetLimitOrderFeeUseCase.Param): Single<Fee>
+
+    fun submitOrder(param: SubmitOrderUseCase.Param): Single<LimitOrderResponse>
+
+    fun getNonce(param: GetNonceUseCase.Param): Single<String>
+
+    fun getOrderFilter(param: GetLimitOrderFilterUseCase.Param): Flowable<OrderFilter>
+
+    fun saveOrderFilter(param: SaveLimitOrderFilterUseCase.Param): Completable
 }

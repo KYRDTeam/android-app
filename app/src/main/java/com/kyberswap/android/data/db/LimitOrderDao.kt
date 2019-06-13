@@ -28,6 +28,9 @@ interface LimitOrderDao {
     @Query("SELECT * from orders where userAddr = :address LIMIT 1")
     fun findOrderByAddress(address: String): Order?
 
+    @Query("SELECT * from orders where userAddr = :address")
+    fun findAllOrdersByAddress(address: String): List<Order>
+
     @Query("DELETE FROM orders")
     fun deleteAllOrders()
 

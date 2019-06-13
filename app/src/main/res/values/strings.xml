@@ -236,8 +236,24 @@
     <string name="month_1">1 Month</string>
     <string name="month_3">3 Month</string>
     <string name="transaction_failed">failed</string>
+    <string name="change_rate">Change Rate</string>
+    <string name="order_warning">This new order has a lower rate than some orders you have created. Below orders will be cancelled when you submitted this order.</string>
+    <string name="limit_order_yes">Yes</string>
+    <string name="limit_order_broadcasted_message">Your transaction will be broadcasted when rate of %s</string>
+    <string name="limit_order_to">To:</string>
+    <string name="limit_order_confirm_info"><![CDATA[Don’t worry. You will not be charged now. You pay fees only when transaction is executed (broadcasted & mined).]]></string>
+    <string name="eth_star_notification">ETH* Ether that is compatible to ERC20 standard. 1 WETH is equal to 1 ETH. Limit Order works with WETH (not ETH).</string>
+    <string name="date">Date</string>
+    <string name="sort_latest">Latest</string>
+    <string name="sort_oldest">Oldest</string>
+    <string name="order_status_open">Open</string>
+    <string name="order_status_in_progress">In Progress</string>
+    <string name="order_status_cancelled">Cancelled</string>
+    <string name="order_status_filled">Filled</string>
+    <string name="order_status_invalidated">Invalidated</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>
     </string-array>
+
 </resources>

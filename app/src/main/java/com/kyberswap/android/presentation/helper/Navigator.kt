@@ -331,7 +331,5 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         const val IN_RIGHT_OUT_LEFT = 1
         const val IN_LEFT_OUT_RIGHT = -1
         const val WITHOUT_ANIMATION = 0
-        const val SWAP_CONFIRMATION = 1010
-        const val SEND_CONFIRMATION = 1011
     }
 }

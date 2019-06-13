@@ -134,18 +134,24 @@ object DataModule {
     @Provides
     @JvmStatic
     fun provideLimitOrderRepository(
+        context: Context,
         tokenDao: TokenDao,
         localLimitOrderDao: LocalLimitOrderDao,
+        orderFilterDao: OrderFilterDao,
         dao: LimitOrderDao,
         api: LimitOrderApi,
         mapper: OrderMapper,
-        feeMapper: FeeMapper
+        feeMapper: FeeMapper,
+        tokenClient: TokenClient
     ): LimitOrderRepository =
         LimitOrderDataRepository(
+            context,
             dao,
             localLimitOrderDao,
+            orderFilterDao,
             tokenDao,
             api,
+            tokenClient,
             mapper,
             feeMapper
         )

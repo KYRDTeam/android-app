@@ -11,7 +11,7 @@ import javax.inject.Inject
 class SaveSendTokenUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val swapRepository: SwapRepository
-) : CompletableUseCase<SaveSendTokenUseCase.Param>(schedulerProvider) {
+) : CompletableUseCase<SaveSendTokenUseCase.Param, Any?>(schedulerProvider) {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     override fun buildUseCaseCompletable(param: Param): Completable {

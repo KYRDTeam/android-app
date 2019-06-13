@@ -41,6 +41,14 @@ abstract class BaseFragment : DaggerFragment() {
 
     }
 
+    fun showAlert(message: String, resourceIcon: Int, listener: () -> Unit = {}) {
+        if (context != null) {
+            this.alertListener = listener
+            val intent = AlertActivity.newIntent(context!!, message, resourceIcon)
+            startActivityForResult(intent, SHOW_ALERT)
+
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == SHOW_ALERT) {

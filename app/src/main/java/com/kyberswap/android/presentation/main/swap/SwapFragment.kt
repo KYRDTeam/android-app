@@ -364,18 +364,15 @@ class SwapFragment : BaseFragment() {
                 edtSource.text.isNullOrEmpty() -> {
                     val errorAmount = getString(R.string.specify_amount)
                     showAlert(errorAmount)
-                    binding.edtSource.error = errorAmount
         
                 edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.swap?.tokenSource?.currentBalance -> {
                     val errorExceedBalance = getString(R.string.exceed_balance)
                     showAlert(errorExceedBalance)
-                    binding.edtSource.error = errorExceedBalance
         
                 binding.swap?.hasSamePair == true -> showAlert(getString(R.string.same_token_alert))
                 binding.swap?.amountTooSmall(edtSource.text.toString()) == true -> {
                     val amountError = getString(R.string.swap_amount_small)
                     showAlert(amountError)
-                    binding.edtSource.error = amountError
         
                 else -> binding.swap?.let { swap ->
                     wallet?.let {

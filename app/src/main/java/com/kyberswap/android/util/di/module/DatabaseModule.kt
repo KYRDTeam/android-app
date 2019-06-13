@@ -85,4 +85,10 @@ class DatabaseModule {
         return appDatabase.localLimitOrderDao()
     }
 
+    @Provides
+    @Singleton
+    fun provideOrderFilterDao(appDatabase: AppDatabase): OrderFilterDao {
+        return appDatabase.orderFilterDao()
+    }
+
 }

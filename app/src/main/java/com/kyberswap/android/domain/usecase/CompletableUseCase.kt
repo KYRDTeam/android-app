@@ -6,7 +6,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 
-abstract class CompletableUseCase<in PARAM> protected constructor(
+abstract class CompletableUseCase<in PARAM, T> protected constructor(
     private val schedulerProvider: SchedulerProvider
 ) {
     private val compositeDisposable = CompositeDisposable()
