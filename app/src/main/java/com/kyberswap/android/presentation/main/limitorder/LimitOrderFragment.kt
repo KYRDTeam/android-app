@@ -20,6 +20,7 @@ import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.LocalLimitOrder
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainPagerAdapter
@@ -47,6 +48,9 @@ class LimitOrderFragment : BaseFragment() {
     lateinit var appExecutors: AppExecutors
 
     private var wallet: Wallet? = null
+
+    @Inject
+    lateinit var dialogHelper: DialogHelper
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -199,6 +203,9 @@ class LimitOrderFragment : BaseFragment() {
                 appExecutors
             ) {
 
+                dialogHelper.showCancelOrder(it) {
+                    viewModel.cancelOrder(it)
+                }
             }
         orderAdapter.mode = Attributes.Mode.Single
         binding.rvRelatedOrder.adapter = orderAdapter
@@ -207,6 +214,7 @@ class LimitOrderFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetRelatedOrdersState.Success -> {
+                        orderAdapter.submitList(null)
                         orderAdapter.submitList(state.orders)
                     }
                     is GetRelatedOrdersState.ShowError -> {
@@ -436,6 +444,20 @@ class LimitOrderFragment : BaseFragment() {
                         showAlert(state.message ?: getString(R.string.something_wrong))
                     }
 
+                }
+            }
+        })
+
+        viewModel.cancelOrderCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == CancelOrdersState.Loading)
+                when (state) {
+                    is CancelOrdersState.Success -> {
+
+                    }
+                    is CancelOrdersState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                    }
                 }
             }
         })
