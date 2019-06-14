@@ -34,6 +34,9 @@ interface LimitOrderDao {
     @Query("DELETE FROM orders")
     fun deleteAllOrders()
 
+    @Query("SELECT * from orders where id = :orderId")
+    fun findOrderById(orderId: Long): Order?
+
     @Delete
     fun delete(model: Order)
 

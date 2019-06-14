@@ -25,6 +25,7 @@
             android:minWidth="132dp">
 
             <TextView
+                android:id="@+id/tvCancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
@@ -115,12 +116,12 @@
                     android:paddingTop="2dp"
                     android:paddingEnd="8dp"
                     android:paddingBottom="2dp"
-                    android:text="@{order.status}"
                     android:textColor="#ffffff"
                     android:textSize="10sp"
                     app:layout_constraintBottom_toBottomOf="@+id/textView58"
                     app:layout_constraintEnd_toEndOf="@+id/view17"
                     app:layout_constraintTop_toTopOf="@+id/textView73"
+                    app:orderStatus="@{order.status}"
                     tools:ignore="SmallSp" />
 
                 <TextView

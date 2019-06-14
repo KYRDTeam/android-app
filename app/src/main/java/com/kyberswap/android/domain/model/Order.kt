@@ -15,7 +15,7 @@ import java.util.*
 @Parcelize
 data class Order(
     @PrimaryKey
-    val id: Int = 0,
+    val id: Long = 0,
     val userAddr: String = "",
     val src: String = "",
     val dst: String = "",

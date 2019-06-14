@@ -21,7 +21,7 @@ class OrderAdapter(
     appExecutors,
     diffCallback = object : DiffUtil.ItemCallback<Order>() {
         override fun areItemsTheSame(oldItem: Order, newItem: Order): Boolean {
-            return oldItem == newItem
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(oldItem: Order, newItem: Order): Boolean {
@@ -46,6 +46,10 @@ class OrderAdapter(
                 mItemManger.closeAllExcept(layout)
             }
         })
+        binding.tvCancel.setOnClickListener {
+            onCancelClick?.invoke(item)
+            mItemManger.closeAllItems()
+        }
         binding.order = item
         binding.executePendingBindings()
 

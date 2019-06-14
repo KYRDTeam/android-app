@@ -27,4 +27,6 @@ interface LimitOrderRepository {
     fun getOrderFilter(param: GetLimitOrderFilterUseCase.Param): Flowable<OrderFilter>
 
     fun saveOrderFilter(param: SaveLimitOrderFilterUseCase.Param): Completable
+
+    fun cancelOrder(param: CancelOrderUseCase.Param): Single<Cancelled>
 }
