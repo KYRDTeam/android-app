@@ -30,8 +30,13 @@ class LimitOrderViewModel @Inject constructor(
     private val saveLimitOrderUseCase: SaveLimitOrderUseCase,
     private val getLimitOrderFee: GetLimitOrderFeeUseCase,
     private val submitOrderUseCase: SubmitOrderUseCase,
-    private val getNonceUseCase: GetNonceUseCase
+    private val getNonceUseCase: GetNonceUseCase,
+    private val cancelOrderUseCase: CancelOrderUseCase
 ) : ViewModel() {
+
+    private val _cancelOrderCallback = MutableLiveData<Event<CancelOrdersState>>()
+    val cancelOrderCallback: LiveData<Event<CancelOrdersState>>
+        get() = _cancelOrderCallback
 
     private val _getLocalLimitOrderCallback = MutableLiveData<Event<GetLocalLimitOrderState>>()
     val getLocalLimitOrderCallback: LiveData<Event<GetLocalLimitOrderState>>
@@ -91,6 +96,21 @@ class LimitOrderViewModel @Inject constructor(
 
     }
 
+    fun cancelOrder(order: Order) {
+        _cancelOrderCallback.postValue(Event(CancelOrdersState.Loading))
+        cancelOrderUseCase.execute(
+            Consumer {
+                _cancelOrderCallback.value = Event(CancelOrdersState.Success(it))
+    ,
+            Consumer {
+                it.printStackTrace()
+                _cancelOrderCallback.value =
+                    Event(CancelOrdersState.ShowError(it.localizedMessage))
+    ,
+            CancelOrderUseCase.Param(order)
+        )
+    }
+
     fun getNonce(order: LocalLimitOrder, wallet: Wallet) {
         getNonceUseCase.execute(
             Consumer {
@@ -120,7 +140,7 @@ class LimitOrderViewModel @Inject constructor(
     ,
             GetRelatedLimitOrdersUseCase.Param(
                 wallet.address,
-                order.tokenSource.tokenAddress, order.tokenDest.tokenAddress
+                order.tokenSource, order.tokenDest
             )
         )
 

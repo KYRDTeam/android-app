@@ -192,13 +192,17 @@ class TransactionDataRepository @Inject constructor(
                                                 .toBigDecimalOrDefaultZero().toInt()
                                         )
                                 )
-                            val transaction = transactions.first().copy(
+                            val tx =
+                                if (transactions.first().gasPrice.isEmpty()) transactions.last() else transactions.first()
+
+                            val transaction = tx.copy(
                                 tokenSource = send?.tokenSymbol ?: "",
                                 sourceAmount = sourceAmount.toDisplayNumber(),
                                 tokenDest = received?.tokenSymbol ?: "",
                                 destAmount = destAmount.toDisplayNumber()
 
                             )
+
                             transactionList.add(transaction)
 
                  else {

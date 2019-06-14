@@ -41,6 +41,7 @@ class OrderAdapter(
     }
 
     override fun bind(binding: ItemOrderBinding, item: Order) {
+        binding.swipe.isSwipeEnabled = item.isPending
         binding.swipe.addSwipeListener(object : SimpleSwipeListener() {
             override fun onStartOpen(layout: SwipeLayout?) {
                 mItemManger.closeAllExcept(layout)

@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.TypeConverters
 import com.kyberswap.android.data.api.transaction.TransactionEntity
 import com.kyberswap.android.data.db.TransactionTypeConverter
+import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.parcel.Parcelize
@@ -217,7 +218,7 @@ data class Transaction(
         get() =
             if (isTransfer) {
                 StringBuilder()
-                    .append(if (type == TransactionType.SEND) "To: $to" else "From: $from")
+                    .append(if (type == TransactionType.SEND) "To: ${to.displayWalletAddress()}" else "From: ${from.displayWalletAddress()}")
                     .toString()
      else
                 StringBuilder().append("1")
