@@ -13,8 +13,10 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentManageOrderBinding
 import com.kyberswap.android.domain.SchedulerProvider
+import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.util.di.ViewModelFactory
@@ -27,6 +29,9 @@ class ManageOrderFragment : BaseFragment() {
 
     @Inject
     lateinit var navigator: Navigator
+
+    @Inject
+    lateinit var dialogHelper: DialogHelper
 
     @Inject
     lateinit var appExecutors: AppExecutors
@@ -73,6 +78,9 @@ class ManageOrderFragment : BaseFragment() {
                 appExecutors
             ) {
 
+                dialogHelper.showCancelOrder(it) {
+                    viewModel.cancelOrder(it)
+        
     
         orderAdapter.mode = Attributes.Mode.Single
         binding.rvOrder.adapter = orderAdapter
@@ -88,60 +96,94 @@ class ManageOrderFragment : BaseFragment() {
             )
 
 
-
         binding.tv1Day.isSelected = true
         currentSelectedView = binding.tv1Day
+
         listOf(binding.tv1Day, binding.tv1Week, binding.tv1Month, binding.tv3Month)
-            .forEach {
-                it.setOnClickListener {
+            .forEach { tv ->
+                tv.setOnClickListener {
                     if (currentSelectedView != it) {
                         currentSelectedView?.isSelected = false
                         currentSelectedView = it
             
                     it.isSelected = true
+
+                    filterByDate(orderAdapter)
         
     
 
-        binding.tvDate.setOnClickListener {
-
-            val orderList = orderAdapter.getData()
-            if (orderList.size <= 1) return@setOnClickListener
-            val first = orderList.first()
-            val last = orderList.last()
-            val list = if (first.createdAt >= last.createdAt) {
-                orderList.sortedBy {
-                    it.createdAt
-        
-     else {
-                orderList.sortedByDescending {
-                    it.createdAt
-        
-    
-            orderAdapter.submitList(null)
-            orderAdapter.submitList(list)
+        wallet?.let {
+            viewModel.getRelatedOrders(it)
 
 
-
-
-        wallet?.let { viewModel.getFilter(it) }
-        viewModel.getRelatedOrderCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getFilterCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
-                    is GetRelatedOrdersState.Success -> {
-                        orderAdapter.submitList(null)
-                        orderAdapter.submitList(state.orders)
+                    is GetFilterState.Success -> {
+                        orderAdapter.submitList(listOf())
+                        orderAdapter.submitList(
+                            viewModel.filterOrders(
+                                state.orderFilter
+                            )
+                        )
+                        filterByDate(orderAdapter)
             
-                    is GetRelatedOrdersState.ShowError -> {
+                    is GetFilterState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
             
         
     
 )
 
+
+        viewModel.cancelOrderCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == CancelOrdersState.Loading)
+                when (state) {
+                    is CancelOrdersState.Success -> {
+
+            
+                    is CancelOrdersState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+            
+        
+    
+)
+    }
+
+    private fun filterByDate(orderAdapter: OrderAdapter) {
+        currentSelectedView?.let {
+            orderAdapter.submitList(listOf())
+            orderAdapter.submitList(getFilterList(it.id))
+
+    }
+
+    private fun getFilterList(id: Int): List<Order> {
+        val value = when (id) {
+            R.id.tv1Day -> {
+                DAY_IN_SEC
+    
+            R.id.tv1Week -> {
+                7 * DAY_IN_SEC
+    
+            R.id.tv1Month -> {
+                30 * DAY_IN_SEC
+    
+            else -> {
+                Int.MAX_VALUE
+    
+
+
+        val now = System.currentTimeMillis() / 1000
+        return viewModel.getCurrentFilterList().filter {
+            it.createdAt >= now - value
+
+
     }
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"
+        const val DAY_IN_SEC = 24 * 60 * 60
         fun newInstance(wallet: Wallet?) =
             ManageOrderFragment().apply {
                 arguments = Bundle().apply {

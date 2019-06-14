@@ -37,6 +37,21 @@ class LimitOrderDataRepository @Inject constructor(
     private val orderMapper: OrderMapper,
     private val feeMapper: FeeMapper
 ) : LimitOrderRepository {
+    override fun cancelOrder(param: CancelOrderUseCase.Param): Single<Cancelled> {
+        return limitOrderApi.cancelOrder(
+            param.order.id
+        ).map {
+            orderMapper.transform(it)
+.doAfterSuccess { status ->
+            if (status.cancelled) {
+                val order = limitOrderDao.findOrderById(param.order.id)
+                order?.let {
+                    limitOrderDao.updateOrder(it.copy(status = Order.Status.CANCELLED.value))
+        
+    
+
+    }
+
     override fun saveOrderFilter(param: SaveLimitOrderFilterUseCase.Param): Completable {
         return Completable.fromCallable {
             val addresses = param.orderFilter.listAddress.filter {
@@ -281,16 +296,18 @@ class LimitOrderDataRepository @Inject constructor(
     }
 
     override fun getLimitOrders(param: GetLimitOrdersUseCase.Param): Flowable<List<Order>> {
-        return limitOrderApi.getOrders(param.walletAddress)
-            .map {
-                it.orders
-    
-            .map {
-                orderMapper.transform(it)
-    
-            .doAfterSuccess {
-                limitOrderDao.insertOrders(it)
-    .toFlowable()
+        return Flowable.mergeDelayError(limitOrderDao.findOrdersByAddressFlowable(param.walletAddress),
+            limitOrderApi.getOrders(param.walletAddress)
+                .map {
+                    it.orders
+        
+                .map {
+                    orderMapper.transform(it)
+        
+                .doAfterSuccess {
+                    limitOrderDao.insertOrders(it)
+        .toFlowable()
+        )
     }
 
     override fun getRelatedLimitOrders(param: GetRelatedLimitOrdersUseCase.Param): Flowable<List<Order>> {

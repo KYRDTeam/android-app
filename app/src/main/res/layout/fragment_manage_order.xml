@@ -32,6 +32,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
+                android:drawableStart="@drawable/ic_filter_order"
+                android:drawablePadding="4dp"
                 android:text="@string/manage_order_filter"
                 android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                 android:textColor="#5a5e67"
@@ -116,103 +118,13 @@
                 app:layout_constraintStart_toEndOf="@+id/tv1Month"
                 app:layout_constraintTop_toTopOf="@+id/tv1Month" />
 
-            <TextView
-                android:id="@+id/tvDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="16dp"
-                android:background="?android:selectableItemBackground"
-                android:drawableEnd="@drawable/ic_swap_vert"
-                android:drawablePadding="4dp"
-                android:gravity="center"
-                android:lineSpacingExtra="12sp"
-                android:padding="4dp"
-                android:text="@string/date"
-                android:textColor="#5a5e67"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toStartOf="@+id/textView10"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintHorizontal_chainStyle="spread_inside"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/view12" />
-
-            <TextView
-                android:id="@+id/textView10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?selectableItemBackground"
-                android:drawableEnd="@drawable/ic_keyboard_arrow_down_filter"
-                android:drawablePadding="4dp"
-                android:gravity="center"
-                android:lineSpacingExtra="12sp"
-                android:padding="4dp"
-                android:text="@string/condition"
-                android:textColor="#5a5e67"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="@+id/tvDate"
-                app:layout_constraintEnd_toStartOf="@+id/textView59"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/tvDate"
-                app:layout_constraintTop_toTopOf="@+id/tvDate"
-                app:layout_constraintVertical_bias="1.0" />
-
-            <TextView
-                android:id="@+id/textView59"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?selectableItemBackground"
-                android:drawableEnd="@drawable/ic_keyboard_arrow_down_filter"
-                android:drawablePadding="4dp"
-                android:lineSpacingExtra="12sp"
-                android:padding="4dp"
-                android:text="@string/contact_address"
-                android:textColor="#5a5e67"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="@+id/textView10"
-                app:layout_constraintEnd_toStartOf="@+id/textView60"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/textView10"
-                app:layout_constraintTop_toTopOf="@+id/textView10" />
-
-            <TextView
-                android:id="@+id/textView60"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
-                android:background="?selectableItemBackground"
-                android:drawableEnd="@drawable/ic_keyboard_arrow_down_filter"
-                android:drawablePadding="4dp"
-                android:lineSpacingExtra="12sp"
-                android:padding="4dp"
-                android:text="@string/filter_status"
-                android:textColor="#5a5e67"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="@+id/textView59"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/textView59"
-                app:layout_constraintTop_toTopOf="@+id/textView59" />
-
-
-            <View
-                android:id="@+id/view12"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/dash_line"
-                app:layout_constraintEnd_toEndOf="@+id/tv3Month"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/tvFilter"
-                app:layout_constraintTop_toBottomOf="@+id/tvFilter" />
-
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvOrder"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="18dp"
                 android:layout_marginEnd="8dp"
                 android:background="@android:color/white"
                 android:clipToPadding="false"
@@ -221,7 +133,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvDate" />
+                app:layout_constraintTop_toBottomOf="@+id/tvFilter" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

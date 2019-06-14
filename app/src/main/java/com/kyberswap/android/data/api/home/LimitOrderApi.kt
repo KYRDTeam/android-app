@@ -1,9 +1,6 @@
 package com.kyberswap.android.data.api.home
 
-import com.kyberswap.android.data.api.limitorder.FeeEntity
-import com.kyberswap.android.data.api.limitorder.LimitOrderResponseEntity
-import com.kyberswap.android.data.api.limitorder.ListLimitOrderResponseEntity
-import com.kyberswap.android.data.api.limitorder.NonceEntity
+import com.kyberswap.android.data.api.limitorder.*
 import io.reactivex.Single
 import retrofit2.http.*
 
@@ -54,4 +51,7 @@ interface LimitOrderApi {
         @Field("signature") signature: String
 
     ): Single<LimitOrderResponseEntity>
+
+    @PUT("api/orders/{id}/cancel")
+    fun cancelOrder(@Path("id") id: Long): Single<CancelledEntity>
 }

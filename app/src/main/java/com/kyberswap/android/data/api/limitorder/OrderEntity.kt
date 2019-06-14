@@ -8,7 +8,7 @@ import java.math.BigDecimal
 
 data class OrderEntity(
     @SerializedName("id")
-    val id: Int = 0,
+    val id: Long = 0,
     @SerializedName("addr")
     val userAddr: String = "",
     @SerializedName("src")
@@ -52,7 +52,7 @@ fun JsonArray.toOrderEntity(jsonArray: JsonArray): OrderEntity {
     val id = if (get(keys.indexOf("id")).isJsonNull) {
         0
     } else {
-        get(keys.indexOf("id"))?.asInt ?: 0
+        get(keys.indexOf("id"))?.asLong ?: 0
     }
 
 

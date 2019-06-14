@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.kyberswap.android.R
+import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import io.github.inflationx.calligraphy3.CalligraphyTypefaceSpan
@@ -141,6 +142,21 @@ object TextViewBindingAdapter {
 
         view.setTextColor(ContextCompat.getColor(view.context, color))
         view.text = StringBuilder().append(rate.abs().toDisplayNumber()).append(" %").toString()
+
+    }
+
+    @BindingAdapter("app:orderStatus")
+    @JvmStatic
+    fun setPercentage(view: TextView, orderStatus: String) {
+        val background = when (orderStatus) {
+            Order.Status.OPEN.value -> R.drawable.rounded_corner_order_open_background
+            Order.Status.FILLED.value -> R.drawable.rounded_corner_order_filled_background
+            Order.Status.IN_PROGRESS.value -> R.drawable.rounded_corner_order_in_progress_background
+            Order.Status.CANCELLED.value -> R.drawable.rounded_corner_order_cancelled_background
+            else -> R.drawable.rounded_corner_order_invalidated_background
+
+        view.text = orderStatus
+        view.setBackgroundResource(background)
 
     }
 }
