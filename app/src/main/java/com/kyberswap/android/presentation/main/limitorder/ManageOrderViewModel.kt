@@ -72,11 +72,6 @@ class ManageOrderViewModel @Inject constructor(
         }.map {
             it.name
         }
-        val status = filter.listStatus.filter {
-            it.isSelected
-        }.map {
-            it.name
-        }
 
         val pairs = filter.listOrders.filter {
             it.isSelected
@@ -97,8 +92,8 @@ class ManageOrderViewModel @Inject constructor(
                 true
             }
         }.filter {
-            if (status.isNotEmpty()) {
-                status.contains(it.status)
+            if (filter.status.isNotEmpty()) {
+                filter.status.contains(it.status)
             } else {
                 true
             }

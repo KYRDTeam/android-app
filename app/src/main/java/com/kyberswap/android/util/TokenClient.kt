@@ -172,12 +172,11 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         isEth: Boolean
     ): EthEstimateGas? {
 
-
         val function = tradeWithHint(
             fromAddress,
             toAddress,
             amount,
-            BigInteger.ZERO,
+            minConversionRate,
             walletAddress
         )
 
@@ -460,7 +459,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         )
     }
 
-    private fun getContractAllowanceAmount(
+    fun getContractAllowanceAmount(
         walletAddress: String,
         tokenAddress: String,
         contractAddress: String, // Token address
@@ -569,7 +568,37 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         return ethTransactions.toList()
     }
 
-    fun signOrder(order: LocalLimitOrder, credentials: Credentials): String {
+    fun signOrder(
+        order: LocalLimitOrder,
+        credentials: Credentials,
+        contractAddress: String
+    ): String {
+
+        if (!order.tokenSource.isETHWETH) {
+            val txManager = RawTransactionManager(web3j, credentials)
+            val allowanceAmount =
+                getContractAllowanceAmount(
+                    order.userAddr,
+                    order.tokenSource.tokenAddress,
+                    contractAddress,
+                    txManager
+                )
+            if (allowanceAmount < order.sourceAmountWithPrecision) {
+                sendContractApproveTransferWithCondition(
+                    allowanceAmount,
+                    order.tokenSource,
+                    contractAddress,
+                    Convert.toWei(
+                        order.gasPrice.toBigDecimalOrDefaultZero(),
+                        Convert.Unit.GWEI
+                    ).toBigInteger(),
+                    order.gasLimit,
+                    txManager
+                )
+            }
+        }
+
+
         val signValue = StringBuilder()
             .append(order.userAddr.removePrefix("0x"))
             .append(order.nonce.removePrefix("0x"))

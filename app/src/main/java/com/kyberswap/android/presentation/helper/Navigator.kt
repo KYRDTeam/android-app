@@ -319,11 +319,12 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     fun navigateToConvertFragment(
         currentFragment: Fragment?,
-        wallet: Wallet?
+        wallet: Wallet?,
+        order: LocalLimitOrder?
     ) {
         navigateByChildFragmentManager(
             currentFragment,
-            ConvertFragment.newInstance(wallet)
+            ConvertFragment.newInstance(wallet, order)
         )
     }
 
