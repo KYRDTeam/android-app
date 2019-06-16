@@ -205,7 +205,7 @@ class SwapFragment : BaseFragment() {
                             expectedRate = state.list[0]
                         )
 
-                        if (swap != null) {
+                        if (swap != null && swap != binding.swap) {
                             binding.swap = swap
                             edtDest.setAmount(
                                 binding.swap?.getExpectedDestAmount(edtSource.toBigDecimalOrDefaultZero())?.toDisplayNumber()
@@ -221,6 +221,7 @@ class SwapFragment : BaseFragment() {
 
                             tvRevertNotification.text =
                                 getRevertNotification(rgRate.checkedRadioButtonId)
+                            binding.executePendingBindings()
                 
             
                     is GetExpectedRateState.ShowError -> {
@@ -238,9 +239,12 @@ class SwapFragment : BaseFragment() {
                             marketRate = state.rate
                         )
 
-                        binding.swap = swap
-                        tvRevertNotification.text =
-                            getRevertNotification(rgRate.checkedRadioButtonId)
+                        if (swap != binding.swap) {
+                            binding.swap = swap
+                            binding.executePendingBindings()
+                            tvRevertNotification.text =
+                                getRevertNotification(rgRate.checkedRadioButtonId)
+                
             
                     is GetMarketRateState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -248,7 +252,6 @@ class SwapFragment : BaseFragment() {
         
     
 )
-
 
         viewModel.getGetGasLimitCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -258,9 +261,12 @@ class SwapFragment : BaseFragment() {
                             gasLimit = state.gasLimit.toString()
                         )
 
-                        binding.swap = swap
-                        tvRevertNotification.text =
-                            getRevertNotification(rgRate.checkedRadioButtonId)
+                        if (swap != binding.swap) {
+                            binding.swap = swap
+                            binding.executePendingBindings()
+                            tvRevertNotification.text =
+                                getRevertNotification(rgRate.checkedRadioButtonId)
+                
             
                     is GetGasLimitState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -306,8 +312,10 @@ class SwapFragment : BaseFragment() {
                         val swap = binding.swap?.copy(
                             gas = state.gas
                         )
-                        binding.swap = swap
-                        binding.executePendingBindings()
+                        if (swap != binding.swap) {
+                            binding.swap = swap
+                            binding.executePendingBindings()
+                
             
                     is GetGasPriceState.ShowError -> {
 
