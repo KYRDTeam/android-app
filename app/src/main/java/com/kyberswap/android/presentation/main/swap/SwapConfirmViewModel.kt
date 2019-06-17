@@ -21,10 +21,10 @@ class SwapConfirmViewModel @Inject constructor(
         get() = _getSwapCallback
 
 
-    private val _getSwapTokenTransactionCallback =
+    private val _swapTokenTransactionCallback =
         MutableLiveData<Event<SwapTokenTransactionState>>()
-    val getSwapTokenTransactionCallback: LiveData<Event<SwapTokenTransactionState>>
-        get() = _getSwapTokenTransactionCallback
+    val swapTokenTransactionCallback: LiveData<Event<SwapTokenTransactionState>>
+        get() = _swapTokenTransactionCallback
 
 
     fun getSwapData(address: String) {
@@ -42,15 +42,15 @@ class SwapConfirmViewModel @Inject constructor(
 
     fun swap(wallet: Wallet?, swap: Swap?) {
         swap?.let {
-            _getSwapTokenTransactionCallback.postValue(Event(SwapTokenTransactionState.Loading))
+            _swapTokenTransactionCallback.postValue(Event(SwapTokenTransactionState.Loading))
             swapTokenUseCase.execute(
                 Consumer {
-                    _getSwapTokenTransactionCallback.value =
+                    _swapTokenTransactionCallback.value =
                         Event(SwapTokenTransactionState.Success(it))
                 },
                 Consumer {
                     it.printStackTrace()
-                    _getSwapTokenTransactionCallback.value =
+                    _swapTokenTransactionCallback.value =
                         Event(SwapTokenTransactionState.ShowError(it.localizedMessage))
                 },
                 SwapTokenUseCase.Param(wallet!!, swap)
