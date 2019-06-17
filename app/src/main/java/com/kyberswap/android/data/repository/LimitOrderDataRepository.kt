@@ -169,41 +169,46 @@ class LimitOrderDataRepository @Inject constructor(
     }
 
     override fun submitOrder(param: SubmitOrderUseCase.Param): Single<LimitOrderResponse> {
-        var password = ""
-        if (context is KyberSwapApplication) {
-            password = String(
-                context.aead.decrypt(
-                    Base64.decode(param.wallet.cipher, Base64.DEFAULT), ByteArray(0)
-                ), Charsets.UTF_8
+        return Single.fromCallable {
+            var password = ""
+            if (context is KyberSwapApplication) {
+                password = String(
+                    context.aead.decrypt(
+                        Base64.decode(param.wallet.cipher, Base64.DEFAULT), ByteArray(0)
+                    ), Charsets.UTF_8
+                )
+    
+
+            val credentials = WalletUtils.loadCredentials(
+                password,
+                WalletManager.storage.keystoreDir.toString() + "/wallets/" + param.wallet.walletId + ".json"
             )
 
-
-        val credentials = WalletUtils.loadCredentials(
-            password,
-            WalletManager.storage.keystoreDir.toString() + "/wallets/" + param.wallet.walletId + ".json"
-        )
-
-        val hexString = tokenClient.signOrder(
-            param.localLimitOrder,
-            credentials
-        )
-
-        return limitOrderApi.createOrder(
-            param.wallet.address,
-            param.localLimitOrder.nonce,
-            param.localLimitOrder.tokenSource.tokenAddress,
-            param.localLimitOrder.tokenDest.tokenAddress,
-            param.localLimitOrder.sourceAmountWithPrecision.toString(16).hexWithPrefix(),
-            param.localLimitOrder.minRateWithPrecision.toString(16).hexWithPrefix(),
-            param.wallet.address,
-            param.localLimitOrder.feeAmountWithPrecision.toString(16).hexWithPrefix(),
+            val hexString = tokenClient.signOrder(
+                param.localLimitOrder,
+                credentials,
+                context.getString(R.string.kyber_address)
+            )
             hexString
-        ).map {
-            orderMapper.transform(it)
-.doAfterSuccess {
-            if (it.success) {
-                limitOrderDao.insertOrder(it.order)
+.flatMap { it ->
+            limitOrderApi.createOrder(
+                param.wallet.address,
+                param.localLimitOrder.nonce,
+                param.localLimitOrder.tokenSource.tokenAddress,
+                param.localLimitOrder.tokenDest.tokenAddress,
+                param.localLimitOrder.sourceAmountWithPrecision.toString(16).hexWithPrefix(),
+                param.localLimitOrder.minRateWithPrecision.toString(16).hexWithPrefix(),
+                param.wallet.address,
+                param.localLimitOrder.feeAmountWithPrecision.toString(16).hexWithPrefix(),
+                it
+            ).map {
+                orderMapper.transform(it)
+    .doAfterSuccess {
+                if (it.success) {
+                    limitOrderDao.insertOrder(it.order)
+        
     
+
 
 
     }
@@ -251,7 +256,21 @@ class LimitOrderDataRepository @Inject constructor(
         val source = updateBalance(defaultLimitOrder.tokenSource)
         val dest = updateBalance(defaultLimitOrder.tokenDest)
 
-        val orderWithToken = defaultLimitOrder.copy(
+        val order = if (source.isETHWETH) {
+            val ethToken =
+                tokenDao.getTokenBySymbol(Token.ETH_SYMBOL) ?: Token()
+            val wethToken =
+                tokenDao.getTokenBySymbol(Token.WETH_SYMBOL) ?: Token()
+
+            defaultLimitOrder.copy(
+                ethToken = ethToken,
+                wethToken = wethToken
+            )
+ else {
+            defaultLimitOrder
+
+
+        val orderWithToken = order.copy(
             tokenSource = source,
             tokenDest = dest
         )
@@ -275,6 +294,7 @@ class LimitOrderDataRepository @Inject constructor(
             token
 
     }
+
 
     override fun saveLimitOrder(param: SaveLimitOrderUseCase.Param): Completable {
         return Completable.fromCallable {
@@ -315,7 +335,7 @@ class LimitOrderDataRepository @Inject constructor(
             limitOrderDao.findOrdersByAddressFlowable(param.walletAddress).map {
                 it.filter { order ->
                     order.src ==
-                        param.tokenSource.tokenSymbol && order.dst == param.tokenDest.tokenSymbol &&
+                        param.tokenSource.submitOrderTokenSymbol && order.dst == param.tokenDest.submitOrderTokenSymbol &&
                         order.isPending
         
     ,

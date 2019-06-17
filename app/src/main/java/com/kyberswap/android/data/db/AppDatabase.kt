@@ -24,10 +24,11 @@ import com.kyberswap.android.domain.model.Unit
         LocalLimitOrder::class,
         OrderFilter::class
     ],
-    version = 37
+    version = 38
 )
 @TypeConverters(
     DataTypeConverter::class,
+    BigIntegerDataTypeConverter::class,
     TransactionTypeConverter::class,
     TokenPairTypeConverter::class,
     ListTypeConverter::class

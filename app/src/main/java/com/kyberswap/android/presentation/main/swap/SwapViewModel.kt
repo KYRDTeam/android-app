@@ -188,11 +188,12 @@ class SwapViewModel @Inject constructor(
                             swap.tokenDest.isTUSD
                         ) {
                             swap.gasLimit.toBigIntegerOrDefaultZero().max(
-                                (it.amountUsed.toBigDecimal() * 1.2.toBigDecimal())
+                                (it.amountUsed.toBigDecimal().multiply(1.2.toBigDecimal()))
                                     .toBigInteger()
                             )
                  else {
-                            (it.amountUsed.toBigDecimal() * 1.2.toBigDecimal()).toBigInteger() + 100000.toBigInteger()
+                            (it.amountUsed.toBigDecimal().multiply(1.2.toBigDecimal())).toBigInteger()
+                                .plus(100000.toBigInteger())
                 
                     _getGetGasLimitCallback.value = Event(GetGasLimitState.Success(gasLimit))
         
