@@ -379,6 +379,7 @@ class SwapFragment : BaseFragment() {
                         viewModel.saveSwap(
                             swap.copy(
                                 sourceAmount = edtSource.text.toString(),
+                                destAmount = edtDest.text.toString(),
                                 minAcceptedRatePercent =
                                 getMinAcceptedRatePercent(rgRate.checkedRadioButtonId),
                                 gasPrice = getSelectedGasPrice(swap.gas)

@@ -7,6 +7,7 @@ import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.repository.TransactionRepository
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
+import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
@@ -15,7 +16,9 @@ import io.reactivex.FlowableTransformer
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.Singles
+import org.web3j.utils.Numeric
 import java.math.BigDecimal
+import java.math.BigInteger
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -26,10 +29,19 @@ class TransactionDataRepository @Inject constructor(
     private val transactionMapper: TransactionMapper,
     private val tokenClient: TokenClient
 ) : TransactionRepository {
-    override fun monitorPendingTransactionsPolling(transactions: List<Transaction>): Flowable<List<Transaction>> {
+    override fun monitorPendingTransactionsPolling(param: MonitorPendingTransactionUseCase.Param): Flowable<List<Transaction>> {
         return Flowable.fromCallable {
-            val pendingTransactions = tokenClient.monitorPendingTransactions(transactions)
-            transactionDao.insertTransactionBatch(pendingTransactions)
+            val pendingTransactions = tokenClient.monitorPendingTransactions(param.transactions)
+            pendingTransactions.forEach { tx ->
+                val transaction =
+                    transactionDao.findTransaction(tx.hash, Transaction.PENDING_TRANSACTION_STATUS)
+                transaction?.let {
+                    if (Numeric.decodeQuantity(tx.blockHash) > BigInteger.ZERO) {
+                        transactionDao.delete(transaction)
+                        transactionDao.insertTransaction(tx)
+                    }
+                }
+            }
             pendingTransactions
         }
             .repeatWhen {
@@ -211,6 +223,7 @@ class TransactionDataRepository @Inject constructor(
                     }
                     transactionList.toList()
                 }.doAfterSuccess {
+                    transactionDao.deleteAllTransactions()
                     transactionDao.insertTransactionBatch(it)
                 }
                 .toFlowable()

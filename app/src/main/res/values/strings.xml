@@ -251,6 +251,15 @@
     <string name="order_status_cancelled">Cancelled</string>
     <string name="order_status_filled">Filled</string>
     <string name="order_status_invalidated">Invalidated</string>
+    <string name="convert_eth_to_weth">Convert ETH to WETH</string>
+    <string name="your_balance">Your balance:</string>
+    <string name="your_address">Your address:</string>
+    <string name="convert_eth_weth">Your order can not be submited because your WETH is not enough, please convert ETH to WETH.</string>
+    <string name="token_eth">ETH</string>
+    <string name="token_weth">WETH</string>
+    <string name="convert">Convert</string>
+    <string name="transaction_mined">Your transaction %s is mined</string>
+    <string name="pending_transaction">You had pending transaction</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>

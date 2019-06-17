@@ -2,10 +2,12 @@ package com.kyberswap.android.domain.model
 
 import android.os.Parcelable
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.TypeConverters
 import com.kyberswap.android.data.api.transaction.TransactionEntity
 import com.kyberswap.android.data.db.TransactionTypeConverter
 import com.kyberswap.android.util.ext.displayWalletAddress
+import com.kyberswap.android.util.ext.safeToString
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.parcel.Parcelize
@@ -17,7 +19,8 @@ import java.util.*
 
 @Entity(
     tableName = "transactions",
-    primaryKeys = ["hash", "from", "to"]
+    primaryKeys = ["hash", "from", "to"],
+    indices = [Index(value = ["hash", "transactionStatus"])]
 )
 @Parcelize
 data class Transaction(
@@ -107,18 +110,18 @@ data class Transaction(
 
     constructor(tx: org.web3j.protocol.core.methods.response.Transaction) : this(
         tx.blockHash,
-        tx.blockNumber.toString(),
+        if (tx.blockNumberRaw.isNullOrEmpty()) "" else tx.blockNumber.safeToString(),
         "",
         "",
         "",
         tx.from,
-        tx.gas.toString(),
-        tx.gasPrice.toString(),
+        tx.gas.safeToString(),
+        tx.gasPrice.safeToString(),
         "",
         tx.hash,
         tx.input,
         "0",
-        tx.nonce.toString(),
+        tx.nonce.safeToString(),
         "0",
         tx.to,
         tx.transactionIndex.toString(),
@@ -131,24 +134,24 @@ data class Transaction(
         tx.blockHash,
         tx.blockNumber.toString(),
         "",
-        tx.contractAddress,
+        tx.contractAddress ?: "",
         tx.cumulativeGasUsed.toString(),
-        tx.from,
+        tx.from ?: "",
         "",
         "",
         tx.gasUsed.toString(),
-        tx.transactionHash,
+        tx.transactionHash ?: "",
         "",
         if (tx.isStatusOK) "0" else "1",
         "",
         "0",
-        tx.to,
+        tx.to ?: "",
         tx.transactionIndex.toString(),
-        tx.status
+        tx.status ?: ""
     )
 
     enum class TransactionType {
-        SEND, RECEIVED
+        SEND, RECEIVED, SWAP
     }
 
     val isTransactionFail: Boolean
@@ -199,6 +202,9 @@ data class Transaction(
         val formatterFull = SimpleDateFormat("EEEE, dd MMM yyyy'T'HH:mm:ssZZZZZ", Locale.ENGLISH)
 
     }
+
+    val isPendingTransaction: Boolean
+        get() = transactionStatus == PENDING_TRANSACTION_STATUS
 
     val shortedDateTimeFormat: String
         get() = if (timeStamp.isNotEmpty()) formatterShort.format(Date(timeStamp.toLong() * 1000L)) else "0"
