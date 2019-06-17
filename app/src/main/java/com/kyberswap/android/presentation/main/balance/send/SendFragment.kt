@@ -289,7 +289,7 @@ class SendFragment : BaseFragment() {
      else {
                 binding.edtAddress.setText(result.contents.toString())
                 if (!result.contents.toString().isContact()) {
-                    binding.edtAddress.error = getString(R.string.invalid_contact_address)
+                    showAlert(getString(R.string.invalid_contact_address))
         
     
  else {

@@ -10,7 +10,7 @@ import javax.inject.Inject
 class SetUnitUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val walletRepository: WalletRepository
-) : CompletableUseCase<String>(schedulerProvider) {
+) : CompletableUseCase<String, Any?>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     override fun buildUseCaseCompletable(param: String): Completable {
         return walletRepository.setSelectedUnit(param)

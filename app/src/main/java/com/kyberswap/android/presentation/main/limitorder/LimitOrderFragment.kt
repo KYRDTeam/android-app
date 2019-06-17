@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
+import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.BR
@@ -19,6 +20,7 @@ import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.LocalLimitOrder
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainPagerAdapter
@@ -48,6 +50,9 @@ class LimitOrderFragment : BaseFragment() {
     private var wallet: Wallet? = null
 
     @Inject
+    lateinit var dialogHelper: DialogHelper
+
+    @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by lazy {
@@ -58,6 +63,8 @@ class LimitOrderFragment : BaseFragment() {
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
+
+    var hasUserFocus: Boolean = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,10 +85,7 @@ class LimitOrderFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
         binding.walletName = wallet?.name
 
-        wallet?.let {
-            viewModel.getLimitOrders(it.address)
-
-
+        viewModel.getLimitOrders(wallet)
 
         viewModel.getLocalLimitOrderCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -97,16 +101,6 @@ class LimitOrderFragment : BaseFragment() {
 
                             binding.order = state.order
                             binding.executePendingBindings()
-
-                            wallet?.let { wallet ->
-                                binding.order?.let { order ->
-                                    viewModel.getRelatedOrders(
-                                        order,
-                                        wallet
-                                    )
-                        
-                    
-
 
                 
             
@@ -157,23 +151,6 @@ class LimitOrderFragment : BaseFragment() {
             showDrawer(true)
 
 
-        viewModel.getLimitOrders(wallet?.address!!)
-
-        binding.tvSubmitOrder.setOnClickListener {
-            binding.order?.let { order ->
-                viewModel.updateOrder(
-                    order.copy(
-                        srcAmount = edtSource.text.toString()
-                    )
-                )
-    
-
-            navigator.navigateToLimitOrderSuggestionScreen(
-                (activity as MainActivity).getCurrentFragment(),
-                wallet
-            )
-
-
         binding.tvBalance.setOnClickListener {
             binding.edtSource.setAmount(tvBalance.text.toString())
 
@@ -194,7 +171,6 @@ class LimitOrderFragment : BaseFragment() {
             )
 
 
-
         binding.tv100Percent.setOnClickListener {
             binding.edtSource.setAmount(tvBalance.text.toString())
 
@@ -204,17 +180,16 @@ class LimitOrderFragment : BaseFragment() {
             resetAmount()
             val limitOrder = binding.order?.swapToken()
             limitOrder?.let {
-                viewModel.saveLimitOrder(limitOrder)
                 getRate(it)
+                viewModel.getFee(
+                    it,
+                    binding.edtSource.text.toString(),
+                    binding.edtDest.text.toString(),
+                    wallet
+                )
     
             binding.setVariable(BR.order, limitOrder)
             binding.executePendingBindings()
-            viewModel.getFee(
-                binding.order,
-                binding.edtSource.text.toString(),
-                binding.edtDest.text.toString(),
-                wallet
-            )
 
 
 
@@ -228,18 +203,43 @@ class LimitOrderFragment : BaseFragment() {
                 appExecutors
             ) {
 
+                dialogHelper.showCancelOrder(it) {
+                    viewModel.cancelOrder(it)
+        
     
         orderAdapter.mode = Attributes.Mode.Single
         binding.rvRelatedOrder.adapter = orderAdapter
-
 
         viewModel.getRelatedOrderCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetRelatedOrdersState.Success -> {
+                        orderAdapter.submitList(null)
                         orderAdapter.submitList(state.orders)
             
                     is GetRelatedOrdersState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+            
+        
+    
+)
+
+        binding.imgInfo.setOnClickListener {
+            showAlert(
+                getString(R.string.eth_star_notification),
+                R.drawable.ic_confirm_info
+            )
+
+
+        viewModel.getGetNonceStateCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetNonceState.Success -> {
+                        val order = binding.order?.copy(nonce = state.nonce)
+                        binding.order = order
+
+            
+                    is GetNonceState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
             
         
@@ -253,16 +253,33 @@ class LimitOrderFragment : BaseFragment() {
             )
 
 
+        viewModel.compositeDisposable.add(binding.edtRate.focusChanges()
+            .observeOn(schedulerProvider.ui())
+            .subscribe {
+                if (it) {
+                    hasUserFocus = it
+        
+    )
+
         viewModel.getGetMarketRateCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetMarketRateState.Success -> {
+
+                        val order = binding.order?.copy(
+                            marketRate = state.rate
+                        )
+
                         binding.tvRate.text = String.format(
                             getString(R.string.limit_order_current_rate),
                             binding.order?.tokenSource?.tokenSymbol,
-                            viewModel.getExpectedDestAmount(BigDecimal.ONE).toDisplayNumber() + binding.order?.tokenDest?.tokenSymbol
+                            order?.getExpectedDestAmount(BigDecimal.ONE)?.toDisplayNumber() + binding.order?.tokenDest?.tokenSymbol
                         )
-                        binding.edtRate.setAmount(viewModel.combineRate)
+
+                        if (!hasUserFocus) {
+                            binding.edtRate.setAmount(order?.combineRate)
+                
+                        binding.order = order
             
                     is GetMarketRateState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -271,10 +288,11 @@ class LimitOrderFragment : BaseFragment() {
     
 )
 
+
         viewModel.compositeDisposable.add(binding.edtRate.textChanges().skipInitialValue()
             .observeOn(schedulerProvider.ui())
             .subscribe {
-                val percentage = it.toString().percentage(viewModel.combineRate).toDouble()
+                val percentage = it.toString().percentage(binding.order?.combineRate).toDouble()
                 val rate = when {
                     percentage > 0.0 -> String.format(
                         getString(R.string.limit_order_rate_higher_market),
@@ -293,12 +311,22 @@ class LimitOrderFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetExpectedRateState.Success -> {
+                        val order = binding.order?.copy(
+                            expectedRate = state.list[0]
+                        )
+
                         binding.tvRate.text = String.format(
                             getString(R.string.limit_order_current_rate),
                             binding.order?.tokenSource?.tokenSymbol,
-                            viewModel.getExpectedDestAmount(BigDecimal.ONE).toDisplayNumber() + " " + binding.order?.tokenDest?.tokenSymbol
+                            order?.getExpectedDestAmount(BigDecimal.ONE)?.toDisplayNumber() + " " + binding.order?.tokenDest?.tokenSymbol
                         )
-                        binding.edtRate.setAmount(viewModel.combineRate)
+                        if (!hasUserFocus) {
+                            binding.edtRate.setAmount(binding.order?.combineRate)
+                
+                        binding.edtDest.setAmount(
+                            binding.order?.getExpectedDestAmount(edtSource.toBigDecimalOrDefaultZero())?.toDisplayNumber()
+                        )
+                        binding.order = order
             
                     is GetExpectedRateState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -318,6 +346,13 @@ class LimitOrderFragment : BaseFragment() {
                     if (order.hasSamePair) {
                         edtDest.setText(text)
              else {
+                        edtDest.setAmount(
+                            order.getExpectedDestAmount(
+                                text.toString()
+                                    .toBigDecimalOrDefaultZero()
+                            )
+                                .toDisplayNumber()
+                        )
                         viewModel.getExpectedRate(
                             order,
                             if (text.isNullOrEmpty()) getString(R.string.default_source_amount) else text.toString()
@@ -332,8 +367,6 @@ class LimitOrderFragment : BaseFragment() {
         
     )
 
-
-
         viewModel.getFee(
             binding.order,
             binding.edtSource.text.toString(),
@@ -347,12 +380,14 @@ class LimitOrderFragment : BaseFragment() {
                     is GetFeeState.Success -> {
                         binding.tvFee.text = String.format(
                             getString(R.string.limit_order_fee),
-                            edtSource.textToDouble().times(state.fee.fee),
+                            edtSource.toBigDecimalOrDefaultZero().times(state.fee.fee.toBigDecimal()).toDisplayNumber(),
                             binding.order?.tokenSource?.tokenSymbol,
                             state.fee.fee.times(100),
                             edtSource.text,
                             binding.order?.tokenSource?.tokenSymbol
                         )
+                        val order = binding.order?.copy(fee = state.fee.fee.toBigDecimal())
+                        binding.order = order
             
                     is GetFeeState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -364,6 +399,68 @@ class LimitOrderFragment : BaseFragment() {
         binding.tvDiscount.setOnClickListener {
             moveToSwapTab()
 
+
+        binding.tvSubmitOrder.setOnClickListener {
+            when {
+                binding.edtSource.text.isNullOrEmpty() -> {
+                    showAlert(getString(R.string.specify_amount))
+        
+                edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.order?.tokenSource?.currentBalance -> {
+                    showAlert(getString(R.string.exceed_balance))
+        
+                binding.order?.hasSamePair == true -> showAlert(getString(R.string.same_token_alert))
+                binding.order?.amountTooSmall(edtSource.text.toString()) == true -> {
+                    showAlert(getString(R.string.swap_amount_small))
+        
+                else -> binding.order?.let { order ->
+                    viewModel.saveLimitOrder(
+                        order.copy(
+                            srcAmount = edtSource.text.toString(),
+                            minRate = edtRate.toBigDecimalOrDefaultZero()
+                        ), true
+                    )
+        
+    
+
+
+        viewModel.saveOrderCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is SaveLimitOrderState.Success -> {
+                        if (viewModel.validate(binding.order, orderAdapter.getData())) {
+                            navigator.navigateToOrderConfirmScreen(
+                                (activity as MainActivity).getCurrentFragment(),
+                                wallet
+                            )
+                 else {
+                            navigator.navigateToLimitOrderSuggestionScreen(
+                                (activity as MainActivity).getCurrentFragment(),
+                                wallet
+                            )
+                
+
+            
+                    is SaveLimitOrderState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+            
+
+        
+    
+)
+
+        viewModel.cancelOrderCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == CancelOrdersState.Loading)
+                when (state) {
+                    is CancelOrdersState.Success -> {
+
+            
+                    is CancelOrdersState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+            
+        
+    
+)
 
     }
 
@@ -389,7 +486,6 @@ class LimitOrderFragment : BaseFragment() {
 
     private fun getRate(order: LocalLimitOrder) {
         if (order.hasSamePair) return
-        viewModel.setDefaultRate(order)
         viewModel.getMarketRate(order)
         viewModel.getExpectedRate(
             order,

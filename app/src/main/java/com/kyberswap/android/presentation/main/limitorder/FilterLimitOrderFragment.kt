@@ -4,16 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import com.kyberswap.android.AppExecutors
+import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentLimitOrderFilterBinding
 import com.kyberswap.android.domain.SchedulerProvider
+import com.kyberswap.android.domain.model.OrderFilter
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.presentation.main.swap.SwapViewModel
 import com.kyberswap.android.util.di.ViewModelFactory
+import kotlinx.android.synthetic.main.fragment_limit_order_filter.*
 import javax.inject.Inject
 
 
@@ -29,16 +32,17 @@ class FilterLimitOrderFragment : BaseFragment() {
 
     private var wallet: Wallet? = null
 
+    private var orderFilter: OrderFilter? = null
+
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(SwapViewModel::class.java)
+        ViewModelProviders.of(this, viewModelFactory).get(FilterViewModel::class.java)
     }
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,22 +64,14 @@ class FilterLimitOrderFragment : BaseFragment() {
 
 
 
+        wallet?.let { viewModel.getFilter(it) }
+
         binding.rvTokenPair.layoutManager = GridLayoutManager(
             activity,
             2
         )
 
         binding.rvTokenPair.adapter = tokenPairAdapter
-        tokenPairAdapter.submitList(
-            listOf(
-                "ETH  ➞  KNC",
-                "ETH  ➞  DAI",
-                "KNC  ➞  DAI",
-                "KNC  ➞  ETH",
-                "DAI  ➞  KNC"
-            )
-        )
-
 
         val addressAdapter = FilterItemAdapter(appExecutors) {
 
@@ -87,17 +83,6 @@ class FilterLimitOrderFragment : BaseFragment() {
         )
 
         binding.rvAddress.adapter = addressAdapter
-        addressAdapter.submitList(
-            listOf(
-                "0xb2745…fa232",
-                "0xb2745…fa392",
-                "0xb2745…fa445",
-                "0xb2745…f5644"
-
-
-            )
-        )
-
 
         val statusAdapter = FilterItemAdapter(appExecutors) {
 
@@ -109,21 +94,70 @@ class FilterLimitOrderFragment : BaseFragment() {
         )
 
         binding.rvStatus.adapter = statusAdapter
-        statusAdapter.submitList(
-            listOf(
-                "Open",
-                "In progress",
-                "Filled",
-                "Canceled",
-                "Invalidated"
-            )
-        )
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
 
 
+        viewModel.getFilterStateCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetFilterState.Success -> {
+                        this.orderFilter = state.orderFilter
+                        rgOrder.check(if (state.orderFilter.oldest) R.id.rbOldest else R.id.rbLatest)
+                        tokenPairAdapter.submitList(state.orderFilter.listOrders)
+                        addressAdapter.submitList(state.orderFilter.listAddress)
+                        statusAdapter.submitList(state.orderFilter.listStatus)
 
+            
+                    is GetFilterState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+            
+        
+    
+)
+
+        binding.tvApply.setOnClickListener {
+            orderFilter?.apply {
+                listAddress = addressAdapter.getData()
+                listOrders = tokenPairAdapter.getData()
+                listStatus = statusAdapter.getData()
+    
+
+            orderFilter?.let {
+                viewModel.saveOrderFilter(it)
+    
+
+
+        viewModel.saveFilterStateCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is SaveFilterState.Success -> {
+                        onSaveFilterSuccess()
+
+            
+                    is SaveFilterState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+            
+        
+    
+)
+
+        binding.tvReset.setOnClickListener {
+            orderFilter?.apply {
+                listAddress = listOf()
+                listOrders = listOf()
+                listStatus = listOf()
+    
+
+            orderFilter?.let {
+                viewModel.saveOrderFilter(it)
+    
+
+    }
+
+    private fun onSaveFilterSuccess() {
+        activity?.onBackPressed()
     }
 
     companion object {

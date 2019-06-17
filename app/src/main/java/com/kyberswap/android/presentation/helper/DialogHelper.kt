@@ -10,7 +10,9 @@ import androidx.databinding.DataBindingUtil
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.DialogBackupMessageAgainBinding
 import com.kyberswap.android.databinding.DialogBackupMessageBinding
+import com.kyberswap.android.databinding.DialogCancelOrderConfirmationBinding
 import com.kyberswap.android.databinding.DialogConfirmationBinding
+import com.kyberswap.android.domain.model.Order
 import javax.inject.Inject
 
 class DialogHelper @Inject constructor(private val activity: AppCompatActivity) {
@@ -28,6 +30,36 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
             positiveListener.invoke()
             dialog.dismiss()
 
+
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+    }
+
+
+    fun showCancelOrder(order: Order, positiveListener: () -> Unit) {
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogCancelOrderConfirmationBinding>(
+                LayoutInflater.from(activity),
+                R.layout.dialog_cancel_order_confirmation,
+                null,
+                false
+            )
+
+        binding.tvConfirm.setOnClickListener {
+            positiveListener.invoke()
+            dialog.dismiss()
+
+
+        binding.tvCancel.setOnClickListener {
+            dialog.dismiss()
+
+        binding.order = order
+        binding.executePendingBindings()
 
         dialog.setView(binding.root)
         dialog.show()

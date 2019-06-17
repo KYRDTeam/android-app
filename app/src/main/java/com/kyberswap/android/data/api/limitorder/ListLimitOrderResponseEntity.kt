@@ -5,7 +5,7 @@ import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 
 @JsonAdapter(OrderListDeserializer::class)
-data class LimitOrderResponse(
+data class ListLimitOrderResponseEntity(
     @SerializedName("fields")
     val fields: List<String> = listOf(),
     @SerializedName("orders")

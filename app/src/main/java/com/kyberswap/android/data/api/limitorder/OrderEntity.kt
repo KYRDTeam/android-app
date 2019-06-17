@@ -2,12 +2,13 @@ package com.kyberswap.android.data.api.limitorder
 
 
 import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
 
 data class OrderEntity(
     @SerializedName("id")
-    val id: Int = 0,
+    val id: Long = 0,
     @SerializedName("addr")
     val userAddr: String = "",
     @SerializedName("src")
@@ -30,8 +31,18 @@ data class OrderEntity(
     val createdAt: Long = 0,
     @SerializedName("updated_at")
     val updatedAt: Long = 0
-
 )
+
+fun JsonObject.toMessage(): Map<String, List<String>> {
+    val entries = entrySet()
+    val map = mutableMapOf<String, List<String>>()
+    entries.forEach { entry ->
+        map[entry.key] = entry.value.asJsonArray.toList().map {
+            it.asString
+
+    }
+    return map
+}
 
 fun JsonArray.toOrderEntity(jsonArray: JsonArray): OrderEntity {
     val keys = jsonArray.toList().map {
@@ -41,7 +52,7 @@ fun JsonArray.toOrderEntity(jsonArray: JsonArray): OrderEntity {
     val id = if (get(keys.indexOf("id")).isJsonNull) {
         0
     } else {
-        get(keys.indexOf("id"))?.asInt ?: 0
+        get(keys.indexOf("id"))?.asLong ?: 0
     }
 
 
