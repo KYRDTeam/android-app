@@ -237,7 +237,10 @@ class SendFragment : BaseFragment() {
                 !edtAddress.text.toString().isContact() -> showAlert(getString(R.string.invalid_contact_address))
                 hasPendingTransaction -> showAlert(getString(R.string.pending_transaction))
                 else -> viewModel.saveSend(
-                    binding.send?.copy(sourceAmount = edtSource.text.toString()),
+                    binding.send?.copy(
+                        sourceAmount = edtSource.text.toString(),
+                        gasPrice = getSelectedGasPrice(binding.send!!.gas)
+                    ),
                     binding.edtAddress.text.toString()
                 )
             }
@@ -268,7 +271,7 @@ class SendFragment : BaseFragment() {
 
     }
 
-    val hasPendingTransaction: Boolean
+    private val hasPendingTransaction: Boolean
         get() = (activity as MainActivity).pendingTransactions.size > 0
 
     private fun getSelectedGasPrice(gas: Gas): String {
