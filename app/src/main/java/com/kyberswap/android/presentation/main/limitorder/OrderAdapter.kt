@@ -21,7 +21,7 @@ class OrderAdapter(
     appExecutors,
     diffCallback = object : DiffUtil.ItemCallback<Order>() {
         override fun areItemsTheSame(oldItem: Order, newItem: Order): Boolean {
-            return oldItem == newItem
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(oldItem: Order, newItem: Order): Boolean {
@@ -41,11 +41,16 @@ class OrderAdapter(
     }
 
     override fun bind(binding: ItemOrderBinding, item: Order) {
+        binding.swipe.isSwipeEnabled = item.isPending
         binding.swipe.addSwipeListener(object : SimpleSwipeListener() {
             override fun onStartOpen(layout: SwipeLayout?) {
                 mItemManger.closeAllExcept(layout)
             }
         })
+        binding.tvCancel.setOnClickListener {
+            onCancelClick?.invoke(item)
+            mItemManger.closeAllItems()
+        }
         binding.order = item
         binding.executePendingBindings()
 

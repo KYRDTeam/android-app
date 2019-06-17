@@ -1,4 +1,8 @@
 package com.kyberswap.android.domain.model
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
-data class FilterItem(val name: String = "")
+
+@Parcelize
+data class FilterItem(var isSelected: Boolean = false, val name: String = "") : Parcelable

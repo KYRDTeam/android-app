@@ -15,7 +15,7 @@ import java.util.*
 @Parcelize
 data class Order(
     @PrimaryKey
-    val id: Int = 0,
+    val id: Long = 0,
     val userAddr: String = "",
     val src: String = "",
     val dst: String = "",
@@ -52,7 +52,7 @@ data class Order(
             .append(src)
             .append("/")
             .append(dst)
-            .append(">=")
+            .append(" >= ")
             .append(minRate.toDisplayNumber())
             .toString()
 
@@ -78,6 +78,9 @@ data class Order(
             .append(src)
             .toString()
 
+    val isPending: Boolean
+        get() = status.toLowerCase() == Status.OPEN.value || status.toLowerCase() == Status.IN_PROGRESS.value
+
     val displayedDate: String
         get() = formatterShort.format(Date(createdAt * 1000L))
 
@@ -88,4 +91,23 @@ data class Order(
         val formatterShort = SimpleDateFormat("dd MMM yyyy", Locale.US)
     }
 
+    enum class Status {
+        OPEN,
+        IN_PROGRESS,
+        CANCELLED,
+        FILLED,
+        INVALIDATED,
+        UNKNOWN;
+
+        val value: String
+            get() = when (this) {
+                OPEN -> "open"
+                IN_PROGRESS -> "in_progress"
+                CANCELLED -> "cancelled"
+                FILLED -> "filled"
+                INVALIDATED -> "invalidated"
+                UNKNOWN -> "unknown"
+            }
+    }
 }
+

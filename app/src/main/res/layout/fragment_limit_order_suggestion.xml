@@ -9,28 +9,20 @@
             name="walletName"
             type="String" />
 
-        <variable
-            name="percentageRate"
-            type="String" />
 
         <variable
-            name="rate"
-            type="String" />
+            name="order"
+            type="com.kyberswap.android.domain.model.LocalLimitOrder" />
 
-        <variable
-            name="swap"
-            type="com.kyberswap.android.domain.model.Swap" />
-
-        <variable
-            name="gas"
-            type="com.kyberswap.android.domain.model.Gas" />
     </data>
 
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/screen_background">
+        android:background="@drawable/screen_background"
+        android:clickable="true"
+        android:focusable="true">
 
         <View
             android:layout_width="0dp"
@@ -142,7 +134,7 @@
                         android:layout_height="32dp"
                         android:scaleType="centerInside"
                         android:src="@drawable/eth"
-                        app:identifier="@{swap.tokenSource.tokenSymbol}"
+                        app:identifier="@{order.tokenSource.tokenSymbol}"
                         app:layout_constraintBottom_toBottomOf="@+id/tvSource"
                         app:layout_constraintEnd_toStartOf="@+id/tvSource"
                         app:layout_constraintHorizontal_bias="0.5"
@@ -156,7 +148,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"
-                        android:text="@{swap.tokenSource.tokenSymbol}"
+                        android:text="@{order.tokenSource.tokenSymbol}"
                         android:textAllCaps="true"
                         android:textColor="#141927"
                         android:textSize="16sp"
@@ -174,6 +166,7 @@
                         android:background="@android:color/transparent"
                         android:backgroundTint="#acb3c6"
                         android:ellipsize="start"
+                        android:focusable="false"
                         android:gravity="end"
                         android:hint="@string/default_swap_amount"
                         android:inputType="numberDecimal"
@@ -192,7 +185,7 @@
                         android:layout_height="32dp"
                         android:scaleType="centerInside"
                         android:src="@drawable/knc"
-                        app:identifier="@{swap.tokenDest.tokenSymbol}"
+                        app:identifier="@{order.tokenDest.tokenSymbol}"
                         app:layout_constraintBottom_toBottomOf="@+id/tvDest"
                         app:layout_constraintEnd_toStartOf="@+id/tvDest"
                         app:layout_constraintHorizontal_bias="0.5"
@@ -206,7 +199,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"
-                        android:text="@{swap.tokenDest.tokenSymbol}"
+                        android:text="@{order.tokenDest.tokenSymbol}"
                         android:textAllCaps="true"
                         android:textColor="#141927"
                         android:textSize="16sp"
@@ -224,6 +217,7 @@
                         android:background="@android:color/transparent"
                         android:backgroundTint="#acb3c6"
                         android:ellipsize="start"
+                        android:focusable="false"
                         android:gravity="end"
                         android:hint="@string/default_swap_amount"
                         android:inputType="numberDecimal"
@@ -276,7 +270,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="96dp"
-                        android:text="ETH* Available"
+                        android:text="@{String.format(@string/token_amount_available, order.tokenSource.tokenSymbol)}"
                         android:textColor="#9ea1aa"
                         android:textSize="12sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -288,7 +282,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="16.130796"
+                        android:text="@{order.tokenSource.displayCurrentBalance}"
                         android:textColor="#141927"
                         android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="@+id/textView47"
@@ -313,7 +307,7 @@
                         android:gravity="center"
                         android:minWidth="50dp"
                         android:minHeight="36dp"
-                        android:text="25%"
+                        android:text="@string/percent_25"
                         android:textColor="#8690ad"
                         android:textSize="12sp"
                         app:layout_constraintBottom_toBottomOf="@+id/textView54"
@@ -333,7 +327,7 @@
                         android:gravity="center"
                         android:minWidth="50dp"
                         android:minHeight="36dp"
-                        android:text="50%"
+                        android:text="@string/percent_50"
                         android:textColor="#8690ad"
                         android:textSize="12sp"
                         app:layout_constraintBottom_toBottomOf="@+id/textView50"
@@ -351,7 +345,7 @@
                         android:gravity="center"
                         android:minWidth="50dp"
                         android:minHeight="36dp"
-                        android:text="100%"
+                        android:text="@string/percent_100"
                         android:textColor="#8690ad"
                         android:textSize="12sp"
                         app:layout_constraintBottom_toBottomOf="@+id/textView49"
@@ -378,22 +372,22 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:text="Rate of"
+                        android:text="@string/limit_order_rate_of"
                         android:textColor="#2a2a2a"
                         android:textSize="16sp"
                         app:layout_constraintBottom_toTopOf="@+id/textView55"
                         app:layout_constraintStart_toStartOf="@+id/view11"
-                        app:layout_constraintTop_toTopOf="@+id/textView57"
+                        app:layout_constraintTop_toTopOf="@+id/tvRate"
                         app:layout_constraintVertical_chainStyle="packed" />
 
                     <TextView
                         android:id="@+id/textView55"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="KNC  ➞ ETH"
+                        android:text="@{order.tokenPair}"
                         android:textColor="#2a2a2a"
                         android:textSize="16sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/textView57"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvRate"
                         app:layout_constraintStart_toStartOf="@+id/textView56"
                         app:layout_constraintTop_toBottomOf="@+id/textView56" />
 
@@ -407,7 +401,7 @@
                         tools:layout_editor_absoluteX="121dp" />
 
                     <TextView
-                        android:id="@+id/textView57"
+                        android:id="@+id/tvRate"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:layout_marginStart="16dp"
@@ -418,7 +412,6 @@
                         android:gravity="center|end"
                         android:paddingStart="20dp"
                         android:paddingEnd="20dp"
-                        android:text="0.0013"
                         android:textColor="#141927"
                         android:textSize="24sp"
                         app:layout_constraintBottom_toBottomOf="@+id/view11"
@@ -435,7 +428,7 @@
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="20dp"
                         android:layout_marginEnd="24dp"
-                        android:text="This new order has a lower rate than some orders you have created. Below orders will be cancelled when you submitted this order."
+                        android:text="@string/order_warning"
                         android:textColor="#ef8102"
                         android:textSize="12sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -464,7 +457,7 @@
                         android:background="@drawable/default_button"
                         android:gravity="center"
                         android:minHeight="45dp"
-                        android:text="Yes"
+                        android:text="@string/limit_order_yes"
                         android:textColor="#ffffff"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -472,13 +465,13 @@
                         app:layout_constraintTop_toBottomOf="@+id/rvRelatedOrder" />
 
                     <TextView
+                        android:id="@+id/tvChangeRate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:background="?selectableItemBackground"
                         android:gravity="center_horizontal"
                         android:padding="8dp"
-                        android:text="Change Rate"
+                        android:text="@string/change_rate"
                         android:textColor="#141927"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="@+id/tvConfirm"

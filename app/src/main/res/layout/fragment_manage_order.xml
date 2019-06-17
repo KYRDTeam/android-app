@@ -18,139 +18,125 @@
             android:layout_marginTop="@dimen/toolbar_height"
             android:background="@color/color_bg_gray" />
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/scFilter"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/toolbar_height"
-            android:fillViewport="true">
+            android:clickable="true"
+            android:focusable="true">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+
+            <TextView
+                android:id="@+id/tvFilter"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:drawableStart="@drawable/ic_filter_order"
+                android:drawablePadding="4dp"
+                android:text="@string/manage_order_filter"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#5a5e67"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toStartOf="@+id/tv1Day"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv1Day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
                 android:clickable="true"
                 android:focusable="true"
-                android:paddingBottom="40dp">
+                android:gravity="center_horizontal"
+                android:padding="8dp"
+                android:text="@string/day_1"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="@color/manage_order_text_color"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvFilter"
+                app:layout_constraintEnd_toStartOf="@+id/tv1Week"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/tvFilter"
+                app:layout_constraintTop_toTopOf="@+id/tvFilter" />
+
+            <TextView
+                android:id="@+id/tv1Week"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_horizontal"
+                android:padding="8dp"
+                android:text="@string/week_1"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="@color/manage_order_text_color"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv1Day"
+                app:layout_constraintEnd_toStartOf="@+id/tv1Month"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/tv1Day"
+                app:layout_constraintTop_toTopOf="@+id/tv1Day" />
+
+            <TextView
+                android:id="@+id/tv1Month"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_horizontal"
+                android:padding="8dp"
+                android:text="@string/month_1"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="@color/manage_order_text_color"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv1Week"
+                app:layout_constraintEnd_toStartOf="@+id/tv3Month"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/tv1Week"
+                app:layout_constraintTop_toTopOf="@+id/tv1Week" />
+
+            <TextView
+                android:id="@+id/tv3Month"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="24dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_horizontal"
+                android:padding="8dp"
+                android:text="@string/month_3"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="@color/manage_order_text_color"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv1Month"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/tv1Month"
+                app:layout_constraintTop_toTopOf="@+id/tv1Month" />
 
 
-                <TextView
-                    android:id="@+id/tvFilter"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="24dp"
-                    android:text="@string/manage_order_filter"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-                    android:textColor="#5a5e67"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toStartOf="@+id/tv1Day"
-                    app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tv1Day"
-                    android:checked="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center_horizontal"
-                    android:padding="8dp"
-                    android:text="@string/day_1"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-                    android:textColor="@color/manage_order_text_color"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvFilter"
-                    app:layout_constraintEnd_toStartOf="@+id/tv1Week"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/tvFilter"
-                    app:layout_constraintTop_toTopOf="@+id/tvFilter" />
-
-                <TextView
-                    android:id="@+id/tv1Week"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:text="@string/week_1"
-                    android:gravity="center_horizontal"
-                    android:padding="8dp"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-                    android:textColor="@color/manage_order_text_color"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/tv1Day"
-                    app:layout_constraintEnd_toStartOf="@+id/tv1Month"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/tv1Day"
-                    app:layout_constraintTop_toTopOf="@+id/tv1Day" />
-
-                <TextView
-                    android:id="@+id/tv1Month"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center_horizontal"
-                    android:padding="8dp"
-                    android:text="@string/month_1"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-                    android:textColor="@color/manage_order_text_color"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/tv1Week"
-                    app:layout_constraintEnd_toStartOf="@+id/tv3Month"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/tv1Week"
-                    app:layout_constraintTop_toTopOf="@+id/tv1Week" />
-
-                <TextView
-                    android:id="@+id/tv3Month"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="24dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center_horizontal"
-                    android:padding="8dp"
-                    android:text="@string/month_3"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-                    android:textColor="@color/manage_order_text_color"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/tv1Month"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/tv1Month"
-                    app:layout_constraintTop_toTopOf="@+id/tv1Month" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvOrder"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="18dp"
+                android:layout_marginEnd="8dp"
+                android:background="@android:color/white"
+                android:clipToPadding="false"
+                android:paddingBottom="40dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvFilter" />
 
 
-                <View
-                    android:id="@+id/view12"
-                    android:layout_width="0dp"
-                    android:layout_height="2dp"
-                    android:layout_marginTop="11dp"
-                    android:background="@drawable/dash_line"
-                    app:layout_constraintEnd_toEndOf="@+id/tv3Month"
-                    app:layout_constraintStart_toStartOf="@+id/tvFilter"
-                    app:layout_constraintTop_toBottomOf="@+id/tvFilter" />
-
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvOrder"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginEnd="8dp"
-                    android:nestedScrollingEnabled="false"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/view12" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.core.widget.NestedScrollView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <FrameLayout
             android:id="@+id/toolbar"

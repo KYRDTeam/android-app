@@ -11,7 +11,7 @@ import javax.inject.Inject
 class UpdateWalletUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val walletRepository: WalletRepository
-) : CompletableUseCase<Wallet>(schedulerProvider) {
+) : CompletableUseCase<Wallet, Any?>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     override fun buildUseCaseCompletable(param: Wallet): Completable {
         return walletRepository.updateWallet(param)

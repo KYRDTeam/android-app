@@ -4,6 +4,10 @@
 
     <data>
 
+        <variable
+            name="order"
+            type="com.kyberswap.android.domain.model.LocalLimitOrder" />
+
     </data>
 
     <FrameLayout
@@ -40,7 +44,7 @@
                     android:layout_marginTop="24dp"
                     android:layout_marginEnd="24dp"
                     android:gravity="center_horizontal"
-                    android:text="Your transaction will be broadcasted when rate of KNC/ETH &gt;= 0.0013"
+                    android:text="@{String.format(@string/limit_order_broadcasted_message, order.displayTokenPair)}"
                     android:textColor="#141927"
                     android:textSize="14sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -56,7 +60,7 @@
                     android:layout_marginTop="32dp"
                     android:layout_marginEnd="24dp"
                     android:gravity="center_horizontal"
-                    android:text="2000 KNC"
+                    android:text="@{order.displayedSrcAmount}"
                     android:textColor="#141927"
                     android:textSize="20sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -71,7 +75,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="24dp"
                     android:gravity="center_horizontal"
-                    android:text="To:"
+                    android:text="@string/limit_order_to"
                     android:textColor="#31cb9e"
                     android:textSize="14sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -87,7 +91,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="24dp"
                     android:gravity="center_horizontal"
-                    android:text="5.179200 ETH"
+                    android:text="@{order.displayedDestAmount}"
                     android:textColor="#141927"
                     android:textSize="20sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -101,7 +105,7 @@
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="24dp"
-                    android:text="(2000 - 8) KNC * 0.0026 = 5.179200 WETH"
+                    android:text="@{order.displayedCalculatedRate}"
                     android:textColor="#7e7e7e"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -126,7 +130,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="20dp"
-                    android:text="Fee"
+                    android:text="@string/transaction_fee"
                     android:textColor="#7e7e7e"
                     android:textSize="14sp"
                     app:layout_constraintEnd_toStartOf="@+id/textView84"
@@ -141,7 +145,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
                     android:gravity="end"
-                    android:text="8.00000 KNC"
+                    android:text="@{order.displayedFee}"
                     android:textColor="#7e7e7e"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="@+id/textView85"
@@ -152,9 +156,10 @@
 
                 <ImageView
                     android:id="@+id/imgInfo"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginEnd="24dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginEnd="16dp"
+                    android:padding="4dp"
                     android:src="@drawable/ic_info_limit"
                     app:layout_constraintBottom_toBottomOf="@+id/textView84"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -173,7 +178,7 @@
                     android:background="@drawable/default_button"
                     android:gravity="center"
                     android:minHeight="45dp"
-                    android:text="Continue"
+                    android:text="@string/swap_continue"
                     android:textColor="#ffffff"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -191,7 +196,7 @@
                     android:layout_marginEnd="24dp"
                     android:gravity="center_horizontal"
                     android:padding="8dp"
-                    android:text="Cancel"
+                    android:text="@string/cancel"
                     android:textColor="#141927"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"

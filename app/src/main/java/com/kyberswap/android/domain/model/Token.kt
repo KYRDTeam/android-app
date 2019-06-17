@@ -141,6 +141,9 @@ data class Token(
     val isTUSD: Boolean
         get() = tokenSymbol.toLowerCase() == TUSD.toLowerCase()
 
+    val isETHWETH: Boolean
+        get() = tokenSymbol.toLowerCase() == ETH_SYMBOL_STAR.toLowerCase()
+
     fun areContentsTheSame(other: Token): Boolean {
         return this.tokenSymbol == other.tokenSymbol &&
             this.currentBalance == other.currentBalance &&
@@ -164,6 +167,10 @@ data class Token(
 
     fun updatePrecision(value: BigInteger): BigInteger {
         return value.divide(BigInteger.TEN.pow(tokenDecimal))
+    }
+
+    fun withTokenDecimal(amount: BigDecimal): BigInteger {
+        return amount.multiply(BigDecimal.TEN.pow(tokenDecimal)).toBigInteger()
     }
 
     companion object {

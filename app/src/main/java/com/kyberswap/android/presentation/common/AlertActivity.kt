@@ -26,6 +26,9 @@ class AlertActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding.content = intent.getStringExtra(ALERT_CONTENT)
+        val resourceId = intent.getIntExtra(ALERT_ICON, -1)
+        binding.resourceId = resourceId
+        binding.isInfo = resourceId > 0
         binding.flContainer.setOnClickListener {
             onBackPressed()
         }
@@ -51,9 +54,15 @@ class AlertActivity : BaseActivity() {
 
     companion object {
         private const val ALERT_CONTENT = "alert_content"
-        fun newIntent(context: Context, content: String) =
+        private const val ALERT_ICON = "alert_icon"
+        fun newIntent(
+            context: Context,
+            content: String,
+            resourceId: Int = 0
+        ) =
             Intent(context, AlertActivity::class.java).apply {
                 putExtra(ALERT_CONTENT, content)
+                putExtra(ALERT_ICON, resourceId)
             }
     }
 }

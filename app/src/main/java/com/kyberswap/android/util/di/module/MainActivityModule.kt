@@ -308,4 +308,12 @@ interface MainActivityModule {
     fun bindManageOrderViewModel(
         manageOrderViewModel: ManageOrderViewModel
     ): ViewModel
+
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(FilterViewModel::class)
+    fun bindFilterViewModel(
+        filterViewModel: FilterViewModel
+    ): ViewModel
 }

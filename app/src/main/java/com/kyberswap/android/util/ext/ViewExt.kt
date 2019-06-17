@@ -2,6 +2,7 @@ package com.kyberswap.android.util.ext
 
 import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import com.kyberswap.android.R
 import java.math.BigDecimal
 
@@ -34,6 +35,14 @@ fun EditText.setAmount(amount: String?) {
         setText(amount)
     } else {
         setText("")
+    }
+}
+
+fun TextView.setAmount(amount: String?) {
+    if (amount.toDoubleOrDefaultZero() != 0.0) {
+        text = amount
+    } else {
+        text = ""
     }
 }
 

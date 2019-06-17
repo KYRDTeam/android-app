@@ -11,7 +11,7 @@ import javax.inject.Inject
 class SaveLimitOrderTokenUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val limitOrderRepository: LimitOrderRepository
-) : CompletableUseCase<SaveLimitOrderTokenUseCase.Param>(schedulerProvider) {
+) : CompletableUseCase<SaveLimitOrderTokenUseCase.Param, Any?>(schedulerProvider) {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     override fun buildUseCaseCompletable(param: Param): Completable {
