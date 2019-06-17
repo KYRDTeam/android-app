@@ -177,7 +177,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             fromAddress,
             toAddress,
             amount,
-            BigInteger.ZERO,
+            minConversionRate,
             walletAddress
         )
 
@@ -550,7 +550,6 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         for (s in transactions.map {
             it.hash
 ) {
-
             val transaction = web3j.ethGetTransactionByHash(s).send().transaction
             if (transaction.isPresent) {
                 val tx = transaction.get()
@@ -560,12 +559,19 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                     if (ethGetTransactionReceipt.isPresent) {
                         val txReceipt = ethGetTransactionReceipt.get()
                         ethTransactions.add(com.kyberswap.android.domain.model.Transaction(txReceipt))
+             else {
+                        ethTransactions.add(
+                            com.kyberswap.android.domain.model.Transaction(
+                                tx
+                            )
+                        )
             
          else {
-                    ethTransactions.add(com.kyberswap.android.domain.model.Transaction(tx))
+                    ethTransactions.add(com.kyberswap.android.domain.model.Transaction(tx).copy(hash = s))
         
     
 
+        if (ethTransactions.isEmpty()) return transactions
         return ethTransactions.toList()
     }
 

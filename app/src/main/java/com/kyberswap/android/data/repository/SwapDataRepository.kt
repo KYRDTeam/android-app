@@ -91,10 +91,21 @@ class SwapDataRepository @Inject constructor(
                 swapDao.updateSwap(it)
     
             hash?.let {
+                val swap = param.swap
                 transactionDao.insertTransaction(
                     Transaction(
                         hash = it,
-                        transactionStatus = Transaction.PENDING_TRANSACTION_STATUS
+                        transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
+                        timeStamp = (System.currentTimeMillis() / 1000L).toString(),
+                        from = swap.tokenSource.tokenAddress,
+                        gas = swap.gasLimit,
+                        gasUsed = swap.gasLimit,
+                        gasPrice = swap.gasPrice,
+                        to = swap.tokenDest.tokenAddress,
+                        tokenSource = swap.tokenSource.tokenSymbol,
+                        tokenDest = swap.tokenDest.tokenSymbol,
+                        sourceAmount = swap.sourceAmount,
+                        destAmount = swap.destAmount
                     )
                 )
     
@@ -123,17 +134,34 @@ class SwapDataRepository @Inject constructor(
                 param,
                 credentials
             )
-            val resetSend = sendTokenDao.findSendByAddress(param.wallet.address)
-            resetSend?.let {
-                it.reset()
-                sendTokenDao.updateSend(it)
+            val resetSend = param.send.copy()
+            resetSend.let {
+                sendTokenDao.updateSend(
+                    it.copy(
+                        tokenSource = it.tokenSource.copy(
+                            currentBalance = it.tokenSource.currentBalance
+                                - resetSend.sourceAmount.toBigDecimalOrDefaultZero()
+                        ),
+                        sourceAmount = ""
+                    )
+                )
     
 
             hash?.let {
+                val transfer = param.send
                 transactionDao.insertTransaction(
                     Transaction(
                         hash = it,
-                        transactionStatus = Transaction.PENDING_TRANSACTION_STATUS
+                        transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
+                        timeStamp = (System.currentTimeMillis() / 1000L).toString(),
+                        from = transfer.tokenSource.tokenAddress,
+                        gas = transfer.gasLimit,
+                        gasUsed = transfer.gasLimit,
+                        gasPrice = transfer.gasPrice,
+                        to = transfer.contact.address,
+                        value = transfer.sourceAmount,
+                        tokenDecimal = transfer.tokenSource.tokenDecimal.toString(),
+                        tokenSymbol = transfer.tokenSource.tokenSymbol
                     )
                 )
     

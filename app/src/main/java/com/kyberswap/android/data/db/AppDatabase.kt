@@ -24,7 +24,7 @@ import com.kyberswap.android.domain.model.Unit
         LocalLimitOrder::class,
         OrderFilter::class
     ],
-    version = 33
+    version = 37
 )
 @TypeConverters(
     DataTypeConverter::class,
