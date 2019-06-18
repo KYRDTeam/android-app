@@ -21,10 +21,7 @@
 
         <ImageView
             android:id="@+id/imgBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="16dp"
-            android:src="@drawable/ic_arrow_back"
+            style="@style/BackImage"
             app:layout_constraintBottom_toBottomOf="@+id/textView26"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"

@@ -207,15 +207,10 @@ class ProfileFragment : BaseFragment() {
                 val signInIntent = googleSignInClient.signInIntent
                 startActivityForResult(signInIntent, RC_SIGN_IN)
      else {
-
-                val socialInfo = SocialInfo(
-                    LoginType.GOOGLE,
-                    account.displayName,
-                    account.idToken,
-                    account.photoUrl.toString(),
-                    account.email
-                )
-                viewModel.login(socialInfo)
+                googleSignInClient.signOut().addOnCompleteListener {
+                    val signInIntent = googleSignInClient.signInIntent
+                    startActivityForResult(signInIntent, RC_SIGN_IN)
+        
     
 
 
@@ -229,6 +224,8 @@ class ProfileFragment : BaseFragment() {
             if (!isLoggedIn) {
                 LoginManager.getInstance()
                     .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"))
+     else {
+                LoginManager.getInstance().logOut()
     
 
             LoginManager.getInstance()

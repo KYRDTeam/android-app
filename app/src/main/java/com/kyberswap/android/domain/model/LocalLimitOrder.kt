@@ -58,7 +58,9 @@ data class LocalLimitOrder(
         return LocalLimitOrder(
             this.userAddr,
             this.tokenDest,
-            this.tokenSource
+            this.tokenSource,
+            ethToken = this.ethToken,
+            wethToken = this.wethToken
         )
     }
 

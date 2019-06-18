@@ -3,293 +3,291 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.kyberswap.android.presentation.main.profile.ProfileFragment">
 
-    <androidx.core.widget.NestedScrollView
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/screen_background"
-        android:fillViewport="true">
+        android:background="@drawable/screen_background">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <FrameLayout
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/toolbar_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/imgBack"
+                style="@style/BackImage" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:text="@string/sign_up"
+                android:textColor="#ffffff"
+                android:textSize="18sp" />
+        </FrameLayout>
+
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clickable="true"
-            android:focusable="true">
+            android:layout_marginTop="@dimen/toolbar_height"
+            android:fillViewport="true">
 
-            <FrameLayout
-                android:id="@+id/toolbar"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/toolbar_height"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_height="match_parent">
+
+
+                <View
+                    android:id="@+id/view9"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:background="@color/color_bg_gray"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
 
                 <ImageView
-                    android:id="@+id/imgBack"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="9dp"
-                    android:src="@drawable/ic_arrow_back" />
+                    android:id="@+id/imgGooglePlus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="28dp"
+                    android:src="@drawable/ic_google_plus_register"
+                    app:layout_constraintEnd_toStartOf="@+id/imgFacebook"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/imgFacebook"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:src="@drawable/ic_facebook_register"
+                    app:layout_constraintBottom_toBottomOf="@+id/imgGooglePlus"
+                    app:layout_constraintEnd_toStartOf="@+id/imgTwitter"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/imgGooglePlus"
+                    app:layout_constraintTop_toTopOf="@+id/imgGooglePlus" />
+
+
+                <ImageView
+                    android:id="@+id/imgTwitter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_twitter_register"
+                    app:layout_constraintBottom_toBottomOf="@+id/imgFacebook"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/imgFacebook"
+                    app:layout_constraintTop_toTopOf="@+id/imgFacebook" />
+
 
                 <TextView
+                    android:id="@+id/tvOr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="4sp"
+                    android:text="@string/register_or"
+                    android:textColor="#141927"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/view12"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toEndOf="@+id/view12"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/view12" />
+
+
+                <View
+                    android:id="@+id/view13"
+                    android:layout_width="0dp"
+                    android:layout_height="2dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:background="@drawable/dash_line"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvOr"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/tvOr"
+                    app:layout_constraintTop_toTopOf="@+id/tvOr" />
+
+                <View
+                    android:id="@+id/view12"
+                    android:layout_width="0dp"
+                    android:layout_height="2dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginEnd="24dp"
+                    android:background="@drawable/dash_line"
+                    app:layout_constraintEnd_toStartOf="@+id/tvOr"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/imgGooglePlus" />
+
+
+                <EditText
+                    android:id="@+id/edtEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:gravity="center"
-                    android:text="@string/sign_up"
-                    android:textColor="#ffffff"
-                    android:textSize="18sp" />
-            </FrameLayout>
-
-
-            <View
-                android:id="@+id/view9"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:background="@color/color_bg_gray"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <ImageView
-                android:id="@+id/imgGooglePlus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:src="@drawable/ic_google_plus_register"
-                app:layout_constraintEnd_toStartOf="@+id/imgFacebook"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintHorizontal_chainStyle="packed"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar" />
-
-            <ImageView
-                android:id="@+id/imgFacebook"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginEnd="32dp"
-                android:src="@drawable/ic_facebook_register"
-                app:layout_constraintBottom_toBottomOf="@+id/imgGooglePlus"
-                app:layout_constraintEnd_toStartOf="@+id/imgTwitter"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/imgGooglePlus"
-                app:layout_constraintTop_toTopOf="@+id/imgGooglePlus" />
-
-
-            <ImageView
-                android:id="@+id/imgTwitter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_twitter_register"
-                app:layout_constraintBottom_toBottomOf="@+id/imgFacebook"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/imgFacebook"
-                app:layout_constraintTop_toTopOf="@+id/imgFacebook" />
-
-
-            <TextView
-                android:id="@+id/tvOr"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:lineSpacingExtra="4sp"
-                android:text="@string/register_or"
-                android:textColor="#141927"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="@+id/view12"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintHorizontal_chainStyle="packed"
-                app:layout_constraintStart_toEndOf="@+id/view12"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/view12" />
-
-
-            <View
-                android:id="@+id/view13"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
-                android:background="@drawable/dash_line"
-                app:layout_constraintBottom_toBottomOf="@+id/tvOr"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/tvOr"
-                app:layout_constraintTop_toTopOf="@+id/tvOr" />
-
-            <View
-                android:id="@+id/view12"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginEnd="24dp"
-                android:background="@drawable/dash_line"
-                app:layout_constraintEnd_toStartOf="@+id/tvOr"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imgGooglePlus" />
-
-
-            <EditText
-                android:id="@+id/edtEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="26dp"
-                android:layout_marginEnd="24dp"
-                android:backgroundTint="@color/edt_background_tint"
-                android:hint="@string/login_email_address"
-                android:inputType="textEmailAddress"
-                android:letterSpacing="0.07"
-                android:minHeight="60dp"
-                android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                android:textColor="#9ea1aa"
-                android:textColorHint="#9ea1aa"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvOr"
-                tools:text="Email Address" />
-
-            <EditText
-                android:id="@+id/edtDisplayName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:backgroundTint="@color/edt_background_tint"
-                android:hint="@string/signup_display_name"
-                android:inputType="textEmailAddress"
-                android:letterSpacing="0.07"
-                android:minHeight="60dp"
-                android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                android:textColor="#9ea1aa"
-                android:textColorHint="#9ea1aa"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="@+id/edtEmail"
-                app:layout_constraintStart_toStartOf="@+id/edtEmail"
-                app:layout_constraintTop_toBottomOf="@+id/edtEmail"
-                tools:text="Display Name" />
-
-
-            <Button
-                android:id="@+id/btnRegister"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="36dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/default_button"
-                android:gravity="center"
-                android:text="@string/register"
-                android:textAllCaps="false"
-                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-                android:textColor="#ffffff"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
-                app:layout_constraintStart_toStartOf="@+id/textInputLayout"
-                app:layout_constraintTop_toBottomOf="@+id/cbTermCondition" />
-
-
-            <TextView
-                android:id="@+id/textView45"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="@string/already_member"
-                android:textColor="#5a5e67"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toStartOf="@+id/tvSignUp"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintHorizontal_chainStyle="packed"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnRegister" />
-
-            <TextView
-                android:id="@+id/tvSignUp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:background="?selectableItemBackground"
-                android:text="@string/login"
-                android:textColor="#fea34c"
-                android:textSize="14sp"
-                app:layout_constraintBaseline_toBaselineOf="@+id/textView45"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/textView45" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:backgroundTint="@color/edt_background_tint"
-                app:hintEnabled="false"
-                app:layout_constraintEnd_toEndOf="@+id/edtDisplayName"
-                app:layout_constraintStart_toStartOf="@+id/edtDisplayName"
-                app:layout_constraintTop_toBottomOf="@+id/edtDisplayName"
-                app:passwordToggleEnabled="true"
-                app:passwordToggleTint="#9ea1aa">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edtPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="26dp"
+                    android:layout_marginEnd="24dp"
                     android:backgroundTint="@color/edt_background_tint"
-                    android:hint="@string/login_password"
-                    android:inputType="textPassword"
+                    android:hint="@string/login_email_address"
+                    android:inputType="textEmailAddress"
                     android:letterSpacing="0.07"
                     android:minHeight="60dp"
                     android:singleLine="true"
                     android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                    android:textColor="#5a5e67"
+                    android:textColor="#9ea1aa"
                     android:textColorHint="#9ea1aa"
                     android:textSize="14sp"
-                    tools:text="Enter Password to Decrypt" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvOr"
+                    tools:text="Email Address" />
 
-            <CheckBox
-                android:id="@+id/cbSubscription"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="44dp"
-                android:checked="true"
-                android:text="@string/subscribe_newsletters"
-                android:theme="@style/CustomRadioTheme"
-                app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/textInputLayout"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
-
-            <CheckBox
-                android:id="@+id/cbTermCondition"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="8dp"
-                android:backgroundTint="#fea34c"
-                android:text="@string/terms_conditions"
-                android:textColor="#fea34c"
-                android:theme="@style/CustomRadioTheme"
-                app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/cbSubscription"
-                app:layout_constraintTop_toBottomOf="@+id/cbSubscription" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <EditText
+                    android:id="@+id/edtDisplayName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:backgroundTint="@color/edt_background_tint"
+                    android:hint="@string/signup_display_name"
+                    android:inputType="textEmailAddress"
+                    android:letterSpacing="0.07"
+                    android:minHeight="60dp"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                    android:textColor="#9ea1aa"
+                    android:textColorHint="#9ea1aa"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="@+id/edtEmail"
+                    app:layout_constraintStart_toStartOf="@+id/edtEmail"
+                    app:layout_constraintTop_toBottomOf="@+id/edtEmail"
+                    tools:text="Display Name" />
 
 
-    </androidx.core.widget.NestedScrollView>
+                <Button
+                    android:id="@+id/btnRegister"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="36dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="@drawable/default_button"
+                    android:gravity="center"
+                    android:text="@string/register"
+                    android:textAllCaps="false"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#ffffff"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
+                    app:layout_constraintStart_toStartOf="@+id/textInputLayout"
+                    app:layout_constraintTop_toBottomOf="@+id/cbTermCondition" />
 
+
+                <TextView
+                    android:id="@+id/textView45"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/already_member"
+                    android:textColor="#5a5e67"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/tvSignUp"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btnRegister" />
+
+                <TextView
+                    android:id="@+id/tvSignUp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:background="?selectableItemBackground"
+                    android:text="@string/login"
+                    android:textColor="#fea34c"
+                    android:textSize="14sp"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/textView45"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/textView45" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:backgroundTint="@color/edt_background_tint"
+                    app:hintEnabled="false"
+                    app:layout_constraintEnd_toEndOf="@+id/edtDisplayName"
+                    app:layout_constraintStart_toStartOf="@+id/edtDisplayName"
+                    app:layout_constraintTop_toBottomOf="@+id/edtDisplayName"
+                    app:passwordToggleEnabled="true"
+                    app:passwordToggleTint="#9ea1aa">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/edt_background_tint"
+                        android:hint="@string/login_password"
+                        android:inputType="textPassword"
+                        android:letterSpacing="0.07"
+                        android:minHeight="60dp"
+                        android:singleLine="true"
+                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textColor="#5a5e67"
+                        android:textColorHint="#9ea1aa"
+                        android:textSize="14sp"
+                        tools:text="Enter Password to Decrypt" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <CheckBox
+                    android:id="@+id/cbSubscription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="44dp"
+                    android:checked="true"
+                    android:text="@string/subscribe_newsletters"
+                    android:theme="@style/CustomRadioTheme"
+                    app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/textInputLayout"
+                    app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+
+                <CheckBox
+                    android:id="@+id/cbTermCondition"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:backgroundTint="#fea34c"
+                    android:text="@string/terms_conditions"
+                    android:textColor="#fea34c"
+                    android:theme="@style/CustomRadioTheme"
+                    app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/cbSubscription"
+                    app:layout_constraintTop_toBottomOf="@+id/cbSubscription" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+    </FrameLayout>
 
 </layout>
 

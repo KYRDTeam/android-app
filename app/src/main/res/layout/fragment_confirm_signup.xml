@@ -32,11 +32,7 @@
 
                 <ImageView
                     android:id="@+id/imgBack"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="9dp"
-                    android:src="@drawable/ic_arrow_back" />
+                    style="@style/BackImage" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -104,7 +100,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView42" />
 
             <TextView
-                android:id="@+id/textView43"
+                android:id="@+id/tvName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="19dp"
@@ -118,16 +114,16 @@
                 tools:text="John Smith" />
 
             <TextView
-                android:id="@+id/textView44"
+                android:id="@+id/tvEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@{social.email}"
                 android:textColor="#5a5e67"
                 android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="@+id/textView43"
-                app:layout_constraintStart_toStartOf="@+id/textView43"
-                app:layout_constraintTop_toBottomOf="@+id/textView43"
+                app:layout_constraintEnd_toEndOf="@+id/tvName"
+                app:layout_constraintStart_toStartOf="@+id/tvName"
+                app:layout_constraintTop_toBottomOf="@+id/tvName"
                 tools:text="johnsmith@gmail.com" />
 
 
@@ -204,7 +200,7 @@
                 android:background="@drawable/dash_line"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView44" />
+                app:layout_constraintTop_toBottomOf="@+id/tvEmail" />
 
             <CheckBox
                 android:id="@+id/cbSubscription"
