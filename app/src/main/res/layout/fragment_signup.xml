@@ -54,24 +54,50 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.0" />
 
+                <View
+                    android:id="@+id/view10"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="34dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="35dp"
+                    android:background="@drawable/rounded_corner_gray_background"
+                    app:layout_constraintBottom_toBottomOf="@+id/view9"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView45"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/textView43"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sign_in_with"
+                    android:textColor="#5a5e67"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/view10"
+                    app:layout_constraintEnd_toStartOf="@+id/imgGooglePlus"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="spread"
+                    app:layout_constraintStart_toStartOf="@+id/view10"
+                    app:layout_constraintTop_toTopOf="@+id/view10" />
+
                 <ImageView
                     android:id="@+id/imgGooglePlus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="28dp"
                     android:src="@drawable/ic_google_plus_register"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView43"
                     app:layout_constraintEnd_toStartOf="@+id/imgFacebook"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintStart_toEndOf="@+id/textView43"
+                    app:layout_constraintTop_toTopOf="@+id/textView43" />
 
                 <ImageView
                     android:id="@+id/imgFacebook"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
-                    android:layout_marginEnd="32dp"
                     android:src="@drawable/ic_facebook_register"
                     app:layout_constraintBottom_toBottomOf="@+id/imgGooglePlus"
                     app:layout_constraintEnd_toStartOf="@+id/imgTwitter"
@@ -84,56 +110,13 @@
                     android:id="@+id/imgTwitter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
                     android:src="@drawable/ic_twitter_register"
                     app:layout_constraintBottom_toBottomOf="@+id/imgFacebook"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/view10"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/imgFacebook"
                     app:layout_constraintTop_toTopOf="@+id/imgFacebook" />
-
-
-                <TextView
-                    android:id="@+id/tvOr"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:lineSpacingExtra="4sp"
-                    android:text="@string/register_or"
-                    android:textColor="#141927"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/view12"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toEndOf="@+id/view12"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/view12" />
-
-
-                <View
-                    android:id="@+id/view13"
-                    android:layout_width="0dp"
-                    android:layout_height="2dp"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginEnd="24dp"
-                    android:background="@drawable/dash_line"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvOr"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/tvOr"
-                    app:layout_constraintTop_toTopOf="@+id/tvOr" />
-
-                <View
-                    android:id="@+id/view12"
-                    android:layout_width="0dp"
-                    android:layout_height="2dp"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="40dp"
-                    android:layout_marginEnd="24dp"
-                    android:background="@drawable/dash_line"
-                    app:layout_constraintEnd_toStartOf="@+id/tvOr"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/imgGooglePlus" />
 
 
                 <EditText
@@ -141,7 +124,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
-                    android:layout_marginTop="26dp"
+                    android:layout_marginTop="32dp"
                     android:layout_marginEnd="24dp"
                     android:backgroundTint="@color/edt_background_tint"
                     android:hint="@string/login_email_address"
@@ -156,7 +139,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvOr"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:text="Email Address" />
 
                 <EditText
@@ -193,7 +176,6 @@
                     android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#ffffff"
                     android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
                     app:layout_constraintStart_toStartOf="@+id/textInputLayout"
                     app:layout_constraintTop_toBottomOf="@+id/cbTermCondition" />
@@ -207,14 +189,14 @@
                     android:text="@string/already_member"
                     android:textColor="#5a5e67"
                     android:textSize="14sp"
-                    app:layout_constraintEnd_toStartOf="@+id/tvSignUp"
+                    app:layout_constraintEnd_toStartOf="@+id/tvLogin"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintHorizontal_chainStyle="packed"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/btnRegister" />
 
                 <TextView
-                    android:id="@+id/tvSignUp"
+                    android:id="@+id/tvLogin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -274,15 +256,30 @@
                     android:id="@+id/cbTermCondition"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="8dp"
                     android:backgroundTint="#fea34c"
+                    android:text="@string/agree_to"
+                    android:theme="@style/CustomRadioTheme"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvTermAndCondition"
+                    app:layout_constraintEnd_toStartOf="@+id/tvTermAndCondition"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toEndOf="@+id/view9"
+                    app:layout_constraintStart_toStartOf="@+id/cbSubscription"
+                    app:layout_constraintTop_toTopOf="@+id/tvTermAndCondition" />
+
+                <TextView
+                    android:id="@+id/tvTermAndCondition"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
                     android:text="@string/terms_conditions"
                     android:textColor="#fea34c"
-                    android:theme="@style/CustomRadioTheme"
+                    android:textSize="14sp"
                     app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/cbSubscription"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/cbTermCondition"
                     app:layout_constraintTop_toBottomOf="@+id/cbSubscription" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

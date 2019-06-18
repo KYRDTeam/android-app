@@ -100,35 +100,7 @@ class ProfileFragment : BaseFragment() {
         LoginManager.getInstance().registerCallback(callbackManager,
             object : FacebookCallback<LoginResult> {
                 override fun onSuccess(result: LoginResult?) {
-
-                    val request = GraphRequest.newMeRequest(
-                        result?.accessToken
-                    ) { me, response ->
-                        if (response?.error != null) {
-                            showAlert(response.error.errorMessage)
-                        } else {
-                            val email = me?.optString("email")
-                            val name = me?.optString("name")
-                            val id = me?.optString("id")
-                            val profileUrl = "https://graph.facebook.com/$id/picture?type=large"
-                            val socialInfo = SocialInfo(
-                                LoginType.FACEBOOK,
-                                name,
-                                result?.accessToken?.token,
-                                profileUrl,
-                                email
-                            )
-                            viewModel.login(socialInfo)
-                        }
-                    }
-
-                    val parameters = Bundle()
-                    parameters.putString(
-                        "fields",
-                        "id, name, email, gender, birthday, picture.type(large)"
-                    )
-                    request.parameters = parameters
-                    request.executeAsync()
+                    result?.accessToken?.let { meRequest(it) }
                 }
 
                 override fun onCancel() {
@@ -225,11 +197,9 @@ class ProfileFragment : BaseFragment() {
                 LoginManager.getInstance()
                     .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"))
             } else {
-                LoginManager.getInstance().logOut()
+                meRequest(accessToken)
             }
 
-            LoginManager.getInstance()
-                .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"))
         }
 
         binding.imgTwitter.setOnClickListener {
@@ -263,6 +233,37 @@ class ProfileFragment : BaseFragment() {
             }
         }
 
+    }
+
+    private fun meRequest(accessToken: AccessToken) {
+        val request = GraphRequest.newMeRequest(
+            accessToken
+        ) { me, response ->
+            if (response?.error != null) {
+                showAlert(response.error.errorMessage)
+            } else {
+                val email = me?.optString("email")
+                val name = me?.optString("name")
+                val id = me?.optString("id")
+                val profileUrl = "https://graph.facebook.com/$id/picture?type=large"
+                val socialInfo = SocialInfo(
+                    LoginType.FACEBOOK,
+                    name,
+                    accessToken.token,
+                    profileUrl,
+                    email
+                )
+                viewModel.login(socialInfo)
+            }
+        }
+
+        val parameters = Bundle()
+        parameters.putString(
+            "fields",
+            "id, name, email, gender, birthday, picture.type(large)"
+        )
+        request.parameters = parameters
+        request.executeAsync()
     }
 
 
