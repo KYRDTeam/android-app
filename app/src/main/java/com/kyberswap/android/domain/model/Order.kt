@@ -58,7 +58,7 @@ data class Order(
 
     val sourceDisplay: String
         get() = StringBuilder()
-            .append(receivedSource.toDisplayNumber())
+            .append(srcAmount.toDisplayNumber())
             .append(" ")
             .append(src)
             .toString()

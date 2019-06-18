@@ -91,7 +91,9 @@ class LimitOrderDataRepository @Inject constructor(
 
     override fun getOrderFilter(param: GetLimitOrderFilterUseCase.Param): Flowable<OrderFilter> {
         val filter = orderFilterDao.findOrderFilterByAddress(param.walletAddress)
-        val orderFilter = filter ?: OrderFilter()
+        val orderFilter = filter ?: OrderFilter(
+            status = listOf(Order.Status.OPEN.value, Order.Status.IN_PROGRESS.value)
+        )
 
         val orders = limitOrderDao.findAllOrdersByAddress(param.walletAddress)
         val pairs = mutableSetOf<Pair<String, String>>()
@@ -134,7 +136,6 @@ class LimitOrderDataRepository @Inject constructor(
     
 
             FilterItem(orderFilter.status.indexOf(it.value) >= 0, display)
-
 
 
         val update = orderFilter.copy(

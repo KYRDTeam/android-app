@@ -447,15 +447,15 @@ class LimitOrderFragment : BaseFragment() {
                     is GetFeeState.Success -> {
 
                         val order = binding.order?.copy(fee = state.fee.fee.toBigDecimal())
+                        binding.tvFee.text = String.format(
+                            getString(R.string.limit_order_fee),
+                            edtSource.toBigDecimalOrDefaultZero().times(state.fee.fee.toBigDecimal()).toDisplayNumber(),
+                            binding.order?.tokenSource?.tokenSymbol,
+                            state.fee.fee.times(100),
+                            edtSource.text,
+                            binding.order?.tokenSource?.tokenSymbol
+                        )
                         if (order != binding.order) {
-                            binding.tvFee.text = String.format(
-                                getString(R.string.limit_order_fee),
-                                edtSource.toBigDecimalOrDefaultZero().times(state.fee.fee.toBigDecimal()).toDisplayNumber(),
-                                binding.order?.tokenSource?.tokenSymbol,
-                                state.fee.fee.times(100),
-                                edtSource.text,
-                                binding.order?.tokenSource?.tokenSymbol
-                            )
                             binding.order = order
                             binding.executePendingBindings()
                 
@@ -476,13 +476,18 @@ class LimitOrderFragment : BaseFragment() {
                 binding.edtSource.text.isNullOrEmpty() -> {
                     showAlert(getString(R.string.specify_amount))
         
-                edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.order?.tokenSource?.currentBalance -> {
+                edtSource.text.toString().toBigDecimalOrDefaultZero() >
+                    viewModel.calAvailableAmount(
+                        binding.order,
+                        orderAdapter.getData()
+                    ).toBigDecimalOrDefaultZero() -> {
                     showAlert(getString(R.string.exceed_balance))
         
                 binding.order?.hasSamePair == true -> showAlert(getString(R.string.same_token_alert))
                 binding.order?.amountTooSmall(edtSource.text.toString()) == true -> {
                     showAlert(getString(R.string.swap_amount_small))
         
+
 
                 else -> binding.order?.let {
 
