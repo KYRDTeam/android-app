@@ -52,7 +52,7 @@ class SignUpViewModel @Inject constructor(
                     Event(LoginState.ShowError(it.localizedMessage))
             },
             LoginSocialUseCase.Param(
-                socialInfo
+                socialInfo, true
             )
         )
     }

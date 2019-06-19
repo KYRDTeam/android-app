@@ -185,7 +185,7 @@
     <string name="sign_up_now">Sign Up Now</string>
     <string name="dont_have_an_account">Don’t have an account.</string>
     <string name="register_or">or</string>
-    <string name="terms_conditions"><![CDATA[Agree to Terms & Conditions]]></string>
+    <string name="terms_conditions"> Terms &amp; Conditions</string>
     <string name="subscribe_newsletters">Subscribe to Newsletters</string>
     <string name="already_member">Already a member?</string>
     <string name="register">Register</string>
@@ -251,6 +251,19 @@
     <string name="order_status_cancelled">Cancelled</string>
     <string name="order_status_filled">Filled</string>
     <string name="order_status_invalidated">Invalidated</string>
+    <string name="convert_eth_to_weth">Convert ETH to WETH</string>
+    <string name="your_balance">Your balance:</string>
+    <string name="your_address">Your address:</string>
+    <string name="convert_eth_weth">Your order can not be submited because your WETH is not enough, please convert ETH to WETH.</string>
+    <string name="token_eth">ETH</string>
+    <string name="token_weth">WETH</string>
+    <string name="convert">Convert</string>
+    <string name="transaction_mined">Your transaction %s is mined</string>
+    <string name="pending_transaction">You had pending transaction</string>
+    <string name="sign_in_with">Or sign in with</string>
+    <string name="agree_to">"Agree to "</string>
+    <string name="term_and_condition">https://files.kyberswap.com/tac.pdf</string>
+    <string name="term_condition_notification">Please accept terms and conditions</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>

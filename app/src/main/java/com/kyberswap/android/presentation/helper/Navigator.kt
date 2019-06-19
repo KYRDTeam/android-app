@@ -14,6 +14,7 @@ import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.limitorder.*
 import com.kyberswap.android.presentation.main.profile.SignUpConfirmFragment
 import com.kyberswap.android.presentation.main.profile.SignUpFragment
+import com.kyberswap.android.presentation.main.profile.TermConditionActivity
 import com.kyberswap.android.presentation.main.setting.AddContactFragment
 import com.kyberswap.android.presentation.main.setting.ContactFragment
 import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
@@ -257,6 +258,9 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         navigateByChildFragmentManager(currentFragment, SignUpFragment.newInstance(wallet))
     }
 
+    fun navigateToTermAndCondition() {
+        activity.startActivity(TermConditionActivity.newIntent(activity))
+    }
 
     fun navigateToLimitOrderSuggestionScreen(currentFragment: Fragment?, wallet: Wallet?) {
         navigateByChildFragmentManager(
@@ -319,11 +323,12 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     fun navigateToConvertFragment(
         currentFragment: Fragment?,
-        wallet: Wallet?
+        wallet: Wallet?,
+        order: LocalLimitOrder?
     ) {
         navigateByChildFragmentManager(
             currentFragment,
-            ConvertFragment.newInstance(wallet)
+            ConvertFragment.newInstance(wallet, order)
         )
     }
 

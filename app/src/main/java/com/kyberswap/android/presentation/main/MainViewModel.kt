@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.transaction.GetPendingTransactionsUseCase
+import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetAllWalletUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
@@ -16,7 +17,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val getAllWalletUseCase: GetAllWalletUseCase,
     private val getPendingTransactionsUseCase: GetPendingTransactionsUseCase,
-    private val monitorPendingTransactionsUseCase: GetPendingTransactionsUseCase
+    private val monitorPendingTransactionsUseCase: MonitorPendingTransactionUseCase
 ) : ViewModel() {
 
     private val _getAllWalletStateCallback = MutableLiveData<Event<GetAllWalletState>>()
@@ -53,22 +54,30 @@ class MainViewModel @Inject constructor(
     fun getPendingTransaction(wallet: Wallet) {
         getPendingTransactionsUseCase.execute(
             Consumer {
-                _getPendingTransactionStateCallback.value = Event(
-                    GetPendingTransactionState.Success(
-                        it
-                    )
-                )
                 monitorPendingTransactionsUseCase.dispose()
-                monitorPendingTransactionsUseCase.execute(
-                    Consumer {
+                if (it.isNotEmpty()) {
+                    monitorPendingTransactionsUseCase.execute(
+                        Consumer { tx ->
+                            _getPendingTransactionStateCallback.value = Event(
+                                GetPendingTransactionState.Success(
+                                    tx
+                                )
+                            )
 
-                    },
-                    Consumer {
-                        it.printStackTrace()
-                        Timber.e(it.localizedMessage)
-                    },
-                    wallet.address
-                )
+                        },
+                        Consumer { ex ->
+                            ex.printStackTrace()
+                            Timber.e(ex.localizedMessage)
+                        },
+                        MonitorPendingTransactionUseCase.Param(it)
+                    )
+                } else {
+                    _getPendingTransactionStateCallback.value = Event(
+                        GetPendingTransactionState.Success(
+                            it
+                        )
+                    )
+                }
 
             },
             Consumer {

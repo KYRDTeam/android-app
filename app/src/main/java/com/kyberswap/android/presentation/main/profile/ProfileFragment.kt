@@ -100,35 +100,7 @@ class ProfileFragment : BaseFragment() {
         LoginManager.getInstance().registerCallback(callbackManager,
             object : FacebookCallback<LoginResult> {
                 override fun onSuccess(result: LoginResult?) {
-
-                    val request = GraphRequest.newMeRequest(
-                        result?.accessToken
-                    ) { me, response ->
-                        if (response?.error != null) {
-                            showAlert(response.error.errorMessage)
-                        } else {
-                            val email = me?.optString("email")
-                            val name = me?.optString("name")
-                            val id = me?.optString("id")
-                            val profileUrl = "https://graph.facebook.com/$id/picture?type=large"
-                            val socialInfo = SocialInfo(
-                                LoginType.FACEBOOK,
-                                name,
-                                result?.accessToken?.token,
-                                profileUrl,
-                                email
-                            )
-                            viewModel.login(socialInfo)
-                        }
-                    }
-
-                    val parameters = Bundle()
-                    parameters.putString(
-                        "fields",
-                        "id, name, email, gender, birthday, picture.type(large)"
-                    )
-                    request.parameters = parameters
-                    request.executeAsync()
+                    result?.accessToken?.let { meRequest(it) }
                 }
 
                 override fun onCancel() {
@@ -207,15 +179,10 @@ class ProfileFragment : BaseFragment() {
                 val signInIntent = googleSignInClient.signInIntent
                 startActivityForResult(signInIntent, RC_SIGN_IN)
             } else {
-
-                val socialInfo = SocialInfo(
-                    LoginType.GOOGLE,
-                    account.displayName,
-                    account.idToken,
-                    account.photoUrl.toString(),
-                    account.email
-                )
-                viewModel.login(socialInfo)
+                googleSignInClient.signOut().addOnCompleteListener {
+                    val signInIntent = googleSignInClient.signInIntent
+                    startActivityForResult(signInIntent, RC_SIGN_IN)
+                }
             }
         }
 
@@ -229,10 +196,10 @@ class ProfileFragment : BaseFragment() {
             if (!isLoggedIn) {
                 LoginManager.getInstance()
                     .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"))
+            } else {
+                meRequest(accessToken)
             }
 
-            LoginManager.getInstance()
-                .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"))
         }
 
         binding.imgTwitter.setOnClickListener {
@@ -266,6 +233,37 @@ class ProfileFragment : BaseFragment() {
             }
         }
 
+    }
+
+    private fun meRequest(accessToken: AccessToken) {
+        val request = GraphRequest.newMeRequest(
+            accessToken
+        ) { me, response ->
+            if (response?.error != null) {
+                showAlert(response.error.errorMessage)
+            } else {
+                val email = me?.optString("email")
+                val name = me?.optString("name")
+                val id = me?.optString("id")
+                val profileUrl = "https://graph.facebook.com/$id/picture?type=large"
+                val socialInfo = SocialInfo(
+                    LoginType.FACEBOOK,
+                    name,
+                    accessToken.token,
+                    profileUrl,
+                    email
+                )
+                viewModel.login(socialInfo)
+            }
+        }
+
+        val parameters = Bundle()
+        parameters.putString(
+            "fields",
+            "id, name, email, gender, birthday, picture.type(large)"
+        )
+        request.parameters = parameters
+        request.executeAsync()
     }
 
 

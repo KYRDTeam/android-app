@@ -17,7 +17,6 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
-import kotlinx.android.synthetic.main.fragment_signup.*
 import javax.inject.Inject
 
 
@@ -64,12 +63,9 @@ class SignUpConfirmFragment : BaseFragment() {
         binding.social = socialInfo
 
         binding.btnRegister.setOnClickListener {
-            viewModel.signUp(
-                edtEmail.text.toString(),
-                edtDisplayName.text.toString(),
-                edtPassword.text.toString(),
-                cbSubscription.isChecked
-            )
+            socialInfo?.let { info ->
+                viewModel.login(info.copy(subscription = binding.cbSubscription.isChecked))
+            }
         }
 
         viewModel.signUpCallback.observe(viewLifecycleOwner, Observer {

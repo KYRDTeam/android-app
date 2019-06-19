@@ -18,6 +18,7 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityMainBinding
+import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.helper.Navigator
@@ -55,6 +56,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     private val binding by lazy {
         DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
     }
+
+    val pendingTransactions = mutableListOf<Transaction>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -158,7 +161,18 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetPendingTransactionState.Success -> {
-                        setPendingTransaction(state.transactions.size)
+                        val txList = state.transactions.filter {
+                            it.blockNumber.isNotEmpty()
+                        }
+
+                        txList.forEach {
+                            showAlert(String.format(getString(R.string.transaction_mined), it.hash))
+                        }
+
+                        val pending = state.transactions.filter { it.blockNumber.isEmpty() }
+                        pendingTransactions.clear()
+                        pendingTransactions.addAll(pending)
+                        setPendingTransaction(pending.size)
                     }
                     is GetPendingTransactionState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))

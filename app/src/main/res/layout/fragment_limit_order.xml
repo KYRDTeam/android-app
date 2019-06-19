@@ -18,6 +18,10 @@
             type="String" />
 
         <variable
+            name="availableAmount"
+            type="String" />
+
+        <variable
             name="order"
             type="com.kyberswap.android.domain.model.LocalLimitOrder" />
 
@@ -301,7 +305,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="@{order.tokenSource.displayCurrentBalance}"
+                        android:text="@{availableAmount}"
                         android:textColor="#141927"
                         android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="@+id/textView47"
