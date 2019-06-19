@@ -17,7 +17,6 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
-import kotlinx.android.synthetic.main.fragment_balance.*
 import kotlinx.android.synthetic.main.fragment_transaction.*
 import javax.inject.Inject
 
@@ -99,8 +98,6 @@ class TransactionFragment : BaseFragment() {
                 when (state) {
                     is GetWalletState.Success -> {
                         this.wallet = state.wallet
-                        tvUnit.text = state.wallet.unit
-                        tvBalance.text = state.wallet.balance
             
 
                     is GetWalletState.ShowError -> {

@@ -44,6 +44,7 @@ interface UserApi {
         @Field("two_factor_code") twoFa: String?,
         @Field("display_name") displayName: String?,
         @Field("oauth_token") oauthToken: String?,
-        @Field("oauth_token_secret") oauthTokenSecret: String?
+        @Field("oauth_token_secret") oauthTokenSecret: String?,
+        @Field("confirm_signup") confirmSignUp: Boolean
     ): Single<LoginUserEntity>
 }

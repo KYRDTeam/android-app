@@ -36,7 +36,8 @@ class UserDataRepository @Inject constructor(
             param.socialInfo.twoFa,
             param.socialInfo.displayName,
             param.socialInfo.oAuthToken,
-            param.socialInfo.oAuthTokenSecret
+            param.socialInfo.oAuthTokenSecret,
+            param.confirmSignUp
         ).map {
             userMapper.transform(it)
 

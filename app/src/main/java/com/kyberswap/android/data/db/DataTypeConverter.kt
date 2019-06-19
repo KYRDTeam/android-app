@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.kyberswap.android.domain.model.Transaction
 import java.math.BigDecimal
+import java.math.BigInteger
 
 
 class DataTypeConverter {
@@ -15,7 +16,19 @@ class DataTypeConverter {
 
     @TypeConverter
     fun bigDecimalToString(decimal: BigDecimal): String {
-        return decimal.toString()
+        return decimal.toPlainString()
+    }
+}
+
+class BigIntegerDataTypeConverter {
+    @TypeConverter
+    fun stringToBigInteger(data: String?): BigInteger {
+        return BigInteger(data)
+    }
+
+    @TypeConverter
+    fun bigIntegerToString(bigInteger: BigInteger): String {
+        return bigInteger.toString()
     }
 }
 

@@ -40,6 +40,30 @@ data class Swap(
     val gas: Gas = Gas()
 ) : Parcelable {
 
+    constructor(limitOrder: LocalLimitOrder) : this(
+        limitOrder.userAddr,
+        limitOrder.ethToken,
+        limitOrder.wethToken,
+        limitOrder.minConvertedAmount,
+        "",
+        BigDecimal.ONE.toDisplayNumber(),
+        "",
+        limitOrder.gasPrice,
+        if (limitOrder.gasLimit > BigInteger.ZERO) limitOrder.gasLimit.toString()
+        else if (limitOrder.ethToken.gasLimit.toBigIntegerOrDefaultZero()
+            == BigInteger.ZERO
+        ) DEFAULT_GAS_LIMIT.toString()
+        else limitOrder.ethToken.gasLimit,
+        BigDecimal.ONE.toDisplayNumber(),
+        3.toString()
+    )
+
+    val defaultGasLimit: String
+        get() = if (tokenSource.gasLimit.toBigIntegerOrDefaultZero()
+            == BigInteger.ZERO
+        ) DEFAULT_GAS_LIMIT.toString()
+        else tokenSource.gasLimit
+
     private val _rate: String?
         get() = if (expectedRate.isEmpty()) marketRate else expectedRate
 

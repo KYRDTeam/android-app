@@ -65,6 +65,9 @@ data class Token(
 
     )
 
+    val submitOrderTokenSymbol: String
+        get() = if (isETHWETH) WETH_SYMBOL else tokenSymbol
+
     fun with(entity: TokenCurrencyEntity): Token {
         return Token(
             this.timestamp,

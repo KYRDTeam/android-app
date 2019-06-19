@@ -5,15 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.LocalLimitOrder
 import com.kyberswap.android.domain.model.Order
+import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.limitorder.*
-import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
-import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
+import com.kyberswap.android.domain.usecase.swap.*
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
-import com.kyberswap.android.presentation.main.swap.GetExpectedRateState
-import com.kyberswap.android.presentation.main.swap.GetMarketRateState
+import com.kyberswap.android.presentation.main.swap.*
 import com.kyberswap.android.util.ext.display
+import com.kyberswap.android.util.ext.sumByBigDecimal
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
@@ -31,7 +32,10 @@ class LimitOrderViewModel @Inject constructor(
     private val getLimitOrderFee: GetLimitOrderFeeUseCase,
     private val submitOrderUseCase: SubmitOrderUseCase,
     private val getNonceUseCase: GetNonceUseCase,
-    private val cancelOrderUseCase: CancelOrderUseCase
+    private val cancelOrderUseCase: CancelOrderUseCase,
+    private val getGasPriceUseCase: GetGasPriceUseCase,
+    private val estimateGasUseCase: EstimateGasUseCase,
+    private val swapTokenUseCase: SwapTokenUseCase
 ) : ViewModel() {
 
     private val _cancelOrderCallback = MutableLiveData<Event<CancelOrdersState>>()
@@ -60,6 +64,10 @@ class LimitOrderViewModel @Inject constructor(
     val getExpectedRateCallback: LiveData<Event<GetExpectedRateState>>
         get() = _getExpectedRateCallback
 
+    private val _getGetGasLimitCallback = MutableLiveData<Event<GetGasLimitState>>()
+    val getGetGasLimitCallback: LiveData<Event<GetGasLimitState>>
+        get() = _getGetGasLimitCallback
+
     val compositeDisposable by lazy {
         CompositeDisposable()
     }
@@ -76,6 +84,15 @@ class LimitOrderViewModel @Inject constructor(
     private val _saveOrderCallback = MutableLiveData<Event<SaveLimitOrderState>>()
     val saveOrderCallback: LiveData<Event<SaveLimitOrderState>>
         get() = _saveOrderCallback
+
+    private val _getGetGasPriceCallback = MutableLiveData<Event<GetGasPriceState>>()
+    val getGetGasPriceCallback: LiveData<Event<GetGasPriceState>>
+        get() = _getGetGasPriceCallback
+
+    private val _swapTokenTransactionCallback =
+        MutableLiveData<Event<SwapTokenTransactionState>>()
+    val swapTokenTransactionCallback: LiveData<Event<SwapTokenTransactionState>>
+        get() = _swapTokenTransactionCallback
 
     fun getLimitOrders(wallet: Wallet?) {
         wallet?.let {
@@ -123,6 +140,20 @@ class LimitOrderViewModel @Inject constructor(
                     Event(GetNonceState.ShowError(it.localizedMessage))
     ,
             GetNonceUseCase.Param(order, wallet)
+        )
+    }
+
+    fun getGasPrice() {
+        getGasPriceUseCase.execute(
+            Consumer {
+                _getGetGasPriceCallback.value = Event(GetGasPriceState.Success(it))
+    ,
+            Consumer {
+                it.printStackTrace()
+                _getGetGasPriceCallback.value =
+                    Event(GetGasPriceState.ShowError(it.localizedMessage))
+    ,
+            null
         )
     }
 
@@ -211,12 +242,20 @@ class LimitOrderViewModel @Inject constructor(
     }
 
 
-    fun saveLimitOrder(order: LocalLimitOrder, fromContinue: Boolean = false) {
+    fun saveLimitOrder(
+        order: LocalLimitOrder,
+        fromContinue: Boolean = false,
+        fromConvert: Boolean = false
+    ) {
 
         saveLimitOrderUseCase.execute(
             Action {
                 if (fromContinue) {
                     _saveOrderCallback.value = Event(SaveLimitOrderState.Success(""))
+        
+                if (fromConvert) {
+                    _swapTokenTransactionCallback.value =
+                        Event(SwapTokenTransactionState.Success(""))
         
     ,
             Consumer {
@@ -263,9 +302,9 @@ class LimitOrderViewModel @Inject constructor(
         return true
     }
 
-    private fun validateBalance(order: LocalLimitOrder, pendingOrders: List<Order>): Boolean {
-        order.tokenSource
-        return false
+    fun needConvertWETH(order: LocalLimitOrder?): Boolean {
+        if (order == null) return false
+        return order.tokenSource.isETHWETH && (order.wethBalance - order.srcAmount.toBigDecimalOrDefaultZero() < BigDecimal.ZERO)
     }
 
     fun submitOrder(order: LocalLimitOrder?, wallet: Wallet?) {
@@ -287,5 +326,80 @@ class LimitOrderViewModel @Inject constructor(
             SubmitOrderUseCase.Param(order, wallet)
         )
 
+    }
+
+    fun getGasLimit(wallet: Wallet, order: LocalLimitOrder) {
+        estimateGasUseCase.execute(
+            Consumer {
+                if (it.error == null) {
+                    val gasLimit =
+                        if (order.tokenSource.isDAI ||
+                            order.tokenSource.isTUSD ||
+                            order.tokenDest.isDAI ||
+                            order.tokenDest.isTUSD
+                        ) {
+                            order.gasLimit.max(
+                                (it.amountUsed.toBigDecimal().multiply(1.2.toBigDecimal())).toBigInteger()
+                            )
+                 else {
+                            (it.amountUsed.toBigDecimal().multiply(1.2.toBigDecimal())).toBigInteger()
+                
+
+                    _getGetGasLimitCallback.value = Event(GetGasLimitState.Success(gasLimit))
+        
+
+    ,
+            Consumer {
+                it.printStackTrace()
+                Event(GetGasLimitState.ShowError(it.localizedMessage))
+    ,
+            EstimateGasUseCase.Param(
+                wallet,
+                order.tokenSource,
+                order.tokenDest,
+                order.srcAmount,
+                order.minRateWithPrecision
+            )
+        )
+    }
+
+    fun convert(wallet: Wallet?, limitOrder: LocalLimitOrder) {
+        val swap = Swap(limitOrder)
+        _swapTokenTransactionCallback.postValue(Event(SwapTokenTransactionState.Loading))
+        swapTokenUseCase.execute(
+            Consumer {
+                val wethBalance =
+                    limitOrder.minConvertedAmount.toBigDecimalOrDefaultZero() + limitOrder.wethToken.currentBalance
+                val order = limitOrder.copy(
+                    wethToken = limitOrder.wethToken.copy(
+                        currentBalance = wethBalance
+                    )
+                )
+                saveLimitOrder(
+                    order, fromConvert = true
+                )
+    ,
+            Consumer {
+                it.printStackTrace()
+                _swapTokenTransactionCallback.value =
+                    Event(SwapTokenTransactionState.ShowError(it.localizedMessage))
+    ,
+            SwapTokenUseCase.Param(wallet!!, swap)
+
+        )
+    }
+
+    fun calAvailableAmount(order: LocalLimitOrder?, orders: List<Order>): String {
+        val pendingAmount = orders.map {
+            it.srcAmount
+.sumByBigDecimal { it }
+
+        val currentAmount = order?.tokenSource?.currentBalance ?: BigDecimal.ZERO
+        var availableAmount = currentAmount - pendingAmount
+        if (availableAmount < BigDecimal.ZERO) {
+            availableAmount = BigDecimal.ZERO
+
+
+        return availableAmount.toDisplayNumber()
     }
 }

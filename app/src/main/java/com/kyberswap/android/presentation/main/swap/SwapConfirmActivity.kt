@@ -63,7 +63,7 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
     
 )
 
-        viewModel.getSwapTokenTransactionCallback.observe(this, Observer {
+        viewModel.swapTokenTransactionCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == SwapTokenTransactionState.Loading)
                 when (state) {

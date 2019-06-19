@@ -4,6 +4,9 @@ import android.os.Parcelable
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.kyberswap.android.data.db.BigIntegerDataTypeConverter
+import com.kyberswap.android.data.db.DataTypeConverter
 import com.kyberswap.android.presentation.common.MIN_SUPPORT_SWAP_SOURCE_AMOUNT
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
@@ -21,16 +24,25 @@ data class LocalLimitOrder(
     @Embedded(prefix = "dest_")
     val tokenDest: Token = Token(),
     val srcAmount: String = "",
-    var marketRate: String = "",
-    var expectedRate: String = "",
+    val marketRate: String = "",
+    val expectedRate: String = "",
+    @TypeConverters(DataTypeConverter::class)
     val minRate: BigDecimal = BigDecimal.ZERO,
     val destAddr: String = "",
     val nonce: String = "",
+    @TypeConverters(DataTypeConverter::class)
     val fee: BigDecimal = BigDecimal.ZERO,
     val status: String = "",
     val txHash: String = "",
     val createdAt: Long = 0,
-    val updatedAt: Long = 0
+    val updatedAt: Long = 0,
+    @TypeConverters(BigIntegerDataTypeConverter::class)
+    val gasLimit: BigInteger = BigInteger.ZERO,
+    val gasPrice: String = "",
+    @Embedded(prefix = "eth_")
+    val ethToken: Token = Token(),
+    @Embedded(prefix = "weth_")
+    val wethToken: Token = Token()
 
 ) : Parcelable {
     val hasSamePair: Boolean
@@ -46,9 +58,28 @@ data class LocalLimitOrder(
         return LocalLimitOrder(
             this.userAddr,
             this.tokenDest,
-            this.tokenSource
+            this.tokenSource,
+            ethToken = this.ethToken,
+            wethToken = this.wethToken
         )
     }
+
+    val wethBalance: BigDecimal
+        get() = wethToken.currentBalance
+
+    val ethBalance: BigDecimal
+        get() = ethToken.currentBalance
+
+    val minConvertedAmount: String
+        get() = (srcAmount.toBigDecimalOrDefaultZero() - wethToken.currentBalance).toDisplayNumber()
+
+    val displayEthBalance: String
+        get() = StringBuilder()
+            .append(ethToken.currentBalance.toDisplayNumber())
+            .append(" ")
+            .append(Token.ETH)
+            .toString()
+
 
     val displayedSrcAmount: String
         get() = StringBuilder()

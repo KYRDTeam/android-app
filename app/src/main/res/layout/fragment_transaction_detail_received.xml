@@ -28,11 +28,7 @@
 
             <ImageView
                 android:id="@+id/imgBack"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="9dp"
-                android:src="@drawable/ic_arrow_back" />
+                style="@style/BackImage" />
 
             <TextView
                 android:layout_width="match_parent"

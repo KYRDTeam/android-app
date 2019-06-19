@@ -25,7 +25,6 @@ import com.kyberswap.android.domain.model.SocialInfo
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.twitter.sdk.android.core.Callback
 import com.twitter.sdk.android.core.TwitterCore
@@ -92,6 +91,10 @@ class SignUpFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.btnRegister.setOnClickListener {
+            if (!binding.cbTermCondition.isChecked) {
+                showAlert(getString(R.string.term_condition_notification))
+                return@setOnClickListener
+    
             viewModel.signUp(
                 edtEmail.text.toString(),
                 edtDisplayName.text.toString(),
@@ -127,35 +130,7 @@ class SignUpFragment : BaseFragment() {
         LoginManager.getInstance().registerCallback(callbackManager,
             object : FacebookCallback<LoginResult> {
                 override fun onSuccess(result: LoginResult?) {
-
-                    val request = GraphRequest.newMeRequest(
-                        result?.accessToken
-                    ) { me, response ->
-                        if (response?.error != null) {
-                            showAlert(response.error.errorMessage)
-                 else {
-                            val email = me?.optString("email")
-                            val name = me?.optString("name")
-                            val id = me?.optString("id")
-                            val profileUrl = "https://graph.facebook.com/$id/picture?type=large"
-                            val socialInfo = SocialInfo(
-                                LoginType.FACEBOOK,
-                                name,
-                                result?.accessToken?.token,
-                                profileUrl,
-                                email
-                            )
-                            viewModel.login(socialInfo)
-                
-            
-
-                    val parameters = Bundle()
-                    parameters.putString(
-                        "fields",
-                        "id, name, email, gender, birthday, picture.type(large)"
-                    )
-                    request.parameters = parameters
-                    request.executeAsync()
+                    result?.accessToken?.let { meRequest(it) }
         
 
                 override fun onCancel() {
@@ -167,10 +142,8 @@ class SignUpFragment : BaseFragment() {
         
     )
 
-        binding.tvSignUp.setOnClickListener {
-            navigator.navigateToSignUpScreen(
-                (activity as MainActivity).getCurrentFragment(), wallet
-            )
+        binding.tvLogin.setOnClickListener {
+            activity?.onBackPressed()
 
 
         binding.imgGooglePlus.setOnClickListener {
@@ -202,10 +175,13 @@ class SignUpFragment : BaseFragment() {
             if (!isLoggedIn) {
                 LoginManager.getInstance()
                     .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"))
+     else {
+                meRequest(accessToken)
     
 
-            LoginManager.getInstance()
-                .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"))
+
+        binding.tvTermAndCondition.setOnClickListener {
+            navigator.navigateToTermAndCondition()
 
 
         binding.imgTwitter.setOnClickListener {
@@ -264,6 +240,37 @@ class SignUpFragment : BaseFragment() {
                     Toast.makeText(context, exception.localizedMessage, Toast.LENGTH_SHORT).show()
         
     )
+    }
+
+    private fun meRequest(accessToken: AccessToken) {
+        val request = GraphRequest.newMeRequest(
+            accessToken
+        ) { me, response ->
+            if (response?.error != null) {
+                showAlert(response.error.errorMessage)
+     else {
+                val email = me?.optString("email")
+                val name = me?.optString("name")
+                val id = me?.optString("id")
+                val profileUrl = "https://graph.facebook.com/$id/picture?type=large"
+                val socialInfo = SocialInfo(
+                    LoginType.FACEBOOK,
+                    name,
+                    accessToken.token,
+                    profileUrl,
+                    email
+                )
+                viewModel.login(socialInfo)
+    
+
+
+        val parameters = Bundle()
+        parameters.putString(
+            "fields",
+            "id, name, email, gender, birthday, picture.type(large)"
+        )
+        request.parameters = parameters
+        request.executeAsync()
     }
 
 

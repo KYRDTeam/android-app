@@ -4,6 +4,7 @@ import com.kyberswap.android.presentation.common.AlertActivity
 import com.kyberswap.android.presentation.landing.LandingActivity
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.balance.send.SendConfirmActivity
+import com.kyberswap.android.presentation.main.profile.TermConditionActivity
 import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
 import com.kyberswap.android.presentation.splash.SplashActivity
 import com.kyberswap.android.presentation.wallet.BackupWalletActivity
@@ -83,4 +84,12 @@ interface ActivityBindingModule {
         ]
     )
     fun contributeSendConfirmActivity(): SendConfirmActivity
+
+    @ActivityScoped
+    @ContributesAndroidInjector(
+        modules = [
+            TermConditionActivityModule::class
+        ]
+    )
+    fun contributeTermConditionActivity(): TermConditionActivity
 }

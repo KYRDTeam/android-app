@@ -60,13 +60,6 @@ class OrderConfirmFragment : BaseFragment() {
             activity?.onBackPressed()
 
 
-        binding.tvContinue.setOnClickListener {
-            navigator.navigateToConvertFragment(
-                (activity as MainActivity).getCurrentFragment(),
-                wallet
-            )
-
-
         viewModel.getLimitOrders(wallet)
         viewModel.getLocalLimitOrderCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->

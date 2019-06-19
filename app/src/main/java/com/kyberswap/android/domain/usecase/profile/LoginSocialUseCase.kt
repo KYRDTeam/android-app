@@ -19,6 +19,7 @@ class LoginSocialUseCase @Inject constructor(
     }
 
     class Param(
-        val socialInfo: SocialInfo
+        val socialInfo: SocialInfo,
+        val confirmSignUp: Boolean = false
     )
 }
