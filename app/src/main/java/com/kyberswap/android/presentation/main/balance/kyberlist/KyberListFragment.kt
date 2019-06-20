@@ -29,7 +29,6 @@ import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_token_header.*
 import kotlinx.android.synthetic.main.layout_token_header.view.*
-import timber.log.Timber
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -147,7 +146,6 @@ class KyberListFragment : BaseFragment() {
                         binding.swipeLayout.isRefreshing = false
                         tokenList.clear()
                         tokenList.addAll(state.tokens)
-                        Timber.e("submitFilterList")
                         tokenAdapter.submitFilterList(
                             getFilterTokenList(
                                 currentSearchString,
@@ -190,7 +188,6 @@ class KyberListFragment : BaseFragment() {
         viewModel.searchedKeywordsCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { searchedString ->
                 currentSearchString = searchedString
-                Timber.e("searchedString: " + searchedString)
                 if (searchedString.isEmpty()) {
                     tokenAdapter.submitFilterList(tokenList)
          else {

@@ -52,7 +52,7 @@ class TokenAdapter(
     }
 
     fun submitFilterList(tokens: List<Token>) {
-        submitList(listOf())
+        submitList(null)
         submitList(tokens)
     }
 

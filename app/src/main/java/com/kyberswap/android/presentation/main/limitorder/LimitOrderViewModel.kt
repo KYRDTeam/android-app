@@ -114,6 +114,7 @@ class LimitOrderViewModel @Inject constructor(
             null
         )
     }
+
     fun getLimitOrders(wallet: Wallet?) {
         wallet?.let {
             getLocalLimitOrderDataUseCase.execute(
@@ -205,22 +206,20 @@ class LimitOrderViewModel @Inject constructor(
             return
 
         getMarketRate.dispose()
-        if (order.hasSamePair) {
-            getMarketRate.execute(
-                Consumer {
-                    _getGetMarketRateCallback.value = Event(GetMarketRateState.Success(it))
-        ,
-                Consumer {
-                    it.printStackTrace()
-                    _getGetMarketRateCallback.value =
-                        Event(GetMarketRateState.ShowError(it.localizedMessage))
-        ,
-                GetMarketRateUseCase.Param(
-                    order.tokenSource.tokenSymbol,
-                    order.tokenDest.tokenSymbol
-                )
+        getMarketRate.execute(
+            Consumer {
+                _getGetMarketRateCallback.value = Event(GetMarketRateState.Success(it))
+    ,
+            Consumer {
+                it.printStackTrace()
+                _getGetMarketRateCallback.value =
+                    Event(GetMarketRateState.ShowError(it.localizedMessage))
+    ,
+            GetMarketRateUseCase.Param(
+                order.tokenSource.tokenSymbol,
+                order.tokenDest.tokenSymbol
             )
-
+        )
     }
 
     fun getExpectedRate(
@@ -236,10 +235,9 @@ class LimitOrderViewModel @Inject constructor(
         getExpectedRateUseCase.dispose()
         getExpectedRateUseCase.execute(
             Consumer {
-                if (it.isNotEmpty()) {
+                if (it.isNotEmpty() && it[0].toBigDecimalOrDefaultZero() > BigDecimal.ZERO) {
                     _getExpectedRateCallback.value = Event(GetExpectedRateState.Success(it))
         
-                _getExpectedRateCallback.value = Event(GetExpectedRateState.Success(it))
     ,
             Consumer {
                 it.printStackTrace()
