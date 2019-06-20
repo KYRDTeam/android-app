@@ -6,8 +6,10 @@ import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.transaction.GetPendingTransactionsUseCase
 import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
+import com.kyberswap.android.domain.usecase.wallet.CreateWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetAllWalletUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.landing.CreateWalletState
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
 import io.reactivex.functions.Consumer
@@ -17,7 +19,8 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val getAllWalletUseCase: GetAllWalletUseCase,
     private val getPendingTransactionsUseCase: GetPendingTransactionsUseCase,
-    private val monitorPendingTransactionsUseCase: MonitorPendingTransactionUseCase
+    private val monitorPendingTransactionsUseCase: MonitorPendingTransactionUseCase,
+    private val createWalletUseCase: CreateWalletUseCase
 ) : ViewModel() {
 
     private val _getAllWalletStateCallback = MutableLiveData<Event<GetAllWalletState>>()
@@ -28,6 +31,10 @@ class MainViewModel @Inject constructor(
         MutableLiveData<Event<GetPendingTransactionState>>()
     val getPendingTransactionStateCallback: LiveData<Event<GetPendingTransactionState>>
         get() = _getPendingTransactionStateCallback
+
+    private val _getMnemonicCallback = MutableLiveData<Event<CreateWalletState>>()
+    val createWalletCallback: LiveData<Event<CreateWalletState>>
+        get() = _getMnemonicCallback
 
 
     fun getWallets() {
@@ -91,6 +98,22 @@ class MainViewModel @Inject constructor(
                 )
             },
             wallet.address
+        )
+    }
+
+    fun createWallet(pinLock: String = "", walletName: String = "Untitled") {
+        _getMnemonicCallback.postValue(Event(CreateWalletState.Loading))
+        createWalletUseCase.execute(
+            Consumer {
+                _getMnemonicCallback.value =
+                    Event(CreateWalletState.Success(it.first, it.second))
+            },
+            Consumer {
+                it.printStackTrace()
+                _getMnemonicCallback.value =
+                    Event(CreateWalletState.ShowError(it.localizedMessage))
+            },
+            CreateWalletUseCase.Param(pinLock, walletName)
         )
     }
 

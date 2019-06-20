@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
@@ -22,7 +23,9 @@ import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
+import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.landing.CreateWalletState
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
 import com.kyberswap.android.presentation.main.balance.WalletAdapter
@@ -50,6 +53,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     private var user: UserInfo? = null
 
+    @Inject
+    lateinit var dialogHelper: DialogHelper
 
     private var currentFragment: Fragment? = null
 
@@ -66,6 +71,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WalletManager.storage = this
+        WalletManager.scanWallets()
+
         wallet = intent.getParcelableExtra(WALLET_PARAM)
         user = intent.getParcelableExtra(USER_PARAM)
 
@@ -187,7 +194,45 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             }
         })
 
+        imgAdd.setOnClickListener {
+            showDrawer(false)
+            dialogHelper.showBottomSheetDialog(
+                {
+                    dialogHelper.showConfirmation {
+                        mainViewModel.createWallet()
+                    }
+
+                },
+                {
+                    navigator.navigateToImportWalletPage()
+
+                }
+            )
+        }
+
+        mainViewModel.createWalletCallback.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == CreateWalletState.Loading)
+                when (state) {
+                    is CreateWalletState.Success -> {
+                        showAlert(getString(R.string.create_wallet_success)) {
+
+                        }
+
+                    }
+                    is CreateWalletState.ShowError -> {
+                        Toast.makeText(
+                            this,
+                            state.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        })
+
     }
+
 
     private fun setPendingTransaction(numOfPendingTransaction: Int) {
         tvPendingTransaction.visibility =

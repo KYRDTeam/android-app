@@ -17,7 +17,6 @@ import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.Singles
 import org.web3j.utils.Numeric
-import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.concurrent.TimeUnit
@@ -38,7 +37,6 @@ class TransactionDataRepository @Inject constructor(
                     transactionDao.findTransaction(tx.hash, Transaction.PENDING_TRANSACTION_STATUS)
                 transaction?.let {
                     if (Numeric.decodeQuantity(tx.blockHash) > BigInteger.ZERO) {
-                        Timber.e(transaction.tokenSymbol)
                         transactionDao.delete(transaction)
                         transactionDao.insertTransaction(tx.copy(transactionStatus = ""))
                     }
