@@ -224,7 +224,7 @@ class LimitOrderFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetRelatedOrdersState.Success -> {
-                        orderAdapter.submitList(null)
+                        orderAdapter.submitList(listOf())
                         orderAdapter.submitList(state.orders)
                         binding.availableAmount =
                             viewModel.calAvailableAmount(binding.order, state.orders)

@@ -55,7 +55,6 @@
         android:gravity="center"
         android:minWidth="30dp"
         android:minHeight="20dp"
-        android:text="3"
         android:textColor="#ffffff"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -82,15 +81,15 @@
         android:textAllCaps="true"
         android:textColor="#2e3957"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView5"
-        app:layout_constraintEnd_toStartOf="@+id/imageView5"
+        app:layout_constraintBottom_toBottomOf="@+id/imgAdd"
+        app:layout_constraintEnd_toStartOf="@+id/imgAdd"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageView5" />
+        app:layout_constraintTop_toTopOf="@+id/imgAdd" />
 
     <ImageView
-        android:id="@+id/imageView5"
+        android:id="@+id/imgAdd"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="85dp"

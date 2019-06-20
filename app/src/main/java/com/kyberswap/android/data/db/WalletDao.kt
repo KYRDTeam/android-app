@@ -13,6 +13,9 @@ interface WalletDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertWallet(wallet: Wallet)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun batchInsertWallets(wallets: List<Wallet>)
+
     @Update
     fun updateWallet(wallet: Wallet)
 
@@ -27,5 +30,8 @@ interface WalletDao {
 
     @get:Query("SELECT * FROM wallets")
     val all: List<Wallet>
+
+    @get:Query("SELECT * FROM wallets")
+    val allWalletsFlowable: Flowable<List<Wallet>>
 }
 

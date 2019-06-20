@@ -116,7 +116,7 @@ class LimitOrderSuggestionFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetRelatedOrdersState.Success -> {
-                        relatedOrderAdapter.submitList(null)
+                        relatedOrderAdapter.submitList(listOf())
                         relatedOrderAdapter.submitList(state.orders)
             
                     is GetRelatedOrdersState.ShowError -> {

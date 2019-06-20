@@ -107,7 +107,6 @@ class KyberListFragment : BaseFragment() {
             )
         tokenAdapter.mode = Attributes.Mode.Single
         binding.rvToken.adapter = tokenAdapter
-
         wallet?.address?.let {
             viewModel.getWallet(it)
 

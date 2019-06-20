@@ -49,10 +49,8 @@ class WalletDataRepository @Inject constructor(
         return unitDao.unit.map { it.unit }
     }
 
-    override fun getAllWallet(): Single<List<Wallet>> {
-        return Single.fromCallable {
-            walletDao.all
-
+    override fun getAllWallet(): Flowable<List<Wallet>> {
+        return walletDao.allWalletsFlowable
 
     }
 
@@ -92,11 +90,14 @@ class WalletDataRepository @Inject constructor(
                 importWalletFromMnemonic.address.toWalletAddress(),
                 importWalletFromMnemonic.id,
                 param.walletName,
-                cipher(generatedPassword)
+                cipher(generatedPassword),
+                true
             )
-            walletDao.insertWallet(
-                wallet
-            )
+            val wallets = walletDao.all.map {
+                it.copy(isSelected = false)
+    .toMutableList()
+            wallets.add(wallet)
+            walletDao.batchInsertWallets(wallets)
             wallet
 
     }
@@ -180,17 +181,14 @@ class WalletDataRepository @Inject constructor(
         return ""
     }
 
-    private fun createIdentityWhenNull(name: String, password: String) {
-        val identity = Identity.getCurrentIdentity()
-        if (identity == null) {
-            Identity.createIdentity(
-                name,
-                password,
-                null,
-                Network.MAINNET,
-                Metadata.P2WPKH
-            )
-
+    private fun createIdentityWhenNull(name: String, password: String): Identity {
+        return Identity.getCurrentIdentity() ?: Identity.createIdentity(
+            name,
+            password,
+            null,
+            Network.MAINNET,
+            Metadata.P2WPKH
+        )
     }
 
     override fun getMnemonic(param: GetMnemonicUseCase.Param): Single<List<Word>> {
@@ -240,7 +238,6 @@ class WalletDataRepository @Inject constructor(
             walletDao.insertWallet(
                 wallet
             )
-
 
             val words = mutableListOf<Word>()
             WalletManager.exportMnemonic(

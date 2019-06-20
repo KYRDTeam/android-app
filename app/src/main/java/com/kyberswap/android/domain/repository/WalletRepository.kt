@@ -22,7 +22,7 @@ interface WalletRepository {
 
     fun getWalletByAddress(param: String): Flowable<Wallet>
 
-    fun getAllWallet(): Single<List<Wallet>>
+    fun getAllWallet(): Flowable<List<Wallet>>
 
     fun getSelectedUnit(): Flowable<String>
 

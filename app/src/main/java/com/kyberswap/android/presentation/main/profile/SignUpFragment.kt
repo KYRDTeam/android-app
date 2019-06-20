@@ -22,6 +22,7 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentSignupBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.SocialInfo
+import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
@@ -212,7 +213,7 @@ class SignUpFragment : BaseFragment() {
                                     state.socialInfo
                                 )
                      else {
-                                showAlert(state.login.userInfo.name)
+                                onLoginSuccess(state.login.userInfo)
                     
                  else {
                             showAlert(state.login.message)
@@ -229,7 +230,19 @@ class SignUpFragment : BaseFragment() {
         
     
 )
+    }
 
+    private fun onLoginSuccess(userInfo: UserInfo) {
+        val fm = (activity as MainActivity).getCurrentFragment()?.childFragmentManager
+        if (fm != null)
+            for (i in 0 until fm.backStackEntryCount) {
+                fm.popBackStack()
+    
+        navigator.navigateToProfileDetail(
+            (activity as MainActivity).getCurrentFragment(),
+            wallet,
+            userInfo
+        )
     }
 
     private fun getTwitterUserProfileWthTwitterCoreApi(
