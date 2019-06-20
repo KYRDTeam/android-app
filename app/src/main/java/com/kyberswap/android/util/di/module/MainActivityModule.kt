@@ -155,6 +155,10 @@ interface MainActivityModule {
     @ContributesAndroidInjector
     fun contributeSignUpConfirmFragment(): SignUpConfirmFragment
 
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeProfileDetailFragment(): ProfileDetailFragment
+
     @Binds
     @IntoMap
     @ViewModelKey(BalanceViewModel::class)
@@ -315,5 +319,13 @@ interface MainActivityModule {
     @ViewModelKey(FilterViewModel::class)
     fun bindFilterViewModel(
         filterViewModel: FilterViewModel
+    ): ViewModel
+
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ProfileDetailViewModel::class)
+    fun bindProfileDetailViewModel(
+        filterViewModel: ProfileDetailViewModel
     ): ViewModel
 }

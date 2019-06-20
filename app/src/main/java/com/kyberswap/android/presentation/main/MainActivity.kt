@@ -19,6 +19,7 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityMainBinding
 import com.kyberswap.android.domain.model.Transaction
+import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.helper.Navigator
@@ -47,6 +48,9 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     private var wallet: Wallet? = null
 
+    private var user: UserInfo? = null
+
+
     private var currentFragment: Fragment? = null
 
     private val mainViewModel: MainViewModel by lazy {
@@ -62,16 +66,10 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WalletManager.storage = this
-
         wallet = intent.getParcelableExtra(WALLET_PARAM)
+        user = intent.getParcelableExtra(USER_PARAM)
 
         binding.viewModel = mainViewModel
-        val adapter = MainPagerAdapter(
-            supportFragmentManager,
-            wallet
-        )
-        binding.vpNavigation.offscreenPageLimit = 4
-        binding.vpNavigation.adapter = adapter
 
         val tabColors =
             applicationContext.resources.getIntArray(R.array.tab_colors)
@@ -89,6 +87,12 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             binding.vpNavigation.setCurrentItem(position, true)
             return@setOnTabSelectedListener true
 
+
+        val adapter = MainPagerAdapter(
+            supportFragmentManager,
+            wallet,
+            user
+        )
 
         val listener = object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
@@ -109,6 +113,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
 
 
+        binding.vpNavigation.adapter = adapter
+        binding.vpNavigation.offscreenPageLimit = 1
         binding.vpNavigation.addOnPageChangeListener(listener)
 
         binding.vpNavigation.post {
@@ -225,9 +231,11 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"
-        fun newIntent(context: Context, wallet: Wallet?) =
+        private const val USER_PARAM = "user_param"
+        fun newIntent(context: Context, wallet: Wallet?, user: UserInfo?) =
             Intent(context, MainActivity::class.java).apply {
                 putExtra(WALLET_PARAM, wallet)
+                putExtra(USER_PARAM, user)
     
     }
 }

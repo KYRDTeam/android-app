@@ -94,7 +94,10 @@ class BalanceFragment : BaseFragment() {
     
 )
 
-        viewModel.getWallet(wallet!!.address)
+        wallet?.address?.let {
+            viewModel.getWallet(it)
+
+
         viewModel.getWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {

@@ -188,7 +188,7 @@ class LimitOrderDataRepository @Inject constructor(
             val hexString = tokenClient.signOrder(
                 param.localLimitOrder,
                 credentials,
-                context.getString(R.string.kyber_address)
+                context.getString(R.string.limit_order_contract)
             )
             hexString
 .flatMap { it ->

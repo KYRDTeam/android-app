@@ -2,14 +2,14 @@
 <animation-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:drawable="@drawable/progress_1"
-        android:duration="250" />
+        android:duration="100" />
     <item
         android:drawable="@drawable/progress_2"
-        android:duration="250" />
+        android:duration="100" />
     <item
         android:drawable="@drawable/progress_3"
-        android:duration="250" />
+        android:duration="100" />
     <item
         android:drawable="@drawable/progress_4"
-        android:duration="250" />
+        android:duration="100" />
 </animation-list>

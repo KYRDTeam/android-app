@@ -5,7 +5,6 @@ import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,12 +18,15 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentLimitOrderBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.LocalLimitOrder
+import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainPagerAdapter
+import com.kyberswap.android.presentation.main.profile.ProfileFragment
+import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.GetExpectedRateState
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
@@ -69,6 +71,8 @@ class LimitOrderFragment : BaseFragment() {
 
     var hasUserFocus: Boolean = false
 
+    private var userInfo: UserInfo? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,6 +92,7 @@ class LimitOrderFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
         binding.walletName = wallet?.name
         viewModel.getLimitOrders(wallet)
+        viewModel.getLoginStatus()
         viewModel.getLocalLimitOrderCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -219,7 +224,7 @@ class LimitOrderFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetRelatedOrdersState.Success -> {
-                        orderAdapter.submitList(null)
+                        orderAdapter.submitList(listOf())
                         orderAdapter.submitList(state.orders)
                         binding.availableAmount =
                             viewModel.calAvailableAmount(binding.order, state.orders)
@@ -488,6 +493,10 @@ class LimitOrderFragment : BaseFragment() {
                     showAlert(getString(R.string.swap_amount_small))
         
 
+                userInfo == null || userInfo!!.uid <= 0 -> {
+                    moveToLoginTab()
+        
+
 
                 else -> binding.order?.let {
 
@@ -550,6 +559,19 @@ class LimitOrderFragment : BaseFragment() {
     
 )
 
+        viewModel.getLoginStatusCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is UserInfoState.Success -> {
+                        userInfo = state.userInfo
+            
+                    is UserInfoState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+            
+        
+    
+)
+
     }
 
     private fun moveToSwapTab() {
@@ -560,8 +582,15 @@ class LimitOrderFragment : BaseFragment() {
 
     }
 
-    private val currentFragment: Fragment?
-        get() = (activity as MainActivity).getCurrentFragment()
+    private fun moveToLoginTab() {
+        if (activity is MainActivity) {
+            handler.post {
+                activity!!.bottomNavigation.currentItem = MainPagerAdapter.PROFILE
+                (currentFragment as? ProfileFragment)?.fromLimitOrder(true)
+    
+
+    }
+
 
     private fun resetAmount() {
         edtSource.setText("")

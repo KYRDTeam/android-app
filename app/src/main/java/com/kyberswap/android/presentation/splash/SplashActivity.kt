@@ -45,16 +45,16 @@ class SplashActivity : BaseActivity() {
 
         handler.postDelayed({
             viewModel.prepareData()
-, 300)
+, 500)
 
         viewModel.getWalletStateCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
-                    is GetWalletState.Success -> {
-                        navigator.navigateToHome(state.wallet)
+                    is GetUserWalletState.Success -> {
+                        navigator.navigateToHome(state.wallet, state.userInfo)
 
             
-                    is GetWalletState.ShowError -> {
+                    is GetUserWalletState.ShowError -> {
                         navigator.navigateToLandingPage()
             
         

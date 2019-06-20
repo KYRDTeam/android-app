@@ -131,6 +131,19 @@ object TextViewBindingAdapter {
         view.visibility = View.VISIBLE
     }
 
+
+    @BindingAdapter("app:isAbove", "app:alertPrice")
+    @JvmStatic
+    fun alert(view: TextView, isAbove: Boolean?, alertPrice: BigDecimal?) {
+        val color = if (true == isAbove) {
+            R.color.rate_up_text_color
+ else R.color.rate_down_text_color
+
+        view.setTextColor(ContextCompat.getColor(view.context, color))
+        view.text = StringBuilder().append(if (true == isAbove) "≥ " else "≤")
+            .append(alertPrice?.toDisplayNumber())
+    }
+
     @BindingAdapter("app:rate")
     @JvmStatic
     fun setPercentage(view: TextView, rate: BigDecimal) {

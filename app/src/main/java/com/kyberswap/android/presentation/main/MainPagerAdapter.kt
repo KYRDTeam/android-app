@@ -5,9 +5,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.main.balance.BalanceFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
+import com.kyberswap.android.presentation.main.profile.ProfileDetailFragment
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.setting.SettingFragment
 import com.kyberswap.android.presentation.main.swap.SwapFragment
@@ -15,7 +17,8 @@ import com.kyberswap.android.presentation.main.swap.SwapFragment
 
 class MainPagerAdapter constructor(
     fm: FragmentManager,
-    val wallet: Wallet?
+    val wallet: Wallet?,
+    val userInfo: UserInfo?
 ) : FragmentPagerAdapter(fm) {
 
     var registeredFragments = SparseArray<Fragment>()
@@ -28,7 +31,11 @@ class MainPagerAdapter constructor(
             )
             LIMIT_ORDER -> LimitOrderFragment.newInstance(wallet)
             SWAP -> SwapFragment.newInstance(wallet)
-            PROFILE -> ProfileFragment.newInstance(wallet)
+            PROFILE -> if (userInfo == null || userInfo.uid <= 0)
+                ProfileFragment.newInstance(wallet) else ProfileDetailFragment.newInstance(
+                wallet,
+                userInfo
+            )
             else -> SettingFragment.newInstance()
 
     }
