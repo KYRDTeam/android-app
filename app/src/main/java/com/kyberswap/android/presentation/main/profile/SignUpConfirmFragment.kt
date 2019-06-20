@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.kyberswap.android.AppExecutors
@@ -16,6 +15,7 @@ import com.kyberswap.android.domain.model.SocialInfo
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
 
@@ -63,6 +63,10 @@ class SignUpConfirmFragment : BaseFragment() {
         binding.social = socialInfo
 
         binding.btnRegister.setOnClickListener {
+            if (!binding.cbTermCondition.isChecked) {
+                showAlert(getString(R.string.term_condition_notification))
+                return@setOnClickListener
+            }
             socialInfo?.let { info ->
                 viewModel.login(info.copy(subscription = binding.cbSubscription.isChecked))
             }
@@ -77,11 +81,6 @@ class SignUpConfirmFragment : BaseFragment() {
                     }
                     is SignUpState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
-                        Toast.makeText(
-                            activity,
-                            state.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
                 }
             }
@@ -89,6 +88,17 @@ class SignUpConfirmFragment : BaseFragment() {
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
+        }
+
+        binding.tvTermAndCondition.setOnClickListener {
+            navigator.navigateToTermAndCondition()
+        }
+
+        binding.tvLogin.setOnClickListener {
+            navigator.navigateToSignUpScreen(
+                (activity as MainActivity).getCurrentFragment(),
+                wallet
+            )
         }
 
     }

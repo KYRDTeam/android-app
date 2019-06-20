@@ -92,4 +92,10 @@
 
     <style name="CustomCheckTheme" parent="CustomRadioTheme" />
 
+    <style name="CustomSwitch" parent="AppThemeTranslucentStatus">
+        <item name="colorControlActivated">#fea34c</item>
+        <item name="colorControlNormal">#b9beca</item>
+        <item name="android:colorForeground">#b9beca</item>
+    </style>
+
 </resources>

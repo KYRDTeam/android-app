@@ -5,9 +5,11 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import com.kyberswap.android.R
 import com.kyberswap.android.presentation.common.AlertActivity
+import com.kyberswap.android.presentation.main.MainActivity
 import dagger.android.support.DaggerFragment
 
 abstract class BaseFragment : DaggerFragment() {
@@ -63,6 +65,9 @@ abstract class BaseFragment : DaggerFragment() {
             Snackbar.make(view!!, message, Snackbar.LENGTH_LONG).show()
         }
     }
+
+    val currentFragment: Fragment
+        get() = (activity as MainActivity).getCurrentFragment() ?: this
 
     fun displaySnackBarWithBottomMargin(snackbar: Snackbar, marginBottom: Int = 0) {
         val snackBarView = snackbar.view

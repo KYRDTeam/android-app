@@ -12,9 +12,7 @@ import com.kyberswap.android.presentation.main.balance.chart.ChartFragment
 import com.kyberswap.android.presentation.main.balance.send.SendConfirmActivity
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.limitorder.*
-import com.kyberswap.android.presentation.main.profile.SignUpConfirmFragment
-import com.kyberswap.android.presentation.main.profile.SignUpFragment
-import com.kyberswap.android.presentation.main.profile.TermConditionActivity
+import com.kyberswap.android.presentation.main.profile.*
 import com.kyberswap.android.presentation.main.setting.AddContactFragment
 import com.kyberswap.android.presentation.main.setting.ContactFragment
 import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
@@ -47,8 +45,8 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         activity.finishAffinity()
     }
 
-    fun navigateToHome(wallet: Wallet? = null) {
-        activity.startActivity(MainActivity.newIntent(activity, wallet))
+    fun navigateToHome(wallet: Wallet? = null, user: UserInfo? = null) {
+        activity.startActivity(MainActivity.newIntent(activity, wallet, user))
         activity.finishAffinity()
     }
 
@@ -223,14 +221,16 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     private fun navigateByChildFragmentManager(
         currentFragment: Fragment?,
-        newFragment: Fragment
+        newFragment: Fragment,
+        addToBackStack: Boolean = true
     ) {
         currentFragment?.let {
             currentFragment.view?.id?.let { id ->
                 replaceFragment(
                     currentFragment.childFragmentManager,
                     id,
-                    newFragment
+                    newFragment,
+                    addToBackStack
                 )
             }
 
@@ -258,6 +258,10 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         navigateByChildFragmentManager(currentFragment, SignUpFragment.newInstance(wallet))
     }
 
+    fun navigateToSignInScreen(currentFragment: Fragment?, wallet: Wallet?) {
+        navigateByChildFragmentManager(currentFragment, ProfileFragment.newInstance(wallet), false)
+    }
+
     fun navigateToTermAndCondition() {
         activity.startActivity(TermConditionActivity.newIntent(activity))
     }
@@ -281,14 +285,30 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     }
 
+    fun navigateToProfileDetail(
+        currentFragment: Fragment?,
+        wallet: Wallet?,
+        user: UserInfo?
+    ) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            ProfileDetailFragment.newInstance(wallet, user),
+            false
+        )
+
+    }
+
     private fun replaceFragment(
         fragmentManager: FragmentManager,
         container: Int,
-        fragment: Fragment
+        fragment: Fragment,
+        addToBackStack: Boolean = true
     ) {
         val transaction = fragmentManager.beginTransaction()
         transaction.replace(container, fragment, fragment.javaClass.simpleName)
-        transaction.addToBackStack(fragment.javaClass.simpleName)
+        if (addToBackStack) {
+            transaction.addToBackStack(fragment.javaClass.simpleName)
+        }
         transaction.commitAllowingStateLoss()
     }
 

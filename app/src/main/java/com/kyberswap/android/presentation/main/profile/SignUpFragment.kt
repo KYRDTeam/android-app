@@ -25,6 +25,7 @@ import com.kyberswap.android.domain.model.SocialInfo
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.twitter.sdk.android.core.Callback
 import com.twitter.sdk.android.core.TwitterCore
@@ -109,21 +110,22 @@ class SignUpFragment : BaseFragment() {
                 when (state) {
                     is SignUpState.Success -> {
                         showAlert(state.registerStatus.message)
+                        navigator.navigateToSignInScreen(
+                            currentFragment, wallet
+                        )
                     }
                     is SignUpState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
-                        Toast.makeText(
-                            activity,
-                            state.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
                 }
             }
         })
 
         binding.imgBack.setOnClickListener {
-            activity?.onBackPressed()
+            navigator.navigateToSignUpScreen(
+                currentFragment,
+                wallet
+            )
         }
 
 
@@ -146,6 +148,15 @@ class SignUpFragment : BaseFragment() {
             activity?.onBackPressed()
         }
 
+        binding.imgBack.setOnClickListener {
+            activity?.onBackPressed()
+        }
+
+        binding.imgFacebook.setOnClickListener {
+            LoginManager.getInstance()
+                .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"))
+        }
+
         binding.imgGooglePlus.setOnClickListener {
             val googleSignInClient = GoogleSignIn.getClient(this.activity!!, gso)
             val account = GoogleSignIn.getLastSignedInAccount(this.activity)
@@ -154,60 +165,70 @@ class SignUpFragment : BaseFragment() {
                 startActivityForResult(signInIntent, RC_SIGN_IN)
             } else {
 
-                val socialInfo = SocialInfo(
-                    LoginType.GOOGLE,
-                    account.displayName,
-                    account.idToken,
-                    account.photoUrl.toString(),
-                    account.email
-                )
-                viewModel.login(socialInfo)
+                googleSignInClient.signOut().addOnCompleteListener {
+                    val signInIntent = googleSignInClient.signInIntent
+                    startActivityForResult(signInIntent, RC_SIGN_IN)
+                }
             }
         }
 
-        binding.imgBack.setOnClickListener {
-            activity?.onBackPressed()
-        }
+        binding.imgTwitter.setOnClickListener {
 
-        binding.imgFacebook.setOnClickListener {
-            val accessToken = AccessToken.getCurrentAccessToken()
-            val isLoggedIn = accessToken != null && !accessToken.isExpired
-            if (!isLoggedIn) {
-                LoginManager.getInstance()
-                    .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"))
-            } else {
-                meRequest(accessToken)
+            val twitterSession = TwitterCore.getInstance().sessionManager.activeSession
+            if (twitterSession != null) {
+                TwitterCore.getInstance().sessionManager.clearActiveSession()
             }
+            twitterAuthClient.authorize(activity, object : Callback<TwitterSession>() {
+                override fun success(result: com.twitter.sdk.android.core.Result<TwitterSession>?) {
+                    getTwitterUserProfileWthTwitterCoreApi(result?.data)
+                }
+
+                override fun failure(exception: TwitterException?) {
+                    exception?.printStackTrace()
+                    Toast.makeText(
+                        context,
+                        exception?.localizedMessage,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+            })
         }
 
         binding.tvTermAndCondition.setOnClickListener {
             navigator.navigateToTermAndCondition()
         }
 
-        binding.imgTwitter.setOnClickListener {
-
-            val twitterSession = TwitterCore.getInstance().sessionManager.activeSession
-            if (twitterSession == null) {
-                twitterAuthClient.authorize(activity, object : Callback<TwitterSession>() {
-                    override fun success(result: com.twitter.sdk.android.core.Result<TwitterSession>?) {
-                        getTwitterUserProfileWthTwitterCoreApi(result?.data)
+        viewModel.loginCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == LoginState.Loading)
+                when (state) {
+                    is LoginState.Success -> {
+                        if (state.login.success) {
+                            if (state.login.confirmSignUpRequired) {
+                                navigator.navigateToSignUpConfirmScreen(
+                                    (activity as MainActivity).getCurrentFragment(),
+                                    wallet,
+                                    state.socialInfo
+                                )
+                            } else {
+                                showAlert(state.login.userInfo.name)
+                            }
+                        } else {
+                            showAlert(state.login.message)
+                        }
                     }
-
-                    override fun failure(exception: TwitterException?) {
-                        exception?.printStackTrace()
+                    is LoginState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
                         Toast.makeText(
-                            context,
-                            exception?.localizedMessage,
+                            activity,
+                            state.message,
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-
-                })
-
-            } else {
-                getTwitterUserProfileWthTwitterCoreApi(twitterSession)
+                }
             }
-        }
+        })
 
     }
 

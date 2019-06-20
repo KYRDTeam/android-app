@@ -29,6 +29,7 @@ class MainViewModel @Inject constructor(
     val getPendingTransactionStateCallback: LiveData<Event<GetPendingTransactionState>>
         get() = _getPendingTransactionStateCallback
 
+
     fun getWallets() {
         getAllWalletUseCase.execute(
             Consumer {
