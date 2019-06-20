@@ -580,28 +580,26 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         contractAddress: String
     ): String {
 
-        if (!order.tokenSource.isETHWETH) {
-            val txManager = RawTransactionManager(web3j, credentials)
-            val allowanceAmount =
-                getContractAllowanceAmount(
-                    order.userAddr,
-                    order.tokenSource.tokenAddress,
-                    contractAddress,
-                    txManager
-                )
-            if (allowanceAmount < order.sourceAmountWithPrecision) {
-                sendContractApproveTransferWithCondition(
-                    allowanceAmount,
-                    order.tokenSource,
-                    contractAddress,
-                    Convert.toWei(
-                        order.gasPrice.toBigDecimalOrDefaultZero(),
-                        Convert.Unit.GWEI
-                    ).toBigInteger(),
-                    order.gasLimit,
-                    txManager
-                )
-            }
+        val txManager = RawTransactionManager(web3j, credentials)
+        val allowanceAmount =
+            getContractAllowanceAmount(
+                order.userAddr,
+                order.tokenSource.tokenAddress,
+                contractAddress,
+                txManager
+            )
+        if (allowanceAmount < order.sourceAmountWithPrecision) {
+            sendContractApproveTransferWithCondition(
+                allowanceAmount,
+                order.tokenSource,
+                contractAddress,
+                Convert.toWei(
+                    order.gasPrice.toBigDecimalOrDefaultZero(),
+                    Convert.Unit.GWEI
+                ).toBigInteger(),
+                order.gasLimit,
+                txManager
+            )
         }
 
 

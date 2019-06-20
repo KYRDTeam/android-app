@@ -17,6 +17,7 @@ import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.Singles
 import org.web3j.utils.Numeric
+import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.concurrent.TimeUnit
@@ -37,8 +38,9 @@ class TransactionDataRepository @Inject constructor(
                     transactionDao.findTransaction(tx.hash, Transaction.PENDING_TRANSACTION_STATUS)
                 transaction?.let {
                     if (Numeric.decodeQuantity(tx.blockHash) > BigInteger.ZERO) {
+                        Timber.e(transaction.tokenSymbol)
                         transactionDao.delete(transaction)
-                        transactionDao.insertTransaction(tx)
+                        transactionDao.insertTransaction(tx.copy(transactionStatus = ""))
                     }
                 }
             }
@@ -159,6 +161,7 @@ class TransactionDataRepository @Inject constructor(
             }.toList()
 
         val erc20Transaction = fetchERC20TokenTransactions(address)
+
         return Flowable.mergeDelayError(
             transactionDao.getCompletedTransactions(),
             Singles.zip(
@@ -223,8 +226,7 @@ class TransactionDataRepository @Inject constructor(
                     }
                     transactionList.toList()
                 }.doAfterSuccess {
-                    transactionDao.deleteAllTransactions()
-                    transactionDao.insertTransactionBatch(it)
+                    transactionDao.updateTransactionList(it)
                 }
                 .toFlowable()
         )

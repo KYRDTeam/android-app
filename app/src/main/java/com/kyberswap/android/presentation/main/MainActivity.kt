@@ -114,7 +114,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         }
 
         binding.vpNavigation.adapter = adapter
-        binding.vpNavigation.offscreenPageLimit = 1
+        binding.vpNavigation.offscreenPageLimit = 4
         binding.vpNavigation.addOnPageChangeListener(listener)
 
         binding.vpNavigation.post {

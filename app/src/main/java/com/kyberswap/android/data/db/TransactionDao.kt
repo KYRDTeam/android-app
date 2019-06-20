@@ -22,6 +22,12 @@ interface TransactionDao {
     @Update
     fun updateTransaction(transaction: Transaction)
 
+    @androidx.room.Transaction
+    fun updateTransactionList(transactions: List<Transaction>) {
+        deleteAllTransactions()
+        insertTransactionBatch(transactions)
+    }
+
     @Update
     fun updateTransactionBatch(transactions: List<Transaction>)
 

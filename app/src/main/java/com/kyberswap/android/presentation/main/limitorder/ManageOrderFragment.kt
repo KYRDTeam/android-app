@@ -120,7 +120,7 @@ class ManageOrderFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetFilterState.Success -> {
-                        orderAdapter.submitList(listOf())
+                        orderAdapter.submitList(null)
                         orderAdapter.submitList(
                             viewModel.filterOrders(
                                 state.orderFilter
@@ -153,7 +153,7 @@ class ManageOrderFragment : BaseFragment() {
 
     private fun filterByDate(orderAdapter: OrderAdapter) {
         currentSelectedView?.let {
-            orderAdapter.submitList(listOf())
+            orderAdapter.submitList(null)
             orderAdapter.submitList(getFilterList(it.id))
         }
     }
