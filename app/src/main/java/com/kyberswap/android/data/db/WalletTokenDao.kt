@@ -17,6 +17,6 @@ interface WalletTokenDao {
     fun getTokensForWallet(walletAddress: String): Flowable<List<WalletToken>>
 
     @get:Query("SELECT * FROM wallet_token")
-    val all: Flowable<List<WalletToken>>
+    val xall: Flowable<List<WalletToken>>
 
 }

@@ -32,8 +32,8 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         activity.finish()
     }
 
-    fun navigateToImportWalletPage() {
-        activity.startActivity(ImportWalletActivity.newIntent(activity))
+    fun navigateToImportWalletPage(fromMain: Boolean = false) {
+        activity.startActivity(ImportWalletActivity.newIntent(activity, fromMain))
     }
 
     fun navigateVerifyBackupWordPage(words: List<Word>, wallet: Wallet) {

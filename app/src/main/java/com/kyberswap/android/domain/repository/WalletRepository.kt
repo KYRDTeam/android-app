@@ -29,4 +29,6 @@ interface WalletRepository {
     fun setSelectedUnit(unit: String): Completable
 
     fun updateWallet(param: Wallet): Completable
+
+    fun addWalletToBalanceMonitor(param: AddWalletToBalanceMonitorUseCase.Param): Completable
 }

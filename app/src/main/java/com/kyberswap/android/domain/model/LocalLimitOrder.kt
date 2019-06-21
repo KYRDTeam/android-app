@@ -134,6 +134,10 @@ data class LocalLimitOrder(
         return amount.multiply(_rate.toBigDecimalOrDefaultZero())
     }
 
+    fun getExpectedDestAmount(rate: BigDecimal, amount: BigDecimal): BigDecimal {
+        return amount.multiply(rate)
+    }
+
     val minRateWithPrecision: BigInteger
         get() = minRate.multiply(BigDecimal.TEN.pow(18)).toBigInteger()
 

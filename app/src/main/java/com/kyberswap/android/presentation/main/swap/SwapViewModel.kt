@@ -9,6 +9,7 @@ import com.kyberswap.android.domain.usecase.swap.*
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import io.reactivex.disposables.CompositeDisposable
@@ -159,7 +160,7 @@ class SwapViewModel @Inject constructor(
         getExpectedRateUseCase.dispose()
         getExpectedRateUseCase.execute(
             Consumer {
-                if (it.isNotEmpty()) {
+                if (it.isNotEmpty() && it.first().toBigDecimalOrDefaultZero() > BigDecimal.ZERO) {
                     _getExpectedRateCallback.value = Event(GetExpectedRateState.Success(it))
         
 
