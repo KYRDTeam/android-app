@@ -16,6 +16,12 @@ interface WalletDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun batchInsertWallets(wallets: List<Wallet>)
 
+    @Transaction
+    fun batchUpdate(wallets: List<Wallet>) {
+        deleteAllWallets()
+        batchInsertWallets(wallets)
+    }
+
     @Update
     fun updateWallet(wallet: Wallet)
 

@@ -24,14 +24,15 @@ import com.kyberswap.android.domain.model.Unit
         LocalLimitOrder::class,
         OrderFilter::class
     ],
-    version = 38
+    version = 40
 )
 @TypeConverters(
     DataTypeConverter::class,
     BigIntegerDataTypeConverter::class,
     TransactionTypeConverter::class,
     TokenPairTypeConverter::class,
-    ListTypeConverter::class
+    ListTypeConverter::class,
+    WalletBalanceTypeConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
 

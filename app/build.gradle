@@ -72,6 +72,7 @@ android {
             applicationIdSuffix ".stg"
         }
         prod {
+
         }
     }
     applicationVariants.all { variant ->

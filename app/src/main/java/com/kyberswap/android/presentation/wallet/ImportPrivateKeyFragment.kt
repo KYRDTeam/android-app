@@ -31,8 +31,16 @@ class ImportPrivateKeyFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
+    private var fromMain: Boolean = false
+
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(ImportPrivateKeyViewModel::class.java)
+    }
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        fromMain = arguments!!.getBoolean(FROM_MAIN_PARAM)
     }
 
     override fun onCreateView(
@@ -66,7 +74,13 @@ class ImportPrivateKeyFragment : BaseFragment() {
                 showProgress(state == ImportWalletState.Loading)
                 when (state) {
                     is ImportWalletState.Success -> {
-                        navigator.navigateToHome(state.wallet)
+                        showAlert(getString(R.string.import_wallet_success)) {
+                            if (fromMain) {
+                                activity?.onBackPressed()
+                            } else {
+                                navigator.navigateToHome(state.wallet)
+                            }
+                        }
                     }
                     is ImportWalletState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -96,9 +110,11 @@ class ImportPrivateKeyFragment : BaseFragment() {
     }
 
     companion object {
-        fun newInstance() =
+        private const val FROM_MAIN_PARAM = "from_main_param"
+        fun newInstance(fromMain: Boolean) =
             ImportPrivateKeyFragment().apply {
                 arguments = Bundle().apply {
+                    putBoolean(FROM_MAIN_PARAM, fromMain)
                 }
             }
     }

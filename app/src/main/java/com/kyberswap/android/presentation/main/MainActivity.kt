@@ -29,6 +29,7 @@ import com.kyberswap.android.presentation.landing.CreateWalletState
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
 import com.kyberswap.android.presentation.main.balance.WalletAdapter
+import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
@@ -116,6 +117,9 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
             override fun onPageSelected(position: Int) {
                 currentFragment = adapter.getRegisteredFragment(position)
+                if (currentFragment is LimitOrderFragment) {
+                    (currentFragment as LimitOrderFragment).getLoginStatus()
+                }
             }
 
         }
@@ -230,6 +234,13 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                 }
             }
         })
+
+        tvSend.setOnClickListener {
+            showDrawer(false)
+            navigator.navigateToSendScreen(
+                currentFragment, wallet
+            )
+        }
 
     }
 

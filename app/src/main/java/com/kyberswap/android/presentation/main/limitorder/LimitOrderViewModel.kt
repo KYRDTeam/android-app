@@ -181,8 +181,8 @@ class LimitOrderViewModel @Inject constructor(
 
     fun getRelatedOrders(order: LocalLimitOrder, wallet: Wallet) {
         getRelatedLimitOrdersUseCase.execute(
-            Consumer {
-                _getRelatedOrderCallback.value = Event(GetRelatedOrdersState.Success(it))
+            Consumer { orderList ->
+                _getRelatedOrderCallback.value = Event(GetRelatedOrdersState.Success(orderList))
             },
             Consumer {
                 it.printStackTrace()
@@ -389,8 +389,8 @@ class LimitOrderViewModel @Inject constructor(
                 val wethBalance =
                     limitOrder.minConvertedAmount.toBigDecimalOrDefaultZero() + limitOrder.wethToken.currentBalance
                 val order = limitOrder.copy(
-                    wethToken = limitOrder.wethToken.copy(
-                        currentBalance = wethBalance
+                    wethToken = limitOrder.wethToken.updateBalance(
+                        wethBalance
                     )
                 )
                 saveLimitOrder(
@@ -419,5 +419,18 @@ class LimitOrderViewModel @Inject constructor(
         }
 
         return availableAmount.toDisplayNumber()
+    }
+
+    fun cancelHigherRateOrder(order: LocalLimitOrder?, orders: List<Order>) {
+        if (order == null) return
+        orders.forEach {
+            cancelOrderUseCase.execute(
+                Consumer { },
+                Consumer { },
+                CancelOrderUseCase.Param(it)
+            )
+        }
+
+
     }
 }

@@ -6,9 +6,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 
 interface BalanceRepository {
-    fun getChange24hPolling(owner: String): Flowable<Token>
+    fun getChange24hPolling(owner: String): Flowable<List<Token>>
     fun getChange24h(): Flowable<List<Token>>
     fun getBalance(param: PrepareBalanceUseCase.Param): Single<List<Token>>
-    fun getBalance(owner: String, tokenList: List<Token>): Single<List<Token>>
-    fun getBalance(owner: String, token: Token): Single<Token>
 }

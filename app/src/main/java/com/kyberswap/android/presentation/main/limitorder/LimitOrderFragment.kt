@@ -392,6 +392,44 @@ class LimitOrderFragment : BaseFragment() {
             }
         })
 
+        viewModel.compositeDisposable.add(
+            binding.edtRate.textChanges()
+                .observeOn(schedulerProvider.ui())
+                .subscribe { text ->
+                    if (text.isNullOrEmpty()) {
+                        binding.edtDest.setText("")
+                    }
+
+                    binding.order?.let { order ->
+                        if (order.hasSamePair) {
+                            edtDest.setText(binding.edtSource.text)
+                        } else {
+                            edtDest.setAmount(
+                                order.getExpectedDestAmount(
+                                    text.toString().toBigDecimalOrDefaultZero(),
+                                    binding.edtSource.toBigDecimalOrDefaultZero()
+                                ).toDisplayNumber()
+                            )
+
+                            val bindingOrder = binding.order?.copy(
+                                srcAmount = edtSource.text.toString(),
+                                minRate = edtRate.toBigDecimalOrDefaultZero()
+                            )
+
+                            bindingOrder?.let {
+                                if (binding.order != bindingOrder) {
+                                    binding.order = bindingOrder
+                                }
+
+                                viewModel.saveLimitOrder(
+                                    it
+                                )
+                            }
+                        }
+                    }
+                })
+
+
         viewModel.compositeDisposable.add(binding.edtSource.textChanges()
             .observeOn(schedulerProvider.ui())
             .subscribe { text ->
@@ -591,6 +629,9 @@ class LimitOrderFragment : BaseFragment() {
         }
     }
 
+    fun getLoginStatus() {
+        viewModel.getLoginStatus()
+    }
 
     private fun resetAmount() {
         edtSource.setText("")

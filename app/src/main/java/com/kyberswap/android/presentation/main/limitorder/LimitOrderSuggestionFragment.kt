@@ -22,11 +22,7 @@ import com.kyberswap.android.util.ext.setAmount
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
-import kotlinx.android.synthetic.main.fragment_limit_order.*
-import kotlinx.android.synthetic.main.fragment_limit_order.tvRate
-import kotlinx.android.synthetic.main.fragment_swap.edtDest
-import kotlinx.android.synthetic.main.fragment_swap.edtSource
-import kotlinx.android.synthetic.main.fragment_swap.imgMenu
+import kotlinx.android.synthetic.main.fragment_swap.*
 import javax.inject.Inject
 
 
@@ -80,7 +76,7 @@ class LimitOrderSuggestionFragment : BaseFragment() {
                         edtDest.setAmount(
                             state.order.getExpectedDestAmount(state.order.srcAmount.toBigDecimalOrDefaultZero()).toDisplayNumber()
                         )
-                        tvRate.setAmount(state.order.combineRate)
+                        binding.tvRate.setAmount(state.order.minRate.toString())
                         wallet?.let { wallet ->
                             viewModel.getRelatedOrders(
                                 state.order,
@@ -117,7 +113,9 @@ class LimitOrderSuggestionFragment : BaseFragment() {
                 when (state) {
                     is GetRelatedOrdersState.Success -> {
                         relatedOrderAdapter.submitList(listOf())
-                        relatedOrderAdapter.submitList(state.orders)
+                        relatedOrderAdapter.submitList(state.orders.filter {
+                            it.minRate > binding.order?.minRate && it.isOpen
+                        })
                     }
                     is GetRelatedOrdersState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -137,6 +135,7 @@ class LimitOrderSuggestionFragment : BaseFragment() {
         }
 
         binding.tvConfirm.setOnClickListener {
+            viewModel.cancelHigherRateOrder(binding.order, relatedOrderAdapter.getData())
             navigator.navigateToOrderConfirmScreen(
                 (activity as MainActivity).getCurrentFragment(),
                 wallet

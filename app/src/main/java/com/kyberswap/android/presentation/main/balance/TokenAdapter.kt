@@ -51,9 +51,14 @@ class TokenAdapter(
         notifyDataSetChanged()
     }
 
-    fun submitFilterList(tokens: List<Token>) {
+    fun submitFilterList(tokens: List<Token>, type: OrderType = OrderType.NAME) {
         submitList(listOf())
-        submitList(tokens)
+        val orderList = if (type == OrderType.NAME) {
+            tokens.sortedBy { it.tokenSymbol }
+        } else {
+            tokens.sortedByDescending { it.currentBalance }
+        }
+        submitList(orderList)
     }
 
 
@@ -152,4 +157,8 @@ class TokenAdapter(
             parent,
             false
         )
+}
+
+enum class OrderType {
+    NAME, BALANCE
 }

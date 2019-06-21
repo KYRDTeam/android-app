@@ -11,10 +11,9 @@ import javax.inject.Inject
 class GetBalancePollingUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val balanceRepository: BalanceRepository
-) : FlowableUseCase<GetBalancePollingUseCase.Param, Token>(schedulerProvider) {
-
+) : FlowableUseCase<GetBalancePollingUseCase.Param, List<Token>>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    override fun buildUseCaseFlowable(param: Param): Flowable<Token> {
+    override fun buildUseCaseFlowable(param: Param): Flowable<List<Token>> {
         return balanceRepository.getChange24hPolling(param.owner)
     }
 
