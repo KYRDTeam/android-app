@@ -8,10 +8,13 @@ import com.kyberswap.android.domain.usecase.transaction.GetPendingTransactionsUs
 import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
 import com.kyberswap.android.domain.usecase.wallet.CreateWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetAllWalletUseCase
+import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
+import com.kyberswap.android.domain.usecase.wallet.UpdateSelectedWalletUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.landing.CreateWalletState
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
+import com.kyberswap.android.presentation.splash.GetWalletState
 import io.reactivex.functions.Consumer
 import timber.log.Timber
 import javax.inject.Inject
@@ -20,7 +23,9 @@ class MainViewModel @Inject constructor(
     private val getAllWalletUseCase: GetAllWalletUseCase,
     private val getPendingTransactionsUseCase: GetPendingTransactionsUseCase,
     private val monitorPendingTransactionsUseCase: MonitorPendingTransactionUseCase,
-    private val createWalletUseCase: CreateWalletUseCase
+    private val getWalletUseCase: GetSelectedWalletUseCase,
+    private val createWalletUseCase: CreateWalletUseCase,
+    private val updateSelectedWalletUseCase: UpdateSelectedWalletUseCase
 ) : ViewModel() {
 
     private val _getAllWalletStateCallback = MutableLiveData<Event<GetAllWalletState>>()
@@ -35,6 +40,10 @@ class MainViewModel @Inject constructor(
     private val _getMnemonicCallback = MutableLiveData<Event<CreateWalletState>>()
     val createWalletCallback: LiveData<Event<CreateWalletState>>
         get() = _getMnemonicCallback
+
+    private val _getWalletStateCallback = MutableLiveData<Event<GetWalletState>>()
+    val getWalletStateCallback: LiveData<Event<GetWalletState>>
+        get() = _getWalletStateCallback
 
 
     fun getWallets() {
@@ -58,6 +67,22 @@ class MainViewModel @Inject constructor(
             null
         )
     }
+
+    fun getSelectedWallet() {
+        getWalletUseCase.execute(
+            Consumer { wallet ->
+                _getWalletStateCallback.value = Event(GetWalletState.Success(wallet))
+
+            },
+            Consumer {
+                it.printStackTrace()
+                _getWalletStateCallback.value =
+                    Event(GetWalletState.ShowError(it.localizedMessage))
+            },
+            null
+        )
+    }
+
 
     fun getPendingTransaction(wallet: Wallet) {
         getPendingTransactionsUseCase.execute(
@@ -114,6 +139,21 @@ class MainViewModel @Inject constructor(
                     Event(CreateWalletState.ShowError(it.localizedMessage))
             },
             CreateWalletUseCase.Param(pinLock, walletName)
+        )
+    }
+
+    fun updateSelectedWallet(wallet: Wallet) {
+        updateSelectedWalletUseCase.execute(
+            Consumer { wl ->
+                _getWalletStateCallback.value = Event(GetWalletState.Success(wl))
+
+            },
+            Consumer {
+                it.printStackTrace()
+                _getWalletStateCallback.value =
+                    Event(GetWalletState.ShowError(it.localizedMessage))
+            },
+            UpdateSelectedWalletUseCase.Param(wallet)
         )
     }
 

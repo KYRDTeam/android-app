@@ -24,6 +24,7 @@ class SplashViewModel @Inject constructor(
         get() = _getWalletStateCallback
 
     fun getWallet(userInfo: UserInfo?) {
+        getWalletUseCase.dispose()
         getWalletUseCase.execute(
             Consumer { wallet ->
                 _getWalletStateCallback.value = Event(GetUserWalletState.Success(wallet, userInfo))

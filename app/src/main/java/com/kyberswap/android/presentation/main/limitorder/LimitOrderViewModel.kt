@@ -2,7 +2,6 @@ package com.kyberswap.android.presentation.main.limitorder
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.LocalLimitOrder
 import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.domain.model.Swap
@@ -10,8 +9,10 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.limitorder.*
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.domain.usecase.swap.*
+import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.*
 import com.kyberswap.android.util.ext.display
@@ -38,8 +39,9 @@ class LimitOrderViewModel @Inject constructor(
     private val getGasPriceUseCase: GetGasPriceUseCase,
     private val estimateGasUseCase: EstimateGasUseCase,
     private val swapTokenUseCase: SwapTokenUseCase,
-    private val getLoginStatusUseCase: GetLoginStatusUseCase
-) : ViewModel() {
+    private val getLoginStatusUseCase: GetLoginStatusUseCase,
+    getSelectedWalletUseCase: GetSelectedWalletUseCase
+) : SelectedWalletViewModel(getSelectedWalletUseCase) {
 
     private val _cancelOrderCallback = MutableLiveData<Event<CancelOrdersState>>()
     val cancelOrderCallback: LiveData<Event<CancelOrdersState>>
@@ -102,6 +104,7 @@ class LimitOrderViewModel @Inject constructor(
         get() = _getLoginStatusCallback
 
     fun getLoginStatus() {
+        getLoginStatusUseCase.dispose()
         getLoginStatusUseCase.execute(
             Consumer {
                 _getLoginStatusCallback.value = Event(UserInfoState.Success(it))
@@ -116,6 +119,7 @@ class LimitOrderViewModel @Inject constructor(
     }
 
     fun getLimitOrders(wallet: Wallet?) {
+        getLocalLimitOrderDataUseCase.dispose()
         wallet?.let {
             getLocalLimitOrderDataUseCase.execute(
                 Consumer {
@@ -150,6 +154,7 @@ class LimitOrderViewModel @Inject constructor(
     }
 
     fun getNonce(order: LocalLimitOrder, wallet: Wallet) {
+        getNonceUseCase.dispose()
         getNonceUseCase.execute(
             Consumer {
                 _getGetNonceStateCallback.value = Event(GetNonceState.Success(it))
@@ -165,6 +170,7 @@ class LimitOrderViewModel @Inject constructor(
     }
 
     fun getGasPrice() {
+        getGasPriceUseCase.dispose()
         getGasPriceUseCase.execute(
             Consumer {
                 _getGetGasPriceCallback.value = Event(GetGasPriceState.Success(it))
@@ -180,6 +186,7 @@ class LimitOrderViewModel @Inject constructor(
 
 
     fun getRelatedOrders(order: LocalLimitOrder, wallet: Wallet) {
+        getRelatedLimitOrdersUseCase.dispose()
         getRelatedLimitOrdersUseCase.execute(
             Consumer { orderList ->
                 _getRelatedOrderCallback.value = Event(GetRelatedOrdersState.Success(orderList))
@@ -291,6 +298,7 @@ class LimitOrderViewModel @Inject constructor(
         wallet: Wallet?
     ) {
         if (order == null || wallet == null) return
+        getLimitOrderFee.dispose()
         getLimitOrderFee.execute(
             Consumer {
                 _getFeeCallback.value = Event(GetFeeState.Success(it))
@@ -346,7 +354,9 @@ class LimitOrderViewModel @Inject constructor(
 
     }
 
-    fun getGasLimit(wallet: Wallet, order: LocalLimitOrder) {
+    fun getGasLimit(wallet: Wallet?, order: LocalLimitOrder?) {
+        if (wallet == null || order == null) return
+        estimateGasUseCase.dispose()
         estimateGasUseCase.execute(
             Consumer {
                 if (it.error == null) {

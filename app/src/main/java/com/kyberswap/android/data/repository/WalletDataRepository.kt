@@ -6,8 +6,10 @@ import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.data.db.UnitDao
 import com.kyberswap.android.data.db.WalletDao
-import com.kyberswap.android.domain.model.*
+import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Unit
+import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.domain.repository.WalletRepository
 import com.kyberswap.android.domain.usecase.wallet.*
 import com.kyberswap.android.util.ext.toWalletAddress
@@ -20,7 +22,6 @@ import org.consenlabs.tokencore.wallet.model.BIP44Util
 import org.consenlabs.tokencore.wallet.model.ChainType
 import org.consenlabs.tokencore.wallet.model.Metadata
 import org.consenlabs.tokencore.wallet.model.Network
-import java.math.BigDecimal
 import java.security.SecureRandom
 import javax.inject.Inject
 
@@ -30,6 +31,13 @@ class WalletDataRepository @Inject constructor(
     private val unitDao: UnitDao,
     private val tokenDao: TokenDao
 ) : WalletRepository {
+    override fun updatedSelectedWallet(param: UpdateSelectedWalletUseCase.Param): Single<Wallet> {
+        return Single.fromCallable {
+            updateSelectedWallet(param.wallet)
+            addWalletToMonitorBalance(param.wallet)
+            param.wallet
+        }
+    }
 
     override fun updateWallet(param: Wallet): Completable {
         return Completable.fromCallable {
@@ -56,15 +64,11 @@ class WalletDataRepository @Inject constructor(
 
     }
 
-    override fun getSelectedWallet(): Single<Wallet> {
-        return Single.fromCallable {
-            val all = walletDao.all
-            var selectedWallet = all.firstOrNull { wallet -> wallet.isSelected }
-            if (selectedWallet == null) {
-                selectedWallet = all.first()
-            }
-            selectedWallet
+    override fun getSelectedWallet(): Flowable<Wallet> {
+        if (walletDao.all.isEmpty()) {
+            return Flowable.error(Throwable("empty"))
         }
+        return walletDao.findSelectedWallet()
 
     }
 
@@ -138,38 +142,26 @@ class WalletDataRepository @Inject constructor(
 
     private fun addWalletToMonitorBalance(wallet: Wallet): List<Token> {
         val tokens = tokenDao.allTokens.map {
-            val walletBalances = it.wallets.toMutableList()
-
-            if (it.wallets.find { it.walletAddress == wallet.address } == null) {
-                walletBalances.add(
-                    WalletBalance(
-                        wallet.address,
-                        BigDecimal.ZERO,
-                        wallet.isSelected
-                    )
-                )
-            }
-
-            it.copy(wallets = walletBalances)
+            it.updateSelectedWallet(wallet)
         }
         tokenDao.updateTokens(tokens)
         return tokens
     }
 
     private fun updateSelectedWallet(wallet: Wallet): List<Wallet> {
-        val wallets = walletDao.all.map {
+        val wallets = mutableListOf<Wallet>()
+        wallets.addAll(walletDao.all)
+        if (wallets.find { it.address == wallet.address } == null) {
+            wallets.add(wallet)
+        }
+
+        walletDao.batchUpdate(wallets.map {
             if (it.address == wallet.address) {
                 it.copy(isSelected = true)
             } else {
                 it.copy(isSelected = false)
             }
-        }.toMutableList()
-
-        if (wallets.find { it.address == wallet.address } == null) {
-            wallets.add(wallet)
-        }
-
-        walletDao.batchUpdate(wallets)
+        })
         return wallets
     }
 

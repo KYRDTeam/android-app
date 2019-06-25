@@ -59,6 +59,7 @@
             android:background="@drawable/notification_drawable"
             android:gravity="center"
             android:minWidth="30dp"
+            android:visibility="invisible"
             android:minHeight="20dp"
             android:textColor="#ffffff"
             android:textSize="12sp"

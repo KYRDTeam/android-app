@@ -28,21 +28,6 @@ class BalanceDataRepository @Inject constructor(
 ) :
     BalanceRepository {
 
-//    override fun getBalance(owner: String, token: Token): Single<Token> {
-//        return Single.fromCallable {
-//            tokenClient.getBalance(owner, token)
-//        }
-//    }
-//
-//    override fun getBalance(owner: String, tokenList: List<Token>): Single<List<Token>> {
-//        return Single.fromCallable {
-//            tokenList.forEach {
-//                tokenClient.getBalance(owner, it)
-//            }
-//            tokenList
-//        }
-//    }
-
     override fun getChange24h(): Flowable<List<Token>> {
         return tokenDao.all
     }
@@ -113,22 +98,33 @@ class BalanceDataRepository @Inject constructor(
             .map { it.values.toList() }
     }
 
+
+    private fun updateBalance(tokens: List<Token>, allTokens: List<Token>): List<Token> {
+        val startListWithBalance = tokens.map { token ->
+            val currentToken = allTokens.find {
+                it.tokenAddress == token.tokenAddress
+            }
+
+            val updatedWithBalance = if (currentToken == null) {
+                token
+            } else {
+                token.copy(wallets = currentToken.wallets)
+            }
+            tokenClient.getBalance(updatedWithBalance)
+        }
+        tokenDao.updateTokens(startListWithBalance)
+        return startListWithBalance
+    }
+
     override fun getChange24hPolling(owner: String): Flowable<List<Token>> {
         return fetchChange24h()
             .map { tokens ->
                 val allTokens = tokenDao.allTokens
-                tokens.map { token ->
-                    val currentToken = allTokens.find {
-                        it.tokenAddress == token.tokenAddress
-                    }
-
-                    val updatedWithBalance = if (currentToken == null) {
-                        token
-                    } else {
-                        token.copy(wallets = currentToken.wallets)
-                    }
-                    tokenClient.getBalance(updatedWithBalance)
-                }
+                val startList = tokens.subList(0, tokens.size / 2)
+                val endList = tokens.subList(tokens.size / 2, tokens.size)
+                val startWithBalance = updateBalance(startList, allTokens)
+                val endWithBalance = updateBalance(endList, allTokens)
+                startWithBalance.union(endWithBalance).toList()
             }
             .doAfterSuccess {
                 tokenDao.updateTokens(it)

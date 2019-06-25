@@ -9,6 +9,7 @@
             name="walletName"
             type="String" />
 
+
         <variable
             name="swap"
             type="com.kyberswap.android.domain.model.Swap" />

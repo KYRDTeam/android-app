@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
@@ -13,7 +12,6 @@ import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.databinding.FragmentBalanceBinding
 import com.kyberswap.android.domain.SchedulerProvider
-import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
@@ -22,7 +20,6 @@ import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.showKeyboard
-import kotlinx.android.synthetic.main.fragment_balance.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -37,7 +34,7 @@ class BalanceFragment : BaseFragment() {
     @Inject
     lateinit var appExecutors: AppExecutors
 
-    private var wallet: Wallet? = null
+//    private var wallet: Wallet? = null
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -57,11 +54,6 @@ class BalanceFragment : BaseFragment() {
 
     private val balanceAddress by lazy { listOf(binding.tvAddress, binding.tvQr) }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        wallet = arguments!!.getParcelable(WALLET_PARAM)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -73,12 +65,28 @@ class BalanceFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        binding.wallet = wallet
+
+        viewModel.getSelectedWallet()
+        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetWalletState.Success -> {
+                        binding.tvUnit.text = state.wallet.unit
+                        binding.tvBalance.text = state.wallet.balance
+                        if (binding.wallet != state.wallet) {
+                            binding.wallet = state.wallet
+                        }
+                    }
+                    is GetWalletState.ShowError -> {
+
+                    }
+                }
+            }
+        })
 
 
         val adapter = BalancePagerAdapter(
-            childFragmentManager,
-            wallet
+            childFragmentManager
         )
         binding.vpBalance.adapter = adapter
         binding.vpBalance.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
@@ -94,29 +102,6 @@ class BalanceFragment : BaseFragment() {
             }
         })
 
-        wallet?.address?.let {
-            viewModel.getWallet(it)
-        }
-
-        viewModel.getWalletCallback.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is GetWalletState.Success -> {
-                        this.wallet = state.wallet
-                        tvUnit.text = state.wallet.unit
-                        tvBalance.text = state.wallet.balance
-                    }
-
-                    is GetWalletState.ShowError -> {
-                        Toast.makeText(
-                            activity,
-                            state.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            }
-        })
 
         binding.tvKyberList.isSelected = true
         currentSelectedView = binding.tvKyberList
@@ -132,8 +117,7 @@ class BalanceFragment : BaseFragment() {
             view.setOnClickListener {
                 (activity as MainActivity).getCurrentFragment()
                 navigator.navigateToBalanceAddressScreen(
-                    (activity as MainActivity).getCurrentFragment(),
-                    wallet
+                    (activity as MainActivity).getCurrentFragment()
                 )
             }
 
@@ -178,12 +162,6 @@ class BalanceFragment : BaseFragment() {
     }
 
     companion object {
-        private const val WALLET_PARAM = "wallet_param"
-        fun newInstance(wallet: Wallet?) =
-            BalanceFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(WALLET_PARAM, wallet)
-                }
-            }
+        fun newInstance() = BalanceFragment()
     }
 }

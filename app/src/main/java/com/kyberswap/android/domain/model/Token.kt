@@ -100,6 +100,30 @@ data class Token(
         )
     }
 
+    fun updateSelectedWallet(wallet: Wallet): Token {
+        val walletBalances = wallets.map {
+            it.copy(isSelected = false)
+        }.toMutableList()
+
+        val walletBalance = wallets.find { it1 -> it1.walletAddress == wallet.address }
+        if (walletBalance == null) {
+            walletBalances.add(
+                WalletBalance(
+                    wallet.address,
+                    BigDecimal.ZERO,
+                    wallet.isSelected
+                )
+            )
+        } else {
+            val idx = walletBalances.indexOf(walletBalance)
+            if (idx >= 0) {
+                walletBalances[idx] = walletBalance.copy(isSelected = wallet.isSelected)
+            }
+        }
+
+        return copy(wallets = walletBalances)
+    }
+
     private fun updateBalance(walletBalance: WalletBalance?): Token {
         if (walletBalance == null) return this
         val updatedWalletBalance = wallets.map {

@@ -64,11 +64,6 @@ class KyberListFragment : BaseFragment() {
         getString(R.string.unit_eth)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        wallet = arguments!!.getParcelable(WALLET_PARAM)
-    }
-
     private var tokenList = mutableListOf<Token>()
     private var currentSearchString = ""
 
@@ -83,7 +78,6 @@ class KyberListFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        binding.wallet = wallet
 
         binding.rvToken.layoutManager = LinearLayoutManager(
             activity,
@@ -96,50 +90,44 @@ class KyberListFragment : BaseFragment() {
                     navigateToChartScreen(it)
                 },
                 {
-                    viewModel.save(wallet!!.address, it, false)
+                    wallet?.address?.let { it1 -> viewModel.save(it1, it, false) }
                 },
                 {
-                    viewModel.save(wallet!!.address, it, true)
+                    wallet?.address?.let { it1 -> viewModel.save(it1, it, true) }
                 },
                 {
-                    viewModel.saveSendToken(wallet!!.address, it)
+                    wallet?.address?.let { it1 -> viewModel.saveSendToken(it1, it) }
                 }
             )
         tokenAdapter.mode = Attributes.Mode.Single
         binding.rvToken.adapter = tokenAdapter
-        wallet?.address?.let {
-            viewModel.getWallet(it)
-        }
 
-        viewModel.getWalletCallback.observe(parentFragment!!.viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
+        viewModel.getSelectedWallet()
+        viewModel.getSelectedWalletCallback.observe(parentFragment!!.viewLifecycleOwner, Observer {
+            it?.peekContent()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
-                        this.wallet = state.wallet
-                        if (state.wallet.unit != tvChangeUnit.text.toString()) {
-                            tvChangeUnit.text = state.wallet.unit
-                            tokenAdapter.showEth(tvChangeUnit.text.toString() == eth)
+                        if (binding.wallet?.address != state.wallet.address) {
+                            this.wallet = state.wallet
+                            binding.wallet = state.wallet
+                            if (state.wallet.unit != tvChangeUnit.text.toString()) {
+                                tvChangeUnit.text = state.wallet.unit
+                                tokenAdapter.showEth(tvChangeUnit.text.toString() == eth)
+                            }
+                            viewModel.getTokenBalance(state.wallet.address)
                         }
 
                     }
                     is GetWalletState.ShowError -> {
-                        Toast.makeText(
-                            activity,
-                            state.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
+
                     }
                 }
             }
         })
 
-        wallet?.address?.let {
-            viewModel.getTokenBalance(it)
-        }
 
         viewModel.getBalanceStateCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
-                showProgress(state == GetBalanceState.Loading)
                 when (state) {
                     is GetBalanceState.Success -> {
                         binding.swipeLayout.isRefreshing = false
@@ -152,13 +140,13 @@ class KyberListFragment : BaseFragment() {
                             )
                         )
 
-                        val isETH = wallet!!.unit == eth
+                        val isETH = wallet?.unit == eth
                         val balance = calcBalance(state.tokens, isETH)
                         if (balance > BigDecimal(1E-10) &&
-                            balance.toDisplayNumber() != wallet!!.balance
+                            balance.toDisplayNumber() != wallet?.balance
                         ) {
-                            wallet!!.balance = balance.toDisplayNumber()
-                            viewModel.updateWallet(wallet!!)
+                            wallet?.balance = balance.toDisplayNumber()
+                            viewModel.updateWallet(wallet)
                         }
                     }
                     is GetBalanceState.ShowError -> {
@@ -176,11 +164,11 @@ class KyberListFragment : BaseFragment() {
             val unit = toggleUnit(tvChangeUnit.text.toString())
             val balance = calcBalance(tokenAdapter.getData(), unit == eth)
             tvChangeUnit.text = unit
-            wallet!!.unit = unit
+            wallet?.unit = unit
             if (balance > BigDecimal.ZERO) {
-                wallet!!.balance = balance.toDisplayNumber()
+                wallet?.balance = balance.toDisplayNumber()
             }
-            viewModel.updateWallet(wallet!!)
+            viewModel.updateWallet(wallet)
             tokenAdapter.showEth(unit == eth)
         }
 
@@ -316,12 +304,6 @@ class KyberListFragment : BaseFragment() {
     }
 
     companion object {
-        private const val WALLET_PARAM = "wallet_param"
-        fun newInstance(wallet: Wallet?) =
-            KyberListFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(WALLET_PARAM, wallet)
-                }
-            }
+        fun newInstance() = KyberListFragment()
     }
 }
