@@ -253,12 +253,12 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     }
 
-    fun navigateToSignUpScreen(currentFragment: Fragment?, wallet: Wallet?) {
-        navigateByChildFragmentManager(currentFragment, SignUpFragment.newInstance(wallet))
+    fun navigateToSignUpScreen(currentFragment: Fragment?) {
+        navigateByChildFragmentManager(currentFragment, SignUpFragment.newInstance())
     }
 
-    fun navigateToSignInScreen(currentFragment: Fragment?, wallet: Wallet?) {
-        navigateByChildFragmentManager(currentFragment, ProfileFragment.newInstance(wallet), false)
+    fun navigateToSignInScreen(currentFragment: Fragment?) {
+        navigateByChildFragmentManager(currentFragment, ProfileFragment.newInstance(), false)
     }
 
     fun navigateToTermAndCondition() {
@@ -274,24 +274,22 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     fun navigateToSignUpConfirmScreen(
         currentFragment: Fragment?,
-        wallet: Wallet?,
         socialInfo: SocialInfo?
     ) {
         navigateByChildFragmentManager(
             currentFragment,
-            SignUpConfirmFragment.newInstance(wallet, socialInfo)
+            SignUpConfirmFragment.newInstance(socialInfo)
         )
 
     }
 
     fun navigateToProfileDetail(
         currentFragment: Fragment?,
-        wallet: Wallet?,
         user: UserInfo?
     ) {
         navigateByChildFragmentManager(
             currentFragment,
-            ProfileDetailFragment.newInstance(wallet, user),
+            ProfileDetailFragment.newInstance(user),
             false
         )
 

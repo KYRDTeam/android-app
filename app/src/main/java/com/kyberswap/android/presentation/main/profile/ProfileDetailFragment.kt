@@ -14,7 +14,6 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentProfileDetailBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.UserInfo
-import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
@@ -37,8 +36,6 @@ class ProfileDetailFragment : BaseFragment() {
     @Inject
     lateinit var appExecutors: AppExecutors
 
-    private var wallet: Wallet? = null
-
     private var user: UserInfo? = null
 
     @Inject
@@ -53,7 +50,6 @@ class ProfileDetailFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        wallet = arguments!!.getParcelable(WALLET_PARAM)
         user = arguments!!.getParcelable(USER_PARAM)
     }
 
@@ -100,9 +96,7 @@ class ProfileDetailFragment : BaseFragment() {
                 showProgress(state == LogoutState.Loading)
                 when (state) {
                     is LogoutState.Success -> {
-                        navigator.navigateToSignInScreen(
-                            currentFragment, wallet
-                        )
+                        navigator.navigateToSignInScreen(currentFragment)
             
                     is LogoutState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -123,12 +117,10 @@ class ProfileDetailFragment : BaseFragment() {
     }
 
     companion object {
-        private const val WALLET_PARAM = "wallet_param"
         private const val USER_PARAM = "user_param"
-        fun newInstance(wallet: Wallet?, user: UserInfo?) =
+        fun newInstance(user: UserInfo?) =
             ProfileDetailFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(WALLET_PARAM, wallet)
                     putParcelable(USER_PARAM, user)
         
     

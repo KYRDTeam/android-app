@@ -42,12 +42,6 @@ class SwapViewModel @Inject constructor(
     val getGetGasLimitCallback: LiveData<Event<GetGasLimitState>>
         get() = _getGetGasLimitCallback
 
-
-    private val _getExpectedRateCallback = MutableLiveData<Event<GetExpectedRateState>>()
-    val getExpectedRateCallback: LiveData<Event<GetExpectedRateState>>
-        get() = _getExpectedRateCallback
-
-
     private val _getGetGasPriceCallback = MutableLiveData<Event<GetGasPriceState>>()
     val getGetGasPriceCallback: LiveData<Event<GetGasPriceState>>
         get() = _getGetGasPriceCallback
@@ -65,6 +59,9 @@ class SwapViewModel @Inject constructor(
     val getGetMarketRateCallback: LiveData<Event<GetMarketRateState>>
         get() = _getGetMarketRateCallback
 
+    private val _getExpectedRateCallback = MutableLiveData<Event<GetExpectedRateState>>()
+    val getExpectedRateCallback: LiveData<Event<GetExpectedRateState>>
+        get() = _getExpectedRateCallback
 
     private val _saveSwapCallback = MutableLiveData<Event<SaveSwapState>>()
     val saveSwapDataCallback: LiveData<Event<SaveSwapState>>

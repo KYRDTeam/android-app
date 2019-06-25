@@ -226,7 +226,7 @@
                     android:textAllCaps="true"
                     android:textColor="#2e3957"
                     android:textSize="14sp"
-                    app:layout_constraintBottom_toTopOf="@+id/rvAlert"
+                    app:layout_constraintBottom_toBottomOf="@+id/view19"
                     app:layout_constraintEnd_toStartOf="@+id/imageView11"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintHorizontal_chainStyle="spread_inside"
@@ -262,7 +262,7 @@
                     android:id="@+id/rvAlert"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:background="@android:color/white"
                     android:clipToPadding="false"
                     android:nestedScrollingEnabled="false"
                     android:paddingBottom="56dp"
@@ -273,7 +273,6 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
-
 
 
     </FrameLayout>

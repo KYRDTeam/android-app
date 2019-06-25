@@ -96,8 +96,7 @@ class SignUpConfirmFragment : BaseFragment() {
 
         binding.tvLogin.setOnClickListener {
             navigator.navigateToSignUpScreen(
-                (activity as MainActivity).getCurrentFragment(),
-                wallet
+                (activity as MainActivity).getCurrentFragment()
             )
 
 
@@ -106,10 +105,9 @@ class SignUpConfirmFragment : BaseFragment() {
     companion object {
         private const val WALLET_PARAM = "wallet_param"
         private const val SOCIAL_PARAM = "social_param"
-        fun newInstance(wallet: Wallet?, socialInfo: SocialInfo?) =
+        fun newInstance(socialInfo: SocialInfo?) =
             SignUpConfirmFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(WALLET_PARAM, wallet)
                     putParcelable(SOCIAL_PARAM, socialInfo)
         
     

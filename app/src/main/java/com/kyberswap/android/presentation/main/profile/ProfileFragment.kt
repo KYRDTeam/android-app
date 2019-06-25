@@ -24,7 +24,6 @@ import com.kyberswap.android.databinding.FragmentProfileBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.SocialInfo
 import com.kyberswap.android.domain.model.UserInfo
-import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
@@ -57,8 +56,6 @@ class ProfileFragment : BaseFragment() {
     @Inject
     lateinit var appExecutors: AppExecutors
 
-    private var wallet: Wallet? = null
-
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -86,11 +83,6 @@ class ProfileFragment : BaseFragment() {
 
     private val twitterAuthClient by lazy {
         TwitterAuthClient()
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        wallet = arguments!!.getParcelable(WALLET_PARAM)
     }
 
     override fun onCreateView(
@@ -122,7 +114,7 @@ class ProfileFragment : BaseFragment() {
 
         binding.tvSignUp.setOnClickListener {
             navigator.navigateToSignUpScreen(
-                (activity as MainActivity).getCurrentFragment(), wallet
+                (activity as MainActivity).getCurrentFragment()
             )
 
         binding.btnLogin.setOnClickListener {
@@ -138,7 +130,6 @@ class ProfileFragment : BaseFragment() {
                             if (state.login.confirmSignUpRequired) {
                                 navigator.navigateToSignUpConfirmScreen(
                                     currentFragment,
-                                    wallet,
                                     state.socialInfo
                                 )
                      else {
@@ -243,10 +234,9 @@ class ProfileFragment : BaseFragment() {
     private fun navigateToProfileDetail(userInfo: UserInfo?) {
         navigator.navigateToProfileDetail(
             currentFragment,
-            wallet, userInfo
+            userInfo
         )
     }
-
 
     private fun meRequest(accessToken: AccessToken) {
         val request = GraphRequest.newMeRequest(
@@ -352,13 +342,8 @@ class ProfileFragment : BaseFragment() {
 
     companion object {
         private const val RC_SIGN_IN = 1000
-        private const val WALLET_PARAM = "wallet_param"
-        fun newInstance(wallet: Wallet?) =
-            ProfileFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(WALLET_PARAM, wallet)
-        
-    
+        fun newInstance() =
+            ProfileFragment()
     }
 
 

@@ -202,7 +202,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     ): Function {
         return Function(
             "transfer",
-            Arrays.asList(
+            listOf(
                 Address(walletAddress),
                 Uint256(BigInteger(value))
             ),
@@ -489,7 +489,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
 
         return Function(
             "approve",
-            Arrays.asList(
+            listOf(
                 Address(contractAddress),
                 Uint256(amount)
             ),

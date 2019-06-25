@@ -16,8 +16,8 @@ data class Alert(
     val status: String = "",
     val createdAt: String = "",
     val updatedAt: String = "",
-    val triggeredAt: Long = 0,
-    val filledAt: Long = 0
+    val triggeredAt: String = "",
+    val filledAt: String = ""
 ) {
     constructor(entity: AlertEntity) : this(
         entity.id,
@@ -31,8 +31,8 @@ data class Alert(
         entity.status,
         entity.createdAt,
         entity.updatedAt,
-        entity.triggeredAt,
-        entity.filledAt
+        entity.triggeredAt ?: "",
+        entity.filledAt ?: ""
     )
 
     val pair: String
