@@ -23,7 +23,6 @@ import com.kyberswap.android.databinding.FragmentSignupBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.SocialInfo
 import com.kyberswap.android.domain.model.UserInfo
-import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
@@ -50,8 +49,6 @@ class SignUpFragment : BaseFragment() {
     @Inject
     lateinit var appExecutors: AppExecutors
 
-    private var wallet: Wallet? = null
-
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -75,11 +72,6 @@ class SignUpFragment : BaseFragment() {
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(SignUpViewModel::class.java)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        wallet = arguments!!.getParcelable(WALLET_PARAM)
     }
 
     override fun onCreateView(
@@ -112,7 +104,7 @@ class SignUpFragment : BaseFragment() {
                     is SignUpState.Success -> {
                         showAlert(state.registerStatus.message)
                         navigator.navigateToSignInScreen(
-                            currentFragment, wallet
+                            currentFragment
                         )
                     }
                     is SignUpState.ShowError -> {
@@ -124,8 +116,7 @@ class SignUpFragment : BaseFragment() {
 
         binding.imgBack.setOnClickListener {
             navigator.navigateToSignUpScreen(
-                currentFragment,
-                wallet
+                currentFragment
             )
         }
 
@@ -209,7 +200,6 @@ class SignUpFragment : BaseFragment() {
                             if (state.login.confirmSignUpRequired) {
                                 navigator.navigateToSignUpConfirmScreen(
                                     (activity as MainActivity).getCurrentFragment(),
-                                    wallet,
                                     state.socialInfo
                                 )
                             } else {
@@ -240,7 +230,6 @@ class SignUpFragment : BaseFragment() {
             }
         navigator.navigateToProfileDetail(
             (activity as MainActivity).getCurrentFragment(),
-            wallet,
             userInfo
         )
     }
@@ -341,14 +330,8 @@ class SignUpFragment : BaseFragment() {
 
 
     companion object {
-        private const val WALLET_PARAM = "wallet_param"
         private const val RC_SIGN_IN = 1000
-        fun newInstance(wallet: Wallet?) =
-            SignUpFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(WALLET_PARAM, wallet)
-                }
-            }
+        fun newInstance() = SignUpFragment()
     }
 
 

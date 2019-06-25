@@ -85,8 +85,6 @@ class LimitOrderFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-
         viewModel.getSelectedWallet()
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -675,12 +673,6 @@ class LimitOrderFragment : BaseFragment() {
     }
 
     companion object {
-        private const val WALLET_PARAM = "wallet_param"
-        fun newInstance(wallet: Wallet?) =
-            LimitOrderFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(WALLET_PARAM, wallet)
-                }
-            }
+        fun newInstance() = LimitOrderFragment()
     }
 }

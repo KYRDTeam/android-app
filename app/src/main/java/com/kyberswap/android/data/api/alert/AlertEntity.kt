@@ -28,7 +28,7 @@ data class AlertEntity(
     @SerializedName("updated_at")
     val updatedAt: String = "",
     @SerializedName("triggered_at")
-    val triggeredAt: Long = 0,
+    val triggeredAt: String? = "",
     @SerializedName("filled_at")
-    val filledAt: Long = 0
+    val filledAt: String? = ""
 )

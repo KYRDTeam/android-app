@@ -140,7 +140,7 @@ object TextViewBindingAdapter {
         } else R.color.rate_down_text_color
 
         view.setTextColor(ContextCompat.getColor(view.context, color))
-        view.text = StringBuilder().append(if (true == isAbove) "≥ " else "≤")
+        view.text = StringBuilder().append(if (true == isAbove) "≥ " else "≤ ")
             .append(alertPrice?.toDisplayNumber())
     }
 

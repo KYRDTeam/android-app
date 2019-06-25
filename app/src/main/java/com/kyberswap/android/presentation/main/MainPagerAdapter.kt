@@ -25,11 +25,10 @@ class MainPagerAdapter constructor(
     init {
         listFragment.add(BALANCE, BalanceFragment.newInstance())
         listFragment.add(SWAP, SwapFragment.newInstance())
-        listFragment.add(LIMIT_ORDER, LimitOrderFragment.newInstance(wallet))
+        listFragment.add(LIMIT_ORDER, LimitOrderFragment.newInstance())
         listFragment.add(
             PROFILE, if (userInfo == null || userInfo.uid <= 0)
-                ProfileFragment.newInstance(wallet) else ProfileDetailFragment.newInstance(
-                wallet,
+                ProfileFragment.newInstance() else ProfileDetailFragment.newInstance(
                 userInfo
             )
         )
