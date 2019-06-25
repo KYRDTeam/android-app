@@ -228,7 +228,9 @@ class SwapDataRepository @Inject constructor(
             .doAfterSuccess { cap ->
                 param.walletAddress?.let {
                     val wallet = walletDao.findWalletByAddress(it)
-                    walletDao.updateWallet(wallet.copy(cap = cap))
+                    if (wallet.cap != cap) {
+                        walletDao.updateWallet(wallet.copy(cap = cap))
+            
         
     
     }

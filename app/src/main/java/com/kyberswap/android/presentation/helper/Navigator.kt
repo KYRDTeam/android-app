@@ -29,7 +29,7 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     fun navigateToLandingPage() {
         activity.startActivity(LandingActivity.newIntent(activity))
-        activity.finish()
+        activity.finishAffinity()
     }
 
     fun navigateToImportWalletPage(fromMain: Boolean = false) {
@@ -72,11 +72,10 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
 
     fun navigateToBalanceAddressScreen(
-        currentFragment: Fragment?,
-        wallet: Wallet?
+        currentFragment: Fragment?
     ) {
 
-        navigateByChildFragmentManager(currentFragment, BalanceAddressFragment.newInstance(wallet))
+        navigateByChildFragmentManager(currentFragment, BalanceAddressFragment.newInstance())
     }
 
     fun navigateToChartScreen(

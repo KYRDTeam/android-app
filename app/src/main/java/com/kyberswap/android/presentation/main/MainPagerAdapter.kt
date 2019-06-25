@@ -17,29 +17,32 @@ import com.kyberswap.android.presentation.main.swap.SwapFragment
 
 class MainPagerAdapter constructor(
     fm: FragmentManager,
-    val wallet: Wallet?,
+    var wallet: Wallet?,
     val userInfo: UserInfo?
 ) : FragmentPagerAdapter(fm) {
+    private val listFragment = mutableListOf<Fragment>()
+
+    init {
+        listFragment.add(BALANCE, BalanceFragment.newInstance())
+        listFragment.add(SWAP, SwapFragment.newInstance())
+        listFragment.add(LIMIT_ORDER, LimitOrderFragment.newInstance(wallet))
+        listFragment.add(
+            PROFILE, if (userInfo == null || userInfo.uid <= 0)
+                ProfileFragment.newInstance(wallet) else ProfileDetailFragment.newInstance(
+                wallet,
+                userInfo
+            )
+        )
+        listFragment.add(SETTING, SettingFragment.newInstance())
+
+    }
 
     var registeredFragments = SparseArray<Fragment>()
 
 
     override fun getItem(position: Int): Fragment {
-        return when (position) {
-            BALANCE -> BalanceFragment.newInstance(
-                wallet
-            )
-            LIMIT_ORDER -> LimitOrderFragment.newInstance(wallet)
-            SWAP -> SwapFragment.newInstance(wallet)
-            PROFILE -> if (userInfo == null || userInfo.uid <= 0)
-                ProfileFragment.newInstance(wallet) else ProfileDetailFragment.newInstance(
-                wallet,
-                userInfo
-            )
-            else -> SettingFragment.newInstance()
-
+        return listFragment[position]
     }
-
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val fragment = super.instantiateItem(container, position) as Fragment

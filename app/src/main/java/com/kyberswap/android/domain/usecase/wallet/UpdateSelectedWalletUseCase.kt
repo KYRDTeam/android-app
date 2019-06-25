@@ -4,16 +4,18 @@ import androidx.annotation.VisibleForTesting
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.WalletRepository
-import com.kyberswap.android.domain.usecase.FlowableUseCase
-import io.reactivex.Flowable
+import com.kyberswap.android.domain.usecase.SequentialUseCase
+import io.reactivex.Single
 import javax.inject.Inject
 
-class GetSelectedWalletUseCase @Inject constructor(
+class UpdateSelectedWalletUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val walletRepository: WalletRepository
-) : FlowableUseCase<String?, Wallet>(schedulerProvider) {
+) : SequentialUseCase<UpdateSelectedWalletUseCase.Param, Wallet>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    override fun buildUseCaseFlowable(param: String?): Flowable<Wallet> {
-        return walletRepository.getSelectedWallet()
+    public override fun buildUseCaseSingle(param: Param): Single<Wallet> {
+        return walletRepository.updatedSelectedWallet(param)
     }
+
+    class Param(val wallet: Wallet)
 }

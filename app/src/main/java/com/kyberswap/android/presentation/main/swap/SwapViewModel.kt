@@ -6,9 +6,11 @@ import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.swap.*
+import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
@@ -27,7 +29,8 @@ class SwapViewModel @Inject constructor(
     private val saveSwapUseCase: SaveSwapUseCase,
     private val getGasPriceUseCase: GetGasPriceUseCase,
     private val getCapUseCase: GetCapUseCase,
-    private val estimateGasUseCase: EstimateGasUseCase
+    private val estimateGasUseCase: EstimateGasUseCase,
+    private val getWalletUseCase: GetSelectedWalletUseCase
 ) : ViewModel() {
 
     private val _getSwapCallback = MutableLiveData<Event<GetSwapState>>()
@@ -67,6 +70,10 @@ class SwapViewModel @Inject constructor(
     val saveSwapDataCallback: LiveData<Event<SaveSwapState>>
         get() = _saveSwapCallback
 
+    private val _getWalletStateCallback = MutableLiveData<Event<GetWalletState>>()
+    val getWalletStateCallback: LiveData<Event<GetWalletState>>
+        get() = _getWalletStateCallback
+
     fun getMarketRate(swap: Swap) {
 
         if (swap.hasSamePair) {
@@ -105,6 +112,7 @@ class SwapViewModel @Inject constructor(
     }
 
     fun getSwapData(address: String) {
+        getSwapData.dispose()
         getSwapData.execute(
             Consumer {
                 it.gasLimit = calculateGasLimit(it).toString()
@@ -178,7 +186,8 @@ class SwapViewModel @Inject constructor(
         )
     }
 
-    fun getGasLimit(wallet: Wallet, swap: Swap) {
+    fun getGasLimit(wallet: Wallet?, swap: Swap?) {
+        if (wallet == null || swap == null) return
         estimateGasUseCase.execute(
             Consumer {
                 if (it.error == null) {
@@ -232,6 +241,21 @@ class SwapViewModel @Inject constructor(
                 _saveSwapCallback.value = Event(SaveSwapState.ShowError(it.localizedMessage))
     ,
             SaveSwapUseCase.Param(swap)
+        )
+    }
+
+    fun getSelectedWallet() {
+        getWalletUseCase.execute(
+            Consumer { wallet ->
+                _getWalletStateCallback.value = Event(GetWalletState.Success(wallet))
+
+    ,
+            Consumer {
+                it.printStackTrace()
+                _getWalletStateCallback.value =
+                    Event(GetWalletState.ShowError(it.localizedMessage))
+    ,
+            null
         )
     }
 }

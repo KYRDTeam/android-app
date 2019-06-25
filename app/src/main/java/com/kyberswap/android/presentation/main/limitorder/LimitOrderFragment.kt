@@ -31,6 +31,7 @@ import com.kyberswap.android.presentation.main.swap.GetExpectedRateState
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.main.swap.GetMarketRateState
+import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -73,12 +74,6 @@ class LimitOrderFragment : BaseFragment() {
 
     private var userInfo: UserInfo? = null
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        wallet = arguments?.getParcelable(WALLET_PARAM)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -90,8 +85,26 @@ class LimitOrderFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        binding.walletName = wallet?.name
-        viewModel.getLimitOrders(wallet)
+
+
+        viewModel.getSelectedWallet()
+        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetWalletState.Success -> {
+                        if (state.wallet.address != wallet?.address) {
+                            this.wallet = state.wallet
+                            binding.walletName = state.wallet.name
+                            viewModel.getLimitOrders(wallet)
+                
+            
+                    is GetWalletState.ShowError -> {
+
+            
+        
+    
+)
+
         viewModel.getLoginStatus()
         viewModel.getLocalLimitOrderCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -111,7 +124,7 @@ class LimitOrderFragment : BaseFragment() {
                 
 
                         viewModel.getGasPrice()
-                        viewModel.getGasLimit(wallet!!, binding.order!!)
+                        viewModel.getGasLimit(wallet, binding.order)
             
                     is GetLocalLimitOrderState.ShowError -> {
 
@@ -226,8 +239,16 @@ class LimitOrderFragment : BaseFragment() {
                     is GetRelatedOrdersState.Success -> {
                         orderAdapter.submitList(listOf())
                         orderAdapter.submitList(state.orders)
-                        binding.availableAmount =
-                            viewModel.calAvailableAmount(binding.order, state.orders)
+
+                        val calAvailableAmount = viewModel.calAvailableAmount(
+                            binding.order,
+                            state.orders
+                        )
+                        if (binding.availableAmount != calAvailableAmount
+                        ) {
+                            binding.availableAmount =
+                                calAvailableAmount
+                
             
                     is GetRelatedOrdersState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -419,11 +440,10 @@ class LimitOrderFragment : BaseFragment() {
                             bindingOrder?.let {
                                 if (binding.order != bindingOrder) {
                                     binding.order = bindingOrder
+                                    viewModel.saveLimitOrder(
+                                        it
+                                    )
                         
-
-                                viewModel.saveLimitOrder(
-                                    it
-                                )
                     
                 
             

@@ -1,7 +1,9 @@
 package com.kyberswap.android.presentation.main.balance.address
 
-import androidx.lifecycle.ViewModel
+import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
+import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import javax.inject.Inject
 
 class BalanceAddressViewModel @Inject constructor(
-) : ViewModel()
+    getSelectedWalletUseCase: GetSelectedWalletUseCase
+) : SelectedWalletViewModel(getSelectedWalletUseCase)

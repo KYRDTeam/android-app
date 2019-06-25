@@ -37,11 +37,9 @@ class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding.viewModel = viewModel
-        handler.post {
-            binding.imageView.setBackgroundResource(R.drawable.progress_animation)
-            val frameAnimation = binding.imageView.background as AnimationDrawable
-            frameAnimation.start()
-
+        binding.imageView.setBackgroundResource(R.drawable.progress_animation)
+        val frameAnimation = binding.imageView.background as AnimationDrawable
+        frameAnimation.start()
 
         handler.postDelayed({
             viewModel.prepareData()
@@ -56,6 +54,7 @@ class SplashActivity : BaseActivity() {
             
                     is GetUserWalletState.ShowError -> {
                         navigator.navigateToLandingPage()
+                        return@Observer
             
         
     

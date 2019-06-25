@@ -3,6 +3,7 @@ package com.kyberswap.android.presentation.main
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -31,6 +32,7 @@ import com.kyberswap.android.presentation.main.balance.GetPendingTransactionStat
 import com.kyberswap.android.presentation.main.balance.WalletAdapter
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
+import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_drawer.*
@@ -63,22 +65,41 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
     }
 
+    private val handler by lazy {
+        Handler()
+    }
+
     private val binding by lazy {
         DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
     }
 
     val pendingTransactions = mutableListOf<Transaction>()
 
+    var adapter: MainPagerAdapter? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WalletManager.storage = this
         WalletManager.scanWallets()
-
-        wallet = intent.getParcelableExtra(WALLET_PARAM)
         user = intent.getParcelableExtra(USER_PARAM)
-
+        mainViewModel.getWalletStateCallback.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetWalletState.Success -> {
+                        wallet = state.wallet
+            
+                    is GetWalletState.ShowError -> {
+                        Toast.makeText(
+                            this,
+                            state.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+            
+        
+    
+)
         binding.viewModel = mainViewModel
-
         val tabColors =
             applicationContext.resources.getIntArray(R.array.tab_colors)
         val navigationAdapter = AHBottomNavigationAdapter(this, R.menu.bottom_navigation_menu)
@@ -102,6 +123,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             user
         )
 
+        binding.vpNavigation.adapter = adapter
+        binding.vpNavigation.offscreenPageLimit = 4
         val listener = object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
 
@@ -123,14 +146,10 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     
 
 
-
-        binding.vpNavigation.adapter = adapter
-        binding.vpNavigation.offscreenPageLimit = 4
         binding.vpNavigation.addOnPageChangeListener(listener)
 
         binding.vpNavigation.post {
             listener.onPageSelected(MainPagerAdapter.SWAP)
-
 
         bottomNavigation.currentItem = MainPagerAdapter.SWAP
         binding.vpNavigation.currentItem = MainPagerAdapter.SWAP
@@ -141,7 +160,15 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             false
         )
         val walletAdapter =
-            WalletAdapter(appExecutors)
+            WalletAdapter(appExecutors) {
+
+                showDrawer(false)
+                handler.postDelayed(
+                    {
+                        mainViewModel.updateSelectedWallet(it)
+            , 250
+                )
+    
         binding.navView.rvWallet.adapter = walletAdapter
 
         mainViewModel.getWallets()
@@ -149,7 +176,11 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetAllWalletState.Success -> {
-                        walletAdapter.submitList(state.wallets)
+                        val selectedWallet = state.wallets.find { it.isSelected }
+                        if (wallet?.address != selectedWallet?.address) {
+                            walletAdapter.submitList(listOf())
+                            walletAdapter.submitList(state.wallets)
+                
             
                     is GetAllWalletState.ShowError -> {
                         navigator.navigateToLandingPage()
@@ -163,10 +194,13 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
 
         tvTransaction.setOnClickListener {
-            navigator.navigateToTransactionScreen(
-                currentFragment,
-                wallet
-            )
+
+            wallet?.let {
+                navigator.navigateToTransactionScreen(
+                    currentFragment,
+                    it
+                )
+    
             showDrawer(false)
 
 
@@ -237,13 +271,15 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
         tvSend.setOnClickListener {
             showDrawer(false)
-            navigator.navigateToSendScreen(
-                currentFragment, wallet
-            )
+            wallet?.let {
+                navigator.navigateToSendScreen(
+                    currentFragment, it
+                )
+    
+
 
 
     }
-
 
     private fun setPendingTransaction(numOfPendingTransaction: Int) {
         tvPendingTransaction.visibility =
@@ -255,8 +291,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         return currentFragment
     }
 
-    fun showDrawer(isShown: Boolean) {
-        if (isShown) {
+    fun showDrawer(show: Boolean) {
+        if (show) {
             binding.drawerLayout.openDrawer(GravityCompat.END)
  else {
             binding.drawerLayout.closeDrawer(GravityCompat.END)
@@ -279,6 +315,11 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                 it.onActivityResult(requestCode, resultCode, data)
     
 
+    }
+
+    override fun onDestroy() {
+        handler.removeCallbacksAndMessages(null)
+        super.onDestroy()
     }
 
     override fun getKeystoreDir(): File {

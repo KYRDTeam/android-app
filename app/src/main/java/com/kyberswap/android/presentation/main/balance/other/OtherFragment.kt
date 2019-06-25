@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.databinding.FragmentOtherBinding
-import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
@@ -23,7 +22,7 @@ class OtherFragment : BaseFragment() {
     @Inject
     lateinit var appExecutors: AppExecutors
 
-    private var wallet: Wallet? = null
+//    private var wallet: Wallet? = null
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -33,11 +32,6 @@ class OtherFragment : BaseFragment() {
         ViewModelProviders.of(this, viewModelFactory).get(OtherViewModel::class.java)
     }
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        wallet = arguments!!.getParcelable(WALLET_PARAM)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,12 +43,6 @@ class OtherFragment : BaseFragment() {
     }
 
     companion object {
-        private const val WALLET_PARAM = "wallet_param"
-        fun newInstance(wallet: Wallet?) =
-            OtherFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(WALLET_PARAM, wallet)
-        
-    
+        fun newInstance() = OtherFragment()
     }
 }

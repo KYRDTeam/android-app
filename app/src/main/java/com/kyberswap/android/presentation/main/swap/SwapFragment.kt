@@ -21,7 +21,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.DEFAULT_ACCEPT_RATE_PERCENTAGE
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.*
 import kotlinx.android.synthetic.main.fragment_swap.*
@@ -52,12 +52,6 @@ class SwapFragment : BaseFragment() {
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        wallet = arguments!!.getParcelable(WALLET_PARAM)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -69,32 +63,51 @@ class SwapFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        binding.walletName = wallet?.name
 
-        wallet?.let {
-            viewModel.getSwapData(it.address)
+        viewModel.getSelectedWallet()
+        viewModel.getWalletStateCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetWalletState.Success -> {
+                        this.wallet = state.wallet
+                        if (binding.swap?.walletAddress != state.wallet.address) {
+                            binding.walletName = state.wallet.name
+                            viewModel.getSwapData(state.wallet.address)
+                            viewModel.getCap(state.wallet.address)
+                
+            
+                    is GetWalletState.ShowError -> {
 
-        grTokenSource.setAllOnClickListener(View.OnClickListener {
-            navigator.navigateToTokenSearchFromSwapTokenScreen(
-                (activity as MainActivity).getCurrentFragment(),
-                wallet,
-                true
-            )
-)
-
-        grTokenDest.setAllOnClickListener(View.OnClickListener {
-            navigator.navigateToTokenSearchFromSwapTokenScreen(
-                (activity as MainActivity).getCurrentFragment(),
-                wallet,
-                false
-            )
-)
-
-        grBalance.setAllOnClickListener(
-            View.OnClickListener {
-                binding.edtSource.setAmount(tvTokenBalanceValue.text.toString())
+            
+        
     
-        )
+)
+
+        viewModel.getSwapDataCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetSwapState.Success -> {
+                        if (binding.swap != state.swap) {
+                            if (state.swap.tokenSource.tokenSymbol == state.swap.tokenDest.tokenSymbol) {
+                                showAlert(getString(R.string.same_token_alert))
+                    
+
+                            edtSource.setAmount(state.swap.sourceAmount)
+                            getRate(state.swap)
+
+                            binding.swap = state.swap
+                            binding.executePendingBindings()
+
+                
+                        viewModel.getGasPrice()
+                        viewModel.getGasLimit(wallet, binding.swap)
+            
+                    is GetSwapState.ShowError -> {
+
+            
+        
+    
+)
 
         tvAdvanceOption.setOnClickListener {
             expandableLayout.expand()
@@ -121,6 +134,7 @@ class SwapFragment : BaseFragment() {
 
         imgMenu.setOnClickListener {
             showDrawer(true)
+
 
 
         imgSwap.setOnClickListener {
@@ -170,32 +184,6 @@ class SwapFragment : BaseFragment() {
                 
             
         )
-
-        viewModel.getSwapDataCallback.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is GetSwapState.Success -> {
-                        if (binding.swap != state.swap) {
-                            if (state.swap.tokenSource.tokenSymbol == state.swap.tokenDest.tokenSymbol) {
-                                showAlert(getString(R.string.same_token_alert))
-                    
-
-                            edtSource.setAmount(state.swap.sourceAmount)
-                            getRate(state.swap)
-
-                            binding.swap = state.swap
-                            binding.executePendingBindings()
-
-                
-                        viewModel.getGasPrice()
-                        viewModel.getGasLimit(wallet!!, binding.swap!!)
-            
-                    is GetSwapState.ShowError -> {
-
-            
-        
-    
-)
 
         viewModel.getExpectedRateCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -328,7 +316,6 @@ class SwapFragment : BaseFragment() {
     
 )
 
-        viewModel.getCap(wallet?.address)
         viewModel.getCapCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -457,12 +444,6 @@ class SwapFragment : BaseFragment() {
     }
 
     companion object {
-        private const val WALLET_PARAM = "wallet_param"
-        fun newInstance(wallet: Wallet?) =
-            SwapFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(WALLET_PARAM, wallet)
-        
-    
+        fun newInstance() = SwapFragment()
     }
 }
