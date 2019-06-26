@@ -246,9 +246,9 @@ class SendFragment : BaseFragment() {
             }
         }
 
-        binding.grBalance.setAllOnClickListener(View.OnClickListener {
+        binding.grBalance.setAllOnClickListener {
             binding.edtSource.setText(binding.send?.tokenSource?.currentBalance?.toPlainString())
-        })
+        }
 
         viewModel.saveSendCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->

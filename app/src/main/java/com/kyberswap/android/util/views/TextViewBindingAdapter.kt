@@ -1,5 +1,7 @@
 package com.kyberswap.android.util.views
 
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.text.Spannable
 import android.text.SpannableString
 import android.view.View
@@ -14,6 +16,8 @@ import com.kyberswap.android.util.ext.toDisplayNumber
 import io.github.inflationx.calligraphy3.CalligraphyTypefaceSpan
 import io.github.inflationx.calligraphy3.TypefaceUtils
 import java.math.BigDecimal
+import java.math.RoundingMode
+
 
 object TextViewBindingAdapter {
     @BindingAdapter("app:resourceId")
@@ -119,6 +123,39 @@ object TextViewBindingAdapter {
     }
 
 
+    @BindingAdapter("app:ratePercentage")
+    @JvmStatic
+    fun ratePercentage(view: TextView, percent: String?) {
+
+        val percentageRate = percent.toBigDecimalOrDefaultZero()
+        val drawable = when {
+            percentageRate > BigDecimal.ZERO -> R.drawable.ic_arrow_up
+            percentageRate < BigDecimal.ZERO -> R.drawable.ic_arrow_down
+            else -> 0
+        }
+        val color = when {
+            percentageRate > BigDecimal.ZERO -> R.color.token_change24h_up
+            percentageRate < BigDecimal.ZERO -> R.color.token_change24h_down
+            else -> R.color.token_change24h_same
+        }
+
+        if (percentageRate == BigDecimal.ZERO) {
+            view.visibility = View.GONE
+        } else {
+            view.visibility = View.VISIBLE
+        }
+
+        view.setTextColor(ContextCompat.getColor(view.context, color))
+
+        view.text =
+            String.format(
+                view.context.getString(R.string.percentage_format),
+                percentageRate.abs().toDouble()
+            )
+        view.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawable, 0)
+    }
+
+
     @BindingAdapter("app:rateValue")
     @JvmStatic
     fun rateWarning(view: TextView, percent: String?) {
@@ -134,7 +171,7 @@ object TextViewBindingAdapter {
 
     @BindingAdapter("app:isAbove", "app:alertPrice")
     @JvmStatic
-    fun alert(view: TextView, isAbove: Boolean?, alertPrice: BigDecimal?) {
+    fun alertPrice(view: TextView, isAbove: Boolean?, alertPrice: BigDecimal?) {
         val color = if (true == isAbove) {
             R.color.rate_up_text_color
         } else R.color.rate_down_text_color
@@ -142,6 +179,62 @@ object TextViewBindingAdapter {
         view.setTextColor(ContextCompat.getColor(view.context, color))
         view.text = StringBuilder().append(if (true == isAbove) "≥ " else "≤ ")
             .append(alertPrice?.toDisplayNumber())
+    }
+
+
+    @BindingAdapter("app:isAbove", "app:percentChange")
+    @JvmStatic
+    fun percentChange(
+        view: TextView,
+        isAbove: Boolean?,
+        percentChange: BigDecimal?
+    ) {
+        val color = if (true == isAbove) {
+            R.color.rate_up_text_color
+        } else R.color.rate_down_text_color
+
+        val drawable = when (isAbove) {
+            true -> R.drawable.ic_arrow_up
+            else -> R.drawable.ic_arrow_down
+        }
+        view.setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0)
+        view.setTextColor(ContextCompat.getColor(view.context, color))
+        view.text = StringBuilder()
+            .append(percentChange?.setScale(2, RoundingMode.UP)?.toDisplayNumber()).append("%")
+    }
+
+
+    @BindingAdapter("app:isAbove", "app:percentChange", "app:isFilled")
+    @JvmStatic
+    fun fillAlertPercentChange(
+        view: TextView,
+        isAbove: Boolean?,
+        percentChange: BigDecimal?,
+        isFilled: Boolean
+    ) {
+        val color = if (true == isAbove) {
+            R.color.rate_up_text_color
+        } else R.color.rate_down_text_color
+
+        val drawable = when (isAbove) {
+            true -> R.drawable.ic_arrow_up
+            else -> R.drawable.ic_arrow_down
+        }
+        if (isFilled) {
+            val icon = view.context.getDrawable(drawable)
+            val matrix = ColorMatrix()
+            matrix.setSaturation(0f)
+
+            val filter = ColorMatrixColorFilter(matrix)
+
+            icon?.colorFilter = filter
+
+        } else {
+            view.setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0)
+        }
+        view.setTextColor(ContextCompat.getColor(view.context, color))
+        view.text = StringBuilder()
+            .append(percentChange?.setScale(2, RoundingMode.UP)?.toDisplayNumber()).append("%")
     }
 
     @BindingAdapter("app:rate")

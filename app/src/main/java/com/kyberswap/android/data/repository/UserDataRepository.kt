@@ -1,13 +1,14 @@
 package com.kyberswap.android.data.repository
 
 import com.kyberswap.android.data.api.home.UserApi
+import com.kyberswap.android.data.db.AlertDao
 import com.kyberswap.android.data.db.UserDao
 import com.kyberswap.android.data.mapper.UserMapper
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.LoginUser
+import com.kyberswap.android.domain.model.ResponseStatus
 import com.kyberswap.android.domain.model.UserInfo
-import com.kyberswap.android.domain.model.UserStatus
 import com.kyberswap.android.domain.repository.UserRepository
 import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
 import com.kyberswap.android.domain.usecase.profile.LoginUseCase
@@ -23,21 +24,34 @@ class UserDataRepository @Inject constructor(
     private val userApi: UserApi,
     private val userDao: UserDao,
     private val storageMediator: StorageMediator,
-    private val userMapper: UserMapper
+    private val userMapper: UserMapper,
+    private val alertDao: AlertDao
 ) : UserRepository {
 
     override fun logout(): Completable {
         return Completable.fromCallable {
             storageMediator.clearToken()
             userDao.deleteAllUsers()
+            alertDao.deleteAllAlerts()
         }
 
     }
 
-    override fun getAlerts(): Single<List<Alert>> {
-        return userApi.getAlert().map {
-            userMapper.transform(it.alerts)
+    override fun getAlerts(): Flowable<List<Alert>> {
+        return Flowable.mergeDelayError(
+            alertDao.all.map { alerts ->
+                alerts.filter { it.isNotLocal }
+            },
+            userApi.getAlert().map {
+                userMapper.transform(it.alerts)
+            }
+                .doAfterSuccess {
+                    alertDao.updateAlerts(it)
+                }.toFlowable()
+        ).map {
+            it.sortedByDescending { it.id }
         }
+
     }
 
     override fun userInfo(): Single<UserInfo?> {
@@ -51,7 +65,7 @@ class UserDataRepository @Inject constructor(
         return userDao.all
     }
 
-    override fun resetPassword(param: ResetPasswordUseCase.Param): Single<UserStatus> {
+    override fun resetPassword(param: ResetPasswordUseCase.Param): Single<ResponseStatus> {
         return userApi.resetPassword(param.email).map {
             userMapper.transform(it)
         }
@@ -85,7 +99,7 @@ class UserDataRepository @Inject constructor(
             }
     }
 
-    override fun signUp(param: SignUpUseCase.Param): Single<UserStatus> {
+    override fun signUp(param: SignUpUseCase.Param): Single<ResponseStatus> {
         return userApi.register(
             param.email,
             param.password,
