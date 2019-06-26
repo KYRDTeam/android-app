@@ -59,23 +59,25 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/toolbar_height"
+            android:background="@android:color/white"
             android:fillViewport="true">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:paddingBottom="16dp">
 
-                <View
-                    android:id="@+id/view9"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:background="@color/color_bg_gray"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
+                <!--<View-->
+                <!--android:id="@+id/view9"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="0dp"-->
+                <!--android:background="@color/color_bg_gray"-->
+                <!--app:layout_constraintBottom_toBottomOf="parent"-->
+                <!--app:layout_constraintEnd_toEndOf="parent"-->
+                <!--app:layout_constraintHorizontal_bias="0.0"-->
+                <!--app:layout_constraintStart_toStartOf="parent"-->
+                <!--app:layout_constraintTop_toTopOf="parent"-->
+                <!--app:layout_constraintVertical_bias="0.0" />-->
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/imgProfile"
@@ -227,36 +229,36 @@
                     android:textColor="#2e3957"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="@+id/view19"
-                    app:layout_constraintEnd_toStartOf="@+id/imageView11"
+                    app:layout_constraintEnd_toStartOf="@+id/imgLeaderBoard"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintHorizontal_chainStyle="spread_inside"
                     app:layout_constraintStart_toStartOf="@+id/textView59"
                     app:layout_constraintTop_toTopOf="@+id/view19" />
 
                 <ImageView
-                    android:id="@+id/imageView11"
+                    android:id="@+id/imgLeaderBoard"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:padding="6dp"
                     android:src="@drawable/ic_trophy"
                     app:layout_constraintBottom_toBottomOf="@+id/textView10"
-                    app:layout_constraintEnd_toStartOf="@+id/imageView12"
+                    app:layout_constraintEnd_toStartOf="@+id/imgCreateAlert"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/textView10"
                     app:layout_constraintTop_toTopOf="@+id/textView10" />
 
                 <ImageView
-                    android:id="@+id/imageView12"
+                    android:id="@+id/imgCreateAlert"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_marginStart="8dp"
                     android:padding="6dp"
                     android:src="@drawable/ic_add_alert"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageView11"
+                    app:layout_constraintBottom_toBottomOf="@+id/imgLeaderBoard"
                     app:layout_constraintEnd_toEndOf="@+id/textView57"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imageView11"
-                    app:layout_constraintTop_toTopOf="@+id/imageView11" />
+                    app:layout_constraintStart_toEndOf="@+id/imgLeaderBoard"
+                    app:layout_constraintTop_toTopOf="@+id/imgLeaderBoard" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvAlert"
@@ -265,11 +267,27 @@
                     android:background="@android:color/white"
                     android:clipToPadding="false"
                     android:nestedScrollingEnabled="false"
-                    android:paddingBottom="56dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/view19" />
+
+                <TextView
+                    android:id="@+id/tvMoreAlert"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selectable_item_background"
+                    android:gravity="center"
+                    android:minHeight="56dp"
+                    android:text="@string/more_alerts"
+                    android:textAllCaps="true"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#5a5e67"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/rvAlert"
+                    app:layout_constraintVertical_bias="0.0" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

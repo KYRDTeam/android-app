@@ -4,8 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainViewModel
-import com.kyberswap.android.presentation.main.alert.PriceAlertFragment
-import com.kyberswap.android.presentation.main.alert.PriceAlertViewModel
+import com.kyberswap.android.presentation.main.alert.*
 import com.kyberswap.android.presentation.main.balance.BalanceFragment
 import com.kyberswap.android.presentation.main.balance.BalanceViewModel
 import com.kyberswap.android.presentation.main.balance.address.BalanceAddressFragment
@@ -165,6 +164,18 @@ interface MainActivityModule {
     @ContributesAndroidInjector
     fun contributePriceAlertFragment(): PriceAlertFragment
 
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributePriceAlertSearchFragment(): PriceAlertTokenSearchFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeManageAlertFragment(): ManageAlertFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeLeaderBoardFragment(): LeaderBoardFragment
+
     @Binds
     @IntoMap
     @ViewModelKey(BalanceViewModel::class)
@@ -199,6 +210,7 @@ interface MainActivityModule {
     fun bindBalanceAddressViewModel(
         otherViewModel: BalanceAddressViewModel
     ): ViewModel
+
 
     @Binds
     @IntoMap
@@ -339,6 +351,27 @@ interface MainActivityModule {
     @IntoMap
     @ViewModelKey(PriceAlertViewModel::class)
     fun bindPriceAlertViewModel(
-        rriceAlertViewModel: PriceAlertViewModel
+        priceAlertViewModel: PriceAlertViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PriceAlertTokenSearchViewModel::class)
+    fun bindPriceAlertTokenSearchViewModel(
+        priceAlertTokenSearchViewModel: PriceAlertTokenSearchViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(MangeAlertViewModel::class)
+    fun bindMangeAlertViewModel(
+        mangeAlertViewModel: MangeAlertViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LeaderBoardViewModel::class)
+    fun bindLeaderBoardViewModel(
+        leaderBoardViewModel: LeaderBoardViewModel
     ): ViewModel
 }

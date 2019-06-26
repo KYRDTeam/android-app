@@ -1,13 +1,13 @@
 package com.kyberswap.android.data.api.home
 
+import com.kyberswap.android.data.api.alert.AlertEntity
 import com.kyberswap.android.data.api.alert.AlertResponseEntity
+import com.kyberswap.android.data.api.alert.LeaderBoardEntity
 import com.kyberswap.android.data.api.user.LoginUserEntity
-import com.kyberswap.android.data.api.user.UserStatusEnity
+import com.kyberswap.android.data.api.user.ResponseStatusEntity
 import io.reactivex.Single
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.GET
-import retrofit2.http.POST
+import retrofit2.http.*
+import java.math.BigDecimal
 
 interface UserApi {
     @FormUrlEncoded
@@ -18,14 +18,14 @@ interface UserApi {
         @Field("password_confirmation") passwordConfirmation: String,
         @Field("display_name") displayName: String,
         @Field("subscription") subscription: Boolean
-    ): Single<UserStatusEnity>
+    ): Single<ResponseStatusEntity>
 
 
     @FormUrlEncoded
     @POST("api/users/reset_password")
     fun resetPassword(
         @Field("email") email: String
-    ): Single<UserStatusEnity>
+    ): Single<ResponseStatusEntity>
 
 
     @FormUrlEncoded
@@ -50,6 +50,34 @@ interface UserApi {
         @Field("confirm_signup") confirmSignUp: Boolean
     ): Single<LoginUserEntity>
 
-    @GET("/api/alerts")
+    @GET("api/alerts")
     fun getAlert(): Single<AlertResponseEntity>
+
+    @POST("api/alerts")
+    @FormUrlEncoded
+    fun createAlert(
+        @Field("base") base: Int,
+        @Field("symbol") symbol: String,
+        @Field("alert_price") alertPrice: BigDecimal,
+        @Field("is_above") isAbove: Boolean
+
+    ): Single<AlertEntity>
+
+    @PUT("api/alerts/{id}")
+    @FormUrlEncoded
+    fun updateAlert(
+        @Path("id") id: Long,
+        @Field("base") base: Int,
+        @Field("symbol") symbol: String,
+        @Field("alert_price") alertPrice: BigDecimal,
+        @Field("is_above") isAbove: Boolean
+
+    ): Single<AlertEntity>
+
+    @DELETE("api/alerts/{id}")
+    fun deleteAlert(@Path("id") id: Long): Single<ResponseStatusEntity>
+
+    @GET("api/alerts/ranks")
+    fun getLeaderBoard(): Single<LeaderBoardEntity>
+
 }

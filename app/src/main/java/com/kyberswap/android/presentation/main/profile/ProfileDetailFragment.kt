@@ -2,6 +2,7 @@ package com.kyberswap.android.presentation.main.profile
 
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +18,8 @@ import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.presentation.main.profile.alert.AlertAdapter
+import com.kyberswap.android.presentation.main.alert.ManageAlertAdapter
+import com.kyberswap.android.presentation.main.profile.alert.DeleteAlertsState
 import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
 import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
@@ -40,6 +42,10 @@ class ProfileDetailFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    private val handler by lazy {
+        Handler()
+    }
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
@@ -73,16 +79,52 @@ class ProfileDetailFragment : BaseFragment() {
             false
         )
         val alertAdapter =
-            AlertAdapter(appExecutors) {
-
-    
+            ManageAlertAdapter(appExecutors, handler,
+                {
+                    navigator.navigateToPriceAlertScreen(
+                        currentFragment, it
+                    )
+        , {
+                    navigator.navigateToPriceAlertScreen(
+                        currentFragment, it
+                    )
+        , {
+                    viewModel.deleteAlert(it)
+        )
         binding.rvAlert.adapter = alertAdapter
 
         viewModel.getAlertsCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetAlertsState.Success -> {
-                        alertAdapter.submitAlerts(state.alerts)
+                        alertAdapter.submitAlerts(state.alerts.take(2))
+            
+                    is GetAlertsState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+            
+        
+    
+)
+
+        viewModel.deleteAlertsCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == DeleteAlertsState.Loading)
+                when (state) {
+                    is DeleteAlertsState.Success -> {
+                        showAlert(getString(R.string.delete_alert_success))
+            
+                    is DeleteAlertsState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+            
+        
+    
+)
+
+        viewModel.getAlertsCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetAlertsState.Success -> {
+                        alertAdapter.submitAlerts(state.alerts.take(2))
             
                     is GetAlertsState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -112,6 +154,24 @@ class ProfileDetailFragment : BaseFragment() {
         binding.tvLogout.setOnClickListener {
             viewModel.logout()
 
+
+        binding.imgCreateAlert.setOnClickListener {
+            navigator.navigateToPriceAlertScreen(
+                currentFragment
+            )
+
+
+
+        binding.imgLeaderBoard.setOnClickListener {
+            navigator.navigateToLeaderBoard(
+                currentFragment
+            )
+
+
+        binding.tvMoreAlert.setOnClickListener {
+            navigator.navigateToManageAlert(
+                currentFragment
+            )
 
 
     }

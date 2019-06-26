@@ -91,4 +91,10 @@ class DatabaseModule {
         return appDatabase.orderFilterDao()
     }
 
+    @Provides
+    @Singleton
+    fun provideAlertDao(appDatabase: AppDatabase): AlertDao {
+        return appDatabase.alertDao()
+    }
+
 }

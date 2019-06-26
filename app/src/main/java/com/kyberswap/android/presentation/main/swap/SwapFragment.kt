@@ -65,7 +65,7 @@ class SwapFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
 
         viewModel.getSelectedWallet()
-        viewModel.getWalletStateCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
