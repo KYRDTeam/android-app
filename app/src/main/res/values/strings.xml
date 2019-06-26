@@ -264,6 +264,19 @@
     <string name="agree_to">"Agree to "</string>
     <string name="term_and_condition">https://files.kyberswap.com/tac.pdf</string>
     <string name="term_condition_notification">Please accept terms and conditions</string>
+    <string name="complete_profile_verification">Complete Your Profile Verification</string>
+    <string name="my_profile">My Profile</string>
+    <string name="profile_unverified">Unverified</string>
+    <string name="profile_verification_notification">Increase KyberSwap\'s trade limits Participate in token sales hosted on KyberGO</string>
+    <string name="profile_verify">Verify</string>
+    <string name="linked_social_accounts">Linked Social Accounts</string>
+    <string name="subscribe_to_newsletters">Subscribe to newsletters</string>
+    <string name="two_factor">2nd Factor</string>
+    <string name="connect_my_facebook">Connect my Facebook</string>
+    <string name="connect_my_twitter">Connect my Twitter</string>
+    <string name="login_with_telegram">Login with Telegram</string>
+    <string name="alerts">Alerts</string>
+    <string name="log_out">Log Out</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>

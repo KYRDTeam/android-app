@@ -5,15 +5,16 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 
 class ImportWalletPagerAdapter constructor(
-    fm: FragmentManager
+    fm: FragmentManager,
+    val fromMain: Boolean
 ) : FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
 
         return when (position) {
-            JSON -> ImportJsonFragment.newInstance()
-            PRIVATE_KEY -> return ImportPrivateKeyFragment.newInstance()
-            else -> return ImportSeedFragment.newInstance()
+            JSON -> ImportJsonFragment.newInstance(fromMain)
+            PRIVATE_KEY -> return ImportPrivateKeyFragment.newInstance(fromMain)
+            else -> return ImportSeedFragment.newInstance(fromMain)
         }
     }
 

@@ -27,6 +27,7 @@ class ProfileViewModel @Inject constructor(
     val resetPasswordCallback: LiveData<Event<ResetPasswordState>>
         get() = _resetPasswordCallback
 
+
     fun login(email: String, password: String) {
         _loginCallback.postValue(Event(LoginState.Loading))
         loginUseCase.execute(

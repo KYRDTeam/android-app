@@ -28,6 +28,8 @@ class ImportWalletActivity : BaseActivity(), KeystoreStorage {
 
     var currentSelectedView: View? = null
 
+    private var fromMain: Boolean = false
+
     private val binding by lazy {
         DataBindingUtil.setContentView<ActivityImportWalletBinding>(
             this,
@@ -37,6 +39,9 @@ class ImportWalletActivity : BaseActivity(), KeystoreStorage {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        fromMain = intent.getBooleanExtra(
+            FROM_MAIN_PARAM, false
+        )
         WalletManager.storage = this
         WalletManager.scanWallets()
         binding.title = getString(R.string.import_wallet_title)
@@ -64,7 +69,7 @@ class ImportWalletActivity : BaseActivity(), KeystoreStorage {
             }
         }
 
-        val adapter = ImportWalletPagerAdapter(supportFragmentManager)
+        val adapter = ImportWalletPagerAdapter(supportFragmentManager, fromMain)
         binding.vpImportOption.adapter = adapter
         binding.vpImportOption.addOnPageChangeListener(object : OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {}
@@ -88,7 +93,11 @@ class ImportWalletActivity : BaseActivity(), KeystoreStorage {
     }
 
     companion object {
-        fun newIntent(context: Context) =
+        private const val FROM_MAIN_PARAM = "from_main_param"
+        fun newIntent(context: Context, fromMain: Boolean) =
             Intent(context, ImportWalletActivity::class.java)
+                .apply {
+                    putExtra(FROM_MAIN_PARAM, fromMain)
+                }
     }
 }

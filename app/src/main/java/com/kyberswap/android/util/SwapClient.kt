@@ -115,8 +115,8 @@ class SwapClient @Inject constructor(private val web3j: Web3j) {
 
     @Throws(Exception::class)
     fun getBalance(owner: String, token: Token): Token {
-        return token.copy(
-            currentBalance = if (token.isETH) {
+        return token.updateBalance(
+            if (token.isETH) {
                 Convert.fromWei(BigDecimal(getEthBalance(owner)), Convert.Unit.ETHER)
             } else {
                 Convert.fromWei(

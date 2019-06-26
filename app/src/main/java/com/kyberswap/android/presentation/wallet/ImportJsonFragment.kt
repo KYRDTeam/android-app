@@ -41,8 +41,15 @@ class ImportJsonFragment : BaseFragment() {
         ViewModelProviders.of(this, viewModelFactory).get(ImportJsonViewModel::class.java)
     }
 
+    private var fromMain: Boolean = false
+
     private val defaultName by lazy {
         getString(R.string.import_your_json_file)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        fromMain = arguments!!.getBoolean(FROM_MAIN_PARAM)
     }
 
     override fun onCreateView(
@@ -75,7 +82,12 @@ class ImportJsonFragment : BaseFragment() {
                     is ImportWalletState.Success -> {
 
                         showAlert(getString(R.string.import_wallet_success)) {
-                            navigator.navigateToHome(state.wallet)
+                            if (fromMain) {
+                                activity?.onBackPressed()
+                            } else {
+                                navigator.navigateToHome(state.wallet)
+                            }
+
                         }
                     }
                     is ImportWalletState.ShowError -> {
@@ -139,10 +151,12 @@ class ImportJsonFragment : BaseFragment() {
 
 
     companion object {
+        private const val FROM_MAIN_PARAM = "from_main_param"
         private const val READ_REQUEST_CODE = 1
-        fun newInstance() =
+        fun newInstance(fromMain: Boolean) =
             ImportJsonFragment().apply {
                 arguments = Bundle().apply {
+                    putBoolean(FROM_MAIN_PARAM, fromMain)
                 }
             }
     }

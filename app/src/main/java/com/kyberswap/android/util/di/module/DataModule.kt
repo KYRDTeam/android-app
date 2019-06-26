@@ -21,8 +21,9 @@ object DataModule {
     fun provideWalletRepository(
         context: Context,
         walletDao: WalletDao,
-        unitDao: UnitDao
-    ): WalletRepository = WalletDataRepository(context, walletDao, unitDao)
+        unitDao: UnitDao,
+        tokenDao: TokenDao
+    ): WalletRepository = WalletDataRepository(context, walletDao, unitDao, tokenDao)
 
     @Singleton
     @Provides
@@ -33,9 +34,9 @@ object DataModule {
         tokenMapper: TokenMapper,
         client: TokenClient,
         tokenDao: TokenDao,
-        walletTokenDao: WalletTokenDao
+        walletDao: WalletDao
     ): BalanceRepository =
-        BalanceDataRepository(api, currencyApi, tokenMapper, client, tokenDao, walletTokenDao)
+        BalanceDataRepository(api, currencyApi, tokenMapper, client, tokenDao, walletDao)
 
     @Singleton
     @Provides

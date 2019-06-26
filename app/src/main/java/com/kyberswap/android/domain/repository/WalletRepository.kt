@@ -18,15 +18,19 @@ interface WalletRepository {
 
     fun importWallet(param: ImportWalletFromSeedUseCase.Param): Single<Wallet>
 
-    fun getSelectedWallet(): Single<Wallet>
+    fun getSelectedWallet(): Flowable<Wallet>
 
     fun getWalletByAddress(param: String): Flowable<Wallet>
 
-    fun getAllWallet(): Single<List<Wallet>>
+    fun getAllWallet(): Flowable<List<Wallet>>
 
     fun getSelectedUnit(): Flowable<String>
 
     fun setSelectedUnit(unit: String): Completable
 
     fun updateWallet(param: Wallet): Completable
+
+    fun addWalletToBalanceMonitor(param: AddWalletToBalanceMonitorUseCase.Param): Completable
+
+    fun updatedSelectedWallet(param: UpdateSelectedWalletUseCase.Param): Single<Wallet>
 }

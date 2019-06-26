@@ -37,6 +37,7 @@ class LimitOrderDataRepository @Inject constructor(
     private val orderMapper: OrderMapper,
     private val feeMapper: FeeMapper
 ) : LimitOrderRepository {
+
     override fun cancelOrder(param: CancelOrderUseCase.Param): Single<Cancelled> {
         return limitOrderApi.cancelOrder(
             param.order.id
@@ -188,7 +189,7 @@ class LimitOrderDataRepository @Inject constructor(
             val hexString = tokenClient.signOrder(
                 param.localLimitOrder,
                 credentials,
-                context.getString(R.string.kyber_address)
+                context.getString(R.string.limit_order_contract)
             )
             hexString
         }.flatMap { it ->
@@ -235,9 +236,8 @@ class LimitOrderDataRepository @Inject constructor(
             val ethBalance = ethToken?.currentBalance ?: BigDecimal.ZERO
             val wethBalance = wethToken?.currentBalance ?: BigDecimal.ZERO
 
-            val defaultSourceToken = wethToken?.copy(
-                tokenSymbol = Token.ETH_SYMBOL_STAR,
-                currentBalance = (ethBalance.plus(wethBalance))
+            val defaultSourceToken = wethToken?.updateBalance(ethBalance.plus(wethBalance))?.copy(
+                tokenSymbol = Token.ETH_SYMBOL_STAR
             )
 
             val defaultDestToken = tokenDao.getTokenBySymbol(Token.KNC)
@@ -290,7 +290,11 @@ class LimitOrderDataRepository @Inject constructor(
                 tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)?.currentBalance ?: BigDecimal.ZERO
             val wethBalance =
                 tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)?.currentBalance ?: BigDecimal.ZERO
-            token.copy(currentBalance = (ethBalance + wethBalance))
+            token.updateBalance(
+                ethBalance.plus(
+                    wethBalance
+                )
+            )
         } else {
             token
         }

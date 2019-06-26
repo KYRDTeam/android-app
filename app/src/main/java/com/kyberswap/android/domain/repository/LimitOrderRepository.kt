@@ -29,4 +29,5 @@ interface LimitOrderRepository {
     fun saveOrderFilter(param: SaveLimitOrderFilterUseCase.Param): Completable
 
     fun cancelOrder(param: CancelOrderUseCase.Param): Single<Cancelled>
+
 }

@@ -4,6 +4,7 @@ import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.kyberswap.android.domain.model.Transaction
+import com.kyberswap.android.domain.model.WalletBalance
 import java.math.BigDecimal
 import java.math.BigInteger
 
@@ -71,6 +72,21 @@ class ListTypeConverter {
 
     @TypeConverter
     fun tokenPairTypeToString(list: List<String>): String {
+        return Gson().toJson(list)
+    }
+}
+
+class WalletBalanceTypeConverter {
+    @TypeConverter
+    fun stringToWalletBalanceType(value: String): List<WalletBalance> {
+        val listType = object : TypeToken<List<WalletBalance>>() {
+        }.type
+        return Gson().fromJson(value, listType)
+    }
+
+
+    @TypeConverter
+    fun walletBalanceTypeToString(list: List<WalletBalance>): String {
         return Gson().toJson(list)
     }
 }

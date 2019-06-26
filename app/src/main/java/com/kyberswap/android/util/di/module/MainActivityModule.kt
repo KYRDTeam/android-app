@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainViewModel
+import com.kyberswap.android.presentation.main.alert.PriceAlertFragment
+import com.kyberswap.android.presentation.main.alert.PriceAlertViewModel
 import com.kyberswap.android.presentation.main.balance.BalanceFragment
 import com.kyberswap.android.presentation.main.balance.BalanceViewModel
 import com.kyberswap.android.presentation.main.balance.address.BalanceAddressFragment
@@ -154,6 +156,14 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeSignUpConfirmFragment(): SignUpConfirmFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeProfileDetailFragment(): ProfileDetailFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributePriceAlertFragment(): PriceAlertFragment
 
     @Binds
     @IntoMap
@@ -315,5 +325,20 @@ interface MainActivityModule {
     @ViewModelKey(FilterViewModel::class)
     fun bindFilterViewModel(
         filterViewModel: FilterViewModel
+    ): ViewModel
+
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ProfileDetailViewModel::class)
+    fun bindProfileDetailViewModel(
+        filterViewModel: ProfileDetailViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PriceAlertViewModel::class)
+    fun bindPriceAlertViewModel(
+        rriceAlertViewModel: PriceAlertViewModel
     ): ViewModel
 }

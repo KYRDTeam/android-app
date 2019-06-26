@@ -24,6 +24,7 @@ import io.reactivex.Single
 import org.consenlabs.tokencore.wallet.WalletManager
 import org.web3j.crypto.WalletUtils
 import org.web3j.protocol.core.methods.response.EthEstimateGas
+import org.web3j.utils.Convert
 import java.math.BigDecimal
 import javax.inject.Inject
 import kotlin.math.pow
@@ -62,7 +63,23 @@ class SwapDataRepository @Inject constructor(
     }
 
     override fun getSendData(param: GetSendTokenUseCase.Param): Flowable<Send> {
-        return sendTokenDao.findSendByAddressFlowable(param.walletAddress)
+
+
+        val send = sendTokenDao.findSendByAddress(param.walletAddress)
+        val defaultSend = if (send == null) {
+            val defaultSourceToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
+            Send(
+                param.walletAddress,
+                defaultSourceToken
+            )
+        } else {
+            send
+        }
+        sendTokenDao.insertSend(defaultSend)
+
+        return sendTokenDao.findSendByAddressFlowable(param.walletAddress).defaultIfEmpty(
+            defaultSend
+        )
     }
 
     override fun swapToken(param: SwapTokenUseCase.Param): Single<String> {
@@ -100,7 +117,10 @@ class SwapDataRepository @Inject constructor(
                         from = swap.tokenSource.tokenAddress,
                         gas = swap.gasLimit,
                         gasUsed = swap.gasLimit,
-                        gasPrice = swap.gasPrice,
+                        gasPrice = Convert.toWei(
+                            swap.gasPrice.toBigDecimalOrDefaultZero(),
+                            Convert.Unit.GWEI
+                        ).toString(),
                         to = swap.tokenDest.tokenAddress,
                         tokenSource = swap.tokenSource.tokenSymbol,
                         tokenDest = swap.tokenDest.tokenSymbol,
@@ -111,7 +131,6 @@ class SwapDataRepository @Inject constructor(
             }
 
             hash
-
         }
     }
 
@@ -138,8 +157,8 @@ class SwapDataRepository @Inject constructor(
             resetSend.let {
                 sendTokenDao.updateSend(
                     it.copy(
-                        tokenSource = it.tokenSource.copy(
-                            currentBalance = it.tokenSource.currentBalance
+                        tokenSource = it.tokenSource.updateBalance(
+                            it.tokenSource.currentBalance
                                 - resetSend.sourceAmount.toBigDecimalOrDefaultZero()
                         ),
                         sourceAmount = ""
@@ -157,7 +176,10 @@ class SwapDataRepository @Inject constructor(
                         from = transfer.tokenSource.tokenAddress,
                         gas = transfer.gasLimit,
                         gasUsed = transfer.gasLimit,
-                        gasPrice = transfer.gasPrice,
+                        gasPrice = Convert.toWei(
+                            transfer.gasPrice.toBigDecimalOrDefaultZero(),
+                            Convert.Unit.GWEI
+                        ).toString(),
                         to = transfer.contact.address,
                         value = transfer.sourceAmount,
                         tokenDecimal = transfer.tokenSource.tokenDecimal.toString(),
@@ -206,7 +228,9 @@ class SwapDataRepository @Inject constructor(
             .doAfterSuccess { cap ->
                 param.walletAddress?.let {
                     val wallet = walletDao.findWalletByAddress(it)
-                    walletDao.updateWallet(wallet.copy(cap = cap))
+                    if (wallet.cap != cap) {
+                        walletDao.updateWallet(wallet.copy(cap = cap))
+                    }
                 }
             }
     }

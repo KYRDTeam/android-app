@@ -5,9 +5,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.main.balance.BalanceFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
+import com.kyberswap.android.presentation.main.profile.ProfileDetailFragment
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.setting.SettingFragment
 import com.kyberswap.android.presentation.main.swap.SwapFragment
@@ -15,24 +17,31 @@ import com.kyberswap.android.presentation.main.swap.SwapFragment
 
 class MainPagerAdapter constructor(
     fm: FragmentManager,
-    val wallet: Wallet?
+    var wallet: Wallet?,
+    val userInfo: UserInfo?
 ) : FragmentPagerAdapter(fm) {
+    private val listFragment = mutableListOf<Fragment>()
+
+    init {
+        listFragment.add(BALANCE, BalanceFragment.newInstance())
+        listFragment.add(SWAP, SwapFragment.newInstance())
+        listFragment.add(LIMIT_ORDER, LimitOrderFragment.newInstance())
+        listFragment.add(
+            PROFILE, if (userInfo == null || userInfo.uid <= 0)
+                ProfileFragment.newInstance() else ProfileDetailFragment.newInstance(
+                userInfo
+            )
+        )
+        listFragment.add(SETTING, SettingFragment.newInstance())
+
+    }
 
     var registeredFragments = SparseArray<Fragment>()
 
 
     override fun getItem(position: Int): Fragment {
-        return when (position) {
-            BALANCE -> BalanceFragment.newInstance(
-                wallet
-            )
-            LIMIT_ORDER -> LimitOrderFragment.newInstance(wallet)
-            SWAP -> SwapFragment.newInstance(wallet)
-            PROFILE -> ProfileFragment.newInstance(wallet)
-            else -> SettingFragment.newInstance()
-        }
+        return listFragment[position]
     }
-
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val fragment = super.instantiateItem(container, position) as Fragment
