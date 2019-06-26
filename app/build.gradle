@@ -73,6 +73,7 @@ android {
 
         prod {
 
+
     }
     applicationVariants.all { variant ->
         copy {

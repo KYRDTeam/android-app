@@ -7,11 +7,9 @@ import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.kyberswap.android.R
-import com.kyberswap.android.databinding.DialogBackupMessageAgainBinding
-import com.kyberswap.android.databinding.DialogBackupMessageBinding
-import com.kyberswap.android.databinding.DialogCancelOrderConfirmationBinding
-import com.kyberswap.android.databinding.DialogConfirmationBinding
+import com.kyberswap.android.databinding.*
 import com.kyberswap.android.domain.model.Order
 import javax.inject.Inject
 
@@ -35,6 +33,33 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         dialog.show()
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
+    }
+
+
+    fun showBottomSheetDialog(onClickCreateWallet: () -> Unit, onClickImportWallet: () -> Unit) {
+
+        val binding = DataBindingUtil.inflate<DialogBottomSheetBinding>(
+            LayoutInflater.from(activity), R.layout.dialog_bottom_sheet, null, false
+        )
+
+        val dialog = BottomSheetDialog(activity)
+        dialog.setContentView(binding.root)
+
+        binding.tvCreateWallet.setOnClickListener {
+            onClickCreateWallet.invoke()
+            dialog.dismiss()
+
+
+        binding.tvImportWallet.setOnClickListener {
+            onClickImportWallet.invoke()
+            dialog.dismiss()
+
+
+        binding.tvCancel.setOnClickListener {
+            dialog.dismiss()
+
+
+        dialog.show()
     }
 
 
@@ -73,7 +98,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         dialog.setCanceledOnTouchOutside(true)
         dialog.setCancelable(true)
         val binding =
-            DataBindingUtil.inflate<com.kyberswap.android.databinding.DialogForgotPasswordBinding>(
+            DataBindingUtil.inflate<DialogForgotPasswordBinding>(
                 LayoutInflater.from(activity), R.layout.dialog_forgot_password, null, false
             )
 

@@ -13,6 +13,19 @@ interface WalletDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertWallet(wallet: Wallet)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun batchInsertWallets(wallets: List<Wallet>)
+
+    @Transaction
+    fun batchUpdate(wallets: List<Wallet>) {
+        deleteAllWallets()
+        batchInsertWallets(wallets)
+    }
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    fun batchUpdateWallets(wallets: List<Wallet>)
+
+
     @Update
     fun updateWallet(wallet: Wallet)
 
@@ -22,10 +35,16 @@ interface WalletDao {
     @Query("SELECT * from wallets where address = :address")
     fun findWalletByAddress(address: String): Wallet
 
+    @Query("SELECT * from wallets where isSelected = :isSelected LIMIT 1")
+    fun findSelectedWallet(isSelected: Boolean = true): Flowable<Wallet>
+
     @Query("DELETE FROM wallets")
     fun deleteAllWallets()
 
     @get:Query("SELECT * FROM wallets")
     val all: List<Wallet>
+
+    @get:Query("SELECT * FROM wallets")
+    val allWalletsFlowable: Flowable<List<Wallet>>
 }
 

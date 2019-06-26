@@ -81,6 +81,9 @@ data class Order(
     val isPending: Boolean
         get() = status.toLowerCase() == Status.OPEN.value || status.toLowerCase() == Status.IN_PROGRESS.value
 
+    val isOpen: Boolean
+        get() = status.toLowerCase() == Status.OPEN.value
+
     val displayedDate: String
         get() = formatterShort.format(Date(createdAt * 1000L))
 

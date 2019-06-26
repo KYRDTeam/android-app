@@ -73,7 +73,8 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     }
 
     @Throws(Exception::class)
-    fun getEthBalance(owner: String): BigInteger {
+    fun getEthBalance(owner: String?): BigInteger {
+        if (owner == null) return BigInteger.ZERO
         return web3j
             .ethGetBalance(
                 owner,
@@ -100,7 +101,8 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     }
 
     @Throws(Exception::class)
-    fun getBalance(walletAddress: String, tokenAddress: String): BigDecimal? {
+    fun getBalance(walletAddress: String?, tokenAddress: String?): BigDecimal? {
+        if (walletAddress == null || tokenAddress == null) return BigDecimal.ZERO
         val function = balanceOf(walletAddress)
         val responseValue = callSmartContractFunction(function, tokenAddress, walletAddress)
 
@@ -115,18 +117,19 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     }
 
     @Throws(Exception::class)
-    fun getBalance(owner: String, token: Token): Token {
-        return token.copy(
-            currentBalance = if (token.isETH) {
-                Convert.fromWei(BigDecimal(getEthBalance(owner)), Convert.Unit.ETHER)
+    fun getBalance(token: Token): Token {
+        return token.updateBalance(
+            if (token.isETH) {
+                Convert.fromWei(BigDecimal(getEthBalance(token.owner)), Convert.Unit.ETHER)
      else {
-                (getBalance(owner, token.tokenAddress) ?: BigDecimal.ZERO).divide(
+                (getBalance(token.owner, token.tokenAddress) ?: BigDecimal.ZERO).divide(
                     BigDecimal(10).pow(
                         token.tokenDecimal
                     )
                 )
     
         )
+
     }
 
     @Throws(Exception::class)
@@ -199,7 +202,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     ): Function {
         return Function(
             "transfer",
-            Arrays.asList(
+            listOf(
                 Address(walletAddress),
                 Uint256(BigInteger(value))
             ),
@@ -486,7 +489,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
 
         return Function(
             "approve",
-            Arrays.asList(
+            listOf(
                 Address(contractAddress),
                 Uint256(amount)
             ),
@@ -580,28 +583,26 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         contractAddress: String
     ): String {
 
-        if (!order.tokenSource.isETHWETH) {
-            val txManager = RawTransactionManager(web3j, credentials)
-            val allowanceAmount =
-                getContractAllowanceAmount(
-                    order.userAddr,
-                    order.tokenSource.tokenAddress,
-                    contractAddress,
-                    txManager
-                )
-            if (allowanceAmount < order.sourceAmountWithPrecision) {
-                sendContractApproveTransferWithCondition(
-                    allowanceAmount,
-                    order.tokenSource,
-                    contractAddress,
-                    Convert.toWei(
-                        order.gasPrice.toBigDecimalOrDefaultZero(),
-                        Convert.Unit.GWEI
-                    ).toBigInteger(),
-                    order.gasLimit,
-                    txManager
-                )
-    
+        val txManager = RawTransactionManager(web3j, credentials)
+        val allowanceAmount =
+            getContractAllowanceAmount(
+                order.userAddr,
+                order.tokenSource.tokenAddress,
+                contractAddress,
+                txManager
+            )
+        if (allowanceAmount < order.sourceAmountWithPrecision) {
+            sendContractApproveTransferWithCondition(
+                allowanceAmount,
+                order.tokenSource,
+                contractAddress,
+                Convert.toWei(
+                    order.gasPrice.toBigDecimalOrDefaultZero(),
+                    Convert.Unit.GWEI
+                ).toBigInteger(),
+                order.gasLimit,
+                txManager
+            )
 
 
 

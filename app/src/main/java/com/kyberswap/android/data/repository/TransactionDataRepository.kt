@@ -38,7 +38,7 @@ class TransactionDataRepository @Inject constructor(
                 transaction?.let {
                     if (Numeric.decodeQuantity(tx.blockHash) > BigInteger.ZERO) {
                         transactionDao.delete(transaction)
-                        transactionDao.insertTransaction(tx)
+                        transactionDao.insertTransaction(tx.copy(transactionStatus = ""))
             
         
     
@@ -159,6 +159,7 @@ class TransactionDataRepository @Inject constructor(
     .toList()
 
         val erc20Transaction = fetchERC20TokenTransactions(address)
+
         return Flowable.mergeDelayError(
             transactionDao.getCompletedTransactions(),
             Singles.zip(
@@ -223,8 +224,7 @@ class TransactionDataRepository @Inject constructor(
             
                     transactionList.toList()
         .doAfterSuccess {
-                    transactionDao.deleteAllTransactions()
-                    transactionDao.insertTransactionBatch(it)
+                    transactionDao.updateTransactionList(it)
         
                 .toFlowable()
         )

@@ -8,6 +8,7 @@ import androidx.room.TypeConverters
 import com.kyberswap.android.data.api.currencies.TokenCurrencyEntity
 import com.kyberswap.android.data.api.token.TokenEntity
 import com.kyberswap.android.data.db.DataTypeConverter
+import com.kyberswap.android.data.db.WalletBalanceTypeConverter
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.parcel.Parcelize
 import java.math.BigDecimal
@@ -31,15 +32,22 @@ data class Token(
     val rateUsdNow: BigDecimal = BigDecimal.ZERO,
     @TypeConverters(DataTypeConverter::class)
     val changeUsd24h: BigDecimal = BigDecimal.ZERO,
-    @TypeConverters(DataTypeConverter::class)
-    val currentBalance: BigDecimal = BigDecimal.ZERO,
+//    @TypeConverters(DataTypeConverter::class)
+//    val currentBalance: BigDecimal = BigDecimal.ZERO,
     val cgId: String = "",
     @TypeConverters(DataTypeConverter::class)
     val gasApprove: BigDecimal = BigDecimal.ZERO,
     val gasLimit: String = "",
     val listingTime: Long = 0,
-    val priority: Boolean = false
+    val priority: Boolean = false,
+    @TypeConverters(WalletBalanceTypeConverter::class)
+    val wallets: List<WalletBalance> = listOf()
 ) : Parcelable {
+
+    val currentBalance: BigDecimal
+        get() = wallets.find { it.isSelected }?.currentBalance
+            ?: wallets.firstOrNull()?.currentBalance ?: BigDecimal.ZERO
+
     constructor(entity: TokenEntity) : this(
         entity.timestamp,
         entity.tokenSymbol,
@@ -65,6 +73,9 @@ data class Token(
 
     )
 
+    val currentWalletBalance: WalletBalance?
+        get() = wallets.find { it.isSelected }
+
     val submitOrderTokenSymbol: String
         get() = if (isETHWETH) WETH_SYMBOL else tokenSymbol
 
@@ -79,12 +90,61 @@ data class Token(
             this.changeEth24h,
             this.rateUsdNow,
             this.changeUsd24h,
-            this.currentBalance,
+//            this.currentBalance,
             entity.cgId,
             entity.gasApprove,
             entity.gasLimit,
             entity.listingTime,
-            entity.priority
+            entity.priority,
+            this.wallets
+        )
+    }
+
+    fun updateSelectedWallet(wallet: Wallet): Token {
+        val walletBalances = wallets.map {
+            it.copy(isSelected = false)
+.toMutableList()
+
+        val walletBalance = wallets.find { it1 -> it1.walletAddress == wallet.address }
+        if (walletBalance == null) {
+            walletBalances.add(
+                WalletBalance(
+                    wallet.address,
+                    BigDecimal.ZERO,
+                    wallet.isSelected
+                )
+            )
+ else {
+            val idx = walletBalances.indexOf(walletBalance)
+            if (idx >= 0) {
+                walletBalances[idx] = walletBalance.copy(isSelected = wallet.isSelected)
+    
+
+
+        return copy(wallets = walletBalances)
+    }
+
+    private fun updateBalance(walletBalance: WalletBalance?): Token {
+        if (walletBalance == null) return this
+        val updatedWalletBalance = wallets.map {
+            if (it.walletAddress == walletBalance.walletAddress) {
+                walletBalance
+     else {
+                it
+    
+
+
+        return this.copy(wallets = updatedWalletBalance)
+    }
+
+    val owner: String?
+        get() = currentWalletBalance?.walletAddress
+
+    fun updateBalance(balance: BigDecimal): Token {
+        return updateBalance(
+            currentWalletBalance?.copy(
+                currentBalance = balance
+            )
         )
     }
 

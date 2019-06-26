@@ -3,6 +3,7 @@ package com.kyberswap.android.presentation.main.profile
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,11 +23,12 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentProfileBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.SocialInfo
-import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.presentation.main.MainPagerAdapter
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.twitter.sdk.android.core.Callback
 import com.twitter.sdk.android.core.TwitterCore
@@ -34,6 +36,7 @@ import com.twitter.sdk.android.core.TwitterException
 import com.twitter.sdk.android.core.TwitterSession
 import com.twitter.sdk.android.core.identity.TwitterAuthClient
 import com.twitter.sdk.android.core.models.User
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_profile.*
 import timber.log.Timber
 import java.util.*
@@ -53,13 +56,15 @@ class ProfileFragment : BaseFragment() {
     @Inject
     lateinit var appExecutors: AppExecutors
 
-    private var wallet: Wallet? = null
-
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
+
+    private var fromLimitOrder: Boolean = false
+
+    private val handler by lazy { Handler() }
 
     private val gso by lazy {
         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -78,11 +83,6 @@ class ProfileFragment : BaseFragment() {
 
     private val twitterAuthClient by lazy {
         TwitterAuthClient()
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        wallet = arguments!!.getParcelable(WALLET_PARAM)
     }
 
     override fun onCreateView(
@@ -114,7 +114,7 @@ class ProfileFragment : BaseFragment() {
 
         binding.tvSignUp.setOnClickListener {
             navigator.navigateToSignUpScreen(
-                (activity as MainActivity).getCurrentFragment(), wallet
+                (activity as MainActivity).getCurrentFragment()
             )
 
         binding.btnLogin.setOnClickListener {
@@ -129,12 +129,14 @@ class ProfileFragment : BaseFragment() {
                         if (state.login.success) {
                             if (state.login.confirmSignUpRequired) {
                                 navigator.navigateToSignUpConfirmScreen(
-                                    (activity as MainActivity).getCurrentFragment(),
-                                    wallet,
+                                    currentFragment,
                                     state.socialInfo
                                 )
                      else {
-                                showAlert(state.login.userInfo.name)
+                                navigateToProfileDetail(state.login.userInfo)
+                                if (fromLimitOrder) {
+                                    moveToLimitOrder()
+                        
                     
                  else {
                             showAlert(state.login.message)
@@ -162,15 +164,19 @@ class ProfileFragment : BaseFragment() {
             
                     is ResetPasswordState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
-                        Toast.makeText(
-                            activity,
-                            state.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
             
         
     
 )
+
+        binding.imgBack.setOnClickListener {
+            activity?.onBackPressed()
+
+
+        binding.imgFacebook.setOnClickListener {
+            LoginManager.getInstance()
+                .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"))
+
 
         binding.imgGooglePlus.setOnClickListener {
             val googleSignInClient = GoogleSignIn.getClient(this.activity!!, gso)
@@ -186,45 +192,27 @@ class ProfileFragment : BaseFragment() {
     
 
 
-        binding.imgBack.setOnClickListener {
-            activity?.onBackPressed()
-
-
-        binding.imgFacebook.setOnClickListener {
-            val accessToken = AccessToken.getCurrentAccessToken()
-            val isLoggedIn = accessToken != null && !accessToken.isExpired
-            if (!isLoggedIn) {
-                LoginManager.getInstance()
-                    .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"))
-     else {
-                meRequest(accessToken)
-    
-
-
-
         binding.imgTwitter.setOnClickListener {
 
             val twitterSession = TwitterCore.getInstance().sessionManager.activeSession
-            if (twitterSession == null) {
-                twitterAuthClient.authorize(activity, object : Callback<TwitterSession>() {
-                    override fun success(result: com.twitter.sdk.android.core.Result<TwitterSession>?) {
-                        getTwitterUserProfileWthTwitterCoreApi(result?.data)
-            
-
-                    override fun failure(exception: TwitterException?) {
-                        exception?.printStackTrace()
-                        Toast.makeText(
-                            context,
-                            exception?.localizedMessage,
-                            Toast.LENGTH_SHORT
-                        ).show()
-            
-
-        )
-
-     else {
-                getTwitterUserProfileWthTwitterCoreApi(twitterSession)
+            if (twitterSession != null) {
+                TwitterCore.getInstance().sessionManager.clearActiveSession()
     
+            twitterAuthClient.authorize(activity, object : Callback<TwitterSession>() {
+                override fun success(result: com.twitter.sdk.android.core.Result<TwitterSession>?) {
+                    getTwitterUserProfileWthTwitterCoreApi(result?.data)
+        
+
+                override fun failure(exception: TwitterException?) {
+                    exception?.printStackTrace()
+                    Toast.makeText(
+                        context,
+                        exception?.localizedMessage,
+                        Toast.LENGTH_SHORT
+                    ).show()
+        
+
+    )
 
 
         binding.tvForgotPassword.setOnClickListener {
@@ -233,6 +221,21 @@ class ProfileFragment : BaseFragment() {
     
 
 
+    }
+
+    private fun moveToLimitOrder() {
+        if (activity is MainActivity) {
+            handler.post {
+                activity!!.bottomNavigation.currentItem = MainPagerAdapter.LIMIT_ORDER
+    
+
+    }
+
+    private fun navigateToProfileDetail(userInfo: UserInfo?) {
+        navigator.navigateToProfileDetail(
+            currentFragment,
+            userInfo
+        )
     }
 
     private fun meRequest(accessToken: AccessToken) {
@@ -328,15 +331,19 @@ class ProfileFragment : BaseFragment() {
 
     }
 
+    fun fromLimitOrder(fromLimitOrder: Boolean) {
+        this.fromLimitOrder = fromLimitOrder
+    }
+
+    override fun onDestroyView() {
+        handler.removeCallbacksAndMessages(null)
+        super.onDestroyView()
+    }
+
     companion object {
         private const val RC_SIGN_IN = 1000
-        private const val WALLET_PARAM = "wallet_param"
-        fun newInstance(wallet: Wallet?) =
-            ProfileFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(WALLET_PARAM, wallet)
-        
-    
+        fun newInstance() =
+            ProfileFragment()
     }
 
 

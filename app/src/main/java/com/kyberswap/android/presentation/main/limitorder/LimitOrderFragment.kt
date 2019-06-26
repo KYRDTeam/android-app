@@ -5,7 +5,6 @@ import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,16 +18,20 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentLimitOrderBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.LocalLimitOrder
+import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainPagerAdapter
+import com.kyberswap.android.presentation.main.profile.ProfileFragment
+import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.GetExpectedRateState
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.main.swap.GetMarketRateState
+import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -69,11 +72,7 @@ class LimitOrderFragment : BaseFragment() {
 
     var hasUserFocus: Boolean = false
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        wallet = arguments?.getParcelable(WALLET_PARAM)
-    }
+    private var userInfo: UserInfo? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -86,8 +85,25 @@ class LimitOrderFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        binding.walletName = wallet?.name
-        viewModel.getLimitOrders(wallet)
+        viewModel.getSelectedWallet()
+        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetWalletState.Success -> {
+                        if (state.wallet.address != wallet?.address) {
+                            this.wallet = state.wallet
+                            binding.walletName = state.wallet.name
+                            viewModel.getLimitOrders(wallet)
+                
+            
+                    is GetWalletState.ShowError -> {
+
+            
+        
+    
+)
+
+        viewModel.getLoginStatus()
         viewModel.getLocalLimitOrderCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -106,7 +122,7 @@ class LimitOrderFragment : BaseFragment() {
                 
 
                         viewModel.getGasPrice()
-                        viewModel.getGasLimit(wallet!!, binding.order!!)
+                        viewModel.getGasLimit(wallet, binding.order)
             
                     is GetLocalLimitOrderState.ShowError -> {
 
@@ -219,10 +235,18 @@ class LimitOrderFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetRelatedOrdersState.Success -> {
-                        orderAdapter.submitList(null)
+                        orderAdapter.submitList(listOf())
                         orderAdapter.submitList(state.orders)
-                        binding.availableAmount =
-                            viewModel.calAvailableAmount(binding.order, state.orders)
+
+                        val calAvailableAmount = viewModel.calAvailableAmount(
+                            binding.order,
+                            state.orders
+                        )
+                        if (binding.availableAmount != calAvailableAmount
+                        ) {
+                            binding.availableAmount =
+                                calAvailableAmount
+                
             
                     is GetRelatedOrdersState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -387,6 +411,43 @@ class LimitOrderFragment : BaseFragment() {
     
 )
 
+        viewModel.compositeDisposable.add(
+            binding.edtRate.textChanges()
+                .observeOn(schedulerProvider.ui())
+                .subscribe { text ->
+                    if (text.isNullOrEmpty()) {
+                        binding.edtDest.setText("")
+            
+
+                    binding.order?.let { order ->
+                        if (order.hasSamePair) {
+                            edtDest.setText(binding.edtSource.text)
+                 else {
+                            edtDest.setAmount(
+                                order.getExpectedDestAmount(
+                                    text.toString().toBigDecimalOrDefaultZero(),
+                                    binding.edtSource.toBigDecimalOrDefaultZero()
+                                ).toDisplayNumber()
+                            )
+
+                            val bindingOrder = binding.order?.copy(
+                                srcAmount = edtSource.text.toString(),
+                                minRate = edtRate.toBigDecimalOrDefaultZero()
+                            )
+
+                            bindingOrder?.let {
+                                if (binding.order != bindingOrder) {
+                                    binding.order = bindingOrder
+                                    viewModel.saveLimitOrder(
+                                        it
+                                    )
+                        
+                    
+                
+            
+        )
+
+
         viewModel.compositeDisposable.add(binding.edtSource.textChanges()
             .observeOn(schedulerProvider.ui())
             .subscribe { text ->
@@ -488,6 +549,10 @@ class LimitOrderFragment : BaseFragment() {
                     showAlert(getString(R.string.swap_amount_small))
         
 
+                userInfo == null || userInfo!!.uid <= 0 -> {
+                    moveToLoginTab()
+        
+
 
                 else -> binding.order?.let {
 
@@ -550,6 +615,19 @@ class LimitOrderFragment : BaseFragment() {
     
 )
 
+        viewModel.getLoginStatusCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is UserInfoState.Success -> {
+                        userInfo = state.userInfo
+            
+                    is UserInfoState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+            
+        
+    
+)
+
     }
 
     private fun moveToSwapTab() {
@@ -560,8 +638,18 @@ class LimitOrderFragment : BaseFragment() {
 
     }
 
-    private val currentFragment: Fragment?
-        get() = (activity as MainActivity).getCurrentFragment()
+    private fun moveToLoginTab() {
+        if (activity is MainActivity) {
+            handler.post {
+                activity!!.bottomNavigation.currentItem = MainPagerAdapter.PROFILE
+                (currentFragment as? ProfileFragment)?.fromLimitOrder(true)
+    
+
+    }
+
+    fun getLoginStatus() {
+        viewModel.getLoginStatus()
+    }
 
     private fun resetAmount() {
         edtSource.setText("")
@@ -585,12 +673,6 @@ class LimitOrderFragment : BaseFragment() {
     }
 
     companion object {
-        private const val WALLET_PARAM = "wallet_param"
-        fun newInstance(wallet: Wallet?) =
-            LimitOrderFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(WALLET_PARAM, wallet)
-        
-    
+        fun newInstance() = LimitOrderFragment()
     }
 }

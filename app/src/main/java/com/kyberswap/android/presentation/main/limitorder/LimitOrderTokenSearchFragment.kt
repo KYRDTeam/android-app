@@ -104,9 +104,8 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
 
                         val combineToken = wethToken?.copy(
                             tokenSymbol = getString(R.string.token_eth_star),
-                            tokenName = getString(R.string.token_eth_star_name),
-                            currentBalance = (ethBalance.plus(wethBalance))
-                        )
+                            tokenName = getString(R.string.token_eth_star_name)
+                        )?.updateBalance(ethBalance.plus(wethBalance))
 
                         combineToken?.let { token -> combineList.add(0, token) }
                         tokenList.clear()

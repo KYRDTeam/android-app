@@ -1,10 +1,12 @@
 package com.kyberswap.android.data.api.home
 
+import com.kyberswap.android.data.api.alert.AlertResponseEntity
 import com.kyberswap.android.data.api.user.LoginUserEntity
 import com.kyberswap.android.data.api.user.UserStatusEnity
 import io.reactivex.Single
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface UserApi {
@@ -47,4 +49,7 @@ interface UserApi {
         @Field("oauth_token_secret") oauthTokenSecret: String?,
         @Field("confirm_signup") confirmSignUp: Boolean
     ): Single<LoginUserEntity>
+
+    @GET("/api/alerts")
+    fun getAlert(): Single<AlertResponseEntity>
 }
