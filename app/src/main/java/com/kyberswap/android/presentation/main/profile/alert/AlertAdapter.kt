@@ -2,7 +2,6 @@ package com.kyberswap.android.presentation.main.profile.alert
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import com.kyberswap.android.AppExecutors
@@ -51,12 +50,10 @@ class AlertAdapter(
 
     override fun onBindViewHolder(holder: DataBoundViewHolder<ItemAlertBinding>, position: Int) {
         super.onBindViewHolder(holder, position)
-        val root = holder.binding.root
-        val background = ContextCompat.getColor(
-            root.context,
-            if (position % 2 == 0) R.color.token_item_even_bg else R.color.token_item_odd_bg
-        )
-        root.setBackgroundColor(background)
+        val background =
+            if (position % 2 == 0) R.drawable.item_even_background else R.drawable.item_odd_background
+        holder.binding.root.setBackgroundResource(background)
+
     }
 
     override fun createBinding(parent: ViewGroup, viewType: Int): ItemAlertBinding =

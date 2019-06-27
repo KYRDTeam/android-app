@@ -14,6 +14,7 @@ import com.kyberswap.android.presentation.main.profile.LoginType
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import jdenticon.Jdenticon
 
+
 object ImageViewBindingAdapter {
     @BindingAdapter("app:imageUrl")
     @JvmStatic
@@ -62,6 +63,9 @@ object ImageViewBindingAdapter {
     @JvmStatic
     fun loadResource(view: ImageView, identifier: String?) {
         if (identifier == null) return
+
+        val stringUrl =
+            "https://files.kyber.network/DesignAssets/tokens/iOS/${identifier.toLowerCase()}.png"
         var resourceIcon: Int?
         try {
 
@@ -76,10 +80,11 @@ object ImageViewBindingAdapter {
             }
 
             if (resourceIcon == 0) {
-                Glide.with(view).load(R.drawable.token_default).error(R.drawable.token_default)
+                Glide.with(view).load(R.drawable.token_default)
                     .into(view)
             } else {
-                Glide.with(view).load(resourceIcon).error(R.drawable.token_default).into(view)
+                Glide.with(view).load(stringUrl).placeholder(resourceIcon)
+                    .error(resourceIcon).into(view)
             }
         } catch (exception: Exception) {
             exception.printStackTrace()

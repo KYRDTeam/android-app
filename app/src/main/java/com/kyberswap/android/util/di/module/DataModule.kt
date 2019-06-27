@@ -126,9 +126,10 @@ object DataModule {
         api: UserApi,
         userDao: UserDao,
         storageMediator: StorageMediator,
-        userMapper: UserMapper
+        userMapper: UserMapper,
+        alertDao: AlertDao
     ): UserRepository =
-        UserDataRepository(api, userDao, storageMediator, userMapper)
+        UserDataRepository(api, userDao, storageMediator, userMapper, alertDao)
 
 
     @Singleton
@@ -155,5 +156,22 @@ object DataModule {
             tokenClient,
             mapper,
             feeMapper
+        )
+
+
+    @Singleton
+    @Provides
+    @JvmStatic
+    fun provideAlertRepository(
+        alertDao: AlertDao,
+        tokenDao: TokenDao,
+        userApi: UserApi,
+        alertMapper: AlertMapper
+    ): AlertRepository =
+        AlertDataRepository(
+            alertDao,
+            tokenDao,
+            userApi,
+            alertMapper
         )
 }

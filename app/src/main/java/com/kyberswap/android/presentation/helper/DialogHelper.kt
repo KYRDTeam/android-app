@@ -7,10 +7,13 @@ import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.*
 import com.kyberswap.android.domain.model.Order
+import com.kyberswap.android.presentation.main.alert.EligibleTokenAdapter
 import javax.inject.Inject
 
 class DialogHelper @Inject constructor(private val activity: AppCompatActivity) {
@@ -176,6 +179,37 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
+
+    fun showConfirmDeleteAlert(
+        positiveListener: () -> Unit,
+        negativeListener: () -> Unit = {}
+    ) {
+
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogConfirmDeleteAlertBinding>(
+                LayoutInflater.from(activity), R.layout.dialog_confirm_delete_alert, null, false
+            )
+
+        binding.tvOk.setOnClickListener {
+            positiveListener.invoke()
+            dialog.dismiss()
+        }
+
+        binding.tvCancel.setOnClickListener {
+            negativeListener.invoke()
+            dialog.dismiss()
+        }
+
+
+
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    }
+
     private fun setDialogDimens(dialog: AlertDialog, width: Int?, height: Int? = null) {
         val lp = WindowManager.LayoutParams()
 
@@ -188,5 +222,35 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         }
 
         dialog.window?.attributes = lp
+    }
+
+    fun showEligibleToken(appExecutors: AppExecutors, tokens: List<String>) {
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogEligibleTokenBinding>(
+                LayoutInflater.from(activity), R.layout.dialog_eligible_token, null, false
+            )
+
+        binding.rvToken.layoutManager = GridLayoutManager(
+            activity,
+            4
+        )
+
+        val adapter = EligibleTokenAdapter(appExecutors) {
+
+        }
+        binding.imgClose.setOnClickListener {
+            dialog.dismiss()
+        }
+        binding.rvToken.adapter = adapter
+        adapter.submitList(tokens)
+
+
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
     }
 }

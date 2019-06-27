@@ -277,6 +277,28 @@
     <string name="login_with_telegram">Login with Telegram</string>
     <string name="alerts">Alerts</string>
     <string name="log_out">Log Out</string>
+    <string name="price_alert">Price Alert</string>
+    <string name="select_pair">Select pair</string>
+    <string name="currency">Currency</string>
+    <string name="alert_price">Alert Price</string>
+    <string name="alert_current_price">Current Price: %s</string>
+    <string name="default_hint">0</string>
+    <string name="more_alerts">More Alerts</string>
+    <string name="alert_triggered">Triggered</string>
+    <string name="alert_edit">Edit</string>
+    <string name="alert_delete">Delete</string>
+    <string name="trigger_on">Trigger on:</string>
+    <string name="delete_alert_success">Delete alert successfully</string>
+    <string name="alerts_leader_board">Alerts Leaderboard</string>
+    <string name="pair">Pair</string>
+    <string name="entry">Entry</string>
+    <string name="swing">Swing</string>
+    <string name="target">Target</string>
+    <string name="delete_alert_confirmation">Do you want to delete this alert</string>
+    <string name="alert_campaign">Campaign(s)</string>
+    <string name="eligible_tokens">Eligible Tokens</string>
+    <string name="campaign_reward_unit">Reward currency: %s</string>
+    <string name="to_do">TO DO</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>

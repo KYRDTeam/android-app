@@ -6,7 +6,7 @@ import java.math.BigDecimal
 
 data class AlertEntity(
     @SerializedName("id")
-    val id: Int = 0,
+    val id: Long = 0,
     @SerializedName("base")
     val base: String = "",
     @SerializedName("symbol")
@@ -30,5 +30,12 @@ data class AlertEntity(
     @SerializedName("triggered_at")
     val triggeredAt: String? = "",
     @SerializedName("filled_at")
-    val filledAt: String? = ""
+    val filledAt: String? = "",
+    val rank: Int? = 0,
+    @SerializedName("user_email")
+    val userEmail: String = "",
+    @SerializedName("telegram_account")
+    val telegramAccount: String? = "",
+    @SerializedName("reward")
+    val reward: String? = ""
 )
