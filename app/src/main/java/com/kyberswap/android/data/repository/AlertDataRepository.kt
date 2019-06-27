@@ -6,7 +6,6 @@ import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.data.mapper.AlertMapper
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.LeaderBoard
-import com.kyberswap.android.domain.model.ResponseStatus
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.repository.AlertRepository
 import com.kyberswap.android.domain.usecase.alert.CreateOrUpdateAlertUseCase
@@ -16,6 +15,7 @@ import com.kyberswap.android.domain.usecase.alert.SaveAlertTokenUseCase
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
+import retrofit2.Response
 import javax.inject.Inject
 
 
@@ -31,9 +31,9 @@ class AlertDataRepository @Inject constructor(
         }
     }
 
-    override fun deleteAlert(param: DeleteAlertsUseCase.Param): Single<ResponseStatus> {
-        return userApi.deleteAlert(param.alert.id).map {
-            alertMapper.transform(it)
+    override fun deleteAlert(param: DeleteAlertsUseCase.Param): Single<Response<Void>> {
+        return userApi.deleteAlert(param.alert.id).doAfterSuccess {
+            alertDao.deleteById(param.alert.id)
         }
     }
 

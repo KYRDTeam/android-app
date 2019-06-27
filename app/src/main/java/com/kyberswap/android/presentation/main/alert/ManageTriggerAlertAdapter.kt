@@ -73,6 +73,10 @@ class ManageTriggerAlertAdapter(
             }
         })
 
+        binding.csLayout.setOnClickListener {
+            onDeleteClick?.invoke(item)
+        }
+
         binding.btnDelete.setOnClickListener {
             binding.swipe.close(true)
             handler.postDelayed({

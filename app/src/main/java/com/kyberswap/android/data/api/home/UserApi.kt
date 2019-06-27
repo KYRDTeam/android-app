@@ -6,6 +6,7 @@ import com.kyberswap.android.data.api.alert.LeaderBoardEntity
 import com.kyberswap.android.data.api.user.LoginUserEntity
 import com.kyberswap.android.data.api.user.ResponseStatusEntity
 import io.reactivex.Single
+import retrofit2.Response
 import retrofit2.http.*
 import java.math.BigDecimal
 
@@ -75,7 +76,7 @@ interface UserApi {
     ): Single<AlertEntity>
 
     @DELETE("api/alerts/{id}")
-    fun deleteAlert(@Path("id") id: Long): Single<ResponseStatusEntity>
+    fun deleteAlert(@Path("id") id: Long): Single<Response<Void>>
 
     @GET("api/alerts/ranks")
     fun getLeaderBoard(): Single<LeaderBoardEntity>

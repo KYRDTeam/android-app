@@ -81,7 +81,11 @@ class ManageAlertFragment : BaseFragment() {
                     )
 
                 }, {
-                    viewModel.deleteAlert(it)
+                    dialogHelper.showConfirmDeleteAlert(
+                        {
+                            viewModel.deleteAlert(it)
+                        }
+                    )
 
                 })
         binding.rvAlert.adapter = alertAdapter
@@ -94,7 +98,11 @@ class ManageAlertFragment : BaseFragment() {
 
 
         val triggerAlertAdapter = ManageTriggerAlertAdapter(appExecutors, handler) {
-            viewModel.deleteAlert(it)
+            dialogHelper.showConfirmDeleteAlert(
+                {
+                    viewModel.deleteAlert(it)
+                }
+            )
         }
 
         viewModel.deleteAlertsCallback.observe(viewLifecycleOwner, Observer {
@@ -149,9 +157,7 @@ class ManageAlertFragment : BaseFragment() {
         }
 
         binding.imgSetting.setOnClickListener {
-            navigator.navigateToLeaderBoard(
-                currentFragment
-            )
+            showAlert(getString(R.string.to_do))
         }
 
 

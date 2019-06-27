@@ -6,6 +6,10 @@
     <data>
 
         <variable
+            name="isActive"
+            type="Boolean" />
+
+        <variable
             name="alert"
             type="com.kyberswap.android.domain.model.Alert" />
 
@@ -26,7 +30,8 @@
                 android:id="@+id/lnHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#f6f7fa"
+                android:background="@drawable/alert_toggle_drawable"
+                app:selected="@{isActive}"
                 android:gravity="center"
                 android:minHeight="44dp"
                 android:orientation="horizontal"
@@ -38,11 +43,12 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_marginStart="12dp"
-                    android:background="@drawable/circle_alert_rank_bg"
+                    android:background="@drawable/circle_alert_rank_toggle_bg"
+                    android:textColor="@color/rank_text_view_color"
                     android:gravity="center"
                     android:text="@{alert.displayRank}"
                     android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-                    android:textColor="#ffffff"
+                    app:selected="@{isActive}"
                     android:textSize="16sp"
                     tools:text="1" />
 
@@ -51,8 +57,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_weight="1"
+                    android:textColor="@color/email_text_view_color"
                     android:text="@{alert.userEmail}"
-                    android:textColor="#1e89c1"
+                    app:selected="@{isActive}"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toTopOf="parent"

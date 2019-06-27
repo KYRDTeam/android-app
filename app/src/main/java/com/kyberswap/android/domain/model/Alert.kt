@@ -97,7 +97,12 @@ data class Alert(
             .toString()
 
     val displayTriggerAt: String
-        get() = displayFormat.format(fullFormat.parse(triggeredAt))
+        get() = try {
+            displayFormat.format(fullFormat.parse(triggeredAt))
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            triggeredAt
+        }
 
 
     companion object {
@@ -108,6 +113,6 @@ data class Alert(
         const val STATUS_ACTIVE = "active"
         const val STATUS_FILLED = "filled"
         val displayFormat = SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.US)
-        val fullFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        val fullFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
     }
 }

@@ -65,7 +65,7 @@ class ProfileDetailViewModel @Inject constructor(
     fun deleteAlert(alert: Alert) {
         deleteAlertsUseCase.execute(
             Consumer {
-                _deleteAlertsCallback.value = Event(DeleteAlertsState.Success(it))
+                _deleteAlertsCallback.value = Event(DeleteAlertsState.Success())
             },
             Consumer {
                 it.printStackTrace()

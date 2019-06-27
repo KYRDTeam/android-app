@@ -47,6 +47,9 @@ interface AlertDao {
     @Query("DELETE FROM alerts")
     fun deleteAllAlerts()
 
+    @Query("DELETE FROM alerts WHERE id = :id")
+    fun deleteById(id: Long)
+
     @Delete
     fun delete(model: Alert)
 
