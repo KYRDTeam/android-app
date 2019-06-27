@@ -2,7 +2,6 @@ package com.kyberswap.android.presentation.main.swap
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.swap.*
@@ -10,7 +9,7 @@ import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
 import com.kyberswap.android.presentation.common.Event
-import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
@@ -30,8 +29,8 @@ class SwapViewModel @Inject constructor(
     private val getGasPriceUseCase: GetGasPriceUseCase,
     private val getCapUseCase: GetCapUseCase,
     private val estimateGasUseCase: EstimateGasUseCase,
-    private val getWalletUseCase: GetSelectedWalletUseCase
-) : ViewModel() {
+    getWalletUseCase: GetSelectedWalletUseCase
+) : SelectedWalletViewModel(getWalletUseCase) {
 
     private val _getSwapCallback = MutableLiveData<Event<GetSwapState>>()
     val getSwapDataCallback: LiveData<Event<GetSwapState>>
@@ -66,10 +65,6 @@ class SwapViewModel @Inject constructor(
     private val _saveSwapCallback = MutableLiveData<Event<SaveSwapState>>()
     val saveSwapDataCallback: LiveData<Event<SaveSwapState>>
         get() = _saveSwapCallback
-
-    private val _getWalletStateCallback = MutableLiveData<Event<GetWalletState>>()
-    val getWalletStateCallback: LiveData<Event<GetWalletState>>
-        get() = _getWalletStateCallback
 
     fun getMarketRate(swap: Swap) {
 
@@ -238,21 +233,6 @@ class SwapViewModel @Inject constructor(
                 _saveSwapCallback.value = Event(SaveSwapState.ShowError(it.localizedMessage))
     ,
             SaveSwapUseCase.Param(swap)
-        )
-    }
-
-    fun getSelectedWallet() {
-        getWalletUseCase.execute(
-            Consumer { wallet ->
-                _getWalletStateCallback.value = Event(GetWalletState.Success(wallet))
-
-    ,
-            Consumer {
-                it.printStackTrace()
-                _getWalletStateCallback.value =
-                    Event(GetWalletState.ShowError(it.localizedMessage))
-    ,
-            null
         )
     }
 }

@@ -3,8 +3,9 @@ package com.kyberswap.android.util.ext
 import android.view.View
 import androidx.constraintlayout.widget.Group
 
-fun Group.setAllOnClickListener(listener: View.OnClickListener?) {
+fun Group.setAllOnClickListener(listener: (view: View) -> Unit = {}) {
     referencedIds.forEach { viewId ->
-        rootView.findViewById<View>(viewId)?.setOnClickListener(listener)
+        val viewById = rootView.findViewById<View>(viewId)
+        viewById?.setOnClickListener(listener)
     }
 }

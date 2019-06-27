@@ -22,9 +22,10 @@ import com.kyberswap.android.domain.model.Unit
         Order::class,
         UserInfo::class,
         LocalLimitOrder::class,
-        OrderFilter::class
+        OrderFilter::class,
+        Alert::class
     ],
-    version = 40
+    version = 43
 )
 @TypeConverters(
     DataTypeConverter::class,
@@ -49,6 +50,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun localLimitOrderDao(): LocalLimitOrderDao
     abstract fun orderFilterDao(): OrderFilterDao
+    abstract fun alertDao(): AlertDao
 
     companion object {
         @Volatile

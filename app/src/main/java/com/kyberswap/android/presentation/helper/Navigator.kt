@@ -7,6 +7,10 @@ import com.kyberswap.android.R
 import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.presentation.landing.LandingActivity
 import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.presentation.main.alert.LeaderBoardFragment
+import com.kyberswap.android.presentation.main.alert.ManageAlertFragment
+import com.kyberswap.android.presentation.main.alert.PriceAlertFragment
+import com.kyberswap.android.presentation.main.alert.PriceAlertTokenSearchFragment
 import com.kyberswap.android.presentation.main.balance.address.BalanceAddressFragment
 import com.kyberswap.android.presentation.main.balance.chart.ChartFragment
 import com.kyberswap.android.presentation.main.balance.send.SendConfirmActivity
@@ -346,6 +350,34 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         navigateByChildFragmentManager(
             currentFragment,
             ConvertFragment.newInstance(wallet, order)
+        )
+    }
+
+    fun navigateToTokenSelection(currentFragment: Fragment?, wallet: Wallet?) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            PriceAlertTokenSearchFragment.newInstance(wallet)
+        )
+    }
+
+    fun navigateToPriceAlertScreen(currentFragment: Fragment?, alert: Alert? = null) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            PriceAlertFragment.newInstance(alert)
+        )
+    }
+
+    fun navigateToLeaderBoard(currentFragment: Fragment?) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            LeaderBoardFragment.newInstance()
+        )
+    }
+
+    fun navigateToManageAlert(currentFragment: Fragment) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            ManageAlertFragment.newInstance()
         )
     }
 
