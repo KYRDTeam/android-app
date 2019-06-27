@@ -80,6 +80,7 @@ class LeaderBoardFragment : BaseFragment() {
                 when (state) {
                     is GetLeaderBoardState.Success -> {
                         adapter.submitAlerts(state.alerts)
+                        binding.campaign = state.campaignInfo
             
                     is GetLeaderBoardState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -87,6 +88,17 @@ class LeaderBoardFragment : BaseFragment() {
         
     
 )
+
+        binding.flToggle.setOnClickListener {
+            binding.expandableLayout.toggle()
+            binding.imgToggle.isSelected = !binding.imgToggle.isSelected
+
+
+        binding.tvEligibleToken.setOnClickListener {
+            dialogHelper.showEligibleToken(
+                appExecutors,
+                binding.campaign?.eligibleTokens?.split(",") ?: listOf()
+            )
 
 
         binding.imgBack.setOnClickListener {

@@ -89,7 +89,11 @@ class ProfileDetailFragment : BaseFragment() {
                         currentFragment, it
                     )
         , {
-                    viewModel.deleteAlert(it)
+                    dialogHelper.showConfirmDeleteAlert(
+                        {
+                            viewModel.deleteAlert(it)
+                
+                    )
         )
         binding.rvAlert.adapter = alertAdapter
 

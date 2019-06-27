@@ -21,8 +21,8 @@ abstract class BaseFragment : DaggerFragment() {
         dialog = ProgressDialog(this.context)
             .apply {
                 setMessage(getString(R.string.message_loading))
-                setCanceledOnTouchOutside(false)
-                setCancelable(false)
+                setCanceledOnTouchOutside(true)
+                setCancelable(true)
     
     }
 

@@ -8,6 +8,8 @@ data class LeaderBoardEntity(
     val currentUserEntity: CurrentUserEntity = CurrentUserEntity(),
     @SerializedName("data")
     val `data`: List<AlertEntity> = listOf(),
+    @SerializedName("campaign_info")
+    val campaignInfo: CampaignInfoEntity = CampaignInfoEntity(),
     @SerializedName("last_campaign_title")
     val lastCampaignTitle: String? = ""
 )

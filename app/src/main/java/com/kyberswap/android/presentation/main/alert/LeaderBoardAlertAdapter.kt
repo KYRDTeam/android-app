@@ -10,6 +10,7 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ItemLeaderBoardBinding
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.presentation.base.DataBoundListAdapter
+import com.kyberswap.android.presentation.base.DataBoundViewHolder
 
 class LeaderBoardAlertAdapter(
     appExecutors: AppExecutors
@@ -34,6 +35,13 @@ class LeaderBoardAlertAdapter(
         submitList(tokens)
     }
 
+    override fun onBindViewHolder(
+        holder: DataBoundViewHolder<ItemLeaderBoardBinding>,
+        position: Int
+    ) {
+        holder.binding.isActive = position == 0
+        super.onBindViewHolder(holder, position)
+    }
 
     override fun bind(binding: ItemLeaderBoardBinding, item: Alert) {
         binding.setVariable(BR.alert, item)
