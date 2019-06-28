@@ -305,6 +305,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvPassportFrontSide"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
@@ -317,6 +318,7 @@
                         android:textSize="14sp" />
 
                     <TextView
+                        android:id="@+id/tvBrowsePassportFontSide"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
@@ -328,6 +330,16 @@
                         android:text="@string/browse"
                         android:textColor="#141927"
                         android:textSize="14sp" />
+
+                    <ImageView
+                        android:id="@+id/imgPassportFrontSide"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="25dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="#ffffff"
+                        android:maxHeight="196dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -349,6 +361,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvPassportBackSide"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
@@ -361,6 +374,7 @@
                         android:textSize="14sp" />
 
                     <TextView
+                        android:id="@+id/tvBrowsePassportBackSide"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
@@ -372,6 +386,16 @@
                         android:text="@string/browse"
                         android:textColor="#141927"
                         android:textSize="14sp" />
+
+                    <ImageView
+                        android:id="@+id/imgPassportBackSide"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="25dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="#ffffff"
+                        android:maxHeight="196dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -395,6 +419,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvPassportHolding"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
@@ -407,6 +432,7 @@
                         android:textSize="14sp" />
 
                     <TextView
+                        android:id="@+id/tvBrowsePassportHolding"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
@@ -418,6 +444,16 @@
                         android:text="@string/browse"
                         android:textColor="#141927"
                         android:textSize="14sp" />
+
+                    <ImageView
+                        android:id="@+id/imgPassportHolding"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="25dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="#ffffff"
+                        android:maxHeight="196dp" />
 
                     <TextView
                         android:layout_width="wrap_content"

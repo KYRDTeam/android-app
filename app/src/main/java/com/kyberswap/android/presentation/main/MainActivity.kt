@@ -32,6 +32,8 @@ import com.kyberswap.android.presentation.main.balance.GetPendingTransactionStat
 import com.kyberswap.android.presentation.main.balance.WalletAdapter
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
+import com.kyberswap.android.presentation.main.profile.kyc.PassportFragment
+import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
@@ -312,6 +314,12 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         val allFragments = supportFragmentManager.fragments
         allFragments.forEach {
             if (it is ProfileFragment) {
+                it.onActivityResult(requestCode, resultCode, data)
+    
+
+
+        currentFragment?.childFragmentManager?.fragments?.forEach {
+            if (it is PersonalInfoFragment || it is PassportFragment) {
                 it.onActivityResult(requestCode, resultCode, data)
     
 
