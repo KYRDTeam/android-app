@@ -17,6 +17,9 @@ import com.kyberswap.android.presentation.main.balance.send.SendConfirmActivity
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.limitorder.*
 import com.kyberswap.android.presentation.main.profile.*
+import com.kyberswap.android.presentation.main.profile.kyc.PassportFragment
+import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
+import com.kyberswap.android.presentation.main.profile.kyc.SubmitFragment
 import com.kyberswap.android.presentation.main.setting.AddContactFragment
 import com.kyberswap.android.presentation.main.setting.ContactFragment
 import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
@@ -378,6 +381,27 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         navigateByChildFragmentManager(
             currentFragment,
             ManageAlertFragment.newInstance()
+        )
+    }
+
+    fun navigateToKYC(currentFragment: Fragment) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            PersonalInfoFragment.newInstance()
+        )
+    }
+
+    fun navigateToPassport(currentFragment: Fragment) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            PassportFragment.newInstance()
+        )
+    }
+
+    fun navigateToSubmitKYC(currentFragment: Fragment) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            SubmitFragment.newInstance()
         )
     }
 

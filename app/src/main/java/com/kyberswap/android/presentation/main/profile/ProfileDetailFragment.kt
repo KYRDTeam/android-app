@@ -178,6 +178,12 @@ class ProfileDetailFragment : BaseFragment() {
             )
 
 
+        binding.tvVerify.setOnClickListener {
+            navigator.navigateToKYC(
+                currentFragment
+            )
+
+
     }
 
     companion object {
