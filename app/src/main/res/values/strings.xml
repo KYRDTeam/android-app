@@ -317,7 +317,7 @@
     <string name="browse">Browse</string>
     <string name="maximum_file_size_is_4mb">(Maximum file size is 4Mb)</string>
     <string name="photo_of_your_passport_back_side">Photo of your Passport - Back Side</string>
-    <string name="photo_of_you_holding_your_passport">Photo of you holding your Passport</string>
+
     <string name="gender">Gender</string>
     <string name="date_of_birth_dd_mm_yy">Date of birth (DD/MM/YY)</string>
     <string name="nationality">Nationality</string>
@@ -352,6 +352,20 @@
     <string name="country">Country</string>
     <string name="have_a_tax_identification_no">Have a Tax Identification No?</string>
     <string name="option_no">No</string>
+    <string name="photo_of_your_passport">Photo of your Passport</string>
+    <string name="tips_on_how_your_passport_should_look">Tips on How your Passport should look</string>
+    <string name="must_show_all_4_corners_of_the_card">Must show all 4 corners of the card</string>
+    <string name="must_not_be_covered_in_anyway">Must not be covered in anyway</string>
+    <string name="must_not_be_blurry">Must not be blurry</string>
+    <string name="this_is_right">This is right!</string>
+    <string name="please_hold_the_passport_tip">Please hold the Passport/ID/Driving  License in your hand next to your face.</string>
+    <string name="your_face_and_the_passport_tip">Your face and the Passport/ID must be clearly visible and any text, numbers or photos on the passport must be readable and not covered by your fingers.</string>
+    <string name="photo_of_you_holding_your_passport">Photo of you holding your Passport</string>
+    <string name="passport_hold_incorrect">Incorrect</string>
+    <string name="passport_hold_correct">This is right!</string>
+    <string name="err_file_size">Maximum file size is 4Mb</string>
+    <string name="camera">Camera</string>
+    <string name="photo_library">Photo Library</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>
