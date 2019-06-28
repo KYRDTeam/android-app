@@ -1,0 +1,463 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="user"
+            type="com.kyberswap.android.domain.model.UserInfo" />
+    </data>
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/screen_background">
+
+        <FrameLayout
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/toolbar_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/imgBack"
+                style="@style/BackImage"
+                android:layout_gravity="start|center"
+                android:layout_marginTop="0dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/passport"
+                android:textColor="#ffffff"
+                android:textSize="18sp" />
+
+        </FrameLayout>
+
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/toolbar_height"
+            android:background="@android:color/white"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#f1f1f3"
+                    android:minHeight="98dp"
+                    android:orientation="vertical"
+                    android:paddingTop="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp">
+
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:background="@drawable/circle_completed"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/ic_step_check" />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="4dp"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:background="@color/step_completed" />
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center"
+                            android:background="@drawable/circle_in_progress" />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="4dp"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:background="#e1e1e1" />
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_gravity="end"
+                            android:background="@drawable/circle_uncompleted" />
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="13dp"
+                        android:gravity="center"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="start"
+                            android:text="@string/personal_info"
+                            android:textColor="#fb795d"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/id_passport"
+                            android:textColor="#9ea1aa"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="@string/personal_info_submit"
+                            android:textColor="#9ea1aa"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="42dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/document_type"
+                    android:textColor="#141927"
+                    android:textSize="14sp" />
+
+                <RadioGroup
+                    android:id="@+id/rgCurrencies"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="27dp"
+                    android:layout_marginEnd="16dp"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/rbId"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:lineSpacingExtra="6sp"
+                        android:text="@string/personal_id"
+                        android:textColor="#5a5e67"
+
+                        android:textSize="14sp"
+                        android:theme="@style/CustomRadioTheme" />
+
+                    <RadioButton
+                        android:id="@+id/rbPassport"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:lineSpacingExtra="6sp"
+                        android:text="@string/passport"
+                        android:textColor="#5a5e67"
+
+                        android:textSize="14sp"
+                        android:theme="@style/CustomRadioTheme" />
+
+                    <RadioButton
+                        android:id="@+id/rbEth"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:lineSpacingExtra="6sp"
+                        android:text="@string/driving_license"
+                        android:textColor="#5a5e67"
+                        android:textSize="14sp"
+                        android:theme="@style/CustomRadioTheme" />
+                </RadioGroup>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="23dp"
+                    android:layout_marginEnd="16dp"
+                    android:backgroundTint="@color/edt_background_tint"
+                    android:hint="@string/document_number"
+                    android:textColorHint="#9ea1aa">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtDocumentNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/edt_background_tint"
+                        android:drawableEnd="@drawable/ic_expand_more"
+                        android:drawablePadding="8dp"
+                        android:letterSpacing="0.07"
+                        android:minHeight="60dp"
+                        android:singleLine="true"
+                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textColor="#5a5e67"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:backgroundTint="@color/edt_background_tint"
+                    android:hint="@string/issue_date"
+                    android:textColorHint="#9ea1aa">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtIssueDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/edt_background_tint"
+                        android:drawablePadding="8dp"
+                        android:letterSpacing="0.07"
+                        android:minHeight="60dp"
+                        android:singleLine="true"
+                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textColor="#5a5e67"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <CheckBox
+                    android:id="@+id/cbIssueDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="23dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/dont_have_this"
+                    android:textColor="#5a5e67"
+                    android:theme="@style/CustomRadioTheme" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="22dp"
+                    android:layout_marginEnd="16dp"
+                    android:backgroundTint="@color/edt_background_tint"
+                    android:hint="@string/expiry_date"
+                    android:textColorHint="#9ea1aa">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtExpiryDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/edt_background_tint"
+                        android:drawablePadding="8dp"
+                        android:letterSpacing="0.07"
+                        android:minHeight="60dp"
+                        android:singleLine="true"
+                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textColor="#5a5e67"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <CheckBox
+                    android:id="@+id/cbExpiryDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="23dp"
+                    android:layout_marginEnd="16dp"
+                    android:checked="true"
+                    android:text="@string/dont_have_this"
+                    android:textColor="#5a5e67"
+                    android:theme="@style/CustomRadioTheme" />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="27dp"
+                    android:background="#f2f3f6"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="27dp"
+                        android:layout_marginEnd="16dp"
+                        android:drawableEnd="@drawable/ic_info_kyc"
+                        android:drawablePadding="12dp"
+                        android:text="@string/photo_of_your_passport_front_side"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="32dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/border_button"
+                        android:gravity="center"
+                        android:minHeight="45dp"
+                        android:text="@string/browse"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="13dp"
+                        android:layout_marginBottom="39dp"
+                        android:lineSpacingExtra="6sp"
+                        android:text="@string/maximum_file_size_is_4mb"
+                        android:textColor="#5a5e67"
+                        android:textSize="14sp" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="27dp"
+                        android:layout_marginEnd="16dp"
+                        android:drawableEnd="@drawable/ic_info_kyc"
+                        android:drawablePadding="12dp"
+                        android:text="@string/photo_of_your_passport_back_side"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="32dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/border_button"
+                        android:gravity="center"
+                        android:minHeight="45dp"
+                        android:text="@string/browse"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="13dp"
+                        android:layout_marginBottom="39dp"
+                        android:lineSpacingExtra="6sp"
+                        android:text="@string/maximum_file_size_is_4mb"
+                        android:textColor="#5a5e67"
+                        android:textSize="14sp" />
+
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#f2f3f6"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="27dp"
+                        android:layout_marginEnd="16dp"
+                        android:drawableEnd="@drawable/ic_info_kyc"
+                        android:drawablePadding="12dp"
+                        android:text="@string/photo_of_you_holding_your_passport"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="32dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/border_button"
+                        android:gravity="center"
+                        android:minHeight="45dp"
+                        android:text="@string/browse"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="13dp"
+                        android:layout_marginBottom="39dp"
+                        android:lineSpacingExtra="6sp"
+                        android:text="@string/maximum_file_size_is_4mb"
+                        android:textColor="#5a5e67"
+                        android:textSize="14sp" />
+
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvNext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="42dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="42dp"
+                    android:background="@drawable/default_button"
+                    android:gravity="center"
+                    android:minHeight="45dp"
+                    android:text="@string/next"
+                    android:textColor="#ffffff"
+                    android:textSize="16sp" />
+
+
+            </LinearLayout>
+
+
+        </androidx.core.widget.NestedScrollView>
+
+
+    </FrameLayout>
+
+
+</layout>
+
+
