@@ -39,7 +39,10 @@ class SplashActivity : BaseActivity() {
         binding.viewModel = viewModel
         binding.imageView.setBackgroundResource(R.drawable.progress_animation)
         val frameAnimation = binding.imageView.background as AnimationDrawable
-        frameAnimation.start()
+        handler.post {
+            frameAnimation.start()
+
+
 
         handler.postDelayed({
             viewModel.prepareData()
@@ -49,7 +52,7 @@ class SplashActivity : BaseActivity() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetUserWalletState.Success -> {
-                        navigator.navigateToHome(state.wallet, state.userInfo)
+                        navigator.navigateToHome(state.userInfo != null && state.userInfo.uid > 0)
 
             
                     is GetUserWalletState.ShowError -> {

@@ -4,8 +4,8 @@
     <data>
 
         <variable
-            name="user"
-            type="com.kyberswap.android.domain.model.UserInfo" />
+            name="info"
+            type="com.kyberswap.android.domain.model.KycInfo" />
     </data>
 
     <FrameLayout
@@ -185,16 +185,7 @@
                         android:textSize="14sp"
                         android:theme="@style/CustomRadioTheme" />
 
-                    <RadioButton
-                        android:id="@+id/rbEth"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:lineSpacingExtra="6sp"
-                        android:text="@string/driving_license"
-                        android:textColor="#5a5e67"
-                        android:textSize="14sp"
-                        android:theme="@style/CustomRadioTheme" />
+
                 </RadioGroup>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -212,10 +203,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
-                        android:drawableEnd="@drawable/ic_expand_more"
-                        android:drawablePadding="8dp"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
+                        android:text="@{info.documentId}"
                         android:singleLine="true"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
@@ -238,10 +228,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
-                        android:drawablePadding="8dp"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
+                        android:text="@{info.documentIssueDate}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -274,10 +264,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
-                        android:drawablePadding="8dp"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
+                        android:text="@{info.documentExpiryDate}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -348,7 +338,7 @@
                         android:layout_marginTop="13dp"
                         android:layout_marginBottom="39dp"
                         android:lineSpacingExtra="6sp"
-                        android:text="@string/maximum_file_size_is_4mb"
+                        android:text="@string/maximum_file_size_is_1mb"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
 
@@ -404,7 +394,7 @@
                         android:layout_marginTop="13dp"
                         android:layout_marginBottom="39dp"
                         android:lineSpacingExtra="6sp"
-                        android:text="@string/maximum_file_size_is_4mb"
+                        android:text="@string/maximum_file_size_is_1mb"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
 
@@ -462,7 +452,7 @@
                         android:layout_marginTop="13dp"
                         android:layout_marginBottom="39dp"
                         android:lineSpacingExtra="6sp"
-                        android:text="@string/maximum_file_size_is_4mb"
+                        android:text="@string/maximum_file_size_is_1mb"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
 

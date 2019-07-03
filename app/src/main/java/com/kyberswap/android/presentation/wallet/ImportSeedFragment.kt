@@ -82,7 +82,7 @@ class ImportSeedFragment : BaseFragment() {
                             if (fromMain) {
                                 activity?.onBackPressed()
                      else {
-                                navigator.navigateToHome(state.wallet)
+                                navigator.navigateToHome()
                     
                 
             

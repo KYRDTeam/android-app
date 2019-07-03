@@ -21,6 +21,7 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.alert.ManageAlertAdapter
 import com.kyberswap.android.presentation.main.profile.alert.DeleteAlertsState
 import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
+import com.kyberswap.android.presentation.main.profile.kyc.ReSubmitState
 import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
 
@@ -54,11 +55,6 @@ class ProfileDetailFragment : BaseFragment() {
         ViewModelProviders.of(this, viewModelFactory).get(ProfileDetailViewModel::class.java)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        user = arguments!!.getParcelable(USER_PARAM)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -70,9 +66,42 @@ class ProfileDetailFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        binding.user = user
-        viewModel.getAlert()
+        viewModel.fetchUserInfo()
+        viewModel.getUserInfoCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is UserInfoState.Success -> {
+                        if (binding.user != state.userInfo) {
+                            binding.user = state.userInfo
 
+                            binding.lnVerify.visibility =
+                                if (UserInfo.PENDING == state.userInfo?.kycStatus) View.GONE else View.VISIBLE
+
+                            binding.tvKycVerification.text =
+                                if (UserInfo.REJECT == state.userInfo?.kycStatus) getString(R.string.profile_rejected) else getString(
+                                    R.string.profile_verification_notification
+                                )
+                            binding.tvAction.text =
+                                if (UserInfo.REJECT == state.userInfo?.kycStatus) getString(R.string.kyc_edit) else getString(
+                                    R.string.profile_verify
+                                )
+                            if (UserInfo.REJECT == state.userInfo?.kycStatus) {
+
+                    
+
+                            binding.tvKycTitle.visibility =
+                                if (UserInfo.PENDING == state.userInfo?.kycStatus) View.VISIBLE else View.GONE
+
+                
+            
+                    is UserInfoState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+            
+        
+    
+)
+
+        viewModel.getAlert()
         binding.rvAlert.layoutManager = LinearLayoutManager(
             activity,
             RecyclerView.VERTICAL,
@@ -178,22 +207,40 @@ class ProfileDetailFragment : BaseFragment() {
             )
 
 
-        binding.tvVerify.setOnClickListener {
-            navigator.navigateToKYC(
-                currentFragment
-            )
+        binding.tvAction.setOnClickListener {
+            binding.user?.let {
+                if (it.isKycReject) {
+                    viewModel.reSubmit(it)
+         else {
+                    navigator.navigateToKYC(
+                        currentFragment, it.kycStep
+                    )
+        
+    
 
+
+
+        viewModel.reSubmitKycCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == ReSubmitState.Loading)
+                when (state) {
+                    is ReSubmitState.Success -> {
+                        navigator.navigateToKYC(
+                            currentFragment, binding.user?.kycStep
+                        )
+            
+                    is ReSubmitState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+            
+        
+    
+)
 
     }
 
     companion object {
-        private const val USER_PARAM = "user_param"
-        fun newInstance(user: UserInfo?) =
-            ProfileDetailFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(USER_PARAM, user)
-        
-    
+        fun newInstance() =
+            ProfileDetailFragment()
     }
 
 
