@@ -10,7 +10,9 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.kyberswap.android.R
+import com.kyberswap.android.domain.model.KycInfo
 import com.kyberswap.android.domain.model.Order
+import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import io.github.inflationx.calligraphy3.CalligraphyTypefaceSpan
@@ -169,6 +171,17 @@ object TextViewBindingAdapter {
     }
 
 
+    @BindingAdapter("app:documentType")
+    @JvmStatic
+    fun documentType(view: TextView, documentType: String?) {
+        if (KycInfo.TYPE_PASSPORT == documentType) {
+            view.text = view.context.getString(R.string.passport)
+        } else if (KycInfo.TYPE_NATIONAL_ID == documentType) {
+            view.text = view.context.getString(R.string.personal_id)
+        }
+    }
+
+
     @BindingAdapter("app:isAbove", "app:alertPrice")
     @JvmStatic
     fun alertPrice(view: TextView, isAbove: Boolean?, alertPrice: BigDecimal?) {
@@ -253,7 +266,7 @@ object TextViewBindingAdapter {
 
     @BindingAdapter("app:orderStatus")
     @JvmStatic
-    fun setPercentage(view: TextView, orderStatus: String) {
+    fun orderStatus(view: TextView, orderStatus: String) {
         val background = when (orderStatus) {
             Order.Status.OPEN.value -> R.drawable.rounded_corner_order_open_background
             Order.Status.FILLED.value -> R.drawable.rounded_corner_order_filled_background
@@ -262,6 +275,28 @@ object TextViewBindingAdapter {
             else -> R.drawable.rounded_corner_order_invalidated_background
         }
         view.text = orderStatus
+        view.setBackgroundResource(background)
+
+    }
+
+    @BindingAdapter("app:kycStatus")
+    @JvmStatic
+    fun kycStatus(view: TextView, kycStatus: String?) {
+        val background = when (kycStatus) {
+            UserInfo.REJECT -> R.drawable.rounded_corner_status_rejected
+            UserInfo.BLOCK -> R.drawable.rounded_corner_status_blocked
+            UserInfo.PENDING -> R.drawable.rounded_corner_status_pending
+            else -> R.drawable.rounded_corner_status_unverified
+        }
+
+        val stringResource = when (kycStatus) {
+            UserInfo.REJECT -> R.string.kyc_status_rejected
+            UserInfo.BLOCK -> R.string.kyc_status_blocked
+            UserInfo.PENDING -> R.string.kyc_status_pending
+            else -> R.string.kyc_status_unverified
+        }
+
+        view.text = view.context.getString(stringResource)
         view.setBackgroundResource(background)
 
     }

@@ -4,8 +4,8 @@
     <data>
 
         <variable
-            name="user"
-            type="com.kyberswap.android.domain.model.UserInfo" />
+            name="info"
+            type="com.kyberswap.android.domain.model.KycInfo" />
     </data>
 
     <FrameLayout
@@ -176,10 +176,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="Satoshi"
+                        android:text="@{info.firstName}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -192,7 +193,7 @@
                     android:layout_marginTop="6dp"
                     android:layout_marginEnd="16dp"
                     android:backgroundTint="@color/edt_background_tint"
-                    android:hint="Middle Name"
+                    android:hint="@string/middle_name"
                     android:textColorHint="#9ea1aa">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -200,10 +201,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text=" "
+                        android:text="@{info.middleName}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -225,10 +227,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="Nakamoto"
+                        android:text="@{info.lastName}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -249,10 +252,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text=" Satoshi Nakamoto"
+                        android:text="@{info.nativeFullName}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -274,10 +278,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="@string/male"
+                        android:text="@{info.gender ? @string/male : @string/female}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -290,7 +295,7 @@
                     android:layout_marginTop="6dp"
                     android:layout_marginEnd="16dp"
                     android:backgroundTint="@color/edt_background_tint"
-                    android:hint="@string/date_of_birth_dd_mm_yy"
+                    android:hint="@string/date_of_birth_yyyy_mm_dd"
                     android:textColorHint="#9ea1aa">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -298,10 +303,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="01/02/1999"
+                        android:text="@{info.dob}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -322,10 +328,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="VIETNAMESE"
+                        android:text="@{info.nationality}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -336,7 +343,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="44dp"
+                    android:layout_marginTop="33dp"
                     android:layout_marginEnd="16dp"
                     android:background="@drawable/dash_line" />
 
@@ -345,7 +352,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="48dp"
+                    android:layout_marginTop="17dp"
                     android:layout_marginEnd="16dp"
                     android:backgroundTint="@color/edt_background_tint"
                     android:hint="@string/residential_address">
@@ -355,10 +362,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="61 Nguy Nhu Kontum"
+                        android:text="@{info.residentialAddress}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textColorHint="#9ea1aa"
@@ -380,10 +388,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="VIETNAM"
+                        android:text="@{info.country}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -404,10 +413,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="Hanoi"
+                        android:text="@{info.city}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -429,10 +439,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="100000"
+                        android:text="@{info.zipCode}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -475,6 +486,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
@@ -496,6 +508,7 @@
                     android:textSize="14sp" />
 
                 <ImageView
+                    android:id="@+id/imgPhotoProofAddress"
                     android:layout_width="match_parent"
                     android:layout_height="186dp"
                     android:layout_marginStart="16dp"
@@ -543,10 +556,11 @@
                         android:layout_marginBottom="8dp"
                         android:backgroundTint="@color/edt_background_tint"
                         android:drawablePadding="8dp"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="@string/salary"
+                        android:text="@{info.sourceFund}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -569,10 +583,11 @@
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
                         android:drawablePadding="8dp"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="131 General Manager"
+                        android:text="@{info.occupationCode}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -595,10 +610,11 @@
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
                         android:drawablePadding="8dp"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="1234567"
+                        android:text="@{info.industryCode}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -620,10 +636,11 @@
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
                         android:drawablePadding="8dp"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="United Kingdom"
+                        android:text="@{info.taxResidencyCountry}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -646,10 +663,11 @@
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
                         android:drawablePadding="8dp"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="766432"
+                        android:text="@{info.taxIdentificationNumber}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -689,13 +707,14 @@
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
                         android:drawablePadding="8dp"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="@string/passport"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"
+                        app:documentType="@{info.documentType}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -714,10 +733,11 @@
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
                         android:drawablePadding="8dp"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="11223344"
+                        android:text="@{info.documentId}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -740,10 +760,11 @@
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
                         android:drawablePadding="8dp"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="12/22/2233"
+                        android:text="@{info.displayIssueDate}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -766,10 +787,11 @@
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
                         android:drawablePadding="8dp"
+                        android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="11/22/2222"
+                        android:text="@{info.documentExpiryDate}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -795,6 +817,7 @@
                         android:textSize="14sp" />
 
                     <ImageView
+                        android:id="@+id/imgPassportFrontSide"
                         android:layout_width="match_parent"
                         android:layout_height="196dp"
                         android:layout_marginStart="16dp"
@@ -823,6 +846,7 @@
                         android:textSize="14sp" />
 
                     <ImageView
+                        android:id="@+id/imgPassportBackSide"
                         android:layout_width="match_parent"
                         android:layout_height="196dp"
                         android:layout_marginStart="16dp"
@@ -852,6 +876,7 @@
                         android:textSize="14sp" />
 
                     <ImageView
+                        android:id="@+id/imgPassportHolding"
                         android:layout_width="match_parent"
                         android:layout_height="196dp"
                         android:layout_marginStart="16dp"
@@ -862,6 +887,7 @@
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/tvSubmit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"

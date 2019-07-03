@@ -303,11 +303,11 @@
     <string name="personal_info_submit">Submit</string>
     <string name="first_name">First Name</string>
     <string name="personal_info">Personal Info</string>
-    <string name="passport">ID/Passport</string>
+    <string name="passport">Passport</string>
     <string name="male">Male</string>
     <string name="female">Female</string>
     <string name="document_type">Document Type</string>
-    <string name="personal_id">ID</string>
+    <string name="personal_id">Identity Card</string>
     <string name="driving_license">Driving license</string>
     <string name="document_number">Document number</string>
     <string name="issue_date">Issue Date</string>
@@ -315,11 +315,11 @@
     <string name="expiry_date">Expiry Date</string>
     <string name="photo_of_your_passport_front_side">Photo of your Passport - Front Side</string>
     <string name="browse">Browse</string>
-    <string name="maximum_file_size_is_4mb">(Maximum file size is 4Mb)</string>
+    <string name="maximum_file_size_is_1mb">(Maximum file size is 1Mb)</string>
     <string name="photo_of_your_passport_back_side">Photo of your Passport - Back Side</string>
 
     <string name="gender">Gender</string>
-    <string name="date_of_birth_dd_mm_yy">Date of birth (DD/MM/YY)</string>
+    <string name="date_of_birth_yyyy_mm_dd">Date of birth (YYYY-MM-DD)</string>
     <string name="nationality">Nationality</string>
     <string name="residential_address">Residential Address</string>
     <string name="country_of_residence">Country of Residence</string>
@@ -345,6 +345,7 @@
     <string name="upload_document">Upload Document</string>
     <string name="primary_source_of_funds">Primary Source of Funds</string>
     <string name="see_more">See more</string>
+    <string name="see_less">See less</string>
     <string name="occupation_code_optional">Occupation code - Optional</string>
     <string name="industry_code_optional">Industry code - Optional</string>
     <string name="please_indicate_your_country_of_tax_residency_optional">Please indicate your country of Tax Residency - Optional</string>
@@ -363,9 +364,19 @@
     <string name="photo_of_you_holding_your_passport">Photo of you holding your Passport</string>
     <string name="passport_hold_incorrect">Incorrect</string>
     <string name="passport_hold_correct">This is right!</string>
-    <string name="err_file_size">Maximum file size is 4Mb</string>
+    <string name="err_file_size">Maximum file size is 1Mb</string>
     <string name="camera">Camera</string>
     <string name="photo_library">Photo Library</string>
+    <string name="source_of_fund_info">Please indicate below the primary professional activity that generate the funds that will be transferred into the wallet. Filling up this field will help us better understand your primary professional activity.</string>
+    <string name="your_profile_verification_status_pending">Your Profile Verification Status: Pending</string>
+    <string name="profile_verification_status">Profile Verification Status</string>
+    <string name="kyc_status_rejected">Rejected</string>
+    <string name="kyc_status_blocked">Blocked</string>
+    <string name="kyc_status_unverified">Unverified</string>
+    <string name="kyc_status_pending">Pending</string>
+    <string name="profile_rejected">Your profile is rejected</string>
+    <string name="kyc_edit">Edit</string>
+
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>

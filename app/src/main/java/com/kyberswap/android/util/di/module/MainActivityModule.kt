@@ -189,6 +189,14 @@ interface MainActivityModule {
     @ContributesAndroidInjector
     fun contributeSubmitFragment(): SubmitFragment
 
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeCountryFragment(): KycInfoSearchFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeVerificationFragment(): VerificationFragment
+
     @Binds
     @IntoMap
     @ViewModelKey(BalanceViewModel::class)
@@ -407,5 +415,12 @@ interface MainActivityModule {
     @ViewModelKey(SubmitViewModel::class)
     fun bindSubmitViewModel(
         submitViewModel: SubmitViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CountryViewModel::class)
+    fun bindCountryViewModel(
+        countryViewModel: CountryViewModel
     ): ViewModel
 }
