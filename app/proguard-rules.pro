@@ -71,3 +71,8 @@
 -keep class com.uphyca.** { *; }
 
 -keep class com.kyberswap.android.data.model.** { *; }
+
+-dontwarn com.squareup.picasso.**
+
+-dontwarn com.bumptech.glide.**
+

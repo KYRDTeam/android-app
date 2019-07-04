@@ -64,7 +64,7 @@ class VerifyBackupWordActivity : BaseActivity() {
             if (first.content == edtFirst.text.trim().toString() &&
                 second.content == edtSecond.text.trim().toString()
             ) {
-                navigator.navigateToHome(wallet)
+                navigator.navigateToHome()
      else {
 
                 if (numberOfTry > 0) {

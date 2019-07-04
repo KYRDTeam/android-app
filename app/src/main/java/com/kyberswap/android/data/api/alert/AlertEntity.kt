@@ -33,7 +33,7 @@ data class AlertEntity(
     val filledAt: String? = "",
     val rank: Int? = 0,
     @SerializedName("user_email")
-    val userEmail: String = "",
+    val userEmail: String? = "",
     @SerializedName("telegram_account")
     val telegramAccount: String? = "",
     @SerializedName("reward")

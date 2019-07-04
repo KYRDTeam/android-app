@@ -1,6 +1,7 @@
 package com.kyberswap.android.domain.model
 
 import android.os.Parcelable
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
@@ -20,7 +21,9 @@ data class UserInfo(
     var kycStep: Int = 0,
     var name: String = "",
     @PrimaryKey
-    var uid: Long = 0
+    var uid: Long = 0,
+    @Embedded
+    var kycInfo: KycInfo = KycInfo()
 ) : Parcelable {
     constructor(entity: UserInfoEntity) : this(
         entity.activeWallets,
@@ -30,6 +33,20 @@ data class UserInfo(
         entity.kycStatus ?: "",
         entity.kycStep,
         entity.name ?: "",
-        entity.uid
+        entity.uid,
+        KycInfo(entity.kycInfo)
     )
+
+    val isKycReject: Boolean
+        get() = kycStatus == "rejected"
+
+    companion object {
+        const val DRAFT = "draft"
+        const val PENDING = "pending"
+        const val REJECT = "rejected"
+        const val BLOCK = "block"
+        const val KYC_STEP_PERSONAL_INFO = 1
+        const val KYC_STEP_ID_PASSPORT = 2
+        const val KYC_STEP_SUBMIT = 3
+    }
 }

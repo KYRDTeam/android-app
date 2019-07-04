@@ -196,6 +196,11 @@ class TokenSearchFragment : BaseFragment() {
 
     }
 
+    override fun onDestroyView() {
+        viewModel.compositeDisposable.dispose()
+        super.onDestroyView()
+    }
+
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"

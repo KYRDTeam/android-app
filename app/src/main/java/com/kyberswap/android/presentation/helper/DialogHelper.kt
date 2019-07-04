@@ -14,6 +14,8 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.*
 import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.presentation.main.alert.EligibleTokenAdapter
+import com.kyberswap.android.presentation.main.alert.Passport
+import com.kyberswap.android.presentation.main.alert.PassportAdapter
 import javax.inject.Inject
 
 class DialogHelper @Inject constructor(private val activity: AppCompatActivity) {
@@ -62,6 +64,111 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
             dialog.dismiss()
 
 
+        dialog.show()
+    }
+
+    fun showImagePickerBottomSheetDialog(onCameraSelect: () -> Unit, onGallerySelect: () -> Unit) {
+
+        val binding = DataBindingUtil.inflate<DialogImagePickerBottomSheetBinding>(
+            LayoutInflater.from(activity), R.layout.dialog_image_picker_bottom_sheet, null, false
+        )
+
+        val dialog = BottomSheetDialog(activity)
+        dialog.setContentView(binding.root)
+
+        binding.tvCamera.setOnClickListener {
+            onCameraSelect.invoke()
+            dialog.dismiss()
+
+
+        binding.tvPhotoLibrary.setOnClickListener {
+            onGallerySelect.invoke()
+            dialog.dismiss()
+
+
+        binding.tvCancel.setOnClickListener {
+            dialog.dismiss()
+
+
+        dialog.show()
+    }
+
+    fun showBottomSheetPassportDialog(
+        appExecutors: AppExecutors
+    ) {
+
+        val binding = DataBindingUtil.inflate<DialogPassportBottomSheetBinding>(
+            LayoutInflater.from(activity), R.layout.dialog_passport_bottom_sheet, null, false
+        )
+
+        val dialog = BottomSheetDialog(activity)
+        dialog.setContentView(binding.root)
+
+        val resources = listOf(
+            R.drawable.passport_show_corner,
+            R.drawable.passport_cover,
+            R.drawable.passport_blurry,
+            R.drawable.passport_correct
+        )
+
+        val contents = listOf(
+            R.string.must_show_all_4_corners_of_the_card,
+            R.string.must_not_be_covered_in_anyway,
+            R.string.must_not_be_blurry,
+            R.string.this_is_right
+        )
+
+        val passports = resources.zip(contents) { resource, content ->
+            Passport(resource, content)
+
+
+        val passportAdapter = PassportAdapter(appExecutors)
+
+        binding.rvPassport.layoutManager = GridLayoutManager(
+            activity,
+            2
+        )
+        binding.rvPassport.adapter = passportAdapter
+        passportAdapter.submitList(passports)
+        dialog.show()
+    }
+
+    fun showBottomSheetHoldPassportDialog(
+        appExecutors: AppExecutors
+    ) {
+
+        val binding = DataBindingUtil.inflate<DialogHoldingPassportBottomSheetBinding>(
+            LayoutInflater.from(activity),
+            R.layout.dialog_holding_passport_bottom_sheet,
+            null,
+            false
+        )
+
+        val dialog = BottomSheetDialog(activity)
+        dialog.setContentView(binding.root)
+
+        val resources = listOf(
+            R.drawable.passport_hold_incorrect,
+            R.drawable.passport_hold_correct
+        )
+
+        val contents = listOf(
+            R.string.passport_hold_incorrect,
+            R.string.passport_hold_correct
+        )
+
+        val passports = resources.zip(contents) { resource, content ->
+            Passport(resource, content)
+
+
+        val passportAdapter = PassportAdapter(appExecutors)
+
+        binding.rvPassport.layoutManager = GridLayoutManager(
+            activity,
+            2
+        )
+        binding.rvPassport.adapter = passportAdapter
+        passportAdapter.submitList(passports)
         dialog.show()
     }
 
