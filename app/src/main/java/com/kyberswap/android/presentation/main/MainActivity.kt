@@ -21,7 +21,6 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityMainBinding
 import com.kyberswap.android.domain.model.Transaction
-import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -32,6 +31,9 @@ import com.kyberswap.android.presentation.main.balance.GetPendingTransactionStat
 import com.kyberswap.android.presentation.main.balance.WalletAdapter
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
+import com.kyberswap.android.presentation.main.profile.kyc.PassportFragment
+import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
+import com.kyberswap.android.presentation.main.profile.kyc.SubmitFragment
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
@@ -54,7 +56,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     private var wallet: Wallet? = null
 
-    private var user: UserInfo? = null
+    private var hasUserInfo: Boolean = false
 
     @Inject
     lateinit var dialogHelper: DialogHelper
@@ -82,7 +84,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         super.onCreate(savedInstanceState)
         WalletManager.storage = this
         WalletManager.scanWallets()
-        user = intent.getParcelableExtra(USER_PARAM)
+        hasUserInfo = intent.getBooleanExtra(USER_PARAM, false)
         mainViewModel.getWalletStateCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -120,7 +122,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         val adapter = MainPagerAdapter(
             supportFragmentManager,
             wallet,
-            user
+            hasUserInfo
         )
 
         binding.vpNavigation.adapter = adapter
@@ -301,10 +303,23 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     override fun onBackPressed() {
         if (currentFragment != null && currentFragment!!.childFragmentManager.backStackEntryCount > 0) {
+
+            currentFragment?.childFragmentManager?.fragments?.forEach {
+                if (it is PassportFragment) {
+                    it.onBackPress()
+                    return
+                } else if (it is SubmitFragment) {
+                    it.onBackPress()
+                    return
+                }
+            }
+
             currentFragment!!.childFragmentManager.popBackStack()
         } else {
             super.onBackPressed()
         }
+
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -312,6 +327,12 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         val allFragments = supportFragmentManager.fragments
         allFragments.forEach {
             if (it is ProfileFragment) {
+                it.onActivityResult(requestCode, resultCode, data)
+            }
+        }
+
+        currentFragment?.childFragmentManager?.fragments?.forEach {
+            if (it is PersonalInfoFragment || it is PassportFragment) {
                 it.onActivityResult(requestCode, resultCode, data)
             }
         }
@@ -327,12 +348,10 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     }
 
     companion object {
-        private const val WALLET_PARAM = "wallet_param"
         private const val USER_PARAM = "user_param"
-        fun newIntent(context: Context, wallet: Wallet?, user: UserInfo?) =
+        fun newIntent(context: Context, hasUserInfo: Boolean? = false) =
             Intent(context, MainActivity::class.java).apply {
-                putExtra(WALLET_PARAM, wallet)
-                putExtra(USER_PARAM, user)
+                putExtra(USER_PARAM, hasUserInfo)
             }
     }
 }

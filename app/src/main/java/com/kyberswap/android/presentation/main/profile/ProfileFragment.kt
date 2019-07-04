@@ -233,8 +233,7 @@ class ProfileFragment : BaseFragment() {
 
     private fun navigateToProfileDetail(userInfo: UserInfo?) {
         navigator.navigateToProfileDetail(
-            currentFragment,
-            userInfo
+            currentFragment
         )
     }
 

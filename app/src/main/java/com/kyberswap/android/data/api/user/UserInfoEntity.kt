@@ -19,5 +19,7 @@ data class UserInfoEntity(
     @SerializedName("name")
     val name: String? = "",
     @SerializedName("uid")
-    val uid: Long = 0
+    val uid: Long = 0,
+    @SerializedName("kyc_info")
+    val kycInfo: KycInfoEntity = KycInfoEntity()
 )

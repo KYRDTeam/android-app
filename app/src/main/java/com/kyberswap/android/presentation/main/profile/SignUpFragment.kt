@@ -229,8 +229,7 @@ class SignUpFragment : BaseFragment() {
                 fm.popBackStack()
             }
         navigator.navigateToProfileDetail(
-            (activity as MainActivity).getCurrentFragment(),
-            userInfo
+            (activity as MainActivity).getCurrentFragment()
         )
     }
 

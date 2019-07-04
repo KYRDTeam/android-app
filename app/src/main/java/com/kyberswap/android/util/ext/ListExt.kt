@@ -9,3 +9,15 @@ inline fun <T> Iterable<T>.sumByBigDecimal(selector: (T) -> BigDecimal): BigDeci
     }
     return sum
 }
+
+
+fun List<String>.display(): String {
+    val builder = StringBuilder()
+    forEachIndexed { index, s ->
+        builder.append(s)
+        if (index < this.size - 1) {
+            builder.append("\n")
+        }
+    }
+    return builder.toString()
+}

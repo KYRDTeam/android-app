@@ -21,6 +21,7 @@ import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.balance.send.SendViewModel
 import com.kyberswap.android.presentation.main.limitorder.*
 import com.kyberswap.android.presentation.main.profile.*
+import com.kyberswap.android.presentation.main.profile.kyc.*
 import com.kyberswap.android.presentation.main.setting.*
 import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.main.swap.SwapViewModel
@@ -175,6 +176,26 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeLeaderBoardFragment(): LeaderBoardFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributePersonalInfoFragment(): PersonalInfoFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributePassportFragment(): PassportFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeSubmitFragment(): SubmitFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeCountryFragment(): KycInfoSearchFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeVerificationFragment(): VerificationFragment
 
     @Binds
     @IntoMap
@@ -373,5 +394,33 @@ interface MainActivityModule {
     @ViewModelKey(LeaderBoardViewModel::class)
     fun bindLeaderBoardViewModel(
         leaderBoardViewModel: LeaderBoardViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PersonalInfoViewModel::class)
+    fun bindPersonalInfoViewModel(
+        personalInfoViewModel: PersonalInfoViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PassportViewModel::class)
+    fun bindPassportViewModel(
+        passportViewModel: PassportViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SubmitViewModel::class)
+    fun bindSubmitViewModel(
+        submitViewModel: SubmitViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CountryViewModel::class)
+    fun bindCountryViewModel(
+        countryViewModel: CountryViewModel
     ): ViewModel
 }

@@ -54,7 +54,7 @@ data class Alert(
         entity.triggeredAt ?: "",
         entity.filledAt ?: "",
         entity.rank ?: 0,
-        entity.userEmail,
+        entity.userEmail ?: "",
         entity.telegramAccount ?: "",
         entity.reward ?: ""
     )

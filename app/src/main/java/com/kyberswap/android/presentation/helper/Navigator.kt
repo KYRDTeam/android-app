@@ -17,6 +17,7 @@ import com.kyberswap.android.presentation.main.balance.send.SendConfirmActivity
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.limitorder.*
 import com.kyberswap.android.presentation.main.profile.*
+import com.kyberswap.android.presentation.main.profile.kyc.*
 import com.kyberswap.android.presentation.main.setting.AddContactFragment
 import com.kyberswap.android.presentation.main.setting.ContactFragment
 import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
@@ -49,8 +50,8 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         activity.finishAffinity()
     }
 
-    fun navigateToHome(wallet: Wallet? = null, user: UserInfo? = null) {
-        activity.startActivity(MainActivity.newIntent(activity, wallet, user))
+    fun navigateToHome(hasUserInfo: Boolean? = false) {
+        activity.startActivity(MainActivity.newIntent(activity, hasUserInfo))
         activity.finishAffinity()
     }
 
@@ -288,12 +289,11 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
     }
 
     fun navigateToProfileDetail(
-        currentFragment: Fragment?,
-        user: UserInfo?
+        currentFragment: Fragment?
     ) {
         navigateByChildFragmentManager(
             currentFragment,
-            ProfileDetailFragment.newInstance(user),
+            ProfileDetailFragment.newInstance(),
             false
         )
 
@@ -378,6 +378,58 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         navigateByChildFragmentManager(
             currentFragment,
             ManageAlertFragment.newInstance()
+        )
+    }
+
+    fun navigateToKYC(currentFragment: Fragment, step: Int?) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            when (step) {
+                UserInfo.KYC_STEP_ID_PASSPORT -> PassportFragment.newInstance()
+                UserInfo.KYC_STEP_SUBMIT -> SubmitFragment.newInstance()
+                else -> PersonalInfoFragment.newInstance()
+            }
+        )
+    }
+
+    fun navigateToPassport(currentFragment: Fragment) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            PassportFragment.newInstance()
+        )
+    }
+
+    fun navigateToPersonalInfo(currentFragment: Fragment) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            PersonalInfoFragment.newInstance()
+        )
+    }
+
+
+    fun navigateToSubmitKYC(currentFragment: Fragment) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            SubmitFragment.newInstance()
+        )
+    }
+
+    fun navigateToVerification(currentFragment: Fragment) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            VerificationFragment.newInstance()
+        )
+    }
+
+    fun navigateToSearch(
+        currentFragment: Fragment,
+        data: List<String>,
+        infoType: KycInfoType
+    ) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            KycInfoSearchFragment.newInstance(data, infoType)
+
         )
     }
 

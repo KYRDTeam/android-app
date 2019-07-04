@@ -1,13 +1,7 @@
 package com.kyberswap.android.domain.repository
 
-import com.kyberswap.android.domain.model.Alert
-import com.kyberswap.android.domain.model.LoginUser
-import com.kyberswap.android.domain.model.ResponseStatus
-import com.kyberswap.android.domain.model.UserInfo
-import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
-import com.kyberswap.android.domain.usecase.profile.LoginUseCase
-import com.kyberswap.android.domain.usecase.profile.ResetPasswordUseCase
-import com.kyberswap.android.domain.usecase.profile.SignUpUseCase
+import com.kyberswap.android.domain.model.*
+import com.kyberswap.android.domain.usecase.profile.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -25,7 +19,25 @@ interface UserRepository {
 
     fun userInfo(): Single<UserInfo?>
 
+    fun getUserInfo(): Flowable<UserInfo>
+
+    fun fetchUserInfo(): Flowable<UserInfo>
+
     fun getAlerts(): Flowable<List<Alert>>
 
     fun logout(): Completable
+
+    fun save(param: SaveKycInfoUseCase.Param): Completable
+
+    fun save(param: SavePersonalInfoUseCase.Param): Single<KycResponseStatus>
+
+    fun save(param: SaveIdPassportUseCase.Param): Single<KycResponseStatus>
+
+    fun resizeImage(param: ResizeImageUseCase.Param): Single<String>
+
+    fun decode(param: Base64DecodeUseCase.Param): Single<ByteArray>
+
+    fun submit(param: SubmitUserInfoUseCase.Param): Single<KycResponseStatus>
+
+    fun reSubmit(param: ReSubmitUserInfoUseCase.Param): Single<KycResponseStatus>
 }
