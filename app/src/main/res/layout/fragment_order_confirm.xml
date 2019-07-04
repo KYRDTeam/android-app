@@ -176,6 +176,7 @@
                     android:layout_marginTop="24dp"
                     android:layout_marginEnd="24dp"
                     android:background="@drawable/default_button"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:gravity="center"
                     android:minHeight="45dp"
                     android:text="@string/swap_continue"

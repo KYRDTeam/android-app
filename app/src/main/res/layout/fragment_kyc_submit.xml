@@ -898,6 +898,7 @@
                     android:gravity="center"
                     android:minHeight="45dp"
                     android:text="@string/next"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#ffffff"
                     android:textSize="16sp" />
             </LinearLayout>

@@ -376,6 +376,11 @@
     <string name="kyc_status_pending">Pending</string>
     <string name="profile_rejected">Your profile is rejected</string>
     <string name="kyc_edit">Edit</string>
+    <string name="kyber_code">KyberCode</string>
+    <string name="your_kybercode">Your KyberCode</string>
+    <string name="kyber_code_apply">Apply</string>
+    <string name="enter_your_kybercode">Enter your KyberCode</string>
+    <string name="name_your_wallet">Name of your wallet (optional)</string>
 
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>

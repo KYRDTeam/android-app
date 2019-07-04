@@ -205,6 +205,7 @@
                         android:layout_marginTop="24dp"
                         android:layout_marginBottom="40dp"
                         android:background="@drawable/border_button"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:gravity="center"
                         android:minWidth="126dp"
                         android:minHeight="45dp"
@@ -213,52 +214,6 @@
                         android:textSize="16sp" />
 
                 </LinearLayout>
-
-
-                <!--<TextView-->
-                <!--android:id="@+id/textView60"-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginTop="24dp"-->
-                <!--android:lineSpacingExtra="8sp"-->
-                <!--android:text="@string/complete_profile_verification"-->
-                <!--android:textColor="#141927"-->
-                <!--android:textSize="14sp"-->
-                <!--app:layout_constraintEnd_toEndOf="@+id/tvName"-->
-                <!--app:layout_constraintStart_toStartOf="@+id/imgProfile"-->
-                <!--app:layout_constraintTop_toBottomOf="@+id/view13" />-->
-
-                <!--<TextView-->
-                <!--android:id="@+id/textView61"-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginTop="8dp"-->
-                <!--android:lineSpacingExtra="8sp"-->
-                <!--android:text="@string/profile_verification_notification"-->
-                <!--android:textColor="#5a5e67"-->
-                <!--android:textSize="14sp"-->
-                <!--app:layout_constraintEnd_toEndOf="@+id/textView60"-->
-                <!--app:layout_constraintStart_toStartOf="@+id/textView60"-->
-                <!--app:layout_constraintTop_toBottomOf="@+id/textView60" />-->
-
-
-                <!--<TextView-->
-                <!--android:id="@+id/tvVerify"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginTop="24dp"-->
-                <!--android:layout_marginBottom="40dp"-->
-                <!--android:background="@drawable/border_button"-->
-                <!--android:gravity="center"-->
-                <!--android:minWidth="126dp"-->
-                <!--android:minHeight="45dp"-->
-                <!--android:text="@string/profile_verify"-->
-                <!--android:textColor="#141927"-->
-                <!--android:textSize="16sp"-->
-                <!--app:layout_constraintBottom_toTopOf="@+id/view19"-->
-                <!--app:layout_constraintEnd_toEndOf="@+id/textView61"-->
-                <!--app:layout_constraintStart_toStartOf="@+id/textView61"-->
-                <!--app:layout_constraintTop_toBottomOf="@+id/textView61" />-->
 
                 <View
                     android:id="@+id/view19"

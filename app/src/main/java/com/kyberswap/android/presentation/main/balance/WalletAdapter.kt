@@ -33,11 +33,6 @@ class WalletAdapter(
         binding.executePendingBindings()
         binding.root.setOnClickListener {
             onItemClick?.invoke(item.copy(isSelected = true))
-//            submitList(getData().map {
-//                it.isSelected = item.address == it.address
-//                it
-//    )
-//            notifyDataSetChanged()
 
 
     }

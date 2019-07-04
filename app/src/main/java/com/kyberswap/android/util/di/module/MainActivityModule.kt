@@ -19,6 +19,8 @@ import com.kyberswap.android.presentation.main.balance.other.OtherFragment
 import com.kyberswap.android.presentation.main.balance.other.OtherViewModel
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.balance.send.SendViewModel
+import com.kyberswap.android.presentation.main.kybercode.KyberCodeFragment
+import com.kyberswap.android.presentation.main.kybercode.KyberCodeViewModel
 import com.kyberswap.android.presentation.main.limitorder.*
 import com.kyberswap.android.presentation.main.profile.*
 import com.kyberswap.android.presentation.main.profile.kyc.*
@@ -196,6 +198,10 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeVerificationFragment(): VerificationFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeKyberCodeFragment(): KyberCodeFragment
 
     @Binds
     @IntoMap
@@ -422,5 +428,12 @@ interface MainActivityModule {
     @ViewModelKey(CountryViewModel::class)
     fun bindCountryViewModel(
         countryViewModel: CountryViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(KyberCodeViewModel::class)
+    fun bindKyberCodeViewModel(
+        kyberCodeViewModel: KyberCodeViewModel
     ): ViewModel
 }

@@ -15,6 +15,7 @@ import com.kyberswap.android.presentation.main.balance.address.BalanceAddressFra
 import com.kyberswap.android.presentation.main.balance.chart.ChartFragment
 import com.kyberswap.android.presentation.main.balance.send.SendConfirmActivity
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
+import com.kyberswap.android.presentation.main.kybercode.KyberCodeFragment
 import com.kyberswap.android.presentation.main.limitorder.*
 import com.kyberswap.android.presentation.main.profile.*
 import com.kyberswap.android.presentation.main.profile.kyc.*
@@ -429,6 +430,14 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         navigateByChildFragmentManager(
             currentFragment,
             KycInfoSearchFragment.newInstance(data, infoType)
+
+        )
+    }
+
+    fun navigateToKyberCode(currentFragment: Fragment?) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            KyberCodeFragment.newInstance()
 
         )
     }
