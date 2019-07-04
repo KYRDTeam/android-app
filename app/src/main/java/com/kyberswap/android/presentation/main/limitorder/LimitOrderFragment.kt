@@ -151,22 +151,6 @@ class LimitOrderFragment : BaseFragment() {
             }
         }
 
-        binding.grTokenSource.setAllOnClickListener {
-            navigator.navigateToTokenSearchFromSwapTokenScreen(
-                (activity as MainActivity).getCurrentFragment(),
-                wallet,
-                true
-            )
-        }
-
-        binding.grTokenDest.setAllOnClickListener {
-            navigator.navigateToTokenSearchFromSwapTokenScreen(
-                (activity as MainActivity).getCurrentFragment(),
-                wallet,
-                true
-            )
-        }
-
         binding.imgMenu.setOnClickListener {
             showDrawer(true)
         }

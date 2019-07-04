@@ -57,6 +57,9 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
             navigator.navigateToImportWalletPage()
         }
 
+        binding.btnPromo.setOnClickListener {
+        }
+
         viewModel.createWalletCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == CreateWalletState.Loading)

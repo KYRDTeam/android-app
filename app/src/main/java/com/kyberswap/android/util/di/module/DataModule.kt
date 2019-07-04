@@ -22,8 +22,11 @@ object DataModule {
         context: Context,
         walletDao: WalletDao,
         unitDao: UnitDao,
-        tokenDao: TokenDao
-    ): WalletRepository = WalletDataRepository(context, walletDao, unitDao, tokenDao)
+        tokenDao: TokenDao,
+        promoApi: PromoApi,
+        promoMapper: PromoMapper
+    ): WalletRepository =
+        WalletDataRepository(context, walletDao, unitDao, tokenDao, promoApi, promoMapper)
 
     @Singleton
     @Provides

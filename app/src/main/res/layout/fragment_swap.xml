@@ -224,7 +224,7 @@
                         app:layout_constraintStart_toEndOf="@+id/tvDest" />
 
                     <androidx.constraintlayout.widget.Group
-                        android:id="@+id/grTokenSource"
+                        android:id="@+id/grSwapTokenSource"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:constraint_referenced_ids="tvSource,imgTokenSource"
@@ -232,7 +232,7 @@
                         tools:layout_editor_absoluteY="20dp" />
 
                     <androidx.constraintlayout.widget.Group
-                        android:id="@+id/grTokenDest"
+                        android:id="@+id/grSwapTokenDest"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:constraint_referenced_ids="tvDest,imgTokenDest"

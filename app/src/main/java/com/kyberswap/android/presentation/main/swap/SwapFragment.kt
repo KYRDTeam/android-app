@@ -149,6 +149,8 @@ class SwapFragment : BaseFragment() {
 
         }
 
+
+
         viewModel.compositeDisposable.add(
             edtSource.textChanges()
                 .observeOn(schedulerProvider.ui())
@@ -184,6 +186,28 @@ class SwapFragment : BaseFragment() {
                         }
                     }
                 })
+
+
+        listOf(binding.imgTokenSource, binding.tvSource).forEach {
+            it.setOnClickListener {
+                navigator.navigateToTokenSearchFromSwapTokenScreen(
+                    currentFragment,
+                    wallet,
+                    true
+                )
+            }
+
+        }
+
+        listOf(binding.imgTokenDest, binding.tvDest).forEach {
+            it.setOnClickListener {
+                navigator.navigateToTokenSearchFromSwapTokenScreen(
+                    currentFragment,
+                    wallet,
+                    false
+                )
+            }
+        }
 
         viewModel.getExpectedRateCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
