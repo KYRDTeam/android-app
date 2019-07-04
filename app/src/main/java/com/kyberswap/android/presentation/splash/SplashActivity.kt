@@ -34,35 +34,39 @@ class SplashActivity : BaseActivity() {
         Handler()
     }
 
+    private lateinit var frameAnimation: AnimationDrawable
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding.viewModel = viewModel
+    }
+
+    override fun onStart() {
+        super.onStart()
         binding.imageView.setBackgroundResource(R.drawable.progress_animation)
-        val frameAnimation = binding.imageView.background as AnimationDrawable
-        handler.post {
-            frameAnimation.start()
-        }
-
-
-        handler.postDelayed({
-            viewModel.prepareData()
-        }, 500)
+        frameAnimation = binding.imageView.background as AnimationDrawable
 
         viewModel.getWalletStateCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is GetUserWalletState.Success -> {
-                        navigator.navigateToHome(state.userInfo != null && state.userInfo.uid > 0)
-
+                if (state != GetUserWalletState.Loading)
+                    when (state) {
+                        is GetUserWalletState.Success -> {
+                            navigator.navigateToHome(state.userInfo != null && state.userInfo.uid > 0)
+                        }
+                        is GetUserWalletState.ShowError -> {
+                            navigator.navigateToLandingPage()
+                            return@Observer
+                        }
                     }
-                    is GetUserWalletState.ShowError -> {
-                        navigator.navigateToLandingPage()
-                        return@Observer
-                    }
-                }
             }
         })
+        frameAnimation.start()
+        handler.postDelayed({
+            viewModel.prepareData()
+            frameAnimation.stop()
+        }, 1600)
     }
+
 
     override fun onDestroy() {
         handler.removeCallbacksAndMessages(null)

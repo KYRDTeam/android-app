@@ -43,6 +43,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
+            android:inputType="text"
             android:id="@+id/edtName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -60,6 +61,7 @@
             app:layout_constraintTop_toBottomOf="@+id/imgBack" />
 
         <EditText
+            android:inputType="text"
             android:id="@+id/edtAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -98,6 +100,7 @@
             android:layout_marginTop="48dp"
             android:layout_marginEnd="24dp"
             android:background="@drawable/default_button"
+            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
             android:gravity="center"
             android:minHeight="45dp"
             android:text="@string/contact_save"

@@ -134,6 +134,7 @@
             android:background="@drawable/default_button"
             android:gravity="center"
             android:minHeight="45dp"
+            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
             android:text="@string/swap_continue"
             android:textColor="#ffffff"
             android:textSize="16sp"

@@ -249,6 +249,7 @@
                     android:layout_marginStart="56dp"
                     android:layout_weight="1"
                     android:background="@drawable/border_button"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:gravity="center"
                     android:minHeight="45dp"
                     android:text="@string/filter_reset"
