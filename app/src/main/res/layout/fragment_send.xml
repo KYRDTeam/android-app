@@ -399,7 +399,7 @@
             app:constraint_referenced_ids="tvTokenBalance,tvBalanceDetail" />
 
         <androidx.constraintlayout.widget.Group
-            android:id="@+id/grTokenSource"
+            android:id="@+id/grSendTokenSource"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:constraint_referenced_ids="tvSource,imgTokenSource" />

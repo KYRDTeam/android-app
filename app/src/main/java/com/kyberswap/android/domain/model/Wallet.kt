@@ -24,7 +24,9 @@ data class Wallet(
     var unit: String = "USD",
     var balance: String = "0",
     @Embedded
-    var cap: Cap = Cap()
+    var cap: Cap = Cap(),
+    @Embedded
+    var promo: Promo? = Promo()
 ) :
     Parcelable {
     constructor(wallet: Wallet) : this(

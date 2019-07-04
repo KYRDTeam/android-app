@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 46,
-    "identityHash": "31ab3c403cada9cb1af4fa7ac49de217",
+    "identityHash": "cfeb2e7cf89add6c28e72039a42e0bb4",
     "entities": [
       {
         "tableName": "tokens",
@@ -110,7 +110,7 @@
       },
       {
         "tableName": "wallets",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`address` TEXT NOT NULL, `walletId` TEXT NOT NULL, `name` TEXT NOT NULL, `cipher` TEXT NOT NULL, `isSelected` INTEGER NOT NULL, `unit` TEXT NOT NULL, `balance` TEXT NOT NULL, `cap` TEXT NOT NULL, `kyced` INTEGER NOT NULL, `rich` INTEGER NOT NULL, PRIMARY KEY(`address`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`address` TEXT NOT NULL, `walletId` TEXT NOT NULL, `name` TEXT NOT NULL, `cipher` TEXT NOT NULL, `isSelected` INTEGER NOT NULL, `unit` TEXT NOT NULL, `balance` TEXT NOT NULL, `cap` TEXT NOT NULL, `kyced` INTEGER NOT NULL, `rich` INTEGER NOT NULL, `privateKey` TEXT, `expiredDate` TEXT, `destinationToken` TEXT, `description` TEXT, `type` TEXT, `receiveAddress` TEXT, PRIMARY KEY(`address`))",
         "fields": [
           {
             "fieldPath": "address",
@@ -171,6 +171,42 @@
             "columnName": "rich",
             "affinity": "INTEGER",
             "notNull": true
+  ,
+          {
+            "fieldPath": "promo.privateKey",
+            "columnName": "privateKey",
+            "affinity": "TEXT",
+            "notNull": false
+  ,
+          {
+            "fieldPath": "promo.expiredDate",
+            "columnName": "expiredDate",
+            "affinity": "TEXT",
+            "notNull": false
+  ,
+          {
+            "fieldPath": "promo.destinationToken",
+            "columnName": "destinationToken",
+            "affinity": "TEXT",
+            "notNull": false
+  ,
+          {
+            "fieldPath": "promo.description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+  ,
+          {
+            "fieldPath": "promo.type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": false
+  ,
+          {
+            "fieldPath": "promo.receiveAddress",
+            "columnName": "receiveAddress",
+            "affinity": "TEXT",
+            "notNull": false
   
         ],
         "primaryKey": {
@@ -2138,7 +2174,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '31ab3c403cada9cb1af4fa7ac49de217')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cfeb2e7cf89add6c28e72039a42e0bb4')"
     ]
   }
 }
