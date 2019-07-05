@@ -24,4 +24,8 @@ data class Promo(
         entity.receiveAddress,
         entity.error
     )
+
+    companion object {
+        const val PAYMENT = "payment"
+    }
 }

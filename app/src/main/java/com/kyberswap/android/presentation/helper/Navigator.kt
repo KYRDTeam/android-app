@@ -21,6 +21,8 @@ import com.kyberswap.android.presentation.main.profile.*
 import com.kyberswap.android.presentation.main.profile.kyc.*
 import com.kyberswap.android.presentation.main.setting.AddContactFragment
 import com.kyberswap.android.presentation.main.setting.ContactFragment
+import com.kyberswap.android.presentation.main.swap.PromoPaymentConfirmActivity
+import com.kyberswap.android.presentation.main.swap.PromoSwapConfirmActivity
 import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
 import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
 import com.kyberswap.android.presentation.main.transaction.*
@@ -129,7 +131,18 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
 
     fun navigateToSwapConfirmationScreen(wallet: Wallet?) {
-        activity.startActivity(SwapConfirmActivity.newIntent(activity, wallet))
+        when {
+            wallet?.isPromo == true -> when {
+                wallet.isPromoPayment -> activity.startActivity(
+                    PromoPaymentConfirmActivity.newIntent(
+                        activity,
+                        wallet
+                    )
+                )
+                else -> activity.startActivity(PromoSwapConfirmActivity.newIntent(activity, wallet))
+            }
+            else -> activity.startActivity(SwapConfirmActivity.newIntent(activity, wallet))
+        }
     }
 
 

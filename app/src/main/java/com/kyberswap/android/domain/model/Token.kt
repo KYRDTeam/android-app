@@ -32,8 +32,6 @@ data class Token(
     val rateUsdNow: BigDecimal = BigDecimal.ZERO,
     @TypeConverters(DataTypeConverter::class)
     val changeUsd24h: BigDecimal = BigDecimal.ZERO,
-//    @TypeConverters(DataTypeConverter::class)
-//    val currentBalance: BigDecimal = BigDecimal.ZERO,
     val cgId: String = "",
     @TypeConverters(DataTypeConverter::class)
     val gasApprove: BigDecimal = BigDecimal.ZERO,

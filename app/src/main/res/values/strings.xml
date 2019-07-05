@@ -228,7 +228,7 @@
     <string name="percent_50">50%</string>
     <string name="percent_100">100%</string>
     <string name="limit_order_rate_of">Rate of</string>
-    <string name="limit_order_discount">Buy 3000KNC to discount 50% for 20 orders</string>
+    <string name="limit_order_discount">Hold from 2000 KNC to get discount for your orders</string>
     <string name="limit_order_fee">Fee: %s %s (%s%% of %s %s)</string>
     <string name="transaction_from">From</string>
     <string name="day_1">1 Day</string>
@@ -381,6 +381,20 @@
     <string name="kyber_code_apply">Apply</string>
     <string name="enter_your_kybercode">Enter your KyberCode</string>
     <string name="name_your_wallet">Name of your wallet (optional)</string>
+    <string name="promo_payment_confirm_title">You are swapping to receive a gift</string>
+    <string name="promo_from">From</string>
+    <string name="promo_to">To</string>
+    <string name="promo_receive">Receive</string>
+    <string name="promo_transaction_fee">Transaction Fee</string>
+    <string name="swap_and_send_to_the_organizer">Swap and Send to the Organizer</string>
+    <string name="expired_date_notification">After swapping please transfer your token to your personal wallet before %s</string>
+    <string name="promo_gift">1 Gift</string>
+    <string name="insufficient_eth">Insufficient Eth</string>
+    <string name="not_enough_eth_blance">Not have enough ETH to pay for transaction fee</string>
+    <string name="can_not_tranfer_token">Can not transfer this token</string>
+    <string name="import_success_notification">Congratulations!!!</string>
+    <string name="import_success_detail">You have successfully unlocked your Promo code. Please move all assets to your wallet by %s</string>
+    <string name="promo_your_wallet">Your Wallet</string>
 
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>

@@ -289,7 +289,11 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
 
         val toAddress = param.swap.tokenDest.tokenAddress
 
-        val walletAddress = param.wallet.address
+        val walletAddress = if (param.wallet.isPromoPayment) param.wallet.promo?.receiveAddress
+            ?: param.wallet.address else
+            param.wallet.address
+
+
         val txManager = RawTransactionManager(web3j, credentials)
 
         return if (param.swap.tokenSource.isETH) {

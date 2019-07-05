@@ -310,10 +310,14 @@ class SwapDataRepository @Inject constructor(
             val tokenDest = tokenDao.getTokenBySymbol(swap.tokenDest.tokenSymbol) ?: Token()
             swap.copy(tokenSource = tokenSource, tokenDest = tokenDest)
         }
+        val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
         swapDao.insertSwap(defaultSwap)
         return swapDao.findSwapDataByAddress(wallet.address).defaultIfEmpty(
             defaultSwap
-        )
+        ).map {
+            it.ethToken = ethToken
+            it
+        }
     }
 
 }

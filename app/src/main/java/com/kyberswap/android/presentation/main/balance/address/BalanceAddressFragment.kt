@@ -20,7 +20,6 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
-import kotlinx.android.synthetic.main.fragment_balance.*
 import javax.inject.Inject
 
 
@@ -57,11 +56,10 @@ class BalanceAddressFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
-                        binding.wallet = state.wallet
-                        tvUnit.text = state.wallet.unit
-                        tvBalance.text = state.wallet.balance
-
-
+                        if (binding.wallet?.address != state.wallet.address) {
+                            binding.wallet = state.wallet
+                            binding.imgAddress.setImageBitmap(generateBarcode())
+                        }
                     }
                     is GetWalletState.ShowError -> {
 
@@ -69,9 +67,6 @@ class BalanceAddressFragment : BaseFragment() {
                 }
             }
         })
-
-
-        binding.imgAddress.setImageBitmap(generateBarcode())
 
         binding.tvCopy.setOnClickListener {
             val clipboard =
@@ -93,8 +88,6 @@ class BalanceAddressFragment : BaseFragment() {
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
         }
-
-
     }
 
     private fun generateBarcode(): Bitmap? {
@@ -115,7 +108,6 @@ class BalanceAddressFragment : BaseFragment() {
     }
 
     companion object {
-        private const val WALLET_PARAM = "wallet_param"
         private const val MIME_TYPE_TEXT = "text/plain"
         fun newInstance() =
             BalanceAddressFragment().apply {

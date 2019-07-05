@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import com.kyberswap.android.R
 import com.kyberswap.android.presentation.common.AlertActivity
+import com.kyberswap.android.presentation.common.AlertWithoutIconActivity
 import com.kyberswap.android.presentation.main.MainActivity
 import dagger.android.support.DaggerFragment
 
@@ -39,6 +40,14 @@ abstract class BaseFragment : DaggerFragment() {
         if (context != null) {
             this.alertListener = listener
             val intent = AlertActivity.newIntent(context!!, message)
+            startActivityForResult(intent, SHOW_ALERT)
+        }
+    }
+
+    fun showAlertWithoutIcon(title: String? = null, message: String, listener: () -> Unit = {}) {
+        if (context != null) {
+            this.alertListener = listener
+            val intent = AlertWithoutIconActivity.newIntent(context!!, title, message)
             startActivityForResult(intent, SHOW_ALERT)
         }
     }

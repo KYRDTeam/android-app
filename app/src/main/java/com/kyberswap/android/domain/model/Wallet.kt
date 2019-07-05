@@ -5,6 +5,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.kyberswap.android.util.ext.toWalletAddress
+import com.kyberswap.android.util.views.DateTimeHelper
 import kotlinx.android.parcel.Parcelize
 import org.consenlabs.tokencore.wallet.Wallet
 import org.jetbrains.annotations.NotNull
@@ -51,6 +52,15 @@ data class Wallet(
             )
         return displayBuilder.toString()
     }
+
+    val isPromo: Boolean
+        get() = promo != null && promo!!.type.isNotEmpty()
+
+    val isPromoPayment: Boolean
+        get() = isPromo && Promo.PAYMENT == promo?.type
+
+    val expiredDatePromoCode: String
+        get() = DateTimeHelper.displayDate(promo?.expiredDate)
 
 
     fun verifyCap(amount: BigDecimal): Boolean {

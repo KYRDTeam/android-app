@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.annotation.NonNull
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
 import com.kyberswap.android.presentation.common.MIN_SUPPORT_SWAP_SOURCE_AMOUNT
@@ -19,11 +20,11 @@ import java.math.RoundingMode
 data class Swap(
     @NonNull
     @PrimaryKey
-    val walletAddress: String = "",
+    var walletAddress: String = "",
     @Embedded(prefix = "source_")
-    val tokenSource: Token = Token(),
+    var tokenSource: Token = Token(),
     @Embedded(prefix = "dest_")
-    val tokenDest: Token = Token(),
+    var tokenDest: Token = Token(),
     var sourceAmount: String = "",
     var destAmount: String = "",
     var expectedRate: String = "",
@@ -37,8 +38,11 @@ data class Swap(
     var marketRate: String = "",
     var minAcceptedRatePercent: String = "",
     @Embedded(prefix = "gas_")
-    val gas: Gas = Gas()
+    var gas: Gas = Gas(),
+    @Ignore
+    var ethToken: Token = Token()
 ) : Parcelable {
+
 
     constructor(limitOrder: LocalLimitOrder) : this(
         limitOrder.userAddr,
@@ -154,16 +158,31 @@ data class Swap(
             .append(tokenDest.rateUsdNow.toDisplayNumber() + " USD")
             .toString()
 
+    private val gasFeeEth: BigDecimal
+        get() = Convert.fromWei(
+            Convert.toWei(gasPrice.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
+                .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
+        )
+
+    private val gasFeeUsd: BigDecimal
+        get() = gasFeeEth.divide(tokenSource.rateEthNow).multiply(tokenSource.rateUsdNow)
+
     val displayGasFee: String
         get() = StringBuilder()
             .append("≈ ")
             .append(
-                Convert.fromWei(
-                    Convert.toWei(gasPrice.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
-                        .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
-                ).toPlainString()
+                gasFeeEth.toPlainString()
             )
             .append(" ETH")
+            .toString()
+
+    val displayGasFeeUsd: String
+        get() = StringBuilder()
+            .append("≈ ")
+            .append(
+                gasFeeUsd.toPlainString()
+            )
+            .append(" USD")
             .toString()
 
     val displayMinAcceptedRate: String
@@ -217,6 +236,9 @@ data class Swap(
             amount < MIN_SUPPORT_SWAP_SOURCE_AMOUNT.toBigDecimal()
         }
     }
+
+    val insufficientEthBalance: Boolean
+        get() = ethToken.currentBalance < gasFeeEth
 
     fun getDefaultSourceAmount(ethAmount: String): BigDecimal {
         return if (tokenSource.rateEthNow == BigDecimal.ZERO) BigDecimal.ZERO
