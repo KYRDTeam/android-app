@@ -33,10 +33,16 @@ class KyberCodeFragment : BaseFragment() {
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
+    private var fromLandingPage: Boolean? = null
 
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(KyberCodeViewModel::class.java)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        fromLandingPage = arguments?.getBoolean(FROM_LANDING_PAGE_EXTRA, false)
     }
 
     override fun onCreateView(
@@ -85,13 +91,23 @@ class KyberCodeFragment : BaseFragment() {
 
     }
 
-    fun onKyberCodeFinish() {
-        activity?.onBackPressed()
+    private fun onKyberCodeFinish() {
+        if (fromLandingPage == true) {
+            navigator.navigateToHome()
+ else {
+            activity?.onBackPressed()
+
     }
 
 
     companion object {
-        fun newInstance() = KyberCodeFragment()
+        private const val FROM_LANDING_PAGE_EXTRA = "from_landing_page_extra"
+        fun newInstance(fromLandingPage: Boolean = false) = KyberCodeFragment()
+            .apply {
+                arguments = Bundle().apply {
+                    putBoolean(FROM_LANDING_PAGE_EXTRA, fromLandingPage)
+        
+    
     }
 
 

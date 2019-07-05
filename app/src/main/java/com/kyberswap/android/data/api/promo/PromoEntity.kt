@@ -15,5 +15,7 @@ data class PromoEntity(
     @SerializedName("type")
     val type: String = "",
     @SerializedName("receive_address")
-    val receiveAddress: String = ""
+    val receiveAddress: String = "",
+    @SerializedName("error")
+    var error: String? = ""
 )

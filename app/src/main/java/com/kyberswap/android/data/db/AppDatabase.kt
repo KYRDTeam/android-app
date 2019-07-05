@@ -25,7 +25,7 @@ import com.kyberswap.android.domain.model.Unit
         OrderFilter::class,
         Alert::class
     ],
-    version = 46
+    version = 48
 )
 @TypeConverters(
     DataTypeConverter::class,

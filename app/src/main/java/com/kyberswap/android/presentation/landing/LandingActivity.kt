@@ -58,6 +58,8 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
 
 
         binding.btnPromo.setOnClickListener {
+            it.enable(false)
+            navigator.navigateToKyberCodeFromLandingPage(R.id.flContainer)
 
 
         viewModel.createWalletCallback.observe(this, Observer {
@@ -91,6 +93,10 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
 
         if (!binding.btnCreateWallet.isEnabled) {
             binding.btnCreateWallet.enable(true)
+
+
+        if (!binding.btnPromo.isEnabled) {
+            binding.btnPromo.enable(true)
 
 
     }

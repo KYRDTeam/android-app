@@ -49,6 +49,14 @@ class SwapFragment : BaseFragment() {
         ViewModelProviders.of(this, viewModelFactory).get(SwapViewModel::class.java)
     }
 
+    private val tokenSources by lazy {
+        listOf(binding.imgTokenSource, binding.tvSource)
+    }
+
+    private val tokenDests by lazy {
+        listOf(binding.imgTokenDest, binding.tvDest)
+    }
+
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
@@ -71,8 +79,20 @@ class SwapFragment : BaseFragment() {
                     is GetWalletState.Success -> {
                         this.wallet = state.wallet
                         if (binding.swap?.walletAddress != state.wallet.address) {
+                            val promo = wallet?.promo
+                            if (promo != null) {
+
+                                enableTokenSearch(isSourceToken = true, isEnable = false)
+                                if (promo.destinationToken.isNotEmpty()) {
+                                    enableTokenSearch(isSourceToken = false, isEnable = false)
+                        
+                     else {
+                                enableTokenSearch(isSourceToken = true, isEnable = true)
+                                enableTokenSearch(isSourceToken = false, isEnable = true)
+                    
+
                             binding.walletName = state.wallet.name
-                            viewModel.getSwapData(state.wallet.address)
+                            viewModel.getSwapData(state.wallet)
                             viewModel.getCap(state.wallet.address)
                 
             
@@ -188,7 +208,7 @@ class SwapFragment : BaseFragment() {
         )
 
 
-        listOf(binding.imgTokenSource, binding.tvSource).forEach {
+        tokenSources.forEach {
             it.setOnClickListener {
                 navigator.navigateToTokenSearchFromSwapTokenScreen(
                     currentFragment,
@@ -199,7 +219,7 @@ class SwapFragment : BaseFragment() {
 
 
 
-        listOf(binding.imgTokenDest, binding.tvDest).forEach {
+        tokenDests.forEach {
             it.setOnClickListener {
                 navigator.navigateToTokenSearchFromSwapTokenScreen(
                     currentFragment,
@@ -423,6 +443,18 @@ class SwapFragment : BaseFragment() {
     private fun resetAmount() {
         edtSource.setText("")
         edtDest.setText("")
+    }
+
+    private fun enableTokenSearch(isSourceToken: Boolean, isEnable: Boolean) {
+        if (isSourceToken) {
+            tokenSources.forEach {
+                it.isEnabled = isEnable
+    
+ else {
+            tokenDests.forEach {
+                it.isEnabled = isEnable
+    
+
     }
 
 

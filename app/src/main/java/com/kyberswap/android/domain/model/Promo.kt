@@ -12,7 +12,8 @@ data class Promo(
     val destinationToken: String = "",
     val description: String = "",
     val type: String = "",
-    val receiveAddress: String = ""
+    val receiveAddress: String = "",
+    val error: String? = ""
 ) : Parcelable {
     constructor(entity: PromoEntity) : this(
         entity.privateKey,
@@ -20,6 +21,7 @@ data class Promo(
         entity.destinationToken,
         entity.description,
         entity.type,
-        entity.receiveAddress
+        entity.receiveAddress,
+        entity.error
     )
 }

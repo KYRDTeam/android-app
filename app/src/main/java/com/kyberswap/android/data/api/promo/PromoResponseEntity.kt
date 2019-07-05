@@ -5,5 +5,8 @@ import com.google.gson.annotations.SerializedName
 
 data class PromoResponseEntity(
     @SerializedName("data")
-    val `data`: PromoEntity = PromoEntity()
+    val `data`: PromoEntity = PromoEntity(),
+    @SerializedName("error")
+    val error: String? = ""
+
 )
