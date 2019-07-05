@@ -85,6 +85,13 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
 )
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (!binding.btnPromo.isEnabled) {
+            binding.btnPromo.enable(true)
+
+    }
+
     override fun onResume() {
         super.onResume()
         if (!binding.btnImportWallet.isEnabled) {
@@ -93,11 +100,6 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
 
         if (!binding.btnCreateWallet.isEnabled) {
             binding.btnCreateWallet.enable(true)
-
-
-        if (!binding.btnPromo.isEnabled) {
-            binding.btnPromo.enable(true)
-
 
     }
 

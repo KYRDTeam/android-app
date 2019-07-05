@@ -14,4 +14,5 @@ const val DEFAULT_NAME = "Untitled"
 val DEFAULT_GAS_LIMIT_SEND_ETH = 30_000.toBigInteger()
 val DEFAULT_GAS_LIMIT_SEND_TOKEN = 100_000.toBigInteger()
 const val MIN_SUPPORT_SWAP_SOURCE_AMOUNT = 0.001
+val KEEP_ETH_BALANCE_FOR_GAS = 600_000.toBigDecimal()
 
