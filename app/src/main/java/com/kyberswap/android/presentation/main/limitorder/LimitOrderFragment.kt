@@ -176,7 +176,20 @@ class LimitOrderFragment : BaseFragment() {
         }
 
         binding.tv100Percent.setOnClickListener {
-            binding.edtSource.setAmount(tvBalance.text.toString())
+
+            binding.order?.let {
+                if (it.tokenSource.isETHWETH) {
+                    binding.edtSource.setAmount(
+                        it.availableAmountForTransfer(
+                            tvBalance.toBigDecimalOrDefaultZero(),
+                            it.gasPrice.toBigDecimalOrDefaultZero()
+                        ).toDisplayNumber()
+                    )
+                } else {
+                    binding.edtSource.setAmount(tvBalance.text.toString())
+                }
+
+            }
         }
 
         binding.tvRate.setOnClickListener {

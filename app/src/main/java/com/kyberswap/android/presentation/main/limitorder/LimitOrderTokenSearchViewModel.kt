@@ -36,10 +36,10 @@ class LimitOrderTokenSearchViewModel @Inject constructor(
 
     fun getTokenList(address: String) {
         getTokenListUseCase.execute(
-            Consumer {
+            Consumer { tokens ->
                 _getTokenListCallback.value = Event(
                     GetBalanceState.Success(
-                        it
+                        tokens.filter { it.spLimitOrder }
                     )
                 )
             },

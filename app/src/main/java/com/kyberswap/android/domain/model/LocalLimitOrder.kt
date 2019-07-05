@@ -7,10 +7,12 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.kyberswap.android.data.db.BigIntegerDataTypeConverter
 import com.kyberswap.android.data.db.DataTypeConverter
+import com.kyberswap.android.presentation.common.KEEP_ETH_BALANCE_FOR_GAS
 import com.kyberswap.android.presentation.common.MIN_SUPPORT_SWAP_SOURCE_AMOUNT
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.parcel.Parcelize
+import org.web3j.utils.Convert
 import java.math.BigDecimal
 import java.math.BigInteger
 
@@ -63,6 +65,7 @@ data class LocalLimitOrder(
             wethToken = this.wethToken
         )
     }
+
 
     val wethBalance: BigDecimal
         get() = wethToken.currentBalance
@@ -161,6 +164,17 @@ data class LocalLimitOrder(
         } else {
             amount < MIN_SUPPORT_SWAP_SOURCE_AMOUNT.toBigDecimal()
         }
+    }
+
+
+    fun availableAmountForTransfer(
+        calAvailableAmount: BigDecimal,
+        gasPrice: BigDecimal
+    ): BigDecimal {
+        return calAvailableAmount - Convert.fromWei(
+            Convert.toWei(gasPrice, Convert.Unit.GWEI)
+                .multiply(KEEP_ETH_BALANCE_FOR_GAS), Convert.Unit.ETHER
+        )
     }
 
     val tokenPair: String
