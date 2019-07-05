@@ -117,26 +117,41 @@ class ChartFragment : BaseFragment() {
         binding.tabLayout.setupWithViewPager(binding.vpChart)
 
         binding.tvBuy.setOnClickListener {
-            wallet?.let {
+            wallet?.let { wallet ->
                 token?.let {
-                    viewModel.save(wallet!!.address, token!!, false)
+                    if (wallet.isPromo) {
+                        moveToSwapTab()
+             else {
+                        viewModel.save(wallet.address, token!!, false)
+            
         
     
 
 
 
         binding.tvSell.setOnClickListener {
-            wallet?.let {
+            wallet?.let { wallet ->
                 token?.let {
-                    viewModel.save(wallet!!.address, token!!, true)
+                    if (wallet.isPromo) {
+                        moveToSwapTab()
+             else {
+                        viewModel.save(wallet.address, token!!, true)
+            
+
         
     
 
 
         binding.tvSend.setOnClickListener {
-            wallet?.let {
+            wallet?.let { wallet ->
                 token?.let {
-                    viewModel.saveSendToken(wallet!!.address, it)
+
+                    if (wallet.isPromo) {
+                        moveToSendScreen()
+             else {
+                        viewModel.saveSendToken(wallet.address, it)
+            
+
         
     
 
@@ -146,10 +161,7 @@ class ChartFragment : BaseFragment() {
                 showProgress(state == SaveSendState.Loading)
                 when (state) {
                     is SaveSendState.Success -> {
-                        navigator.navigateToSendScreen(
-                            (activity as MainActivity).getCurrentFragment(),
-                            wallet
-                        )
+                        moveToSendScreen()
             
                     is SaveSendState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -190,6 +202,13 @@ class ChartFragment : BaseFragment() {
                 activity!!.bottomNavigation.currentItem = MainPagerAdapter.SWAP
     
 
+    }
+
+    private fun moveToSendScreen() {
+        navigator.navigateToSendScreen(
+            currentFragment,
+            wallet
+        )
     }
 
     companion object {

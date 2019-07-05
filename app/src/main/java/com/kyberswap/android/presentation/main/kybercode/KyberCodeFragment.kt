@@ -80,7 +80,15 @@ class KyberCodeFragment : BaseFragment() {
                 showProgress(state == KyberCodeState.Loading)
                 when (state) {
                     is KyberCodeState.Success -> {
-                        onKyberCodeFinish()
+                        showAlertWithoutIcon(
+                            getString(R.string.import_success_notification), String.format(
+                                getString(
+                                    R.string.import_success_detail
+                                ), state.wallet.expiredDatePromoCode
+                            )
+                        ) {
+                            onKyberCodeFinish()
+                
             
                     is KyberCodeState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))

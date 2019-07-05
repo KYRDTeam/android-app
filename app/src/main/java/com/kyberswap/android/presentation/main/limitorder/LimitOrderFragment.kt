@@ -179,6 +179,9 @@ class LimitOrderFragment : BaseFragment() {
             binding.edtSource.setAmount(tvBalance.text.toString())
 
 
+        binding.tvRate.setOnClickListener {
+            binding.edtRate.setText(binding.tvRate.text)
+
 
         binding.imgSwap.setOnClickListener {
             resetAmount()
