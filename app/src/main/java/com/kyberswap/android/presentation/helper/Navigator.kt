@@ -442,6 +442,14 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         )
     }
 
+    fun navigateToKyberCodeFromLandingPage(container: Int) {
+        replaceFragment(
+            fragmentManager,
+            container,
+            KyberCodeFragment.newInstance(true)
+        )
+    }
+
     companion object {
         const val IN_RIGHT_OUT_LEFT = 1
         const val IN_LEFT_OUT_RIGHT = -1

@@ -114,37 +114,42 @@ class WalletDataRepository @Inject constructor(
 
     override fun importWallet(param: ImportWalletFromPrivateKeyUseCase.Param): Single<Wallet> {
         return Single.fromCallable {
-            val metadata =
-                Metadata(
-                    ChainType.ETHEREUM,
-                    Network.MAINNET,
-                    param.walletName,
-                    null
+            if (param.promo?.error != null && param.promo.error.isNotEmpty()) {
+                Wallet(promo = param.promo)
+            } else {
+                val metadata =
+                    Metadata(
+                        ChainType.ETHEREUM,
+                        Network.MAINNET,
+                        param.walletName,
+                        null
+                    )
+                metadata.source = Metadata.FROM_PRIVATE
+
+                val generatedPassword = generatePassword()
+
+                createIdentity(param.walletName, generatedPassword)
+                val importWalletFromPrivateKey = WalletManager.importWalletFromPrivateKey(
+                    metadata,
+                    param.privateKey,
+                    generatedPassword,
+                    false
                 )
-            metadata.source = Metadata.FROM_PRIVATE
 
-            val generatedPassword = generatePassword()
+                val wallet = Wallet(
+                    importWalletFromPrivateKey.address.toWalletAddress(),
+                    importWalletFromPrivateKey.id,
+                    param.walletName,
+                    cipher(generatedPassword),
+                    true,
+                    promo = param.promo
+                )
 
-            createIdentity(param.walletName, generatedPassword)
-            val importWalletFromPrivateKey = WalletManager.importWalletFromPrivateKey(
-                metadata,
-                param.privateKey,
-                generatedPassword,
-                false
-            )
+                updateSelectedWallet(wallet)
+                addWalletToMonitorBalance(wallet)
+                wallet
+            }
 
-            val wallet = Wallet(
-                importWalletFromPrivateKey.address.toWalletAddress(),
-                importWalletFromPrivateKey.id,
-                param.walletName,
-                cipher(generatedPassword),
-                true,
-                promo = param.promo
-            )
-
-            updateSelectedWallet(wallet)
-            addWalletToMonitorBalance(wallet)
-            wallet
         }
     }
 
@@ -305,7 +310,7 @@ class WalletDataRepository @Inject constructor(
             param.kyberCode,
             nonce
         ).map {
-            promoMapper.transform(it.data)
+            promoMapper.transform(it)
         }.flatMap {
             importWallet(
                 ImportWalletFromPrivateKeyUseCase.Param(

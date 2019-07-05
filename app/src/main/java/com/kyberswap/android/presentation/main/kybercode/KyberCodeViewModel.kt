@@ -20,7 +20,12 @@ class KyberCodeViewModel @Inject constructor(
         _getKyberCodeCallback.postValue(Event(KyberCodeState.Loading))
         applyKyberCodeUseCase.execute(
             Consumer {
-                _getKyberCodeCallback.value = Event(KyberCodeState.Success(it))
+                if (it.promo?.error.isNullOrEmpty()) {
+                    _getKyberCodeCallback.value = Event(KyberCodeState.Success(it))
+                } else {
+                    _getKyberCodeCallback.value = Event(KyberCodeState.ShowError(it.promo?.error))
+                }
+
             },
             Consumer {
                 it.printStackTrace()

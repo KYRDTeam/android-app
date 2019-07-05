@@ -84,23 +84,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         WalletManager.storage = this
         WalletManager.scanWallets()
         hasUserInfo = intent.getBooleanExtra(USER_PARAM, false)
-//        mainViewModel.getSelectedWallet()
-//        mainViewModel.getWalletStateCallback.observe(this, Observer {
-//            it?.getContentIfNotHandled()?.let { state ->
-//                when (state) {
-//                    is GetWalletState.Success -> {
-//                        wallet = state.wallet
-//                    }
-//                    is GetWalletState.ShowError -> {
-//                        Toast.makeText(
-//                            this,
-//                            state.message,
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-//                    }
-//                }
-//            }
-//        })
         binding.viewModel = mainViewModel
         val tabColors =
             applicationContext.resources.getIntArray(R.array.tab_colors)
@@ -121,7 +104,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
         val adapter = MainPagerAdapter(
             supportFragmentManager,
-            wallet,
             hasUserInfo
         )
 
@@ -181,6 +163,9 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                         val selectedWallet = state.wallets.find { it.isSelected }
                         if (wallet?.address != selectedWallet?.address) {
                             wallet = selectedWallet
+                            wallet?.let {
+                                mainViewModel.getPendingTransaction(it)
+                            }
                             walletAdapter.submitList(listOf())
                             walletAdapter.submitList(state.wallets)
                         }
@@ -223,9 +208,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             )
         }
 
-        wallet?.let {
-            mainViewModel.getPendingTransaction(it)
-        }
 
         mainViewModel.getPendingTransactionStateCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -304,8 +286,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                 }, 250
             )
         }
-
-
     }
 
     private fun setPendingTransaction(numOfPendingTransaction: Int) {
