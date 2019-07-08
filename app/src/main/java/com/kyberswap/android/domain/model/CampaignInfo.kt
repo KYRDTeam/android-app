@@ -1,8 +1,7 @@
 package com.kyberswap.android.domain.model
 
 import com.kyberswap.android.data.api.alert.CampaignInfoEntity
-import java.text.SimpleDateFormat
-import java.util.*
+import com.kyberswap.android.util.views.DateTimeHelper
 
 
 data class CampaignInfo(
@@ -27,23 +26,9 @@ data class CampaignInfo(
     )
 
     val displayStartTime: String
-        get() = try {
-            Alert.displayFormat.format(Alert.fullFormat.parse(startTime))
- catch (ex: Exception) {
-            ex.printStackTrace()
-            startTime
-
+        get() = DateTimeHelper.displayDate(startTime)
 
     val displayEndTime: String
-        get() = try {
-            Alert.displayFormat.format(Alert.fullFormat.parse(endTime))
- catch (ex: Exception) {
-            ex.printStackTrace()
-            endTime
+        get() = DateTimeHelper.displayDate(endTime)
 
-
-    companion object {
-        val displayFormat = SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.US)
-        val fullFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-    }
 }

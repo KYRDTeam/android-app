@@ -46,7 +46,7 @@ fun TextView.setAmount(amount: String?) {
     }
 }
 
-fun EditText.getAmountOrDefaultValue(): String {
+fun TextView.getAmountOrDefaultValue(): String {
     return if (text.isNullOrEmpty() ||
         text.toString().toDouble() == 0.0
     ) context.getString(
@@ -55,6 +55,6 @@ fun EditText.getAmountOrDefaultValue(): String {
 }
 
 
-fun EditText.toBigDecimalOrDefaultZero(): BigDecimal {
+fun TextView.toBigDecimalOrDefaultZero(): BigDecimal {
     return text.toString().toBigDecimalOrDefaultZero()
 }

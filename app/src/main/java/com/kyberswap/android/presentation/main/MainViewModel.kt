@@ -96,7 +96,6 @@ class MainViewModel @Inject constructor(
                                     tx
                                 )
                             )
-
                 ,
                         Consumer { ex ->
                             ex.printStackTrace()

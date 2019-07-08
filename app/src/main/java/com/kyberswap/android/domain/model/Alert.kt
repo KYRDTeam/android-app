@@ -6,11 +6,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.kyberswap.android.data.api.alert.AlertEntity
 import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.views.DateTimeHelper
 import kotlinx.android.parcel.Parcelize
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.text.SimpleDateFormat
-import java.util.*
 
 @Entity(tableName = "alerts")
 @Parcelize
@@ -97,12 +96,7 @@ data class Alert(
             .toString()
 
     val displayTriggerAt: String
-        get() = try {
-            displayFormat.format(fullFormat.parse(triggeredAt))
- catch (ex: Exception) {
-            ex.printStackTrace()
-            triggeredAt
-
+        get() = DateTimeHelper.displayDate(triggeredAt)
 
 
     companion object {
@@ -112,7 +106,5 @@ data class Alert(
         const val BASE_ETH = "ETH"
         const val STATUS_ACTIVE = "active"
         const val STATUS_FILLED = "filled"
-        val displayFormat = SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.US)
-        val fullFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
     }
 }

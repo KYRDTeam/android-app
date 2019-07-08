@@ -46,8 +46,8 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
         WalletManager.storage = this
         WalletManager.scanWallets()
         wallet = intent.getParcelableExtra(WALLET_PARAM)
-        wallet?.apply {
-            viewModel.getSwapData(this.address)
+        wallet?.let {
+            viewModel.getSwapData(it)
 
 
         viewModel.getSwapDataCallback.observe(this, Observer {

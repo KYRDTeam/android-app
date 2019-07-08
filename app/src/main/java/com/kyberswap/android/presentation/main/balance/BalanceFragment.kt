@@ -34,8 +34,6 @@ class BalanceFragment : BaseFragment() {
     @Inject
     lateinit var appExecutors: AppExecutors
 
-//    private var wallet: Wallet? = null
-
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 

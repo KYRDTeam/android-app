@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presentation.main.MainActivity">
+
+    <data>
+
+        <variable
+            name="swap"
+            type="com.kyberswap.android.domain.model.Swap" />
+
+        <variable
+            name="expiredDate"
+            type="String" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/screen_background"
+        android:fitsSystemWindows="true">
+
+        <FrameLayout
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/toolbar_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/imgBack"
+                style="@style/BackImage" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:text="@string/confirm"
+                android:textColor="#ffffff"
+                android:textSize="18sp" />
+        </FrameLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/toolbar_height"
+            android:background="@color/color_bg_gray"
+            android:fillViewport="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/textView103"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="34dp"
+                    android:layout_marginEnd="32dp"
+                    android:text="@string/promo_your_wallet"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#141927"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView107"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@{swap.walletAddress}"
+                    android:textColor="#5a5e67"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="@+id/textView103"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="@+id/textView103"
+                    app:layout_constraintTop_toBottomOf="@+id/textView103"
+                    tools:text="0b274516cdcbd2bca7cf2ce0fa392172a2c3fd24aeb9d6a6201d278cfe52503a" />
+
+                <TextView
+                    android:id="@+id/textView108"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="21dp"
+                    android:drawableStart="@drawable/ic_info"
+                    android:drawablePadding="4dp"
+                    android:text="@{String.format(@string/expired_date_notification, expiredDate)}"
+                    android:textColor="#1e87f0"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toEndOf="@+id/textView107"
+                    app:layout_constraintStart_toStartOf="@+id/textView107"
+                    app:layout_constraintTop_toBottomOf="@+id/textView107" />
+
+                <View
+                    android:id="@+id/view21"
+                    android:layout_width="0dp"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/dash_line"
+                    app:layout_constraintEnd_toEndOf="@+id/textView103"
+                    app:layout_constraintStart_toStartOf="@+id/textView103"
+                    app:layout_constraintTop_toBottomOf="@+id/textView108" />
+
+                <TextView
+                    android:id="@+id/textView106"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:letterSpacing="-0.03"
+                    android:lineSpacingExtra="2sp"
+                    android:text="@string/promo_from"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#ef8102"
+                    android:textSize="12sp"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toStartOf="@+id/textView103"
+                    app:layout_constraintTop_toBottomOf="@+id/view21" />
+
+                <TextView
+                    android:id="@+id/textView104"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:letterSpacing="-0.03"
+                    android:lineSpacingExtra="2sp"
+                    android:text="@string/promo_to"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#ef8102"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@+id/textView106"
+                    app:layout_constraintTop_toBottomOf="@+id/imageView7" />
+
+
+                <TextView
+
+                    android:id="@+id/tvSourceToken"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="48dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@{swap.displaySourceAmount}"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#222222"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView106"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/barrier4"
+                    app:layout_constraintTop_toTopOf="@+id/textView106"
+                    tools:text="1 PT" />
+
+                <TextView
+                    android:id="@+id/textView112"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:lineSpacingExtra="2sp"
+                    android:text="@string/swap_and_send_to_the_organizer"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#666666"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/imageView7"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageView7"
+                    app:layout_constraintTop_toTopOf="@+id/imageView7" />
+
+                <ImageView
+                    android:id="@+id/imageView7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:src="@drawable/ic_exchange_promo"
+                    app:layout_constraintEnd_toEndOf="@+id/tvSourceToken"
+                    app:layout_constraintStart_toStartOf="@+id/tvSourceToken"
+                    app:layout_constraintTop_toBottomOf="@+id/tvSourceToken" />
+
+                <TextView
+                    android:id="@+id/tvDestToken"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{swap.displayDestAmount}"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#222222"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView104"
+                    app:layout_constraintEnd_toEndOf="@+id/imageView7"
+                    app:layout_constraintStart_toStartOf="@+id/imageView7"
+                    app:layout_constraintTop_toTopOf="@+id/textView104"
+                    tools:text="X Token" />
+
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="right"
+                    app:constraint_referenced_ids="textView104,textView106"
+                    tools:layout_editor_absoluteX="411dp" />
+
+                <View
+                    android:id="@+id/view23"
+                    android:layout_width="0dp"
+                    android:layout_height="2dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="32dp"
+                    android:background="@drawable/dash_line"
+                    app:layout_constraintEnd_toEndOf="@+id/view21"
+                    app:layout_constraintStart_toStartOf="@+id/textView104"
+                    app:layout_constraintTop_toBottomOf="@+id/tvDestToken" />
+
+                <TextView
+                    android:id="@+id/textView113"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:text="@string/promo_transaction_fee"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#5a5e67"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvFeeEth"
+                    app:layout_constraintEnd_toEndOf="@+id/view23"
+                    app:layout_constraintEnd_toStartOf="@+id/tvFeeEth"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toStartOf="@+id/view23"
+                    app:layout_constraintTop_toTopOf="@+id/tvFeeEth" />
+
+                <TextView
+                    android:id="@+id/tvFeeEth"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="27dp"
+                    android:gravity="center|end"
+                    android:text="@{swap.displayGasFee}"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#5a5e67"
+                    android:textSize="20sp"
+                    app:layout_constraintEnd_toEndOf="@+id/view23"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/textView113"
+                    app:layout_constraintTop_toBottomOf="@+id/view23"
+                    tools:text="0.019532 ETH" />
+
+                <TextView
+                    android:id="@+id/tvFeeUsd"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="9dp"
+                    android:gravity="center|end"
+                    android:lineSpacingExtra="8sp"
+                    android:text="@{swap.displayGasFeeUsd}"
+                    android:textColor="#9ea1aa"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="@+id/tvFeeEth"
+                    app:layout_constraintStart_toStartOf="@+id/tvFeeEth"
+                    app:layout_constraintTop_toBottomOf="@+id/tvFeeEth" />
+
+                <TextView
+                    android:id="@+id/tvConfirm"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="28dp"
+                    android:background="@drawable/default_button"
+                    android:gravity="center"
+                    android:minHeight="45dp"
+                    android:text="@string/confirm"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#ffffff"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="@+id/tvFeeEth"
+                    app:layout_constraintStart_toStartOf="@+id/textView113"
+                    app:layout_constraintTop_toBottomOf="@+id/tvFeeUsd" />
+
+                <TextView
+                    android:id="@+id/tvCancel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center"
+                    android:minHeight="45dp"
+                    android:text="@string/cancel"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#141927"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="@+id/tvConfirm"
+                    app:layout_constraintStart_toStartOf="@+id/tvConfirm"
+                    app:layout_constraintTop_toBottomOf="@+id/tvConfirm" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+    </FrameLayout>
+
+
+</layout>

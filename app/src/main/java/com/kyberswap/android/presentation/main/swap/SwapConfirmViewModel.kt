@@ -27,7 +27,7 @@ class SwapConfirmViewModel @Inject constructor(
         get() = _swapTokenTransactionCallback
 
 
-    fun getSwapData(address: String) {
+    fun getSwapData(wallet: Wallet) {
         getSwapData.execute(
             Consumer {
                 _getSwapCallback.value = Event(GetSwapState.Success(it))
@@ -36,7 +36,7 @@ class SwapConfirmViewModel @Inject constructor(
                 it.printStackTrace()
                 _getSwapCallback.value = Event(GetSwapState.ShowError(it.localizedMessage))
     ,
-            GetSwapDataUseCase.Param(address)
+            GetSwapDataUseCase.Param(wallet)
         )
     }
 

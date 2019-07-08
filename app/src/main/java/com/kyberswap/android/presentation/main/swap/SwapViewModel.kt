@@ -103,7 +103,7 @@ class SwapViewModel @Inject constructor(
         )
     }
 
-    fun getSwapData(address: String) {
+    fun getSwapData(wallet: Wallet) {
         getSwapData.dispose()
         getSwapData.execute(
             Consumer {
@@ -114,7 +114,7 @@ class SwapViewModel @Inject constructor(
                 it.printStackTrace()
                 _getSwapCallback.value = Event(GetSwapState.ShowError(it.localizedMessage))
     ,
-            GetSwapDataUseCase.Param(address)
+            GetSwapDataUseCase.Param(wallet)
         )
     }
 

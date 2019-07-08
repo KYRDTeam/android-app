@@ -34,7 +34,6 @@ import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.profile.kyc.PassportFragment
 import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
 import com.kyberswap.android.presentation.main.profile.kyc.SubmitFragment
-import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_drawer.*
@@ -85,22 +84,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         WalletManager.storage = this
         WalletManager.scanWallets()
         hasUserInfo = intent.getBooleanExtra(USER_PARAM, false)
-        mainViewModel.getWalletStateCallback.observe(this, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is GetWalletState.Success -> {
-                        wallet = state.wallet
-            
-                    is GetWalletState.ShowError -> {
-                        Toast.makeText(
-                            this,
-                            state.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
-            
-        
-    
-)
         binding.viewModel = mainViewModel
         val tabColors =
             applicationContext.resources.getIntArray(R.array.tab_colors)
@@ -121,7 +104,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
         val adapter = MainPagerAdapter(
             supportFragmentManager,
-            wallet,
             hasUserInfo
         )
 
@@ -180,6 +162,10 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                     is GetAllWalletState.Success -> {
                         val selectedWallet = state.wallets.find { it.isSelected }
                         if (wallet?.address != selectedWallet?.address) {
+                            wallet = selectedWallet
+                            wallet?.let {
+                                mainViewModel.getPendingTransaction(it)
+                    
                             walletAdapter.submitList(listOf())
                             walletAdapter.submitList(state.wallets)
                 
@@ -196,18 +182,31 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
 
         tvTransaction.setOnClickListener {
-
-            wallet?.let {
-                navigator.navigateToTransactionScreen(
-                    currentFragment,
-                    it
-                )
-    
             showDrawer(false)
+            handler.postDelayed(
+                {
+                    wallet?.let {
+                        navigator.navigateToTransactionScreen(
+                            currentFragment,
+                            it
+                        )
+            
+        , 250
+            )
 
 
-        wallet?.let {
-            mainViewModel.getPendingTransaction(it)
+        tvKyberCode.setOnClickListener {
+            showDrawer(false)
+            handler.postDelayed(
+                {
+                    wallet?.let {
+                        navigator.navigateToKyberCode(
+                            currentFragment
+                        )
+            
+        , 250
+            )
+
 
 
         mainViewModel.getPendingTransactionStateCallback.observe(this, Observer {
@@ -236,17 +235,21 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
         imgAdd.setOnClickListener {
             showDrawer(false)
-            dialogHelper.showBottomSheetDialog(
+            handler.postDelayed(
                 {
-                    dialogHelper.showConfirmation {
-                        mainViewModel.createWallet()
-            
+                    dialogHelper.showBottomSheetDialog(
+                        {
+                            dialogHelper.showConfirmation {
+                                mainViewModel.createWallet()
+                    
 
-        ,
-                {
-                    navigator.navigateToImportWalletPage()
+                ,
+                        {
+                            navigator.navigateToImportWalletPage()
 
-        
+                
+                    )
+        , 250
             )
 
 
@@ -273,13 +276,15 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
         tvSend.setOnClickListener {
             showDrawer(false)
-            wallet?.let {
-                navigator.navigateToSendScreen(
-                    currentFragment, it
-                )
-    
-
-
+            handler.postDelayed(
+                {
+                    wallet?.let {
+                        navigator.navigateToSendScreen(
+                            currentFragment, it
+                        )
+            
+        , 250
+            )
 
     }
 

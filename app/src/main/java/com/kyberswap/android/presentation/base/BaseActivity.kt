@@ -8,7 +8,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
 import com.jaeger.library.StatusBarUtil
 import com.kyberswap.android.R
+import com.kyberswap.android.presentation.base.BaseFragment.Companion.SHOW_ALERT
 import com.kyberswap.android.presentation.common.AlertActivity
+import com.kyberswap.android.presentation.common.AlertWithoutIconActivity
 import dagger.android.support.DaggerAppCompatActivity
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
 
@@ -40,12 +42,18 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     fun showAlert(message: String, listener: () -> Unit = {}) {
         this.alertListener = listener
         val intent = AlertActivity.newIntent(this, message)
-        startActivityForResult(intent, BaseFragment.SHOW_ALERT)
+        startActivityForResult(intent, SHOW_ALERT)
+    }
+
+    fun showInsufficientAlert(title: String, message: String, listener: () -> Unit) {
+        this.alertListener = listener
+        val intent = AlertWithoutIconActivity.newIntent(this, title, message)
+        startActivityForResult(intent, SHOW_ALERT)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == BaseFragment.SHOW_ALERT) {
+        if (requestCode == SHOW_ALERT) {
             if (resultCode == Activity.RESULT_OK) {
                 alertListener.invoke()
     

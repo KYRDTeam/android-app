@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.main.balance.BalanceFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
 import com.kyberswap.android.presentation.main.profile.ProfileDetailFragment
@@ -16,7 +15,6 @@ import com.kyberswap.android.presentation.main.swap.SwapFragment
 
 class MainPagerAdapter constructor(
     fm: FragmentManager,
-    var wallet: Wallet?,
     hasUserInfo: Boolean
 ) : FragmentPagerAdapter(fm) {
     private val listFragment = mutableListOf<Fragment>()

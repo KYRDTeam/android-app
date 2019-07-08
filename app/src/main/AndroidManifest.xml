@@ -116,6 +116,12 @@
             android:name=".presentation.main.profile.TermConditionActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".presentation.main.swap.PromoPaymentConfirmActivity" />
+        <activity android:name=".presentation.main.swap.PromoSwapConfirmActivity" />
+        <activity
+            android:name=".presentation.common.AlertWithoutIconActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/AlertStyle" />
 
     </application>
 

@@ -151,22 +151,6 @@ class LimitOrderFragment : BaseFragment() {
     
 
 
-        binding.grTokenSource.setAllOnClickListener {
-            navigator.navigateToTokenSearchFromSwapTokenScreen(
-                (activity as MainActivity).getCurrentFragment(),
-                wallet,
-                true
-            )
-
-
-        binding.grTokenDest.setAllOnClickListener {
-            navigator.navigateToTokenSearchFromSwapTokenScreen(
-                (activity as MainActivity).getCurrentFragment(),
-                wallet,
-                true
-            )
-
-
         binding.imgMenu.setOnClickListener {
             showDrawer(true)
 
@@ -192,8 +176,24 @@ class LimitOrderFragment : BaseFragment() {
 
 
         binding.tv100Percent.setOnClickListener {
-            binding.edtSource.setAmount(tvBalance.text.toString())
 
+            binding.order?.let {
+                if (it.tokenSource.isETHWETH) {
+                    binding.edtSource.setAmount(
+                        it.availableAmountForTransfer(
+                            tvBalance.toBigDecimalOrDefaultZero(),
+                            it.gasPrice.toBigDecimalOrDefaultZero()
+                        ).toDisplayNumber()
+                    )
+         else {
+                    binding.edtSource.setAmount(tvBalance.text.toString())
+        
+
+    
+
+
+        binding.tvRate.setOnClickListener {
+            binding.edtRate.setText(binding.tvRate.text)
 
 
         binding.imgSwap.setOnClickListener {

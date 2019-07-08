@@ -15,11 +15,14 @@ import com.kyberswap.android.presentation.main.balance.address.BalanceAddressFra
 import com.kyberswap.android.presentation.main.balance.chart.ChartFragment
 import com.kyberswap.android.presentation.main.balance.send.SendConfirmActivity
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
+import com.kyberswap.android.presentation.main.kybercode.KyberCodeFragment
 import com.kyberswap.android.presentation.main.limitorder.*
 import com.kyberswap.android.presentation.main.profile.*
 import com.kyberswap.android.presentation.main.profile.kyc.*
 import com.kyberswap.android.presentation.main.setting.AddContactFragment
 import com.kyberswap.android.presentation.main.setting.ContactFragment
+import com.kyberswap.android.presentation.main.swap.PromoPaymentConfirmActivity
+import com.kyberswap.android.presentation.main.swap.PromoSwapConfirmActivity
 import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
 import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
 import com.kyberswap.android.presentation.main.transaction.*
@@ -128,7 +131,18 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
 
     fun navigateToSwapConfirmationScreen(wallet: Wallet?) {
-        activity.startActivity(SwapConfirmActivity.newIntent(activity, wallet))
+        when {
+            wallet?.isPromo == true -> when {
+                wallet.isPromoPayment -> activity.startActivity(
+                    PromoPaymentConfirmActivity.newIntent(
+                        activity,
+                        wallet
+                    )
+                )
+                else -> activity.startActivity(PromoSwapConfirmActivity.newIntent(activity, wallet))
+    
+            else -> activity.startActivity(SwapConfirmActivity.newIntent(activity, wallet))
+
     }
 
 
@@ -430,6 +444,22 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
             currentFragment,
             KycInfoSearchFragment.newInstance(data, infoType)
 
+        )
+    }
+
+    fun navigateToKyberCode(currentFragment: Fragment?) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            KyberCodeFragment.newInstance()
+
+        )
+    }
+
+    fun navigateToKyberCodeFromLandingPage(container: Int) {
+        replaceFragment(
+            fragmentManager,
+            container,
+            KyberCodeFragment.newInstance(true)
         )
     }
 

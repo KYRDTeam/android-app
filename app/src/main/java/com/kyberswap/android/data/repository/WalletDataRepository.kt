@@ -3,15 +3,19 @@ package com.kyberswap.android.data.repository
 import android.content.Context
 import android.util.Base64
 import com.kyberswap.android.KyberSwapApplication
+import com.kyberswap.android.R
+import com.kyberswap.android.data.api.home.PromoApi
 import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.data.db.UnitDao
 import com.kyberswap.android.data.db.WalletDao
+import com.kyberswap.android.data.mapper.PromoMapper
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Unit
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.domain.repository.WalletRepository
 import com.kyberswap.android.domain.usecase.wallet.*
+import com.kyberswap.android.util.HMAC
 import com.kyberswap.android.util.ext.toWalletAddress
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -29,8 +33,11 @@ class WalletDataRepository @Inject constructor(
     val context: Context,
     private val walletDao: WalletDao,
     private val unitDao: UnitDao,
-    private val tokenDao: TokenDao
+    private val tokenDao: TokenDao,
+    private val promoApi: PromoApi,
+    private val promoMapper: PromoMapper
 ) : WalletRepository {
+
     override fun updatedSelectedWallet(param: UpdateSelectedWalletUseCase.Param): Single<Wallet> {
         return Single.fromCallable {
             updateSelectedWallet(param.wallet)
@@ -107,36 +114,42 @@ class WalletDataRepository @Inject constructor(
 
     override fun importWallet(param: ImportWalletFromPrivateKeyUseCase.Param): Single<Wallet> {
         return Single.fromCallable {
-            val metadata =
-                Metadata(
-                    ChainType.ETHEREUM,
-                    Network.MAINNET,
-                    param.walletName,
-                    null
+            if (param.promo?.error != null && param.promo.error.isNotEmpty()) {
+                Wallet(promo = param.promo)
+     else {
+                val metadata =
+                    Metadata(
+                        ChainType.ETHEREUM,
+                        Network.MAINNET,
+                        param.walletName,
+                        null
+                    )
+                metadata.source = Metadata.FROM_PRIVATE
+
+                val generatedPassword = generatePassword()
+
+                createIdentity(param.walletName, generatedPassword)
+                val importWalletFromPrivateKey = WalletManager.importWalletFromPrivateKey(
+                    metadata,
+                    param.privateKey,
+                    generatedPassword,
+                    false
                 )
-            metadata.source = Metadata.FROM_PRIVATE
 
-            val generatedPassword = generatePassword()
+                val wallet = Wallet(
+                    importWalletFromPrivateKey.address.toWalletAddress(),
+                    importWalletFromPrivateKey.id,
+                    param.walletName,
+                    cipher(generatedPassword),
+                    true,
+                    promo = param.promo
+                )
 
-            createIdentity(param.walletName, generatedPassword)
-            val importWalletFromPrivateKey = WalletManager.importWalletFromPrivateKey(
-                metadata,
-                param.privateKey,
-                generatedPassword,
-                false
-            )
+                updateSelectedWallet(wallet)
+                addWalletToMonitorBalance(wallet)
+                wallet
+    
 
-            val wallet = Wallet(
-                importWalletFromPrivateKey.address.toWalletAddress(),
-                importWalletFromPrivateKey.id,
-                param.walletName,
-                cipher(generatedPassword),
-                true
-            )
-
-            updateSelectedWallet(wallet)
-            addWalletToMonitorBalance(wallet)
-            wallet
 
     }
 
@@ -253,9 +266,7 @@ class WalletDataRepository @Inject constructor(
     override fun createWallet(param: CreateWalletUseCase.Param): Single<Pair<Wallet, List<Word>>> {
 
         return Single.fromCallable {
-
             val generatedPassword = generatePassword()
-
             val identity =
                 Identity.createIdentity(
                     param.walletName,
@@ -285,6 +296,29 @@ class WalletDataRepository @Inject constructor(
     
 
             Pair(wallet, words)
+
+    }
+
+    override fun createWallet(param: ApplyKyberCodeUseCase.Param): Single<Wallet> {
+        val privateKey = context.getString(R.string.kyber_code_api_key)
+        val nonce = System.currentTimeMillis()
+        val input = "code=${param.kyberCode}&isInternalApp=True&nonce=$nonce"
+        val signedMessage = HMAC.hmacDigest(input, privateKey, "HmacSHA512")
+        return promoApi.getPromo(
+            signedMessage ?: "",
+            "True",
+            param.kyberCode,
+            nonce
+        ).map {
+            promoMapper.transform(it)
+.flatMap {
+            importWallet(
+                ImportWalletFromPrivateKeyUseCase.Param(
+                    it.privateKey,
+                    param.walletName,
+                    it
+                )
+            )
 
     }
 }
