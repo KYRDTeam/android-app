@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -18,6 +19,7 @@
             android:layout_height="48dp"
             android:layout_marginTop="29dp"
             android:layout_marginEnd="7dp"
+            android:padding="8dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_drawer_close"
             app:layout_constraintEnd_toEndOf="parent"
@@ -36,43 +38,44 @@
 
         <TextView
             android:id="@+id/tvTransaction"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:gravity="center_vertical"
+            android:minHeight="54dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             android:text="@string/transactions"
             android:textAllCaps="true"
             android:textColor="#2e3957"
             android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="@+id/tvPendingTransaction"
-            app:layout_constraintEnd_toStartOf="@+id/tvPendingTransaction"
-            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tvPendingTransaction" />
+            app:layout_constraintTop_toBottomOf="@+id/view" />
 
         <TextView
             android:id="@+id/tvPendingTransaction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="83dp"
-            android:layout_marginTop="18dp"
             android:layout_marginEnd="13dp"
             android:background="@drawable/notification_drawable"
             android:gravity="center"
             android:minWidth="30dp"
-            android:visibility="invisible"
             android:minHeight="20dp"
             android:textColor="#ffffff"
             android:textSize="12sp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/tvTransaction"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/tvTransaction"
-            app:layout_constraintTop_toBottomOf="@+id/view" />
+            app:layout_constraintTop_toTopOf="@+id/tvTransaction"
+            tools:text="5" />
 
         <View
             android:id="@+id/view2"
             android:layout_width="match_parent"
             android:layout_height="0.1dp"
-            android:layout_marginTop="18dp"
             android:background="@color/drawer_divider_color"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -80,9 +83,41 @@
             app:layout_constraintTop_toBottomOf="@+id/tvTransaction" />
 
         <TextView
-            android:id="@+id/textView11"
-            android:layout_width="wrap_content"
+            android:id="@+id/tvKyberCode"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:gravity="center_vertical"
+            android:minHeight="54dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:text="@string/kyber_code"
+            android:textAllCaps="true"
+            android:textColor="#2e3957"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view2" />
+
+        <View
+            android:id="@+id/view3"
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:background="@color/drawer_divider_color"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvKyberCode" />
+
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minHeight="54dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             android:text="@string/my_wallet"
             android:textAllCaps="true"
             android:textColor="#2e3957"
@@ -99,19 +134,17 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginStart="85dp"
-            android:layout_marginTop="6dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_add_wallet"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/textView11"
-            app:layout_constraintTop_toBottomOf="@+id/view2" />
+            app:layout_constraintTop_toBottomOf="@+id/view3" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvWallet"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="18dp"
             android:nestedScrollingEnabled="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -123,8 +156,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
+            android:background="?selectableItemBackground"
             android:gravity="start|center"
             android:minHeight="48dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             android:text="@string/send"
             android:textAllCaps="true"
             android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"

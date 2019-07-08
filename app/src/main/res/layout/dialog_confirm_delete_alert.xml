@@ -60,6 +60,7 @@
                     android:layout_marginStart="7dp"
                     android:layout_weight="1"
                     android:background="@drawable/default_button"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:gravity="center"
                     android:minHeight="45dp"
                     android:text="@string/ok"

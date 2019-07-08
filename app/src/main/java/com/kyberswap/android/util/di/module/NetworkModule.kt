@@ -113,6 +113,16 @@ class NetworkModule {
 
     @Provides
     @Singleton
+    fun providePromoApi(context: Context, client: OkHttpClient): PromoApi {
+        return createApiClient(
+            PromoApi::class.java,
+            context.getString(R.string.user_endpoint_url),
+            client
+        )
+    }
+
+    @Provides
+    @Singleton
     fun provideChange24hApi(context: Context, client: OkHttpClient): CurrencyApi {
         return createApiClient(
             CurrencyApi::class.java,

@@ -9,5 +9,7 @@
     <string name="transaction_etherscan_endpoint_url" formatted="false" translatable="false">https://etherscan.io/tx/</string>
     <string name="transaction_kyber_endpoint_url" formatted="false" translatable="false">https://kyber.enjinx.io/eth/transaction/</string>
     <string name="kyber_address" formatted="false" translatable="false">0x818E6FECD516Ecc3849DAf6845e3EC868087B755</string>
-    <string name="limit_order_contract" formatted="false" translatable="false">0x88E7e3b54147F57da5c8aA80b362eF72FFf35d5a</string>
+    <string name="limit_order_contract" formatted="false" translatable="false">0x4d54793dec1b0f2b5daf2b8e30c0742b9cac80cb</string>
+    <string name="kyber_code_api_key">9872342987234234b</string>
+    <string name="promo_source_token">PT</string>
 </resources>

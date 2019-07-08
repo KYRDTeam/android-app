@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.kyberswap.android.AppExecutors
@@ -58,6 +59,17 @@ class SignUpConfirmFragment : BaseFragment() {
         return binding.root
     }
 
+    private fun onLoginSuccess() {
+        val fm = (activity as MainActivity).getCurrentFragment()?.childFragmentManager
+        if (fm != null)
+            for (i in 0 until fm.backStackEntryCount) {
+                fm.popBackStack()
+            }
+        navigator.navigateToProfileDetail(
+            (activity as MainActivity).getCurrentFragment()
+        )
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.social = socialInfo
@@ -72,6 +84,37 @@ class SignUpConfirmFragment : BaseFragment() {
             }
         }
 
+
+        viewModel.loginCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == LoginState.Loading)
+                when (state) {
+                    is LoginState.Success -> {
+                        if (state.login.success) {
+                            if (state.login.confirmSignUpRequired) {
+                                navigator.navigateToSignUpConfirmScreen(
+                                    (activity as MainActivity).getCurrentFragment(),
+                                    state.socialInfo
+                                )
+                            } else {
+                                onLoginSuccess()
+                            }
+                        } else {
+                            showAlert(state.login.message)
+                        }
+                    }
+                    is LoginState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        Toast.makeText(
+                            activity,
+                            state.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        })
+
         viewModel.signUpCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == SignUpState.Loading)
@@ -85,6 +128,7 @@ class SignUpConfirmFragment : BaseFragment() {
                 }
             }
         })
+
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()

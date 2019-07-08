@@ -57,6 +57,11 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
             navigator.navigateToImportWalletPage()
         }
 
+        binding.btnPromo.setOnClickListener {
+            it.enable(false)
+            navigator.navigateToKyberCodeFromLandingPage(R.id.flContainer)
+        }
+
         viewModel.createWalletCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == CreateWalletState.Loading)
@@ -80,6 +85,13 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
         })
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (!binding.btnPromo.isEnabled) {
+            binding.btnPromo.enable(true)
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         if (!binding.btnImportWallet.isEnabled) {
@@ -89,7 +101,6 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
         if (!binding.btnCreateWallet.isEnabled) {
             binding.btnCreateWallet.enable(true)
         }
-
     }
 
 

@@ -10,6 +10,8 @@ import io.reactivex.Single
 interface WalletRepository {
     fun createWallet(param: CreateWalletUseCase.Param): Single<Pair<Wallet, List<Word>>>
 
+    fun createWallet(param: ApplyKyberCodeUseCase.Param): Single<Wallet>
+
     fun getMnemonic(param: GetMnemonicUseCase.Param): Single<List<Word>>
 
     fun importWallet(param: ImportWalletFromJsonUseCase.Param): Single<Wallet>

@@ -4,110 +4,116 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".presentation.main.MainActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
+        android:id="@+id/flContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:background="@drawable/screen_background">
+        android:background="@drawable/screen_background"
+        android:fitsSystemWindows="true">
 
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/vpLanding"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="match_parent">
 
-        <me.relex.circleindicator.CircleIndicator
-            android:id="@+id/indicator"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="418dp"
-            app:ci_animator="@anim/indicator"
-            app:ci_drawable="@drawable/ci_drawable"
-            app:ci_drawable_unselected="@drawable/ci_drawable_unselected"
-            app:ci_gravity="center"
-            app:ci_height="6dp"
-            app:ci_margin="9dp"
-            app:ci_width="21dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/vpLanding"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/btnPromo"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:layout_marginStart="36dp"
-            android:layout_marginEnd="36dp"
-            android:layout_marginBottom="140dp"
-            android:background="@drawable/promo_button"
-            android:gravity="center"
-            android:text="@string/promo_code"
-            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-            android:textColor="#fa6b64"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent" />
+            <me.relex.circleindicator.CircleIndicator
+                android:id="@+id/indicator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="418dp"
+                app:ci_animator="@anim/indicator"
+                app:ci_drawable="@drawable/ci_drawable"
+                app:ci_drawable_unselected="@drawable/ci_drawable_unselected"
+                app:ci_gravity="center"
+                app:ci_height="6dp"
+                app:ci_margin="9dp"
+                app:ci_width="21dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/btnCreateWallet"
-            android:layout_width="0dp"
-            android:layout_height="45dp"
-            android:layout_marginStart="36dp"
-            android:layout_marginTop="17dp"
-            android:layout_marginEnd="2dp"
-            android:background="@drawable/wallet_button"
-            android:gravity="center"
-            android:text="@string/create_wallet"
-            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-            android:textColor="#ffffff"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toStartOf="@+id/btnImportWallet"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnPromo" />
+            <Button
+                android:id="@+id/btnPromo"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_marginStart="36dp"
+                android:layout_marginEnd="36dp"
+                android:layout_marginBottom="140dp"
+                android:background="@drawable/promo_button"
+                android:gravity="center"
+                android:text="@string/promo_code"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#fa6b64"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent" />
 
-        <Button
-            android:id="@+id/btnImportWallet"
-            android:layout_width="0dp"
-            android:layout_height="45dp"
-            android:layout_marginStart="2dp"
-            android:layout_marginTop="17dp"
-            android:layout_marginEnd="36dp"
-            android:background="@drawable/wallet_button"
-            android:gravity="center"
-            android:text="@string/import_wallet"
-            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-            android:textColor="#ffffff"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/btnCreateWallet"
-            app:layout_constraintTop_toBottomOf="@+id/btnPromo" />
+            <Button
+                android:id="@+id/btnCreateWallet"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_marginStart="36dp"
+                android:layout_marginTop="17dp"
+                android:layout_marginEnd="2dp"
+                android:background="@drawable/wallet_button"
+                android:gravity="center"
+                android:text="@string/create_wallet"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#ffffff"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toStartOf="@+id/btnImportWallet"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnPromo" />
 
-        <TextView
-            android:id="@+id/tvTermAndCondition"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="29dp"
-            android:layout_marginEnd="8dp"
-            android:gravity="center_horizontal"
-            android:letterSpacing="0.07"
-            android:text="@string/terms_and_conditions"
-            android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-            android:textColor="#ffffff"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnCreateWallet" />
+            <Button
+                android:id="@+id/btnImportWallet"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="17dp"
+                android:layout_marginEnd="36dp"
+                android:background="@drawable/wallet_button"
+                android:gravity="center"
+                android:text="@string/import_wallet"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#ffffff"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/btnCreateWallet"
+                app:layout_constraintTop_toBottomOf="@+id/btnPromo" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/tvTermAndCondition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="29dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center_horizontal"
+                android:letterSpacing="0.07"
+                android:text="@string/terms_and_conditions"
+                android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                android:textColor="#ffffff"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnCreateWallet" />
 
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </FrameLayout>
 
 </layout>

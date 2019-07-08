@@ -12,6 +12,7 @@ import com.kyberswap.android.domain.usecase.swap.*
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.common.KEEP_ETH_BALANCE_FOR_GAS
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.*
@@ -22,6 +23,7 @@ import com.kyberswap.android.util.ext.toDisplayNumber
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
+import org.web3j.utils.Convert
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -430,6 +432,14 @@ class LimitOrderViewModel @Inject constructor(
 
         return availableAmount.toDisplayNumber()
     }
+
+    fun availableAmountForTransfer(calAvailableAmount: String, gasPrice: BigDecimal): BigDecimal {
+        return calAvailableAmount.toBigDecimalOrDefaultZero() - Convert.fromWei(
+            Convert.toWei(gasPrice, Convert.Unit.GWEI)
+                .multiply(KEEP_ETH_BALANCE_FOR_GAS), Convert.Unit.ETHER
+        )
+    }
+
 
     fun cancelHigherRateOrder(order: LocalLimitOrder?, orders: List<Order>) {
         if (order == null) return

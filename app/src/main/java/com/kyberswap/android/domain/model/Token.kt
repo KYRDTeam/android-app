@@ -32,14 +32,13 @@ data class Token(
     val rateUsdNow: BigDecimal = BigDecimal.ZERO,
     @TypeConverters(DataTypeConverter::class)
     val changeUsd24h: BigDecimal = BigDecimal.ZERO,
-//    @TypeConverters(DataTypeConverter::class)
-//    val currentBalance: BigDecimal = BigDecimal.ZERO,
     val cgId: String = "",
     @TypeConverters(DataTypeConverter::class)
     val gasApprove: BigDecimal = BigDecimal.ZERO,
     val gasLimit: String = "",
     val listingTime: Long = 0,
     val priority: Boolean = false,
+    val spLimitOrder: Boolean = false,
     @TypeConverters(WalletBalanceTypeConverter::class)
     val wallets: List<WalletBalance> = listOf()
 ) : Parcelable {
@@ -69,7 +68,8 @@ data class Token(
         gasApprove = entity.gasApprove,
         gasLimit = entity.gasLimit,
         listingTime = entity.listingTime,
-        priority = entity.priority
+        priority = entity.priority,
+        spLimitOrder = entity.spLimitOrder ?: false
 
     )
 
@@ -96,6 +96,7 @@ data class Token(
             entity.gasLimit,
             entity.listingTime,
             entity.priority,
+            entity.spLimitOrder ?: false,
             this.wallets
         )
     }

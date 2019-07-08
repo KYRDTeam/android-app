@@ -3,19 +3,13 @@ package com.kyberswap.android.presentation.splash
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.kyberswap.android.domain.model.UserInfo
-import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
-import com.kyberswap.android.domain.usecase.token.PrepareBalanceUseCase
-import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
+import com.kyberswap.android.domain.usecase.token.PreloadUseCase
 import com.kyberswap.android.presentation.common.Event
-import com.kyberswap.android.presentation.main.profile.UserInfoState
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class SplashViewModel @Inject constructor(
-    private val getWalletUseCase: GetSelectedWalletUseCase,
-    private val prepareBalanceUseCase: PrepareBalanceUseCase,
-    private val getLoginStatusUseCase: GetLoginStatusUseCase
+    private val preloadUseCase: PreloadUseCase
 ) :
     ViewModel() {
 
@@ -23,12 +17,14 @@ class SplashViewModel @Inject constructor(
     val getWalletStateCallback: LiveData<Event<GetUserWalletState>>
         get() = _getWalletStateCallback
 
-    fun getWallet(userInfo: UserInfo?) {
-        getWalletUseCase.dispose()
-        getWalletUseCase.execute(
-            Consumer { wallet ->
-                _getWalletStateCallback.value = Event(GetUserWalletState.Success(wallet, userInfo))
-                getWalletUseCase.dispose()
+    fun prepareData() {
+        preloadUseCase.dispose()
+        _getWalletStateCallback.postValue(Event(GetUserWalletState.Loading))
+        preloadUseCase.execute(
+            Consumer {
+                _getWalletStateCallback.value =
+                    Event(GetUserWalletState.Success(it.second, it.first))
+                preloadUseCase.dispose()
 
 
             },
@@ -41,42 +37,8 @@ class SplashViewModel @Inject constructor(
         )
     }
 
-    private val _getLoginStatusCallback = MutableLiveData<Event<UserInfoState>>()
-    val getLoginStatusCallback: LiveData<Event<UserInfoState>>
-        get() = _getLoginStatusCallback
-
-    private fun verifyLoginStatus() {
-        getLoginStatusUseCase.execute(
-            Consumer {
-                getWallet(it)
-                _getLoginStatusCallback.value = Event(UserInfoState.Success(it))
-
-            },
-            Consumer {
-                getWallet(null)
-                it.printStackTrace()
-                _getLoginStatusCallback.value =
-                    Event(UserInfoState.ShowError(it.localizedMessage))
-            },
-            null
-        )
-    }
-
-    fun prepareData() {
-        prepareBalanceUseCase.execute(
-            Consumer {
-                verifyLoginStatus()
-            },
-            Consumer { error ->
-                error.printStackTrace()
-                verifyLoginStatus()
-            },
-            PrepareBalanceUseCase.Param()
-        )
-    }
-
     override fun onCleared() {
-        prepareBalanceUseCase.dispose()
+        preloadUseCase.dispose()
         super.onCleared()
     }
 }

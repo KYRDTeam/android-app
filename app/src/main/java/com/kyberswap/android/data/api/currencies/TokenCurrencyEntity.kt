@@ -21,5 +21,8 @@ data class TokenCurrencyEntity(
     @SerializedName("priority")
     val priority: Boolean = false,
     @SerializedName("symbol")
-    val symbol: String = ""
+    val symbol: String = "",
+    @SerializedName("sp_limit_order")
+    val spLimitOrder: Boolean? = false
+
 )

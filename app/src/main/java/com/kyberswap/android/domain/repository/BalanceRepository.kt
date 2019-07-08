@@ -8,5 +8,5 @@ import io.reactivex.Single
 interface BalanceRepository {
     fun getChange24hPolling(owner: String): Flowable<List<Token>>
     fun getChange24h(): Flowable<List<Token>>
-    fun getBalance(param: PrepareBalanceUseCase.Param): Single<List<Token>>
+    fun getBalance(param: PrepareBalanceUseCase.Param = PrepareBalanceUseCase.Param()): Single<List<Token>>
 }

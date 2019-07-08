@@ -378,6 +378,7 @@
                         android:layout_marginTop="25dp"
                         android:layout_marginEnd="15dp"
                         android:background="@drawable/default_button"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:gravity="center"
                         android:minHeight="45dp"
                         android:text="@string/swap_continue"
@@ -398,7 +399,7 @@
             app:constraint_referenced_ids="tvTokenBalance,tvBalanceDetail" />
 
         <androidx.constraintlayout.widget.Group
-            android:id="@+id/grTokenSource"
+            android:id="@+id/grSendTokenSource"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:constraint_referenced_ids="tvSource,imgTokenSource" />

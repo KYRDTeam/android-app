@@ -1,6 +1,8 @@
 package com.kyberswap.android.presentation.main.swap
 
 import android.animation.ObjectAnimator
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -49,6 +51,14 @@ class SwapFragment : BaseFragment() {
         ViewModelProviders.of(this, viewModelFactory).get(SwapViewModel::class.java)
     }
 
+    private val tokenSources by lazy {
+        listOf(binding.imgTokenSource, binding.tvSource)
+    }
+
+    private val tokenDests by lazy {
+        listOf(binding.imgTokenDest, binding.tvDest)
+    }
+
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
@@ -71,8 +81,20 @@ class SwapFragment : BaseFragment() {
                     is GetWalletState.Success -> {
                         this.wallet = state.wallet
                         if (binding.swap?.walletAddress != state.wallet.address) {
+                            val promo = wallet?.promo
+                            if (promo != null) {
+
+                                enableTokenSearch(isSourceToken = true, isEnable = false)
+                                if (promo.destinationToken.isNotEmpty()) {
+                                    enableTokenSearch(isSourceToken = false, isEnable = false)
+                                }
+                            } else {
+                                enableTokenSearch(isSourceToken = true, isEnable = true)
+                                enableTokenSearch(isSourceToken = false, isEnable = true)
+                            }
+
                             binding.walletName = state.wallet.name
-                            viewModel.getSwapData(state.wallet.address)
+                            viewModel.getSwapData(state.wallet)
                             viewModel.getCap(state.wallet.address)
                         }
                     }
@@ -149,6 +171,8 @@ class SwapFragment : BaseFragment() {
 
         }
 
+
+
         viewModel.compositeDisposable.add(
             edtSource.textChanges()
                 .observeOn(schedulerProvider.ui())
@@ -184,6 +208,35 @@ class SwapFragment : BaseFragment() {
                         }
                     }
                 })
+
+
+        tokenSources.forEach {
+            it.setOnClickListener {
+                navigator.navigateToTokenSearchFromSwapTokenScreen(
+                    currentFragment,
+                    wallet,
+                    true
+                )
+            }
+
+        }
+
+        tokenDests.forEach {
+            it.setOnClickListener {
+                navigator.navigateToTokenSearchFromSwapTokenScreen(
+                    currentFragment,
+                    wallet,
+                    false
+                )
+            }
+        }
+
+        binding.tvTokenBalanceValue.setOnClickListener {
+            val balance = binding.tvTokenBalanceValue.text
+            if (balance.isNotEmpty()) {
+                binding.edtSource.setText(balance)
+            }
+        }
 
         viewModel.getExpectedRateCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -359,22 +412,27 @@ class SwapFragment : BaseFragment() {
         })
 
         binding.tvContinue.setOnClickListener {
-            when {
-                edtSource.text.isNullOrEmpty() -> {
-                    val errorAmount = getString(R.string.specify_amount)
-                    showAlert(errorAmount)
-                }
-                edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.swap?.tokenSource?.currentBalance -> {
-                    val errorExceedBalance = getString(R.string.exceed_balance)
-                    showAlert(errorExceedBalance)
-                }
-                binding.swap?.hasSamePair == true -> showAlert(getString(R.string.same_token_alert))
-                binding.swap?.amountTooSmall(edtSource.text.toString()) == true -> {
-                    val amountError = getString(R.string.swap_amount_small)
-                    showAlert(amountError)
-                }
-                else -> binding.swap?.let { swap ->
-                    wallet?.let {
+            binding.swap?.let { swap ->
+                when {
+                    edtSource.text.isNullOrEmpty() -> {
+                        val errorAmount = getString(R.string.specify_amount)
+                        showAlert(errorAmount)
+                    }
+                    edtSource.text.toString().toBigDecimalOrDefaultZero() > swap.tokenSource.currentBalance -> {
+                        val errorExceedBalance = getString(R.string.exceed_balance)
+                        showAlert(errorExceedBalance)
+                    }
+                    swap.hasSamePair -> showAlert(getString(R.string.same_token_alert))
+                    swap.amountTooSmall(edtSource.text.toString()) -> {
+                        val amountError = getString(R.string.swap_amount_small)
+                        showAlert(amountError)
+                    }
+
+                    swap.copy(gasPrice = getSelectedGasPrice(swap.gas)).insufficientEthBalance -> showAlertWithoutIcon(
+                        getString(R.string.insufficient_eth),
+                        getString(R.string.not_enough_eth_blance)
+                    )
+                    else -> wallet?.let {
                         viewModel.saveSwap(
                             swap.copy(
                                 sourceAmount = edtSource.text.toString(),
@@ -385,7 +443,6 @@ class SwapFragment : BaseFragment() {
                             ), true
                         )
                     }
-
                 }
             }
 
@@ -399,6 +456,38 @@ class SwapFragment : BaseFragment() {
     private fun resetAmount() {
         edtSource.setText("")
         edtDest.setText("")
+    }
+
+    private fun enableTokenSearch(isSourceToken: Boolean, isEnable: Boolean) {
+        if (isSourceToken) {
+            tokenSources.forEach {
+                it.isEnabled = isEnable
+            }
+        } else {
+            tokenDests.forEach {
+                it.isEnabled = isEnable
+            }
+        }
+
+        val colorMatrix = ColorMatrix()
+        colorMatrix.setSaturation(0f)
+
+
+        val image = if (isSourceToken) {
+            binding.imgTokenSource
+        } else {
+            binding.imgTokenDest
+        }
+
+        if (isEnable) {
+            colorMatrix.setSaturation(1f)
+        } else {
+            colorMatrix.setSaturation(0.5f)
+        }
+        val filter = ColorMatrixColorFilter(colorMatrix)
+        image.colorFilter = filter
+
+        binding.imgSwap.isEnabled = isEnable
     }
 
 
