@@ -36,7 +36,6 @@ class BalanceDataRepository @Inject constructor(
         return if (tokenDao.all.blockingFirst().isEmpty() || param.forceUpdate) {
             fetchChange24h()
                 .flatMap { tokenList ->
-                    //                    tokenDao.insertTokens(it)
                     currencyApi.internalCurrencies()
                         .map { currencies -> currencies.data }
                         .toFlowable()
@@ -45,7 +44,6 @@ class BalanceDataRepository @Inject constructor(
                             val tokenBySymbol = tokenList.find {
                                 it.tokenSymbol == internalCurrency.symbol
                             }
-//                                tokenDao.getTokenBySymbol(internalCurrency.symbol)
                             tokenBySymbol?.with(internalCurrency) ?: Token(internalCurrency)
                         }
                         .toList()

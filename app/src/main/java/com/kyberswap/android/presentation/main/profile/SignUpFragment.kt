@@ -145,11 +145,13 @@ class SignUpFragment : BaseFragment() {
         }
 
         binding.imgFacebook.setOnClickListener {
+            stopCounter()
             LoginManager.getInstance()
                 .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"))
         }
 
         binding.imgGooglePlus.setOnClickListener {
+            stopCounter()
             val googleSignInClient = GoogleSignIn.getClient(this.activity!!, gso)
             val account = GoogleSignIn.getLastSignedInAccount(this.activity)
             if (account == null) {
@@ -165,6 +167,7 @@ class SignUpFragment : BaseFragment() {
         }
 
         binding.imgTwitter.setOnClickListener {
+            stopCounter()
 
             val twitterSession = TwitterCore.getInstance().sessionManager.activeSession
             if (twitterSession != null) {
@@ -297,6 +300,7 @@ class SignUpFragment : BaseFragment() {
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        startCounter()
         callbackManager.onActivityResult(requestCode, resultCode, data)
         twitterAuthClient.onActivityResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)

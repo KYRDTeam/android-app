@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
+import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.presentation.common.AlertActivity
 import com.kyberswap.android.presentation.common.AlertWithoutIconActivity
@@ -95,5 +96,19 @@ abstract class BaseFragment : DaggerFragment() {
 
     companion object {
         const val SHOW_ALERT = 0
+    }
+
+    fun stopCounter() {
+        val context = activity?.applicationContext
+        if (context is KyberSwapApplication) {
+            context.stopCounter()
+        }
+    }
+
+    fun startCounter() {
+        val context = activity?.applicationContext
+        if (context is KyberSwapApplication) {
+            context.startCounter()
+        }
     }
 }

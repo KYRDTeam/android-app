@@ -15,6 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/screen_background"
+        android:fitsSystemWindows="true"
         android:orientation="vertical">
 
         <include
@@ -44,8 +45,8 @@
             android:gravity="center"
             android:text="@string/next"
             android:textAllCaps="false"
-            android:textColor="#ffffff"
             android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textColor="#ffffff"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
