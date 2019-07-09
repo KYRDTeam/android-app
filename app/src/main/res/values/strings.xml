@@ -395,6 +395,11 @@
     <string name="import_success_notification">Congratulations!!!</string>
     <string name="import_success_detail">You have successfully unlocked your Promo code. Please move all assets to your wallet by %s</string>
     <string name="promo_your_wallet">Your Wallet</string>
+    <string name="pl_set_new_pin">Set a new PIN</string>
+    <string name="pl_access_wallet">Your PIN is used to access your wallets</string>
+    <string name="pl_repeat_title">Repeat PIN</string>
+    <string name="pl_repeat_content">Remember this code to access your wallets</string>
+    <string name="pl_verify_access">Verify your access</string>
 
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>

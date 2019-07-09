@@ -23,7 +23,8 @@ import com.kyberswap.android.domain.model.Unit
         UserInfo::class,
         LocalLimitOrder::class,
         OrderFilter::class,
-        Alert::class
+        Alert::class,
+        PassCode::class
     ],
     version = 48
 )
@@ -51,6 +52,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun localLimitOrderDao(): LocalLimitOrderDao
     abstract fun orderFilterDao(): OrderFilterDao
     abstract fun alertDao(): AlertDao
+    abstract fun passCodeDao(): PassCodeDao
 
     companion object {
         @Volatile

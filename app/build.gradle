@@ -29,6 +29,10 @@ android {
                 arg("room.schemaLocation", "$projectDir/schemas".toString())
     
 
+
+        kotlinOptions {
+            jvmTarget = '1.8'
+
     }
 
     defaultConfig {
@@ -240,6 +244,7 @@ dependencies {
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
     implementation 'com.kofigyan.stateprogressbar:stateprogressbar:1.0.0'
     implementation 'com.github.jkwiecien:EasyImage:3.0.1'
+    implementation project(path: ':pinlockview')
 
 
 }

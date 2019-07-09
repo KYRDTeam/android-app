@@ -1,5 +1,6 @@
 package com.kyberswap.android.presentation.helper
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -54,8 +55,10 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
     }
 
     fun navigateToHome(hasUserInfo: Boolean? = false) {
-        activity.startActivity(MainActivity.newIntent(activity, hasUserInfo))
-        activity.finishAffinity()
+        activity.startActivity(MainActivity.newIntent(activity, hasUserInfo)
+            .apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    )
     }
 
     @JvmOverloads

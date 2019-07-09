@@ -32,6 +32,7 @@
             android:name=".presentation.common.AlertActivity"
             android:launchMode="singleTop"
             android:theme="@style/AlertStyle" />
+
         <activity
             android:name=".presentation.splash.SplashActivity"
             android:label="@string/app_name"
@@ -43,14 +44,8 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- <activity -->
-        <!-- android:name=".presentation.main.MainActivity" -->
-        <!-- android:label="@string/app_name"> -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.intent.action.MAIN" /> -->
-        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-        <!-- </intent-filter> -->
-        <!-- </activity> -->
+        </activity>
+
         <activity
             android:name=".presentation.landing.LandingActivity"
             android:screenOrientation="portrait"
@@ -122,6 +117,9 @@
             android:name=".presentation.common.AlertWithoutIconActivity"
             android:launchMode="singleTop"
             android:theme="@style/AlertStyle" />
+        <activity
+            android:name=".presentation.setting.PassCodeLockActivity"
+            android:launchMode="singleTop" />
 
     </application>
 

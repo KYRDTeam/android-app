@@ -102,11 +102,11 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             return@setOnTabSelectedListener true
 
 
-        val adapter = MainPagerAdapter(
+
+        adapter = MainPagerAdapter(
             supportFragmentManager,
             hasUserInfo
         )
-
         binding.vpNavigation.adapter = adapter
         binding.vpNavigation.offscreenPageLimit = 4
         val listener = object : ViewPager.OnPageChangeListener {
@@ -123,7 +123,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     
 
             override fun onPageSelected(position: Int) {
-                currentFragment = adapter.getRegisteredFragment(position)
+                currentFragment = adapter?.getRegisteredFragment(position)
                 if (currentFragment is LimitOrderFragment) {
                     (currentFragment as LimitOrderFragment).getLoginStatus()
         
@@ -138,44 +138,81 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         bottomNavigation.currentItem = MainPagerAdapter.SWAP
         binding.vpNavigation.currentItem = MainPagerAdapter.SWAP
 
+
+
         binding.navView.rvWallet.layoutManager = LinearLayoutManager(
             this,
             RecyclerView.VERTICAL,
             false
         )
-        val walletAdapter =
-            WalletAdapter(appExecutors) {
 
-                showDrawer(false)
-                handler.postDelayed(
-                    {
-                        mainViewModel.updateSelectedWallet(it)
-            , 250
-                )
-    
-        binding.navView.rvWallet.adapter = walletAdapter
+        handler.postDelayed(
+            {
+                val walletAdapter =
+                    WalletAdapter(appExecutors) {
 
-        mainViewModel.getWallets()
-        mainViewModel.getAllWalletStateCallback.observe(this, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is GetAllWalletState.Success -> {
-                        val selectedWallet = state.wallets.find { it.isSelected }
-                        if (wallet?.address != selectedWallet?.address) {
-                            wallet = selectedWallet
-                            wallet?.let {
-                                mainViewModel.getPendingTransaction(it)
+                        showDrawer(false)
+                        handler.postDelayed(
+                            {
+                                mainViewModel.updateSelectedWallet(it)
+                    , 250
+                        )
+            
+                binding.navView.rvWallet.adapter = walletAdapter
+
+                mainViewModel.getWallets()
+                mainViewModel.getAllWalletStateCallback.observe(this, Observer {
+                    it?.getContentIfNotHandled()?.let { state ->
+                        when (state) {
+                            is GetAllWalletState.Success -> {
+                                val selectedWallet = state.wallets.find { it.isSelected }
+                                if (wallet?.address != selectedWallet?.address) {
+                                    wallet = selectedWallet
+                                    wallet?.let {
+                                        mainViewModel.getPendingTransaction(it)
+                            
+                                    walletAdapter.submitList(listOf())
+                                    walletAdapter.submitList(state.wallets)
+                        
                     
-                            walletAdapter.submitList(listOf())
-                            walletAdapter.submitList(state.wallets)
+                            is GetAllWalletState.ShowError -> {
+                                navigator.navigateToLandingPage()
+                    
                 
             
-                    is GetAllWalletState.ShowError -> {
-                        navigator.navigateToLandingPage()
+        )
+
+                mainViewModel.getPendingTransactionStateCallback.observe(this, Observer {
+                    it?.getContentIfNotHandled()?.let { state ->
+                        when (state) {
+                            is GetPendingTransactionState.Success -> {
+                                val txList = state.transactions.filter {
+                                    it.blockNumber.isNotEmpty()
+                        
+
+                                txList.forEach {
+                                    showAlert(
+                                        String.format(
+                                            getString(R.string.transaction_mined),
+                                            it.hash
+                                        )
+                                    )
+                        
+
+                                val pending = state.transactions.filter { it.blockNumber.isEmpty() }
+                                pendingTransactions.clear()
+                                pendingTransactions.addAll(pending)
+                                setPendingTransaction(pending.size)
+                    
+                            is GetPendingTransactionState.ShowError -> {
+                                showAlert(state.message ?: getString(R.string.something_wrong))
+                    
+                
             
-        
+        )
     
-)
+            , 250)
+
 
         imgClose.setOnClickListener {
             showDrawer(false)
@@ -209,29 +246,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
 
 
-        mainViewModel.getPendingTransactionStateCallback.observe(this, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is GetPendingTransactionState.Success -> {
-                        val txList = state.transactions.filter {
-                            it.blockNumber.isNotEmpty()
-                
-
-                        txList.forEach {
-                            showAlert(String.format(getString(R.string.transaction_mined), it.hash))
-                
-
-                        val pending = state.transactions.filter { it.blockNumber.isEmpty() }
-                        pendingTransactions.clear()
-                        pendingTransactions.addAll(pending)
-                        setPendingTransaction(pending.size)
-            
-                    is GetPendingTransactionState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
-            
-        
-    
-)
 
         imgAdd.setOnClickListener {
             showDrawer(false)

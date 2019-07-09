@@ -34,18 +34,15 @@ class SplashActivity : BaseActivity() {
         Handler()
     }
 
+    companion object {
+        var active = false
+    }
+
     private lateinit var frameAnimation: AnimationDrawable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding.viewModel = viewModel
-    }
-
-    override fun onStart() {
-        super.onStart()
-        binding.imageView.setBackgroundResource(R.drawable.progress_animation)
-        frameAnimation = binding.imageView.background as AnimationDrawable
-
         viewModel.getWalletStateCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 if (state != GetUserWalletState.Loading)
@@ -60,11 +57,24 @@ class SplashActivity : BaseActivity() {
             
     
 )
-        frameAnimation.start()
         handler.postDelayed({
             viewModel.prepareData()
             frameAnimation.stop()
 , 1600)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        active = true
+        binding.imageView.setBackgroundResource(R.drawable.progress_animation)
+        frameAnimation = binding.imageView.background as AnimationDrawable
+        frameAnimation.start()
+    }
+
+
+    override fun onStop() {
+        super.onStop()
+        active = false
     }
 
 

@@ -68,20 +68,20 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    fun getSelectedWallet() {
-        getWalletUseCase.execute(
-            Consumer { wallet ->
-                _getWalletStateCallback.value = Event(GetWalletState.Success(wallet))
-
-    ,
-            Consumer {
-                it.printStackTrace()
-                _getWalletStateCallback.value =
-                    Event(GetWalletState.ShowError(it.localizedMessage))
-    ,
-            null
-        )
-    }
+//    fun getSelectedWallet() {
+//        getWalletUseCase.execute(
+//            Consumer { wallet ->
+//                _getWalletStateCallback.value = Event(GetWalletState.Success(wallet))
+//
+//    ,
+//            Consumer {
+//                it.printStackTrace()
+//                _getWalletStateCallback.value =
+//                    Event(GetWalletState.ShowError(it.localizedMessage))
+//    ,
+//            null
+//        )
+//    }
 
 
     fun getPendingTransaction(wallet: Wallet) {
