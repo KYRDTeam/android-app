@@ -2,11 +2,12 @@ package com.kyberswap.android.presentation.main.setting
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.usecase.contact.GetContactUseCase
 import com.kyberswap.android.domain.usecase.contact.SaveContactUseCase
+import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.swap.GetContactState
 import com.kyberswap.android.presentation.main.swap.SaveContactState
 import io.reactivex.functions.Action
@@ -15,8 +16,9 @@ import javax.inject.Inject
 
 class ContactViewModel @Inject constructor(
     private val saveContactUseCase: SaveContactUseCase,
-    private val getContactUseCase: GetContactUseCase
-) : ViewModel() {
+    private val getContactUseCase: GetContactUseCase,
+    getSelectedWalletUseCase: GetSelectedWalletUseCase
+) : SelectedWalletViewModel(getSelectedWalletUseCase) {
     private val _saveContactCallback = MutableLiveData<Event<SaveContactState>>()
     val saveContactCallback: LiveData<Event<SaveContactState>>
         get() = _saveContactCallback
@@ -51,6 +53,12 @@ class ContactViewModel @Inject constructor(
             },
             GetContactUseCase.Param(walletAddress)
         )
+    }
+
+    override fun onCleared() {
+        saveContactUseCase.dispose()
+        getContactUseCase.dispose()
+        super.onCleared()
     }
 
 }

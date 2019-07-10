@@ -181,12 +181,11 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
     }
 
     fun navigateToContactScreen(
-        currentFragment: Fragment?,
-        wallet: Wallet?
+        currentFragment: Fragment?
     ) {
         navigateByChildFragmentManager(
             currentFragment,
-            ContactFragment.newInstance(wallet)
+            ContactFragment.newInstance()
         )
     }
 
