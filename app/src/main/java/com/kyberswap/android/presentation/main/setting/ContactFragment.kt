@@ -2,6 +2,7 @@ package com.kyberswap.android.presentation.main.setting
 
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,7 @@ import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.balance.send.ContactAdapter
 import com.kyberswap.android.presentation.main.swap.GetContactState
 import com.kyberswap.android.presentation.main.swap.SaveContactState
+import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
 
@@ -45,11 +47,10 @@ class ContactFragment : BaseFragment() {
         ViewModelProviders.of(this, viewModelFactory).get(ContactViewModel::class.java)
     }
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        wallet = arguments!!.getParcelable(WALLET_PARAM)
+    private val handler by lazy {
+        Handler()
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,6 +62,26 @@ class ContactFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        viewModel.getSelectedWallet()
+        viewModel.getSelectedWalletCallback.observe(parentFragment!!.viewLifecycleOwner, Observer {
+            it?.peekContent()?.let { state ->
+                when (state) {
+                    is GetWalletState.Success -> {
+                        if (this.wallet?.address != state.wallet.address) {
+                            this.wallet = state.wallet
+                            wallet?.let {
+                                viewModel.getContact(it.address)
+                    
+                
+
+            
+                    is GetWalletState.ShowError -> {
+
+            
+        
+    
+)
 
         binding.imgAddContact.setOnClickListener {
             navigator.navigateToAddContactScreen(
@@ -81,9 +102,21 @@ class ContactFragment : BaseFragment() {
         )
 
         val contactAdapter =
-            ContactAdapter(appExecutors) { contact ->
-                viewModel.saveSendContact(wallet!!.address, contact)
-    
+            ContactAdapter(appExecutors, handler, { contact ->
+                wallet?.let {
+                    viewModel.saveSendContact(it.address, contact)
+        
+
+    ,
+                {
+
+        ,
+                {
+
+        ,
+                {
+
+        )
         binding.rvContact.adapter = contactAdapter
 
         viewModel.saveContactCallback.observe(viewLifecycleOwner, Observer {
@@ -105,8 +138,6 @@ class ContactFragment : BaseFragment() {
     
 )
 
-
-        viewModel.getContact(wallet!!.address)
         viewModel.getContactCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -122,15 +153,14 @@ class ContactFragment : BaseFragment() {
 
     }
 
+    override fun onDestroyView() {
+        handler.removeCallbacksAndMessages(null)
+        super.onDestroyView()
+    }
 
     companion object {
-        private const val WALLET_PARAM = "param_wallet"
-        fun newInstance(wallet: Wallet?) =
-            ContactFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(WALLET_PARAM, wallet)
-        
-    
+        fun newInstance() =
+            ContactFragment()
     }
 
 

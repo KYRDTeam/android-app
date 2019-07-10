@@ -54,7 +54,7 @@ class SettingFragment : BaseFragment() {
 
 
         binding.lnContact.setOnClickListener {
-
+            navigator.navigateToContactScreen(currentFragment)
 
 
         binding.lnSupport.setOnClickListener {
