@@ -29,6 +29,10 @@ interface WalletDao {
     @Update
     fun updateWallet(wallet: Wallet)
 
+    @Delete
+    fun deleteWallet(wallet: Wallet)
+
+
     @Query("SELECT * from wallets where address = :address")
     fun loadWalletByAddress(address: String): Flowable<Wallet>
 

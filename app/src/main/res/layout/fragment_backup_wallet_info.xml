@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="wallet"
-            type="com.kyberswap.android.domain.model.Wallet" />
+            name="info"
+            type="String" />
     </data>
 
     <FrameLayout
@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:gravity="center"
-                android:text="@{wallet.name}"
+                android:text="@string/backup_your_wallet"
                 android:textColor="#ffffff"
                 android:textSize="18sp" />
         </FrameLayout>
@@ -40,6 +40,15 @@
             android:layout_marginTop="@dimen/toolbar_height"
             android:background="@android:color/white"
             android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:text="@string/export_at_your_own_risk"
+                android:textColor="#f96363"
+                android:textSize="14sp" />
 
             <ImageView
                 android:id="@+id/imgAddress"
@@ -59,51 +68,29 @@
                 android:gravity="center_horizontal"
                 android:letterSpacing="0.07"
                 android:lineSpacingExtra="7sp"
-                android:text="@{wallet.address}"
+                android:text="@{info}"
                 android:textColor="#9ea1aa"
                 android:textSize="14sp"
                 tools:text="98i76yuin7uhy643xujhoui63huyhty6432fvbhyjnbvfe447uhyt8" />
 
-            <LinearLayout
+
+            <TextView
+                android:id="@+id/tvSave"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="75dp"
                 android:layout_marginEnd="20dp"
-                android:orientation="horizontal">
+                android:background="@drawable/default_button"
+                android:gravity="center"
+                android:minHeight="45dp"
+                android:text="@string/contact_save"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#ffffff"
+                android:textSize="16sp" />
 
-                <TextView
-                    android:id="@+id/tvShare"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/border_button"
-                    android:gravity="center"
-                    android:minHeight="45dp"
-                    android:text="@string/share"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-                    android:textColor="#141927"
-                    android:textSize="16sp" />
 
-                <View
-                    android:layout_width="11dp"
-                    android:layout_height="1dp" />
-
-                <TextView
-                    android:id="@+id/tvCopy"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/default_button"
-                    android:gravity="center"
-                    android:minHeight="45dp"
-                    android:text="@string/copy"
-                    android:textAllCaps="false"
-
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-                    android:textColor="#ffffff"
-                    android:textSize="16sp" />
-            </LinearLayout>
         </LinearLayout>
 
 

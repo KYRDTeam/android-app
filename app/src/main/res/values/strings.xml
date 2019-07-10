@@ -144,7 +144,7 @@
     <string name="more">more</string>
     <string name="send">Send</string>
     <string name="add_contact">Add Contact</string>
-    <string name="manage_walllet">Manage Walllet</string>
+    <string name="manage_wallet">Manage Walllet</string>
     <string name="manage_alert">Manage Alert</string>
     <string name="alert_method">Alert Method</string>
     <string name="setting_contact">Contact</string>
@@ -400,6 +400,29 @@
     <string name="pl_repeat_title">Repeat PIN</string>
     <string name="pl_repeat_content">Remember this code to access your wallets</string>
     <string name="pl_verify_access">Verify your access</string>
+    <string name="wallet_switch">Switch</string>
+    <string name="wallet_edit">Edit</string>
+    <string name="wallet_delete">Delete</string>
+    <string name="skip">Skip</string>
+    <string name="switch_wallet">Switch Wallet</string>
+    <string name="name_your_wallet_optional">Name of your wallet (optional)</string>
+    <string name="edit_wallet">Edit Wallet</string>
+    <string name="ba_skip">Skip?</string>
+    <string name="you_can_backup_your_wallet_later">You can backup your wallet later</string>
+    <string name="show_backup_phrase">Show Backup Phrase</string>
+    <string name="delete_wallet">Delete Wallet</string>
+    <string name="backup_keystore">Backup Keystore</string>
+    <string name="wallet_backup_private_key">Backup Private Key</string>
+    <string name="wallet_copy_address">Copy Address</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="password_done">Done</string>
+    <string name="password_mismatch">Password mismatch</string>
+    <string name="field_required">Filed Required</string>
+    <string name="delete_wallet_success">Delete wallet successfully</string>
+    <string name="export_at_your_own_risk">Export at your own risk!</string>
+    <string name="backup_mnemonic">Backup Mnemonic</string>
+    <string name="backup_your_wallet">Backup Your Wallet</string>
 
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
