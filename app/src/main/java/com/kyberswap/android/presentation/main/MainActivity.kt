@@ -273,6 +273,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                 when (state) {
                     is CreateWalletState.Success -> {
                         showAlert(getString(R.string.create_wallet_success)) {
+                            navigator.navigateToBackupWalletPage(state.words, state.wallet, true)
 
                 
 

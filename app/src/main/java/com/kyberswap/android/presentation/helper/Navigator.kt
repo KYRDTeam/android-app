@@ -22,6 +22,9 @@ import com.kyberswap.android.presentation.main.profile.*
 import com.kyberswap.android.presentation.main.profile.kyc.*
 import com.kyberswap.android.presentation.main.setting.AddContactFragment
 import com.kyberswap.android.presentation.main.setting.ContactFragment
+import com.kyberswap.android.presentation.main.setting.wallet.BackupWalletInfoFragment
+import com.kyberswap.android.presentation.main.setting.wallet.EditWalletFragment
+import com.kyberswap.android.presentation.main.setting.wallet.ManageWalletFragment
 import com.kyberswap.android.presentation.main.swap.PromoPaymentConfirmActivity
 import com.kyberswap.android.presentation.main.swap.PromoSwapConfirmActivity
 import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
@@ -49,9 +52,15 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         activity.startActivity(VerifyBackupWordActivity.newIntent(activity, words, wallet))
     }
 
-    fun navigateToBackupWalletPage(words: List<Word>, wallet: Wallet) {
-        activity.startActivity(BackupWalletActivity.newIntent(activity, words, wallet))
-        activity.finishAffinity()
+    fun navigateToBackupWalletPage(
+        words: List<Word>,
+        wallet: Wallet,
+        fromSetting: Boolean = false
+    ) {
+        activity.startActivity(BackupWalletActivity.newIntent(activity, words, wallet, fromSetting))
+        if (!fromSetting) {
+            activity.finishAffinity()
+
     }
 
     fun navigateToHome(hasUserInfo: Boolean? = false) {
@@ -463,6 +472,27 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
             fragmentManager,
             container,
             KyberCodeFragment.newInstance(true)
+        )
+    }
+
+    fun navigateToManageWalletFragment(currentFragment: Fragment) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            ManageWalletFragment.newInstance()
+        )
+    }
+
+    fun navigateToEditWallet(currentFragment: Fragment, wallet: Wallet) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            EditWalletFragment.newInstance(wallet)
+        )
+    }
+
+    fun navigateToBackupWalletInfo(currentFragment: Fragment?, value: String) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            BackupWalletInfoFragment.newInstance(value)
         )
     }
 

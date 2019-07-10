@@ -27,224 +27,265 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/color_bg_gray"
-                android:paddingStart="24dp"
-                android:paddingEnd="24dp">
+                android:background="@color/color_bg_gray">
 
-                <ImageView
-                    android:id="@+id/imgManageWallet"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginTop="24dp"
-                    android:src="@drawable/ic_manage_wallet"
-                    app:layout_constraintEnd_toStartOf="@+id/tvManageWallet"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvManageWallet"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/lnManageWallet"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:lineSpacingExtra="10sp"
-                    android:text="@string/manage_walllet"
-                    android:textColor="#141927"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/imgManageWallet"
+                    android:layout_marginTop="16dp"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:minHeight="45dp"
+                    android:orientation="horizontal"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imgManageWallet"
-                    app:layout_constraintTop_toTopOf="@+id/imgManageWallet" />
-
-                <ImageView
-                    android:id="@+id/imgManageAlert"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginTop="18dp"
-                    android:src="@drawable/ic_manage_alert"
-                    app:layout_constraintEnd_toStartOf="@+id/tvManageAlert"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintHorizontal_chainStyle="packed"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/imgManageWallet" />
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:id="@+id/tvManageAlert"
-                    android:layout_width="wrap_content"
+                    <ImageView
+                        android:id="@+id/imgManageWallet"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_manage_wallet" />
+
+                    <TextView
+                        android:id="@+id/tvManageWallet"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:lineSpacingExtra="10sp"
+                        android:text="@string/manage_wallet"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lnManageAlert"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:lineSpacingExtra="10sp"
-                    android:text="@string/manage_alert"
-                    android:textColor="#141927"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/imgManageAlert"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imgManageAlert"
-                    app:layout_constraintTop_toTopOf="@+id/imgManageAlert" />
+                    android:background="?selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:minHeight="45dp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    app:layout_constraintEnd_toEndOf="@+id/lnManageWallet"
+                    app:layout_constraintStart_toStartOf="@+id/lnManageWallet"
+                    app:layout_constraintTop_toBottomOf="@+id/lnManageWallet">
 
-                <ImageView
-                    android:id="@+id/imgAlertMethod"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginTop="18dp"
-                    android:src="@drawable/ic_alert_method"
-                    app:layout_constraintEnd_toStartOf="@+id/tvAlertMethod"
+                    <ImageView
+                        android:id="@+id/imgManageAlert"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_manage_alert" />
+
+                    <TextView
+                        android:id="@+id/tvManageAlert"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:lineSpacingExtra="10sp"
+                        android:text="@string/manage_alert"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/lnAlertMethod"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:minHeight="45dp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    app:layout_constraintEnd_toEndOf="@+id/lnManageAlert"
+                    app:layout_constraintStart_toStartOf="@+id/lnManageAlert"
+                    app:layout_constraintTop_toBottomOf="@+id/lnManageAlert">
+
+                    <ImageView
+                        android:id="@+id/imgAlertMethod"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_alert_method" />
+
+                    <TextView
+                        android:id="@+id/tvAlertMethod"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:lineSpacingExtra="10sp"
+                        android:text="@string/alert_method"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lnContact"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:minHeight="45dp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    app:layout_constraintEnd_toEndOf="@+id/lnAlertMethod"
+                    app:layout_constraintStart_toStartOf="@+id/lnAlertMethod"
+                    app:layout_constraintTop_toBottomOf="@+id/lnAlertMethod">
+
+                    <ImageView
+                        android:id="@+id/imgContact"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_contacts" />
+
+                    <TextView
+                        android:id="@+id/tvContact"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:lineSpacingExtra="10sp"
+                        android:text="@string/setting_contact"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lnSupport"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:minHeight="45dp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    app:layout_constraintEnd_toEndOf="@+id/lnContact"
+                    app:layout_constraintStart_toStartOf="@+id/lnContact"
+                    app:layout_constraintTop_toBottomOf="@+id/lnContact">
+
+                    <ImageView
+                        android:id="@+id/imgSupport"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_support" />
+
+                    <TextView
+                        android:id="@+id/tvSupport"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:lineSpacingExtra="10sp"
+                        android:text="@string/setting_support"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/lnChangePin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:minHeight="45dp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    app:layout_constraintEnd_toEndOf="@+id/lnContact"
+                    app:layout_constraintStart_toStartOf="@+id/lnContact"
+                    app:layout_constraintTop_toBottomOf="@+id/lnSupport">
+
+                    <ImageView
+                        android:id="@+id/imgChangePin"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_change_pin" />
+
+                    <TextView
+                        android:id="@+id/tvChangePin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:lineSpacingExtra="10sp"
+                        android:text="@string/change_pin"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/lnAbount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:minHeight="45dp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    app:layout_constraintEnd_toEndOf="@+id/lnSupport"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="@+id/lnSupport"
+                    app:layout_constraintTop_toBottomOf="@+id/lnChangePin">
+
+                    <ImageView
+                        android:id="@+id/imgAbout"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_about" />
+
+                    <TextView
+                        android:id="@+id/tvAbout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:lineSpacingExtra="10sp"
+                        android:text="@string/setting_about"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lnCommunity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:minHeight="45dp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    app:layout_constraintEnd_toEndOf="@+id/lnAbount"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/imgManageAlert" />
+                    app:layout_constraintStart_toStartOf="@+id/lnAbount"
+                    app:layout_constraintTop_toBottomOf="@+id/lnAbount">
 
-                <TextView
-                    android:id="@+id/tvAlertMethod"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:lineSpacingExtra="10sp"
-                    android:text="@string/alert_method"
-                    android:textColor="#141927"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/imgAlertMethod"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imgAlertMethod" />
+                    <ImageView
+                        android:id="@+id/imgCommunity"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_language" />
 
-                <ImageView
-                    android:id="@+id/imgContact"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginTop="18dp"
-                    android:src="@drawable/ic_contacts"
-                    app:layout_constraintEnd_toStartOf="@+id/tvContact"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/imgAlertMethod" />
+                    <TextView
+                        android:id="@+id/tvCommunity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:lineSpacingExtra="10sp"
+                        android:text="@string/setting_community"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/tvContact"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:lineSpacingExtra="10sp"
-                    android:text="@string/setting_contact"
-                    android:textColor="#141927"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/imgContact"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imgContact"
-                    app:layout_constraintTop_toTopOf="@+id/imgContact" />
-
-                <ImageView
-                    android:id="@+id/imgSupport"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginTop="18dp"
-                    android:src="@drawable/ic_support"
-                    app:layout_constraintEnd_toStartOf="@+id/tvSupport"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/imgContact" />
-
-                <TextView
-                    android:id="@+id/tvSupport"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:lineSpacingExtra="10sp"
-                    android:text="@string/setting_support"
-                    android:textColor="#141927"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/imgSupport"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imgSupport"
-                    app:layout_constraintTop_toTopOf="@+id/imgSupport" />
-
-                <ImageView
-                    android:id="@+id/imgChangePin"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginTop="18dp"
-                    android:src="@drawable/ic_change_pin"
-                    app:layout_constraintEnd_toStartOf="@+id/tvChangePin"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/imgSupport" />
-
-                <TextView
-                    android:id="@+id/tvChangePin"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:lineSpacingExtra="10sp"
-                    android:text="@string/change_pin"
-                    android:textColor="#141927"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/imgChangePin"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imgChangePin"
-                    app:layout_constraintTop_toTopOf="@+id/imgChangePin" />
-
-                <ImageView
-                    android:id="@+id/imgAbout"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginTop="18dp"
-                    android:src="@drawable/ic_about"
-                    app:layout_constraintEnd_toStartOf="@+id/tvAbout"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/imgChangePin" />
-
-                <TextView
-                    android:id="@+id/tvAbout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:lineSpacingExtra="10sp"
-                    android:text="@string/setting_about"
-                    android:textColor="#141927"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/imgAbout"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imgAbout"
-                    app:layout_constraintTop_toTopOf="@+id/imgAbout" />
-
-                <ImageView
-                    android:id="@+id/imgCommunity"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginTop="18dp"
-                    android:src="@drawable/ic_language"
-                    app:layout_constraintEnd_toStartOf="@+id/tvCommunity"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/imgAbout" />
-
-                <TextView
-                    android:id="@+id/tvCommunity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:lineSpacingExtra="10sp"
-                    android:text="@string/setting_community"
-                    android:textColor="#141927"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/imgCommunity"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imgCommunity"
-                    app:layout_constraintTop_toTopOf="@+id/imgCommunity" />
 
                 <ImageView
                     android:id="@+id/imgTelegram"
@@ -279,7 +320,8 @@
                     app:layout_constraintEnd_toStartOf="@+id/imgFacebook"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/imgTelegramDeveloper"
-                    app:layout_constraintTop_toTopOf="@+id/imgFacebook" />
+                    app:layout_constraintTop_toTopOf="@+id/imgFacebook"
+                    app:layout_constraintVertical_bias="1.0" />
 
                 <ImageView
                     android:id="@+id/imgFacebook"
@@ -324,73 +366,87 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/imgMedium"
-                    app:layout_constraintTop_toBottomOf="@+id/imgCommunity" />
+                    app:layout_constraintTop_toBottomOf="@+id/lnCommunity" />
 
-                <ImageView
-                    android:id="@+id/imgShare"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginTop="18dp"
-                    android:src="@drawable/ic_share"
-                    app:layout_constraintEnd_toStartOf="@+id/tvShare"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/imgTelegram" />
-
-                <TextView
-                    android:id="@+id/tvShare"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/lnShareWithFriend"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:lineSpacingExtra="10sp"
-                    android:text="@string/share_with_friends"
-                    android:textColor="#141927"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/imgShare"
+                    android:layout_marginTop="26dp"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:minHeight="45dp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imgShare"
-                    app:layout_constraintTop_toTopOf="@+id/imgShare" />
+                    app:layout_constraintStart_toStartOf="@+id/lnCommunity"
+                    app:layout_constraintTop_toBottomOf="@+id/imgFacebook">
 
-                <ImageView
-                    android:id="@+id/imgFavorite"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginTop="18dp"
-                    android:src="@drawable/ic_favorite"
-                    app:layout_constraintEnd_toStartOf="@+id/tvFavorite"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/imgShare" />
+                    <ImageView
+                        android:id="@+id/imgShare"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_share" />
 
-                <TextView
-                    android:id="@+id/tvFavorite"
-                    android:layout_width="wrap_content"
+                    <TextView
+                        android:id="@+id/tvShare"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:lineSpacingExtra="10sp"
+                        android:text="@string/share_with_friends"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lnRateMyApp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:lineSpacingExtra="10sp"
-                    android:text="@string/rate_app"
-                    android:textColor="#141927"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/imgFavorite"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:minHeight="45dp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imgFavorite"
-                    app:layout_constraintTop_toTopOf="@+id/imgFavorite" />
+                    app:layout_constraintStart_toStartOf="@+id/lnCommunity"
+                    app:layout_constraintTop_toBottomOf="@+id/lnShareWithFriend">
+
+                    <ImageView
+                        android:id="@+id/imgFavorite"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_favorite" />
+
+                    <TextView
+                        android:id="@+id/tvFavorite"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:lineSpacingExtra="10sp"
+                        android:text="@string/rate_app"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
 
                 <TextView
                     android:id="@+id/tvVersion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginStart="72dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="8dp"
                     android:lineSpacingExtra="14sp"
                     android:text="Version 1.1.0 - 18 - Production"
                     android:textColor="#5a5e67"
                     android:textSize="10sp"
-                    app:layout_constraintStart_toStartOf="@+id/tvFavorite"
-                    app:layout_constraintTop_toBottomOf="@+id/tvFavorite"
+                    app:layout_constraintEnd_toEndOf="@+id/lnRateMyApp"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/lnRateMyApp"
+                    app:layout_constraintTop_toBottomOf="@+id/lnRateMyApp"
                     tools:ignore="SmallSp" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvBackupKeystore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="?selectableItemBackground"
+            android:gravity="center"
+            android:minHeight="45dp"
+            android:text="@string/backup_keystore"
+            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textColor="#2e3957"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvBackupPrivateKey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:gravity="center"
+            android:minHeight="45dp"
+            android:text="@string/wallet_backup_private_key"
+            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textColor="#2e3957"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvBackupMnemonic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:gravity="center"
+            android:minHeight="45dp"
+            android:text="@string/backup_mnemonic"
+            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textColor="#2e3957"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvBackupCopyAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:gravity="center"
+            android:minHeight="45dp"
+            android:text="@string/wallet_copy_address"
+            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textColor="#2e3957"
+            android:textSize="14sp" />
+
+
+        <TextView
+            android:id="@+id/tvCancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:gravity="center"
+            android:minHeight="45dp"
+            android:text="@string/cancel"
+            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textColor="#2e3957"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+</layout>

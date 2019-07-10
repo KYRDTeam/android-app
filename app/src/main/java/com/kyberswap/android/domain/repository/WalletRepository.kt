@@ -1,5 +1,6 @@
 package com.kyberswap.android.domain.repository
 
+import com.kyberswap.android.domain.model.VerifyStatus
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.domain.usecase.wallet.*
@@ -35,4 +36,12 @@ interface WalletRepository {
     fun addWalletToBalanceMonitor(param: AddWalletToBalanceMonitorUseCase.Param): Completable
 
     fun updatedSelectedWallet(param: UpdateSelectedWalletUseCase.Param): Single<Wallet>
+
+    fun exportKeystore(param: ExportKeystoreWalletUseCase.Param): Single<String>
+
+    fun exportPrivateKey(param: ExportPrivateKeyWalletUseCase.Param): Single<String>
+
+    fun exportMnemonic(param: ExportMnemonicWalletUseCase.Param): Single<String>
+
+    fun deleteWallet(param: DeleteWalletUseCase.Param): Single<VerifyStatus>
 }

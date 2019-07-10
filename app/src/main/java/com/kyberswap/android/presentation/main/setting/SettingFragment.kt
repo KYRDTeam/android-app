@@ -37,6 +37,45 @@ class SettingFragment : BaseFragment() {
         return binding.root
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        binding.lnManageWallet.setOnClickListener {
+            navigator.navigateToManageWalletFragment(
+                currentFragment
+            )
+
+
+        binding.lnManageAlert.setOnClickListener {
+
+
+
+        binding.lnAlertMethod.setOnClickListener {
+
+
+
+        binding.lnContact.setOnClickListener {
+
+
+
+        binding.lnSupport.setOnClickListener {
+
+
+
+        binding.lnChangePin.setOnClickListener {
+
+
+
+        binding.lnAbount.setOnClickListener {
+
+
+
+        binding.lnCommunity.setOnClickListener {
+
+
+
+
+    }
+
     companion object {
         fun newInstance() =
             SettingFragment().apply {

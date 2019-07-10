@@ -9,10 +9,8 @@ import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.data.db.UnitDao
 import com.kyberswap.android.data.db.WalletDao
 import com.kyberswap.android.data.mapper.PromoMapper
-import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.domain.model.Unit
-import com.kyberswap.android.domain.model.Wallet
-import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.domain.repository.WalletRepository
 import com.kyberswap.android.domain.usecase.wallet.*
 import com.kyberswap.android.util.HMAC
@@ -26,6 +24,7 @@ import org.consenlabs.tokencore.wallet.model.BIP44Util
 import org.consenlabs.tokencore.wallet.model.ChainType
 import org.consenlabs.tokencore.wallet.model.Metadata
 import org.consenlabs.tokencore.wallet.model.Network
+import java.io.File
 import java.security.SecureRandom
 import javax.inject.Inject
 
@@ -319,6 +318,74 @@ class WalletDataRepository @Inject constructor(
                     it
                 )
             )
+
+    }
+
+    override fun exportKeystore(param: ExportKeystoreWalletUseCase.Param): Single<String> {
+        return Single.fromCallable {
+            var password = ""
+            if (context is KyberSwapApplication) {
+                password = String(
+                    context.aead.decrypt(
+                        Base64.decode(param.wallet.cipher, Base64.DEFAULT), ByteArray(0)
+                    ), Charsets.UTF_8
+                )
+    
+
+            WalletManager.exportKeystore(param.wallet.walletId, password)
+
+    }
+
+    override fun exportPrivateKey(param: ExportPrivateKeyWalletUseCase.Param): Single<String> {
+        return Single.fromCallable {
+            var password = ""
+            if (context is KyberSwapApplication) {
+                password = String(
+                    context.aead.decrypt(
+                        Base64.decode(param.wallet.cipher, Base64.DEFAULT), ByteArray(0)
+                    ), Charsets.UTF_8
+                )
+    
+
+            WalletManager.exportPrivateKey(param.wallet.walletId, password)
+
+    }
+
+    override fun exportMnemonic(param: ExportMnemonicWalletUseCase.Param): Single<String> {
+        return Single.fromCallable {
+            var password = ""
+            if (context is KyberSwapApplication) {
+                password = String(
+                    context.aead.decrypt(
+                        Base64.decode(param.wallet.cipher, Base64.DEFAULT), ByteArray(0)
+                    ), Charsets.UTF_8
+                )
+    
+
+            WalletManager.exportMnemonic(param.wallet.walletId, password).mnemonic
+
+    }
+
+    override fun deleteWallet(param: DeleteWalletUseCase.Param): Single<VerifyStatus> {
+        return Single.fromCallable {
+            val wallet = param.wallet
+            val file =
+                File(WalletManager.storage.keystoreDir.toString() + "/wallets/" + param.wallet.walletId + ".json")
+            if (file.delete()) {
+                val status = VerifyStatus(true)
+                val wallets = walletDao.all.toMutableList()
+                if (wallet.isSelected) {
+                    val firstOrNull = wallets.firstOrNull()
+                    firstOrNull?.let {
+                        updateSelectedWallet(it)
+            
+        
+                wallets.remove(wallet)
+                walletDao.deleteWallet(wallet)
+                status.copy(isEmptyWallet = wallets.isEmpty())
+     else {
+                VerifyStatus(false)
+    
 
     }
 }

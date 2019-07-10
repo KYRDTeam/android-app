@@ -106,6 +106,9 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
 
     fun startCounter() {
         disposable.clear()
+        if (counter >= THRESHOLD_VALUE) {
+            counter = 0
+
         disposable.add(
             Observable.interval(counter, 10, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.computation())
@@ -156,8 +159,7 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onAppForegrounded() {
-        if (counter >= 5) {
-            counter = 0
+        if (counter >= THRESHOLD_VALUE) {
             startActivity(PassCodeLockActivity.newIntent(this).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
     )
@@ -165,6 +167,6 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
     }
 
     companion object {
-        const val THRESHOLD_VALUE = 5L
+        const val THRESHOLD_VALUE = 60L
     }
 }
