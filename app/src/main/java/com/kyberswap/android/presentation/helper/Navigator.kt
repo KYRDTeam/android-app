@@ -63,8 +63,9 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         }
     }
 
-    fun navigateToHome(hasUserInfo: Boolean? = false) {
-        activity.startActivity(MainActivity.newIntent(activity, hasUserInfo)
+    fun navigateToHome() {
+        activity.startActivity(
+            MainActivity.newIntent(activity)
             .apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             })

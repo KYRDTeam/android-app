@@ -5,9 +5,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import com.kyberswap.android.domain.model.NotificationAlert
 import com.kyberswap.android.presentation.main.balance.BalanceFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
-import com.kyberswap.android.presentation.main.profile.ProfileDetailFragment
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.setting.SettingFragment
 import com.kyberswap.android.presentation.main.swap.SwapFragment
@@ -15,25 +15,20 @@ import com.kyberswap.android.presentation.main.swap.SwapFragment
 
 class MainPagerAdapter constructor(
     fm: FragmentManager,
-    hasUserInfo: Boolean
+    alert: NotificationAlert?
 ) : FragmentPagerAdapter(fm) {
     private val listFragment = mutableListOf<Fragment>()
 
     init {
         listFragment.add(BALANCE, BalanceFragment.newInstance())
-        listFragment.add(SWAP, SwapFragment.newInstance())
+        listFragment.add(SWAP, SwapFragment.newInstance(alert))
         listFragment.add(LIMIT_ORDER, LimitOrderFragment.newInstance())
-        listFragment.add(
-            PROFILE, if (hasUserInfo)
-                ProfileDetailFragment.newInstance(
-                ) else ProfileFragment.newInstance()
-        )
+        listFragment.add(PROFILE, ProfileFragment.newInstance())
         listFragment.add(SETTING, SettingFragment.newInstance())
 
     }
 
     var registeredFragments = SparseArray<Fragment>()
-
 
     override fun getItem(position: Int): Fragment {
         return listFragment[position]

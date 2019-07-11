@@ -23,6 +23,7 @@ import com.kyberswap.android.presentation.main.profile.alert.DeleteAlertsState
 import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
 import com.kyberswap.android.presentation.main.profile.kyc.ReSubmitState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.onesignal.OneSignal
 import javax.inject.Inject
 
 
@@ -66,6 +67,11 @@ class ProfileDetailFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        OneSignal.idsAvailable { _, _ ->
+            viewModel.updatePushToken(OneSignal.getPermissionSubscriptionState().subscriptionStatus.pushToken)
+        }
+
         viewModel.fetchUserInfo()
         viewModel.getUserInfoCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->

@@ -428,5 +428,7 @@
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>
     </string-array>
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="alert_trigger_content"><![CDATA[Your price alert for %s %s just got triggered]]></string>
 
 </resources>

@@ -8,10 +8,7 @@ import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.LeaderBoard
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.repository.AlertRepository
-import com.kyberswap.android.domain.usecase.alert.CreateOrUpdateAlertUseCase
-import com.kyberswap.android.domain.usecase.alert.DeleteAlertsUseCase
-import com.kyberswap.android.domain.usecase.alert.GetCurrentAlertUseCase
-import com.kyberswap.android.domain.usecase.alert.SaveAlertTokenUseCase
+import com.kyberswap.android.domain.usecase.alert.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -25,6 +22,7 @@ class AlertDataRepository @Inject constructor(
     private val userApi: UserApi,
     private val alertMapper: AlertMapper
 ) : AlertRepository {
+
     override fun getLeaderBoardAlert(): Single<LeaderBoard> {
         return userApi.getLeaderBoard().map {
             alertMapper.transform(it)
@@ -55,10 +53,14 @@ class AlertDataRepository @Inject constructor(
                 alert.tokenSymbol,
                 alert.alertPrice,
                 alert.isAbove
-            ).map { alertMapper.transform(it) }
+            ).map {
+                alertMapper.transform(it)
+            }
         }
             .doAfterSuccess {
-                alertDao.updateAlert(alert)
+                if (it.message.isNullOrEmpty()) {
+                    alertDao.updateAlert(alert)
+                }
             }
     }
 
@@ -83,7 +85,11 @@ class AlertDataRepository @Inject constructor(
             val token = tokenDao.getTokenBySymbol(currentAlert.tokenSymbol) ?: Token()
             currentAlert.copy(token = token)
         }
-        alertDao.insertAlert(alert)
+
+        if (currentAlert != alert) {
+            alertDao.insertAlert(alert)
+        }
+
         return alertDao.findAlertByIdFlowable(id).defaultIfEmpty(
             alert
         )
@@ -96,6 +102,12 @@ class AlertDataRepository @Inject constructor(
                 token = param.token
             ) ?: Alert(walletAddress = param.walletAddress, token = param.token)
             alertDao.updateAlert(alert)
+        }
+    }
+
+    override fun getAlert(param: GetAlertUseCase.Param): Single<Alert> {
+        return Single.fromCallable {
+            alertDao.findAlertById(param.alertId)
         }
     }
 }

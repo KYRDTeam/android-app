@@ -18,11 +18,14 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentSwapBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Gas
+import com.kyberswap.android.domain.model.NotificationAlert
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.DEFAULT_ACCEPT_RATE_PERCENTAGE
+import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.alert.GetAlertState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.*
@@ -40,9 +43,14 @@ class SwapFragment : BaseFragment() {
     lateinit var navigator: Navigator
 
     @Inject
+    lateinit var dialogHelper: DialogHelper
+
+    @Inject
     lateinit var appExecutors: AppExecutors
 
     private var wallet: Wallet? = null
+
+    private var alertNotification: NotificationAlert? = null
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -62,6 +70,11 @@ class SwapFragment : BaseFragment() {
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        alertNotification = arguments?.getParcelable(ALERT_PARAM)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -74,6 +87,8 @@ class SwapFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        alertNotification?.let { viewModel.getAlert(it) }
+
         viewModel.getSelectedWallet()
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -82,10 +97,9 @@ class SwapFragment : BaseFragment() {
                         this.wallet = state.wallet
                         if (binding.swap?.walletAddress != state.wallet.address) {
                             val promo = wallet?.promo
-                            if (promo != null) {
-
+                            if (wallet?.isPromo == true) {
                                 enableTokenSearch(isSourceToken = true, isEnable = false)
-                                if (promo.destinationToken.isNotEmpty()) {
+                                if (promo?.destinationToken?.isNotEmpty() == true) {
                                     enableTokenSearch(isSourceToken = false, isEnable = false)
                                 }
                             } else {
@@ -94,7 +108,7 @@ class SwapFragment : BaseFragment() {
                             }
 
                             binding.walletName = state.wallet.name
-                            viewModel.getSwapData(state.wallet)
+                            viewModel.getSwapData(state.wallet, alertNotification)
                             viewModel.getCap(state.wallet.address)
                         }
                     }
@@ -379,6 +393,21 @@ class SwapFragment : BaseFragment() {
             }
         })
 
+        viewModel.getAlertState.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetAlertState.Success -> {
+                        dialogHelper.showAlertTriggerDialog(state.alert) {
+
+                        }
+                    }
+                    is GetAlertState.ShowError -> {
+
+                    }
+                }
+            }
+        })
+
         viewModel.compositeDisposable.add(
             edtCustom.textChanges()
                 .observeOn(schedulerProvider.ui())
@@ -533,6 +562,11 @@ class SwapFragment : BaseFragment() {
     }
 
     companion object {
-        fun newInstance() = SwapFragment()
+        private const val ALERT_PARAM = "alert_param"
+        fun newInstance(alert: NotificationAlert?) = SwapFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable(ALERT_PARAM, alert)
+            }
+        }
     }
 }

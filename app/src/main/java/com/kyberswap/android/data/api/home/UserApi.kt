@@ -126,4 +126,8 @@ interface UserApi {
     @POST("api/kyc_profile/resubmit_kyc")
     fun resubmit(): Single<KycResponseStatusEntity>
 
+    @PATCH("api/update_push_token")
+    @FormUrlEncoded
+    fun updatePushToken(@Field("push_token_mobile") token: String): Single<ResponseStatusEntity>
+
 }

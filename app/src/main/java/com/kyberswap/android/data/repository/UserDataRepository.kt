@@ -296,6 +296,12 @@ class UserDataRepository @Inject constructor(
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
+    override fun updatePushNotification(param: UpdatePushTokenUseCase.Param): Single<ResponseStatus> {
+        return userApi.updatePushToken(param.token).map {
+            userMapper.transform(it)
+        }
+    }
+
 
     companion object {
         private const val MAX_IMAGE_SIZE = 1000 * 1024

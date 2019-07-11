@@ -14,6 +14,7 @@ import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.*
+import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.presentation.main.alert.EligibleTokenAdapter
 import com.kyberswap.android.presentation.main.alert.Passport
@@ -439,6 +440,31 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
 
 
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    }
+
+    fun showAlertTriggerDialog(
+        alert: Alert,
+        positiveListener: () -> Unit = {}
+    ) {
+
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogAlertTriggerBinding>(
+                LayoutInflater.from(activity), R.layout.dialog_alert_trigger, null, false
+            )
+
+        binding.tvOk.setOnClickListener {
+            positiveListener.invoke()
+            dialog.dismiss()
+        }
+
+        binding.alert = alert
+        binding.executePendingBindings()
         dialog.setView(binding.root)
         dialog.show()
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
