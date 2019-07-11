@@ -48,7 +48,7 @@ class SplashActivity : BaseActivity() {
                 if (state != GetUserWalletState.Loading)
                     when (state) {
                         is GetUserWalletState.Success -> {
-                            navigator.navigateToHome(state.userInfo != null && state.userInfo.uid > 0)
+                            navigator.navigateToHome()
                 
                         is GetUserWalletState.ShowError -> {
                             navigator.navigateToLandingPage()

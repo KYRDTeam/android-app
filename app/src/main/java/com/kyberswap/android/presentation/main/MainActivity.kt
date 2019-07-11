@@ -20,6 +20,7 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityMainBinding
+import com.kyberswap.android.domain.model.NotificationAlert
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
@@ -57,10 +58,13 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     private var hasUserInfo: Boolean = false
 
+    private var alert: NotificationAlert? = null
+
     @Inject
     lateinit var dialogHelper: DialogHelper
 
     private var currentFragment: Fragment? = null
+
 
     private val mainViewModel: MainViewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
@@ -83,7 +87,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         super.onCreate(savedInstanceState)
         WalletManager.storage = this
         WalletManager.scanWallets()
-        hasUserInfo = intent.getBooleanExtra(USER_PARAM, false)
+        alert = intent.getParcelableExtra(ALERT_PARAM)
+
         binding.viewModel = mainViewModel
         val tabColors =
             applicationContext.resources.getIntArray(R.array.tab_colors)
@@ -102,11 +107,11 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             return@setOnTabSelectedListener true
 
 
-
         adapter = MainPagerAdapter(
             supportFragmentManager,
-            hasUserInfo
+            alert
         )
+
         binding.vpNavigation.adapter = adapter
         binding.vpNavigation.offscreenPageLimit = 4
         val listener = object : ViewPager.OnPageChangeListener {
@@ -138,81 +143,74 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         bottomNavigation.currentItem = MainPagerAdapter.SWAP
         binding.vpNavigation.currentItem = MainPagerAdapter.SWAP
 
-
-
         binding.navView.rvWallet.layoutManager = LinearLayoutManager(
             this,
             RecyclerView.VERTICAL,
             false
         )
 
-        handler.postDelayed(
-            {
-                val walletAdapter =
-                    WalletAdapter(appExecutors) {
+        val walletAdapter =
+            WalletAdapter(appExecutors) {
 
-                        showDrawer(false)
-                        handler.postDelayed(
-                            {
-                                mainViewModel.updateSelectedWallet(it)
-                    , 250
-                        )
-            
-                binding.navView.rvWallet.adapter = walletAdapter
-
-                mainViewModel.getWallets()
-                mainViewModel.getAllWalletStateCallback.observe(this, Observer {
-                    it?.getContentIfNotHandled()?.let { state ->
-                        when (state) {
-                            is GetAllWalletState.Success -> {
-                                val selectedWallet = state.wallets.find { it.isSelected }
-                                if (wallet?.address != selectedWallet?.address) {
-                                    wallet = selectedWallet
-                                    wallet?.let {
-                                        mainViewModel.getPendingTransaction(it)
-                            
-                                    walletAdapter.submitList(listOf())
-                                    walletAdapter.submitList(state.wallets)
-                        
-                    
-                            is GetAllWalletState.ShowError -> {
-                                navigator.navigateToLandingPage()
-                    
-                
-            
-        )
-
-                mainViewModel.getPendingTransactionStateCallback.observe(this, Observer {
-                    it?.getContentIfNotHandled()?.let { state ->
-                        when (state) {
-                            is GetPendingTransactionState.Success -> {
-                                val txList = state.transactions.filter {
-                                    it.blockNumber.isNotEmpty()
-                        
-
-                                txList.forEach {
-                                    showAlert(
-                                        String.format(
-                                            getString(R.string.transaction_mined),
-                                            it.hash
-                                        )
-                                    )
-                        
-
-                                val pending = state.transactions.filter { it.blockNumber.isEmpty() }
-                                pendingTransactions.clear()
-                                pendingTransactions.addAll(pending)
-                                setPendingTransaction(pending.size)
-                    
-                            is GetPendingTransactionState.ShowError -> {
-                                showAlert(state.message ?: getString(R.string.something_wrong))
-                    
-                
-            
-        )
+                showDrawer(false)
+                handler.postDelayed(
+                    {
+                        mainViewModel.updateSelectedWallet(it)
+            , 250
+                )
     
-            , 250)
+        binding.navView.rvWallet.adapter = walletAdapter
 
+        mainViewModel.getWallets()
+        mainViewModel.getAllWalletStateCallback.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetAllWalletState.Success -> {
+                        val selectedWallet = state.wallets.find { it.isSelected }
+                        if (wallet?.address != selectedWallet?.address) {
+                            wallet = selectedWallet
+                            wallet?.let {
+                                mainViewModel.getPendingTransaction(it)
+                    
+                            walletAdapter.submitList(listOf())
+                            walletAdapter.submitList(state.wallets)
+                
+            
+                    is GetAllWalletState.ShowError -> {
+                        navigator.navigateToLandingPage()
+            
+        
+    
+)
+
+        mainViewModel.getPendingTransactionStateCallback.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetPendingTransactionState.Success -> {
+                        val txList = state.transactions.filter {
+                            it.blockNumber.isNotEmpty()
+                
+
+                        txList.forEach {
+                            showAlert(
+                                String.format(
+                                    getString(R.string.transaction_mined),
+                                    it.hash
+                                )
+                            )
+                
+
+                        val pending = state.transactions.filter { it.blockNumber.isEmpty() }
+                        pendingTransactions.clear()
+                        pendingTransactions.addAll(pending)
+                        setPendingTransaction(pending.size)
+            
+                    is GetPendingTransactionState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+            
+        
+    
+)
 
         imgClose.setOnClickListener {
             showDrawer(false)
@@ -243,8 +241,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             
         , 250
             )
-
-
 
 
         imgAdd.setOnClickListener {
@@ -313,6 +309,9 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         return currentFragment
     }
 
+    val profileFragment: Fragment?
+        get() = adapter?.getRegisteredFragment(MainPagerAdapter.PROFILE)
+
     fun showDrawer(show: Boolean) {
         if (show) {
             binding.drawerLayout.openDrawer(GravityCompat.END)
@@ -368,10 +367,13 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     }
 
     companion object {
-        private const val USER_PARAM = "user_param"
-        fun newIntent(context: Context, hasUserInfo: Boolean? = false) =
+        private const val ALERT_PARAM = "alert_param"
+        fun newIntent(
+            context: Context,
+            alert: NotificationAlert? = null
+        ) =
             Intent(context, MainActivity::class.java).apply {
-                putExtra(USER_PARAM, hasUserInfo)
+                putExtra(ALERT_PARAM, alert)
     
     }
 }

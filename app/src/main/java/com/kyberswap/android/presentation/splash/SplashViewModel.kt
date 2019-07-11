@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.usecase.token.PreloadUseCase
 import com.kyberswap.android.presentation.common.Event
 import io.reactivex.functions.Consumer
-import timber.log.Timber
 import javax.inject.Inject
 
 class SplashViewModel @Inject constructor(
@@ -23,9 +22,8 @@ class SplashViewModel @Inject constructor(
         _getWalletStateCallback.postValue(Event(GetUserWalletState.Loading))
         preloadUseCase.execute(
             Consumer {
-                Timber.e("prepareData")
                 _getWalletStateCallback.value =
-                    Event(GetUserWalletState.Success(it.second, it.first))
+                    Event(GetUserWalletState.Success(it))
                 preloadUseCase.dispose()
 
 

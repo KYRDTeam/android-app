@@ -23,7 +23,6 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentProfileBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.SocialInfo
-import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
@@ -97,6 +96,8 @@ class ProfileFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        viewModel.getLoginStatus()
+
         LoginManager.getInstance().registerCallback(callbackManager,
             object : FacebookCallback<LoginResult> {
                 override fun onSuccess(result: LoginResult?) {
@@ -133,7 +134,7 @@ class ProfileFragment : BaseFragment() {
                                     state.socialInfo
                                 )
                      else {
-                                navigateToProfileDetail(state.login.userInfo)
+                                navigateToProfileDetail()
                                 if (fromLimitOrder) {
                                     moveToLimitOrder()
                         
@@ -163,6 +164,23 @@ class ProfileFragment : BaseFragment() {
                         showAlert(state.status.message)
             
                     is ResetPasswordState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+            
+        
+    
+)
+
+        viewModel.getLoginStatusCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is UserInfoState.Success -> {
+                        if (state.userInfo != null && state.userInfo.uid > 0) {
+                            navigator.navigateToProfileDetail(
+                                profileFragment
+                            )
+                
+            
+                    is UserInfoState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
             
         
@@ -234,7 +252,7 @@ class ProfileFragment : BaseFragment() {
 
     }
 
-    private fun navigateToProfileDetail(userInfo: UserInfo?) {
+    private fun navigateToProfileDetail() {
         navigator.navigateToProfileDetail(
             currentFragment
         )

@@ -121,6 +121,11 @@
             android:name=".presentation.setting.PassCodeLockActivity"
             android:launchMode="singleTop" />
 
+        <meta-data
+            android:name="com.onesignal.NotificationOpened.DEFAULT"
+            android:value="DISABLE" />
+
+
     </application>
 
 </manifest>

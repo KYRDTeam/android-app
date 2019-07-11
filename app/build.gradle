@@ -6,6 +6,8 @@ apply plugin: 'deploygate'
 apply plugin: "io.gitlab.arturbosch.detekt"
 apply from: '../gradle/findbugs.gradle'
 apply from: '../gradle/ktlint.gradle'
+apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
+
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -33,6 +35,11 @@ android {
         kotlinOptions {
             jvmTarget = '1.8'
 
+
+        manifestPlaceholders = [
+                onesignal_app_id               : '',
+                onesignal_google_project_number: 'REMOTE'
+        ]
     }
 
     defaultConfig {
@@ -246,8 +253,9 @@ dependencies {
     implementation 'com.github.jkwiecien:EasyImage:3.0.1'
     implementation project(path: ':pinlockview')
 
-
+    implementation 'com.onesignal:OneSignal:[3.9.1, 3.99.99]'
 }
+
 
 detekt {
     version = "1.0.0.RC8"

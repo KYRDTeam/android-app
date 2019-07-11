@@ -79,6 +79,9 @@ abstract class BaseFragment : DaggerFragment() {
     val currentFragment: Fragment
         get() = (activity as MainActivity).getCurrentFragment() ?: this
 
+    val profileFragment: Fragment?
+        get() = (activity as MainActivity).profileFragment ?: this
+
     fun displaySnackBarWithBottomMargin(snackbar: Snackbar, marginBottom: Int = 0) {
         val snackBarView = snackbar.view
         val params = snackBarView.layoutParams as CoordinatorLayout.LayoutParams

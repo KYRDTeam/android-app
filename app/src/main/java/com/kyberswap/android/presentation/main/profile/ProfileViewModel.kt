@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.SocialInfo
+import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
 import com.kyberswap.android.domain.usecase.profile.LoginUseCase
 import com.kyberswap.android.domain.usecase.profile.ResetPasswordUseCase
@@ -16,17 +17,35 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val loginSocialUseCase: LoginSocialUseCase,
-    private val resetPasswordUseCase: ResetPasswordUseCase
+    private val resetPasswordUseCase: ResetPasswordUseCase,
+    private val getLoginStatusUseCase: GetLoginStatusUseCase
 ) : ViewModel() {
     private val _loginCallback = MutableLiveData<Event<LoginState>>()
     val loginCallback: LiveData<Event<LoginState>>
         get() = _loginCallback
 
+    private val _getLoginStatusCallback = MutableLiveData<Event<UserInfoState>>()
+    val getLoginStatusCallback: LiveData<Event<UserInfoState>>
+        get() = _getLoginStatusCallback
 
     private val _resetPasswordCallback = MutableLiveData<Event<ResetPasswordState>>()
     val resetPasswordCallback: LiveData<Event<ResetPasswordState>>
         get() = _resetPasswordCallback
 
+    fun getLoginStatus() {
+        getLoginStatusUseCase.dispose()
+        getLoginStatusUseCase.execute(
+            Consumer {
+                _getLoginStatusCallback.value = Event(UserInfoState.Success(it))
+    ,
+            Consumer {
+                it.printStackTrace()
+                _getLoginStatusCallback.value =
+                    Event(UserInfoState.ShowError(it.localizedMessage))
+    ,
+            null
+        )
+    }
 
     fun login(email: String, password: String) {
         _loginCallback.postValue(Event(LoginState.Loading))
@@ -43,7 +62,6 @@ class ProfileViewModel @Inject constructor(
             LoginUseCase.Param(email, password)
         )
     }
-
 
     fun login(socialInfo: SocialInfo) {
         _loginCallback.postValue(Event(LoginState.Loading))

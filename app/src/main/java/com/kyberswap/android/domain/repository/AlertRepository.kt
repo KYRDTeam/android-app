@@ -2,10 +2,7 @@ package com.kyberswap.android.domain.repository
 
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.LeaderBoard
-import com.kyberswap.android.domain.usecase.alert.CreateOrUpdateAlertUseCase
-import com.kyberswap.android.domain.usecase.alert.DeleteAlertsUseCase
-import com.kyberswap.android.domain.usecase.alert.GetCurrentAlertUseCase
-import com.kyberswap.android.domain.usecase.alert.SaveAlertTokenUseCase
+import com.kyberswap.android.domain.usecase.alert.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -22,4 +19,6 @@ interface AlertRepository {
     fun deleteAlert(param: DeleteAlertsUseCase.Param): Single<Response<Void>>
 
     fun getLeaderBoardAlert(): Single<LeaderBoard>
+
+    fun getAlert(param: GetAlertUseCase.Param): Single<Alert>
 }

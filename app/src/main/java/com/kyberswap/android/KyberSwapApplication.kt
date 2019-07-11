@@ -1,5 +1,6 @@
 package com.kyberswap.android
 
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.Lifecycle
@@ -12,11 +13,13 @@ import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink.aead.AeadFactory
 import com.google.crypto.tink.aead.AeadKeyTemplates
 import com.google.crypto.tink.integration.android.AndroidKeysetManager
+import com.kyberswap.android.presentation.notification.NotificationOpenedHandler
 import com.kyberswap.android.presentation.setting.PassCodeLockActivity
 import com.kyberswap.android.util.di.AppComponent
 import com.kyberswap.android.util.di.DaggerAppComponent
 import com.kyberswap.android.util.di.module.DatabaseModule
 import com.kyberswap.android.util.di.module.NetworkModule
+import com.onesignal.OneSignal
 import com.orhanobut.hawk.Hawk
 import com.twitter.sdk.android.core.DefaultLogger
 import com.twitter.sdk.android.core.Twitter
@@ -51,6 +54,7 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
 
     override fun onCreate() {
         super.onCreate()
+        instance = this
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
@@ -97,6 +101,13 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
             .debug(true)
             .build()
         Twitter.initialize(config)
+
+        OneSignal.setLogLevel(OneSignal.LOG_LEVEL.DEBUG, OneSignal.LOG_LEVEL.WARN)
+
+        OneSignal.startInit(this)
+            .setNotificationOpenedHandler(NotificationOpenedHandler())
+            .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
+            .init()
 
     }
 
@@ -168,5 +179,6 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
 
     companion object {
         const val THRESHOLD_VALUE = 60L
+        lateinit var instance: Context private set
     }
 }

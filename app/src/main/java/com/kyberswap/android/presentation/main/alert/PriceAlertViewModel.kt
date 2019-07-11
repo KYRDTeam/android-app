@@ -48,7 +48,12 @@ class PriceAlertViewModel @Inject constructor(
         _createOrUpdateAlertCallback.postValue(Event(CreateOrUpdateAlertState.Loading))
         createOrUpdateAlertUseCase.execute(
             Consumer {
-                _createOrUpdateAlertCallback.value = Event(CreateOrUpdateAlertState.Success(it))
+                if (it.message.isNullOrEmpty()) {
+                    _createOrUpdateAlertCallback.value = Event(CreateOrUpdateAlertState.Success(it))
+         else {
+                    _createOrUpdateAlertCallback.value =
+                        Event(CreateOrUpdateAlertState.ShowError(it.message))
+        
     ,
             Consumer {
                 it.printStackTrace()
