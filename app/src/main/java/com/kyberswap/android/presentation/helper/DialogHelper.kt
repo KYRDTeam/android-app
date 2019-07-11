@@ -15,6 +15,7 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.*
 import com.kyberswap.android.domain.model.Alert
+import com.kyberswap.android.domain.model.NotificationLimitOrder
 import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.presentation.main.alert.EligibleTokenAdapter
 import com.kyberswap.android.presentation.main.alert.Passport
@@ -542,5 +543,51 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         dialog.show()
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
+    }
+
+    fun showExceedNumberAlertDialog(positiveListener: () -> Unit = {}) {
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogMaximumAlertBinding>(
+                LayoutInflater.from(activity), R.layout.dialog_maximum_alert, null, false
+            )
+
+        binding.tvConfirm.setOnClickListener {
+            positiveListener.invoke()
+            dialog.dismiss()
+        }
+
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    }
+
+    fun showOrderFillDialog(
+        notification: NotificationLimitOrder,
+        positiveListener: (url: String) -> Unit
+    ) {
+
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogOrderFilledBinding>(
+                LayoutInflater.from(activity), R.layout.dialog_order_filled, null, false
+            )
+
+        binding.tvDetail.setOnClickListener {
+            positiveListener.invoke(notification.txHash)
+            dialog.dismiss()
+        }
+
+        dialog.setView(binding.root)
+
+        binding.order = Order(notification)
+        binding.executePendingBindings()
+
+        dialog.show()
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 }

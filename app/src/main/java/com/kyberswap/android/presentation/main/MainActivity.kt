@@ -21,6 +21,7 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityMainBinding
 import com.kyberswap.android.domain.model.NotificationAlert
+import com.kyberswap.android.domain.model.NotificationLimitOrder
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
@@ -56,9 +57,9 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     private var wallet: Wallet? = null
 
-    private var hasUserInfo: Boolean = false
-
     private var alert: NotificationAlert? = null
+
+    private var limitOrder: NotificationLimitOrder? = null
 
     @Inject
     lateinit var dialogHelper: DialogHelper
@@ -80,14 +81,15 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     val pendingTransactions = mutableListOf<Transaction>()
 
-    var adapter: MainPagerAdapter? = null
-
+    private var adapter: MainPagerAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WalletManager.storage = this
         WalletManager.scanWallets()
+
         alert = intent.getParcelableExtra(ALERT_PARAM)
+        limitOrder = intent.getParcelableExtra(LIMIT_ORDER_PARAM)
 
         binding.viewModel = mainViewModel
         val tabColors =
@@ -109,7 +111,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
         adapter = MainPagerAdapter(
             supportFragmentManager,
-            alert
+            alert,
+            limitOrder
         )
 
         binding.vpNavigation.adapter = adapter
@@ -137,11 +140,18 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
         binding.vpNavigation.addOnPageChangeListener(listener)
 
-        binding.vpNavigation.post {
-            listener.onPageSelected(MainPagerAdapter.SWAP)
+        val initial = if (limitOrder != null) {
+            MainPagerAdapter.LIMIT_ORDER
+        } else {
+            MainPagerAdapter.SWAP
         }
-        bottomNavigation.currentItem = MainPagerAdapter.SWAP
-        binding.vpNavigation.currentItem = MainPagerAdapter.SWAP
+
+        binding.vpNavigation.post {
+            listener.onPageSelected(initial)
+        }
+        bottomNavigation.currentItem = initial
+        binding.vpNavigation.currentItem = initial
+
 
         binding.navView.rvWallet.layoutManager = LinearLayoutManager(
             this,
@@ -368,12 +378,15 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     companion object {
         private const val ALERT_PARAM = "alert_param"
+        private const val LIMIT_ORDER_PARAM = "limit_order_param"
         fun newIntent(
             context: Context,
-            alert: NotificationAlert? = null
+            alert: NotificationAlert? = null,
+            limitOrderNotification: NotificationLimitOrder? = null
         ) =
             Intent(context, MainActivity::class.java).apply {
                 putExtra(ALERT_PARAM, alert)
+                putExtra(LIMIT_ORDER_PARAM, limitOrderNotification)
             }
     }
 }

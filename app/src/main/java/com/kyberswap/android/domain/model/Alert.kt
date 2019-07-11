@@ -112,5 +112,6 @@ data class Alert(
         const val BASE_ETH = "ETH"
         const val STATUS_ACTIVE = "active"
         const val STATUS_FILLED = "filled"
+        const val MAX_ALERT_NUMBER = 10
     }
 }
