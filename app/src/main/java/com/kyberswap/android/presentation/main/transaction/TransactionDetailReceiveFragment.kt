@@ -3,8 +3,6 @@ package com.kyberswap.android.presentation.main.transaction
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +16,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.openUrl
 import kotlinx.android.synthetic.main.fragment_transaction_status.*
 import javax.inject.Inject
 
@@ -91,12 +90,6 @@ class TransactionDetailReceiveFragment : BaseFragment() {
 
     }
 
-    private fun openUrl(url: String?) {
-        if (url.isNullOrEmpty()) return
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse(url)
-        startActivity(intent)
-    }
 
     override fun showProgress(showProgress: Boolean) {
         progressBar.visibility = if (showProgress) View.VISIBLE else View.GONE

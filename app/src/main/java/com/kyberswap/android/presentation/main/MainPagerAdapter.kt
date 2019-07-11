@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.kyberswap.android.domain.model.NotificationAlert
+import com.kyberswap.android.domain.model.NotificationLimitOrder
 import com.kyberswap.android.presentation.main.balance.BalanceFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
@@ -15,14 +16,15 @@ import com.kyberswap.android.presentation.main.swap.SwapFragment
 
 class MainPagerAdapter constructor(
     fm: FragmentManager,
-    alert: NotificationAlert?
+    alert: NotificationAlert?,
+    limitOrder: NotificationLimitOrder?
 ) : FragmentPagerAdapter(fm) {
     private val listFragment = mutableListOf<Fragment>()
 
     init {
         listFragment.add(BALANCE, BalanceFragment.newInstance())
         listFragment.add(SWAP, SwapFragment.newInstance(alert))
-        listFragment.add(LIMIT_ORDER, LimitOrderFragment.newInstance())
+        listFragment.add(LIMIT_ORDER, LimitOrderFragment.newInstance(limitOrder))
         listFragment.add(PROFILE, ProfileFragment.newInstance())
         listFragment.add(SETTING, SettingFragment.newInstance())
 

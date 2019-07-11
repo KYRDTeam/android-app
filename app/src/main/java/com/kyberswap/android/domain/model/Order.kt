@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import com.kyberswap.android.data.api.limitorder.OrderEntity
 import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.toLongSafe
 import kotlinx.android.parcel.Parcelize
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
@@ -42,6 +43,21 @@ data class Order(
         entity.txHash,
         entity.createdAt,
         entity.updatedAt
+    )
+
+    constructor(notification: NotificationLimitOrder) : this(
+        if (notification.orderId > 0) notification.orderId else notification.testOrderId.toLongSafe(),
+        notification.sender,
+        notification.srcToken,
+        notification.dstToken,
+        notification.srcAmount,
+        notification.minRate,
+        "",
+        notification.fee,
+        Status.FILLED.value,
+        notification.txHash,
+        notification.createdAt,
+        notification.updatedAt
     )
 
     val receivedSource: BigDecimal

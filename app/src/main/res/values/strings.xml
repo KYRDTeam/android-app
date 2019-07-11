@@ -430,5 +430,11 @@
     </string-array>
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="alert_trigger_content"><![CDATA[Your price alert for %s %s just got triggered]]></string>
+    <string name="maximum_alerts_title">You have maximum alerts</string>
+    <string name="maximum_alerts_content">You have maximum alerts so you could not add more new alert. Please delete some add more new alert.</string>
+    <string name="got_it">Got it</string>
+    <string name="your_order_is_filled">Your order is filled</string>
+    <string name="order_filled_close">Close</string>
+    <string name="order_filled_details">Details</string>
 
 </resources>
