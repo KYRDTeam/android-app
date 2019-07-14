@@ -40,8 +40,6 @@ class ProfileDetailFragment : BaseFragment() {
     @Inject
     lateinit var appExecutors: AppExecutors
 
-    private var user: UserInfo? = null
-
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -191,7 +189,13 @@ class ProfileDetailFragment : BaseFragment() {
 
 
         binding.tvLogout.setOnClickListener {
-            viewModel.logout()
+            dialogHelper.showConfirmation(
+                getString(R.string.log_out), getString(R.string.lout_out_confirmation)
+                , {
+                    viewModel.logout()
+        , {
+
+        )
 
 
         binding.imgCreateAlert.setOnClickListener {

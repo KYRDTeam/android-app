@@ -1,6 +1,7 @@
 package com.kyberswap.android.domain.repository
 
 import com.kyberswap.android.domain.model.Contact
+import com.kyberswap.android.domain.usecase.contact.DeleteContactUseCase
 import com.kyberswap.android.domain.usecase.contact.GetContactUseCase
 import com.kyberswap.android.domain.usecase.contact.SaveContactUseCase
 import io.reactivex.Completable
@@ -11,4 +12,6 @@ interface ContactRepository {
     fun getContacts(param: GetContactUseCase.Param): Flowable<List<Contact>>
 
     fun saveContact(param: SaveContactUseCase.Param): Completable
+
+    fun deleteContact(param: DeleteContactUseCase.Param): Completable
 }

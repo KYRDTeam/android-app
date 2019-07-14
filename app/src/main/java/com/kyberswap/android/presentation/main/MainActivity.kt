@@ -25,9 +25,12 @@ import com.kyberswap.android.domain.model.NotificationLimitOrder
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
+import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.landing.CreateWalletState
+import com.kyberswap.android.presentation.main.alert.AlertMethodFragment
+import com.kyberswap.android.presentation.main.alert.ManageAlertFragment
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
 import com.kyberswap.android.presentation.main.balance.WalletAdapter
@@ -36,6 +39,7 @@ import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.profile.kyc.PassportFragment
 import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
 import com.kyberswap.android.presentation.main.profile.kyc.SubmitFragment
+import com.kyberswap.android.presentation.main.setting.SettingFragment
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_drawer.*
@@ -65,6 +69,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     lateinit var dialogHelper: DialogHelper
 
     private var currentFragment: Fragment? = null
+
+    private var hasPendingTransaction: Boolean? = false
 
 
     private val mainViewModel: MainViewModel by lazy {
@@ -132,8 +138,19 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
             override fun onPageSelected(position: Int) {
                 currentFragment = adapter?.getRegisteredFragment(position)
+                showPendingTransaction()
                 if (currentFragment is LimitOrderFragment) {
                     (currentFragment as LimitOrderFragment).getLoginStatus()
+         else if (currentFragment is SettingFragment) {
+                    (currentFragment as SettingFragment).getLoginStatus()
+                    currentFragment?.childFragmentManager?.fragments?.forEach {
+                        if (it is ManageAlertFragment) {
+                            it.getLoginStatus()
+                            return
+                 else if (it is AlertMethodFragment) {
+                            it.getLoginStatus()
+                
+            
         
     
 
@@ -310,9 +327,20 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     }
 
     private fun setPendingTransaction(numOfPendingTransaction: Int) {
+        hasPendingTransaction = numOfPendingTransaction > 0
         tvPendingTransaction.visibility =
             if (numOfPendingTransaction > 0) View.VISIBLE else View.INVISIBLE
         tvPendingTransaction.text = numOfPendingTransaction.toString()
+        showPendingTransaction()
+
+    }
+
+    private fun showPendingTransaction() {
+        if (currentFragment is PendingTransactionNotification) {
+            (currentFragment as PendingTransactionNotification).showNotification(
+                hasPendingTransaction == true
+            )
+
     }
 
     fun getCurrentFragment(): Fragment? {

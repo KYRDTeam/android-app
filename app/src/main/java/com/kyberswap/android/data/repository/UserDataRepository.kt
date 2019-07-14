@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import androidx.exifinterface.media.ExifInterface
+import com.google.gson.Gson
 import com.kyberswap.android.data.api.home.UserApi
 import com.kyberswap.android.data.db.AlertDao
 import com.kyberswap.android.data.db.UserDao
@@ -11,11 +12,14 @@ import com.kyberswap.android.data.mapper.UserMapper
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.domain.repository.UserRepository
+import com.kyberswap.android.domain.usecase.alert.UpdateAlertMethodsUseCase
 import com.kyberswap.android.domain.usecase.profile.*
 import com.kyberswap.android.presentation.main.profile.kyc.KycInfoType
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
+import okhttp3.MediaType
+import okhttp3.RequestBody
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import javax.inject.Inject
@@ -75,7 +79,7 @@ class UserDataRepository @Inject constructor(
     }
 
     override fun getUserInfo(): Flowable<UserInfo> {
-        return userDao.all
+        return userDao.all.defaultIfEmpty(UserInfo())
     }
 
     override fun getUser(): Flowable<UserInfo> {
@@ -298,6 +302,20 @@ class UserDataRepository @Inject constructor(
 
     override fun updatePushNotification(param: UpdatePushTokenUseCase.Param): Single<ResponseStatus> {
         return userApi.updatePushToken(param.token).map {
+            userMapper.transform(it)
+
+    }
+
+    override fun getAlertMethods(): Single<AlertMethodsResponse> {
+        return userApi.getAlertMethod().map {
+            userMapper.transform(it)
+
+    }
+
+    override fun updateAlertMethods(param: UpdateAlertMethodsUseCase.Param): Single<ResponseStatus> {
+        val body =
+            RequestBody.create(MediaType.parse("text/plain"), Gson().toJson(param.alertMethods))
+        return userApi.updateAlertMethods(body).map {
             userMapper.transform(it)
 
     }

@@ -131,7 +131,7 @@ data class LocalLimitOrder(
         get() = fee.multiply(srcAmount.toBigDecimalOrDefaultZero())
 
     val feeAmountWithPrecision: BigInteger
-        get() = fee.multiply(BigDecimal.TEN.pow(4)).toBigInteger()
+        get() = fee.multiply(BigDecimal.TEN.pow(6)).toBigInteger()
 
     fun getExpectedDestAmount(amount: BigDecimal): BigDecimal {
         return amount.multiply(_rate.toBigDecimalOrDefaultZero())

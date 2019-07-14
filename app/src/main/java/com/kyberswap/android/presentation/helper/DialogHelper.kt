@@ -42,6 +42,42 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         dialog.setView(binding.root)
         dialog.show()
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    }
+
+    fun showConfirmation(
+        title: String,
+        content: String,
+        positiveListener: () -> Unit = {},
+        negativeListener: () -> Unit = {}
+    ) {
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogConfirmationWithNegativeOptionBinding>(
+                LayoutInflater.from(activity),
+                R.layout.dialog_confirmation_with_negative_option,
+                null,
+                false
+            )
+
+        binding.tvPositiveOption.setOnClickListener {
+            positiveListener.invoke()
+            dialog.dismiss()
+
+
+        binding.tvNegativeOption.setOnClickListener {
+            negativeListener.invoke()
+            dialog.dismiss()
+
+
+        binding.title = title
+        binding.content = content
+        binding.executePendingBindings()
+
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
     }
 

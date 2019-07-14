@@ -14,13 +14,25 @@
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/placeHolder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/screen_background">
+
+            <View
+                android:id="@+id/vNotification"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginTop="@dimen/notification_margin_top"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/circle_new_active_bg"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/imgMenu"

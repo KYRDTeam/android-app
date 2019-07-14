@@ -12,5 +12,7 @@ import kotlinx.android.parcel.Parcelize
 data class PassCode(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
-    val digest: String = ""
+    val digest: String = "",
+    val remainNum: Int = 0,
+    val time: Long = 0L
 ) : Parcelable

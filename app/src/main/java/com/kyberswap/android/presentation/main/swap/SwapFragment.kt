@@ -23,6 +23,7 @@ import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.DEFAULT_ACCEPT_RATE_PERCENTAGE
+import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.alert.GetAlertState
@@ -35,7 +36,7 @@ import net.cachapa.expandablelayout.ExpandableLayout
 import javax.inject.Inject
 
 
-class SwapFragment : BaseFragment() {
+class SwapFragment : BaseFragment(), PendingTransactionNotification {
 
     private lateinit var binding: FragmentSwapBinding
 
@@ -559,6 +560,10 @@ class SwapFragment : BaseFragment() {
     override fun onDestroyView() {
         viewModel.compositeDisposable.dispose()
         super.onDestroyView()
+    }
+
+    override fun showNotification(showNotification: Boolean) {
+        binding.vNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
     }
 
     companion object {

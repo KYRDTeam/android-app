@@ -134,6 +134,12 @@ class ProfileFragment : BaseFragment() {
                                     state.socialInfo
                                 )
                      else {
+                                showAlertWithoutIcon(
+                                    message = String.format(
+                                        getString(R.string.wellcome_back),
+                                        state.login.userInfo.name
+                                    )
+                                )
                                 navigateToProfileDetail()
                                 if (fromLimitOrder) {
                                     moveToLimitOrder()
@@ -186,10 +192,6 @@ class ProfileFragment : BaseFragment() {
         
     
 )
-
-        binding.imgBack.setOnClickListener {
-            activity?.onBackPressed()
-
 
         binding.imgFacebook.setOnClickListener {
             stopCounter()

@@ -1,5 +1,6 @@
 package com.kyberswap.android.domain.repository
 
+import com.kyberswap.android.domain.model.PassCode
 import com.kyberswap.android.domain.model.VerifyStatus
 import com.kyberswap.android.domain.usecase.setting.SavePinUseCase
 import com.kyberswap.android.domain.usecase.setting.VerifyPinUseCase
@@ -11,5 +12,5 @@ interface SettingRepository {
 
     fun verifyPin(param: VerifyPinUseCase.Param): Single<VerifyStatus>
 
-    fun getPin(): Single<String?>
+    fun getPin(): Single<PassCode>
 }

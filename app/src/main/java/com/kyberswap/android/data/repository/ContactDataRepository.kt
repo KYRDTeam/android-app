@@ -3,6 +3,7 @@ package com.kyberswap.android.data.repository
 import com.kyberswap.android.data.db.ContactDao
 import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.repository.ContactRepository
+import com.kyberswap.android.domain.usecase.contact.DeleteContactUseCase
 import com.kyberswap.android.domain.usecase.contact.GetContactUseCase
 import com.kyberswap.android.domain.usecase.contact.SaveContactUseCase
 import com.kyberswap.android.presentation.common.DEFAULT_NAME
@@ -15,6 +16,7 @@ class ContactDataRepository @Inject constructor(
     private val contactDao: ContactDao
 
 ) : ContactRepository {
+
     override fun saveContact(param: SaveContactUseCase.Param): Completable {
         return Completable.fromCallable {
             val name = if (param.name.isEmpty()) {
@@ -32,6 +34,10 @@ class ContactDataRepository @Inject constructor(
 
     override fun getContacts(param: GetContactUseCase.Param): Flowable<List<Contact>> {
         return contactDao.loadContactByWalletAddress(param.walletAddress)
+    }
+
+    override fun deleteContact(param: DeleteContactUseCase.Param): Completable {
+        return contactDao.deleteContactCompletable(param.contact)
     }
 
 }

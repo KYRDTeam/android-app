@@ -83,7 +83,7 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
 
         try {
             AeadConfig.register()
-            aead = AeadFactory.getPrimitive(getOrGenerateNewKeysetHandle())
+            aead = AeadFactory.getPrimitive(getOrGenerateNewKeySetHandle())
  catch (e: GeneralSecurityException) {
             throw RuntimeException(e)
  catch (e: IOException) {
@@ -121,7 +121,7 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
             counter = 0
 
         disposable.add(
-            Observable.interval(counter, 10, TimeUnit.SECONDS)
+            Observable.interval(counter, 1, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
@@ -134,7 +134,7 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
     }
 
     @Throws(IOException::class, GeneralSecurityException::class)
-    private fun getOrGenerateNewKeysetHandle(): KeysetHandle {
+    fun getOrGenerateNewKeySetHandle(): KeysetHandle {
         return AndroidKeysetManager.Builder()
             .withSharedPref(applicationContext, TINK_KEYSET_NAME, PREF_FILE_NAME)
             .withKeyTemplate(AeadKeyTemplates.AES256_GCM)
