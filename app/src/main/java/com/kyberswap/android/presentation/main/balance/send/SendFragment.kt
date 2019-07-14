@@ -3,6 +3,7 @@ package com.kyberswap.android.presentation.main.balance.send
 import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,6 +52,10 @@ class SendFragment : BaseFragment() {
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(SendViewModel::class.java)
+    }
+
+    private val handler by lazy {
+        Handler()
     }
 
     @Inject
@@ -121,10 +126,7 @@ class SendFragment : BaseFragment() {
         }
 
         binding.tvMore.setOnClickListener {
-            navigator.navigateToContactScreen(
-                (activity as MainActivity).getCurrentFragment(),
-                wallet
-            )
+            navigator.navigateToContactScreen(currentFragment)
         }
 
         binding.expandableLayout.setOnExpansionUpdateListener { _, state ->
@@ -154,11 +156,18 @@ class SendFragment : BaseFragment() {
         )
 
         val contactAdapter =
-            ContactAdapter(appExecutors) { contact ->
+            ContactAdapter(appExecutors, handler, { contact ->
                 val send = binding.send?.copy(contact = contact)
                 binding.send = send
                 binding.edtAddress.setText(contact.address)
-            }
+            },
+                {
+
+                }, {
+
+                }, {
+
+                })
         binding.rvContact.adapter = contactAdapter
 
         viewModel.getContact(wallet!!.address)
@@ -283,6 +292,7 @@ class SendFragment : BaseFragment() {
     }
 
     override fun onDestroyView() {
+        handler.removeCallbacksAndMessages(null)
         viewModel.compositeDisposable.dispose()
         super.onDestroyView()
     }

@@ -1,5 +1,6 @@
 package com.kyberswap.android.presentation.helper
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -7,10 +8,7 @@ import com.kyberswap.android.R
 import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.presentation.landing.LandingActivity
 import com.kyberswap.android.presentation.main.MainActivity
-import com.kyberswap.android.presentation.main.alert.LeaderBoardFragment
-import com.kyberswap.android.presentation.main.alert.ManageAlertFragment
-import com.kyberswap.android.presentation.main.alert.PriceAlertFragment
-import com.kyberswap.android.presentation.main.alert.PriceAlertTokenSearchFragment
+import com.kyberswap.android.presentation.main.alert.*
 import com.kyberswap.android.presentation.main.balance.address.BalanceAddressFragment
 import com.kyberswap.android.presentation.main.balance.chart.ChartFragment
 import com.kyberswap.android.presentation.main.balance.send.SendConfirmActivity
@@ -21,6 +19,9 @@ import com.kyberswap.android.presentation.main.profile.*
 import com.kyberswap.android.presentation.main.profile.kyc.*
 import com.kyberswap.android.presentation.main.setting.AddContactFragment
 import com.kyberswap.android.presentation.main.setting.ContactFragment
+import com.kyberswap.android.presentation.main.setting.wallet.BackupWalletInfoFragment
+import com.kyberswap.android.presentation.main.setting.wallet.EditWalletFragment
+import com.kyberswap.android.presentation.main.setting.wallet.ManageWalletFragment
 import com.kyberswap.android.presentation.main.swap.PromoPaymentConfirmActivity
 import com.kyberswap.android.presentation.main.swap.PromoSwapConfirmActivity
 import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
@@ -48,14 +49,23 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         activity.startActivity(VerifyBackupWordActivity.newIntent(activity, words, wallet))
     }
 
-    fun navigateToBackupWalletPage(words: List<Word>, wallet: Wallet) {
-        activity.startActivity(BackupWalletActivity.newIntent(activity, words, wallet))
-        activity.finishAffinity()
+    fun navigateToBackupWalletPage(
+        words: List<Word>,
+        wallet: Wallet,
+        fromSetting: Boolean = false
+    ) {
+        activity.startActivity(BackupWalletActivity.newIntent(activity, words, wallet, fromSetting))
+        if (!fromSetting) {
+            activity.finishAffinity()
+        }
     }
 
-    fun navigateToHome(hasUserInfo: Boolean? = false) {
-        activity.startActivity(MainActivity.newIntent(activity, hasUserInfo))
-        activity.finishAffinity()
+    fun navigateToHome() {
+        activity.startActivity(
+            MainActivity.newIntent(activity)
+            .apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            })
     }
 
     @JvmOverloads
@@ -159,22 +169,22 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     fun navigateToAddContactScreen(
         currentFragment: Fragment?,
-        wallet: Wallet?,
-        address: String = ""
+        wallet: Wallet? = null,
+        address: String = "",
+        contact: Contact? = null
     ) {
         navigateByChildFragmentManager(
             currentFragment,
-            AddContactFragment.newInstance(wallet, address)
+            AddContactFragment.newInstance(wallet, address, contact)
         )
     }
 
     fun navigateToContactScreen(
-        currentFragment: Fragment?,
-        wallet: Wallet?
+        currentFragment: Fragment?
     ) {
         navigateByChildFragmentManager(
             currentFragment,
-            ContactFragment.newInstance(wallet)
+            ContactFragment.newInstance()
         )
     }
 
@@ -395,6 +405,13 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         )
     }
 
+    fun navigateToAlertMethod(currentFragment: Fragment) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            AlertMethodFragment.newInstance()
+        )
+    }
+
     fun navigateToKYC(currentFragment: Fragment, step: Int?) {
         navigateByChildFragmentManager(
             currentFragment,
@@ -460,6 +477,27 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
             fragmentManager,
             container,
             KyberCodeFragment.newInstance(true)
+        )
+    }
+
+    fun navigateToManageWalletFragment(currentFragment: Fragment) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            ManageWalletFragment.newInstance()
+        )
+    }
+
+    fun navigateToEditWallet(currentFragment: Fragment, wallet: Wallet) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            EditWalletFragment.newInstance(wallet)
+        )
+    }
+
+    fun navigateToBackupWalletInfo(currentFragment: Fragment?, value: String) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            BackupWalletInfoFragment.newInstance(value)
         )
     }
 

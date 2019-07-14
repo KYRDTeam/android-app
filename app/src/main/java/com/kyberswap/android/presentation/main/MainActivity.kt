@@ -20,12 +20,17 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityMainBinding
+import com.kyberswap.android.domain.model.NotificationAlert
+import com.kyberswap.android.domain.model.NotificationLimitOrder
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
+import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.landing.CreateWalletState
+import com.kyberswap.android.presentation.main.alert.AlertMethodFragment
+import com.kyberswap.android.presentation.main.alert.ManageAlertFragment
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
 import com.kyberswap.android.presentation.main.balance.WalletAdapter
@@ -34,6 +39,7 @@ import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.profile.kyc.PassportFragment
 import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
 import com.kyberswap.android.presentation.main.profile.kyc.SubmitFragment
+import com.kyberswap.android.presentation.main.setting.SettingFragment
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_drawer.*
@@ -55,12 +61,17 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     private var wallet: Wallet? = null
 
-    private var hasUserInfo: Boolean = false
+    private var alert: NotificationAlert? = null
+
+    private var limitOrder: NotificationLimitOrder? = null
 
     @Inject
     lateinit var dialogHelper: DialogHelper
 
     private var currentFragment: Fragment? = null
+
+    private var hasPendingTransaction: Boolean? = false
+
 
     private val mainViewModel: MainViewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
@@ -76,14 +87,16 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     val pendingTransactions = mutableListOf<Transaction>()
 
-    var adapter: MainPagerAdapter? = null
-
+    private var adapter: MainPagerAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WalletManager.storage = this
         WalletManager.scanWallets()
-        hasUserInfo = intent.getBooleanExtra(USER_PARAM, false)
+
+        alert = intent.getParcelableExtra(ALERT_PARAM)
+        limitOrder = intent.getParcelableExtra(LIMIT_ORDER_PARAM)
+
         binding.viewModel = mainViewModel
         val tabColors =
             applicationContext.resources.getIntArray(R.array.tab_colors)
@@ -102,9 +115,10 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             return@setOnTabSelectedListener true
         }
 
-        val adapter = MainPagerAdapter(
+        adapter = MainPagerAdapter(
             supportFragmentManager,
-            hasUserInfo
+            alert,
+            limitOrder
         )
 
         binding.vpNavigation.adapter = adapter
@@ -123,26 +137,45 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             }
 
             override fun onPageSelected(position: Int) {
-                currentFragment = adapter.getRegisteredFragment(position)
+                currentFragment = adapter?.getRegisteredFragment(position)
+                showPendingTransaction()
                 if (currentFragment is LimitOrderFragment) {
                     (currentFragment as LimitOrderFragment).getLoginStatus()
+                } else if (currentFragment is SettingFragment) {
+                    (currentFragment as SettingFragment).getLoginStatus()
+                    currentFragment?.childFragmentManager?.fragments?.forEach {
+                        if (it is ManageAlertFragment) {
+                            it.getLoginStatus()
+                            return
+                        } else if (it is AlertMethodFragment) {
+                            it.getLoginStatus()
+                        }
+                    }
                 }
             }
         }
 
         binding.vpNavigation.addOnPageChangeListener(listener)
 
-        binding.vpNavigation.post {
-            listener.onPageSelected(MainPagerAdapter.SWAP)
+        val initial = if (limitOrder != null) {
+            MainPagerAdapter.LIMIT_ORDER
+        } else {
+            MainPagerAdapter.SWAP
         }
-        bottomNavigation.currentItem = MainPagerAdapter.SWAP
-        binding.vpNavigation.currentItem = MainPagerAdapter.SWAP
+
+        binding.vpNavigation.post {
+            listener.onPageSelected(initial)
+        }
+        bottomNavigation.currentItem = initial
+        binding.vpNavigation.currentItem = initial
+
 
         binding.navView.rvWallet.layoutManager = LinearLayoutManager(
             this,
             RecyclerView.VERTICAL,
             false
         )
+
         val walletAdapter =
             WalletAdapter(appExecutors) {
 
@@ -172,6 +205,35 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                     }
                     is GetAllWalletState.ShowError -> {
                         navigator.navigateToLandingPage()
+                    }
+                }
+            }
+        })
+
+        mainViewModel.getPendingTransactionStateCallback.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetPendingTransactionState.Success -> {
+                        val txList = state.transactions.filter {
+                            it.blockNumber.isNotEmpty()
+                        }
+
+                        txList.forEach {
+                            showAlert(
+                                String.format(
+                                    getString(R.string.transaction_mined),
+                                    it.hash
+                                )
+                            )
+                        }
+
+                        val pending = state.transactions.filter { it.blockNumber.isEmpty() }
+                        pendingTransactions.clear()
+                        pendingTransactions.addAll(pending)
+                        setPendingTransaction(pending.size)
+                    }
+                    is GetPendingTransactionState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
                     }
                 }
             }
@@ -208,31 +270,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             )
         }
 
-
-        mainViewModel.getPendingTransactionStateCallback.observe(this, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is GetPendingTransactionState.Success -> {
-                        val txList = state.transactions.filter {
-                            it.blockNumber.isNotEmpty()
-                        }
-
-                        txList.forEach {
-                            showAlert(String.format(getString(R.string.transaction_mined), it.hash))
-                        }
-
-                        val pending = state.transactions.filter { it.blockNumber.isEmpty() }
-                        pendingTransactions.clear()
-                        pendingTransactions.addAll(pending)
-                        setPendingTransaction(pending.size)
-                    }
-                    is GetPendingTransactionState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
-                    }
-                }
-            }
-        })
-
         imgAdd.setOnClickListener {
             showDrawer(false)
             handler.postDelayed(
@@ -259,6 +296,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                 when (state) {
                     is CreateWalletState.Success -> {
                         showAlert(getString(R.string.create_wallet_success)) {
+                            navigator.navigateToBackupWalletPage(state.words, state.wallet, true)
 
                         }
 
@@ -289,14 +327,28 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     }
 
     private fun setPendingTransaction(numOfPendingTransaction: Int) {
+        hasPendingTransaction = numOfPendingTransaction > 0
         tvPendingTransaction.visibility =
             if (numOfPendingTransaction > 0) View.VISIBLE else View.INVISIBLE
         tvPendingTransaction.text = numOfPendingTransaction.toString()
+        showPendingTransaction()
+
+    }
+
+    private fun showPendingTransaction() {
+        if (currentFragment is PendingTransactionNotification) {
+            (currentFragment as PendingTransactionNotification).showNotification(
+                hasPendingTransaction == true
+            )
+        }
     }
 
     fun getCurrentFragment(): Fragment? {
         return currentFragment
     }
+
+    val profileFragment: Fragment?
+        get() = adapter?.getRegisteredFragment(MainPagerAdapter.PROFILE)
 
     fun showDrawer(show: Boolean) {
         if (show) {
@@ -353,10 +405,16 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     }
 
     companion object {
-        private const val USER_PARAM = "user_param"
-        fun newIntent(context: Context, hasUserInfo: Boolean? = false) =
+        private const val ALERT_PARAM = "alert_param"
+        private const val LIMIT_ORDER_PARAM = "limit_order_param"
+        fun newIntent(
+            context: Context,
+            alert: NotificationAlert? = null,
+            limitOrderNotification: NotificationLimitOrder? = null
+        ) =
             Intent(context, MainActivity::class.java).apply {
-                putExtra(USER_PARAM, hasUserInfo)
+                putExtra(ALERT_PARAM, alert)
+                putExtra(LIMIT_ORDER_PARAM, limitOrderNotification)
             }
     }
 }

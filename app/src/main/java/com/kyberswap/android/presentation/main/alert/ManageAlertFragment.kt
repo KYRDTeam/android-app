@@ -17,6 +17,7 @@ import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.profile.alert.DeleteAlertsState
 import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
 import com.kyberswap.android.util.di.ViewModelFactory
@@ -59,11 +60,29 @@ class ManageAlertFragment : BaseFragment() {
         return binding.root
     }
 
+
+    fun getLoginStatus() {
+        viewModel.getLoginStatus()
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
+        viewModel.getLoginStatus()
+        viewModel.getLoginStatusCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is UserInfoState.Success -> {
+                        if (!(state.userInfo != null && state.userInfo.uid > 0)) {
+                            activity?.onBackPressed()
+                        }
+                    }
+                    is UserInfoState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                    }
+                }
+            }
+        })
         viewModel.getAlert()
-
         binding.rvAlert.layoutManager = LinearLayoutManager(
             activity,
             RecyclerView.VERTICAL,
@@ -157,7 +176,7 @@ class ManageAlertFragment : BaseFragment() {
         }
 
         binding.imgSetting.setOnClickListener {
-            showAlert(getString(R.string.to_do))
+            navigator.navigateToAlertMethod(currentFragment)
         }
 
 

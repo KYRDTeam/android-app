@@ -2,6 +2,7 @@ package com.kyberswap.android.data.db
 
 import androidx.room.*
 import com.kyberswap.android.domain.model.Contact
+import io.reactivex.Completable
 import io.reactivex.Flowable
 
 /**
@@ -15,6 +16,9 @@ interface ContactDao {
 
     @Update
     fun updateContact(contact: Contact)
+
+    @Delete
+    fun deleteContactCompletable(contact: Contact): Completable
 
     @Query("SELECT * from contacts where address = :address")
     fun loadContactByAddress(address: String): Flowable<Contact>

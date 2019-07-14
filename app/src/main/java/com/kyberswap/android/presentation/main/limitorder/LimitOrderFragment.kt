@@ -18,9 +18,11 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentLimitOrderBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.LocalLimitOrder
+import com.kyberswap.android.domain.model.NotificationLimitOrder
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
@@ -43,7 +45,7 @@ import javax.inject.Inject
 import kotlin.math.absoluteValue
 
 
-class LimitOrderFragment : BaseFragment() {
+class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
 
     private lateinit var binding: FragmentLimitOrderBinding
 
@@ -74,6 +76,13 @@ class LimitOrderFragment : BaseFragment() {
 
     private var userInfo: UserInfo? = null
 
+    private var notification: NotificationLimitOrder? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        notification = arguments?.getParcelable(NOTIFICATION_PARAM)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -85,6 +94,12 @@ class LimitOrderFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        notification?.let {
+            dialogHelper.showOrderFillDialog(it) { url ->
+                openUrl(getString(R.string.transaction_etherscan_endpoint_url) + url)
+            }
+        }
         viewModel.getSelectedWallet()
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -672,7 +687,16 @@ class LimitOrderFragment : BaseFragment() {
         )
     }
 
+    override fun showNotification(showNotification: Boolean) {
+        binding.vNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
+    }
+
     companion object {
-        fun newInstance() = LimitOrderFragment()
+        private const val NOTIFICATION_PARAM = "notification_param"
+        fun newInstance(notification: NotificationLimitOrder? = null) = LimitOrderFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable(NOTIFICATION_PARAM, notification)
+            }
+        }
     }
 }

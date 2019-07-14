@@ -21,3 +21,7 @@ fun List<String>.display(): String {
     }
     return builder.toString()
 }
+
+inline fun <reified T> toArray(list: List<*>): Array<T> {
+    return (list as List<T>).toTypedArray()
+}

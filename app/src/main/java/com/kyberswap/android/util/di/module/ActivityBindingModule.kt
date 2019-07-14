@@ -9,6 +9,7 @@ import com.kyberswap.android.presentation.main.profile.TermConditionActivity
 import com.kyberswap.android.presentation.main.swap.PromoPaymentConfirmActivity
 import com.kyberswap.android.presentation.main.swap.PromoSwapConfirmActivity
 import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
+import com.kyberswap.android.presentation.setting.PassCodeLockActivity
 import com.kyberswap.android.presentation.splash.SplashActivity
 import com.kyberswap.android.presentation.wallet.BackupWalletActivity
 import com.kyberswap.android.presentation.wallet.ImportWalletActivity
@@ -115,4 +116,12 @@ interface ActivityBindingModule {
         ]
     )
     fun contributePromoSwapConfirmActivity(): PromoSwapConfirmActivity
+
+    @ActivityScoped
+    @ContributesAndroidInjector(
+        modules = [
+            PassCodeLockActivityModule::class
+        ]
+    )
+    fun contributePassCodeLockActivity(): PassCodeLockActivity
 }

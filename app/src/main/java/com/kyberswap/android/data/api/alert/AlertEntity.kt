@@ -37,5 +37,7 @@ data class AlertEntity(
     @SerializedName("telegram_account")
     val telegramAccount: String? = "",
     @SerializedName("reward")
-    val reward: String? = ""
+    val reward: String? = "",
+    @SerializedName("message")
+    var message: String? = ""
 )

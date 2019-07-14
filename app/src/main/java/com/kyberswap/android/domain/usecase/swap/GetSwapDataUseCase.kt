@@ -2,6 +2,7 @@ package com.kyberswap.android.domain.usecase.swap
 
 import androidx.annotation.VisibleForTesting
 import com.kyberswap.android.domain.SchedulerProvider
+import com.kyberswap.android.domain.model.NotificationAlert
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.SwapRepository
@@ -18,5 +19,5 @@ class GetSwapDataUseCase @Inject constructor(
         return swapRepository.getSwapData(param)
     }
 
-    class Param(val wallet: Wallet)
+    class Param(val wallet: Wallet, val alert: NotificationAlert? = null)
 }

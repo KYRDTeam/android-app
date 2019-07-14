@@ -123,4 +123,13 @@ class SendViewModel @Inject constructor(
             EstimateTransferGasUseCase.Param(wallet, send)
         )
     }
+
+    override fun onCleared() {
+        getSendTokenUseCase.dispose()
+        getGasPriceUseCase.dispose()
+        saveSendUseCase.dispose()
+        getContactUseCase.dispose()
+        estimateTransferGasUseCase.dispose()
+        super.onCleared()
+    }
 }

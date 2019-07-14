@@ -23,7 +23,6 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentProfileBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.SocialInfo
-import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
@@ -97,6 +96,8 @@ class ProfileFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        viewModel.getLoginStatus()
+
         LoginManager.getInstance().registerCallback(callbackManager,
             object : FacebookCallback<LoginResult> {
                 override fun onSuccess(result: LoginResult?) {
@@ -133,7 +134,13 @@ class ProfileFragment : BaseFragment() {
                                     state.socialInfo
                                 )
                             } else {
-                                navigateToProfileDetail(state.login.userInfo)
+                                showAlertWithoutIcon(
+                                    message = String.format(
+                                        getString(R.string.wellcome_back),
+                                        state.login.userInfo.name
+                                    )
+                                )
+                                navigateToProfileDetail()
                                 if (fromLimitOrder) {
                                     moveToLimitOrder()
                                 }
@@ -169,16 +176,31 @@ class ProfileFragment : BaseFragment() {
             }
         })
 
-        binding.imgBack.setOnClickListener {
-            activity?.onBackPressed()
-        }
+        viewModel.getLoginStatusCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is UserInfoState.Success -> {
+                        if (state.userInfo != null && state.userInfo.uid > 0) {
+                            navigator.navigateToProfileDetail(
+                                profileFragment
+                            )
+                        }
+                    }
+                    is UserInfoState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                    }
+                }
+            }
+        })
 
         binding.imgFacebook.setOnClickListener {
+            stopCounter()
             LoginManager.getInstance()
                 .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"))
         }
 
         binding.imgGooglePlus.setOnClickListener {
+            stopCounter()
             val googleSignInClient = GoogleSignIn.getClient(this.activity!!, gso)
             val account = GoogleSignIn.getLastSignedInAccount(this.activity)
             if (account == null) {
@@ -193,6 +215,7 @@ class ProfileFragment : BaseFragment() {
         }
 
         binding.imgTwitter.setOnClickListener {
+            stopCounter()
 
             val twitterSession = TwitterCore.getInstance().sessionManager.activeSession
             if (twitterSession != null) {
@@ -231,7 +254,7 @@ class ProfileFragment : BaseFragment() {
         }
     }
 
-    private fun navigateToProfileDetail(userInfo: UserInfo?) {
+    private fun navigateToProfileDetail() {
         navigator.navigateToProfileDetail(
             currentFragment
         )
@@ -301,6 +324,7 @@ class ProfileFragment : BaseFragment() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        startCounter()
         callbackManager.onActivityResult(requestCode, resultCode, data)
         twitterAuthClient.onActivityResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)

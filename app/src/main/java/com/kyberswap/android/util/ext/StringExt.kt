@@ -22,6 +22,15 @@ fun String.hexWithPrefix(): String {
     }
 }
 
+fun String.toLongSafe(): Long {
+    return try {
+        toLong()
+    } catch (ex: NumberFormatException) {
+        ex.printStackTrace()
+        0L
+    }
+}
+
 
 fun String?.percentage(other: String?): BigDecimal {
     if (other.isNullOrEmpty() || this.isNullOrEmpty()) return BigDecimal.ZERO

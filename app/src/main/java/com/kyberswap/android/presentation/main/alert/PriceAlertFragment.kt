@@ -19,6 +19,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.percentage
@@ -44,6 +45,8 @@ class PriceAlertFragment : BaseFragment() {
     private var wallet: Wallet? = null
 
     private var alert: Alert? = null
+
+    private var currentAlertNumber: Int = 0
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -113,6 +116,22 @@ class PriceAlertFragment : BaseFragment() {
             }
         })
 
+        viewModel.getAllAlert()
+        viewModel.getAllAlertsCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetAlertsState.Success -> {
+                        if (currentAlertNumber != state.alerts.size) {
+                            currentAlertNumber = state.alerts.size
+                        }
+                    }
+                    is GetAlertsState.ShowError -> {
+
+                    }
+                }
+            }
+        })
+
         viewModel.createOrUpdateAlertCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == CreateOrUpdateAlertState.Loading)
@@ -149,13 +168,19 @@ class PriceAlertFragment : BaseFragment() {
 
         binding.imgDone.setOnClickListener {
             val alert = binding.alert
-            viewModel.createOrUpdateAlert(
-                alert?.copy(
-                    base = unit,
-                    alertPrice = binding.edtRate.toBigDecimalOrDefaultZero(),
-                    isAbove = binding.ratePercentage.toBigDecimalOrDefaultZero() > BigDecimal.ZERO
+            if (currentAlertNumber > Alert.MAX_ALERT_NUMBER) {
+                dialogHelper.showExceedNumberAlertDialog {
+
+                }
+            } else {
+                viewModel.createOrUpdateAlert(
+                    alert?.copy(
+                        base = unit,
+                        alertPrice = binding.edtRate.toBigDecimalOrDefaultZero(),
+                        isAbove = binding.ratePercentage.toBigDecimalOrDefaultZero() > BigDecimal.ZERO
+                    )
                 )
-            )
+            }
         }
 
         binding.vChangeToken.setOnClickListener {

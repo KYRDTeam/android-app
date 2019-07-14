@@ -2,17 +2,21 @@ package com.kyberswap.android.presentation.main.swap
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.kyberswap.android.domain.model.NotificationAlert
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.usecase.alert.GetAlertUseCase
 import com.kyberswap.android.domain.usecase.swap.*
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
+import com.kyberswap.android.presentation.main.alert.GetAlertState
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.toLongSafe
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -23,12 +27,13 @@ import javax.inject.Inject
 class SwapViewModel @Inject constructor(
     private val getWalletByAddressUseCase: GetWalletByAddressUseCase,
     private val getExpectedRateUseCase: GetExpectedRateUseCase,
-    private val getSwapData: GetSwapDataUseCase,
+    private val getSwapDataUseCase: GetSwapDataUseCase,
     private val getMarketRate: GetMarketRateUseCase,
     private val saveSwapUseCase: SaveSwapUseCase,
     private val getGasPriceUseCase: GetGasPriceUseCase,
     private val getCapUseCase: GetCapUseCase,
     private val estimateGasUseCase: EstimateGasUseCase,
+    private val getAlertUseCase: GetAlertUseCase,
     getWalletUseCase: GetSelectedWalletUseCase
 ) : SelectedWalletViewModel(getWalletUseCase) {
 
@@ -49,6 +54,10 @@ class SwapViewModel @Inject constructor(
     private val _getCapCallback = MutableLiveData<Event<GetCapState>>()
     val getCapCallback: LiveData<Event<GetCapState>>
         get() = _getCapCallback
+
+    private val _getAlertState = MutableLiveData<Event<GetAlertState>>()
+    val getAlertState: LiveData<Event<GetAlertState>>
+        get() = _getAlertState
 
     val compositeDisposable by lazy {
         CompositeDisposable()
@@ -103,9 +112,9 @@ class SwapViewModel @Inject constructor(
         )
     }
 
-    fun getSwapData(wallet: Wallet) {
-        getSwapData.dispose()
-        getSwapData.execute(
+    fun getSwapData(wallet: Wallet, alert: NotificationAlert? = null) {
+        getSwapDataUseCase.dispose()
+        getSwapDataUseCase.execute(
             Consumer {
                 it.gasLimit = calculateGasLimit(it).toString()
                 _getSwapCallback.value = Event(GetSwapState.Success(it))
@@ -114,7 +123,7 @@ class SwapViewModel @Inject constructor(
                 it.printStackTrace()
                 _getSwapCallback.value = Event(GetSwapState.ShowError(it.localizedMessage))
             },
-            GetSwapDataUseCase.Param(wallet)
+            GetSwapDataUseCase.Param(wallet, alert)
         )
     }
 
@@ -215,12 +224,6 @@ class SwapViewModel @Inject constructor(
         )
     }
 
-    override fun onCleared() {
-        getWalletByAddressUseCase.dispose()
-        compositeDisposable.dispose()
-        super.onCleared()
-    }
-
     fun saveSwap(swap: Swap, fromContinue: Boolean = false) {
         saveSwapUseCase.execute(
             Action {
@@ -234,5 +237,35 @@ class SwapViewModel @Inject constructor(
             },
             SaveSwapUseCase.Param(swap)
         )
+    }
+
+    fun getAlert(alertNotification: NotificationAlert) {
+        getAlertUseCase.execute(
+            Consumer {
+                _getAlertState.value = Event(GetAlertState.Success(it))
+            },
+            Consumer {
+                it.printStackTrace()
+                _getAlertState.value = Event(GetAlertState.ShowError(it.localizedMessage))
+            },
+            GetAlertUseCase.Param(
+                if (alertNotification.alertId > 0) alertNotification.alertId else alertNotification.testAlertId.toLongSafe()
+
+            )
+        )
+    }
+
+    override fun onCleared() {
+        getWalletByAddressUseCase.dispose()
+        getExpectedRateUseCase.dispose()
+        getSwapDataUseCase.dispose()
+        getMarketRate.dispose()
+        saveSwapUseCase.dispose()
+        getGasPriceUseCase.dispose()
+        estimateGasUseCase.dispose()
+        getCapUseCase.dispose()
+        getAlertUseCase.dispose()
+        compositeDisposable.dispose()
+        super.onCleared()
     }
 }

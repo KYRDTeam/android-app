@@ -177,4 +177,14 @@ object DataModule {
             userApi,
             alertMapper
         )
+
+    @Singleton
+    @Provides
+    @JvmStatic
+    fun providePassCodeRepository(
+        passCodeDao: PassCodeDao
+    ): SettingRepository =
+        SettingDataRepository(
+            passCodeDao
+        )
 }

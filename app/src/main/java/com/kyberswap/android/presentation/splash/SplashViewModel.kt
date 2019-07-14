@@ -23,7 +23,7 @@ class SplashViewModel @Inject constructor(
         preloadUseCase.execute(
             Consumer {
                 _getWalletStateCallback.value =
-                    Event(GetUserWalletState.Success(it.second, it.first))
+                    Event(GetUserWalletState.Success(it))
                 preloadUseCase.dispose()
 
 

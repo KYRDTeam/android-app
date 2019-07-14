@@ -2,6 +2,7 @@ package com.kyberswap.android.presentation.main.setting
 
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,11 +16,14 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentContactBinding
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.balance.send.ContactAdapter
+import com.kyberswap.android.presentation.main.swap.DeleteContactState
 import com.kyberswap.android.presentation.main.swap.GetContactState
 import com.kyberswap.android.presentation.main.swap.SaveContactState
+import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
 
@@ -31,6 +35,8 @@ class ContactFragment : BaseFragment() {
     @Inject
     lateinit var navigator: Navigator
 
+    @Inject
+    lateinit var dialogHelper: DialogHelper
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -45,10 +51,15 @@ class ContactFragment : BaseFragment() {
         ViewModelProviders.of(this, viewModelFactory).get(ContactViewModel::class.java)
     }
 
+    private val handler by lazy {
+        Handler()
+    }
+
+    private var fromSetting: Boolean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        wallet = arguments!!.getParcelable(WALLET_PARAM)
+        fromSetting = arguments?.getBoolean(FROM_SETTING_PARAM, false)
     }
 
     override fun onCreateView(
@@ -61,6 +72,25 @@ class ContactFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        viewModel.getSelectedWallet()
+        viewModel.getSelectedWalletCallback.observe(parentFragment!!.viewLifecycleOwner, Observer {
+            it?.peekContent()?.let { state ->
+                when (state) {
+                    is GetWalletState.Success -> {
+                        if (this.wallet?.address != state.wallet.address) {
+                            this.wallet = state.wallet
+                            wallet?.let {
+                                viewModel.getContact(it.address)
+                            }
+                        }
+                    }
+                    is GetWalletState.ShowError -> {
+
+                    }
+                }
+            }
+        })
 
         binding.imgAddContact.setOnClickListener {
             navigator.navigateToAddContactScreen(
@@ -81,9 +111,38 @@ class ContactFragment : BaseFragment() {
         )
 
         val contactAdapter =
-            ContactAdapter(appExecutors) { contact ->
-                viewModel.saveSendContact(wallet!!.address, contact)
-            }
+            ContactAdapter(appExecutors, handler, { contact ->
+                if (fromSetting == true) {
+                    navigator.navigateToAddContactScreen(currentFragment, contact = contact)
+                } else {
+                    wallet?.let {
+                        viewModel.saveSendContact(it.address, contact)
+                    }
+                }
+            },
+                { contact ->
+                    wallet?.let {
+                        viewModel.saveSendContact(it.address, contact)
+                    }
+                },
+                { contact ->
+                    navigator.navigateToAddContactScreen(
+                        currentFragment,
+                        wallet,
+                        contact.address,
+                        contact
+                    )
+                },
+                { contact ->
+
+                    dialogHelper.showConfirmation(
+                        getString(R.string.alert_delete),
+                        getString(R.string.contact_confirm_delete),
+                        {
+                            viewModel.deleteContact(contact)
+                        })
+
+                })
         binding.rvContact.adapter = contactAdapter
 
         viewModel.saveContactCallback.observe(viewLifecycleOwner, Observer {
@@ -91,7 +150,9 @@ class ContactFragment : BaseFragment() {
                 showProgress(state == SaveContactState.Loading)
                 when (state) {
                     is SaveContactState.Success -> {
-                        activity!!.onBackPressed()
+                        navigator.navigateToSendScreen(
+                            currentFragment, wallet
+                        )
                     }
                     is SaveContactState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -105,8 +166,6 @@ class ContactFragment : BaseFragment() {
             }
         })
 
-
-        viewModel.getContact(wallet!!.address)
         viewModel.getContactCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -120,15 +179,36 @@ class ContactFragment : BaseFragment() {
             }
         })
 
+        viewModel.deleteContactCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is DeleteContactState.Success -> {
+                        showAlertWithoutIcon(message = getString(R.string.delete_contact_success))
+                    }
+                    is DeleteContactState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                    }
+                }
+            }
+        })
+
     }
 
+    private fun onSuccess() {
+        activity?.onBackPressed()
+    }
+
+    override fun onDestroyView() {
+        handler.removeCallbacksAndMessages(null)
+        super.onDestroyView()
+    }
 
     companion object {
-        private const val WALLET_PARAM = "param_wallet"
-        fun newInstance(wallet: Wallet?) =
+        private const val FROM_SETTING_PARAM = "from_setting_param"
+        fun newInstance(fromSetting: Boolean = false) =
             ContactFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(WALLET_PARAM, wallet)
+                    putBoolean(FROM_SETTING_PARAM, fromSetting)
                 }
             }
     }

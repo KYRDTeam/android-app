@@ -144,7 +144,7 @@
     <string name="more">more</string>
     <string name="send">Send</string>
     <string name="add_contact">Add Contact</string>
-    <string name="manage_walllet">Manage Walllet</string>
+    <string name="manage_wallet">Manage Walllet</string>
     <string name="manage_alert">Manage Alert</string>
     <string name="alert_method">Alert Method</string>
     <string name="setting_contact">Contact</string>
@@ -395,10 +395,73 @@
     <string name="import_success_notification">Congratulations!!!</string>
     <string name="import_success_detail">You have successfully unlocked your Promo code. Please move all assets to your wallet by %s</string>
     <string name="promo_your_wallet">Your Wallet</string>
+    <string name="pl_set_new_pin">Set a new PIN</string>
+    <string name="pl_access_wallet">Your PIN is used to access your wallets</string>
+    <string name="pl_repeat_title">Repeat PIN</string>
+    <string name="pl_repeat_content">Remember this code to access your wallets</string>
+    <string name="pl_verify_access">Verify your access</string>
+    <string name="wallet_switch">Switch</string>
+    <string name="wallet_edit">Edit</string>
+    <string name="wallet_delete">Delete</string>
+    <string name="skip">Skip</string>
+    <string name="switch_wallet">Switch Wallet</string>
+    <string name="name_your_wallet_optional">Name of your wallet (optional)</string>
+    <string name="edit_wallet">Edit Wallet</string>
+    <string name="ba_skip">Skip?</string>
+    <string name="you_can_backup_your_wallet_later">You can backup your wallet later</string>
+    <string name="show_backup_phrase">Show Backup Phrase</string>
+    <string name="delete_wallet">Delete Wallet</string>
+    <string name="backup_keystore">Backup Keystore</string>
+    <string name="wallet_backup_private_key">Backup Private Key</string>
+    <string name="wallet_copy_address">Copy Address</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="password_done">Done</string>
+    <string name="password_mismatch">Password mismatch</string>
+    <string name="field_required">Filed Required</string>
+    <string name="delete_wallet_success">Delete wallet successfully</string>
+    <string name="export_at_your_own_risk">Export at your own risk!</string>
+    <string name="backup_mnemonic">Backup Mnemonic</string>
+    <string name="backup_your_wallet">Backup Your Wallet</string>
 
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>
     </string-array>
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="alert_trigger_content"><![CDATA[Your price alert for %s %s just got triggered]]></string>
+    <string name="maximum_alerts_title">You have maximum alerts</string>
+    <string name="maximum_alerts_content">You have maximum alerts so you could not add more new alert. Please delete some add more new alert.</string>
+    <string name="got_it">Got it</string>
+    <string name="your_order_is_filled">Your order is filled</string>
+    <string name="order_filled_close">Close</string>
+    <string name="order_filled_details">Details</string>
+    <string name="title_error">Error</string>
+    <string name="sign_in_required">You must sign in to use Price Alert feature</string>
+    <string name="wellcome_back">Welcome back, %s</string>
+    <string name="lout_out_confirmation">Do you want to logout</string>
+    <string name="alert_notification_title">Get Alert notification by</string>
+    <string name="alert_email">Email</string>
+    <string name="alert_telegram">Telegram</string>
+    <string name="not_enable">Not enabled</string>
+    <string name="title_success">Success</string>
+    <string name="alert_methods_update_success">Update alert methods successfully!</string>
+    <string name="delete_contact">Delete Contact</string>
+    <string name="edit_contact">Edit Contact</string>
+    <string name="contact_confirm_delete">Do you want to delete this contact?</string>
+    <string name="delete_contact_success">Delete contact successfully</string>
+    <string name="too_many_attempt">Too many attempts, please try in %s seconds</string>
+    <string name="number_of_attempt">You have %d attempts</string>
+    <string name="setting_about_url">https://kyber.network/about/company</string>
+    <string name="setting_community_url">https://kyber.network/community</string>
+    <string name="setting_support_message">Please send request to support@kyber.network</string>
+    <string name="setting_kyber_network_url">https://t.me/kybernetwork</string>
+    <string name="setting_kyber_network_developer_url">https://t.me/KyberDeveloper</string>
+    <string name="setting_github_url">https://github.com/KyberNetwork</string>
+    <string name="setting_twitter_url">https://twitter.com/KyberSwap</string>
+    <string name="setting_facebook_url">https://www.facebook.com/kybernetwork</string>
+    <string name="setting_medium_url">https://medium.com/@kyberswap</string>
+    <string name="setting_linkedin_url">https://www.linkedin.com/company/kybernetwork</string>
+    <string name="setting_share_info">I just found an awesome wallet app. Check out here https://apple.co/2USHOtx</string>
 
 </resources>

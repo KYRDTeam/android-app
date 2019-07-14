@@ -25,6 +25,7 @@ import com.kyberswap.android.presentation.main.limitorder.*
 import com.kyberswap.android.presentation.main.profile.*
 import com.kyberswap.android.presentation.main.profile.kyc.*
 import com.kyberswap.android.presentation.main.setting.*
+import com.kyberswap.android.presentation.main.setting.wallet.*
 import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.main.swap.SwapViewModel
 import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
@@ -202,6 +203,22 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeKyberCodeFragment(): KyberCodeFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeManageWalletFragment(): ManageWalletFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeEditWalletFragment(): EditWalletFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeBackupWalletInfoFragment(): BackupWalletInfoFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeAlertMethodFragment(): AlertMethodFragment
 
     @Binds
     @IntoMap
@@ -435,5 +452,33 @@ interface MainActivityModule {
     @ViewModelKey(KyberCodeViewModel::class)
     fun bindKyberCodeViewModel(
         kyberCodeViewModel: KyberCodeViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ManageWalletViewModel::class)
+    fun bindManageWalletViewModel(
+        manageWalletViewModel: ManageWalletViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(EditWalletViewModel::class)
+    fun bindEditWalletViewModel(
+        editWalletViewModel: EditWalletViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(BackupWalletInfoViewModel::class)
+    fun bindBackupWalletInfoViewModel(
+        backupWalletInfoViewModel: BackupWalletInfoViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(AlertMethodViewModel::class)
+    fun bindAlertMethodViewModel(
+        alertMethodViewModel: AlertMethodViewModel
     ): ViewModel
 }

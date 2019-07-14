@@ -97,4 +97,10 @@ class DatabaseModule {
         return appDatabase.alertDao()
     }
 
+    @Provides
+    @Singleton
+    fun providePassCodeDao(appDatabase: AppDatabase): PassCodeDao {
+        return appDatabase.passCodeDao()
+    }
+
 }

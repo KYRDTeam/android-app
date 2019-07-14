@@ -31,6 +31,7 @@
     </data>
 
     <FrameLayout
+        android:fitsSystemWindows="true"
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -45,6 +46,17 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <View
+                android:id="@+id/vNotification"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginTop="@dimen/notification_margin_top"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/circle_new_active_bg"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/imgMenu"
