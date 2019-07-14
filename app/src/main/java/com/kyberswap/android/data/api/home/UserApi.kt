@@ -1,6 +1,7 @@
 package com.kyberswap.android.data.api.home
 
 import com.kyberswap.android.data.api.alert.AlertEntity
+import com.kyberswap.android.data.api.alert.AlertMethodsResponseEntity
 import com.kyberswap.android.data.api.alert.AlertResponseEntity
 import com.kyberswap.android.data.api.alert.LeaderBoardEntity
 import com.kyberswap.android.data.api.user.KycResponseStatusEntity
@@ -8,6 +9,7 @@ import com.kyberswap.android.data.api.user.LoginUserEntity
 import com.kyberswap.android.data.api.user.ResponseStatusEntity
 import com.kyberswap.android.data.api.user.UserInfoEntity
 import io.reactivex.Single
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.*
 import java.math.BigDecimal
@@ -125,5 +127,16 @@ interface UserApi {
 
     @POST("api/kyc_profile/resubmit_kyc")
     fun resubmit(): Single<KycResponseStatusEntity>
+
+    @PATCH("api/update_push_token")
+    @FormUrlEncoded
+    fun updatePushToken(@Field("push_token_mobile") token: String): Single<ResponseStatusEntity>
+
+    @GET("api/get_alert_methods")
+    fun getAlertMethod(): Single<AlertMethodsResponseEntity>
+
+    @Headers("Content-Type: application/json")
+    @POST("api/update_alert_methods")
+    fun updateAlertMethods(@Body rawJsonString: RequestBody): Single<ResponseStatusEntity>
 
 }

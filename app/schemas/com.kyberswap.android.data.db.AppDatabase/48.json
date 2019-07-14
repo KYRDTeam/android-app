@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 48,
-    "identityHash": "6a79b2440294568393dd0820d2ae9230",
+    "identityHash": "9636bf02394474c10dce94f985ef1c0e",
     "entities": [
       {
         "tableName": "tokens",
@@ -2014,7 +2014,7 @@
       },
       {
         "tableName": "alerts",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `base` TEXT NOT NULL, `symbol` TEXT NOT NULL, `alertType` TEXT NOT NULL, `alertPrice` TEXT NOT NULL, `createdAtPrice` TEXT NOT NULL, `percentChange` TEXT NOT NULL, `isAbove` INTEGER NOT NULL, `status` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `updatedAt` TEXT NOT NULL, `triggeredAt` TEXT NOT NULL, `filledAt` TEXT NOT NULL, `rank` INTEGER NOT NULL, `userEmail` TEXT NOT NULL, `telegramAccount` TEXT NOT NULL, `reward` TEXT NOT NULL, `state` TEXT NOT NULL, `walletAddress` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `tokenSymbol` TEXT NOT NULL, `tokenName` TEXT NOT NULL, `tokenAddress` TEXT NOT NULL, `tokenDecimal` INTEGER NOT NULL, `rateEthNow` TEXT NOT NULL, `changeEth24h` TEXT NOT NULL, `rateUsdNow` TEXT NOT NULL, `changeUsd24h` TEXT NOT NULL, `cgId` TEXT NOT NULL, `gasApprove` TEXT NOT NULL, `gasLimit` TEXT NOT NULL, `listingTime` INTEGER NOT NULL, `priority` INTEGER NOT NULL, `spLimitOrder` INTEGER NOT NULL, `wallets` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `base` TEXT NOT NULL, `symbol` TEXT NOT NULL, `alertType` TEXT NOT NULL, `alertPrice` TEXT NOT NULL, `createdAtPrice` TEXT NOT NULL, `percentChange` TEXT NOT NULL, `isAbove` INTEGER NOT NULL, `status` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `updatedAt` TEXT NOT NULL, `triggeredAt` TEXT NOT NULL, `filledAt` TEXT NOT NULL, `rank` INTEGER NOT NULL, `userEmail` TEXT NOT NULL, `telegramAccount` TEXT NOT NULL, `reward` TEXT NOT NULL, `message` TEXT, `state` TEXT NOT NULL, `walletAddress` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `tokenSymbol` TEXT NOT NULL, `tokenName` TEXT NOT NULL, `tokenAddress` TEXT NOT NULL, `tokenDecimal` INTEGER NOT NULL, `rateEthNow` TEXT NOT NULL, `changeEth24h` TEXT NOT NULL, `rateUsdNow` TEXT NOT NULL, `changeUsd24h` TEXT NOT NULL, `cgId` TEXT NOT NULL, `gasApprove` TEXT NOT NULL, `gasLimit` TEXT NOT NULL, `listingTime` INTEGER NOT NULL, `priority` INTEGER NOT NULL, `spLimitOrder` INTEGER NOT NULL, `wallets` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -2117,6 +2117,12 @@
             "columnName": "reward",
             "affinity": "TEXT",
             "notNull": true
+  ,
+          {
+            "fieldPath": "message",
+            "columnName": "message",
+            "affinity": "TEXT",
+            "notNull": false
   ,
           {
             "fieldPath": "state",
@@ -2235,12 +2241,50 @@
 ,
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "pass_codes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `digest` TEXT NOT NULL, `remainNum` INTEGER NOT NULL, `time` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "digest",
+            "columnName": "digest",
+            "affinity": "TEXT",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "remainNum",
+            "columnName": "remainNum",
+            "affinity": "INTEGER",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "time",
+            "columnName": "time",
+            "affinity": "INTEGER",
+            "notNull": true
+  
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+,
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6a79b2440294568393dd0820d2ae9230')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9636bf02394474c10dce94f985ef1c0e')"
     ]
   }
 }

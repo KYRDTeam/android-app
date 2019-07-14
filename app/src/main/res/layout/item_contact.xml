@@ -9,43 +9,100 @@
             type="com.kyberswap.android.domain.model.Contact" />
     </data>
 
-    <LinearLayout
-        android:id="@+id/lnItem"
+    <com.daimajia.swipe.SwipeLayout
+        android:id="@+id/swipe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?selectableItemBackground"
-        android:gravity="center"
-        android:minHeight="64dp">
-
-        <ImageView
-            android:id="@+id/imgToken"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/token_default"
-            app:address="@{contact.address}" />
+        app:clickToClose="true"
+        app:drag_edge="right">
 
         <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/btnSend"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="72dp"
+                android:layout_height="match_parent"
+                android:background="#31cb9e"
+                android:gravity="center"
+                android:text="@string/send"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#ffffff"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/btnEdit"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="72dp"
+                android:layout_height="match_parent"
+                android:background="#1e89c1"
+                android:gravity="center"
+                android:text="@string/wallet_edit"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#ffffff"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/btnDelete"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="72dp"
+                android:layout_height="match_parent"
+                android:background="#edab2f"
+                android:gravity="center"
+                android:text="@string/wallet_delete"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#ffffff"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:id="@+id/lnItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="7dp"
-            android:orientation="vertical">
+            android:background="?selectableItemBackground"
+            android:gravity="center"
+            android:minHeight="64dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <ImageView
+                android:id="@+id/imgContact"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/token_default"
+                app:address="@{contact.address}" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{contact.name}"
-                android:textColor="#2e3957"
-                android:textSize="14sp" />
+                android:layout_marginStart="7dp"
+                android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@{contact.displayAddress}"
-                android:textColor="#9ea1aa"
-                android:textSize="14sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{contact.name}"
+                    android:textColor="#2e3957"
+                    android:textSize="14sp" />
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:ellipsize="middle"
+                    android:singleLine="true"
+                    android:text="@{contact.address}"
+                    android:textColor="#9ea1aa"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
+    </com.daimajia.swipe.SwipeLayout>
+
 </layout>

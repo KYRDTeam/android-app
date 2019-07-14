@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
+import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.presentation.common.AlertActivity
 import com.kyberswap.android.presentation.common.AlertWithoutIconActivity
@@ -78,6 +79,9 @@ abstract class BaseFragment : DaggerFragment() {
     val currentFragment: Fragment
         get() = (activity as MainActivity).getCurrentFragment() ?: this
 
+    val profileFragment: Fragment?
+        get() = (activity as MainActivity).profileFragment ?: this
+
     fun displaySnackBarWithBottomMargin(snackbar: Snackbar, marginBottom: Int = 0) {
         val snackBarView = snackbar.view
         val params = snackBarView.layoutParams as CoordinatorLayout.LayoutParams
@@ -95,5 +99,19 @@ abstract class BaseFragment : DaggerFragment() {
 
     companion object {
         const val SHOW_ALERT = 0
+    }
+
+    fun stopCounter() {
+        val context = activity?.applicationContext
+        if (context is KyberSwapApplication) {
+            context.stopCounter()
+
+    }
+
+    fun startCounter() {
+        val context = activity?.applicationContext
+        if (context is KyberSwapApplication) {
+            context.startCounter()
+
     }
 }

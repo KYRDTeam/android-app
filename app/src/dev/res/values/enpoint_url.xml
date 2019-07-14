@@ -8,6 +8,7 @@
     <string name="transaction_endpoint_url" formatted="false" translatable="false">https://api-ropsten.etherscan.io</string>
     <string name="transaction_kyber_endpoint_url" formatted="false" translatable="false">https://kyber.enjinx.io/eth/transaction/</string>
     <string name="user_endpoint_url" formatted="false" translatable="false">https://dev-userdashboard.knstats.com/</string>
+    <!--<string name="user_endpoint_url" formatted="false" translatable="false">http://192.168.2.139:3000/</string>-->
     <string name="kyber_address" formatted="false" translatable="false">0x818E6FECD516Ecc3849DAf6845e3EC868087B755</string>
     <string name="limit_order_contract" formatted="false" translatable="false">0x88E7e3b54147F57da5c8aA80b362eF72FFf35d5a</string>
     <string name="kyber_code_api_key">9872342987234234b</string>

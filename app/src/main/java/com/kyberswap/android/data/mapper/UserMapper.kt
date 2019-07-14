@@ -1,6 +1,7 @@
 package com.kyberswap.android.data.mapper
 
 import com.kyberswap.android.data.api.alert.AlertEntity
+import com.kyberswap.android.data.api.alert.AlertMethodsResponseEntity
 import com.kyberswap.android.data.api.user.KycResponseStatusEntity
 import com.kyberswap.android.data.api.user.LoginUserEntity
 import com.kyberswap.android.data.api.user.ResponseStatusEntity
@@ -29,5 +30,9 @@ class UserMapper @Inject constructor() {
         return alerts.map {
             Alert(it)
 
+    }
+
+    fun transform(entity: AlertMethodsResponseEntity): AlertMethodsResponse {
+        return AlertMethodsResponse(entity)
     }
 }

@@ -32,6 +32,7 @@ data class Alert(
     val userEmail: String = "",
     val telegramAccount: String = "",
     val reward: String = "",
+    var message: String? = "",
     val state: String = "",
     @Embedded
     val token: Token = Token(),
@@ -55,7 +56,8 @@ data class Alert(
         entity.rank ?: 0,
         entity.userEmail ?: "",
         entity.telegramAccount ?: "",
-        entity.reward ?: ""
+        entity.reward ?: "",
+        entity.message ?: ""
     )
 
     val displayRank: String
@@ -87,6 +89,10 @@ data class Alert(
     val displayAlertPrice: String
         get() = if (alertPrice != BigDecimal.ZERO) alertPrice.toDisplayNumber() else ""
 
+    val alertPriceWithPrefix: String
+        get() = StringBuilder().append(if (isAbove) "≥ " else "≤ ")
+            .append(alertPrice.toDisplayNumber()).toString()
+
     val displayCreatedAtPrice: String
         get() = createdAtPrice.toDisplayNumber()
 
@@ -106,5 +112,6 @@ data class Alert(
         const val BASE_ETH = "ETH"
         const val STATUS_ACTIVE = "active"
         const val STATUS_FILLED = "filled"
+        const val MAX_ALERT_NUMBER = 10
     }
 }

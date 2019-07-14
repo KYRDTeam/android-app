@@ -4,10 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.usecase.alert.CreateOrUpdateAlertUseCase
+import com.kyberswap.android.domain.usecase.alert.GetAlertsUseCase
 import com.kyberswap.android.domain.usecase.alert.GetCurrentAlertUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
+import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
@@ -15,7 +17,8 @@ import javax.inject.Inject
 class PriceAlertViewModel @Inject constructor(
     getSelectedWalletUseCase: GetSelectedWalletUseCase,
     private val getCurrentAlertUseCase: GetCurrentAlertUseCase,
-    private val createOrUpdateAlertUseCase: CreateOrUpdateAlertUseCase
+    private val createOrUpdateAlertUseCase: CreateOrUpdateAlertUseCase,
+    private val getAlertsUseCase: GetAlertsUseCase
 ) : SelectedWalletViewModel(getSelectedWalletUseCase) {
 
     val compositeDisposable = CompositeDisposable()
@@ -27,6 +30,10 @@ class PriceAlertViewModel @Inject constructor(
     private val _createOrUpdateAlertCallback = MutableLiveData<Event<CreateOrUpdateAlertState>>()
     val createOrUpdateAlertCallback: LiveData<Event<CreateOrUpdateAlertState>>
         get() = _createOrUpdateAlertCallback
+
+    private val _getAllAlertsCallback = MutableLiveData<Event<GetAlertsState>>()
+    val getAllAlertsCallback: LiveData<Event<GetAlertsState>>
+        get() = _getAllAlertsCallback
 
     fun getCurrentAlert(walletAddress: String, alert: Alert?) {
         getCurrentAlertUseCase.execute(
@@ -43,12 +50,30 @@ class PriceAlertViewModel @Inject constructor(
         )
     }
 
+    fun getAllAlert() {
+        getAlertsUseCase.execute(
+            Consumer {
+                _getAllAlertsCallback.value = Event(GetAlertsState.Success(it))
+    ,
+            Consumer {
+                it.printStackTrace()
+                _getAllAlertsCallback.value = Event(GetAlertsState.ShowError(it.localizedMessage))
+    ,
+            null
+        )
+    }
+
     fun createOrUpdateAlert(alert: Alert?) {
         if (alert == null) return
         _createOrUpdateAlertCallback.postValue(Event(CreateOrUpdateAlertState.Loading))
         createOrUpdateAlertUseCase.execute(
             Consumer {
-                _createOrUpdateAlertCallback.value = Event(CreateOrUpdateAlertState.Success(it))
+                if (it.message.isNullOrEmpty()) {
+                    _createOrUpdateAlertCallback.value = Event(CreateOrUpdateAlertState.Success(it))
+         else {
+                    _createOrUpdateAlertCallback.value =
+                        Event(CreateOrUpdateAlertState.ShowError(it.message))
+        
     ,
             Consumer {
                 it.printStackTrace()

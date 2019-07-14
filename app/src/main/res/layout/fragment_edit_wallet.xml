@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="wallet"
+            type="com.kyberswap.android.domain.model.Wallet" />
+    </data>
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/screen_background">
+
+        <FrameLayout
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/toolbar_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/imgBack"
+                style="@style/BackImage"
+                android:layout_gravity="start|center"
+                android:layout_marginTop="0dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/edit_wallet"
+                android:textColor="#ffffff"
+                android:textSize="18sp" />
+
+        </FrameLayout>
+
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scPersonalInfo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/toolbar_height"
+            android:background="@android:color/white"
+            android:fillViewport="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayout2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:backgroundTint="@color/edt_background_tint"
+                    android:hint="@string/name_your_wallet_optional"
+                    android:textColorHint="#9ea1aa"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtWalletName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/edt_background_tint"
+                        android:inputType="textCapWords"
+                        android:letterSpacing="0.07"
+                        android:minHeight="60dp"
+                        android:singleLine="true"
+                        android:text="@{wallet.name}"
+                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textColor="#5a5e67"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/tvShowBackupPhrase"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:drawableStart="@drawable/ic_wallet_document"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:minHeight="45dp"
+                    android:text="@string/show_backup_phrase"
+                    android:textColor="#1e89c1"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="@+id/textInputLayout2"
+                    app:layout_constraintStart_toStartOf="@+id/textInputLayout2"
+                    app:layout_constraintTop_toBottomOf="@+id/textInputLayout2" />
+
+                <TextView
+                    android:id="@+id/tvDeleteWallet"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:drawableStart="@drawable/ic_trash"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:minHeight="45dp"
+                    android:text="@string/delete_wallet"
+                    android:textColor="#f96363"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="@+id/textInputLayout2"
+                    app:layout_constraintStart_toStartOf="@+id/textInputLayout2"
+                    app:layout_constraintTop_toBottomOf="@+id/tvShowBackupPhrase" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+    </FrameLayout>
+</layout>

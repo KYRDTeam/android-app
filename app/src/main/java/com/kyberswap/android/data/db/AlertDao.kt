@@ -55,5 +55,8 @@ interface AlertDao {
 
     @get:Query("SELECT * FROM alerts")
     val all: Flowable<List<Alert>>
+
+    @Query("SELECT * FROM alerts")
+    fun allAlerts(): List<Alert>
 }
 

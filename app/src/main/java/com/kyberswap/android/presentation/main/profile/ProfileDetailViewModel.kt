@@ -7,10 +7,7 @@ import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.usecase.alert.DeleteAlertsUseCase
 import com.kyberswap.android.domain.usecase.alert.GetAlertsUseCase
-import com.kyberswap.android.domain.usecase.profile.FetchUserInfoUseCase
-import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
-import com.kyberswap.android.domain.usecase.profile.LogoutUseCase
-import com.kyberswap.android.domain.usecase.profile.ReSubmitUserInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.*
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.profile.alert.DeleteAlertsState
 import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
@@ -18,6 +15,7 @@ import com.kyberswap.android.presentation.main.profile.kyc.ReSubmitState
 import com.kyberswap.android.util.ext.display
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
+import timber.log.Timber
 import javax.inject.Inject
 
 class ProfileDetailViewModel @Inject constructor(
@@ -26,7 +24,8 @@ class ProfileDetailViewModel @Inject constructor(
     private val deleteAlertsUseCase: DeleteAlertsUseCase,
     private val getLoginStatusUseCase: GetLoginStatusUseCase,
     private val fetchUserInfoUseCase: FetchUserInfoUseCase,
-    private val reSubmitUserInfoUseCase: ReSubmitUserInfoUseCase
+    private val reSubmitUserInfoUseCase: ReSubmitUserInfoUseCase,
+    private val updatePushTokenUseCase: UpdatePushTokenUseCase
 ) : ViewModel() {
 
     private val _getAlertsCallback = MutableLiveData<Event<GetAlertsState>>()
@@ -136,5 +135,18 @@ class ProfileDetailViewModel @Inject constructor(
         getLoginStatusUseCase.dispose()
         fetchUserInfoUseCase.dispose()
         super.onCleared()
+    }
+
+    fun updatePushToken(token: String) {
+        updatePushTokenUseCase.execute(
+            Consumer {
+
+    ,
+            Consumer {
+                it.printStackTrace()
+                Timber.e(it.localizedMessage)
+    ,
+            UpdatePushTokenUseCase.Param(token)
+        )
     }
 }

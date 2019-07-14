@@ -31,8 +31,7 @@
                 android:gravity="center"
                 android:text="@{wallet.name}"
                 android:textColor="#ffffff"
-                android:textSize="18sp"
-                tools:text="Backup your Wallet" />
+                android:textSize="18sp" />
         </FrameLayout>
 
         <LinearLayout
@@ -79,10 +78,10 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@drawable/border_button"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:gravity="center"
                     android:minHeight="45dp"
                     android:text="@string/share"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#141927"
                     android:textSize="16sp" />
 
@@ -96,12 +95,12 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@drawable/default_button"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:gravity="center"
                     android:minHeight="45dp"
                     android:text="@string/copy"
-
                     android:textAllCaps="false"
+
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#ffffff"
                     android:textSize="16sp" />
             </LinearLayout>
