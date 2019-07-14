@@ -18,5 +18,5 @@ class VerifyPinUseCase @Inject constructor(
         return settingRepository.verifyPin(param)
     }
 
-    class Param(val pin: String)
+    class Param(val pin: String, val remainNum: Int, val time: Long)
 }

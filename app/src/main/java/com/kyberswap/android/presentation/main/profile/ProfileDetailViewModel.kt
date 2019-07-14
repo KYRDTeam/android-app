@@ -140,7 +140,7 @@ class ProfileDetailViewModel @Inject constructor(
     fun updatePushToken(token: String) {
         updatePushTokenUseCase.execute(
             Consumer {
-                Timber.e(it.message)
+
             },
             Consumer {
                 it.printStackTrace()

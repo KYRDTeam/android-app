@@ -20,7 +20,8 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/screen_background">
+        android:background="@drawable/screen_background"
+        android:fitsSystemWindows="true">
 
         <View
             android:layout_width="0dp"
@@ -31,6 +32,17 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <View
+                android:id="@+id/vNotification"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginTop="@dimen/notification_margin_top"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/circle_new_active_bg"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/imgMenu"
@@ -399,10 +411,10 @@
                             android:layout_marginTop="25dp"
                             android:layout_marginEnd="15dp"
                             android:background="@drawable/default_button"
-                            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                             android:gravity="center"
                             android:minHeight="45dp"
                             android:text="@string/swap_continue"
+                            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                             android:textColor="#ffffff"
                             android:textSize="16sp" />
 

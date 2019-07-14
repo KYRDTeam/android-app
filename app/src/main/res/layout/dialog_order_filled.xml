@@ -25,7 +25,7 @@
             android:background="@drawable/rounded_corner_dialog_background"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="30dp">
+            android:padding="16dp">
 
             <TextView
                 android:layout_width="wrap_content"

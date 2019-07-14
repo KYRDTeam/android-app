@@ -31,4 +31,9 @@ open class SelectedWalletViewModel @Inject constructor(
             null
         )
     }
+
+    override fun onCleared() {
+        getWalletUseCase.dispose()
+        super.onCleared()
+    }
 }

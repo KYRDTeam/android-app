@@ -27,7 +27,7 @@
                 android:layout_height="match_parent"
                 android:background="#31cb9e"
                 android:gravity="center"
-                android:text="@string/wallet_switch"
+                android:text="@string/send"
                 android:textAllCaps="false"
                 android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                 android:textColor="#ffffff"
@@ -61,6 +61,8 @@
         </LinearLayout>
 
         <LinearLayout
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
             android:id="@+id/lnItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -90,10 +92,12 @@
                     android:textSize="14sp" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="@{contact.displayAddress}"
+                    android:ellipsize="middle"
+                    android:singleLine="true"
+                    android:text="@{contact.address}"
                     android:textColor="#9ea1aa"
                     android:textSize="14sp" />
 

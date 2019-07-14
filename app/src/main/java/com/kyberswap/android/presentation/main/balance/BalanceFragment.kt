@@ -13,6 +13,7 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.databinding.FragmentBalanceBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.balance.kyberlist.KyberListViewModel
@@ -24,7 +25,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
-class BalanceFragment : BaseFragment() {
+class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     private lateinit var binding: FragmentBalanceBinding
 
@@ -151,6 +152,10 @@ class BalanceFragment : BaseFragment() {
             }
             false
         }
+    }
+
+    override fun showNotification(showNotification: Boolean) {
+        binding.vNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
     }
 
     private fun setSelectedOption(view: View) {

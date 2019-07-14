@@ -216,6 +216,10 @@ interface MainActivityModule {
     @ContributesAndroidInjector
     fun contributeBackupWalletInfoFragment(): BackupWalletInfoFragment
 
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeAlertMethodFragment(): AlertMethodFragment
+
     @Binds
     @IntoMap
     @ViewModelKey(BalanceViewModel::class)
@@ -469,5 +473,12 @@ interface MainActivityModule {
     @ViewModelKey(BackupWalletInfoViewModel::class)
     fun bindBackupWalletInfoViewModel(
         backupWalletInfoViewModel: BackupWalletInfoViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(AlertMethodViewModel::class)
+    fun bindAlertMethodViewModel(
+        alertMethodViewModel: AlertMethodViewModel
     ): ViewModel
 }

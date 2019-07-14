@@ -7,6 +7,7 @@ import com.kyberswap.android.domain.usecase.setting.GetPinUseCase
 import com.kyberswap.android.domain.usecase.setting.SavePinUseCase
 import com.kyberswap.android.domain.usecase.setting.VerifyPinUseCase
 import com.kyberswap.android.presentation.common.Event
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
@@ -29,6 +30,8 @@ class PassCodeLockViewModel @Inject constructor(
     private val _getPinCallback = MutableLiveData<Event<GetPinState>>()
     val getPinCallback: LiveData<Event<GetPinState>>
         get() = _getPinCallback
+
+    val compositeDisposable = CompositeDisposable()
 
 
     fun save(pin: String) {
@@ -59,7 +62,7 @@ class PassCodeLockViewModel @Inject constructor(
     }
 
 
-    fun verifyPin(pin: String) {
+    fun verifyPin(pin: String, remainNum: Int, time: Long) {
         verifyPinUseCase.execute(
             Consumer {
                 _verifyPinCallback.value = Event(VerifyPinState.Success(it))
@@ -68,9 +71,16 @@ class PassCodeLockViewModel @Inject constructor(
                 it.printStackTrace()
                 _verifyPinCallback.value = Event(VerifyPinState.ShowError(it.localizedMessage))
             },
-            VerifyPinUseCase.Param(pin)
+            VerifyPinUseCase.Param(pin, remainNum, time)
         )
     }
 
+    public override fun onCleared() {
+        compositeDisposable.dispose()
+        savePinUseCase.dispose()
+        verifyPinUseCase.dispose()
+        getPinUseCase.dispose()
+        super.onCleared()
+    }
 
 }

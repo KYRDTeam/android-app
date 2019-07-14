@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 48,
-    "identityHash": "f25fd2b605f17915316b5160aff3aafb",
+    "identityHash": "9636bf02394474c10dce94f985ef1c0e",
     "entities": [
       {
         "tableName": "tokens",
@@ -2244,7 +2244,7 @@
       },
       {
         "tableName": "pass_codes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `digest` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `digest` TEXT NOT NULL, `remainNum` INTEGER NOT NULL, `time` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -2256,6 +2256,18 @@
             "fieldPath": "digest",
             "columnName": "digest",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "remainNum",
+            "columnName": "remainNum",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "time",
+            "columnName": "time",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -2272,7 +2284,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f25fd2b605f17915316b5160aff3aafb')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9636bf02394474c10dce94f985ef1c0e')"
     ]
   }
 }

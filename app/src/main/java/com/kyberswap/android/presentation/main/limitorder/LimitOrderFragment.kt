@@ -22,6 +22,7 @@ import com.kyberswap.android.domain.model.NotificationLimitOrder
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
@@ -44,7 +45,7 @@ import javax.inject.Inject
 import kotlin.math.absoluteValue
 
 
-class LimitOrderFragment : BaseFragment() {
+class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
 
     private lateinit var binding: FragmentLimitOrderBinding
 
@@ -684,6 +685,10 @@ class LimitOrderFragment : BaseFragment() {
             order,
             edtSource.getAmountOrDefaultValue()
         )
+    }
+
+    override fun showNotification(showNotification: Boolean) {
+        binding.vNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
     }
 
     companion object {

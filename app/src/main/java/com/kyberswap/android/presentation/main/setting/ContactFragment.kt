@@ -16,9 +16,11 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentContactBinding
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.balance.send.ContactAdapter
+import com.kyberswap.android.presentation.main.swap.DeleteContactState
 import com.kyberswap.android.presentation.main.swap.GetContactState
 import com.kyberswap.android.presentation.main.swap.SaveContactState
 import com.kyberswap.android.presentation.splash.GetWalletState
@@ -33,6 +35,8 @@ class ContactFragment : BaseFragment() {
     @Inject
     lateinit var navigator: Navigator
 
+    @Inject
+    lateinit var dialogHelper: DialogHelper
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -51,6 +55,12 @@ class ContactFragment : BaseFragment() {
         Handler()
     }
 
+    private var fromSetting: Boolean? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        fromSetting = arguments?.getBoolean(FROM_SETTING_PARAM, false)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,7 +84,6 @@ class ContactFragment : BaseFragment() {
                                 viewModel.getContact(it.address)
                             }
                         }
-
                     }
                     is GetWalletState.ShowError -> {
 
@@ -103,18 +112,35 @@ class ContactFragment : BaseFragment() {
 
         val contactAdapter =
             ContactAdapter(appExecutors, handler, { contact ->
-                wallet?.let {
-                    viewModel.saveSendContact(it.address, contact)
+                if (fromSetting == true) {
+                    navigator.navigateToAddContactScreen(currentFragment, contact = contact)
+                } else {
+                    wallet?.let {
+                        viewModel.saveSendContact(it.address, contact)
+                    }
                 }
-
             },
-                {
-
+                { contact ->
+                    wallet?.let {
+                        viewModel.saveSendContact(it.address, contact)
+                    }
                 },
-                {
-
+                { contact ->
+                    navigator.navigateToAddContactScreen(
+                        currentFragment,
+                        wallet,
+                        contact.address,
+                        contact
+                    )
                 },
-                {
+                { contact ->
+
+                    dialogHelper.showConfirmation(
+                        getString(R.string.alert_delete),
+                        getString(R.string.contact_confirm_delete),
+                        {
+                            viewModel.deleteContact(contact)
+                        })
 
                 })
         binding.rvContact.adapter = contactAdapter
@@ -124,7 +150,9 @@ class ContactFragment : BaseFragment() {
                 showProgress(state == SaveContactState.Loading)
                 when (state) {
                     is SaveContactState.Success -> {
-                        activity!!.onBackPressed()
+                        navigator.navigateToSendScreen(
+                            currentFragment, wallet
+                        )
                     }
                     is SaveContactState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
@@ -151,6 +179,23 @@ class ContactFragment : BaseFragment() {
             }
         })
 
+        viewModel.deleteContactCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is DeleteContactState.Success -> {
+                        showAlertWithoutIcon(message = getString(R.string.delete_contact_success))
+                    }
+                    is DeleteContactState.ShowError -> {
+                        showAlert(state.message ?: getString(R.string.something_wrong))
+                    }
+                }
+            }
+        })
+
+    }
+
+    private fun onSuccess() {
+        activity?.onBackPressed()
     }
 
     override fun onDestroyView() {
@@ -159,8 +204,13 @@ class ContactFragment : BaseFragment() {
     }
 
     companion object {
-        fun newInstance() =
-            ContactFragment()
+        private const val FROM_SETTING_PARAM = "from_setting_param"
+        fun newInstance(fromSetting: Boolean = false) =
+            ContactFragment().apply {
+                arguments = Bundle().apply {
+                    putBoolean(FROM_SETTING_PARAM, fromSetting)
+                }
+            }
     }
 
 

@@ -63,6 +63,14 @@ class PinLockView : RecyclerView {
 
     }
 
+    fun enableInput(isEnable: Boolean) {
+        if (isEnable) {
+            mAdapter?.onItemClickListener = mOnNumberClickListener
+        } else {
+            mAdapter?.onItemClickListener = null
+        }
+    }
+
     private val mOnDeleteClickListener = object : PinLockAdapter.OnDeleteClickListener {
         override fun onDeleteClicked() {
             if (mPin.length > 0) {

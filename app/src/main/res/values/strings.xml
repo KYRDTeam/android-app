@@ -436,5 +436,32 @@
     <string name="your_order_is_filled">Your order is filled</string>
     <string name="order_filled_close">Close</string>
     <string name="order_filled_details">Details</string>
+    <string name="title_error">Error</string>
+    <string name="sign_in_required">You must sign in to use Price Alert feature</string>
+    <string name="wellcome_back">Welcome back, %s</string>
+    <string name="lout_out_confirmation">Do you want to logout</string>
+    <string name="alert_notification_title">Get Alert notification by</string>
+    <string name="alert_email">Email</string>
+    <string name="alert_telegram">Telegram</string>
+    <string name="not_enable">Not enabled</string>
+    <string name="title_success">Success</string>
+    <string name="alert_methods_update_success">Update alert methods successfully!</string>
+    <string name="delete_contact">Delete Contact</string>
+    <string name="edit_contact">Edit Contact</string>
+    <string name="contact_confirm_delete">Do you want to delete this contact?</string>
+    <string name="delete_contact_success">Delete contact successfully</string>
+    <string name="too_many_attempt">Too many attempts, please try in %s seconds</string>
+    <string name="number_of_attempt">You have %d attempts</string>
+    <string name="setting_about_url">https://kyber.network/about/company</string>
+    <string name="setting_community_url">https://kyber.network/community</string>
+    <string name="setting_support_message">Please send request to support@kyber.network</string>
+    <string name="setting_kyber_network_url">https://t.me/kybernetwork</string>
+    <string name="setting_kyber_network_developer_url">https://t.me/KyberDeveloper</string>
+    <string name="setting_github_url">https://github.com/KyberNetwork</string>
+    <string name="setting_twitter_url">https://twitter.com/KyberSwap</string>
+    <string name="setting_facebook_url">https://www.facebook.com/kybernetwork</string>
+    <string name="setting_medium_url">https://medium.com/@kyberswap</string>
+    <string name="setting_linkedin_url">https://www.linkedin.com/company/kybernetwork</string>
+    <string name="setting_share_info">I just found an awesome wallet app. Check out here https://apple.co/2USHOtx</string>
 
 </resources>

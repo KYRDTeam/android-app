@@ -3,11 +3,13 @@ package com.kyberswap.android.presentation.main.setting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.kyberswap.android.domain.model.Contact
+import com.kyberswap.android.domain.usecase.contact.DeleteContactUseCase
 import com.kyberswap.android.domain.usecase.contact.GetContactUseCase
 import com.kyberswap.android.domain.usecase.contact.SaveContactUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
+import com.kyberswap.android.presentation.main.swap.DeleteContactState
 import com.kyberswap.android.presentation.main.swap.GetContactState
 import com.kyberswap.android.presentation.main.swap.SaveContactState
 import io.reactivex.functions.Action
@@ -17,6 +19,7 @@ import javax.inject.Inject
 class ContactViewModel @Inject constructor(
     private val saveContactUseCase: SaveContactUseCase,
     private val getContactUseCase: GetContactUseCase,
+    private val deleteContactUseCase: DeleteContactUseCase,
     getSelectedWalletUseCase: GetSelectedWalletUseCase
 ) : SelectedWalletViewModel(getSelectedWalletUseCase) {
     private val _saveContactCallback = MutableLiveData<Event<SaveContactState>>()
@@ -26,6 +29,10 @@ class ContactViewModel @Inject constructor(
     private val _getContactCallback = MutableLiveData<Event<GetContactState>>()
     val getContactCallback: LiveData<Event<GetContactState>>
         get() = _getContactCallback
+
+    private val _deleteContactCallback = MutableLiveData<Event<DeleteContactState>>()
+    val deleteContactCallback: LiveData<Event<DeleteContactState>>
+        get() = _deleteContactCallback
 
 
     fun saveSendContact(walletAddress: String, contact: Contact) {
@@ -52,6 +59,20 @@ class ContactViewModel @Inject constructor(
                 _getContactCallback.value = Event(GetContactState.ShowError(it.localizedMessage))
             },
             GetContactUseCase.Param(walletAddress)
+        )
+    }
+
+    fun deleteContact(contact: Contact) {
+        deleteContactUseCase.execute(
+            Action {
+                _deleteContactCallback.value = Event(DeleteContactState.Success(""))
+            },
+            Consumer {
+                it.printStackTrace()
+                _deleteContactCallback.value =
+                    Event(DeleteContactState.ShowError(it.localizedMessage))
+            },
+            DeleteContactUseCase.Param(contact)
         )
     }
 

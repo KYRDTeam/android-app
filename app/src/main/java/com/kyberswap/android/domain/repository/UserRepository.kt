@@ -1,6 +1,7 @@
 package com.kyberswap.android.domain.repository
 
 import com.kyberswap.android.domain.model.*
+import com.kyberswap.android.domain.usecase.alert.UpdateAlertMethodsUseCase
 import com.kyberswap.android.domain.usecase.profile.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -24,6 +25,10 @@ interface UserRepository {
     fun fetchUserInfo(): Flowable<UserInfo>
 
     fun getAlerts(): Flowable<List<Alert>>
+
+    fun getAlertMethods(): Single<AlertMethodsResponse>
+
+    fun updateAlertMethods(param: UpdateAlertMethodsUseCase.Param): Single<ResponseStatus>
 
     fun logout(): Completable
 
