@@ -47,9 +47,9 @@ object DataModule {
     fun provideTokenRepository(
         client: TokenClient,
         api: SwapApi,
-        swapDao: SwapDao,
         tokenApi: TokenApi,
         rateDao: RateDao,
+        tokenDao: TokenDao,
         rateMapper: RateMapper,
         chartMapper: ChartMapper,
         context: Context
@@ -57,9 +57,9 @@ object DataModule {
         TokenDataRepository(
             client,
             api,
-            swapDao,
             tokenApi,
             rateDao,
+            tokenDao,
             rateMapper,
             chartMapper,
             context

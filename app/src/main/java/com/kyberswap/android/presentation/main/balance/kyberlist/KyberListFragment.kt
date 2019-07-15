@@ -105,34 +105,34 @@ class KyberListFragment : BaseFragment() {
             RecyclerView.VERTICAL,
             false
         )
-        tokenAdapter =
-            TokenAdapter(appExecutors, handler,
-                {
-                    navigateToChartScreen(it)
-        ,
-                {
-                    if (wallet?.isPromo == true) {
-                        moveToSwapTab()
-             else {
-                        wallet?.address?.let { it1 -> viewModel.save(it1, it, false) }
-            
-        ,
-                {
-                    if (wallet?.isPromo == true) {
-                        moveToSwapTab()
-             else {
-                        wallet?.address?.let { it1 -> viewModel.save(it1, it, true) }
-            
-        ,
-                {
-                    if (wallet?.isPromo == true && it.tokenSymbol == getString(R.string.promo_source_token)) {
-                        showAlertWithoutIcon(message = getString(R.string.can_not_tranfer_token))
-             else {
-                        wallet?.address?.let { it1 -> viewModel.saveSendToken(it1, it) }
-            
-
-        
-            )
+//        tokenAdapter =
+//            TokenAdapter(appExecutors, handler,
+//                {
+//                    navigateToChartScreen(it)
+//        ,
+//                {
+//                    if (wallet?.isPromo == true) {
+//                        moveToSwapTab()
+//             else {
+//                        wallet?.address?.let { it1 -> viewModel.save(it1, it, false) }
+//            
+//        ,
+//                {
+//                    if (wallet?.isPromo == true) {
+//                        moveToSwapTab()
+//             else {
+//                        wallet?.address?.let { it1 -> viewModel.save(it1, it, true) }
+//            
+//        ,
+//                {
+//                    if (wallet?.isPromo == true && it.tokenSymbol == getString(R.string.promo_source_token)) {
+//                        showAlertWithoutIcon(message = getString(R.string.can_not_tranfer_token))
+//             else {
+//                        wallet?.address?.let { it1 -> viewModel.saveSendToken(it1, it) }
+//            
+//
+//        
+//            )
         tokenAdapter?.mode = Attributes.Mode.Single
         binding.rvToken.adapter = tokenAdapter
 
