@@ -41,9 +41,18 @@ class TokenAdapter(
 ) {
     private var isEth = false
 
+    private var orderType: OrderType = OrderType.NAME
+
+    private var isHide = false
+
 
     override fun getSwipeLayoutResourceId(position: Int): Int {
         return R.id.swipe
+    }
+
+    fun hideBalance(isHide: Boolean) {
+        this.isHide = isHide
+        notifyDataSetChanged()
     }
 
     fun showEth(boolean: Boolean) {
@@ -51,15 +60,74 @@ class TokenAdapter(
         notifyDataSetChanged()
     }
 
-    fun submitFilterList(tokens: List<Token>, type: OrderType = OrderType.NAME) {
-        submitList(listOf())
-        val orderList = if (type == OrderType.NAME) {
-            tokens.sortedBy { it.tokenSymbol }
+    fun submitFilterList(tokens: List<Token>, forceUpdate: Boolean = false) {
+        val orderList = when (orderType) {
+            OrderType.NAME -> tokens.sortedBy { it.tokenSymbol }
+            OrderType.BALANCE -> tokens.sortedByDescending { it.currentBalance }
+            OrderType.ETH_ASC -> tokens.sortedBy {
+                it.rateEthNow
+    
+            OrderType.ETH_DESC -> tokens.sortedByDescending {
+                it.rateEthNow
+    
+            OrderType.USD_ASC -> tokens.sortedBy { it.rateUsdNow }
+            OrderType.USD_DESC -> tokens.sortedByDescending {
+                it.rateUsdNow
+    
+            OrderType.CHANGE_24H_ASC -> tokens.sortedBy {
+                it.change24hValue(isEth)
+    
+            OrderType.CHANGE24H_DESC -> tokens.sortedByDescending {
+                it.change24hValue(isEth)
+    
+
+        if (forceUpdate) {
+            submitList(null)
  else {
-            tokens.sortedByDescending { it.currentBalance }
+            submitList(listOf())
 
         submitList(orderList)
     }
+
+    fun toggleEth(): OrderType {
+        return when (orderType) {
+            OrderType.ETH_ASC -> OrderType.ETH_DESC
+            OrderType.ETH_DESC -> OrderType.ETH_ASC
+            else -> OrderType.ETH_DESC
+
+    }
+
+    fun toggleUsd(): OrderType {
+        return when (orderType) {
+            OrderType.USD_ASC -> OrderType.USD_DESC
+            OrderType.USD_DESC -> OrderType.USD_ASC
+            else -> OrderType.USD_DESC
+
+    }
+
+    fun toggleChange24h(): OrderType {
+        return when (orderType) {
+            OrderType.CHANGE24H_DESC -> OrderType.CHANGE_24H_ASC
+            OrderType.CHANGE_24H_ASC -> OrderType.CHANGE24H_DESC
+            else -> OrderType.CHANGE24H_DESC
+
+    }
+
+    fun toggleNameBal(): OrderType {
+        return when (orderType) {
+            OrderType.NAME -> OrderType.BALANCE
+            OrderType.BALANCE -> OrderType.NAME
+            else -> OrderType.NAME
+
+    }
+
+    val isNotNameBalOrder: Boolean
+        get() = orderType != OrderType.NAME && orderType != OrderType.BALANCE
+
+    val isAsc: Boolean
+        get() = orderType == OrderType.ETH_ASC ||
+            orderType == OrderType.USD_ASC ||
+            orderType == OrderType.CHANGE_24H_ASC
 
 
     override fun onBindViewHolder(
@@ -73,6 +141,7 @@ class TokenAdapter(
     }
 
     override fun bind(binding: ItemTokenBinding, item: Token) {
+        item.isHide = isHide
         binding.setVariable(BR.token, item)
         binding.lnItem.setOnClickListener {
             onTokenClick?.invoke(item)
@@ -155,8 +224,14 @@ class TokenAdapter(
             parent,
             false
         )
+
+    fun setOrderBy(type: OrderType) {
+        this.orderType = type
+
+        submitFilterList(getData(), true)
+    }
 }
 
 enum class OrderType {
-    NAME, BALANCE
+    NAME, BALANCE, ETH_ASC, ETH_DESC, USD_ASC, USD_DESC, CHANGE_24H_ASC, CHANGE24H_DESC
 }

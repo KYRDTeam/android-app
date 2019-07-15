@@ -138,7 +138,7 @@
     <string name="swap_done">Your Swap is Done</string>
     <string name="maker_time">Time: %s</string>
     <string name="maker_price">Price: %s</string>
-    <string name="change_24h">24h ch%</string>
+    <string name="change_24h">24h%</string>
     <string name="recipient_address">Recipient address</string>
     <string name="recent_contact">Recent Contact</string>
     <string name="more">more</string>
@@ -463,5 +463,7 @@
     <string name="setting_medium_url">https://medium.com/@kyberswap</string>
     <string name="setting_linkedin_url">https://www.linkedin.com/company/kybernetwork</string>
     <string name="setting_share_info">I just found an awesome wallet app. Check out here https://apple.co/2USHOtx</string>
+    <string name="item_token_header_bal">Bal</string>
+    <string name="token_new">New</string>
 
 </resources>
