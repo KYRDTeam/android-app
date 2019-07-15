@@ -55,7 +55,10 @@ class BalanceDataRepository @Inject constructor(
                                 }
 
                                 if (currentToken != null) {
-                                    token.copy(wallets = currentToken.wallets)
+                                    token.copy(
+                                        wallets = currentToken.wallets,
+                                        fav = currentToken.fav
+                                    )
                                 } else {
                                     token
                                 }
@@ -103,11 +106,12 @@ class BalanceDataRepository @Inject constructor(
                 it.tokenAddress == token.tokenAddress
             }
 
-            val updatedWithBalance = if (currentToken == null) {
-                token
-            } else {
-                token.copy(wallets = currentToken.wallets)
-            }
+            val updatedWithBalance = currentToken?.copy(
+                rateUsdNow = token.rateUsdNow,
+                rateEthNow = token.rateEthNow,
+                changeEth24h = token.changeEth24h,
+                changeUsd24h = token.changeUsd24h
+            ) ?: token
             tokenClient.getBalance(updatedWithBalance)
         }
         tokenDao.updateTokens(startListWithBalance)

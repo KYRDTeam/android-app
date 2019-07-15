@@ -41,7 +41,9 @@ data class Token(
     val priority: Boolean = false,
     val spLimitOrder: Boolean = false,
     @TypeConverters(WalletBalanceTypeConverter::class)
-    val wallets: List<WalletBalance> = listOf()
+    val wallets: List<WalletBalance> = listOf(),
+    val fav: Boolean = false,
+    val isOther: Boolean = false
 ) : Parcelable {
 
     @IgnoredOnParcel
@@ -90,24 +92,17 @@ data class Token(
         get() = if (isETHWETH) WETH_SYMBOL else tokenSymbol
 
     fun with(entity: TokenCurrencyEntity): Token {
-        return Token(
-            this.timestamp,
-            entity.symbol,
-            entity.name,
-            entity.address,
-            entity.decimals,
-            this.rateEthNow,
-            this.changeEth24h,
-            this.rateUsdNow,
-            this.changeUsd24h,
-//            this.currentBalance,
-            entity.cgId,
-            entity.gasApprove,
-            entity.gasLimit,
-            entity.listingTime,
-            entity.priority,
-            entity.spLimitOrder ?: false,
-            this.wallets
+        return this.copy(
+            tokenSymbol = entity.symbol,
+            tokenName = entity.name,
+            tokenAddress = entity.address,
+            tokenDecimal = entity.decimals,
+            cgId = entity.cgId,
+            gasApprove = entity.gasApprove,
+            gasLimit = entity.gasLimit,
+            listingTime = entity.listingTime,
+            priority = entity.priority,
+            spLimitOrder = entity.spLimitOrder ?: false
         )
     }
 
@@ -224,7 +219,8 @@ data class Token(
             this.rateEthNow == other.rateEthNow &&
             this.rateUsdNow == other.rateUsdNow &&
             this.changeUsd24h == other.changeUsd24h &&
-            this.changeEth24h == other.changeEth24h
+            this.changeEth24h == other.changeEth24h &&
+            this.fav == other.fav
     }
 
     fun change24hStatus(isEth: Boolean): Int {

@@ -9,6 +9,7 @@
         <variable
             name="wallet"
             type="com.kyberswap.android.domain.model.Wallet" />
+
     </data>
 
     <FrameLayout
@@ -151,16 +152,18 @@
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/tvOther"
+                    android:id="@+id/tvFavOther"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginStart="26dp"
                     android:backgroundTint="@color/balance_text_view_color"
                     android:checked="false"
                     android:clickable="true"
+                    android:drawableEnd="@drawable/ic_arrow_drop_down_toggle"
+                    android:drawablePadding="8dp"
                     android:focusable="true"
                     android:gravity="center"
-                    android:text="@string/other"
+                    android:text="@string/favourite"
                     android:textColor="@color/balance_text_view_color"
                     android:textSize="14sp" />
 
@@ -187,15 +190,44 @@
 
             </LinearLayout>
 
-            <com.kyberswap.android.presentation.common.CustomViewPager
-                android:id="@+id/vpBalance"
+            <!--<com.kyberswap.android.presentation.common.CustomViewPager-->
+            <!--android:id="@+id/vpBalance"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="0dp"-->
+            <!--android:background="@android:color/white"-->
+            <!--app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@+id/linearLayout" />-->
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:background="@android:color/white"
+                android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+                <include
+                    android:id="@+id/header"
+                    layout="@layout/layout_token_header" />
+
+                <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                    android:id="@+id/swipeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvToken"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/white" />
+                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+            </LinearLayout>
 
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/group"

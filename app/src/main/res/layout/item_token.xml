@@ -12,6 +12,8 @@
         <variable
             name="showEth"
             type="Boolean" />
+
+        <import type="android.view.View" />
     </data>
 
     <com.daimajia.swipe.SwipeLayout
@@ -104,8 +106,9 @@
                 android:layout_marginStart="8dp"
                 android:text="@string/token_new"
                 android:textColor="#f96363"
+
                 android:textSize="10sp"
-                android:visibility="gone"
+                android:visibility="@{token.shouldShowAsNew ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="@+id/textView121"
                 app:layout_constraintStart_toEndOf="@+id/textView121"
                 app:layout_constraintTop_toTopOf="@+id/textView121"
@@ -183,14 +186,16 @@
                 android:id="@+id/imgFav"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/ic_token_favorite"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="8dp"
+                android:padding="8dp"
+                android:src="@drawable/ic_token_favorite_selective"
                 app:layout_constraintBottom_toBottomOf="@+id/tvChange24h"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/tvChange24h"
-                app:layout_constraintTop_toTopOf="@+id/tvChange24h" />
+                app:layout_constraintTop_toTopOf="@+id/tvChange24h"
+                app:selected="@{token.fav}" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -83,6 +83,7 @@
     <string name="balance">Balance</string>
     <string name="kyber_list">Kyber List</string>
     <string name="other">Other</string>
+    <string name="favourite">Favourite</string>
     <string name="name">Name</string>
     <string name="limit_order">Limit Order</string>
     <string name="profile">Profile</string>
@@ -465,5 +466,7 @@
     <string name="setting_share_info">I just found an awesome wallet app. Check out here https://apple.co/2USHOtx</string>
     <string name="item_token_header_bal">Bal</string>
     <string name="token_new">New</string>
+    <string name="add_fav_success">Successfully added to your favourite</string>
+    <string name="remove_fav_success">Removed from your favourite</string>
 
 </resources>

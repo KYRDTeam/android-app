@@ -25,7 +25,8 @@ class TokenAdapter(
     private val onTokenClick: ((Token) -> Unit)?,
     private val onBuyClick: ((Token) -> Unit)?,
     private val onSellClick: ((Token) -> Unit)?,
-    private val onSendClick: ((Token) -> Unit)?
+    private val onSendClick: ((Token) -> Unit)?,
+    private val onFavClick: ((Token) -> Unit)?
 
 ) : DataBoundListSwipeAdapter<Token, ItemTokenBinding>(
     appExecutors,
@@ -45,6 +46,9 @@ class TokenAdapter(
 
     private var isHide = false
 
+    private var tokenType: TokenType = TokenType.LISTED
+
+    private var tokenList = mutableListOf<Token>()
 
     override fun getSwipeLayoutResourceId(position: Int): Int {
         return R.id.swipe
@@ -58,6 +62,15 @@ class TokenAdapter(
     fun showEth(boolean: Boolean) {
         isEth = boolean
         notifyDataSetChanged()
+    }
+
+    fun setFullTokenList(tokenList: List<Token>) {
+        this.tokenList.clear()
+        this.tokenList.addAll(tokenList)
+    }
+
+    fun getFullTokenList(): List<Token> {
+        return tokenList
     }
 
     fun submitFilterList(tokens: List<Token>, forceUpdate: Boolean = false) {
@@ -81,12 +94,25 @@ class TokenAdapter(
                 it.change24hValue(isEth)
             }
         }
+
+        val filterList = when (tokenType) {
+            TokenType.LISTED -> orderList.filter { it.isListed }
+            TokenType.FAVOURITE -> orderList.filter {
+                it.fav
+            }
+            TokenType.OTHER -> orderList.filter {
+                it.isOther
+            }
+        }
+
         if (forceUpdate) {
             submitList(null)
         } else {
             submitList(listOf())
         }
-        submitList(orderList)
+
+
+        submitList(filterList)
     }
 
     fun toggleEth(): OrderType {
@@ -170,6 +196,14 @@ class TokenAdapter(
 
         }
 
+        binding.imgFav.setOnClickListener {
+            val prevSelected = it.isSelected
+            it.isSelected = !prevSelected
+            handler.post {
+                onFavClick?.invoke(item.copy(fav = !prevSelected))
+            }
+        }
+
         binding.swipe.addSwipeListener(object : SimpleSwipeListener() {
             override fun onStartOpen(layout: SwipeLayout?) {
                 mItemManger.closeAllExcept(layout)
@@ -230,8 +264,17 @@ class TokenAdapter(
 
         submitFilterList(getData(), true)
     }
+
+    fun setTokenType(tokenType: TokenType) {
+        this.tokenType = tokenType
+        submitFilterList(tokenList, true)
+    }
 }
 
 enum class OrderType {
     NAME, BALANCE, ETH_ASC, ETH_DESC, USD_ASC, USD_DESC, CHANGE_24H_ASC, CHANGE24H_DESC
+}
+
+enum class TokenType {
+    LISTED, FAVOURITE, OTHER
 }
