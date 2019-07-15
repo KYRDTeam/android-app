@@ -83,6 +83,12 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             }
         })
 
+        viewModel.visibilityCallback.observe(viewLifecycleOwner, Observer {
+            it?.peekContent()?.let { visibility ->
+                hideBalance(visibility)
+            }
+        })
+
 
         val adapter = BalancePagerAdapter(
             childFragmentManager
@@ -119,7 +125,12 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     (activity as MainActivity).getCurrentFragment()
                 )
             }
+        }
 
+        binding.imgVisibility.setOnClickListener {
+            val selected = !it.isSelected
+            it.isSelected = selected
+            viewModel.updateVisibility(selected)
         }
 
         binding.imgMenu.setOnClickListener {
@@ -152,6 +163,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             }
             false
         }
+    }
+
+    private fun hideBalance(isHide: Boolean) {
+        binding.tvBalance.text = if (isHide) "******" else binding.wallet?.balance
     }
 
     override fun showNotification(showNotification: Boolean) {

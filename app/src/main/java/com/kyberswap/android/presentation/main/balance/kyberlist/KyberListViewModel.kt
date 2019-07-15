@@ -41,7 +41,12 @@ class KyberListViewModel @Inject constructor(
     val searchedKeywordsCallback: LiveData<Event<String>>
         get() = _searchedKeywords
 
+    val visibilityCallback: LiveData<Event<Boolean>>
+        get() = _visibility
+
     private val _searchedKeywords = MutableLiveData<Event<String>>()
+
+    private val _visibility = MutableLiveData<Event<Boolean>>()
 
     private val _saveSwapDataStateStateCallback = MutableLiveData<Event<SaveSwapDataState>>()
     val saveTokenSelectionCallback: LiveData<Event<SaveSwapDataState>>
@@ -63,6 +68,10 @@ class KyberListViewModel @Inject constructor(
 
     fun updateSearchKeyword(keyword: String) {
         _searchedKeywords.value = Event(keyword)
+    }
+
+    fun updateVisibility(isVisible: Boolean) {
+        _visibility.value = Event(isVisible)
     }
 
     fun getTokenBalance(address: String) {

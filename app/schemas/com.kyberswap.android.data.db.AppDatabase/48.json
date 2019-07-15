@@ -2,12 +2,18 @@
   "formatVersion": 1,
   "database": {
     "version": 48,
-    "identityHash": "9636bf02394474c10dce94f985ef1c0e",
+    "identityHash": "59f56e941e550928fcb2c772969c5bd3",
     "entities": [
       {
         "tableName": "tokens",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`timestamp` INTEGER NOT NULL, `tokenSymbol` TEXT NOT NULL, `tokenName` TEXT NOT NULL, `tokenAddress` TEXT NOT NULL, `tokenDecimal` INTEGER NOT NULL, `rateEthNow` TEXT NOT NULL, `changeEth24h` TEXT NOT NULL, `rateUsdNow` TEXT NOT NULL, `changeUsd24h` TEXT NOT NULL, `cgId` TEXT NOT NULL, `gasApprove` TEXT NOT NULL, `gasLimit` TEXT NOT NULL, `listingTime` INTEGER NOT NULL, `priority` INTEGER NOT NULL, `spLimitOrder` INTEGER NOT NULL, `wallets` TEXT NOT NULL, PRIMARY KEY(`tokenSymbol`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`isHide` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL, `tokenSymbol` TEXT NOT NULL, `tokenName` TEXT NOT NULL, `tokenAddress` TEXT NOT NULL, `tokenDecimal` INTEGER NOT NULL, `rateEthNow` TEXT NOT NULL, `changeEth24h` TEXT NOT NULL, `rateUsdNow` TEXT NOT NULL, `changeUsd24h` TEXT NOT NULL, `cgId` TEXT NOT NULL, `gasApprove` TEXT NOT NULL, `gasLimit` TEXT NOT NULL, `listingTime` INTEGER NOT NULL, `priority` INTEGER NOT NULL, `spLimitOrder` INTEGER NOT NULL, `wallets` TEXT NOT NULL, PRIMARY KEY(`tokenSymbol`))",
         "fields": [
+          {
+            "fieldPath": "isHide",
+            "columnName": "isHide",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
           {
             "fieldPath": "timestamp",
             "columnName": "timestamp",
@@ -252,7 +258,7 @@
       },
       {
         "tableName": "swaps",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`walletAddress` TEXT NOT NULL, `sourceAmount` TEXT NOT NULL, `destAmount` TEXT NOT NULL, `expectedRate` TEXT NOT NULL, `slippageRate` TEXT NOT NULL, `gasPrice` TEXT NOT NULL, `gasLimit` TEXT NOT NULL, `marketRate` TEXT NOT NULL, `minAcceptedRatePercent` TEXT NOT NULL, `source_timestamp` INTEGER NOT NULL, `source_tokenSymbol` TEXT NOT NULL, `source_tokenName` TEXT NOT NULL, `source_tokenAddress` TEXT NOT NULL, `source_tokenDecimal` INTEGER NOT NULL, `source_rateEthNow` TEXT NOT NULL, `source_changeEth24h` TEXT NOT NULL, `source_rateUsdNow` TEXT NOT NULL, `source_changeUsd24h` TEXT NOT NULL, `source_cgId` TEXT NOT NULL, `source_gasApprove` TEXT NOT NULL, `source_gasLimit` TEXT NOT NULL, `source_listingTime` INTEGER NOT NULL, `source_priority` INTEGER NOT NULL, `source_spLimitOrder` INTEGER NOT NULL, `source_wallets` TEXT NOT NULL, `dest_timestamp` INTEGER NOT NULL, `dest_tokenSymbol` TEXT NOT NULL, `dest_tokenName` TEXT NOT NULL, `dest_tokenAddress` TEXT NOT NULL, `dest_tokenDecimal` INTEGER NOT NULL, `dest_rateEthNow` TEXT NOT NULL, `dest_changeEth24h` TEXT NOT NULL, `dest_rateUsdNow` TEXT NOT NULL, `dest_changeUsd24h` TEXT NOT NULL, `dest_cgId` TEXT NOT NULL, `dest_gasApprove` TEXT NOT NULL, `dest_gasLimit` TEXT NOT NULL, `dest_listingTime` INTEGER NOT NULL, `dest_priority` INTEGER NOT NULL, `dest_spLimitOrder` INTEGER NOT NULL, `dest_wallets` TEXT NOT NULL, `gas_fast` TEXT NOT NULL, `gas_standard` TEXT NOT NULL, `gas_low` TEXT NOT NULL, PRIMARY KEY(`walletAddress`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`walletAddress` TEXT NOT NULL, `sourceAmount` TEXT NOT NULL, `destAmount` TEXT NOT NULL, `expectedRate` TEXT NOT NULL, `slippageRate` TEXT NOT NULL, `gasPrice` TEXT NOT NULL, `gasLimit` TEXT NOT NULL, `marketRate` TEXT NOT NULL, `minAcceptedRatePercent` TEXT NOT NULL, `source_isHide` INTEGER NOT NULL, `source_timestamp` INTEGER NOT NULL, `source_tokenSymbol` TEXT NOT NULL, `source_tokenName` TEXT NOT NULL, `source_tokenAddress` TEXT NOT NULL, `source_tokenDecimal` INTEGER NOT NULL, `source_rateEthNow` TEXT NOT NULL, `source_changeEth24h` TEXT NOT NULL, `source_rateUsdNow` TEXT NOT NULL, `source_changeUsd24h` TEXT NOT NULL, `source_cgId` TEXT NOT NULL, `source_gasApprove` TEXT NOT NULL, `source_gasLimit` TEXT NOT NULL, `source_listingTime` INTEGER NOT NULL, `source_priority` INTEGER NOT NULL, `source_spLimitOrder` INTEGER NOT NULL, `source_wallets` TEXT NOT NULL, `dest_isHide` INTEGER NOT NULL, `dest_timestamp` INTEGER NOT NULL, `dest_tokenSymbol` TEXT NOT NULL, `dest_tokenName` TEXT NOT NULL, `dest_tokenAddress` TEXT NOT NULL, `dest_tokenDecimal` INTEGER NOT NULL, `dest_rateEthNow` TEXT NOT NULL, `dest_changeEth24h` TEXT NOT NULL, `dest_rateUsdNow` TEXT NOT NULL, `dest_changeUsd24h` TEXT NOT NULL, `dest_cgId` TEXT NOT NULL, `dest_gasApprove` TEXT NOT NULL, `dest_gasLimit` TEXT NOT NULL, `dest_listingTime` INTEGER NOT NULL, `dest_priority` INTEGER NOT NULL, `dest_spLimitOrder` INTEGER NOT NULL, `dest_wallets` TEXT NOT NULL, `gas_fast` TEXT NOT NULL, `gas_standard` TEXT NOT NULL, `gas_low` TEXT NOT NULL, PRIMARY KEY(`walletAddress`))",
         "fields": [
           {
             "fieldPath": "walletAddress",
@@ -306,6 +312,12 @@
             "fieldPath": "minAcceptedRatePercent",
             "columnName": "minAcceptedRatePercent",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenSource.isHide",
+            "columnName": "source_isHide",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -402,6 +414,12 @@
             "fieldPath": "tokenSource.wallets",
             "columnName": "source_wallets",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenDest.isHide",
+            "columnName": "dest_isHide",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -530,7 +548,7 @@
       },
       {
         "tableName": "sends",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`walletAddress` TEXT NOT NULL, `sourceAmount` TEXT NOT NULL, `gasPrice` TEXT NOT NULL, `gasLimit` TEXT NOT NULL, `token_timestamp` INTEGER NOT NULL, `token_tokenSymbol` TEXT NOT NULL, `token_tokenName` TEXT NOT NULL, `token_tokenAddress` TEXT NOT NULL, `token_tokenDecimal` INTEGER NOT NULL, `token_rateEthNow` TEXT NOT NULL, `token_changeEth24h` TEXT NOT NULL, `token_rateUsdNow` TEXT NOT NULL, `token_changeUsd24h` TEXT NOT NULL, `token_cgId` TEXT NOT NULL, `token_gasApprove` TEXT NOT NULL, `token_gasLimit` TEXT NOT NULL, `token_listingTime` INTEGER NOT NULL, `token_priority` INTEGER NOT NULL, `token_spLimitOrder` INTEGER NOT NULL, `token_wallets` TEXT NOT NULL, `fast` TEXT NOT NULL, `standard` TEXT NOT NULL, `low` TEXT NOT NULL, `contact_walletAddress` TEXT NOT NULL, `contact_address` TEXT NOT NULL, `contact_name` TEXT NOT NULL, `eth_timestamp` INTEGER NOT NULL, `eth_tokenSymbol` TEXT NOT NULL, `eth_tokenName` TEXT NOT NULL, `eth_tokenAddress` TEXT NOT NULL, `eth_tokenDecimal` INTEGER NOT NULL, `eth_rateEthNow` TEXT NOT NULL, `eth_changeEth24h` TEXT NOT NULL, `eth_rateUsdNow` TEXT NOT NULL, `eth_changeUsd24h` TEXT NOT NULL, `eth_cgId` TEXT NOT NULL, `eth_gasApprove` TEXT NOT NULL, `eth_gasLimit` TEXT NOT NULL, `eth_listingTime` INTEGER NOT NULL, `eth_priority` INTEGER NOT NULL, `eth_spLimitOrder` INTEGER NOT NULL, `eth_wallets` TEXT NOT NULL, PRIMARY KEY(`walletAddress`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`walletAddress` TEXT NOT NULL, `sourceAmount` TEXT NOT NULL, `gasPrice` TEXT NOT NULL, `gasLimit` TEXT NOT NULL, `token_isHide` INTEGER NOT NULL, `token_timestamp` INTEGER NOT NULL, `token_tokenSymbol` TEXT NOT NULL, `token_tokenName` TEXT NOT NULL, `token_tokenAddress` TEXT NOT NULL, `token_tokenDecimal` INTEGER NOT NULL, `token_rateEthNow` TEXT NOT NULL, `token_changeEth24h` TEXT NOT NULL, `token_rateUsdNow` TEXT NOT NULL, `token_changeUsd24h` TEXT NOT NULL, `token_cgId` TEXT NOT NULL, `token_gasApprove` TEXT NOT NULL, `token_gasLimit` TEXT NOT NULL, `token_listingTime` INTEGER NOT NULL, `token_priority` INTEGER NOT NULL, `token_spLimitOrder` INTEGER NOT NULL, `token_wallets` TEXT NOT NULL, `fast` TEXT NOT NULL, `standard` TEXT NOT NULL, `low` TEXT NOT NULL, `contact_walletAddress` TEXT NOT NULL, `contact_address` TEXT NOT NULL, `contact_name` TEXT NOT NULL, `eth_isHide` INTEGER NOT NULL, `eth_timestamp` INTEGER NOT NULL, `eth_tokenSymbol` TEXT NOT NULL, `eth_tokenName` TEXT NOT NULL, `eth_tokenAddress` TEXT NOT NULL, `eth_tokenDecimal` INTEGER NOT NULL, `eth_rateEthNow` TEXT NOT NULL, `eth_changeEth24h` TEXT NOT NULL, `eth_rateUsdNow` TEXT NOT NULL, `eth_changeUsd24h` TEXT NOT NULL, `eth_cgId` TEXT NOT NULL, `eth_gasApprove` TEXT NOT NULL, `eth_gasLimit` TEXT NOT NULL, `eth_listingTime` INTEGER NOT NULL, `eth_priority` INTEGER NOT NULL, `eth_spLimitOrder` INTEGER NOT NULL, `eth_wallets` TEXT NOT NULL, PRIMARY KEY(`walletAddress`))",
         "fields": [
           {
             "fieldPath": "walletAddress",
@@ -554,6 +572,12 @@
             "fieldPath": "gasLimit",
             "columnName": "gasLimit",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenSource.isHide",
+            "columnName": "token_isHide",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -686,6 +710,12 @@
             "fieldPath": "contact.name",
             "columnName": "contact_name",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ethToken.isHide",
+            "columnName": "eth_isHide",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -1488,7 +1518,7 @@
       },
       {
         "tableName": "current_orders",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`userAddr` TEXT NOT NULL, `srcAmount` TEXT NOT NULL, `marketRate` TEXT NOT NULL, `expectedRate` TEXT NOT NULL, `minRate` TEXT NOT NULL, `destAddr` TEXT NOT NULL, `nonce` TEXT NOT NULL, `fee` TEXT NOT NULL, `status` TEXT NOT NULL, `txHash` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `gasLimit` TEXT NOT NULL, `gasPrice` TEXT NOT NULL, `source_timestamp` INTEGER NOT NULL, `source_tokenSymbol` TEXT NOT NULL, `source_tokenName` TEXT NOT NULL, `source_tokenAddress` TEXT NOT NULL, `source_tokenDecimal` INTEGER NOT NULL, `source_rateEthNow` TEXT NOT NULL, `source_changeEth24h` TEXT NOT NULL, `source_rateUsdNow` TEXT NOT NULL, `source_changeUsd24h` TEXT NOT NULL, `source_cgId` TEXT NOT NULL, `source_gasApprove` TEXT NOT NULL, `source_gasLimit` TEXT NOT NULL, `source_listingTime` INTEGER NOT NULL, `source_priority` INTEGER NOT NULL, `source_spLimitOrder` INTEGER NOT NULL, `source_wallets` TEXT NOT NULL, `dest_timestamp` INTEGER NOT NULL, `dest_tokenSymbol` TEXT NOT NULL, `dest_tokenName` TEXT NOT NULL, `dest_tokenAddress` TEXT NOT NULL, `dest_tokenDecimal` INTEGER NOT NULL, `dest_rateEthNow` TEXT NOT NULL, `dest_changeEth24h` TEXT NOT NULL, `dest_rateUsdNow` TEXT NOT NULL, `dest_changeUsd24h` TEXT NOT NULL, `dest_cgId` TEXT NOT NULL, `dest_gasApprove` TEXT NOT NULL, `dest_gasLimit` TEXT NOT NULL, `dest_listingTime` INTEGER NOT NULL, `dest_priority` INTEGER NOT NULL, `dest_spLimitOrder` INTEGER NOT NULL, `dest_wallets` TEXT NOT NULL, `eth_timestamp` INTEGER NOT NULL, `eth_tokenSymbol` TEXT NOT NULL, `eth_tokenName` TEXT NOT NULL, `eth_tokenAddress` TEXT NOT NULL, `eth_tokenDecimal` INTEGER NOT NULL, `eth_rateEthNow` TEXT NOT NULL, `eth_changeEth24h` TEXT NOT NULL, `eth_rateUsdNow` TEXT NOT NULL, `eth_changeUsd24h` TEXT NOT NULL, `eth_cgId` TEXT NOT NULL, `eth_gasApprove` TEXT NOT NULL, `eth_gasLimit` TEXT NOT NULL, `eth_listingTime` INTEGER NOT NULL, `eth_priority` INTEGER NOT NULL, `eth_spLimitOrder` INTEGER NOT NULL, `eth_wallets` TEXT NOT NULL, `weth_timestamp` INTEGER NOT NULL, `weth_tokenSymbol` TEXT NOT NULL, `weth_tokenName` TEXT NOT NULL, `weth_tokenAddress` TEXT NOT NULL, `weth_tokenDecimal` INTEGER NOT NULL, `weth_rateEthNow` TEXT NOT NULL, `weth_changeEth24h` TEXT NOT NULL, `weth_rateUsdNow` TEXT NOT NULL, `weth_changeUsd24h` TEXT NOT NULL, `weth_cgId` TEXT NOT NULL, `weth_gasApprove` TEXT NOT NULL, `weth_gasLimit` TEXT NOT NULL, `weth_listingTime` INTEGER NOT NULL, `weth_priority` INTEGER NOT NULL, `weth_spLimitOrder` INTEGER NOT NULL, `weth_wallets` TEXT NOT NULL, PRIMARY KEY(`userAddr`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`userAddr` TEXT NOT NULL, `srcAmount` TEXT NOT NULL, `marketRate` TEXT NOT NULL, `expectedRate` TEXT NOT NULL, `minRate` TEXT NOT NULL, `destAddr` TEXT NOT NULL, `nonce` TEXT NOT NULL, `fee` TEXT NOT NULL, `status` TEXT NOT NULL, `txHash` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `gasLimit` TEXT NOT NULL, `gasPrice` TEXT NOT NULL, `source_isHide` INTEGER NOT NULL, `source_timestamp` INTEGER NOT NULL, `source_tokenSymbol` TEXT NOT NULL, `source_tokenName` TEXT NOT NULL, `source_tokenAddress` TEXT NOT NULL, `source_tokenDecimal` INTEGER NOT NULL, `source_rateEthNow` TEXT NOT NULL, `source_changeEth24h` TEXT NOT NULL, `source_rateUsdNow` TEXT NOT NULL, `source_changeUsd24h` TEXT NOT NULL, `source_cgId` TEXT NOT NULL, `source_gasApprove` TEXT NOT NULL, `source_gasLimit` TEXT NOT NULL, `source_listingTime` INTEGER NOT NULL, `source_priority` INTEGER NOT NULL, `source_spLimitOrder` INTEGER NOT NULL, `source_wallets` TEXT NOT NULL, `dest_isHide` INTEGER NOT NULL, `dest_timestamp` INTEGER NOT NULL, `dest_tokenSymbol` TEXT NOT NULL, `dest_tokenName` TEXT NOT NULL, `dest_tokenAddress` TEXT NOT NULL, `dest_tokenDecimal` INTEGER NOT NULL, `dest_rateEthNow` TEXT NOT NULL, `dest_changeEth24h` TEXT NOT NULL, `dest_rateUsdNow` TEXT NOT NULL, `dest_changeUsd24h` TEXT NOT NULL, `dest_cgId` TEXT NOT NULL, `dest_gasApprove` TEXT NOT NULL, `dest_gasLimit` TEXT NOT NULL, `dest_listingTime` INTEGER NOT NULL, `dest_priority` INTEGER NOT NULL, `dest_spLimitOrder` INTEGER NOT NULL, `dest_wallets` TEXT NOT NULL, `eth_isHide` INTEGER NOT NULL, `eth_timestamp` INTEGER NOT NULL, `eth_tokenSymbol` TEXT NOT NULL, `eth_tokenName` TEXT NOT NULL, `eth_tokenAddress` TEXT NOT NULL, `eth_tokenDecimal` INTEGER NOT NULL, `eth_rateEthNow` TEXT NOT NULL, `eth_changeEth24h` TEXT NOT NULL, `eth_rateUsdNow` TEXT NOT NULL, `eth_changeUsd24h` TEXT NOT NULL, `eth_cgId` TEXT NOT NULL, `eth_gasApprove` TEXT NOT NULL, `eth_gasLimit` TEXT NOT NULL, `eth_listingTime` INTEGER NOT NULL, `eth_priority` INTEGER NOT NULL, `eth_spLimitOrder` INTEGER NOT NULL, `eth_wallets` TEXT NOT NULL, `weth_isHide` INTEGER NOT NULL, `weth_timestamp` INTEGER NOT NULL, `weth_tokenSymbol` TEXT NOT NULL, `weth_tokenName` TEXT NOT NULL, `weth_tokenAddress` TEXT NOT NULL, `weth_tokenDecimal` INTEGER NOT NULL, `weth_rateEthNow` TEXT NOT NULL, `weth_changeEth24h` TEXT NOT NULL, `weth_rateUsdNow` TEXT NOT NULL, `weth_changeUsd24h` TEXT NOT NULL, `weth_cgId` TEXT NOT NULL, `weth_gasApprove` TEXT NOT NULL, `weth_gasLimit` TEXT NOT NULL, `weth_listingTime` INTEGER NOT NULL, `weth_priority` INTEGER NOT NULL, `weth_spLimitOrder` INTEGER NOT NULL, `weth_wallets` TEXT NOT NULL, PRIMARY KEY(`userAddr`))",
         "fields": [
           {
             "fieldPath": "userAddr",
@@ -1572,6 +1602,12 @@
             "fieldPath": "gasPrice",
             "columnName": "gasPrice",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenSource.isHide",
+            "columnName": "source_isHide",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -1671,6 +1707,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "tokenDest.isHide",
+            "columnName": "dest_isHide",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "tokenDest.timestamp",
             "columnName": "dest_timestamp",
             "affinity": "INTEGER",
@@ -1767,6 +1809,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "ethToken.isHide",
+            "columnName": "eth_isHide",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "ethToken.timestamp",
             "columnName": "eth_timestamp",
             "affinity": "INTEGER",
@@ -1860,6 +1908,12 @@
             "fieldPath": "ethToken.wallets",
             "columnName": "eth_wallets",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wethToken.isHide",
+            "columnName": "weth_isHide",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -2014,7 +2068,7 @@
       },
       {
         "tableName": "alerts",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `base` TEXT NOT NULL, `symbol` TEXT NOT NULL, `alertType` TEXT NOT NULL, `alertPrice` TEXT NOT NULL, `createdAtPrice` TEXT NOT NULL, `percentChange` TEXT NOT NULL, `isAbove` INTEGER NOT NULL, `status` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `updatedAt` TEXT NOT NULL, `triggeredAt` TEXT NOT NULL, `filledAt` TEXT NOT NULL, `rank` INTEGER NOT NULL, `userEmail` TEXT NOT NULL, `telegramAccount` TEXT NOT NULL, `reward` TEXT NOT NULL, `message` TEXT, `state` TEXT NOT NULL, `walletAddress` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `tokenSymbol` TEXT NOT NULL, `tokenName` TEXT NOT NULL, `tokenAddress` TEXT NOT NULL, `tokenDecimal` INTEGER NOT NULL, `rateEthNow` TEXT NOT NULL, `changeEth24h` TEXT NOT NULL, `rateUsdNow` TEXT NOT NULL, `changeUsd24h` TEXT NOT NULL, `cgId` TEXT NOT NULL, `gasApprove` TEXT NOT NULL, `gasLimit` TEXT NOT NULL, `listingTime` INTEGER NOT NULL, `priority` INTEGER NOT NULL, `spLimitOrder` INTEGER NOT NULL, `wallets` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `base` TEXT NOT NULL, `symbol` TEXT NOT NULL, `alertType` TEXT NOT NULL, `alertPrice` TEXT NOT NULL, `createdAtPrice` TEXT NOT NULL, `percentChange` TEXT NOT NULL, `isAbove` INTEGER NOT NULL, `status` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `updatedAt` TEXT NOT NULL, `triggeredAt` TEXT NOT NULL, `filledAt` TEXT NOT NULL, `rank` INTEGER NOT NULL, `userEmail` TEXT NOT NULL, `telegramAccount` TEXT NOT NULL, `reward` TEXT NOT NULL, `message` TEXT, `state` TEXT NOT NULL, `walletAddress` TEXT NOT NULL, `isHide` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL, `tokenSymbol` TEXT NOT NULL, `tokenName` TEXT NOT NULL, `tokenAddress` TEXT NOT NULL, `tokenDecimal` INTEGER NOT NULL, `rateEthNow` TEXT NOT NULL, `changeEth24h` TEXT NOT NULL, `rateUsdNow` TEXT NOT NULL, `changeUsd24h` TEXT NOT NULL, `cgId` TEXT NOT NULL, `gasApprove` TEXT NOT NULL, `gasLimit` TEXT NOT NULL, `listingTime` INTEGER NOT NULL, `priority` INTEGER NOT NULL, `spLimitOrder` INTEGER NOT NULL, `wallets` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -2134,6 +2188,12 @@
             "fieldPath": "walletAddress",
             "columnName": "walletAddress",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "token.isHide",
+            "columnName": "isHide",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -2284,7 +2344,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9636bf02394474c10dce94f985ef1c0e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '59f56e941e550928fcb2c772969c5bd3')"
     ]
   }
 }

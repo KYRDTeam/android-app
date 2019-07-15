@@ -209,6 +209,17 @@
                 android:layout_height="wrap_content"
                 app:constraint_referenced_ids="tvAddress,tvQr" />
 
+            <ImageView
+                android:id="@+id/imgVisibility"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="11dp"
+                android:padding="8dp"
+                android:src="@drawable/ic_visibility_toggle_drawable"
+                app:layout_constraintBottom_toBottomOf="@+id/textView3"
+                app:layout_constraintStart_toEndOf="@+id/textView3"
+                app:layout_constraintTop_toTopOf="@+id/textView3" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
 </layout>

@@ -10,6 +10,7 @@ import com.kyberswap.android.data.api.token.TokenEntity
 import com.kyberswap.android.data.db.DataTypeConverter
 import com.kyberswap.android.data.db.WalletBalanceTypeConverter
 import com.kyberswap.android.util.ext.toDisplayNumber
+import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -43,6 +44,9 @@ data class Token(
     val wallets: List<WalletBalance> = listOf()
 ) : Parcelable {
 
+    @IgnoredOnParcel
+    var isHide: Boolean = false
+
     val currentBalance: BigDecimal
         get() = wallets.find { it.isSelected }?.currentBalance
             ?: wallets.firstOrNull()?.currentBalance ?: BigDecimal.ZERO
@@ -75,6 +79,12 @@ data class Token(
 
     val currentWalletBalance: WalletBalance?
         get() = wallets.find { it.isSelected }
+
+    val isListed: Boolean
+        get() = System.currentTimeMillis() - listingTime >= 0
+
+    val shouldShowAsNew: Boolean
+        get() = listingTime >= System.currentTimeMillis() / 1000 - 7.0 * 24.0 * 60.0 * 60.0
 
     val submitOrderTokenSymbol: String
         get() = if (isETHWETH) WETH_SYMBOL else tokenSymbol
@@ -163,7 +173,7 @@ data class Token(
         get() = changeUsd24h.toDisplayNumber()
 
     val displayCurrentBalance: String
-        get() = currentBalance.toDisplayNumber()
+        get() = if (isHide) "******" else currentBalance.toDisplayNumber()
 
     val displayCurrentBalanceInEth: String
         get() = StringBuilder()
@@ -219,6 +229,10 @@ data class Token(
 
     fun change24hStatus(isEth: Boolean): Int {
         return getChange24hStatus(if (isEth) changeEth24h else changeUsd24h)
+    }
+
+    fun change24hValue(isEth: Boolean): BigDecimal {
+        return if (isEth) changeEth24h else changeUsd24h
     }
 
     private fun getChange24hStatus(value: BigDecimal): Int {
