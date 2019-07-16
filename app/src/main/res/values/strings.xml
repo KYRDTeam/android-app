@@ -376,6 +376,7 @@
     <string name="kyc_status_blocked">Blocked</string>
     <string name="kyc_status_unverified">Unverified</string>
     <string name="kyc_status_pending">Pending</string>
+    <string name="kyc_status_approved">Approved</string>
     <string name="profile_rejected">Your profile is rejected</string>
     <string name="kyc_edit">Edit</string>
     <string name="kyber_code">KyberCode</string>

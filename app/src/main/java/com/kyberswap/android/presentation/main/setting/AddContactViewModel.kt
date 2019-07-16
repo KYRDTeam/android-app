@@ -9,6 +9,7 @@ import com.kyberswap.android.domain.usecase.contact.SaveContactUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.swap.DeleteContactState
 import com.kyberswap.android.presentation.main.swap.SaveContactState
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
@@ -24,6 +25,8 @@ class AddContactViewModel @Inject constructor(
     private val _deleteContactCallback = MutableLiveData<Event<DeleteContactState>>()
     val deleteContactCallback: LiveData<Event<DeleteContactState>>
         get() = _deleteContactCallback
+
+    val compositeDisposable = CompositeDisposable()
 
 
     fun save(walletAddress: String, name: String, address: String) {

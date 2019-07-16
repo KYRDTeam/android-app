@@ -9,8 +9,10 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.zxing.integration.android.IntentIntegrator
+import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentAddContactBinding
+import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
@@ -35,6 +37,9 @@ class AddContactFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    @Inject
+    lateinit var schedulerProvider: SchedulerProvider
 
     private var wallet: Wallet? = null
     private var address: String? = null
@@ -84,13 +89,42 @@ class AddContactFragment : BaseFragment() {
             binding.edtAddress.setText(address)
         }
 
+        viewModel.compositeDisposable.add(binding.edtAddress.textChanges()
+            .skipInitialValue()
+            .observeOn(schedulerProvider.ui())
+            .subscribe {
+                binding.ilAddress.error = null
+            })
+
 
         binding.lnDelete.visibility = if (contact == null) View.GONE else View.VISIBLE
 
         binding.lnSend.setOnClickListener {
-            wallet?.let {
-                contact?.let { contact -> viewModel.saveSendContact(it.address, contact, true) }
+
+            when {
+                binding.edtAddress.text.isNullOrEmpty() -> showError(getString(R.string.provide_receive_address))
+                !binding.edtAddress.text.toString().isContact() -> showError(getString(R.string.invalid_contact_address))
+                else -> {
+                    wallet?.let {
+                        if (contact == null) contact = Contact(
+                            it.address,
+                            binding.edtAddress.text.toString(),
+                            binding.edtName.text.toString(),
+                            System.currentTimeMillis() / 1000
+                        )
+
+                        contact?.let { contact ->
+                            viewModel.saveSendContact(
+                                it.address,
+                                contact,
+                                true
+                            )
+                        }
+                    }
+                }
             }
+
+
         }
 
         binding.lnDelete.setOnClickListener {
@@ -171,12 +205,17 @@ class AddContactFragment : BaseFragment() {
             } else {
                 binding.edtAddress.setText(result.contents.toString())
                 if (!result.contents.toString().isContact()) {
-                    binding.edtAddress.error = getString(R.string.invalid_contact_address)
+                    binding.ilAddress.error = getString(R.string.invalid_contact_address)
                 }
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
+    }
+
+    override fun onDestroyView() {
+        viewModel.compositeDisposable.clear()
+        super.onDestroyView()
     }
 
     companion object {
