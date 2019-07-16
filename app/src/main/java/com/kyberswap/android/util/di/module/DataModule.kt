@@ -36,10 +36,9 @@ object DataModule {
         currencyApi: CurrencyApi,
         tokenMapper: TokenMapper,
         client: TokenClient,
-        tokenDao: TokenDao,
-        walletDao: WalletDao
+        tokenDao: TokenDao
     ): BalanceRepository =
-        BalanceDataRepository(api, currencyApi, tokenMapper, client, tokenDao, walletDao)
+        BalanceDataRepository(api, currencyApi, tokenMapper, client, tokenDao)
 
     @Singleton
     @Provides
