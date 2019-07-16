@@ -107,9 +107,9 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                     is GetWalletState.Success -> {
                         binding.walletName = state.wallet.name
                         if (state.wallet.address != wallet?.address) {
-                            this.wallet = state.wallet
                             viewModel.getLimitOrders(wallet)
                 
+                        this.wallet = state.wallet
             
                     is GetWalletState.ShowError -> {
 
@@ -127,7 +127,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                             if (state.order.tokenSource.tokenSymbol == state.order.tokenDest.tokenSymbol) {
                                 showAlert(getString(R.string.same_token_alert))
                     
-
 
                             edtSource.setAmount(state.order.srcAmount)
                             getRate(state.order)
@@ -700,9 +699,9 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
 
 
     override fun onDestroyView() {
-        super.onDestroyView()
         handler.removeCallbacksAndMessages(null)
-        viewModel.compositeDisposable.dispose()
+        viewModel.compositeDisposable.clear()
+        super.onDestroyView()
     }
 
     private fun getRate(order: LocalLimitOrder) {

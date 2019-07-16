@@ -64,6 +64,7 @@ class TokenSearchViewModel @Inject constructor(
         getWalletByAddressUseCase.dispose()
         saveSwapDataTokenUseCase.dispose()
         getTokenListUseCase.dispose()
+        compositeDisposable.dispose()
         super.onCleared()
     }
 
@@ -94,5 +95,6 @@ class TokenSearchViewModel @Inject constructor(
             SaveSendTokenUseCase.Param(address, token)
         )
     }
+
 
 }

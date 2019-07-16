@@ -81,9 +81,9 @@ class BalanceViewModel @Inject constructor(
     }
 
     fun getTokenBalance(address: String) {
+        getBalancePollingUseCase.dispose()
         getBalancePollingUseCase.execute(
             Consumer {
-
 
     ,
             Consumer {
@@ -91,6 +91,7 @@ class BalanceViewModel @Inject constructor(
     ,
             GetBalancePollingUseCase.Param(address)
         )
+        getBalanceUseCase.dispose()
         _getBalanceStateCallback.postValue(Event(GetBalanceState.Loading))
         getBalanceUseCase.execute(
             Consumer {

@@ -195,7 +195,7 @@ class TokenSearchFragment : BaseFragment() {
     }
 
     override fun onDestroyView() {
-        viewModel.compositeDisposable.dispose()
+        viewModel.compositeDisposable.clear()
         super.onDestroyView()
     }
 

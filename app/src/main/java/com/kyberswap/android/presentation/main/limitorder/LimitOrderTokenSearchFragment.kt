@@ -185,6 +185,11 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
 
     }
 
+    override fun onDestroyView() {
+        viewModel.compositeDisposable.clear()
+        super.onDestroyView()
+    }
+
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"

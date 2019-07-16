@@ -100,6 +100,7 @@ class SwapViewModel @Inject constructor(
     }
 
     fun getCap(address: String?) {
+        getCapUseCase.dispose()
         getCapUseCase.execute(
             Consumer {
                 _getCapCallback.value = Event(GetCapState.Success(it))

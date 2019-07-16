@@ -33,6 +33,7 @@ import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_token_header.*
 import kotlinx.android.synthetic.main.layout_token_header.view.*
+import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -124,13 +125,14 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
+                        if (state.wallet.address != binding.wallet?.address) {
+                            viewModel.getTokenBalance(state.wallet.address)
+                
+                        Timber.e(state.wallet.toString())
                         this.wallet = state.wallet
                         binding.tvUnit.text = state.wallet.unit
                         binding.tvBalance.text = state.wallet.displayBalance
                         if (binding.wallet != state.wallet) {
-                            if (state.wallet.address != binding.wallet?.address) {
-                                viewModel.getTokenBalance(state.wallet.address)
-                    
                             binding.wallet = state.wallet
                 
 
@@ -253,7 +255,9 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetBalanceState.Success -> {
-                        binding.swipeLayout.isRefreshing = false
+                        if (binding.swipeLayout.isRefreshing) {
+                            binding.swipeLayout.isRefreshing = false
+                
                         tokenAdapter?.setFullTokenList(state.tokens)
                         tokenAdapter?.submitFilterList(
                             getFilterTokenList(
@@ -265,9 +269,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                         val isETH = wallet?.unit == eth
                         setCurrencyDisplay(isETH)
                         val balance = calcBalance(state.tokens, isETH)
-                        if (balance > BigDecimal(1E-18) &&
-                            balance.toDisplayNumber() != wallet?.balance
-                        ) {
+                        if (balance.toDisplayNumber() != wallet?.balance) {
                             wallet?.balance = balance.toDisplayNumber()
                             viewModel.updateWallet(wallet)
                 
@@ -492,19 +494,25 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     private fun calcBalance(tokens: List<Token>, isETH: Boolean): BigDecimal {
         var balance = BigDecimal.ZERO
         tokens.forEach { token ->
-            balance += token.currentBalance.multiply(
-                if (isETH) {
-                    token.rateEthNow
+            balance +=
+                if (token.currentBalance == BigDecimal.ZERO) {
+                    BigDecimal.ZERO
          else {
-                    token.rateUsdNow
+                    token.currentBalance.multiply(
+                        if (isETH) {
+                            token.rateEthNow
+                 else {
+                            token.rateUsdNow
+                
+                    )
         
-            )
 
         return balance
 
     }
 
     override fun onDestroy() {
+        viewModel.compositeDisposable.clear()
         handler.removeCallbacksAndMessages(null)
         super.onDestroy()
     }

@@ -417,6 +417,11 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
 
     }
 
+    override fun onDestroyView() {
+        viewModel.compositeDisposable.clear()
+        super.onDestroyView()
+    }
+
     companion object {
         private const val BASE64_PREFIX = "data:image/jpeg;base64,"
         fun newInstance() =
