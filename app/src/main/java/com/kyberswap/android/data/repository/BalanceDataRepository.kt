@@ -3,7 +3,6 @@ package com.kyberswap.android.data.repository
 import com.kyberswap.android.data.api.home.CurrencyApi
 import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.db.TokenDao
-import com.kyberswap.android.data.db.WalletDao
 import com.kyberswap.android.data.mapper.TokenMapper
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.repository.BalanceRepository
@@ -23,8 +22,7 @@ class BalanceDataRepository @Inject constructor(
     private val currencyApi: CurrencyApi,
     private val tokenMapper: TokenMapper,
     private val tokenClient: TokenClient,
-    private val tokenDao: TokenDao,
-    private val walletDao: WalletDao
+    private val tokenDao: TokenDao
 ) :
     BalanceRepository {
 
@@ -101,7 +99,7 @@ class BalanceDataRepository @Inject constructor(
 
 
     private fun updateBalance(tokens: List<Token>, allTokens: List<Token>): List<Token> {
-        val startListWithBalance = tokens.map { token ->
+        val listWithBalance = tokens.map { token ->
             val currentToken = allTokens.find {
                 it.tokenAddress == token.tokenAddress
             }
@@ -114,19 +112,23 @@ class BalanceDataRepository @Inject constructor(
             ) ?: token
             tokenClient.getBalance(updatedWithBalance)
         }
-        tokenDao.updateTokens(startListWithBalance)
-        return startListWithBalance
+        tokenDao.updateTokens(listWithBalance)
+        return listWithBalance
     }
 
     override fun getChange24hPolling(owner: String): Flowable<List<Token>> {
         return fetchChange24h()
             .map { tokens ->
                 val allTokens = tokenDao.allTokens
-                val startList = tokens.subList(0, tokens.size / 2)
-                val endList = tokens.subList(tokens.size / 2, tokens.size)
-                val startWithBalance = updateBalance(startList, allTokens)
-                val endWithBalance = updateBalance(endList, allTokens)
-                startWithBalance.union(endWithBalance).toList()
+//                val startList = tokens.subList(0, tokens.size / 2)
+//                val endList = tokens.subList(tokens.size / 2, tokens.size)
+//                val startWithBalance = updateBalance(startList, allTokens)
+//                val endWithBalance = updateBalance(endList, allTokens)
+
+
+//                startWithBalance.union(endWithBalance).toList()
+
+                updateBalance(tokens, allTokens)
             }
             .doAfterSuccess {
                 tokenDao.updateTokens(it)
