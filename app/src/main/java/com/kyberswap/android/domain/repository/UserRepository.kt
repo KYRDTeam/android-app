@@ -47,4 +47,6 @@ interface UserRepository {
     fun reSubmit(param: ReSubmitUserInfoUseCase.Param): Single<KycResponseStatus>
 
     fun updatePushNotification(param: UpdatePushTokenUseCase.Param): Single<ResponseStatus>
+
+    fun saveLocal(param: SaveLocalPersonalInfoUseCase.Param): Completable
 }

@@ -255,7 +255,10 @@ class KyberListFragment : BaseFragment() {
                     is SaveSwapDataState.Success -> {
             
                     is SaveSwapDataState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -270,7 +273,10 @@ class KyberListFragment : BaseFragment() {
                         moveToSwapTab()
             
                     is SaveSwapDataState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -284,7 +290,10 @@ class KyberListFragment : BaseFragment() {
                         navigateToSendScreen()
             
                     is SaveSendState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     

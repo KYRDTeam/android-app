@@ -75,7 +75,7 @@
                     android:background="@drawable/default_button"
                     android:gravity="center"
                     android:minHeight="45dp"
-                    android:text="@string/log_out"
+                    android:text="@string/ok"
                     android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#ffffff"
                     android:textSize="16sp" />

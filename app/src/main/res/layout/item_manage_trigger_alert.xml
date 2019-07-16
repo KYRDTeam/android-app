@@ -30,7 +30,7 @@
                 android:background="#fa6566"
                 android:gravity="center"
                 android:minWidth="72dp"
-                android:text="@string/alert_delete"
+                android:text="@string/title_delete"
                 android:textAllCaps="false"
                 android:textColor="#ffffff"
                 android:textSize="16sp" />

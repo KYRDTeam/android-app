@@ -105,9 +105,9 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
+                        binding.walletName = state.wallet.name
                         if (state.wallet.address != wallet?.address) {
                             this.wallet = state.wallet
-                            binding.walletName = state.wallet.name
                             viewModel.getLimitOrders(wallet)
                 
             
@@ -264,7 +264,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                 
             
                     is GetRelatedOrdersState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -286,7 +289,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
 
             
                     is GetNonceState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -331,7 +337,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                 
             
                     is GetMarketRateState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -381,7 +390,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                 
             
                     is GetExpectedRateState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -401,7 +413,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                 
             
                     is GetGasLimitState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -537,7 +552,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                 
             
                     is GetFeeState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -609,7 +627,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                 
             
                     is SaveLimitOrderState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
 
         
@@ -624,7 +645,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
 
             
                     is CancelOrdersState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -637,7 +661,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                         userInfo = state.userInfo
             
                     is UserInfoState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     

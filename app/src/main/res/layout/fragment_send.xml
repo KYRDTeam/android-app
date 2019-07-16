@@ -172,23 +172,52 @@
                 android:background="@color/color_bg_gray"
                 android:paddingBottom="80dp">
 
-                <EditText
-                    android:id="@+id/edtAddress"
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ilAddress"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="38dp"
+                    android:layout_marginEnd="16dp"
                     android:backgroundTint="@color/edt_background_tint"
-                    android:hint="@string/recipient_address"
-                    android:inputType="text"
-                    android:singleLine="true"
-                    android:textColor="#9ea1aa"
-                    android:textSize="14sp"
+                    android:textColorHint="#9ea1aa"
                     app:layout_constraintEnd_toStartOf="@+id/imgQRCode"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintHorizontal_chainStyle="spread_inside"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/edt_background_tint"
+                        android:hint="@string/recipient_address"
+                        android:imeOptions="actionDone"
+                        android:inputType="text"
+                        android:singleLine="true"
+                        android:textColor="#9ea1aa"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!--<EditText-->
+                <!--android:id="@+id/edtAddress"-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginStart="24dp"-->
+                <!--android:layout_marginTop="38dp"-->
+                <!--android:backgroundTint="@color/edt_background_tint"-->
+                <!--android:hint="@string/recipient_address"-->
+                <!--android:inputType="text"-->
+                <!--android:singleLine="true"-->
+                <!--android:textColor="#9ea1aa"-->
+                <!--android:textSize="14sp"-->
+                <!--app:layout_constraintEnd_toStartOf="@+id/imgQRCode"-->
+                <!--app:layout_constraintHorizontal_bias="0.5"-->
+                <!--app:layout_constraintHorizontal_chainStyle="spread_inside"-->
+                <!--app:layout_constraintStart_toStartOf="parent"-->
+                <!--app:layout_constraintTop_toTopOf="parent" />-->
 
                 <ImageView
                     android:id="@+id/imgQRCode"
@@ -197,11 +226,11 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="24dp"
                     android:src="@drawable/ic_qr_code_send"
-                    app:layout_constraintBottom_toBottomOf="@+id/edtAddress"
+                    app:layout_constraintBottom_toBottomOf="@+id/ilAddress"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/edtAddress"
-                    app:layout_constraintTop_toTopOf="@+id/edtAddress" />
+                    app:layout_constraintStart_toEndOf="@+id/ilAddress"
+                    app:layout_constraintTop_toTopOf="@+id/ilAddress" />
 
                 <TextView
                     android:id="@+id/tvAddContact"
@@ -378,10 +407,10 @@
                         android:layout_marginTop="25dp"
                         android:layout_marginEnd="15dp"
                         android:background="@drawable/default_button"
-                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:gravity="center"
                         android:minHeight="45dp"
                         android:text="@string/swap_continue"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#ffffff"
                         android:textSize="16sp" />
 

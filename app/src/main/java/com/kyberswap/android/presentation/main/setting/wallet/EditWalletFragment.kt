@@ -85,7 +85,23 @@ class EditWalletFragment : BaseFragment() {
 
 
         binding.tvDeleteWallet.setOnClickListener {
-            wallet?.let { it1 -> viewModel.deleteWallet(it1) }
+
+            dialogHelper.showConfirmation(
+                getString(R.string.title_delete),
+                getString(R.string.delete_wallet_confirmation),
+                {
+                    wallet?.let { it1 -> viewModel.deleteWallet(it1) }
+        )
+
+
+        binding.imgDone.setOnClickListener {
+            if (binding.edtWalletName.text.isNullOrBlank()) {
+                showAlertWithoutIcon(message = getString(R.string.wallet_empty_name))
+     else {
+                wallet?.copy(name = binding.edtWalletName.text.toString())?.let { wl ->
+                    viewModel.save(wl)
+        
+    
 
 
         viewModel.deleteWalletCallback.observe(viewLifecycleOwner, Observer {
@@ -97,7 +113,10 @@ class EditWalletFragment : BaseFragment() {
                         onDeleteWalletSuccess(state.verifyStatus)
             
                     is DeleteWalletState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -111,7 +130,10 @@ class EditWalletFragment : BaseFragment() {
                         onExportWalletComplete(state.value)
             
                     is ExportWalletState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -125,7 +147,10 @@ class EditWalletFragment : BaseFragment() {
                         navigator.navigateToBackupWalletInfo(currentFragment, state.value)
             
                     is ExportWalletState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -140,11 +165,34 @@ class EditWalletFragment : BaseFragment() {
                         navigator.navigateToBackupWalletInfo(currentFragment, state.value)
             
                     is ExportWalletState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
 )
+
+        viewModel.saveWalletCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is SaveWalletState.Success -> {
+                        onSaveComplete()
+            
+                    is SaveWalletState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+            
+        
+    
+)
+    }
+
+    private fun onSaveComplete() {
+        activity?.onBackPressed()
     }
 
     private fun copyWalletAddress() {

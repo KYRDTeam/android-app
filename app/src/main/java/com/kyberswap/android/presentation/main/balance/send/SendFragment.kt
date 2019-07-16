@@ -8,20 +8,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.zxing.integration.android.IntentIntegrator
+import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentSendBinding
 import com.kyberswap.android.domain.SchedulerProvider
+import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.swap.*
@@ -48,6 +50,9 @@ class SendFragment : BaseFragment() {
     private var wallet: Wallet? = null
 
     @Inject
+    lateinit var dialogHelper: DialogHelper
+
+    @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by lazy {
@@ -57,6 +62,10 @@ class SendFragment : BaseFragment() {
     private val handler by lazy {
         Handler()
     }
+
+    private var currentSelection: Contact? = null
+
+    private val contacts = mutableListOf<Contact>()
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
@@ -94,7 +103,10 @@ class SendFragment : BaseFragment() {
                         binding.send = send
             
                     is GetGasPriceState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -119,9 +131,10 @@ class SendFragment : BaseFragment() {
 
         binding.tvAddContact.setOnClickListener {
             navigator.navigateToAddContactScreen(
-                (activity as MainActivity).getCurrentFragment(),
+                currentFragment,
                 wallet,
-                edtAddress.text.toString()
+                onlyAddress(edtAddress.text.toString()),
+                currentSelection
             )
 
 
@@ -146,7 +159,7 @@ class SendFragment : BaseFragment() {
         binding.rbFast.isChecked = true
 
         binding.imgBack.setOnClickListener {
-            activity!!.onBackPressed()
+            activity?.onBackPressed()
 
 
         binding.rvContact.layoutManager = LinearLayoutManager(
@@ -155,30 +168,120 @@ class SendFragment : BaseFragment() {
             false
         )
 
+        viewModel.compositeDisposable.add(binding.edtAddress.focusChanges()
+            .skipInitialValue()
+            .observeOn(schedulerProvider.ui())
+            .subscribe { focused ->
+                if (focused) {
+                    currentSelection?.let {
+                        binding.edtAddress.setText(it.address)
+            
+         else {
+                    currentSelection?.let {
+                        binding.edtAddress.setText(it.nameAddressDisplay)
+            
+
+        
+    )
+
+        viewModel.compositeDisposable.add(
+            binding.edtAddress.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
+                    if (currentSelection != null) {
+                        tvAddContact.text = getString(R.string.edit_contact)
+             else {
+                        tvAddContact.text = getString(R.string.add_contact)
+            
+        )
+
         val contactAdapter =
-            ContactAdapter(appExecutors, handler, { contact ->
-                val send = binding.send?.copy(contact = contact)
-                binding.send = send
-                binding.edtAddress.setText(contact.address)
-    ,
+            ContactAdapter(
+                appExecutors, handler,
                 {
-
+                    sendToContact(it)
+        ,
+                {
+                    sendToContact(it)
+                    wallet?.let { wallet ->
+                        viewModel.saveSendContact(wallet.address, it)
+            
         , {
-
+                    navigator.navigateToAddContactScreen(
+                        currentFragment,
+                        wallet,
+                        it.address,
+                        it
+                    )
         , {
+                    dialogHelper.showConfirmation(
+                        getString(R.string.title_delete),
+                        getString(R.string.contact_confirm_delete),
+                        {
+                            viewModel.deleteContact(it)
+                )
 
         )
+
+        viewModel.saveContactCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == SaveContactState.Loading)
+                when (state) {
+                    is SaveContactState.Success -> {
+
+            
+                    is SaveContactState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+            
+        
+    
+)
+
+        viewModel.deleteContactCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is DeleteContactState.Success -> {
+                        showAlertWithoutIcon(message = getString(R.string.delete_contact_success))
+            
+                    is DeleteContactState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+            
+        
+    
+)
+
         binding.rvContact.adapter = contactAdapter
 
-        viewModel.getContact(wallet!!.address)
+        wallet?.address?.let { viewModel.getContact(it) }
         viewModel.getContactCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetContactState.Success -> {
+                        contacts.clear()
+                        contacts.addAll(state.contacts)
+                        currentSelection?.let {
+                            currentSelection = contacts.find { ct ->
+                                ct.address == it.address
+                    
+
+                            currentSelection?.let { it1 -> sendToContact(it1) }
+
+
+                
                         contactAdapter.submitList(state.contacts.take(2))
             
                     is GetContactState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -195,7 +298,10 @@ class SendFragment : BaseFragment() {
                         binding.send = send
             
                     is GetGasLimitState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -219,7 +325,10 @@ class SendFragment : BaseFragment() {
                         )
             
                     is GetSendState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
 
             
         
@@ -243,7 +352,7 @@ class SendFragment : BaseFragment() {
                 binding.edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.send?.tokenSource?.currentBalance -> {
                     showAlert(getString(R.string.exceed_balance))
         
-                !edtAddress.text.toString().isContact() -> showAlert(getString(R.string.invalid_contact_address))
+                !onlyAddress(edtAddress.text.toString()).isContact() -> showAlert(getString(R.string.invalid_contact_address))
                 hasPendingTransaction -> showAlert(getString(R.string.pending_transaction))
                 else -> viewModel.saveSend(
                     binding.send?.copy(
@@ -267,17 +376,22 @@ class SendFragment : BaseFragment() {
                         navigator.navigateToSendConfirmationScreen(wallet)
             
                     is SaveSendState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
-                        Toast.makeText(
-                            activity,
-                            state.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
 )
 
+    }
+
+    private fun sendToContact(contact: Contact) {
+        val send = binding.send?.copy(contact = contact)
+        binding.send = send
+        currentSelection = contact
+        binding.edtAddress.setText(contact.nameAddressDisplay)
     }
 
     private val hasPendingTransaction: Boolean
@@ -293,7 +407,7 @@ class SendFragment : BaseFragment() {
 
     override fun onDestroyView() {
         handler.removeCallbacksAndMessages(null)
-        viewModel.compositeDisposable.dispose()
+        viewModel.compositeDisposable.clear()
         super.onDestroyView()
     }
 
@@ -303,7 +417,17 @@ class SendFragment : BaseFragment() {
             if (result.contents == null) {
                 showAlert(getString(R.string.message_cancelled))
      else {
-                binding.edtAddress.setText(result.contents.toString())
+
+                val contact = contacts.find {
+                    it.address == result.contents.toString()
+        
+                if (contact != null) {
+                    currentSelection = contact
+                    binding.edtAddress.setText(contact.nameAddressDisplay)
+         else {
+                    binding.edtAddress.setText(result.contents.toString())
+        
+
                 if (!result.contents.toString().isContact()) {
                     showAlert(getString(R.string.invalid_contact_address))
         
@@ -311,6 +435,12 @@ class SendFragment : BaseFragment() {
  else {
             super.onActivityResult(requestCode, resultCode, data)
 
+    }
+
+
+    private fun onlyAddress(fullAddress: String): String {
+        val prefix = fullAddress.substring(0, fullAddress.indexOf("0x"))
+        return fullAddress.removePrefix(prefix).trim()
     }
 
     companion object {

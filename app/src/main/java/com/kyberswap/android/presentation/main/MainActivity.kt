@@ -199,9 +199,9 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                             wallet?.let {
                                 mainViewModel.getPendingTransaction(it)
                     
-                            walletAdapter.submitList(listOf())
-                            walletAdapter.submitList(state.wallets)
                 
+                        walletAdapter.submitList(listOf())
+                        walletAdapter.submitList(state.wallets)
             
                     is GetAllWalletState.ShowError -> {
                         navigator.navigateToLandingPage()
@@ -233,7 +233,10 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                         setPendingTransaction(pending.size)
             
                     is GetPendingTransactionState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     

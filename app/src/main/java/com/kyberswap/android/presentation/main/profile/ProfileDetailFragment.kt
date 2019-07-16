@@ -99,7 +99,10 @@ class ProfileDetailFragment : BaseFragment() {
                 
             
                     is UserInfoState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -137,7 +140,10 @@ class ProfileDetailFragment : BaseFragment() {
                         alertAdapter.submitAlerts(state.alerts.take(2))
             
                     is GetAlertsState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -164,7 +170,10 @@ class ProfileDetailFragment : BaseFragment() {
                         alertAdapter.submitAlerts(state.alerts.take(2))
             
                     is GetAlertsState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -178,15 +187,14 @@ class ProfileDetailFragment : BaseFragment() {
                         navigator.navigateToSignInScreen(currentFragment)
             
                     is LogoutState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
 )
-
-        binding.imgBack.setOnClickListener {
-            activity?.onBackPressed()
-
 
         binding.tvLogout.setOnClickListener {
             dialogHelper.showConfirmation(
@@ -240,7 +248,10 @@ class ProfileDetailFragment : BaseFragment() {
                         )
             
                     is ReSubmitState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     

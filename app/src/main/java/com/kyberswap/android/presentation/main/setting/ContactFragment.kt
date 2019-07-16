@@ -6,7 +6,6 @@ import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -136,7 +135,7 @@ class ContactFragment : BaseFragment() {
                 { contact ->
 
                     dialogHelper.showConfirmation(
-                        getString(R.string.alert_delete),
+                        getString(R.string.title_delete),
                         getString(R.string.contact_confirm_delete),
                         {
                             viewModel.deleteContact(contact)
@@ -155,12 +154,10 @@ class ContactFragment : BaseFragment() {
                         )
             
                     is SaveContactState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
-                        Toast.makeText(
-                            activity,
-                            state.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -173,7 +170,10 @@ class ContactFragment : BaseFragment() {
                         contactAdapter.submitList(state.contacts)
             
                     is GetContactState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -186,16 +186,15 @@ class ContactFragment : BaseFragment() {
                         showAlertWithoutIcon(message = getString(R.string.delete_contact_success))
             
                     is DeleteContactState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
 )
 
-    }
-
-    private fun onSuccess() {
-        activity?.onBackPressed()
     }
 
     override fun onDestroyView() {

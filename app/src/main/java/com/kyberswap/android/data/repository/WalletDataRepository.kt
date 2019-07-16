@@ -388,4 +388,12 @@ class WalletDataRepository @Inject constructor(
     
 
     }
+
+    override fun saveWallet(param: SaveWalletUseCase.Param): Completable {
+        return Completable.fromCallable {
+
+            val currentWallet = walletDao.findWalletByAddress(param.wallet.address)
+            walletDao.updateWallet(currentWallet.copy(name = param.wallet.name))
+
+    }
 }

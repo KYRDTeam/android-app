@@ -38,6 +38,16 @@
                 android:textColor="#ffffff"
                 android:textSize="18sp" />
 
+            <ImageView
+                android:id="@+id/imgDone"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center|end"
+                android:layout_marginEnd="14dp"
+                android:background="?selectableItemBackground"
+                android:padding="7dp"
+                android:src="@drawable/ic_done" />
+
         </FrameLayout>
 
 

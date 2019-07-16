@@ -102,7 +102,10 @@ class SubmitFragment : BaseFragment() {
                 
             
                     is UserInfoState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -122,7 +125,10 @@ class SubmitFragment : BaseFragment() {
                         navigator.navigateToVerification(currentFragment)
             
                     is SavePersonalInfoState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -140,7 +146,10 @@ class SubmitFragment : BaseFragment() {
                         glideDisplayImage(state.byteArray, state.imageView)
             
                     is DecodeBase64State.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     

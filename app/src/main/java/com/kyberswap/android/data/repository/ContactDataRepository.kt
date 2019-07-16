@@ -24,16 +24,21 @@ class ContactDataRepository @Inject constructor(
      else param.name
 
             val findContactByAddress = contactDao.findContactByAddress(param.address)
+            val updatedAt = System.currentTimeMillis() / 1000
             val contact = findContactByAddress?.copy(
                 walletAddress = param.walletAddress,
-                address = param.address
-            ) ?: Contact(param.walletAddress, param.address, name)
+                address = param.address,
+                name = param.name,
+                updatedAt = updatedAt
+            ) ?: Contact(param.walletAddress, param.address, name, updatedAt)
             contactDao.insertContact(contact)
 
     }
 
     override fun getContacts(param: GetContactUseCase.Param): Flowable<List<Contact>> {
-        return contactDao.loadContactByWalletAddress(param.walletAddress)
+        return contactDao.loadContactByWalletAddress(param.walletAddress).map { contacts ->
+            contacts.sortedByDescending { it.updatedAt }
+
     }
 
     override fun deleteContact(param: DeleteContactUseCase.Param): Completable {

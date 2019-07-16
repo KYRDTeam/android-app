@@ -52,7 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:paddingBottom="20dp">
+                android:paddingBottom="200dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -143,6 +143,7 @@
 
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ilFirstName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -157,10 +158,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
+                        android:inputType="textCapWords"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:inputType="textCapWords"
                         android:text="@{info.firstName}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
@@ -168,6 +169,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ilMiddleName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -182,9 +184,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
+                        android:inputType="textCapWords"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
-                        android:inputType="textCapWords"
                         android:singleLine="true"
                         android:text="@{info.middleName}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
@@ -194,6 +196,7 @@
 
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ilLastName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -208,10 +211,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
+                        android:inputType="textCapWords"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:inputType="textCapWords"
                         android:text="@{info.lastName}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
@@ -219,6 +222,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ilNativeFullName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -233,9 +237,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
+                        android:inputType="textCapWords"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
-                        android:inputType="textCapWords"
                         android:singleLine="true"
                         android:text="@{info.nativeFullName}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
@@ -295,6 +299,7 @@
 
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ilDob"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -321,7 +326,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tlNationality"
+                    android:id="@+id/ilNationality"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -358,7 +363,7 @@
                     android:background="@drawable/dash_line" />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputLayout"
+                    android:id="@+id/ilResidentialAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -372,10 +377,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
+                        android:inputType="textCapSentences"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:inputType="textCapSentences"
                         android:text="@{info.residentialAddress}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
@@ -384,6 +389,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ilCountry"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -411,6 +417,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ilCity"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -425,11 +432,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
+                        android:inputType="textCapWords"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.city}"
-                        android:inputType="textCapWords"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -437,6 +444,7 @@
 
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ilZipCode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -451,10 +459,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
+                        android:inputType="number"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:inputType="number"
                         android:text="@{info.zipCode}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
@@ -491,6 +499,7 @@
                 </LinearLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ilDocumentProofAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -508,10 +517,10 @@
                         android:drawableEnd="@drawable/ic_expand_more"
                         android:enabled="true"
                         android:focusable="false"
+                        android:inputType="textCapSentences"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:inputType="textCapSentences"
                         android:text="@{info.documentProofAddress}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
@@ -528,10 +537,10 @@
                     android:layout_marginTop="42dp"
                     android:layout_marginEnd="37dp"
                     android:background="@drawable/border_button"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:gravity="center"
                     android:minHeight="45dp"
                     android:text="@string/upload_document"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#141927"
                     android:textSize="14sp" />
 
@@ -591,6 +600,7 @@
                 </LinearLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ilSourceFund"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -665,6 +675,7 @@
                         android:orientation="vertical">
 
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/ilOccupationCode"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
@@ -681,10 +692,10 @@
                                 android:backgroundTint="@color/edt_background_tint"
                                 android:drawableEnd="@drawable/ic_expand_more"
                                 android:drawablePadding="8dp"
-                                android:letterSpacing="0.07"
-                                android:minHeight="60dp"
                                 android:enabled="true"
                                 android:focusable="false"
+                                android:letterSpacing="0.07"
+                                android:minHeight="60dp"
                                 android:singleLine="true"
                                 android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                                 android:textColor="#5a5e67"
@@ -693,6 +704,7 @@
 
 
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/ilIndus"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
@@ -709,11 +721,11 @@
                                 android:backgroundTint="@color/edt_background_tint"
                                 android:drawableEnd="@drawable/ic_expand_more"
                                 android:drawablePadding="8dp"
+                                android:enabled="true"
+                                android:focusable="false"
                                 android:letterSpacing="0.07"
                                 android:minHeight="60dp"
                                 android:singleLine="true"
-                                android:enabled="true"
-                                android:focusable="false"
                                 android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                                 android:textColor="#5a5e67"
                                 android:textSize="14sp" />
@@ -742,6 +754,7 @@
                             android:textSize="12sp" />
 
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/ilTaxResidencyCountry"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
@@ -758,12 +771,12 @@
                                 android:backgroundTint="@color/edt_background_tint"
                                 android:drawableEnd="@drawable/ic_expand_more"
                                 android:drawablePadding="8dp"
-                                android:letterSpacing="0.07"
-                                android:minHeight="60dp"
                                 android:enabled="true"
                                 android:focusable="false"
-                                android:text="@{info.taxResidencyCountry}"
+                                android:letterSpacing="0.07"
+                                android:minHeight="60dp"
                                 android:singleLine="true"
+                                android:text="@{info.taxResidencyCountry}"
                                 android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                                 android:textColor="#5a5e67"
                                 android:textSize="14sp" />
@@ -815,6 +828,7 @@
                         </RadioGroup>
 
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/ilTin"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
@@ -850,10 +864,10 @@
                     android:layout_marginTop="27dp"
                     android:layout_marginEnd="20dp"
                     android:background="@drawable/default_button"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:gravity="center"
                     android:minHeight="45dp"
                     android:text="@string/next"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#ffffff"
                     android:textSize="16sp" />
             </LinearLayout>

@@ -7,9 +7,9 @@ data class CurrentUserEntity(
     @SerializedName("id")
     val id: Int = 0,
     @SerializedName("email")
-    val email: String = "",
+    val email: String? = "",
     @SerializedName("rank")
-    val rank: Int = 0,
+    val rank: Int? = 0,
     @SerializedName("active_alerts")
     val activeAlerts: List<AlertEntity> = listOf()
 )
