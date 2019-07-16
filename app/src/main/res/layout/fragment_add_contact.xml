@@ -78,28 +78,59 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <EditText
-                android:id="@+id/edtAddress"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/ilAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="24dp"
                 android:backgroundTint="@color/edt_background_tint"
-                android:hint="@string/contact_address"
-                android:inputType="text"
-                android:minHeight="48dp"
-                android:paddingStart="0dp"
-                android:paddingEnd="24dp"
-                android:singleLine="true"
-                android:text="@{contact.address}"
-                android:textColor="#2e3957"
-                android:textSize="14sp"
+                android:textColorHint="#9ea1aa"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintHorizontal_chainStyle="spread_inside"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/edtName" />
+                app:layout_constraintTop_toBottomOf="@+id/edtName">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/edt_background_tint"
+                    android:hint="@string/contact_address"
+                    android:inputType="text"
+                    android:minHeight="48dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="24dp"
+                    android:singleLine="true"
+                    android:text="@{contact.address}"
+                    android:textColor="#2e3957"
+                    android:textSize="14sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!--<EditText-->
+            <!--android:id="@+id/edtAddress"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginStart="24dp"-->
+            <!--android:layout_marginTop="24dp"-->
+            <!--android:layout_marginEnd="24dp"-->
+            <!--android:backgroundTint="@color/edt_background_tint"-->
+            <!--android:hint="@string/contact_address"-->
+            <!--android:inputType="text"-->
+            <!--android:minHeight="48dp"-->
+            <!--android:paddingStart="0dp"-->
+            <!--android:paddingEnd="24dp"-->
+            <!--android:singleLine="true"-->
+            <!--android:text="@{contact.address}"-->
+            <!--android:textColor="#2e3957"-->
+            <!--android:textSize="14sp"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintHorizontal_bias="0.5"-->
+            <!--app:layout_constraintHorizontal_chainStyle="spread_inside"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@+id/edtName" />-->
 
             <ImageView
                 android:id="@+id/imgQRCode"
@@ -107,9 +138,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="24dp"
                 android:src="@drawable/ic_qr_code_send"
-                app:layout_constraintBottom_toBottomOf="@+id/edtAddress"
+                app:layout_constraintBottom_toBottomOf="@+id/ilAddress"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/edtAddress" />
+                app:layout_constraintTop_toTopOf="@+id/ilAddress" />
 
             <!--<TextView-->
             <!--android:id="@+id/tvSave"-->
@@ -142,7 +173,7 @@
                 android:paddingEnd="24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/edtAddress">
+                app:layout_constraintTop_toBottomOf="@+id/ilAddress">
 
                 <ImageView
                     android:layout_width="wrap_content"

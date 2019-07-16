@@ -79,7 +79,9 @@ class ProfileDetailFragment : BaseFragment() {
                             binding.user = state.userInfo
 
                             binding.lnVerify.visibility =
-                                if (UserInfo.PENDING == state.userInfo?.kycStatus) View.GONE else View.VISIBLE
+                                if (UserInfo.PENDING == state.userInfo?.kycStatus ||
+                                    UserInfo.APPROVED == state.userInfo?.kycStatus
+                                ) View.GONE else View.VISIBLE
 
                             binding.tvKycVerification.text =
                                 if (UserInfo.REJECT == state.userInfo?.kycStatus) getString(R.string.profile_rejected) else getString(

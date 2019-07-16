@@ -439,8 +439,14 @@ class SendFragment : BaseFragment() {
 
 
     private fun onlyAddress(fullAddress: String): String {
-        val prefix = fullAddress.substring(0, fullAddress.indexOf("0x"))
-        return fullAddress.removePrefix(prefix).trim()
+        val index = fullAddress.indexOf("0x")
+        return if (index >= 0) {
+            val prefix = fullAddress.substring(0, fullAddress.indexOf("0x"))
+            fullAddress.removePrefix(prefix).trim()
+ else {
+            fullAddress
+
+
     }
 
     companion object {

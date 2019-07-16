@@ -45,6 +45,7 @@ data class UserInfo(
         const val PENDING = "pending"
         const val REJECT = "rejected"
         const val BLOCK = "block"
+        const val APPROVED = "approved"
         const val KYC_STEP_PERSONAL_INFO = 1
         const val KYC_STEP_ID_PASSPORT = 2
         const val KYC_STEP_SUBMIT = 3
