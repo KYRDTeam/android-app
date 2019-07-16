@@ -89,7 +89,7 @@ class SendFragment : BaseFragment() {
         binding.edtSource.setText("")
         binding.walletName = wallet?.name
         wallet?.let {
-            viewModel.getSendInfo(wallet!!.address)
+            viewModel.getSendInfo(it.address)
         }
         viewModel.getGasPrice()
         viewModel.getGetGasPriceCallback.observe(viewLifecycleOwner, Observer {

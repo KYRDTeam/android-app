@@ -60,6 +60,7 @@ class LimitOrderTokenSearchViewModel @Inject constructor(
         getWalletByAddressUseCase.dispose()
         saveLimitOrderTokenUseCase.dispose()
         getTokenListUseCase.dispose()
+        compositeDisposable.dispose()
         super.onCleared()
     }
 

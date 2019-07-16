@@ -570,7 +570,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     override fun onDestroyView() {
-        viewModel.compositeDisposable.dispose()
+        viewModel.compositeDisposable.clear()
         super.onDestroyView()
     }
 
