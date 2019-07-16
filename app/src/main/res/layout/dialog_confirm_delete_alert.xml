@@ -21,7 +21,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:letterSpacing="0.07"
-                android:text="@string/alert_delete"
+                android:text="@string/title_delete"
                 android:textColor="#141927"
                 android:textSize="18sp" />
 

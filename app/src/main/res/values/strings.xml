@@ -287,7 +287,7 @@
     <string name="more_alerts">More Alerts</string>
     <string name="alert_triggered">Triggered</string>
     <string name="alert_edit">Edit</string>
-    <string name="alert_delete">Delete</string>
+    <string name="title_delete">Delete</string>
     <string name="trigger_on">Trigger on:</string>
     <string name="delete_alert_success">Delete alert successfully</string>
     <string name="alerts_leader_board">Alerts Leaderboard</string>
@@ -321,6 +321,7 @@
 
     <string name="gender">Gender</string>
     <string name="date_of_birth_yyyy_mm_dd">Date of birth (YYYY-MM-DD)</string>
+    <string name="date_format_yyyy_mm_dd">%4d-%02d-%02d</string>
     <string name="nationality">Nationality</string>
     <string name="residential_address">Residential Address</string>
     <string name="country_of_residence">Country of Residence</string>
@@ -468,5 +469,24 @@
     <string name="token_new">New</string>
     <string name="add_fav_success">Successfully added to your favourite</string>
     <string name="remove_fav_success">Removed from your favourite</string>
+    <string name="delete_wallet_confirmation">Do you want to remove this wallet?</string>
+    <string name="wallet_empty_name">Wallet Name must not be null</string>
+    <string name="kyc_first_name_required">First name can\'t be blank</string>
+    <string name="kyc_last_name_required">Last name can\'t be blank</string>
+    <string name="kyc_nationality_required">Nationality can\'t be blank</string>
+    <string name="kyc_country_resident_required">Country Resident name can\'t be blank</string>
+    <string name="kyc_dob_required">Date of birth can\'t be blank</string>
+    <string name="kyc_residental_address_required">Residential address can\'t be blank</string>
+    <string name="kyc_city_required">City can\'t be blank</string>
+    <string name="kyc_zip_code_required">Zip code can\'t be blank</string>
+    <string name="kyc_document_proof_address_required">Document type for proofing address can\'t be blank</string>
+    <string name="kyc_dob_18_year_old">You must be at least 18 years old</string>
+    <string name="kyc_source_of_fun_required">Source of Funds can\'t be blank</string>
+    <string name="kyc_document_number_required">Document Number can\'t be blank</string>
+    <string name="kyc_document_type_required">Document Type can\'t be blank</string>
+    <string name="kyc_photo_id_front_required">Photo identity front side can\'t be blank</string>
+    <string name="kyc_photo_id_back_required">Photo identity back side can\'t be blank</string>
+    <string name="kyc_photo_id_sielf_required">Photo selfie can\'t be blank</string>
+
 
 </resources>

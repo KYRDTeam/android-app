@@ -72,7 +72,15 @@ class ManageWalletFragment : BaseFragment() {
                         }, {
                             navigator.navigateToEditWallet(currentFragment, it)
                         }, {
-                            viewModel.deleteWallet(it)
+
+                            dialogHelper.showConfirmation(
+                                getString(R.string.title_delete),
+                                getString(R.string.delete_wallet_confirmation),
+                                {
+                                    viewModel.deleteWallet(it)
+                                })
+
+
                         })
                 },
                 {
@@ -83,7 +91,12 @@ class ManageWalletFragment : BaseFragment() {
                     navigator.navigateToEditWallet(currentFragment, it)
                 },
                 {
-                    viewModel.deleteWallet(it)
+                    dialogHelper.showConfirmation(
+                        getString(R.string.title_delete),
+                        getString(R.string.delete_wallet_confirmation),
+                        {
+                            viewModel.deleteWallet(it)
+                        })
                 })
 
 
@@ -137,7 +150,10 @@ class ManageWalletFragment : BaseFragment() {
 
                     }
                     is CreateWalletState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }
@@ -155,7 +171,10 @@ class ManageWalletFragment : BaseFragment() {
                         }
                     }
                     is DeleteWalletState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }

@@ -1,7 +1,6 @@
 package com.kyberswap.android.presentation.main.setting
 
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -59,7 +58,10 @@ class SettingFragment : BaseFragment() {
                         hasUserInfo = state.userInfo != null && state.userInfo.uid > 0
                     }
                     is UserInfoState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }
@@ -109,10 +111,11 @@ class SettingFragment : BaseFragment() {
                 PassCodeLockActivity.newIntent(
                     context,
                     PassCodeLockActivity.PASS_CODE_LOCK_TYPE_CHANGE
-                ).apply {
-                    flags =
-                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
-                }
+                )
+//                    .apply {
+//                        flags =
+//                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+//                    }
             })
 
         }

@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -24,11 +25,14 @@ import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.tbruyelle.rxpermissions2.RxPermissions
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
+import kotlinx.android.synthetic.main.fragment_passport.*
 import pl.aprilapps.easyphotopicker.*
+import java.util.*
 import javax.inject.Inject
 
 
-class PassportFragment : BaseFragment() {
+class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
 
     private lateinit var binding: FragmentPassportBinding
 
@@ -55,6 +59,8 @@ class PassportFragment : BaseFragment() {
     private var frontImageString: String? = null
     private var backImageString: String? = null
     private var selfieImageString: String? = null
+
+    private var currentSelectedDate: EditText? = null
 
 
     private val viewModel by lazy {
@@ -138,6 +144,32 @@ class PassportFragment : BaseFragment() {
         binding.tvPassportHolding.setOnClickListener {
             dialogHelper.showBottomSheetHoldPassportDialog(appExecutors)
         }
+
+
+        binding.edtIssueDate.setOnClickListener {
+            currentSelectedDate = it as EditText
+            val now = Calendar.getInstance()
+            val dpd = DatePickerDialog.newInstance(
+                this,
+                now.get(Calendar.YEAR),
+                now.get(Calendar.MONTH),
+                now.get(Calendar.DAY_OF_MONTH)
+            )
+            dpd.show(fragmentManager, "Datepickerdialog")
+        }
+
+        binding.edtExpiryDate.setOnClickListener {
+            currentSelectedDate = it as EditText
+            val now = Calendar.getInstance()
+            val dpd = DatePickerDialog.newInstance(
+                this,
+                now.get(Calendar.YEAR),
+                now.get(Calendar.MONTH),
+                now.get(Calendar.DAY_OF_MONTH)
+            )
+            dpd.show(fragmentManager, "Datepickerdialog")
+        }
+
         listOf(
             binding.tvBrowsePassportFontSide,
             binding.tvBrowsePassportBackSide,
@@ -171,10 +203,11 @@ class PassportFragment : BaseFragment() {
                 }
             }
 
-        viewModel.compositeDisposable.add(binding.cbIssueDate.checkedChanges().skipInitialValue()
+        viewModel.compositeDisposable.add(
+            binding.cbIssueDate.checkedChanges()
             .observeOn(schedulerProvider.ui())
             .subscribe {
-                binding.edtIssueDate.isEnabled = it
+                binding.edtIssueDate.isEnabled = !it
                 if (!it) {
                     binding.edtIssueDate.requestFocus()
                 } else {
@@ -183,10 +216,11 @@ class PassportFragment : BaseFragment() {
 
             })
 
-        viewModel.compositeDisposable.add(binding.cbExpiryDate.checkedChanges().skipInitialValue()
+        viewModel.compositeDisposable.add(
+            binding.cbExpiryDate.checkedChanges()
             .observeOn(schedulerProvider.ui())
             .subscribe {
-                binding.edtExpiryDate.isEnabled = it
+                binding.edtExpiryDate.isEnabled = !it
                 if (!it) {
                     binding.edtExpiryDate.requestFocus()
                 } else {
@@ -209,20 +243,47 @@ class PassportFragment : BaseFragment() {
                 val photoSelfie =
                     if (selfieImageString.isNullOrEmpty()) it.photoSelfie else BASE64_PREFIX + selfieImageString
 
-                viewModel.save(
-                    it.copy(
-                        documentId = binding.edtDocumentNumber.text.toString(),
-                        documentType = if (binding.rbId.isChecked) KycInfo.TYPE_NATIONAL_ID else if (binding.rbPassport.isChecked) KycInfo.TYPE_PASSPORT else "",
-                        documentIssueDate = binding.edtIssueDate.text.toString(),
-                        documentExpiryDate = binding.edtExpiryDate.text.toString(),
-                        photoIdentityFrontSide = photoIdentityFrontSide,
-                        photoIdentityBackSide = photoIdentityBackSide,
-                        photoSelfie = photoSelfie
+                when {
 
-                    )
-                )
+                    !binding.rbId.isChecked && !binding.rbPassport.isChecked -> {
+                        showError(getString(R.string.kyc_document_type_required))
+                    }
+
+                    edtDocumentNumber.text.toString().isBlank() -> {
+                        val error = getString(R.string.kyc_document_number_required)
+                        showError(error)
+                        binding.ilDocumentId.error = error
+
+                    }
+
+                    photoIdentityFrontSide.isEmpty() -> {
+                        showError(getString(R.string.kyc_photo_id_front_required))
+                    }
+
+                    photoIdentityBackSide.isEmpty() -> {
+                        showError(getString(R.string.kyc_photo_id_back_required))
+                    }
+
+                    photoIdentityBackSide.isEmpty() -> {
+                        showError(getString(R.string.kyc_photo_id_sielf_required))
+                    }
+
+                    else -> {
+                        viewModel.save(
+                            it.copy(
+                                documentId = binding.edtDocumentNumber.text.toString(),
+                                documentType = if (binding.rbId.isChecked) KycInfo.TYPE_NATIONAL_ID else if (binding.rbPassport.isChecked) KycInfo.TYPE_PASSPORT else "",
+                                documentIssueDate = binding.edtIssueDate.text.toString(),
+                                documentExpiryDate = binding.edtExpiryDate.text.toString(),
+                                photoIdentityFrontSide = photoIdentityFrontSide,
+                                photoIdentityBackSide = photoIdentityBackSide,
+                                photoSelfie = photoSelfie
+
+                            )
+                        )
+                    }
+                }
             }
-
         }
 
         viewModel.savePersonalInfoCallback.observe(viewLifecycleOwner, Observer {
@@ -240,6 +301,18 @@ class PassportFragment : BaseFragment() {
         })
 
 
+    }
+
+
+    override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
+        currentSelectedDate?.setText(
+            String.format(
+                getString(R.string.date_format_yyyy_mm_dd),
+                year,
+                monthOfYear + 1,
+                dayOfMonth
+            )
+        )
     }
 
 

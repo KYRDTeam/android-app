@@ -45,6 +45,10 @@ abstract class BaseFragment : DaggerFragment() {
         }
     }
 
+    fun showError(message: String, listener: () -> Unit = {}) {
+        showAlert(message, R.drawable.ic_info_error, listener)
+    }
+
     fun showAlertWithoutIcon(title: String? = null, message: String, listener: () -> Unit = {}) {
         if (context != null) {
             this.alertListener = listener

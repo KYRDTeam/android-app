@@ -81,6 +81,7 @@ class AddContactFragment : BaseFragment() {
             binding.executePendingBindings()
         } else {
             binding.title = getString(R.string.add_contact)
+            binding.edtAddress.setText(address)
         }
 
 
@@ -95,7 +96,7 @@ class AddContactFragment : BaseFragment() {
         binding.lnDelete.setOnClickListener {
             contact?.let {
                 dialogHelper.showConfirmation(
-                    getString(R.string.alert_delete),
+                    getString(R.string.title_delete),
                     getString(R.string.contact_confirm_delete),
                     {
                         viewModel.deleteContact(it)
@@ -104,12 +105,10 @@ class AddContactFragment : BaseFragment() {
         }
 
         binding.imgDone.setOnClickListener {
-            if (binding.edtAddress.text.isNullOrEmpty())
-                showAlert(getString(R.string.provide_receive_address))
-            else if (!binding.edtAddress.text.toString().isContact()) {
-                showAlert(getString(R.string.invalid_contact_address))
-            } else {
-                wallet?.address?.let { address ->
+            when {
+                binding.edtAddress.text.isNullOrEmpty() -> showAlert(getString(R.string.provide_receive_address))
+                !binding.edtAddress.text.toString().isContact() -> showAlert(getString(R.string.invalid_contact_address))
+                else -> wallet?.address?.let { address ->
                     viewModel.save(
                         address,
                         binding.edtName.text.toString(),
@@ -133,7 +132,10 @@ class AddContactFragment : BaseFragment() {
                         }
                     }
                     is SaveContactState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }
@@ -147,7 +149,10 @@ class AddContactFragment : BaseFragment() {
                         onSuccess()
                     }
                     is DeleteContactState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }

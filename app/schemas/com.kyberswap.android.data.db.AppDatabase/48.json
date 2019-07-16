@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 48,
-    "identityHash": "696fee1aa28cb588af09cd421b76e0e5",
+    "identityHash": "aebc742f216d3f0c91f5653f36031990",
     "entities": [
       {
         "tableName": "tokens",
@@ -584,7 +584,7 @@
       },
       {
         "tableName": "sends",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`walletAddress` TEXT NOT NULL, `sourceAmount` TEXT NOT NULL, `gasPrice` TEXT NOT NULL, `gasLimit` TEXT NOT NULL, `token_isHide` INTEGER NOT NULL, `token_timestamp` INTEGER NOT NULL, `token_tokenSymbol` TEXT NOT NULL, `token_tokenName` TEXT NOT NULL, `token_tokenAddress` TEXT NOT NULL, `token_tokenDecimal` INTEGER NOT NULL, `token_rateEthNow` TEXT NOT NULL, `token_changeEth24h` TEXT NOT NULL, `token_rateUsdNow` TEXT NOT NULL, `token_changeUsd24h` TEXT NOT NULL, `token_cgId` TEXT NOT NULL, `token_gasApprove` TEXT NOT NULL, `token_gasLimit` TEXT NOT NULL, `token_listingTime` INTEGER NOT NULL, `token_priority` INTEGER NOT NULL, `token_spLimitOrder` INTEGER NOT NULL, `token_wallets` TEXT NOT NULL, `token_fav` INTEGER NOT NULL, `token_isOther` INTEGER NOT NULL, `fast` TEXT NOT NULL, `standard` TEXT NOT NULL, `low` TEXT NOT NULL, `contact_walletAddress` TEXT NOT NULL, `contact_address` TEXT NOT NULL, `contact_name` TEXT NOT NULL, `eth_isHide` INTEGER NOT NULL, `eth_timestamp` INTEGER NOT NULL, `eth_tokenSymbol` TEXT NOT NULL, `eth_tokenName` TEXT NOT NULL, `eth_tokenAddress` TEXT NOT NULL, `eth_tokenDecimal` INTEGER NOT NULL, `eth_rateEthNow` TEXT NOT NULL, `eth_changeEth24h` TEXT NOT NULL, `eth_rateUsdNow` TEXT NOT NULL, `eth_changeUsd24h` TEXT NOT NULL, `eth_cgId` TEXT NOT NULL, `eth_gasApprove` TEXT NOT NULL, `eth_gasLimit` TEXT NOT NULL, `eth_listingTime` INTEGER NOT NULL, `eth_priority` INTEGER NOT NULL, `eth_spLimitOrder` INTEGER NOT NULL, `eth_wallets` TEXT NOT NULL, `eth_fav` INTEGER NOT NULL, `eth_isOther` INTEGER NOT NULL, PRIMARY KEY(`walletAddress`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`walletAddress` TEXT NOT NULL, `sourceAmount` TEXT NOT NULL, `gasPrice` TEXT NOT NULL, `gasLimit` TEXT NOT NULL, `token_isHide` INTEGER NOT NULL, `token_timestamp` INTEGER NOT NULL, `token_tokenSymbol` TEXT NOT NULL, `token_tokenName` TEXT NOT NULL, `token_tokenAddress` TEXT NOT NULL, `token_tokenDecimal` INTEGER NOT NULL, `token_rateEthNow` TEXT NOT NULL, `token_changeEth24h` TEXT NOT NULL, `token_rateUsdNow` TEXT NOT NULL, `token_changeUsd24h` TEXT NOT NULL, `token_cgId` TEXT NOT NULL, `token_gasApprove` TEXT NOT NULL, `token_gasLimit` TEXT NOT NULL, `token_listingTime` INTEGER NOT NULL, `token_priority` INTEGER NOT NULL, `token_spLimitOrder` INTEGER NOT NULL, `token_wallets` TEXT NOT NULL, `token_fav` INTEGER NOT NULL, `token_isOther` INTEGER NOT NULL, `fast` TEXT NOT NULL, `standard` TEXT NOT NULL, `low` TEXT NOT NULL, `contact_walletAddress` TEXT NOT NULL, `contact_address` TEXT NOT NULL, `contact_name` TEXT NOT NULL, `contact_updatedAt` INTEGER NOT NULL, `eth_isHide` INTEGER NOT NULL, `eth_timestamp` INTEGER NOT NULL, `eth_tokenSymbol` TEXT NOT NULL, `eth_tokenName` TEXT NOT NULL, `eth_tokenAddress` TEXT NOT NULL, `eth_tokenDecimal` INTEGER NOT NULL, `eth_rateEthNow` TEXT NOT NULL, `eth_changeEth24h` TEXT NOT NULL, `eth_rateUsdNow` TEXT NOT NULL, `eth_changeUsd24h` TEXT NOT NULL, `eth_cgId` TEXT NOT NULL, `eth_gasApprove` TEXT NOT NULL, `eth_gasLimit` TEXT NOT NULL, `eth_listingTime` INTEGER NOT NULL, `eth_priority` INTEGER NOT NULL, `eth_spLimitOrder` INTEGER NOT NULL, `eth_wallets` TEXT NOT NULL, `eth_fav` INTEGER NOT NULL, `eth_isOther` INTEGER NOT NULL, PRIMARY KEY(`walletAddress`))",
         "fields": [
           {
             "fieldPath": "walletAddress",
@@ -758,6 +758,12 @@
             "fieldPath": "contact.name",
             "columnName": "contact_name",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contact.updatedAt",
+            "columnName": "contact_updatedAt",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -981,7 +987,7 @@
       },
       {
         "tableName": "contacts",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`walletAddress` TEXT NOT NULL, `address` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`walletAddress`, `address`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`walletAddress` TEXT NOT NULL, `address` TEXT NOT NULL, `name` TEXT NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`walletAddress`, `address`))",
         "fields": [
           {
             "fieldPath": "walletAddress",
@@ -999,6 +1005,12 @@
             "fieldPath": "name",
             "columnName": "name",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -2464,7 +2476,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '696fee1aa28cb588af09cd421b76e0e5')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'aebc742f216d3f0c91f5653f36031990')"
     ]
   }
 }

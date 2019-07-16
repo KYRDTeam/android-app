@@ -370,7 +370,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     is SaveSwapDataState.Success -> {
                     }
                     is SaveSwapDataState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }
@@ -385,7 +388,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                         moveToSwapTab()
                     }
                     is SaveSwapDataState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }
@@ -399,7 +405,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                         navigateToSendScreen()
                     }
                     is SaveSendState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }

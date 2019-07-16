@@ -4,6 +4,8 @@ import com.kyberswap.android.domain.model.CustomBytes32
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.math.pow
 
 fun String.toWalletAddress(): String {
@@ -44,6 +46,11 @@ fun String?.percentage(other: String?): BigDecimal {
         ex.printStackTrace()
         BigDecimal.ZERO
     }
+}
+
+fun String.toDate(): Date {
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    return dateFormat.parse(this)
 }
 
 fun String?.toBigDecimalOrDefaultZero(): BigDecimal {

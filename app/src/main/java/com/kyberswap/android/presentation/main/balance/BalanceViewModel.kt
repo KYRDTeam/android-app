@@ -46,10 +46,11 @@ class BalanceViewModel @Inject constructor(
     val searchedKeywordsCallback: LiveData<Event<String>>
         get() = _searchedKeywords
 
+    private val _searchedKeywords = MutableLiveData<Event<String>>()
+
     val visibilityCallback: LiveData<Event<Boolean>>
         get() = _visibility
 
-    private val _searchedKeywords = MutableLiveData<Event<String>>()
 
     private val _visibility = MutableLiveData<Event<Boolean>>()
 
