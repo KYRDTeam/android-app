@@ -122,6 +122,7 @@ class LimitOrderViewModel @Inject constructor(
 
     fun getLimitOrders(wallet: Wallet?) {
         getLocalLimitOrderDataUseCase.dispose()
+        getLocalLimitOrderDataUseCase.dispose()
         wallet?.let {
             getLocalLimitOrderDataUseCase.execute(
                 Consumer {
@@ -134,7 +135,7 @@ class LimitOrderViewModel @Inject constructor(
                     _getLocalLimitOrderCallback.value =
                         Event(GetLocalLimitOrderState.ShowError(it.localizedMessage))
         ,
-                GetLocalLimitOrderDataUseCase.Param(wallet.address)
+                GetLocalLimitOrderDataUseCase.Param(wallet)
             )
 
 

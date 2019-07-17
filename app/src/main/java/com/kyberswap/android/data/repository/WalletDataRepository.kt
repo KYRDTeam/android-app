@@ -40,7 +40,7 @@ class WalletDataRepository @Inject constructor(
     override fun updatedSelectedWallet(param: UpdateSelectedWalletUseCase.Param): Single<Wallet> {
         return Single.fromCallable {
             updateSelectedWallet(param.wallet)
-            addWalletToMonitorBalance(param.wallet)
+            addWalletToMonitorBalance(param.wallet.copy(isSelected = true))
             param.wallet
 
     }

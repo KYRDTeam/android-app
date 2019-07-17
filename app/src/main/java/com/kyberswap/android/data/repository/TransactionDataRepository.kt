@@ -189,7 +189,7 @@ class TransactionDataRepository @Inject constructor(
                     
 
                             val sourceAmount = send?.value.toBigDecimalOrDefaultZero()
-                                .divide(
+                                .div(
                                     10.toBigDecimal()
                                         .pow(
                                             (send?.tokenDecimal ?: Token.ETH_DECIMAL.toString())
@@ -198,7 +198,7 @@ class TransactionDataRepository @Inject constructor(
                                 )
 
                             val destAmount = received?.value.toBigDecimalOrDefaultZero()
-                                .divide(
+                                .div(
                                     10.toBigDecimal()
                                         .pow(
                                             (received?.tokenDecimal ?: Token.ETH_DECIMAL.toString())

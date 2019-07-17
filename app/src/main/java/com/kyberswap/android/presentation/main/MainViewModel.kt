@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
+import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetPendingTransactionsUseCase
 import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
 import com.kyberswap.android.domain.usecase.wallet.CreateWalletUseCase
@@ -28,7 +29,8 @@ class MainViewModel @Inject constructor(
     private val getWalletUseCase: GetSelectedWalletUseCase,
     private val createWalletUseCase: CreateWalletUseCase,
     private val updateSelectedWalletUseCase: UpdateSelectedWalletUseCase,
-    private val getLoginStatusUseCase: GetLoginStatusUseCase
+    private val getLoginStatusUseCase: GetLoginStatusUseCase,
+    private val getBalancePollingUseCase: GetBalancePollingUseCase
 ) : ViewModel() {
 
     private val _getAllWalletStateCallback = MutableLiveData<Event<GetAllWalletState>>()
@@ -90,6 +92,20 @@ class MainViewModel @Inject constructor(
         )
     }
 
+    fun pollingTokenBalance(wallet: Wallet) {
+        getBalancePollingUseCase.dispose()
+        getBalancePollingUseCase.execute(
+            Consumer {
+
+    ,
+            Consumer {
+                it.printStackTrace()
+    ,
+            GetBalancePollingUseCase.Param(wallet.address)
+        )
+
+    }
+
     fun getPendingTransaction(wallet: Wallet) {
         getPendingTransactionsUseCase.execute(
             Consumer {
@@ -148,12 +164,14 @@ class MainViewModel @Inject constructor(
     }
 
     fun updateSelectedWallet(wallet: Wallet) {
+        getBalancePollingUseCase.dispose()
         updateSelectedWalletUseCase.execute(
             Consumer { wl ->
                 _getWalletStateCallback.value = Event(GetWalletState.Success(wl))
 
     ,
             Consumer {
+                pollingTokenBalance(wallet)
                 it.printStackTrace()
                 _getWalletStateCallback.value =
                     Event(GetWalletState.ShowError(it.localizedMessage))

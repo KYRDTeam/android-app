@@ -50,8 +50,10 @@ data class Token(
     var isHide: Boolean = false
 
     val currentBalance: BigDecimal
-        get() = wallets.find { it.isSelected }?.currentBalance
-            ?: wallets.firstOrNull()?.currentBalance ?: BigDecimal.ZERO
+        get() = wallets.find {
+            it.isSelected
+?.currentBalance
+            ?: BigDecimal.ZERO
 
     constructor(entity: TokenEntity) : this(
         entity.timestamp,
@@ -81,6 +83,9 @@ data class Token(
 
     val currentWalletBalance: WalletBalance?
         get() = wallets.find { it.isSelected }
+
+    val selectedWalletAddress: String
+        get() = currentWalletBalance?.walletAddress ?: ""
 
     val isListed: Boolean
         get() = System.currentTimeMillis() - listingTime >= 0
@@ -123,7 +128,7 @@ data class Token(
  else {
             val idx = walletBalances.indexOf(walletBalance)
             if (idx >= 0) {
-                walletBalances[idx] = walletBalance.copy(isSelected = wallet.isSelected)
+                walletBalances[idx] = walletBalance.copy(isSelected = true)
     
 
 
@@ -240,7 +245,7 @@ data class Token(
     }
 
     fun updatePrecision(value: BigInteger): BigInteger {
-        return value.divide(BigInteger.TEN.pow(tokenDecimal))
+        return value.div(BigInteger.TEN.pow(tokenDecimal))
     }
 
     fun withTokenDecimal(amount: BigDecimal): BigInteger {

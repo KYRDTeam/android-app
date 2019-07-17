@@ -312,7 +312,7 @@
     <string name="driving_license">Driving license</string>
     <string name="document_number">Document number</string>
     <string name="issue_date">Issue Date</string>
-    <string name="dont_have_this">I don’t have this</string>
+    <string name="dont_have_this">None applicable</string>
     <string name="expiry_date">Expiry Date</string>
     <string name="photo_of_your_passport_front_side">Photo of your Passport - Front Side</string>
     <string name="browse">Browse</string>

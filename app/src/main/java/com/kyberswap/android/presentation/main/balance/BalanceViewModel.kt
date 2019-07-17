@@ -80,27 +80,12 @@ class BalanceViewModel @Inject constructor(
         _visibility.value = Event(isVisible)
     }
 
-    fun getTokenBalance(address: String) {
-        getBalancePollingUseCase.dispose()
-        getBalancePollingUseCase.execute(
-            Consumer {
-
-    ,
-            Consumer {
-                it.printStackTrace()
-    ,
-            GetBalancePollingUseCase.Param(address)
-        )
+    fun getTokenBalance() {
         getBalanceUseCase.dispose()
         _getBalanceStateCallback.postValue(Event(GetBalanceState.Loading))
         getBalanceUseCase.execute(
             Consumer {
-
-                _getBalanceStateCallback.value = Event(
-                    GetBalanceState.Success(
-                        it
-                    )
-                )
+                _getBalanceStateCallback.value = Event(GetBalanceState.Success(it))
     ,
             Consumer {
                 it.printStackTrace()

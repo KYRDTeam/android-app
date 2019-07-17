@@ -27,13 +27,12 @@ import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.setTextIfChange
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.showKeyboard
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.layout_token_header.*
 import kotlinx.android.synthetic.main.layout_token_header.view.*
-import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -90,6 +89,12 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         listOf(binding.header.tvName, binding.header.tvBalance)
     }
 
+    private val balanceIndex by lazy {
+        nameAndBal.indexOf(binding.header.tvBalance)
+    }
+
+    private var forceUpdate: Boolean = false
+
     private val orderByOptions by lazy {
         listOf(
             binding.header.tvName,
@@ -100,7 +105,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         )
     }
 
-    private var selectedIndex: Int = 1
+    private var nameBalSelectedIndex: Int = 0
 
     private var orderBySelectedIndex: Int = 0
 
@@ -121,20 +126,26 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         super.onActivityCreated(savedInstanceState)
 
         viewModel.getSelectedWallet()
-        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
+        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
                         if (state.wallet.address != binding.wallet?.address) {
-                            viewModel.getTokenBalance(state.wallet.address)
+                            viewModel.getTokenBalance()
+                            tokenAdapter?.let {
+                                forceUpdate = true
+                                setNameBalanceSelectedOption(balanceIndex)
+                    
                 
-                        Timber.e(state.wallet.toString())
-                        this.wallet = state.wallet
-                        binding.tvUnit.text = state.wallet.unit
-                        binding.tvBalance.text = state.wallet.displayBalance
+
+                        binding.tvUnit.setTextIfChange(state.wallet.unit)
+                        binding.tvBalance.setTextIfChange(state.wallet.displayBalance)
+
                         if (binding.wallet != state.wallet) {
                             binding.wallet = state.wallet
                 
+
+                        this.wallet = state.wallet
 
             
                     is GetWalletState.ShowError -> {
@@ -165,10 +176,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
         balanceAddress.forEach { view ->
             view.setOnClickListener {
-                (activity as MainActivity).getCurrentFragment()
-                navigator.navigateToBalanceAddressScreen(
-                    (activity as MainActivity).getCurrentFragment()
-                )
+                navigator.navigateToBalanceAddressScreen(currentFragment)
     
 
 
@@ -248,26 +256,31 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         tokenAdapter?.mode = Attributes.Mode.Single
         binding.rvToken.adapter = tokenAdapter
 
-
-        tvName.isSelected = true
-
-        viewModel.getBalanceStateCallback.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
+        viewModel.getBalanceStateCallback.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetBalanceState.Success -> {
                         if (binding.swipeLayout.isRefreshing) {
                             binding.swipeLayout.isRefreshing = false
                 
-                        tokenAdapter?.setFullTokenList(state.tokens)
-                        tokenAdapter?.submitFilterList(
-                            getFilterTokenList(
-                                currentSearchString,
-                                state.tokens
+
+                        tokenAdapter?.let {
+                            it.setFullTokenList(state.tokens)
+                            if (forceUpdate) {
+                                forceUpdate = false
+                                it.submitList(null)
+                    
+                            it.submitFilterList(
+                                getFilterTokenList(
+                                    currentSearchString,
+                                    state.tokens
+                                )
                             )
-                        )
+                
 
                         val isETH = wallet?.unit == eth
                         setCurrencyDisplay(isETH)
+
                         val balance = calcBalance(state.tokens, isETH)
                         if (balance.toDisplayNumber() != wallet?.balance) {
                             wallet?.balance = balance.toDisplayNumber()
@@ -326,11 +339,11 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
 
 
-        setNameBalanceSelectedOption(selectedIndex)
+        setNameBalanceSelectedOption(balanceIndex)
 
         nameAndBal.forEachIndexed { index, view ->
             view.setOnClickListener {
-                setNameBalanceSelectedOption(nameAndBal.indexOf(view))
+                setNameBalanceSelectedOption(getNameBalNextSelectedIndex(index))
     
 
 
@@ -415,6 +428,15 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         
     
 )
+    }
+
+    private fun getNameBalNextSelectedIndex(index: Int): Int {
+        return if (index == nameBalSelectedIndex && tokenAdapter?.isNameBalOrder == true) {
+            (nameBalSelectedIndex + 1) % 2
+ else {
+            index
+
+
     }
 
     private fun hideBalance(isHide: Boolean) {
@@ -533,7 +555,6 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         view.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawable, 0)
     }
 
-
     private fun setCurrencyDisplay(isEth: Boolean) {
         binding.header.tvEth.isSelected = isEth
         binding.header.tvUsd.isSelected = !isEth
@@ -557,25 +578,15 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     private fun setNameBalanceSelectedOption(index: Int) {
         tokenAdapter?.let {
-            toggleDisplay(false, nameAndBal[selectedIndex])
-            selectedIndex = if (it.isNotNameBalOrder) {
-                index
-     else {
-                if (index == selectedIndex) {
-                    (selectedIndex + 1) % 2
-         else {
-                    index
-        
-    
-
-            val selectedView = nameAndBal[selectedIndex]
+            toggleDisplay(false, nameAndBal[nameBalSelectedIndex])
+            val selectedView = nameAndBal[index]
             toggleDisplay(true, selectedView)
             if (selectedView == binding.header.tvName) {
                 it.setOrderBy(OrderType.NAME)
      else if (selectedView == binding.header.tvBalance) {
                 it.setOrderBy(OrderType.BALANCE)
     
-
+            nameBalSelectedIndex = index
             updateOrderOption(orderByOptions.indexOf(selectedView), selectedView)
 
     }
