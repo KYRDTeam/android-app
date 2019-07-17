@@ -23,6 +23,7 @@ class WalletAdapter(
 
         override fun areContentsTheSame(oldItem: Wallet, newItem: Wallet): Boolean {
             return oldItem.name == newItem.name && oldItem.address == newItem.address
+                && oldItem.isSelected == newItem.isSelected
         }
     }
 ) {

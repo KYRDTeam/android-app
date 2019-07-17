@@ -165,7 +165,7 @@ data class Swap(
         )
 
     private val gasFeeUsd: BigDecimal
-        get() = gasFeeEth.divide(tokenSource.rateEthNow).multiply(tokenSource.rateUsdNow)
+        get() = gasFeeEth.div(tokenSource.rateEthNow).multiply(tokenSource.rateUsdNow)
 
     val displayGasFee: String
         get() = StringBuilder()
@@ -188,7 +188,7 @@ data class Swap(
     val displayMinAcceptedRate: String
         get() = ((BigDecimal.ONE - minAcceptedRatePercent
             .toBigDecimalOrDefaultZero()
-            .divide(100.toBigDecimal())).multiply(
+            .div(100.toBigDecimal())).multiply(
             expectedRate.toBigDecimalOrDefaultZero()
         ))
             .toDisplayNumber()
@@ -197,7 +197,7 @@ data class Swap(
         get() = Convert.toWei(
             (BigDecimal.ONE - minAcceptedRatePercent
                 .toBigDecimalOrDefaultZero()
-                .divide(100.toBigDecimal()))
+                .div(100.toBigDecimal()))
                 .multiply(expectedRate.toBigDecimalOrDefaultZero()),
             Convert.Unit.ETHER
         )

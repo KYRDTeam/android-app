@@ -189,8 +189,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         binding.navView.rvWallet.adapter = walletAdapter
 
         mainViewModel.getWallets()
-        mainViewModel.getAllWalletStateCallback.observe(this, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
+        mainViewModel.getAllWalletStateCallback.observe(this, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetAllWalletState.Success -> {
                         val selectedWallet = state.wallets.find { it.isSelected }
@@ -198,6 +198,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                             wallet = selectedWallet
                             wallet?.let {
                                 mainViewModel.getPendingTransaction(it)
+                                mainViewModel.pollingTokenBalance(it)
+
                             }
                         }
                         walletAdapter.submitList(listOf())

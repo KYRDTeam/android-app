@@ -228,47 +228,59 @@ class LimitOrderDataRepository @Inject constructor(
     }
 
     override fun getCurrentLimitOrders(param: GetLocalLimitOrderDataUseCase.Param): Flowable<LocalLimitOrder> {
-        val limitOrder = localLimitOrderDao.findLocalLimitOrderByAddress(param.walletAddress)
-        val defaultLimitOrder = if (limitOrder == null) {
-            val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)
-            val wethToken = tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)
+        val wallet = param.wallet
+        val defaultLimitOrder = when (val limitOrder =
+            localLimitOrderDao.findLocalLimitOrderByAddress(wallet.address)) {
+            null -> {
+                val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)
+                val wethToken = tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)
 
-            val ethBalance = ethToken?.currentBalance ?: BigDecimal.ZERO
-            val wethBalance = wethToken?.currentBalance ?: BigDecimal.ZERO
+                val ethBalance = ethToken?.currentBalance ?: BigDecimal.ZERO
+                val wethBalance = wethToken?.currentBalance ?: BigDecimal.ZERO
 
-            val defaultSourceToken = wethToken?.updateBalance(ethBalance.plus(wethBalance))?.copy(
-                tokenSymbol = Token.ETH_SYMBOL_STAR
-            )
+                val defaultSourceToken =
+                    wethToken?.updateBalance(ethBalance.plus(wethBalance))?.copy(
+                        tokenSymbol = Token.ETH_SYMBOL_STAR
+                    )
 
-            val defaultDestToken = tokenDao.getTokenBySymbol(Token.KNC)
+                val defaultDestToken = tokenDao.getTokenBySymbol(Token.KNC)
 
-            val order = LocalLimitOrder(
-                param.walletAddress,
-                defaultSourceToken ?: Token(),
-                defaultDestToken ?: Token()
-            )
+                val order = LocalLimitOrder(
+                    wallet.address,
+                    defaultSourceToken ?: Token(),
+                    defaultDestToken ?: Token()
+                )
 
-            localLimitOrderDao.insertOrder(order)
-            order
-        } else {
-            limitOrder
+                localLimitOrderDao.insertOrder(order)
+                order
+            }
+            else -> when {
+                limitOrder.tokenSource.selectedWalletAddress != wallet.address -> {
+                    val source = limitOrder.tokenSource.updateSelectedWallet(wallet)
+                    val dest = limitOrder.tokenDest.updateSelectedWallet(wallet)
+                    limitOrder.copy(tokenSource = source, tokenDest = dest)
+                }
+                else -> limitOrder
+            }
         }
 
-        val source = updateBalance(defaultLimitOrder.tokenSource)
-        val dest = updateBalance(defaultLimitOrder.tokenDest)
 
-        val order = if (source.isETHWETH) {
-            val ethToken =
-                tokenDao.getTokenBySymbol(Token.ETH_SYMBOL) ?: Token()
-            val wethToken =
-                tokenDao.getTokenBySymbol(Token.WETH_SYMBOL) ?: Token()
+        val source = updateBalance(defaultLimitOrder.tokenSource, wallet)
+        val dest = updateBalance(defaultLimitOrder.tokenDest, wallet)
 
-            defaultLimitOrder.copy(
-                ethToken = ethToken,
-                wethToken = wethToken
-            )
-        } else {
-            defaultLimitOrder
+        val order = when {
+            source.isETHWETH -> {
+                val ethToken =
+                    tokenDao.getTokenBySymbol(Token.ETH_SYMBOL) ?: Token()
+                val wethToken =
+                    tokenDao.getTokenBySymbol(Token.WETH_SYMBOL) ?: Token()
+
+                defaultLimitOrder.copy(
+                    ethToken = ethToken,
+                    wethToken = wethToken
+                )
+            }
+            else -> defaultLimitOrder
         }
 
         val orderWithToken = order.copy(
@@ -276,27 +288,42 @@ class LimitOrderDataRepository @Inject constructor(
             tokenDest = dest
         )
 
-        if (orderWithToken != defaultLimitOrder) {
-            localLimitOrderDao.insertOrder(orderWithToken)
-        }
+        localLimitOrderDao.insertOrder(orderWithToken)
 
-        return localLimitOrderDao.findLocalLimitOrderByAddressFlowable(param.walletAddress)
+        return localLimitOrderDao.findLocalLimitOrderByAddressFlowable(wallet.address)
             .defaultIfEmpty(orderWithToken)
     }
 
-    private fun updateBalance(token: Token): Token {
-        return if (token.isETHWETH) {
-            val ethBalance =
-                tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)?.currentBalance ?: BigDecimal.ZERO
-            val wethBalance =
-                tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)?.currentBalance ?: BigDecimal.ZERO
-            token.updateBalance(
-                ethBalance.plus(
-                    wethBalance
+    private fun updateBalance(token: Token, wallet: Wallet): Token {
+        return when {
+            token.isETHWETH -> {
+
+                val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)
+                val wethToken = tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)
+                val ethBalance = if (ethToken?.selectedWalletAddress != wallet.address) {
+                    ethToken?.updateSelectedWallet(wallet)
+                } else {
+                    ethToken
+                }?.currentBalance ?: BigDecimal.ZERO
+
+                val wethBalance = if (wethToken?.selectedWalletAddress != wallet.address) {
+                    wethToken?.updateSelectedWallet(wallet)
+                } else {
+                    wethToken
+                }?.currentBalance ?: BigDecimal.ZERO
+
+                token.updateBalance(
+                    ethBalance.plus(wethBalance)
                 )
-            )
-        } else {
-            token
+            }
+            else -> {
+                when {
+                    token.selectedWalletAddress != wallet.address -> token.updateSelectedWallet(
+                        wallet
+                    )
+                    else -> token
+                }
+            }
         }
     }
 

@@ -158,8 +158,8 @@
 
             <ImageView
                 android:id="@+id/imgState"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="11dp"
+                android:layout_height="11dp"
                 android:src="@drawable/ic_arrow_up"
                 app:layout_constraintBottom_toBottomOf="@+id/textView124"
                 app:layout_constraintEnd_toStartOf="@+id/tvChange24h"

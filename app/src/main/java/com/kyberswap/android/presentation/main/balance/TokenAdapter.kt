@@ -42,7 +42,7 @@ class TokenAdapter(
 ) {
     private var isEth = false
 
-    private var orderType: OrderType = OrderType.NAME
+    private var orderType: OrderType = OrderType.BALANCE
 
     private var isHide = false
 
@@ -111,7 +111,6 @@ class TokenAdapter(
             submitList(listOf())
         }
 
-
         submitList(filterList)
     }
 
@@ -147,8 +146,8 @@ class TokenAdapter(
         }
     }
 
-    val isNotNameBalOrder: Boolean
-        get() = orderType != OrderType.NAME && orderType != OrderType.BALANCE
+    val isNameBalOrder: Boolean
+        get() = orderType == OrderType.BALANCE || orderType == OrderType.NAME
 
     val isAsc: Boolean
         get() = orderType == OrderType.ETH_ASC ||
@@ -259,9 +258,9 @@ class TokenAdapter(
             false
         )
 
+
     fun setOrderBy(type: OrderType) {
         this.orderType = type
-
         submitFilterList(getData(), true)
     }
 
