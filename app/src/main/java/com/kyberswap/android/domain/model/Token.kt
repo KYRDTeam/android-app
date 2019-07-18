@@ -122,7 +122,7 @@ data class Token(
                 WalletBalance(
                     wallet.address,
                     BigDecimal.ZERO,
-                    wallet.isSelected
+                    true
                 )
             )
         } else {

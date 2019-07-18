@@ -29,7 +29,8 @@ data class Wallet(
     @Embedded
     var cap: Cap = Cap(),
     @Embedded
-    var promo: Promo? = Promo()
+    var promo: Promo? = Promo(),
+    val createAt: Long = 0
 ) :
     Parcelable {
     constructor(wallet: Wallet) : this(

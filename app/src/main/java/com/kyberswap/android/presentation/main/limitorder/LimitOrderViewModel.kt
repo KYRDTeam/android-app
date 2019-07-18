@@ -24,6 +24,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import org.web3j.utils.Convert
+import timber.log.Timber
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -425,7 +426,10 @@ class LimitOrderViewModel @Inject constructor(
             it.srcAmount
         }.sumByBigDecimal { it }
 
+        Timber.e(pendingAmount.toDisplayNumber())
+
         val currentAmount = order?.tokenSource?.currentBalance ?: BigDecimal.ZERO
+        Timber.e(currentAmount.toDisplayNumber())
         var availableAmount = currentAmount - pendingAmount
         if (availableAmount < BigDecimal.ZERO) {
             availableAmount = BigDecimal.ZERO
