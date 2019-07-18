@@ -43,7 +43,8 @@ data class Token(
     @TypeConverters(WalletBalanceTypeConverter::class)
     val wallets: List<WalletBalance> = listOf(),
     val fav: Boolean = false,
-    val isOther: Boolean = false
+    val isOther: Boolean = false,
+    val limitOrderBalance: BigDecimal = BigDecimal.ZERO
 ) : Parcelable {
 
     @IgnoredOnParcel
@@ -174,6 +175,9 @@ data class Token(
 
     val displayCurrentBalance: String
         get() = if (isHide) "******" else currentBalance.toDisplayNumber()
+
+    val displayLimitOrderBalance: String
+        get() = limitOrderBalance.toDisplayNumber()
 
     val displayCurrentBalanceInEth: String
         get() = StringBuilder()

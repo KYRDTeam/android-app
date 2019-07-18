@@ -19,7 +19,7 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.balance.GetBalanceState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
-import com.kyberswap.android.presentation.main.swap.TokenSearchAdapter
+import com.kyberswap.android.presentation.main.swap.TokenSearchLimitOrderAdapter
 import com.kyberswap.android.util.di.ViewModelFactory
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
@@ -79,12 +79,12 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
         )
 
         val tokenAdapter =
-            TokenSearchAdapter(appExecutors) { token ->
+            TokenSearchLimitOrderAdapter(appExecutors) { token ->
                 viewModel.saveTokenSelection(wallet!!.address, token, isSourceToken ?: false)
 
     
         binding.rvToken.adapter = tokenAdapter
-        viewModel.getTokenList(wallet!!.address)
+        wallet?.let { viewModel.getPendingBalances(it) }
 
         viewModel.getTokenListCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -95,8 +95,8 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
                         val ethToken = combineList.find { it.isETH }
                         val wethToken = combineList.find { it.isWETH }
 
-                        val ethBalance = ethToken?.currentBalance ?: BigDecimal.ZERO
-                        val wethBalance = wethToken?.currentBalance ?: BigDecimal.ZERO
+                        val ethBalance = ethToken?.limitOrderBalance ?: BigDecimal.ZERO
+                        val wethBalance = wethToken?.limitOrderBalance ?: BigDecimal.ZERO
 
                         combineList.remove(ethToken)
                         combineList.remove(wethToken)
@@ -164,7 +164,10 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
         activity?.onBackPressed()
     }
 
-    private fun updateFilterListToken(searchedText: String?, tokenAdapter: TokenSearchAdapter) {
+    private fun updateFilterListToken(
+        searchedText: String?,
+        tokenAdapter: TokenSearchLimitOrderAdapter
+    ) {
         if (searchedText.isNullOrEmpty()) {
             tokenAdapter.submitFilterList(tokenList)
  else {
