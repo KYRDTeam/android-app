@@ -387,7 +387,7 @@ class LimitOrderDataRepository @Inject constructor(
                     it.filter { it.isPending }
         
                 .doAfterSuccess {
-                    limitOrderDao.insertOrders(it)
+                    limitOrderDao.updateOrders(it)
         .toFlowable()
         )
 

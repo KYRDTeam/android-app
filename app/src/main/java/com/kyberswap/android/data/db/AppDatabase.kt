@@ -1,10 +1,13 @@
 package com.kyberswap.android.data.db
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.domain.model.Unit
 
@@ -26,7 +29,7 @@ import com.kyberswap.android.domain.model.Unit
         Alert::class,
         PassCode::class
     ],
-    version = 48
+    version = 1
 )
 @TypeConverters(
     DataTypeConverter::class,
@@ -65,11 +68,18 @@ abstract class AppDatabase : RoomDatabase() {
                         ?: buildDatabase(context).also { INSTANCE = it }
         
 
+        @VisibleForTesting
+        internal val MIGRATION_1_2: Migration = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+    
+
+
         private fun buildDatabase(context: Context) =
             Room.databaseBuilder(
                 context.applicationContext,
                 AppDatabase::class.java, "kyberswap.db"
             )
+                .addMigrations(MIGRATION_1_2)
                 .fallbackToDestructiveMigration()
                 .allowMainThreadQueries()
                 .build()

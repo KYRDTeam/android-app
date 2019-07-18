@@ -40,6 +40,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_limit_order.*
 import kotlinx.android.synthetic.main.fragment_swap.edtDest
 import kotlinx.android.synthetic.main.fragment_swap.edtSource
+import timber.log.Timber
 import java.math.BigDecimal
 import javax.inject.Inject
 import kotlin.math.absoluteValue
@@ -249,18 +250,16 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetRelatedOrdersState.Success -> {
-                        orderAdapter.submitList(listOf())
+                        orderAdapter.submitList(null)
                         orderAdapter.submitList(state.orders)
 
                         val calAvailableAmount = viewModel.calAvailableAmount(
                             binding.order,
                             state.orders
                         )
-                        if (binding.availableAmount != calAvailableAmount
-                        ) {
-                            binding.availableAmount =
-                                calAvailableAmount
-                            binding.executePendingBindings()
+                        Timber.e(calAvailableAmount)
+                        if (binding.availableAmount != calAvailableAmount) {
+                            binding.availableAmount = calAvailableAmount
                 
             
                     is GetRelatedOrdersState.ShowError -> {
