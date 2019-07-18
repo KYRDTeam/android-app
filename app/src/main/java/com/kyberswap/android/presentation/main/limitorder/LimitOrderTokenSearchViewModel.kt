@@ -3,7 +3,10 @@ package com.kyberswap.android.presentation.main.limitorder
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.kyberswap.android.domain.model.PendingBalances
 import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.usecase.limitorder.GetPendingBalancesUseCase
 import com.kyberswap.android.domain.usecase.limitorder.SaveLimitOrderTokenUseCase
 import com.kyberswap.android.domain.usecase.token.GetTokenUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
@@ -13,12 +16,14 @@ import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class LimitOrderTokenSearchViewModel @Inject constructor(
     private val getTokenListUseCase: GetTokenUseCase,
     private val getWalletByAddressUseCase: GetWalletByAddressUseCase,
-    private val saveLimitOrderTokenUseCase: SaveLimitOrderTokenUseCase
+    private val saveLimitOrderTokenUseCase: SaveLimitOrderTokenUseCase,
+    private val pendingBalancesUseCase: GetPendingBalancesUseCase
 ) : ViewModel() {
 
     private val _getTokenListCallback = MutableLiveData<Event<GetBalanceState>>()
@@ -34,12 +39,23 @@ class LimitOrderTokenSearchViewModel @Inject constructor(
         CompositeDisposable()
     }
 
-    fun getTokenList(address: String) {
+    fun getTokenList(address: String, pendingBalances: PendingBalances) {
         getTokenListUseCase.execute(
             Consumer { tokens ->
                 _getTokenListCallback.value = Event(
                     GetBalanceState.Success(
-                        tokens.filter { it.spLimitOrder }
+                        tokens
+                            .filter { it.spLimitOrder }.map {
+                                val pendingAmount =
+                                    pendingBalances.data[it.tokenSymbol] ?: BigDecimal.ZERO
+                                if (pendingAmount > BigDecimal.ZERO) {
+                                    val availableAmount = it.currentBalance - pendingAmount
+                                    it.copy(limitOrderBalance = if (availableAmount > BigDecimal.ZERO) availableAmount else BigDecimal.ZERO)
+                                } else {
+                                    it.copy(limitOrderBalance = it.currentBalance)
+                                }
+
+                            }
                     )
                 )
             },
@@ -53,6 +69,24 @@ class LimitOrderTokenSearchViewModel @Inject constructor(
                     )
             },
             address
+        )
+    }
+
+    fun getPendingBalances(wallet: Wallet) {
+        pendingBalancesUseCase.execute(
+            Consumer {
+                getTokenList(wallet.address, it)
+            },
+            Consumer {
+                it.printStackTrace()
+                _getTokenListCallback.value =
+                    Event(
+                        GetBalanceState.ShowError(
+                            it.localizedMessage
+                        )
+                    )
+            },
+            GetPendingBalancesUseCase.Param(wallet)
         )
     }
 

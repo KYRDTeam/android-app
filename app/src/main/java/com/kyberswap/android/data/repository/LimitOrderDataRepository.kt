@@ -5,10 +5,7 @@ import android.util.Base64
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.LimitOrderApi
-import com.kyberswap.android.data.db.LimitOrderDao
-import com.kyberswap.android.data.db.LocalLimitOrderDao
-import com.kyberswap.android.data.db.OrderFilterDao
-import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.db.*
 import com.kyberswap.android.data.mapper.FeeMapper
 import com.kyberswap.android.data.mapper.OrderMapper
 import com.kyberswap.android.domain.model.*
@@ -32,6 +29,7 @@ class LimitOrderDataRepository @Inject constructor(
     private val localLimitOrderDao: LocalLimitOrderDao,
     private val orderFilterDao: OrderFilterDao,
     private val tokenDao: TokenDao,
+    private val pendingBalancesDao: PendingBalancesDao,
     private val limitOrderApi: LimitOrderApi,
     private val tokenClient: TokenClient,
     private val orderMapper: OrderMapper,
@@ -391,6 +389,18 @@ class LimitOrderDataRepository @Inject constructor(
                 }.toFlowable()
         )
 
+    }
+
+    override fun getPendingBalances(param: GetPendingBalancesUseCase.Param): Flowable<PendingBalances> {
+        return Flowable.mergeDelayError(
+            pendingBalancesDao.all,
+            limitOrderApi.getPendingBalances(param.wallet.address).map {
+                orderMapper.transform(it)
+            }.doAfterSuccess {
+                pendingBalancesDao.createNewPendingBalances(it)
+            }.toFlowable()
+
+        )
     }
 
     companion object {

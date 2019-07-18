@@ -27,9 +27,10 @@ import com.kyberswap.android.domain.model.Unit
         LocalLimitOrder::class,
         OrderFilter::class,
         Alert::class,
-        PassCode::class
+        PassCode::class,
+        PendingBalances::class
     ],
-    version = 1
+    version = 2
 )
 @TypeConverters(
     DataTypeConverter::class,
@@ -37,7 +38,8 @@ import com.kyberswap.android.domain.model.Unit
     TransactionTypeConverter::class,
     TokenPairTypeConverter::class,
     ListTypeConverter::class,
-    WalletBalanceTypeConverter::class
+    WalletBalanceTypeConverter::class,
+    PendingBalancesConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -56,6 +58,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun orderFilterDao(): OrderFilterDao
     abstract fun alertDao(): AlertDao
     abstract fun passCodeDao(): PassCodeDao
+    abstract fun pendingBalancesDao(): PendingBalancesDao
 
     companion object {
         @Volatile
@@ -71,6 +74,7 @@ abstract class AppDatabase : RoomDatabase() {
         @VisibleForTesting
         internal val MIGRATION_1_2: Migration = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE tokens " + " ADD COLUMN limitOrderBalance TEXT NOT NULL default '' ")
             }
         }
 

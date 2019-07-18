@@ -103,4 +103,10 @@ class DatabaseModule {
         return appDatabase.passCodeDao()
     }
 
+    @Provides
+    @Singleton
+    fun providePendingBalancesDao(appDatabase: AppDatabase): PendingBalancesDao {
+        return appDatabase.pendingBalancesDao()
+    }
+
 }
