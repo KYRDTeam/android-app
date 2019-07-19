@@ -73,6 +73,7 @@ class LimitOrderTokenSearchViewModel @Inject constructor(
     }
 
     fun getPendingBalances(wallet: Wallet) {
+        pendingBalancesUseCase.dispose()
         pendingBalancesUseCase.execute(
             Consumer {
                 getTokenList(wallet.address, it)
@@ -94,6 +95,7 @@ class LimitOrderTokenSearchViewModel @Inject constructor(
         getWalletByAddressUseCase.dispose()
         saveLimitOrderTokenUseCase.dispose()
         getTokenListUseCase.dispose()
+        pendingBalancesUseCase.dispose()
         compositeDisposable.dispose()
         super.onCleared()
     }

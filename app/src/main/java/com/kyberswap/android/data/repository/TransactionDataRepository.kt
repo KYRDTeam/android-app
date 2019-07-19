@@ -1,10 +1,11 @@
 package com.kyberswap.android.data.repository
 
 import com.kyberswap.android.data.api.home.TransactionApi
-import com.kyberswap.android.data.db.TransactionDao
+import com.kyberswap.android.data.db.*
 import com.kyberswap.android.data.mapper.TransactionMapper
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Transaction
+import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.TransactionRepository
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
 import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
@@ -27,7 +28,11 @@ class TransactionDataRepository @Inject constructor(
     private val transactionApi: TransactionApi,
     private val transactionDao: TransactionDao,
     private val transactionMapper: TransactionMapper,
-    private val tokenClient: TokenClient
+    private val tokenClient: TokenClient,
+    private val tokenDao: TokenDao,
+    private val swapDao: SwapDao,
+    private val sendDao: SendDao,
+    private val limitOrderDao: LocalLimitOrderDao
 ) : TransactionRepository {
     override fun monitorPendingTransactionsPolling(param: MonitorPendingTransactionUseCase.Param): Flowable<List<Transaction>> {
         return Flowable.fromCallable {
@@ -39,17 +44,76 @@ class TransactionDataRepository @Inject constructor(
                     if (Numeric.decodeQuantity(tx.blockHash) > BigInteger.ZERO) {
                         transactionDao.delete(transaction)
                         transactionDao.insertTransaction(tx.copy(transactionStatus = ""))
+                        val tokenSource = tokenDao.getTokenBySymbol(it.tokenSource)
+                        val tokenDest = tokenDao.getTokenBySymbol(it.tokenDest)
+                        tokenSource?.let { src ->
+                            updateTokenBalance(src, param.wallet)
+
+                        }
+
+                        tokenDest?.let { dest ->
+                            updateTokenBalance(dest, param.wallet)
+                        }
+
+
                     }
                 }
             }
             pendingTransactions
         }
             .repeatWhen {
-                it.delay(10, TimeUnit.SECONDS)
+                it.delay(15, TimeUnit.SECONDS)
             }
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
             }
+    }
+
+    private fun updateTokenBalance(token: Token, wallet: Wallet) {
+        val updatedBalanceToken = tokenClient.updateBalance(token)
+        tokenDao.updateToken(updatedBalanceToken)
+
+        val swapByAddress = swapDao.findSwapByAddress(wallet.address)
+        swapByAddress?.let { swap ->
+            if (swap.tokenSource.tokenSymbol == updatedBalanceToken.tokenSymbol) {
+                swapDao.updateSwap(swap.copy(tokenSource = updatedBalanceToken))
+            }
+        }
+
+        val sendByAddress = sendDao.findSendByAddress(wallet.address)
+        sendByAddress?.let { send ->
+            if (send.tokenSource.tokenSymbol == updatedBalanceToken.tokenSymbol) {
+                sendDao.updateSend(send.copy(tokenSource = updatedBalanceToken))
+            }
+
+        }
+
+        val orderByAddress =
+            limitOrderDao.findLocalLimitOrderByAddress(wallet.address)
+        orderByAddress?.let { order ->
+            if (order.tokenSource.symbol == updatedBalanceToken.tokenSymbol) {
+                limitOrderDao.updateOrder(
+                    order.copy(
+                        tokenSource = order.tokenSource.updateBalance(
+                            updatedBalanceToken.currentBalance
+                        )
+                    )
+                )
+            } else if (order.tokenSource.tokenSymbol == Token.ETH_SYMBOL_STAR && updatedBalanceToken.tokenSymbol == Token.ETH_SYMBOL) {
+                val wethToken = tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)
+                val ethBalance = updatedBalanceToken.currentBalance
+                val wethBalance = wethToken?.currentBalance ?: BigDecimal.ZERO
+
+                limitOrderDao.updateOrder(
+                    order.copy(
+                        tokenSource = order.tokenSource.updateBalance(
+                            ethBalance.plus(wethBalance)
+                        )
+                    )
+                )
+
+            }
+        }
     }
 
     override fun fetchPendingTransaction(address: String): Flowable<List<Transaction>> {
@@ -189,7 +253,7 @@ class TransactionDataRepository @Inject constructor(
                             }
 
                             val sourceAmount = send?.value.toBigDecimalOrDefaultZero()
-                                .div(
+                                .divide(
                                     BigDecimal.TEN
                                         .pow(
                                             (send?.tokenDecimal ?: Token.ETH_DECIMAL.toString())
@@ -198,7 +262,7 @@ class TransactionDataRepository @Inject constructor(
                                 )
 
                             val destAmount = received?.value.toBigDecimalOrDefaultZero()
-                                .div(
+                                .divide(
                                     BigDecimal.TEN
                                         .pow(
                                             (received?.tokenDecimal ?: Token.ETH_DECIMAL.toString())

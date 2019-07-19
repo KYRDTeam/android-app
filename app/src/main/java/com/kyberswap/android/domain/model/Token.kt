@@ -82,6 +82,9 @@ data class Token(
 
     )
 
+    val symbol: String
+        get() = if (tokenSymbol == ETH_SYMBOL_STAR) WETH_SYMBOL else tokenSymbol
+
     val currentWalletBalance: WalletBalance?
         get() = wallets.find { it.isSelected }
 
@@ -92,7 +95,7 @@ data class Token(
         get() = System.currentTimeMillis() - listingTime >= 0
 
     val shouldShowAsNew: Boolean
-        get() = listingTime >= System.currentTimeMillis() / 1000 - 7.0 * 24.0 * 60.0 * 60.0
+        get() = 7.0 * 24.0 * 60.0 * 60.0 >= System.currentTimeMillis() / 1000 - listingTime && System.currentTimeMillis() / 1000 - listingTime >= 0
 
     val submitOrderTokenSymbol: String
         get() = if (isETHWETH) WETH_SYMBOL else tokenSymbol

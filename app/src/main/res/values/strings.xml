@@ -253,7 +253,7 @@
     <string name="order_status_filled">Filled</string>
     <string name="order_status_invalidated">Invalidated</string>
     <string name="convert_eth_to_weth">Convert ETH to WETH</string>
-    <string name="your_balance">Your balance:</string>
+    <string name="your_balance">Your available balance:</string>
     <string name="your_address">Your address:</string>
     <string name="convert_eth_weth">Your order can not be submited because your WETH is not enough, please convert ETH to WETH.</string>
     <string name="token_eth">ETH</string>
@@ -488,6 +488,12 @@
     <string name="kyc_photo_id_front_required">Photo identity front side can\'t be blank</string>
     <string name="kyc_photo_id_back_required">Photo identity back side can\'t be blank</string>
     <string name="kyc_photo_id_sielf_required">Photo selfie can\'t be blank</string>
+    <string name="eth_balance">%s ETH</string>
+    <string name="weth_balance">%s WETH</string>
+    <string name="min_eth_amount">You should convert at least %s ETH to continue with your order</string>
+    <string name="invalid_amount">Invalid amount</string>
+    <string name="eth_balance_not_enough">You ETH balance is not enough to make the transaction</string>
+    <string name="eth_balance_not_enough_for_fee">You don\'t have enough ETH pay for transaction fee of %s</string>
 
 
 </resources>

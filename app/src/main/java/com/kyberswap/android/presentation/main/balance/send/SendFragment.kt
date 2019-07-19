@@ -323,6 +323,9 @@ class SendFragment : BaseFragment() {
                             state.send,
                             wallet
                         )
+                        if (state.send.contact.address.isNotBlank()) {
+                            sendToContact(state.send.contact)
+                        }
                     }
                     is GetSendState.ShowError -> {
                         showAlert(

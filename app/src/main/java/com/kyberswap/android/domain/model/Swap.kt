@@ -230,11 +230,7 @@ data class Swap(
     fun amountTooSmall(sourceAmount: String?): Boolean {
         val amount =
             sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateEthNow)
-        return if (tokenSource.isETH) {
-            amount <= MIN_SUPPORT_SWAP_SOURCE_AMOUNT.toBigDecimal()
-        } else {
-            amount < MIN_SUPPORT_SWAP_SOURCE_AMOUNT.toBigDecimal()
-        }
+        return amount < MIN_SUPPORT_SWAP_SOURCE_AMOUNT.toBigDecimal()
     }
 
     val insufficientEthBalance: Boolean

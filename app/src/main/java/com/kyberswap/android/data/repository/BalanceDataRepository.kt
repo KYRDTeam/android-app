@@ -110,7 +110,7 @@ class BalanceDataRepository @Inject constructor(
                 changeEth24h = token.changeEth24h,
                 changeUsd24h = token.changeUsd24h
             ) ?: token
-            tokenClient.getBalance(updatedWithBalance)
+            tokenClient.updateBalance(updatedWithBalance)
         }
         tokenDao.updateTokens(listWithBalance)
         return listWithBalance

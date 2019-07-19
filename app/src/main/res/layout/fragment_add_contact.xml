@@ -104,7 +104,6 @@
                     android:paddingStart="0dp"
                     android:paddingEnd="24dp"
                     android:singleLine="true"
-                    android:text="@{contact.address}"
                     android:textColor="#2e3957"
                     android:textSize="14sp" />
             </com.google.android.material.textfield.TextInputLayout>

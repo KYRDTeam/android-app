@@ -431,6 +431,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                     viewModel.save(
                         binding.info?.copy(
                             firstName = edtFirstName.text.toString(),
+                            middleName = edtMiddleName.text.toString(),
                             lastName = edtLastName.text.toString(),
                             nationality = edtNationality.text.toString(),
                             country = edtCountryResident.text.toString(),
@@ -461,6 +462,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
     private fun saveCurrentKycInfo() {
         binding.info?.copy(
             firstName = edtFirstName.text.toString(),
+            middleName = edtMiddleName.text.toString(),
             lastName = edtLastName.text.toString(),
             nationality = edtNationality.text.toString(),
             country = edtCountryResident.text.toString(),

@@ -157,10 +157,6 @@ class SwapDataRepository @Inject constructor(
             resetSend.let {
                 sendTokenDao.updateSend(
                     it.copy(
-                        tokenSource = it.tokenSource.updateBalance(
-                            it.tokenSource.currentBalance
-                                - resetSend.sourceAmount.toBigDecimalOrDefaultZero()
-                        ),
                         sourceAmount = ""
                     )
                 )
