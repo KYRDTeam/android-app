@@ -19,7 +19,7 @@ interface SendDao {
         insertSend(send)
     }
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateSend(send: Send)
 
     @Query("SELECT * from sends where walletAddress = :address")

@@ -107,23 +107,27 @@ class MainViewModel @Inject constructor(
     }
 
     fun getPendingTransaction(wallet: Wallet) {
+        getPendingTransactionsUseCase.dispose()
         getPendingTransactionsUseCase.execute(
             Consumer {
-                monitorPendingTransactionsUseCase.dispose()
                 if (it.isNotEmpty()) {
+                    monitorPendingTransactionsUseCase.dispose()
                     monitorPendingTransactionsUseCase.execute(
                         Consumer { tx ->
+
                             _getPendingTransactionStateCallback.value = Event(
-                                GetPendingTransactionState.Success(
-                                    tx
-                                )
+                                GetPendingTransactionState.Success(tx)
                             )
+
+                            if (tx.none { it.blockNumber.isEmpty() }) {
+                                monitorPendingTransactionsUseCase.dispose()
+                    
                 ,
                         Consumer { ex ->
                             ex.printStackTrace()
                             Timber.e(ex.localizedMessage)
                 ,
-                        MonitorPendingTransactionUseCase.Param(it)
+                        MonitorPendingTransactionUseCase.Param(it, wallet)
                     )
          else {
                     _getPendingTransactionStateCallback.value = Event(

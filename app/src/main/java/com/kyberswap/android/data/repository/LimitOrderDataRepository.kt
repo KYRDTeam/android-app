@@ -16,10 +16,13 @@ import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.hexWithPrefix
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.FlowableTransformer
 import io.reactivex.Single
+import io.reactivex.functions.BiFunction
 import org.consenlabs.tokencore.wallet.WalletManager
 import org.web3j.crypto.WalletUtils
 import java.math.BigDecimal
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -292,6 +295,15 @@ class LimitOrderDataRepository @Inject constructor(
             .defaultIfEmpty(orderWithToken)
     }
 
+    private fun <T> zipWithFlatMap(): FlowableTransformer<T, Long> {
+        return FlowableTransformer { flowable ->
+            flowable.zipWith(
+                Flowable.range(COUNTER_START, ATTEMPTS),
+                BiFunction<T, Int, Int> { _: T, u: Int -> u })
+                .flatMap { t -> Flowable.timer(t * 5L, TimeUnit.SECONDS) }
+
+    }
+
     private fun updateBalance(token: Token, wallet: Wallet): Token {
         return when {
             token.isETHWETH -> {
@@ -394,11 +406,18 @@ class LimitOrderDataRepository @Inject constructor(
     override fun getPendingBalances(param: GetPendingBalancesUseCase.Param): Flowable<PendingBalances> {
         return Flowable.mergeDelayError(
             pendingBalancesDao.all,
-            limitOrderApi.getPendingBalances(param.wallet.address).map {
-                orderMapper.transform(it)
-    .doAfterSuccess {
-                pendingBalancesDao.createNewPendingBalances(it)
-    .toFlowable()
+            limitOrderApi.getPendingBalances(param.wallet.address)
+                .map {
+                    orderMapper.transform(it)
+        .doAfterSuccess {
+                    pendingBalancesDao.createNewPendingBalances(it)
+        .toFlowable()
+                .repeatWhen {
+                    it.delay(5, TimeUnit.SECONDS)
+        
+                .retryWhen { throwable ->
+                    throwable.compose(zipWithFlatMap())
+        
 
         )
     }
@@ -406,5 +425,7 @@ class LimitOrderDataRepository @Inject constructor(
     companion object {
         const val TOKEN_PAIR_SEPARATOR = "  ➞  "
         const val ADDRESS_SEPARATOR = "..."
+        private const val COUNTER_START = 1
+        private const val ATTEMPTS = 5
     }
 }

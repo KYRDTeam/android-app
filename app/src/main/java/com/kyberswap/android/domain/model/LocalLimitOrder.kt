@@ -66,19 +66,43 @@ data class LocalLimitOrder(
         )
     }
 
+    val displayGasFee: String
+        get() = StringBuilder()
+            .append("≈ ")
+            .append(
+                gasFeeEth.toPlainString()
+            )
+            .append(" ETH")
+            .toString()
+
+    private val gasFeeEth: BigDecimal
+        get() = Convert.fromWei(
+            Convert.toWei(gasPrice.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
+                .multiply(gasLimit.toBigDecimal()), Convert.Unit.ETHER
+        )
+
+    val displayMarketRate: String
+        get() = marketRate.toBigDecimalOrDefaultZero().toDisplayNumber()
 
     val wethBalance: BigDecimal
-        get() = wethToken.currentBalance
+        get() = wethToken.limitOrderBalance
 
     val ethBalance: BigDecimal
-        get() = ethToken.currentBalance
+        get() = ethToken.limitOrderBalance
 
     val minConvertedAmount: String
         get() = (srcAmount.toBigDecimalOrDefaultZero() - wethToken.currentBalance).toDisplayNumber()
 
     val displayEthBalance: String
         get() = StringBuilder()
-            .append(ethToken.currentBalance.toDisplayNumber())
+            .append(ethBalance.toDisplayNumber())
+            .append(" ")
+            .append(Token.ETH)
+            .toString()
+
+    val displayWethBalance: String
+        get() = StringBuilder()
+            .append(wethBalance.toDisplayNumber())
             .append(" ")
             .append(Token.ETH)
             .toString()

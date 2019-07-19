@@ -83,6 +83,7 @@ class AddContactFragment : BaseFragment() {
         if (contact != null) {
             binding.title = getString(R.string.edit_contact)
             binding.contact = contact
+            binding.edtAddress.setText(contact?.address)
             binding.executePendingBindings()
  else {
             binding.title = getString(R.string.add_contact)

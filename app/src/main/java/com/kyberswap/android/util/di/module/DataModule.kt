@@ -104,9 +104,10 @@ object DataModule {
     @Provides
     @JvmStatic
     fun provideContactRepository(
-        contactDao: ContactDao
+        contactDao: ContactDao,
+        sendDao: SendDao
     ): ContactRepository =
-        ContactDataRepository(contactDao)
+        ContactDataRepository(contactDao, sendDao)
 
 
     @Singleton
@@ -116,9 +117,22 @@ object DataModule {
         api: TransactionApi,
         transactionDao: TransactionDao,
         mapper: TransactionMapper,
-        tokenClient: TokenClient
+        tokenClient: TokenClient,
+        tokenDao: TokenDao,
+        swapDao: SwapDao,
+        sendDao: SendDao,
+        limitOrderDao: LocalLimitOrderDao
     ): TransactionRepository =
-        TransactionDataRepository(api, transactionDao, mapper, tokenClient)
+        TransactionDataRepository(
+            api,
+            transactionDao,
+            mapper,
+            tokenClient,
+            tokenDao,
+            swapDao,
+            sendDao,
+            limitOrderDao
+        )
 
 
     @Singleton

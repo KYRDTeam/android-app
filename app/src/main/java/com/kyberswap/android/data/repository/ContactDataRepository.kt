@@ -1,6 +1,7 @@
 package com.kyberswap.android.data.repository
 
 import com.kyberswap.android.data.db.ContactDao
+import com.kyberswap.android.data.db.SendDao
 import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.repository.ContactRepository
 import com.kyberswap.android.domain.usecase.contact.DeleteContactUseCase
@@ -13,7 +14,8 @@ import javax.inject.Inject
 
 
 class ContactDataRepository @Inject constructor(
-    private val contactDao: ContactDao
+    private val contactDao: ContactDao,
+    private val sendDao: SendDao
 
 ) : ContactRepository {
 
@@ -32,6 +34,14 @@ class ContactDataRepository @Inject constructor(
                 updatedAt = updatedAt
             ) ?: Contact(param.walletAddress, param.address, name, updatedAt)
             contactDao.insertContact(contact)
+
+            if (param.isSend) {
+                val send = sendDao.findSendByAddress(param.walletAddress)
+                send?.let {
+                    sendDao.updateSend(it.copy(contact = contact))
+        
+    
+
 
     }
 

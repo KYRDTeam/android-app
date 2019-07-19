@@ -87,6 +87,14 @@ fun String?.toBigIntegerOrDefaultZero(): BigInteger {
     }
 }
 
+fun String.exactAmount(): String? {
+    return if (this.toDoubleOrDefaultZero() != 0.0) {
+        this
+    } else {
+        "0"
+    }
+}
+
 fun String?.toDoubleOrDefaultZero(): Double {
     if (this.isNullOrEmpty()) return 0.0
     return try {

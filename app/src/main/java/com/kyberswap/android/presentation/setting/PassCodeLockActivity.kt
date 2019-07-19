@@ -17,7 +17,6 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -78,7 +77,6 @@ class PassCodeLockActivity : BaseActivity() {
         binding.pinLockView.setPinLockListener(object : PinLockListener {
             override fun onComplete(pin: String) {
                 if (binding.title == repeatTitle || binding.title == verifyAccess) {
-                    Timber.e(remainNum.toString())
                     viewModel.verifyPin(pin, remainNum, System.currentTimeMillis())
          else {
                     viewModel.save(pin)

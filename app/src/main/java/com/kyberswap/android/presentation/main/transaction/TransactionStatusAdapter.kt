@@ -25,8 +25,8 @@ class TransactionStatusAdapter(
         override fun areItemsTheSame(oldItem: TransactionItem, newItem: TransactionItem): Boolean {
             return when {
                 oldItem is TransactionItem.Header && newItem is TransactionItem.Header && oldItem.date == newItem.date -> true
-                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemOdd && oldItem.transaction == newItem.transaction -> true
-                else -> oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemEven && oldItem.transaction == newItem.transaction
+                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemOdd && oldItem.transaction.hash == newItem.transaction.hash -> true
+                else -> oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemEven && oldItem.transaction.hash == newItem.transaction.hash
     
 
 
