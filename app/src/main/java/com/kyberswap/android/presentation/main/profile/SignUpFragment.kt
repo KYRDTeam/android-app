@@ -22,7 +22,6 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentSignupBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.SocialInfo
-import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
@@ -108,7 +107,10 @@ class SignUpFragment : BaseFragment() {
                         )
             
                     is SignUpState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -206,26 +208,24 @@ class SignUpFragment : BaseFragment() {
                                     state.socialInfo
                                 )
                      else {
-                                onLoginSuccess(state.login.userInfo)
+                                onLoginSuccess()
                     
                  else {
                             showAlert(state.login.message)
                 
             
                     is LoginState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
-                        Toast.makeText(
-                            activity,
-                            state.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
 )
     }
 
-    private fun onLoginSuccess(userInfo: UserInfo) {
+    private fun onLoginSuccess() {
         val fm = (activity as MainActivity).getCurrentFragment()?.childFragmentManager
         if (fm != null)
             for (i in 0 until fm.backStackEntryCount) {

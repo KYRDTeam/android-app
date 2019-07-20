@@ -157,10 +157,6 @@ class SwapDataRepository @Inject constructor(
             resetSend.let {
                 sendTokenDao.updateSend(
                     it.copy(
-                        tokenSource = it.tokenSource.updateBalance(
-                            it.tokenSource.currentBalance
-                                - resetSend.sourceAmount.toBigDecimalOrDefaultZero()
-                        ),
                         sourceAmount = ""
                     )
                 )
@@ -263,13 +259,13 @@ class SwapDataRepository @Inject constructor(
 
     override fun saveSwapData(param: SaveSwapDataTokenUseCase.Param): Completable {
         return Completable.fromCallable {
-            val currentSwapForWalletAddress =
+            val swapByWalletAddress =
                 swapDao.findSwapDataByAddress(param.walletAddress).blockingFirst()
             val tokenBySymbol = tokenDao.getTokenBySymbol(param.token.tokenSymbol)
             val swap = if (param.isSourceToken) {
-                currentSwapForWalletAddress.copy(tokenSource = tokenBySymbol ?: Token())
+                swapByWalletAddress.copy(tokenSource = tokenBySymbol ?: Token())
      else {
-                currentSwapForWalletAddress.copy(tokenDest = tokenBySymbol ?: Token())
+                swapByWalletAddress.copy(tokenDest = tokenBySymbol ?: Token())
     
             swapDao.updateSwap(swap)
 
@@ -278,7 +274,7 @@ class SwapDataRepository @Inject constructor(
     override fun getSwapData(param: GetSwapDataUseCase.Param): Flowable<Swap> {
         val wallet = param.wallet
         val alert = param.alert
-        val swap = swapDao.findSwapByAddress(wallet.address)
+        val swapByWalletAddress = swapDao.findSwapByAddress(wallet.address)
         val defaultSwap =
             when {
                 alert != null -> {
@@ -292,7 +288,7 @@ class SwapDataRepository @Inject constructor(
                         defaultDestToken ?: Token()
                     )
         
-                swap == null -> {
+                swapByWalletAddress == null -> {
 
                     val promo = wallet.promo
                     val sourceToken: String
@@ -318,17 +314,34 @@ class SwapDataRepository @Inject constructor(
         
                 else -> {
                     val tokenSource =
-                        tokenDao.getTokenBySymbol(swap.tokenSource.tokenSymbol) ?: Token()
-                    val tokenDest = tokenDao.getTokenBySymbol(swap.tokenDest.tokenSymbol) ?: Token()
-                    swap.copy(tokenSource = tokenSource, tokenDest = tokenDest)
+                        tokenDao.getTokenBySymbol(swapByWalletAddress.tokenSource.tokenSymbol)
+                            ?: Token()
+                    val tokenDest =
+                        tokenDao.getTokenBySymbol(swapByWalletAddress.tokenDest.tokenSymbol)
+                            ?: Token()
+                    swapByWalletAddress.copy(tokenSource = tokenSource, tokenDest = tokenDest)
         
     
-        val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
-        swapDao.insertSwap(defaultSwap)
-        return swapDao.findSwapDataByAddress(wallet.address).defaultIfEmpty(
+
+
+        val swap = if (defaultSwap.tokenSource.selectedWalletAddress != wallet.address) {
+            defaultSwap.copy(tokenSource = defaultSwap.tokenSource.updateSelectedWallet(wallet))
+ else {
             defaultSwap
+
+
+        val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
+        val eth = if (ethToken.selectedWalletAddress != wallet.address) {
+            ethToken.updateSelectedWallet(wallet)
+ else {
+            ethToken
+
+
+        swapDao.insertSwap(swap)
+        return swapDao.findSwapDataByAddress(wallet.address).defaultIfEmpty(
+            swap
         ).map {
-            it.ethToken = ethToken
+            it.ethToken = eth
             it
 
     }

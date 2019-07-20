@@ -101,7 +101,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     }
 
     @Throws(Exception::class)
-    fun getBalance(walletAddress: String?, tokenAddress: String?): BigDecimal? {
+    fun updateBalance(walletAddress: String?, tokenAddress: String?): BigDecimal? {
         if (walletAddress == null || tokenAddress == null) return BigDecimal.ZERO
         val function = balanceOf(walletAddress)
         val responseValue = callSmartContractFunction(function, tokenAddress, walletAddress)
@@ -117,12 +117,12 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     }
 
     @Throws(Exception::class)
-    fun getBalance(token: Token): Token {
+    fun updateBalance(token: Token): Token {
         return token.updateBalance(
             if (token.isETH) {
                 Convert.fromWei(BigDecimal(getEthBalance(token.owner)), Convert.Unit.ETHER)
      else {
-                (getBalance(token.owner, token.tokenAddress) ?: BigDecimal.ZERO).divide(
+                (updateBalance(token.owner, token.tokenAddress) ?: BigDecimal.ZERO).divide(
                     BigDecimal(10).pow(
                         token.tokenDecimal
                     )

@@ -45,6 +45,12 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         startActivityForResult(intent, SHOW_ALERT)
     }
 
+    fun showAlert(message: String, resourceIcon: Int, listener: () -> Unit = {}) {
+        this.alertListener = listener
+        val intent = AlertActivity.newIntent(this, message, resourceIcon)
+        startActivityForResult(intent, SHOW_ALERT)
+    }
+
     fun showInsufficientAlert(title: String, message: String, listener: () -> Unit) {
         this.alertListener = listener
         val intent = AlertWithoutIconActivity.newIntent(this, title, message)

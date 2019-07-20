@@ -18,11 +18,12 @@ class WalletAdapter(
     appExecutors,
     diffCallback = object : DiffUtil.ItemCallback<Wallet>() {
         override fun areItemsTheSame(oldItem: Wallet, newItem: Wallet): Boolean {
-            return oldItem == newItem
+            return oldItem.walletId == newItem.walletId
 
 
         override fun areContentsTheSame(oldItem: Wallet, newItem: Wallet): Boolean {
-            return oldItem == newItem
+            return oldItem.name == newItem.name && oldItem.address == newItem.address
+                && oldItem.isSelected == newItem.isSelected
 
     }
 ) {

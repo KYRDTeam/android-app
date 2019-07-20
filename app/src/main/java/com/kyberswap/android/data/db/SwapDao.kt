@@ -13,7 +13,7 @@ interface SwapDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertSwap(swap: Swap)
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateSwap(swap: Swap)
 
     @Query("SELECT * from swaps where walletAddress = :address")

@@ -13,10 +13,6 @@ import com.kyberswap.android.presentation.main.balance.chart.ChartFragment
 import com.kyberswap.android.presentation.main.balance.chart.ChartViewModel
 import com.kyberswap.android.presentation.main.balance.chart.LineChartFragment
 import com.kyberswap.android.presentation.main.balance.chart.LineChartViewModel
-import com.kyberswap.android.presentation.main.balance.kyberlist.KyberListFragment
-import com.kyberswap.android.presentation.main.balance.kyberlist.KyberListViewModel
-import com.kyberswap.android.presentation.main.balance.other.OtherFragment
-import com.kyberswap.android.presentation.main.balance.other.OtherViewModel
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.balance.send.SendViewModel
 import com.kyberswap.android.presentation.main.kybercode.KyberCodeFragment
@@ -51,14 +47,6 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeProfileFragment(): ProfileFragment
-
-    @FragmentScoped
-    @ContributesAndroidInjector
-    fun contributeKyberListFragment(): KyberListFragment
-
-    @FragmentScoped
-    @ContributesAndroidInjector
-    fun contributeOtherFragment(): OtherFragment
 
     @FragmentScoped
     @ContributesAndroidInjector
@@ -232,20 +220,6 @@ interface MainActivityModule {
     @ViewModelKey(MainViewModel::class)
     fun bindMainViewModel(
         mainViewModel: MainViewModel
-    ): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(KyberListViewModel::class)
-    fun bindKyberListViewModel(
-        kyberListViewModel: KyberListViewModel
-    ): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(OtherViewModel::class)
-    fun bindOtherViewModel(
-        otherViewModel: OtherViewModel
     ): ViewModel
 
     @Binds

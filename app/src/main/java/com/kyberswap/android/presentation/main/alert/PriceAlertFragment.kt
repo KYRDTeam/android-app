@@ -93,7 +93,10 @@ class PriceAlertFragment : BaseFragment() {
                 
             
                     is GetWalletState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -110,7 +113,10 @@ class PriceAlertFragment : BaseFragment() {
                 
             
                     is GetCurrentAlertState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -140,7 +146,10 @@ class PriceAlertFragment : BaseFragment() {
                         onCompleted()
             
                     is CreateOrUpdateAlertState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     

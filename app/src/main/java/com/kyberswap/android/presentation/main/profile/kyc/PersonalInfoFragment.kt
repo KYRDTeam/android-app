@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
+import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentPersonalInfoBinding
@@ -25,6 +26,7 @@ import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.loadJSONFromAssets
+import com.kyberswap.android.util.ext.toDate
 import com.tbruyelle.rxpermissions2.RxPermissions
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import kotlinx.android.synthetic.main.fragment_personal_info.*
@@ -133,8 +135,8 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 
         viewModel.getUserInfo()
 
-        viewModel.getUserInfoCallback.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
+        viewModel.getUserInfoCallback.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is UserInfoState.Success -> {
                         if (binding.info != state.userInfo?.kycInfo) {
@@ -148,8 +150,18 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 
                             val occupationCode = binding.info?.occupationCode?.trim()
                             val industryCode = binding.info?.industryCode?.trim()
-                            binding.edtOccupationCode.setText("$occupationCode - ${occupationCodes[occupationCode]}")
-                            binding.edtIndus.setText("$industryCode - ${industrialCodes[industryCode]}")
+                            occupationCode?.let {
+                                if (it.isNotEmpty()) {
+                                    binding.edtOccupationCode.setText("$occupationCode - ${occupationCodes[occupationCode]}")
+                        
+
+                    
+
+                            industryCode?.let {
+                                if (it.isNotEmpty()) {
+                                    binding.edtIndus.setText("$industryCode - ${industrialCodes[industryCode]}")
+                        
+                    
 
                             val tin = binding.info?.haveTaxIdentification
                             tin?.let {
@@ -167,7 +179,10 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                 
             
                     is UserInfoState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -181,14 +196,19 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                         navigator.navigateToPassport(currentFragment)
             
                     is SavePersonalInfoState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
 )
 
 
+
         binding.edtNationality.setOnClickListener {
+            saveCurrentKycInfo()
             kycData?.let {
                 navigator.navigateToSearch(
                     currentFragment,
@@ -199,6 +219,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 
 
         binding.edtCountryResident.setOnClickListener {
+            saveCurrentKycInfo()
             kycData?.let {
                 navigator.navigateToSearch(
                     currentFragment,
@@ -232,6 +253,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 
 
         binding.edtOccupationCode.setOnClickListener {
+            saveCurrentKycInfo()
             kycData?.let {
                 navigator.navigateToSearch(
                     currentFragment,
@@ -242,6 +264,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 
 
         binding.edtProofAddress.setOnClickListener {
+            saveCurrentKycInfo()
             kycData?.let {
                 navigator.navigateToSearch(
                     currentFragment,
@@ -252,6 +275,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 
 
         binding.edtSourceFund.setOnClickListener {
+            saveCurrentKycInfo()
             kycData?.let {
                 navigator.navigateToSearch(
                     currentFragment,
@@ -262,6 +286,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 
 
         binding.edtIndus.setOnClickListener {
+            saveCurrentKycInfo()
             kycData?.let {
                 navigator.navigateToSearch(
                     currentFragment,
@@ -272,6 +297,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 
 
         binding.edtTaxCountry.setOnClickListener {
+            saveCurrentKycInfo()
             kycData?.let {
                 navigator.navigateToSearch(
                     currentFragment,
@@ -286,29 +312,179 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 
 
 
-        binding.tvNext.setOnClickListener {
-            viewModel.save(
-                binding.info?.copy(
-                    firstName = edtFirstName.text.toString(),
-                    lastName = edtLastName.text.toString(),
-                    nationality = edtNationality.text.toString(),
-                    country = edtCountryResident.text.toString(),
-                    dob = binding.edtBod.text.toString(),
-                    gender = rbMale.isChecked,
-                    residentialAddress = binding.edtResidentAddress.text.toString(),
-                    city = binding.edtCityResident.text.toString(),
-                    zipCode = binding.edtPostalCode.text.toString(),
-                    documentProofAddress = binding.edtProofAddress.text.toString(),
-                    photoProofAddress = BASE64_PREFIX + stringImage,
-                    occupationCode = binding.edtOccupationCode.text.toString().split("-").firstOrNull()
-                        ?: "",
-                    industryCode = binding.edtIndus.text.toString().split("-").firstOrNull() ?: "",
-                    taxResidencyCountry = binding.edtTaxCountry.text.toString(),
-                    haveTaxIdentification = binding.rbYes.isChecked,
-                    taxIdentificationNumber = binding.edtTaxCountry.text.toString()
-                )
-            )
+        viewModel.compositeDisposable.add(binding.edtFirstName.textChanges().subscribe {
+            binding.ilFirstName.error = null
+)
 
+        viewModel.compositeDisposable.add(binding.edtLastName.textChanges().subscribe {
+            binding.ilLastName.error = null
+)
+
+        viewModel.compositeDisposable.add(binding.edtNationality.textChanges().subscribe {
+            binding.ilNationality.error = null
+)
+
+
+        viewModel.compositeDisposable.add(binding.edtCountryResident.textChanges().subscribe {
+            binding.ilCountry.error = null
+)
+
+
+        viewModel.compositeDisposable.add(binding.edtBod.textChanges().subscribe {
+            binding.ilDob.error = null
+)
+
+
+        viewModel.compositeDisposable.add(binding.edtResidentAddress.textChanges().subscribe {
+            binding.ilResidentialAddress.error = null
+)
+
+
+        viewModel.compositeDisposable.add(binding.edtCityResident.textChanges().subscribe {
+            binding.ilCity.error = null
+)
+
+        viewModel.compositeDisposable.add(binding.edtPostalCode.textChanges().subscribe {
+            binding.ilZipCode.error = null
+)
+
+        viewModel.compositeDisposable.add(binding.edtProofAddress.textChanges().subscribe {
+            binding.ilDocumentProofAddress.error = null
+)
+
+
+
+        binding.tvNext.setOnClickListener {
+
+
+            when {
+                edtFirstName.text.toString().isBlank() -> {
+                    val error = getString(R.string.kyc_first_name_required)
+                    showError(error)
+                    binding.ilFirstName.error = error
+
+        
+
+                edtLastName.text.toString().isBlank() -> {
+                    val error = getString(R.string.kyc_last_name_required)
+                    showError(error)
+                    binding.ilLastName.error = error
+        
+
+                edtBod.text.toString().isBlank() -> {
+                    val error = getString(R.string.kyc_dob_required)
+                    showError(error)
+                    binding.ilDob.error = error
+        
+
+                viewModel.inValidDob(edtBod.text.toString().toDate()) -> {
+                    val error = getString(R.string.kyc_dob_18_year_old)
+                    showError(getString(R.string.kyc_dob_18_year_old))
+                    binding.ilDob.error = error
+        
+
+                edtNationality.text.toString().isBlank() -> {
+                    val error = getString(R.string.kyc_nationality_required)
+                    showError(error)
+                    binding.ilNationality.error = error
+        
+
+
+                edtCountryResident.text.toString().isBlank() -> {
+                    val error = getString(R.string.kyc_country_resident_required)
+                    showError(error)
+                    binding.ilCountry.error = error
+        
+
+
+                edtResidentAddress.text.toString().isBlank() -> {
+                    val error = getString(R.string.kyc_residental_address_required)
+                    showError(error)
+                    binding.ilResidentialAddress.error = error
+        
+
+                edtCityResident.text.toString().isBlank() -> {
+                    val error = getString(R.string.kyc_city_required)
+                    showError(error)
+                    binding.ilCity.error = error
+        
+
+                edtPostalCode.text.toString().isBlank() -> {
+                    val error = getString(R.string.kyc_zip_code_required)
+                    showError(error)
+                    binding.ilZipCode.error = error
+        
+
+                edtProofAddress.text.toString().isBlank() -> {
+                    val error = getString(R.string.kyc_document_proof_address_required)
+                    showError(error)
+                    binding.ilDocumentProofAddress.error = error
+        
+
+                edtSourceFund.text.toString().isBlank() -> {
+                    val error = getString(R.string.kyc_source_of_fun_required)
+                    showError(error)
+                    binding.ilSourceFund.error = error
+        
+
+                else -> {
+                    viewModel.save(
+                        binding.info?.copy(
+                            firstName = edtFirstName.text.toString(),
+                            middleName = edtMiddleName.text.toString(),
+                            lastName = edtLastName.text.toString(),
+                            nationality = edtNationality.text.toString(),
+                            country = edtCountryResident.text.toString(),
+                            dob = binding.edtBod.text.toString(),
+                            gender = rbMale.isChecked,
+                            residentialAddress = binding.edtResidentAddress.text.toString(),
+                            city = binding.edtCityResident.text.toString(),
+                            zipCode = binding.edtPostalCode.text.toString(),
+                            documentProofAddress = binding.edtProofAddress.text.toString(),
+                            photoProofAddress = BASE64_PREFIX + stringImage,
+                            occupationCode = binding.edtOccupationCode.text.toString().split("-").firstOrNull()
+                                ?: "",
+                            industryCode = binding.edtIndus.text.toString().split("-").firstOrNull()
+                                ?: "",
+                            taxResidencyCountry = binding.edtTaxCountry.text.toString(),
+                            haveTaxIdentification = binding.rbYes.isChecked,
+                            taxIdentificationNumber = binding.edtTaxCountry.text.toString(),
+                            sourceFund = binding.edtSourceFund.text.toString()
+                        )
+                    )
+        
+
+    
+
+
+    }
+
+    private fun saveCurrentKycInfo() {
+        binding.info?.copy(
+            firstName = edtFirstName.text.toString(),
+            middleName = edtMiddleName.text.toString(),
+            lastName = edtLastName.text.toString(),
+            nationality = edtNationality.text.toString(),
+            country = edtCountryResident.text.toString(),
+            dob = binding.edtBod.text.toString(),
+            gender = rbMale.isChecked,
+            residentialAddress = binding.edtResidentAddress.text.toString(),
+            city = binding.edtCityResident.text.toString(),
+            zipCode = binding.edtPostalCode.text.toString(),
+            documentProofAddress = binding.edtProofAddress.text.toString(),
+            photoProofAddress = BASE64_PREFIX + stringImage,
+            occupationCode = binding.edtOccupationCode.text.toString().split("-").firstOrNull()
+                ?: "",
+            industryCode = binding.edtIndus.text.toString().split("-").firstOrNull()
+                ?: "",
+            taxResidencyCountry = binding.edtTaxCountry.text.toString(),
+            haveTaxIdentification = binding.rbYes.isChecked,
+            taxIdentificationNumber = binding.edtTaxCountry.text.toString(),
+            sourceFund = binding.edtSourceFund.text.toString()
+        )?.let {
+            viewModel.saveLocal(
+                it
+            )
 
     }
 
@@ -345,10 +521,22 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 
     }
 
+    override fun onDestroyView() {
+        viewModel.compositeDisposable.clear()
+        super.onDestroyView()
+    }
 
     @SuppressLint("SetTextI18n")
     override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
-        binding.edtBod.setText("$dayOfMonth/${monthOfYear + 1}/$year")
+        String.format(getString(R.string.date_format_yyyy_mm_dd), year, monthOfYear + 1, dayOfMonth)
+        binding.edtBod.setText(
+            String.format(
+                getString(R.string.date_format_yyyy_mm_dd),
+                year,
+                monthOfYear + 1,
+                dayOfMonth
+            )
+        )
     }
 
     private fun onPhotosReturned(returnedPhotos: Array<MediaFile>) {
@@ -362,7 +550,10 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                             displayImage(state.stringImage)
                 
                         is ResizeImageState.ShowError -> {
-                            showAlert(state.message ?: getString(R.string.something_wrong))
+                            showAlert(
+                                state.message ?: getString(R.string.something_wrong),
+                                R.drawable.ic_info_error
+                            )
                 
             
         
@@ -381,7 +572,10 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                         glideDisplayImage(state.byteArray)
             
                     is DecodeBase64State.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     

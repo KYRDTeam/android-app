@@ -5,20 +5,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.KycInfo
-import com.kyberswap.android.domain.usecase.profile.Base64DecodeUseCase
-import com.kyberswap.android.domain.usecase.profile.GetUserInfoUseCase
-import com.kyberswap.android.domain.usecase.profile.ResizeImageUseCase
-import com.kyberswap.android.domain.usecase.profile.SavePersonalInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.*
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.ext.display
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import kotlinx.android.parcel.Parcelize
+import java.util.*
 import javax.inject.Inject
 
 class PersonalInfoViewModel @Inject constructor(
     private val getUserInfoUseCase: GetUserInfoUseCase,
     private val savePersonalInfoUseCase: SavePersonalInfoUseCase,
+    private val saveLocalPersonalInfoUseCase: SaveLocalPersonalInfoUseCase,
     private val resizeImageUseCase: ResizeImageUseCase,
     private val decodeBase64DecodeUseCase: Base64DecodeUseCase
 ) : ViewModel() {
@@ -26,6 +27,10 @@ class PersonalInfoViewModel @Inject constructor(
     private val _getUserInfoCallback = MutableLiveData<Event<UserInfoState>>()
     val getUserInfoCallback: LiveData<Event<UserInfoState>>
         get() = _getUserInfoCallback
+
+    private val _saveKycInfoCallback = MutableLiveData<Event<SaveKycInfoState>>()
+    val saveKycInfoCallback: LiveData<Event<SaveKycInfoState>>
+        get() = _saveKycInfoCallback
 
 
     private val _savePersonalInfoCallback = MutableLiveData<Event<SavePersonalInfoState>>()
@@ -39,6 +44,8 @@ class PersonalInfoViewModel @Inject constructor(
     private val _decodeImageCallback = MutableLiveData<Event<DecodeBase64State>>()
     val decodeImageCallback: LiveData<Event<DecodeBase64State>>
         get() = _decodeImageCallback
+
+    val compositeDisposable = CompositeDisposable()
 
     fun getUserInfo() {
         getUserInfoUseCase.dispose()
@@ -54,6 +61,10 @@ class PersonalInfoViewModel @Inject constructor(
     ,
             null
         )
+    }
+
+    fun inValidDob(dob: Date): Boolean {
+        return System.currentTimeMillis() / 1000 - dob.time / 1000 <= 18 * 12 * 30 * 24 * 60 * 60
     }
 
     fun save(kycInfo: KycInfo?) {
@@ -75,7 +86,19 @@ class PersonalInfoViewModel @Inject constructor(
     ,
             SavePersonalInfoUseCase.Param(kycInfo)
         )
+    }
 
+    fun saveLocal(kycInfo: KycInfo) {
+        saveLocalPersonalInfoUseCase.execute(
+            Action {
+                _saveKycInfoCallback.value = Event(SaveKycInfoState.Success(""))
+    ,
+            Consumer {
+                it.printStackTrace()
+                _saveKycInfoCallback.value = Event(SaveKycInfoState.ShowError(it.localizedMessage))
+    
+            , SaveLocalPersonalInfoUseCase.Param(kycInfo)
+        )
     }
 
     fun resizeImage(absolutePath: String) {
@@ -121,6 +144,7 @@ class PersonalInfoViewModel @Inject constructor(
         savePersonalInfoUseCase.dispose()
         resizeImageUseCase.dispose()
         decodeBase64DecodeUseCase.dispose()
+        compositeDisposable.dispose()
         super.onCleared()
     }
 

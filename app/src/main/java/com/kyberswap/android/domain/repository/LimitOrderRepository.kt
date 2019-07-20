@@ -10,6 +10,8 @@ interface LimitOrderRepository {
 
     fun getLimitOrders(param: GetLimitOrdersUseCase.Param): Flowable<List<Order>>
 
+    fun getPendingBalances(param: GetPendingBalancesUseCase.Param): Flowable<PendingBalances>
+
     fun getRelatedLimitOrders(param: GetRelatedLimitOrdersUseCase.Param): Flowable<List<Order>>
 
     fun getCurrentLimitOrders(param: GetLocalLimitOrderDataUseCase.Param): Flowable<LocalLimitOrder>

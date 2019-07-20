@@ -3,7 +3,6 @@ package com.kyberswap.android.presentation.landing
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -74,11 +73,10 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
 
             
                     is CreateWalletState.ShowError -> {
-                        Toast.makeText(
-                            this,
-                            state.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     

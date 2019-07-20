@@ -61,6 +61,22 @@ class TokenPairTypeConverter {
     }
 }
 
+
+class PendingBalancesConverter {
+    @TypeConverter
+    fun stringToPendingBalancesType(value: String): Map<String, BigDecimal> {
+        val listType = object : TypeToken<Map<String, BigDecimal>>() {
+.type
+        return Gson().fromJson(value, listType)
+    }
+
+
+    @TypeConverter
+    fun pendingBalancesTypeToString(list: Map<String, BigDecimal>): String {
+        return Gson().toJson(list)
+    }
+}
+
 class ListTypeConverter {
     @TypeConverter
     fun stringToTokenPairType(value: String): List<String> {

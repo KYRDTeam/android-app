@@ -54,6 +54,11 @@ fun TextView.getAmountOrDefaultValue(): String {
     ) else text.toString()
 }
 
+fun TextView.setTextIfChange(text: CharSequence) {
+    if (text != this.text) {
+        this.text = text
+    }
+}
 
 fun TextView.toBigDecimalOrDefaultZero(): BigDecimal {
     return text.toString().toBigDecimalOrDefaultZero()

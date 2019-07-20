@@ -54,4 +54,9 @@ interface LimitOrderApi {
 
     @PUT("api/orders/{id}/cancel")
     fun cancelOrder(@Path("id") id: Long): Single<CancelledEntity>
+
+    @GET("api/orders/pending_balances")
+    fun getPendingBalances(
+        @Query("user_addr") address: String
+    ): Single<PendingBalancesEntity>
 }

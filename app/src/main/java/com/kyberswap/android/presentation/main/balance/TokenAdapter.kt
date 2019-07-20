@@ -25,7 +25,8 @@ class TokenAdapter(
     private val onTokenClick: ((Token) -> Unit)?,
     private val onBuyClick: ((Token) -> Unit)?,
     private val onSellClick: ((Token) -> Unit)?,
-    private val onSendClick: ((Token) -> Unit)?
+    private val onSendClick: ((Token) -> Unit)?,
+    private val onFavClick: ((Token) -> Unit)?
 
 ) : DataBoundListSwipeAdapter<Token, ItemTokenBinding>(
     appExecutors,
@@ -41,9 +42,21 @@ class TokenAdapter(
 ) {
     private var isEth = false
 
+    private var orderType: OrderType = OrderType.BALANCE
+
+    private var isHide = false
+
+    private var tokenType: TokenType = TokenType.LISTED
+
+    private var tokenList = mutableListOf<Token>()
 
     override fun getSwipeLayoutResourceId(position: Int): Int {
         return R.id.swipe
+    }
+
+    fun hideBalance(isHide: Boolean) {
+        this.isHide = isHide
+        notifyDataSetChanged()
     }
 
     fun showEth(boolean: Boolean) {
@@ -51,15 +64,95 @@ class TokenAdapter(
         notifyDataSetChanged()
     }
 
-    fun submitFilterList(tokens: List<Token>, type: OrderType = OrderType.NAME) {
-        submitList(listOf())
-        val orderList = if (type == OrderType.NAME) {
-            tokens.sortedBy { it.tokenSymbol }
- else {
-            tokens.sortedByDescending { it.currentBalance }
-
-        submitList(orderList)
+    fun setFullTokenList(tokenList: List<Token>) {
+        this.tokenList.clear()
+        this.tokenList.addAll(tokenList)
     }
+
+    fun getFullTokenList(): List<Token> {
+        return tokenList
+    }
+
+    fun submitFilterList(tokens: List<Token>, forceUpdate: Boolean = false) {
+        val orderList = when (orderType) {
+            OrderType.NAME -> tokens.sortedBy { it.tokenSymbol }
+            OrderType.BALANCE -> tokens.sortedByDescending { it.currentBalance }
+            OrderType.ETH_ASC -> tokens.sortedBy {
+                it.rateEthNow
+    
+            OrderType.ETH_DESC -> tokens.sortedByDescending {
+                it.rateEthNow
+    
+            OrderType.USD_ASC -> tokens.sortedBy { it.rateUsdNow }
+            OrderType.USD_DESC -> tokens.sortedByDescending {
+                it.rateUsdNow
+    
+            OrderType.CHANGE_24H_ASC -> tokens.sortedBy {
+                it.change24hValue(isEth)
+    
+            OrderType.CHANGE24H_DESC -> tokens.sortedByDescending {
+                it.change24hValue(isEth)
+    
+
+
+        val filterList = when (tokenType) {
+            TokenType.LISTED -> orderList.filter { it.isListed }
+            TokenType.FAVOURITE -> orderList.filter {
+                it.fav
+    
+            TokenType.OTHER -> orderList.filter {
+                it.isOther
+    
+
+
+        if (forceUpdate) {
+            submitList(null)
+ else {
+            submitList(listOf())
+
+
+        submitList(filterList)
+    }
+
+    fun toggleEth(): OrderType {
+        return when (orderType) {
+            OrderType.ETH_ASC -> OrderType.ETH_DESC
+            OrderType.ETH_DESC -> OrderType.ETH_ASC
+            else -> OrderType.ETH_DESC
+
+    }
+
+    fun toggleUsd(): OrderType {
+        return when (orderType) {
+            OrderType.USD_ASC -> OrderType.USD_DESC
+            OrderType.USD_DESC -> OrderType.USD_ASC
+            else -> OrderType.USD_DESC
+
+    }
+
+    fun toggleChange24h(): OrderType {
+        return when (orderType) {
+            OrderType.CHANGE24H_DESC -> OrderType.CHANGE_24H_ASC
+            OrderType.CHANGE_24H_ASC -> OrderType.CHANGE24H_DESC
+            else -> OrderType.CHANGE24H_DESC
+
+    }
+
+    fun toggleNameBal(): OrderType {
+        return when (orderType) {
+            OrderType.NAME -> OrderType.BALANCE
+            OrderType.BALANCE -> OrderType.NAME
+            else -> OrderType.NAME
+
+    }
+
+    val isNameBalOrder: Boolean
+        get() = orderType == OrderType.BALANCE || orderType == OrderType.NAME
+
+    val isAsc: Boolean
+        get() = orderType == OrderType.ETH_ASC ||
+            orderType == OrderType.USD_ASC ||
+            orderType == OrderType.CHANGE_24H_ASC
 
 
     override fun onBindViewHolder(
@@ -73,6 +166,7 @@ class TokenAdapter(
     }
 
     override fun bind(binding: ItemTokenBinding, item: Token) {
+        item.isHide = isHide
         binding.setVariable(BR.token, item)
         binding.lnItem.setOnClickListener {
             onTokenClick?.invoke(item)
@@ -99,6 +193,14 @@ class TokenAdapter(
         , 250
             )
 
+
+
+        binding.imgFav.setOnClickListener {
+            val prevSelected = it.isSelected
+            it.isSelected = !prevSelected
+            handler.post {
+                onFavClick?.invoke(item.copy(fav = !prevSelected))
+    
 
 
         binding.swipe.addSwipeListener(object : SimpleSwipeListener() {
@@ -155,8 +257,23 @@ class TokenAdapter(
             parent,
             false
         )
+
+
+    fun setOrderBy(type: OrderType) {
+        this.orderType = type
+        submitFilterList(getData(), true)
+    }
+
+    fun setTokenType(tokenType: TokenType) {
+        this.tokenType = tokenType
+        submitFilterList(tokenList, true)
+    }
 }
 
 enum class OrderType {
-    NAME, BALANCE
+    NAME, BALANCE, ETH_ASC, ETH_DESC, USD_ASC, USD_DESC, CHANGE_24H_ASC, CHANGE24H_DESC
+}
+
+enum class TokenType {
+    LISTED, FAVOURITE, OTHER
 }

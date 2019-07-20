@@ -2,28 +2,22 @@ package com.kyberswap.android.presentation.main.limitorder
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.kyberswap.android.domain.model.LocalLimitOrder
-import com.kyberswap.android.domain.model.Order
-import com.kyberswap.android.domain.model.Swap
-import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.domain.usecase.limitorder.*
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.domain.usecase.swap.*
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
-import com.kyberswap.android.presentation.common.KEEP_ETH_BALANCE_FOR_GAS
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.*
 import com.kyberswap.android.util.ext.display
-import com.kyberswap.android.util.ext.sumByBigDecimal
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
-import org.web3j.utils.Convert
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -42,6 +36,7 @@ class LimitOrderViewModel @Inject constructor(
     private val estimateGasUseCase: EstimateGasUseCase,
     private val swapTokenUseCase: SwapTokenUseCase,
     private val getLoginStatusUseCase: GetLoginStatusUseCase,
+    private val pendingBalancesUseCase: GetPendingBalancesUseCase,
     getSelectedWalletUseCase: GetSelectedWalletUseCase
 ) : SelectedWalletViewModel(getSelectedWalletUseCase) {
 
@@ -105,6 +100,10 @@ class LimitOrderViewModel @Inject constructor(
     val getLoginStatusCallback: LiveData<Event<UserInfoState>>
         get() = _getLoginStatusCallback
 
+    private val _getPendingBalancesCallback = MutableLiveData<Event<GetPendingBalancesState>>()
+    val getPendingBalancesCallback: LiveData<Event<GetPendingBalancesState>>
+        get() = _getPendingBalancesCallback
+
     fun getLoginStatus() {
         getLoginStatusUseCase.dispose()
         getLoginStatusUseCase.execute(
@@ -120,7 +119,29 @@ class LimitOrderViewModel @Inject constructor(
         )
     }
 
+    fun getPendingBalances(wallet: Wallet?) {
+        if (wallet == null) return
+        pendingBalancesUseCase.dispose()
+        pendingBalancesUseCase.execute(
+            Consumer {
+                _getPendingBalancesCallback.value =
+                    Event(GetPendingBalancesState.Success(it))
+    ,
+            Consumer {
+                it.printStackTrace()
+                _getPendingBalancesCallback.value =
+                    Event(
+                        GetPendingBalancesState.ShowError(
+                            it.localizedMessage
+                        )
+                    )
+    ,
+            GetPendingBalancesUseCase.Param(wallet)
+        )
+    }
+
     fun getLimitOrders(wallet: Wallet?) {
+        getLocalLimitOrderDataUseCase.dispose()
         getLocalLimitOrderDataUseCase.dispose()
         wallet?.let {
             getLocalLimitOrderDataUseCase.execute(
@@ -134,7 +155,7 @@ class LimitOrderViewModel @Inject constructor(
                     _getLocalLimitOrderCallback.value =
                         Event(GetLocalLimitOrderState.ShowError(it.localizedMessage))
         ,
-                GetLocalLimitOrderDataUseCase.Param(wallet.address)
+                GetLocalLimitOrderDataUseCase.Param(wallet)
             )
 
 
@@ -262,13 +283,6 @@ class LimitOrderViewModel @Inject constructor(
         )
     }
 
-    override fun onCleared() {
-        getWalletByAddressUseCase.dispose()
-        compositeDisposable.dispose()
-        super.onCleared()
-    }
-
-
     fun saveLimitOrder(
         order: LocalLimitOrder,
         fromContinue: Boolean = false,
@@ -330,9 +344,12 @@ class LimitOrderViewModel @Inject constructor(
         return true
     }
 
-    fun needConvertWETH(order: LocalLimitOrder?): Boolean {
+    fun needConvertWETH(order: LocalLimitOrder?, pendingBalances: PendingBalances?): Boolean {
         if (order == null) return false
-        return order.tokenSource.isETHWETH && (order.wethBalance - order.srcAmount.toBigDecimalOrDefaultZero() < BigDecimal.ZERO)
+        val pendingAmount =
+            pendingBalances?.data?.get(order.tokenSource.symbol) ?: BigDecimal.ZERO
+        return order.tokenSource.isETHWETH &&
+            (order.wethToken.currentBalance - pendingAmount - order.srcAmount.toBigDecimalOrDefaultZero() < BigDecimal.ZERO)
     }
 
     fun submitOrder(order: LocalLimitOrder?, wallet: Wallet?) {
@@ -419,12 +436,10 @@ class LimitOrderViewModel @Inject constructor(
         )
     }
 
-    fun calAvailableAmount(order: LocalLimitOrder?, orders: List<Order>): String {
-        val pendingAmount = orders.map {
-            it.srcAmount
-.sumByBigDecimal { it }
-
-        val currentAmount = order?.tokenSource?.currentBalance ?: BigDecimal.ZERO
+    fun calAvailableAmount(token: Token?, pendingBalances: PendingBalances?): String {
+        val pendingAmount =
+            pendingBalances?.data?.get(token?.symbol) ?: BigDecimal.ZERO
+        val currentAmount = token?.currentBalance ?: BigDecimal.ZERO
         var availableAmount = currentAmount - pendingAmount
         if (availableAmount < BigDecimal.ZERO) {
             availableAmount = BigDecimal.ZERO
@@ -432,14 +447,6 @@ class LimitOrderViewModel @Inject constructor(
 
         return availableAmount.toDisplayNumber()
     }
-
-    fun availableAmountForTransfer(calAvailableAmount: String, gasPrice: BigDecimal): BigDecimal {
-        return calAvailableAmount.toBigDecimalOrDefaultZero() - Convert.fromWei(
-            Convert.toWei(gasPrice, Convert.Unit.GWEI)
-                .multiply(KEEP_ETH_BALANCE_FOR_GAS), Convert.Unit.ETHER
-        )
-    }
-
 
     fun cancelHigherRateOrder(order: LocalLimitOrder?, orders: List<Order>) {
         if (order == null) return
@@ -450,7 +457,25 @@ class LimitOrderViewModel @Inject constructor(
                 CancelOrderUseCase.Param(it)
             )
 
-
-
     }
+
+    override fun onCleared() {
+        getRelatedLimitOrdersUseCase.dispose()
+        getLocalLimitOrderDataUseCase.dispose()
+        getWalletByAddressUseCase.dispose()
+        getExpectedRateUseCase.dispose()
+        getMarketRate.dispose()
+        saveLimitOrderUseCase.dispose()
+        getLimitOrderFee.dispose()
+        submitOrderUseCase.dispose()
+        getNonceUseCase.dispose()
+        cancelOrderUseCase.dispose()
+        getGasPriceUseCase.dispose()
+        estimateGasUseCase.dispose()
+        swapTokenUseCase.dispose()
+        getLoginStatusUseCase.dispose()
+        compositeDisposable.dispose()
+        super.onCleared()
+    }
+
 }

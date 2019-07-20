@@ -16,8 +16,8 @@ data class CurrentUser(
 ) {
     constructor(entity: CurrentUserEntity) : this(
         entity.id,
-        entity.email,
-        entity.rank,
+        entity.email ?: "",
+        entity.rank ?: 0,
         entity.activeAlerts.map {
             Alert(it)
 

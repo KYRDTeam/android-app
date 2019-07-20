@@ -139,7 +139,7 @@ class UserDataRepository @Inject constructor(
 
             val kycInfo = when (param.kycInfoType) {
                 KycInfoType.NATIONALITY -> currentKycInfo.copy(nationality = param.value)
-                KycInfoType.COUNTRY_OF_RESIDENCE -> currentKycInfo.copy(residentialAddress = param.value)
+                KycInfoType.COUNTRY_OF_RESIDENCE -> currentKycInfo.copy(country = param.value)
                 KycInfoType.PROOF_ADDRESS -> currentKycInfo.copy(documentProofAddress = param.value)
                 KycInfoType.SOURCE_FUND -> currentKycInfo.copy(sourceFund = param.value)
                 KycInfoType.OCCUPATION_CODE -> currentKycInfo.copy(occupationCode = param.value)
@@ -169,8 +169,8 @@ class UserDataRepository @Inject constructor(
             info.industryCode,
             info.taxResidencyCountry,
             if (info.haveTaxIdentification == null) null else if (info.haveTaxIdentification == true) 1 else 0,
-            info.taxIdentificationNumber
-
+            info.taxIdentificationNumber,
+            info.sourceFund
         ).map {
             userMapper.transform(it)
 .doAfterSuccess {
@@ -320,6 +320,14 @@ class UserDataRepository @Inject constructor(
 
     }
 
+    override fun saveLocal(param: SaveLocalPersonalInfoUseCase.Param): Completable {
+        return Completable.fromCallable {
+            val user = userDao.getUser() ?: UserInfo()
+            user.kycInfo = param.kycInfo
+            userDao.updateUser(user)
+
+
+    }
 
     companion object {
         private const val MAX_IMAGE_SIZE = 1000 * 1024

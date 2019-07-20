@@ -4,6 +4,8 @@ import android.os.Parcelable
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toWalletAddress
 import com.kyberswap.android.util.views.DateTimeHelper
 import kotlinx.android.parcel.Parcelize
@@ -27,7 +29,8 @@ data class Wallet(
     @Embedded
     var cap: Cap = Cap(),
     @Embedded
-    var promo: Promo? = Promo()
+    var promo: Promo? = Promo(),
+    val createAt: Long = 0
 ) :
     Parcelable {
     constructor(wallet: Wallet) : this(
@@ -52,6 +55,9 @@ data class Wallet(
             )
         return displayBuilder.toString()
     }
+
+    val displayBalance: String
+        get() = if (balance.toBigDecimalOrDefaultZero() > BigDecimal(1E-18)) balance.toBigDecimalOrDefaultZero().toDisplayNumber() else BigDecimal.ZERO.toDisplayNumber()
 
     val isPromo: Boolean
         get() = promo != null && promo!!.type.isNotEmpty()

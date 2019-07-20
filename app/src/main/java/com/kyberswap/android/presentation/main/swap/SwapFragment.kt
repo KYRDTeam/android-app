@@ -96,6 +96,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                 when (state) {
                     is GetWalletState.Success -> {
                         this.wallet = state.wallet
+                        binding.walletName = state.wallet.name
                         if (binding.swap?.walletAddress != state.wallet.address) {
                             val promo = wallet?.promo
                             if (wallet?.isPromo == true) {
@@ -108,7 +109,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                                 enableTokenSearch(isSourceToken = false, isEnable = true)
                     
 
-                            binding.walletName = state.wallet.name
                             viewModel.getSwapData(state.wallet, alertNotification)
                             viewModel.getCap(state.wallet.address)
                 
@@ -285,7 +285,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                 
             
                     is GetExpectedRateState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -306,7 +309,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                 
             
                     is GetMarketRateState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -329,7 +335,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                 
             
                     is GetGasLimitState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -388,7 +397,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetCapState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
             
         
     
@@ -558,7 +570,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     override fun onDestroyView() {
-        viewModel.compositeDisposable.dispose()
+        viewModel.compositeDisposable.clear()
         super.onDestroyView()
     }
 

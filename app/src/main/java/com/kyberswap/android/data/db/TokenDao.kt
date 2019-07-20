@@ -19,10 +19,16 @@ interface TokenDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertTokens(tokens: List<Token>)
 
-    @Update
-    fun updateToken(token: Token)
+    @Delete
+    fun deleteToken(token: Token)
 
-    @Update
+    @Transaction
+    fun updateToken(token: Token) {
+        deleteToken(token)
+        insertToken(token)
+    }
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateTokens(tokens: List<Token>)
 
     @Query("DELETE FROM tokens")

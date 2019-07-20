@@ -13,7 +13,7 @@ interface LocalLimitOrderDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrder(localLimitOrder: LocalLimitOrder)
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateOrder(localLimitOrder: LocalLimitOrder)
 
     @Query("SELECT * from current_orders where userAddr = :address")

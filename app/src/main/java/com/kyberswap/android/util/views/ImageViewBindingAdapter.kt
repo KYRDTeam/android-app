@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.caverock.androidsvg.SVG
 import com.kyberswap.android.R
+import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.presentation.main.profile.LoginType
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import jdenticon.Jdenticon
@@ -64,8 +65,14 @@ object ImageViewBindingAdapter {
     fun loadResource(view: ImageView, identifier: String?) {
         if (identifier == null) return
 
+        val id = if (identifier == Token.ETH_SYMBOL_STAR) {
+            Token.ETH
+ else {
+            identifier
+
+
         val stringUrl =
-            "https://files.kyber.network/DesignAssets/tokens/iOS/${identifier.toLowerCase()}.png"
+            "https://files.kyber.network/DesignAssets/tokens/iOS/${id.toLowerCase()}.png"
         var resourceIcon: Int?
         try {
 
@@ -80,12 +87,10 @@ object ImageViewBindingAdapter {
     
 
             if (resourceIcon == 0) {
-                Glide.with(view).load(R.drawable.token_default)
-                    .into(view)
-     else {
-                Glide.with(view).load(stringUrl).placeholder(resourceIcon)
-                    .error(resourceIcon).into(view)
+                resourceIcon = R.drawable.token_default
     
+            Glide.with(view).load(stringUrl).placeholder(resourceIcon)
+                .error(resourceIcon).into(view)
  catch (exception: Exception) {
             exception.printStackTrace()
 

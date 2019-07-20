@@ -3,6 +3,7 @@ package com.kyberswap.android.domain.usecase.limitorder
 import androidx.annotation.VisibleForTesting
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.LocalLimitOrder
+import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.LimitOrderRepository
 import com.kyberswap.android.domain.usecase.FlowableUseCase
 import io.reactivex.Flowable
@@ -17,5 +18,5 @@ class GetLocalLimitOrderDataUseCase @Inject constructor(
         return limitOrderRepository.getCurrentLimitOrders(param)
     }
 
-    class Param(val walletAddress: String)
+    class Param(val wallet: Wallet)
 }

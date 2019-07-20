@@ -36,10 +36,9 @@ object DataModule {
         currencyApi: CurrencyApi,
         tokenMapper: TokenMapper,
         client: TokenClient,
-        tokenDao: TokenDao,
-        walletDao: WalletDao
+        tokenDao: TokenDao
     ): BalanceRepository =
-        BalanceDataRepository(api, currencyApi, tokenMapper, client, tokenDao, walletDao)
+        BalanceDataRepository(api, currencyApi, tokenMapper, client, tokenDao)
 
     @Singleton
     @Provides
@@ -47,9 +46,9 @@ object DataModule {
     fun provideTokenRepository(
         client: TokenClient,
         api: SwapApi,
-        swapDao: SwapDao,
         tokenApi: TokenApi,
         rateDao: RateDao,
+        tokenDao: TokenDao,
         rateMapper: RateMapper,
         chartMapper: ChartMapper,
         context: Context
@@ -57,9 +56,9 @@ object DataModule {
         TokenDataRepository(
             client,
             api,
-            swapDao,
             tokenApi,
             rateDao,
+            tokenDao,
             rateMapper,
             chartMapper,
             context
@@ -105,9 +104,10 @@ object DataModule {
     @Provides
     @JvmStatic
     fun provideContactRepository(
-        contactDao: ContactDao
+        contactDao: ContactDao,
+        sendDao: SendDao
     ): ContactRepository =
-        ContactDataRepository(contactDao)
+        ContactDataRepository(contactDao, sendDao)
 
 
     @Singleton
@@ -117,9 +117,22 @@ object DataModule {
         api: TransactionApi,
         transactionDao: TransactionDao,
         mapper: TransactionMapper,
-        tokenClient: TokenClient
+        tokenClient: TokenClient,
+        tokenDao: TokenDao,
+        swapDao: SwapDao,
+        sendDao: SendDao,
+        limitOrderDao: LocalLimitOrderDao
     ): TransactionRepository =
-        TransactionDataRepository(api, transactionDao, mapper, tokenClient)
+        TransactionDataRepository(
+            api,
+            transactionDao,
+            mapper,
+            tokenClient,
+            tokenDao,
+            swapDao,
+            sendDao,
+            limitOrderDao
+        )
 
 
     @Singleton
@@ -144,6 +157,7 @@ object DataModule {
         localLimitOrderDao: LocalLimitOrderDao,
         orderFilterDao: OrderFilterDao,
         dao: LimitOrderDao,
+        pendingBalancesDao: PendingBalancesDao,
         api: LimitOrderApi,
         mapper: OrderMapper,
         feeMapper: FeeMapper,
@@ -155,6 +169,7 @@ object DataModule {
             localLimitOrderDao,
             orderFilterDao,
             tokenDao,
+            pendingBalancesDao,
             api,
             tokenClient,
             mapper,
