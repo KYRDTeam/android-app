@@ -19,7 +19,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
+import com.kyberswap.android.presentation.main.profile.alert.GetNumberAlertsState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.percentage
@@ -55,6 +55,8 @@ class PriceAlertFragment : BaseFragment() {
     lateinit var schedulerProvider: SchedulerProvider
 
     private var clearAlertPrice = false
+
+    private var previousTokenPair: CharSequence? = null
 
     private val handler by lazy {
         Handler()
@@ -108,6 +110,7 @@ class PriceAlertFragment : BaseFragment() {
                     is GetCurrentAlertState.Success -> {
                         if (state.alert != binding.alert) {
                             binding.alert = state.alert
+                            binding.executePendingBindings()
                             updateAlert()
                             setupCurrency()
                 
@@ -122,16 +125,16 @@ class PriceAlertFragment : BaseFragment() {
     
 )
 
-        viewModel.getAllAlert()
+        viewModel.getNumberOfAlerts()
         viewModel.getAllAlertsCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
-                    is GetAlertsState.Success -> {
-                        if (currentAlertNumber != state.alerts.size) {
-                            currentAlertNumber = state.alerts.size
+                    is GetNumberAlertsState.Success -> {
+                        if (currentAlertNumber != state.numOfAlert) {
+                            currentAlertNumber = state.numOfAlert
                 
             
-                    is GetAlertsState.ShowError -> {
+                    is GetNumberAlertsState.ShowError -> {
 
             
         
@@ -161,8 +164,22 @@ class PriceAlertFragment : BaseFragment() {
             .subscribe {
                 updateAlert()
                 if (clearAlertPrice) {
-                    binding.edtRate.text.clear()
+                    binding.edtRate.setText("")
         
+    )
+
+        viewModel.compositeDisposable.add(binding.tvToken.textChanges()
+            .skipInitialValue()
+            .observeOn(schedulerProvider.ui())
+            .subscribe {
+                previousTokenPair?.let {
+                    if (previousTokenPair != it) {
+                        viewModel.updateAlertInfo(binding.alert)
+                        previousTokenPair = it
+                        clearAlertPrice = true
+            
+        
+
     )
 
         viewModel.compositeDisposable.add(binding.edtRate.textChanges()
@@ -178,12 +195,27 @@ class PriceAlertFragment : BaseFragment() {
 
         binding.imgDone.setOnClickListener {
             val alert = binding.alert
-            if (currentAlertNumber > Alert.MAX_ALERT_NUMBER) {
-                dialogHelper.showExceedNumberAlertDialog {
+            when {
+                currentAlertNumber > Alert.MAX_ALERT_NUMBER -> dialogHelper.showExceedNumberAlertDialog {
 
         
-     else {
-                viewModel.createOrUpdateAlert(
+
+
+                binding.ratePercentage.toBigDecimalOrDefaultZero().abs() < 0.1.toBigDecimal() -> {
+                    showAlertWithoutIcon(
+                        getString(R.string.title_error),
+                        getString(R.string.alert_price_diffrent_price_warning)
+                    )
+        
+
+                binding.ratePercentage.toBigDecimalOrDefaultZero() > 10000.toBigDecimal() -> {
+                    showAlertWithoutIcon(
+                        getString(R.string.title_error),
+                        getString(R.string.alert_price_range_warning)
+                    )
+        
+
+                else -> viewModel.createOrUpdateAlert(
                     alert?.copy(
                         base = unit,
                         alertPrice = binding.edtRate.toBigDecimalOrDefaultZero(),
@@ -195,10 +227,11 @@ class PriceAlertFragment : BaseFragment() {
 
         binding.vChangeToken.setOnClickListener {
             navigator.navigateToTokenSelection(
-                currentFragment, wallet
+                currentFragment, wallet, alert
             )
 
     }
+
 
     private fun onCompleted() {
         activity?.onBackPressed()
@@ -249,6 +282,7 @@ class PriceAlertFragment : BaseFragment() {
     override fun onDestroyView() {
         this.wallet = null
         handler.removeCallbacksAndMessages(null)
+        viewModel.compositeDisposable.clear()
         super.onDestroyView()
     }
 

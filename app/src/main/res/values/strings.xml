@@ -277,6 +277,7 @@
     <string name="connect_my_twitter">Connect my Twitter</string>
     <string name="login_with_telegram">Login with Telegram</string>
     <string name="alerts">Alerts</string>
+    <string name="alerts_board">Alert(s)</string>
     <string name="log_out">Log Out</string>
     <string name="price_alert">Price Alert</string>
     <string name="select_pair">Select pair</string>
@@ -500,6 +501,13 @@
     <string name="register_invalid_password">Password must be at least eight characters including one digit, one uppercase letter, one lower case letter and alphanumeric characters</string>
     <string name="register_display_name_required">Please enter a display name to continue</string>
     <string name="send_token">Send Token</string>
+    <string name="alert_price_diffrent_price_warning">Your alert price should be different at least 0.1% from current price</string>
+    <string name="alert_price_range_warning">Your target price should be from 1% to 10000% of current price</string>
+    <string name="alert_limit_exceed">Alert limit exceeded</string>
+    <string name="alert_limit_exceeds_instruction">Your already have 10 (maximum) alerts in your inbox. Please delete an existing alert to add a new one</string>
+    <string name="alert_leader_board_name">You - %s</string>
+    <string name="no_alert_message">We will send you notification when prices go above or below your targets</string>
+    <string name="add_alert">Add Alert</string>
 
 
 </resources>

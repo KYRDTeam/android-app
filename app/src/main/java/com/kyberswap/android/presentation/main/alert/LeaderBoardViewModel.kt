@@ -3,6 +3,7 @@ package com.kyberswap.android.presentation.main.alert
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.kyberswap.android.domain.model.Alert
+import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.usecase.alert.GetLeaderBoardAlertsUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.presentation.common.Event
@@ -21,16 +22,16 @@ class LeaderBoardViewModel @Inject constructor(
     val getAlertsCallback: LiveData<Event<GetLeaderBoardState>>
         get() = _getAlertsCallback
 
-    fun getLeaderBoard() {
+    fun getLeaderBoard(userInfo: UserInfo) {
         _getAlertsCallback.postValue(Event(GetLeaderBoardState.Loading))
         getLeaderBoardAlertsUseCase.execute(
             Consumer { lb ->
-                val meAlert = lb.currentUserEntity.activeAlerts.map {
-                    it.copy(rank = lb.currentUserEntity.rank)
-        .firstOrNull()
+                val meAlert = lb.data.find {
+                    it.userId == userInfo.uid
+        
                 val alerts = mutableListOf<Alert>()
                 if (meAlert != null) {
-                    alerts.add(meAlert)
+                    alerts.add(meAlert.copy(userName = userInfo.name))
         
                 alerts.addAll(lb.data)
 

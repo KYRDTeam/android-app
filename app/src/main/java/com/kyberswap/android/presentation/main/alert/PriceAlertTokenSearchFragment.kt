@@ -13,6 +13,7 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentTokenSearchBinding
 import com.kyberswap.android.domain.SchedulerProvider
+import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
@@ -39,6 +40,8 @@ class PriceAlertTokenSearchFragment : BaseFragment() {
 
     private var wallet: Wallet? = null
 
+    private var alert: Alert? = null
+
     private var currentSearchString = ""
 
     private var tokenList = mutableListOf<Token>()
@@ -52,6 +55,7 @@ class PriceAlertTokenSearchFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         wallet = arguments?.getParcelable(WALLET_PARAM)
+        alert = arguments?.getParcelable(ALERT_PARAM)
     }
 
     override fun onCreateView(
@@ -75,7 +79,7 @@ class PriceAlertTokenSearchFragment : BaseFragment() {
         val tokenAdapter =
             PriceAlertTokenSearchAdapter(appExecutors) { token ->
 
-                viewModel.saveToken(wallet, token)
+                viewModel.saveToken(wallet, token, alert)
     
 
         binding.rvToken.adapter = tokenAdapter
@@ -177,10 +181,12 @@ class PriceAlertTokenSearchFragment : BaseFragment() {
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"
-        fun newInstance(wallet: Wallet?) =
+        private const val ALERT_PARAM = "alert_param"
+        fun newInstance(wallet: Wallet?, alert: Alert?) =
             PriceAlertTokenSearchFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(WALLET_PARAM, wallet)
+                    putParcelable(ALERT_PARAM, alert)
 
         
     

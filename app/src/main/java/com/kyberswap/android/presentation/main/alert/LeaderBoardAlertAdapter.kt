@@ -10,7 +10,6 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ItemLeaderBoardBinding
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.presentation.base.DataBoundListAdapter
-import com.kyberswap.android.presentation.base.DataBoundViewHolder
 
 class LeaderBoardAlertAdapter(
     appExecutors: AppExecutors
@@ -20,7 +19,6 @@ class LeaderBoardAlertAdapter(
     diffCallback = object : DiffUtil.ItemCallback<Alert>() {
         override fun areItemsTheSame(oldItem: Alert, newItem: Alert): Boolean {
             return oldItem == newItem
-
 
 
         override fun areContentsTheSame(oldItem: Alert, newItem: Alert): Boolean {
@@ -35,15 +33,8 @@ class LeaderBoardAlertAdapter(
         submitList(tokens)
     }
 
-    override fun onBindViewHolder(
-        holder: DataBoundViewHolder<ItemLeaderBoardBinding>,
-        position: Int
-    ) {
-        holder.binding.isActive = position == 0
-        super.onBindViewHolder(holder, position)
-    }
-
     override fun bind(binding: ItemLeaderBoardBinding, item: Alert) {
+        binding.isActive = item.userName.isNotBlank()
         binding.setVariable(BR.alert, item)
         binding.executePendingBindings()
     }

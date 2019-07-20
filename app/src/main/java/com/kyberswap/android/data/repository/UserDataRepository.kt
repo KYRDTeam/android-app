@@ -60,6 +60,19 @@ class UserDataRepository @Inject constructor(
 
     }
 
+    override fun getNumberAlerts(): Flowable<Int> {
+        return Flowable.mergeDelayError(
+            alertDao.all.map { alerts ->
+                alerts.filter { it.isNotLocal }.size
+    ,
+            userApi.getAlert().map {
+                userMapper.transform(it.alerts)
+    .toFlowable().map {
+                it.size
+    
+        )
+    }
+
     override fun userInfo(): Single<UserInfo?> {
         return Single.fromCallable {
             userDao.getUser() ?: UserInfo()
