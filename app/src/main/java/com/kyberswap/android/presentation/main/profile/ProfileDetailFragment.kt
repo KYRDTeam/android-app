@@ -14,6 +14,7 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentProfileDetailBinding
 import com.kyberswap.android.domain.SchedulerProvider
+import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -42,6 +43,8 @@ class ProfileDetailFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    private val alerts = mutableListOf<Alert>()
 
     private val handler by lazy {
         Handler()
@@ -139,6 +142,9 @@ class ProfileDetailFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetAlertsState.Success -> {
+                        binding.isEmpty = state.alerts.isEmpty()
+                        this.alerts.clear()
+                        this.alerts.addAll(state.alerts)
                         alertAdapter.submitAlerts(state.alerts.take(2))
                     }
                     is GetAlertsState.ShowError -> {
@@ -209,15 +215,25 @@ class ProfileDetailFragment : BaseFragment() {
         }
 
         binding.imgCreateAlert.setOnClickListener {
-            navigator.navigateToPriceAlertScreen(
-                currentFragment
-            )
+            if (alerts.size >= 10) {
+                dialogHelper.showDialogInfo(
+                    title = getString(R.string.alert_limit_exceed), content = getString(
+                        R.string.alert_limit_exceeds_instruction
+                    )
+                )
+            } else {
+                navigator.navigateToPriceAlertScreen(
+                    currentFragment
+                )
+            }
+
         }
 
 
         binding.imgLeaderBoard.setOnClickListener {
             navigator.navigateToLeaderBoard(
-                currentFragment
+                currentFragment,
+                binding.user
             )
         }
 

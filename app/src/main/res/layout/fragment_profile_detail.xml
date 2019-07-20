@@ -7,6 +7,12 @@
         <variable
             name="user"
             type="com.kyberswap.android.domain.model.UserInfo" />
+
+        <variable
+            name="isEmpty"
+            type="Boolean" />
+
+        <import type="android.view.View" />
     </data>
 
     <FrameLayout
@@ -199,11 +205,11 @@
                         android:layout_marginTop="24dp"
                         android:layout_marginBottom="40dp"
                         android:background="@drawable/border_button"
-                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:gravity="center"
                         android:minWidth="126dp"
                         android:minHeight="45dp"
                         android:text="@string/profile_verify"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#141927"
                         android:textSize="16sp" />
 
@@ -269,6 +275,7 @@
                     android:background="@android:color/white"
                     android:clipToPadding="false"
                     android:nestedScrollingEnabled="false"
+                    android:visibility="@{isEmpty ? View.GONE : View.VISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/view19" />
@@ -277,7 +284,7 @@
                     android:id="@+id/tvMoreAlert"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/selectable_item_background"
+                    android:background="?selectableItemBackground"
                     android:gravity="center"
                     android:minHeight="56dp"
                     android:text="@string/more_alerts"
@@ -285,11 +292,28 @@
                     android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#5a5e67"
                     android:textSize="12sp"
+                    android:visibility="@{isEmpty ? View.GONE : View.VISIBLE}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/rvAlert"
                     app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="36dp"
+                    android:gravity="center"
+                    android:lineSpacingExtra="8sp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    android:text="@string/no_alert_message"
+                    android:textColor="#5a5e67"
+                    android:textSize="14sp"
+                    android:visibility="@{isEmpty ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvMoreAlert" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

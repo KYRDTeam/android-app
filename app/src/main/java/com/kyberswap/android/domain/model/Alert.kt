@@ -28,6 +28,7 @@ data class Alert(
     val updatedAt: String = "",
     val triggeredAt: String = "",
     val filledAt: String = "",
+    val userId: Long = 0,
     val rank: Int = 0,
     val userEmail: String = "",
     val telegramAccount: String = "",
@@ -36,7 +37,8 @@ data class Alert(
     val state: String = "",
     @Embedded
     val token: Token = Token(),
-    val walletAddress: String = ""
+    val walletAddress: String = "",
+    val userName: String = ""
 
 ) : Parcelable {
     constructor(entity: AlertEntity) : this(
@@ -53,6 +55,7 @@ data class Alert(
         entity.updatedAt,
         entity.triggeredAt ?: "",
         entity.filledAt ?: "",
+        entity.userId ?: 0,
         entity.rank ?: 0,
         entity.userEmail ?: "",
         entity.telegramAccount ?: "",
@@ -78,7 +81,7 @@ data class Alert(
     val isEthBase: Boolean
         get() = base.toLowerCase() == BASE_ETH.toLowerCase()
     val tokenSymbol: String
-        get() = if (symbol.isNotEmpty()) symbol else token.tokenSymbol
+        get() = if (token.tokenSymbol.isNotEmpty()) token.tokenSymbol else symbol
 
     val pair: String
         get() = StringBuilder()

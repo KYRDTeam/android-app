@@ -26,6 +26,8 @@ interface UserRepository {
 
     fun getAlerts(): Flowable<List<Alert>>
 
+    fun getNumberAlerts(): Flowable<Int>
+
     fun getAlertMethods(): Single<AlertMethodsResponse>
 
     fun updateAlertMethods(param: UpdateAlertMethodsUseCase.Param): Single<ResponseStatus>

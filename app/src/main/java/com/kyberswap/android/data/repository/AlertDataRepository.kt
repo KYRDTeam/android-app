@@ -13,6 +13,7 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import retrofit2.Response
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -64,46 +65,68 @@ class AlertDataRepository @Inject constructor(
             }
     }
 
+
     override fun getCurrentAlert(param: GetCurrentAlertUseCase.Param): Flowable<Alert> {
-        val id = if (param.alert == null) {
-            Alert.LOCAL_ID
-        } else {
-            param.alert.id
-        }
+        return Flowable.fromCallable {
+            val id = if (param.alert == null) {
+                Alert.LOCAL_ID
+            } else {
+                param.alert.id
+            }
 
-        val currentAlert = alertDao.findAlertById(id)
-        val alert = if (currentAlert == null) {
-            val defaultToken = tokenDao.getTokenBySymbol(Token.KNC)
-            Alert(
-                id = Alert.LOCAL_ID,
-                walletAddress = param.walletAddress,
-                token = defaultToken ?: Token(),
-                state = Alert.STATE_LOCAL
-            )
+            val currentAlert = alertDao.findAlertById(id)
+            val alert = if (currentAlert == null) {
+                val defaultToken = tokenDao.getTokenBySymbol(Token.KNC)
+                Alert(
+                    id = Alert.LOCAL_ID,
+                    walletAddress = param.walletAddress,
+                    token = defaultToken ?: Token(),
+                    state = Alert.STATE_LOCAL
+                )
 
-        } else {
-            val token = tokenDao.getTokenBySymbol(currentAlert.tokenSymbol) ?: Token()
-            currentAlert.copy(token = token)
-        }
+            } else {
+                val token = tokenDao.getTokenBySymbol(currentAlert.tokenSymbol) ?: Token()
+                currentAlert.copy(token = token)
+            }
 
-        if (currentAlert != alert) {
-            alertDao.insertAlert(alert)
-        }
-
-        return alertDao.findAlertByIdFlowable(id).defaultIfEmpty(
+            if (currentAlert != alert) {
+                Timber.e("insert")
+                alertDao.insertAlert(alert)
+            }
             alert
-        )
+        }.flatMap {
+            alertDao.findAlertByIdFlowable(it.id)
+        }
     }
 
     override fun saveAlertToken(param: SaveAlertTokenUseCase.Param): Completable {
         return Completable.fromCallable {
-            val currentAlert = alertDao.findLocalAlert(param.walletAddress)
+
+            val currentAlert = if (param.alert != null && param.alert.id > 0) {
+
+                alertDao.findAlertById(param.alert.id)
+            } else {
+                alertDao.findLocalAlert(param.walletAddress)
+            }
+
             val alert = currentAlert?.copy(
                 token = param.token
             ) ?: Alert(walletAddress = param.walletAddress, token = param.token)
-            alertDao.updateAlert(alert)
+            alertDao.insertAlert(alert)
         }
     }
+
+    override fun updateCurrentAlert(param: UpdateCurrentAlertUseCase.Param): Completable {
+        return Completable.fromCallable {
+            val currentAlert = alertDao.findAlertById(param.alert.id)?.copy(token = Token())
+            currentAlert?.let {
+                alertDao.updateAlert(currentAlert)
+            }
+
+
+        }
+    }
+
 
     override fun getAlert(param: GetAlertUseCase.Param): Single<Alert> {
         return Single.fromCallable {

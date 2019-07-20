@@ -21,4 +21,6 @@ interface AlertRepository {
     fun getLeaderBoardAlert(): Single<LeaderBoard>
 
     fun getAlert(param: GetAlertUseCase.Param): Single<Alert>
+
+    fun updateCurrentAlert(param: UpdateCurrentAlertUseCase.Param): Completable
 }

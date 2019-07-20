@@ -230,7 +230,7 @@
                         android:minHeight="42dp"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
-                        android:text="@string/alerts"
+                        android:text="@string/alerts_board"
                         android:textAllCaps="true"
                         android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#5a5e67"

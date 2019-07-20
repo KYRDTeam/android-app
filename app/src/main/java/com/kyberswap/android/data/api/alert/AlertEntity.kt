@@ -31,6 +31,9 @@ data class AlertEntity(
     val triggeredAt: String? = "",
     @SerializedName("filled_at")
     val filledAt: String? = "",
+    @SerializedName("user_id")
+    val userId: Long? = 0,
+    @SerializedName("rank")
     val rank: Int? = 0,
     @SerializedName("user_email")
     val userEmail: String? = "",

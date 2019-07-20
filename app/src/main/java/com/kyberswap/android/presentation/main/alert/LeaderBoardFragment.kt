@@ -14,6 +14,7 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentLeaderBoardBinding
 import com.kyberswap.android.domain.SchedulerProvider
+import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
@@ -45,8 +46,15 @@ class LeaderBoardFragment : BaseFragment() {
         Handler()
     }
 
+    private var userInfo: UserInfo? = null
+
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(LeaderBoardViewModel::class.java)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        userInfo = arguments?.getParcelable(USER_INFO_PARAM)
     }
 
     override fun onCreateView(
@@ -61,7 +69,7 @@ class LeaderBoardFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel.getLeaderBoard()
+        userInfo?.let { viewModel.getLeaderBoard(it) }
 
         binding.rvLeaderBoard.layoutManager = LinearLayoutManager(
             activity,
@@ -116,8 +124,14 @@ class LeaderBoardFragment : BaseFragment() {
     }
 
     companion object {
-        fun newInstance() =
-            LeaderBoardFragment()
+        private const val USER_INFO_PARAM = "user_info"
+        fun newInstance(userInfo: UserInfo?) =
+            LeaderBoardFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable(USER_INFO_PARAM, userInfo)
+
+                }
+            }
     }
 
 

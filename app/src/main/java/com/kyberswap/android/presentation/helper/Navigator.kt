@@ -377,10 +377,10 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         )
     }
 
-    fun navigateToTokenSelection(currentFragment: Fragment?, wallet: Wallet?) {
+    fun navigateToTokenSelection(currentFragment: Fragment?, wallet: Wallet?, alert: Alert?) {
         navigateByChildFragmentManager(
             currentFragment,
-            PriceAlertTokenSearchFragment.newInstance(wallet)
+            PriceAlertTokenSearchFragment.newInstance(wallet, alert)
         )
     }
 
@@ -391,10 +391,10 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         )
     }
 
-    fun navigateToLeaderBoard(currentFragment: Fragment?) {
+    fun navigateToLeaderBoard(currentFragment: Fragment?, userInfo: UserInfo?) {
         navigateByChildFragmentManager(
             currentFragment,
-            LeaderBoardFragment.newInstance()
+            LeaderBoardFragment.newInstance(userInfo)
         )
     }
 

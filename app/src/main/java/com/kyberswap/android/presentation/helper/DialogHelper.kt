@@ -44,6 +44,28 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
+    fun showDialogInfo(title: String, content: String, positiveListener: () -> Unit = {}) {
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogInfoBinding>(
+                LayoutInflater.from(activity), R.layout.dialog_info, null, false
+            )
+
+        binding.title = title
+        binding.content = content
+        binding.tvOk.setOnClickListener {
+            positiveListener.invoke()
+            dialog.dismiss()
+        }
+
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    }
+
+
     fun showConfirmation(
         title: String,
         content: String,

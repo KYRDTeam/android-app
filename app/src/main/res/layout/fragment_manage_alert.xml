@@ -3,15 +3,25 @@
 
     <data>
 
+        <variable
+            name="isEmpty"
+            type="Boolean" />
+
+        <variable
+            name="isEmptyTrigger"
+            type="Boolean" />
+
+        <import type="android.view.View" />
+
     </data>
 
     <LinearLayout
-        android:clickable="true"
-        android:focusable="true"
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/screen_background"
+        android:clickable="true"
+        android:focusable="true"
         android:orientation="vertical">
 
         <FrameLayout
@@ -90,6 +100,7 @@
                     android:background="@android:color/white"
                     android:clipToPadding="false"
                     android:nestedScrollingEnabled="false"
+                    android:visibility="@{isEmpty ? View.GONE : View.VISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="parent"
@@ -109,6 +120,7 @@
                     android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#5a5e67"
                     android:textSize="12sp"
+                    android:visibility="@{isEmpty || isEmptyTrigger ? View.GONE : View.VISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/rvAlert" />
@@ -120,10 +132,49 @@
                     android:background="@android:color/white"
                     android:clipToPadding="false"
                     android:nestedScrollingEnabled="false"
+                    android:visibility="@{isEmpty ? View.GONE : View.VISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView44" />
+
+                <TextView
+                    android:id="@+id/tvEmpty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="36dp"
+                    android:gravity="center"
+                    android:lineSpacingExtra="8sp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    android:text="@string/no_alert_message"
+                    android:textColor="#5a5e67"
+                    android:textSize="14sp"
+                    android:visibility="@{isEmpty ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/rvTrigger" />
+
+                <TextView
+                    android:id="@+id/tvAdd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="48dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginEnd="48dp"
+                    android:background="@drawable/default_button"
+                    android:gravity="center"
+                    android:minHeight="45dp"
+                    android:text="@string/add_alert"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#ffffff"
+                    android:textSize="16sp"
+                    android:visibility="@{isEmpty ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvEmpty" />
+
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
 
