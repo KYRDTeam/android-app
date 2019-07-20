@@ -139,7 +139,9 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                 
 
                         binding.tvUnit.setTextIfChange(state.wallet.unit)
-                        binding.tvBalance.setTextIfChange(state.wallet.displayBalance)
+                        if (tokenAdapter?.hideBlance != true) {
+                            binding.tvBalance.setTextIfChange(state.wallet.displayBalance)
+                
 
                         if (binding.wallet != state.wallet) {
                             binding.wallet = state.wallet
@@ -378,13 +380,13 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             viewModel.refresh()
 
 
-        viewModel.saveTokenSelectionCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.saveWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
-                showProgress(state == SaveSwapDataState.Loading)
+                showProgress(state == SaveWalletState.Loading)
                 when (state) {
-                    is SaveSwapDataState.Success -> {
+                    is SaveWalletState.Success -> {
             
-                    is SaveSwapDataState.ShowError -> {
+                    is SaveWalletState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error

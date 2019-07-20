@@ -156,6 +156,7 @@ class PriceAlertFragment : BaseFragment() {
 )
 
         viewModel.compositeDisposable.add(binding.rgCurrencies.checkedChanges()
+            .skipInitialValue()
             .observeOn(schedulerProvider.ui())
             .subscribe {
                 updateAlert()
@@ -220,16 +221,20 @@ class PriceAlertFragment : BaseFragment() {
     }
 
     private fun updateAlert() {
-        binding.tvToken.text = StringBuilder()
-            .append(binding.alert?.tokenSymbol)
-            .append("/")
-            .append(unit)
-            .toString()
+        binding.alert?.let {
+            binding.tvToken.text = StringBuilder()
+                .append(it.tokenSymbol)
+                .append("/")
+                .append(unit)
+                .toString()
 
-        binding.tvCurrentPrice.text = String.format(
-            getString(R.string.alert_current_price),
-            price?.toDisplayNumber()
-        )
+
+        price?.let {
+            binding.tvCurrentPrice.text = String.format(
+                getString(R.string.alert_current_price),
+                it.toDisplayNumber()
+            )
+
     }
 
     val unit: String
@@ -242,6 +247,7 @@ class PriceAlertFragment : BaseFragment() {
 
 
     override fun onDestroyView() {
+        this.wallet = null
         handler.removeCallbacksAndMessages(null)
         super.onDestroyView()
     }

@@ -72,6 +72,10 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     private var hasPendingTransaction: Boolean? = false
 
+    private var listener: ViewPager.OnPageChangeListener? = null
+
+    private var fromLimitOrder: Boolean = false
+
 
     private val mainViewModel: MainViewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
@@ -123,7 +127,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
         binding.vpNavigation.adapter = adapter
         binding.vpNavigation.offscreenPageLimit = 4
-        val listener = object : ViewPager.OnPageChangeListener {
+        listener = object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
 
     
@@ -139,23 +143,33 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             override fun onPageSelected(position: Int) {
                 currentFragment = adapter?.getRegisteredFragment(position)
                 showPendingTransaction()
-                if (currentFragment is LimitOrderFragment) {
-                    (currentFragment as LimitOrderFragment).getLoginStatus()
-         else if (currentFragment is SettingFragment) {
-                    (currentFragment as SettingFragment).getLoginStatus()
-                    currentFragment?.childFragmentManager?.fragments?.forEach {
-                        if (it is ManageAlertFragment) {
-                            it.getLoginStatus()
-                            return
-                 else if (it is AlertMethodFragment) {
-                            it.getLoginStatus()
+                when (currentFragment) {
+                    is LimitOrderFragment -> (currentFragment as LimitOrderFragment).run {
+                        getLoginStatus()
+                        getNonce()
+            
+                    is SettingFragment -> {
+                        (currentFragment as SettingFragment).getLoginStatus()
+                        currentFragment?.childFragmentManager?.fragments?.forEach {
+                            if (it is ManageAlertFragment) {
+                                it.getLoginStatus()
+                                return
+                     else if (it is AlertMethodFragment) {
+                                it.getLoginStatus()
+                    
                 
+            
+                    is ProfileFragment -> if (fromLimitOrder) {
+                        (currentFragment as ProfileFragment).fromLimitOrder(fromLimitOrder)
             
         
     
 
 
-        binding.vpNavigation.addOnPageChangeListener(listener)
+        listener?.let {
+            binding.vpNavigation.addOnPageChangeListener(it)
+
+
 
         val initial = if (limitOrder != null) {
             MainPagerAdapter.LIMIT_ORDER
@@ -164,7 +178,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
 
         binding.vpNavigation.post {
-            listener.onPageSelected(initial)
+            listener?.onPageSelected(initial)
 
         bottomNavigation.currentItem = initial
         binding.vpNavigation.currentItem = initial
@@ -331,6 +345,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     }
 
+
     private fun setPendingTransaction(numOfPendingTransaction: Int) {
         hasPendingTransaction = numOfPendingTransaction > 0
         tvPendingTransaction.visibility =
@@ -380,6 +395,15 @@ class MainActivity : BaseActivity(), KeystoreStorage {
  else {
             super.onBackPressed()
 
+
+
+    }
+
+    fun moveToTab(tab: Int, fromLimitOrder: Boolean = false) {
+        this.fromLimitOrder = fromLimitOrder
+        handler.post {
+            bottomNavigation.currentItem = tab
+            listener?.onPageSelected(tab)
 
 
     }

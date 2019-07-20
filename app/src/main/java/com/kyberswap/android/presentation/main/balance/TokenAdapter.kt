@@ -46,6 +46,9 @@ class TokenAdapter(
 
     private var isHide = false
 
+    val hideBlance: Boolean
+        get() = isHide
+
     private var tokenType: TokenType = TokenType.LISTED
 
     private var tokenList = mutableListOf<Token>()

@@ -47,40 +47,51 @@
                 app:layout_constraintVertical_bias="0.0" />
 
 
-            <EditText
-                android:id="@+id/edtEmail"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/ilEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="34dp"
                 android:layout_marginEnd="24dp"
-                android:backgroundTint="@color/edt_background_tint"
-                android:hint="@string/login_email_address"
-                android:inputType="textEmailAddress"
-                android:letterSpacing="0.07"
                 android:minHeight="60dp"
-                android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                android:textColor="#9ea1aa"
-                android:textColorHint="#9ea1aa"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Email Address" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <EditText
+                    android:id="@+id/edtEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/edt_background_tint"
+                    android:hint="@string/login_email_address"
+                    android:inputType="textEmailAddress"
+                    android:letterSpacing="0.07"
+                    android:minHeight="60dp"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                    android:textColor="#9ea1aa"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayout"
+                android:id="@+id/ilPassword"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:backgroundTint="@color/edt_background_tint"
                 app:hintEnabled="false"
-                app:layout_constraintEnd_toEndOf="@+id/edtEmail"
-                app:layout_constraintStart_toStartOf="@+id/edtEmail"
-                app:layout_constraintTop_toBottomOf="@+id/edtEmail"
+                app:layout_constraintEnd_toEndOf="@+id/ilEmail"
+                app:layout_constraintStart_toStartOf="@+id/ilEmail"
+                app:layout_constraintTop_toBottomOf="@+id/ilEmail"
                 app:passwordToggleEnabled="true"
                 app:passwordToggleTint="#9ea1aa">
 
@@ -113,8 +124,8 @@
                 android:text="@string/forgot_password"
                 android:textColor="#fea34c"
                 android:textSize="13sp"
-                app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+                app:layout_constraintEnd_toEndOf="@+id/ilPassword"
+                app:layout_constraintTop_toBottomOf="@+id/ilPassword" />
 
             <TextView
                 android:id="@+id/btnLogin"
@@ -131,8 +142,8 @@
                 android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                 android:textColor="#ffffff"
                 android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
-                app:layout_constraintStart_toStartOf="@+id/textInputLayout"
+                app:layout_constraintEnd_toEndOf="@+id/ilPassword"
+                app:layout_constraintStart_toStartOf="@+id/ilPassword"
                 app:layout_constraintTop_toBottomOf="@+id/tvForgotPassword"
                 app:layout_constraintVertical_bias="0.0" />
 

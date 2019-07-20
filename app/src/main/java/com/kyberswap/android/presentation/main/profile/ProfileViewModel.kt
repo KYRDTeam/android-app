@@ -10,6 +10,7 @@ import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
 import com.kyberswap.android.domain.usecase.profile.LoginUseCase
 import com.kyberswap.android.domain.usecase.profile.ResetPasswordUseCase
 import com.kyberswap.android.presentation.common.Event
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
 import kotlinx.android.parcel.Parcelize
 import javax.inject.Inject
@@ -31,6 +32,8 @@ class ProfileViewModel @Inject constructor(
     private val _resetPasswordCallback = MutableLiveData<Event<ResetPasswordState>>()
     val resetPasswordCallback: LiveData<Event<ResetPasswordState>>
         get() = _resetPasswordCallback
+
+    val compositeDisposable = CompositeDisposable()
 
     fun getLoginStatus() {
         getLoginStatusUseCase.dispose()
@@ -93,6 +96,15 @@ class ProfileViewModel @Inject constructor(
     ,
             ResetPasswordUseCase.Param(email)
         )
+    }
+
+    override fun onCleared() {
+        compositeDisposable.dispose()
+        loginUseCase.dispose()
+        loginSocialUseCase.dispose()
+        resetPasswordUseCase.dispose()
+        getLoginStatusUseCase.dispose()
+        super.onCleared()
     }
 
 }
