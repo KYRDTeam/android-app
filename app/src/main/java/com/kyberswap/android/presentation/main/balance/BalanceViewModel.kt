@@ -54,9 +54,9 @@ class BalanceViewModel @Inject constructor(
 
     private val _visibility = MutableLiveData<Event<Boolean>>()
 
-    private val _saveSwapDataStateStateCallback = MutableLiveData<Event<SaveSwapDataState>>()
-    val saveTokenSelectionCallback: LiveData<Event<SaveSwapDataState>>
-        get() = _saveSwapDataStateStateCallback
+    private val _saveWalletCallback = MutableLiveData<Event<SaveWalletState>>()
+    val saveWalletCallback: LiveData<Event<SaveWalletState>>
+        get() = _saveWalletCallback
 
 
     private val _callback = MutableLiveData<Event<SaveSwapDataState>>()
@@ -104,12 +104,12 @@ class BalanceViewModel @Inject constructor(
         if (wallet == null) return
         updateWalletUseCase.execute(
             Action {
-                _saveSwapDataStateStateCallback.value = Event(SaveSwapDataState.Success())
+                _saveWalletCallback.value = Event(SaveWalletState.Success(""))
             },
             Consumer {
                 it.printStackTrace()
-                _saveSwapDataStateStateCallback.value =
-                    Event(SaveSwapDataState.ShowError(it.localizedMessage))
+                _saveWalletCallback.value =
+                    Event(SaveWalletState.ShowError(it.localizedMessage))
             },
             wallet
         )

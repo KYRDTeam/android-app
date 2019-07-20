@@ -24,7 +24,6 @@ import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainPagerAdapter
-import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.GetExpectedRateState
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
@@ -33,7 +32,6 @@ import com.kyberswap.android.presentation.main.swap.GetMarketRateState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.*
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_limit_order.*
 import kotlinx.android.synthetic.main.fragment_swap.edtDest
 import kotlinx.android.synthetic.main.fragment_swap.edtSource
@@ -119,6 +117,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
         })
 
         viewModel.getLoginStatus()
+
         viewModel.getLocalLimitOrderCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -671,6 +670,17 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                 when (state) {
                     is GetPendingBalancesState.Success -> {
                         this.pendingBalances = state.pendingBalances
+                        if (state.pendingBalances.data.size != pendingBalances?.data?.size) {
+                            binding.order?.let { order ->
+                                wallet?.let { wallet ->
+                                    viewModel.getRelatedOrders(
+                                        order,
+                                        wallet
+                                    )
+                                }
+                            }
+                        }
+
                         updateAvailableAmount(state.pendingBalances)
                     }
                     is GetPendingBalancesState.ShowError -> {
@@ -699,20 +709,11 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     private fun moveToSwapTab() {
-        if (activity is MainActivity) {
-            handler.post {
-                activity!!.bottomNavigation.currentItem = MainPagerAdapter.SWAP
-            }
-        }
+        (activity as? MainActivity)?.moveToTab(MainPagerAdapter.SWAP)
     }
 
     private fun moveToLoginTab() {
-        if (activity is MainActivity) {
-            handler.post {
-                activity!!.bottomNavigation.currentItem = MainPagerAdapter.PROFILE
-                (currentFragment as? ProfileFragment)?.fromLimitOrder(true)
-            }
-        }
+        (activity as? MainActivity)?.moveToTab(MainPagerAdapter.PROFILE, true)
     }
 
     fun getLoginStatus() {
@@ -738,6 +739,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
             order,
             edtSource.getAmountOrDefaultValue()
         )
+    }
+
+    fun getNonce() {
+        binding.order?.let { wallet?.let { it1 -> viewModel.getNonce(it, it1) } }
     }
 
     override fun showNotification(showNotification: Boolean) {

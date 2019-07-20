@@ -4,6 +4,7 @@ package com.kyberswap.android.presentation.main.profile
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentProfileBinding
@@ -35,7 +37,6 @@ import com.twitter.sdk.android.core.TwitterException
 import com.twitter.sdk.android.core.TwitterSession
 import com.twitter.sdk.android.core.identity.TwitterAuthClient
 import com.twitter.sdk.android.core.models.User
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_profile.*
 import timber.log.Timber
 import java.util.*
@@ -118,9 +119,6 @@ class ProfileFragment : BaseFragment() {
                 (activity as MainActivity).getCurrentFragment()
             )
         }
-        binding.btnLogin.setOnClickListener {
-            viewModel.login(edtEmail.text.toString(), edtPassword.text.toString())
-        }
 
         viewModel.loginCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -140,10 +138,11 @@ class ProfileFragment : BaseFragment() {
                                         state.login.userInfo.name
                                     )
                                 )
-                                navigateToProfileDetail()
                                 if (fromLimitOrder) {
+                                    fromLimitOrder = false
                                     moveToLimitOrder()
                                 }
+                                navigateToProfileDetail()
                             }
                         } else {
                             showAlert(state.login.message)
@@ -248,14 +247,70 @@ class ProfileFragment : BaseFragment() {
             }
         }
 
+        binding.btnLogin.setOnClickListener {
+
+
+            when {
+                binding.edtEmail.text.toString().isBlank() -> {
+                    val errorMessage = getString(
+                        R.string.login_email_address_required
+                    )
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_error), message = errorMessage
+                    )
+
+                    binding.ilEmail.error = errorMessage
+
+                }
+
+                !Patterns.EMAIL_ADDRESS.matcher(binding.edtEmail.text).matches() -> {
+
+                    val errorMessage = getString(
+                        R.string.login_invalid_email_address
+                    )
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_error), message = errorMessage
+                    )
+
+                    binding.ilEmail.error = errorMessage
+                }
+
+                binding.edtPassword.text.toString().isBlank() -> {
+                    val errorMessage = getString(
+                        R.string.login_password_required
+                    )
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_error), message = errorMessage
+                    )
+                    binding.ilPassword.error = errorMessage
+
+                }
+
+                else -> {
+                    viewModel.login(edtEmail.text.toString(), edtPassword.text.toString())
+                }
+
+            }
+
+        }
+
+        viewModel.compositeDisposable.add(
+            binding.edtEmail.textChanges()
+                .skipInitialValue()
+                .subscribe {
+                    binding.ilEmail.error = null
+                })
+
+        viewModel.compositeDisposable.add(
+            binding.edtPassword.textChanges()
+                .skipInitialValue()
+                .subscribe {
+                    binding.ilPassword.error = null
+                })
     }
 
     private fun moveToLimitOrder() {
-        if (activity is MainActivity) {
-            handler.post {
-                activity!!.bottomNavigation.currentItem = MainPagerAdapter.LIMIT_ORDER
-            }
-        }
+        (activity as? MainActivity)?.moveToTab(MainPagerAdapter.LIMIT_ORDER)
     }
 
     private fun navigateToProfileDetail() {
@@ -363,6 +418,7 @@ class ProfileFragment : BaseFragment() {
     }
 
     override fun onDestroyView() {
+        viewModel.compositeDisposable.clear()
         handler.removeCallbacksAndMessages(null)
         super.onDestroyView()
     }

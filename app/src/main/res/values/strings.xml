@@ -494,6 +494,12 @@
     <string name="invalid_amount">Invalid amount</string>
     <string name="eth_balance_not_enough">You ETH balance is not enough to make the transaction</string>
     <string name="eth_balance_not_enough_for_fee">You don\'t have enough ETH pay for transaction fee of %s</string>
+    <string name="login_invalid_email_address">Please enter a valid email address to continue</string>
+    <string name="login_email_address_required">Please enter a email address to continue</string>
+    <string name="login_password_required">Please enter the password</string>
+    <string name="register_invalid_password">Password must be at least eight characters including one digit, one uppercase letter, one lower case letter and alphanumeric characters</string>
+    <string name="register_display_name_required">Please enter a display name to continue</string>
+    <string name="send_token">Send Token</string>
 
 
 </resources>

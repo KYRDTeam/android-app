@@ -6,6 +6,7 @@ import java.math.BigInteger
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.regex.Pattern
 import kotlin.math.pow
 
 fun String.toWalletAddress(): String {
@@ -23,6 +24,14 @@ fun String.hexWithPrefix(): String {
         "0x$this"
     }
 }
+
+fun String.validPassword(): Boolean {
+    return Pattern.compile(PATTERN_REGEX_PASSWORD).matcher(this).matches()
+}
+
+
+const val PATTERN_REGEX_PASSWORD =
+    "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#\$%^&+=])(?=\\S+\$).{8,}\$"
 
 fun String.toLongSafe(): Long {
     return try {
