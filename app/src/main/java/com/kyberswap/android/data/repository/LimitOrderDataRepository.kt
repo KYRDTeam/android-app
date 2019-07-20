@@ -5,10 +5,7 @@ import android.util.Base64
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.LimitOrderApi
-import com.kyberswap.android.data.db.LimitOrderDao
-import com.kyberswap.android.data.db.LocalLimitOrderDao
-import com.kyberswap.android.data.db.OrderFilterDao
-import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.db.*
 import com.kyberswap.android.data.mapper.FeeMapper
 import com.kyberswap.android.data.mapper.OrderMapper
 import com.kyberswap.android.domain.model.*
@@ -19,10 +16,13 @@ import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.hexWithPrefix
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.FlowableTransformer
 import io.reactivex.Single
+import io.reactivex.functions.BiFunction
 import org.consenlabs.tokencore.wallet.WalletManager
 import org.web3j.crypto.WalletUtils
 import java.math.BigDecimal
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -32,6 +32,7 @@ class LimitOrderDataRepository @Inject constructor(
     private val localLimitOrderDao: LocalLimitOrderDao,
     private val orderFilterDao: OrderFilterDao,
     private val tokenDao: TokenDao,
+    private val pendingBalancesDao: PendingBalancesDao,
     private val limitOrderApi: LimitOrderApi,
     private val tokenClient: TokenClient,
     private val orderMapper: OrderMapper,
@@ -228,47 +229,59 @@ class LimitOrderDataRepository @Inject constructor(
     }
 
     override fun getCurrentLimitOrders(param: GetLocalLimitOrderDataUseCase.Param): Flowable<LocalLimitOrder> {
-        val limitOrder = localLimitOrderDao.findLocalLimitOrderByAddress(param.walletAddress)
-        val defaultLimitOrder = if (limitOrder == null) {
-            val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)
-            val wethToken = tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)
+        val wallet = param.wallet
+        val defaultLimitOrder = when (val limitOrder =
+            localLimitOrderDao.findLocalLimitOrderByAddress(wallet.address)) {
+            null -> {
+                val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)
+                val wethToken = tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)
 
-            val ethBalance = ethToken?.currentBalance ?: BigDecimal.ZERO
-            val wethBalance = wethToken?.currentBalance ?: BigDecimal.ZERO
+                val ethBalance = ethToken?.currentBalance ?: BigDecimal.ZERO
+                val wethBalance = wethToken?.currentBalance ?: BigDecimal.ZERO
 
-            val defaultSourceToken = wethToken?.updateBalance(ethBalance.plus(wethBalance))?.copy(
-                tokenSymbol = Token.ETH_SYMBOL_STAR
-            )
+                val defaultSourceToken =
+                    wethToken?.updateBalance(ethBalance.plus(wethBalance))?.copy(
+                        tokenSymbol = Token.ETH_SYMBOL_STAR
+                    )
 
-            val defaultDestToken = tokenDao.getTokenBySymbol(Token.KNC)
+                val defaultDestToken = tokenDao.getTokenBySymbol(Token.KNC)
 
-            val order = LocalLimitOrder(
-                param.walletAddress,
-                defaultSourceToken ?: Token(),
-                defaultDestToken ?: Token()
-            )
+                val order = LocalLimitOrder(
+                    wallet.address,
+                    defaultSourceToken ?: Token(),
+                    defaultDestToken ?: Token()
+                )
 
-            localLimitOrderDao.insertOrder(order)
-            order
-        } else {
-            limitOrder
+                localLimitOrderDao.insertOrder(order)
+                order
+            }
+            else -> when {
+                limitOrder.tokenSource.selectedWalletAddress != wallet.address -> {
+                    val source = limitOrder.tokenSource.updateSelectedWallet(wallet)
+                    val dest = limitOrder.tokenDest.updateSelectedWallet(wallet)
+                    limitOrder.copy(tokenSource = source, tokenDest = dest)
+                }
+                else -> limitOrder
+            }
         }
 
-        val source = updateBalance(defaultLimitOrder.tokenSource)
-        val dest = updateBalance(defaultLimitOrder.tokenDest)
 
-        val order = if (source.isETHWETH) {
-            val ethToken =
-                tokenDao.getTokenBySymbol(Token.ETH_SYMBOL) ?: Token()
-            val wethToken =
-                tokenDao.getTokenBySymbol(Token.WETH_SYMBOL) ?: Token()
+        val source = updateBalance(defaultLimitOrder.tokenSource, wallet)
+        val dest = updateBalance(defaultLimitOrder.tokenDest, wallet)
 
-            defaultLimitOrder.copy(
-                ethToken = ethToken,
-                wethToken = wethToken
-            )
-        } else {
-            defaultLimitOrder
+        val order = when {
+            source.isETHWETH -> {
+                val ethToken =
+                    tokenDao.getTokenBySymbol(Token.ETH_SYMBOL) ?: Token()
+                val wethToken =
+                    tokenDao.getTokenBySymbol(Token.WETH_SYMBOL) ?: Token()
+
+                defaultLimitOrder.copy(
+                    ethToken = ethToken,
+                    wethToken = wethToken
+                )
+            }
+            else -> defaultLimitOrder
         }
 
         val orderWithToken = order.copy(
@@ -276,27 +289,51 @@ class LimitOrderDataRepository @Inject constructor(
             tokenDest = dest
         )
 
-        if (orderWithToken != defaultLimitOrder) {
-            localLimitOrderDao.insertOrder(orderWithToken)
-        }
+        localLimitOrderDao.insertOrder(orderWithToken)
 
-        return localLimitOrderDao.findLocalLimitOrderByAddressFlowable(param.walletAddress)
+        return localLimitOrderDao.findLocalLimitOrderByAddressFlowable(wallet.address)
             .defaultIfEmpty(orderWithToken)
     }
 
-    private fun updateBalance(token: Token): Token {
-        return if (token.isETHWETH) {
-            val ethBalance =
-                tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)?.currentBalance ?: BigDecimal.ZERO
-            val wethBalance =
-                tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)?.currentBalance ?: BigDecimal.ZERO
-            token.updateBalance(
-                ethBalance.plus(
-                    wethBalance
+    private fun <T> zipWithFlatMap(): FlowableTransformer<T, Long> {
+        return FlowableTransformer { flowable ->
+            flowable.zipWith(
+                Flowable.range(COUNTER_START, ATTEMPTS),
+                BiFunction<T, Int, Int> { _: T, u: Int -> u })
+                .flatMap { t -> Flowable.timer(t * 5L, TimeUnit.SECONDS) }
+        }
+    }
+
+    private fun updateBalance(token: Token, wallet: Wallet): Token {
+        return when {
+            token.isETHWETH -> {
+
+                val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)
+                val wethToken = tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)
+                val ethBalance = if (ethToken?.selectedWalletAddress != wallet.address) {
+                    ethToken?.updateSelectedWallet(wallet)
+                } else {
+                    ethToken
+                }?.currentBalance ?: BigDecimal.ZERO
+
+                val wethBalance = if (wethToken?.selectedWalletAddress != wallet.address) {
+                    wethToken?.updateSelectedWallet(wallet)
+                } else {
+                    wethToken
+                }?.currentBalance ?: BigDecimal.ZERO
+
+                token.updateBalance(
+                    ethBalance.plus(wethBalance)
                 )
-            )
-        } else {
-            token
+            }
+            else -> {
+                when {
+                    token.selectedWalletAddress != wallet.address -> token.updateSelectedWallet(
+                        wallet
+                    )
+                    else -> token
+                }
+            }
         }
     }
 
@@ -360,14 +397,35 @@ class LimitOrderDataRepository @Inject constructor(
                     it.filter { it.isPending }
                 }
                 .doAfterSuccess {
-                    limitOrderDao.insertOrders(it)
+                    limitOrderDao.updateOrders(it)
                 }.toFlowable()
         )
 
     }
 
+    override fun getPendingBalances(param: GetPendingBalancesUseCase.Param): Flowable<PendingBalances> {
+        return Flowable.mergeDelayError(
+            pendingBalancesDao.all,
+            limitOrderApi.getPendingBalances(param.wallet.address)
+                .map {
+                    orderMapper.transform(it)
+                }.doAfterSuccess {
+                    pendingBalancesDao.createNewPendingBalances(it)
+                }.toFlowable()
+                .repeatWhen {
+                    it.delay(5, TimeUnit.SECONDS)
+                }
+                .retryWhen { throwable ->
+                    throwable.compose(zipWithFlatMap())
+                }
+
+        )
+    }
+
     companion object {
         const val TOKEN_PAIR_SEPARATOR = "  ➞  "
         const val ADDRESS_SEPARATOR = "..."
+        private const val COUNTER_START = 1
+        private const val ATTEMPTS = 5
     }
 }

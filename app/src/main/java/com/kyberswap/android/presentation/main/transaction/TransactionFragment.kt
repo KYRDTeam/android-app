@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.kyberswap.android.AppExecutors
+import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentTransactionBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Wallet
@@ -101,11 +101,10 @@ class TransactionFragment : BaseFragment() {
                     }
 
                     is GetWalletState.ShowError -> {
-                        Toast.makeText(
-                            activity,
-                            state.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }

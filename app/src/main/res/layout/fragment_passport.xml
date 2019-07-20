@@ -153,7 +153,7 @@
                     android:textSize="14sp" />
 
                 <RadioGroup
-                    android:id="@+id/rgCurrencies"
+                    android:id="@+id/rgIdentity"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -193,6 +193,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="23dp"
+                    android:id="@+id/ilDocumentId"
                     android:layout_marginEnd="16dp"
                     android:backgroundTint="@color/edt_background_tint"
                     android:hint="@string/document_number"
@@ -230,6 +231,8 @@
                         android:backgroundTint="@color/edt_background_tint"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
+                        android:enabled="true"
+                        android:focusable="false"
                         android:singleLine="true"
                         android:text="@{info.documentIssueDate}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
@@ -266,6 +269,8 @@
                         android:backgroundTint="@color/edt_background_tint"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
+                        android:enabled="true"
+                        android:focusable="false"
                         android:singleLine="true"
                         android:text="@{info.documentExpiryDate}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"

@@ -29,7 +29,6 @@ class GetTokenWorker constructor(params: Int) : Job(
 
     override fun onAdded() {
 
-        Timber.e("onAdded")
 
     }
 
@@ -40,7 +39,6 @@ class GetTokenWorker constructor(params: Int) : Job(
 
     @Throws(Throwable::class)
     override fun onRun() {
-        Timber.e("onRun")
 
         tokenApi.getChange24h().toObservable()
             .repeatWhen {

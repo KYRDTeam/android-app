@@ -165,8 +165,8 @@ data class Transaction(
                     .append(" ")
                     .append(
                         value.toBigDecimalOrDefaultZero()
-                            .divide(
-                                10.toBigDecimal()
+                            .div(
+                                BigDecimal.TEN
                                     .pow(
                                         tokenDecimal
                                             .toBigDecimalOrDefaultZero().toInt()

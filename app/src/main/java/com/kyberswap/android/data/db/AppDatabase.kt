@@ -1,10 +1,13 @@
 package com.kyberswap.android.data.db
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.domain.model.Unit
 
@@ -24,9 +27,10 @@ import com.kyberswap.android.domain.model.Unit
         LocalLimitOrder::class,
         OrderFilter::class,
         Alert::class,
-        PassCode::class
+        PassCode::class,
+        PendingBalances::class
     ],
-    version = 48
+    version = 2
 )
 @TypeConverters(
     DataTypeConverter::class,
@@ -34,7 +38,8 @@ import com.kyberswap.android.domain.model.Unit
     TransactionTypeConverter::class,
     TokenPairTypeConverter::class,
     ListTypeConverter::class,
-    WalletBalanceTypeConverter::class
+    WalletBalanceTypeConverter::class,
+    PendingBalancesConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -53,6 +58,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun orderFilterDao(): OrderFilterDao
     abstract fun alertDao(): AlertDao
     abstract fun passCodeDao(): PassCodeDao
+    abstract fun pendingBalancesDao(): PendingBalancesDao
 
     companion object {
         @Volatile
@@ -65,11 +71,19 @@ abstract class AppDatabase : RoomDatabase() {
                         ?: buildDatabase(context).also { INSTANCE = it }
                 }
 
+        @VisibleForTesting
+        internal val MIGRATION_1_2: Migration = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE tokens " + " ADD COLUMN limitOrderBalance TEXT NOT NULL default '' ")
+            }
+        }
+
         private fun buildDatabase(context: Context) =
             Room.databaseBuilder(
                 context.applicationContext,
                 AppDatabase::class.java, "kyberswap.db"
             )
+                .addMigrations(MIGRATION_1_2)
                 .fallbackToDestructiveMigration()
                 .allowMainThreadQueries()
                 .build()

@@ -3,9 +3,12 @@ package com.kyberswap.android.presentation.main.balance.send
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.model.Send
 import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.usecase.contact.DeleteContactUseCase
 import com.kyberswap.android.domain.usecase.contact.GetContactUseCase
+import com.kyberswap.android.domain.usecase.contact.SaveContactUseCase
 import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
@@ -20,10 +23,12 @@ import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class SendViewModel @Inject constructor(
+    private val saveContactUseCase: SaveContactUseCase,
     private val getSendTokenUseCase: GetSendTokenUseCase,
     private val getGasPriceUseCase: GetGasPriceUseCase,
     private val saveSendUseCase: SaveSendUseCase,
     private val getContactUseCase: GetContactUseCase,
+    private val deleteContactUseCase: DeleteContactUseCase,
     private val estimateTransferGasUseCase: EstimateTransferGasUseCase
 ) : ViewModel() {
     val compositeDisposable = CompositeDisposable()
@@ -47,6 +52,24 @@ class SendViewModel @Inject constructor(
     val getGetGasLimitCallback: LiveData<Event<GetGasLimitState>>
         get() = _getGetGasLimitCallback
 
+    private val _saveContactCallback = MutableLiveData<Event<SaveContactState>>()
+    val saveContactCallback: LiveData<Event<SaveContactState>>
+        get() = _saveContactCallback
+
+    private val _deleteContactCallback = MutableLiveData<Event<DeleteContactState>>()
+    val deleteContactCallback: LiveData<Event<DeleteContactState>>
+        get() = _deleteContactCallback
+
+
+    val currentContactSelection: LiveData<Event<Contact>>
+        get() = _currentSelection
+
+    private val _currentSelection = MutableLiveData<Event<Contact>>()
+
+    fun updateCurrentContact(contact: Contact) {
+        _currentSelection.value = Event(contact)
+    }
+
     fun getSendInfo(address: String) {
         getSendTokenUseCase.execute(
             Consumer {
@@ -59,6 +82,35 @@ class SendViewModel @Inject constructor(
                 _getSendCallback.value = Event(GetSendState.ShowError(it.localizedMessage))
             },
             GetSendTokenUseCase.Param(address)
+        )
+    }
+
+    fun deleteContact(contact: Contact) {
+        deleteContactUseCase.execute(
+            Action {
+                _deleteContactCallback.value = Event(DeleteContactState.Success(""))
+            },
+            Consumer {
+                it.printStackTrace()
+                _deleteContactCallback.value =
+                    Event(DeleteContactState.ShowError(it.localizedMessage))
+            },
+            DeleteContactUseCase.Param(contact)
+        )
+    }
+
+
+    fun saveSendContact(walletAddress: String, contact: Contact) {
+        saveContactUseCase.execute(
+            Action {
+                _saveContactCallback.value = Event(SaveContactState.Success())
+            },
+            Consumer {
+                it.printStackTrace()
+                _saveContactCallback.value =
+                    Event(SaveContactState.ShowError(it.localizedMessage))
+            },
+            SaveContactUseCase.Param(walletAddress, contact.address, contact.name)
         )
     }
 

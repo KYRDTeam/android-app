@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.kyberswap.android.AppExecutors
@@ -104,12 +103,10 @@ class SignUpConfirmFragment : BaseFragment() {
                         }
                     }
                     is LoginState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
-                        Toast.makeText(
-                            activity,
-                            state.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }
@@ -123,7 +120,10 @@ class SignUpConfirmFragment : BaseFragment() {
                         showAlert(state.registerStatus.message)
                     }
                     is SignUpState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }

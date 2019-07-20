@@ -44,4 +44,6 @@ interface WalletRepository {
     fun exportMnemonic(param: ExportMnemonicWalletUseCase.Param): Single<String>
 
     fun deleteWallet(param: DeleteWalletUseCase.Param): Single<VerifyStatus>
+
+    fun saveWallet(param: SaveWalletUseCase.Param): Completable
 }

@@ -28,6 +28,7 @@ import java.io.File
 import java.security.SecureRandom
 import javax.inject.Inject
 
+
 class WalletDataRepository @Inject constructor(
     val context: Context,
     private val walletDao: WalletDao,
@@ -40,7 +41,7 @@ class WalletDataRepository @Inject constructor(
     override fun updatedSelectedWallet(param: UpdateSelectedWalletUseCase.Param): Single<Wallet> {
         return Single.fromCallable {
             updateSelectedWallet(param.wallet)
-            addWalletToMonitorBalance(param.wallet)
+            updateWalletToMonitorBalance(param.wallet.copy(isSelected = true))
             param.wallet
         }
     }
@@ -106,7 +107,7 @@ class WalletDataRepository @Inject constructor(
                 true
             )
             updateSelectedWallet(wallet)
-            addWalletToMonitorBalance(wallet)
+            updateWalletToMonitorBalance(wallet)
             wallet
         }
     }
@@ -132,7 +133,7 @@ class WalletDataRepository @Inject constructor(
                     metadata,
                     param.privateKey,
                     generatedPassword,
-                    false
+                    true
                 )
 
                 val wallet = Wallet(
@@ -145,14 +146,51 @@ class WalletDataRepository @Inject constructor(
                 )
 
                 updateSelectedWallet(wallet)
-                addWalletToMonitorBalance(wallet)
+                updateWalletToMonitorBalance(wallet)
                 wallet
             }
 
         }
     }
 
-    private fun addWalletToMonitorBalance(wallet: Wallet): List<Token> {
+    override fun importWallet(param: ImportWalletFromJsonUseCase.Param): Single<Wallet> {
+        return Single.fromCallable {
+            val openInputStream = context.contentResolver?.openInputStream(param.uri)
+            val keystoreContent = openInputStream?.bufferedReader().use { it?.readText() }
+            val metadata =
+                Metadata(
+                    ChainType.ETHEREUM,
+                    Network.MAINNET,
+                    param.walletName,
+                    null
+                )
+
+            metadata.source = Metadata.FROM_KEYSTORE
+
+            createIdentity(param.walletName, param.password)
+            val importWalletFromKeystore = WalletManager.importWalletFromKeystore(
+                metadata,
+                keystoreContent,
+                param.password,
+                true
+            )
+
+
+            val wallet = Wallet(
+                importWalletFromKeystore.address.toWalletAddress(),
+                importWalletFromKeystore.id,
+                param.walletName,
+                cipher(param.password),
+                true
+            )
+
+            updateSelectedWallet(wallet)
+            updateWalletToMonitorBalance(wallet)
+            wallet
+        }
+    }
+
+    private fun updateWalletToMonitorBalance(wallet: Wallet): List<Token> {
         val tokens = tokenDao.allTokens.map {
             it.updateSelectedWallet(wallet)
         }
@@ -177,44 +215,9 @@ class WalletDataRepository @Inject constructor(
         return wallets
     }
 
-    override fun importWallet(param: ImportWalletFromJsonUseCase.Param): Single<Wallet> {
-        return Single.fromCallable {
-            val openInputStream = context.contentResolver?.openInputStream(param.uri)
-            val keystoreContent = openInputStream?.bufferedReader().use { it?.readText() }
-            val metadata =
-                Metadata(
-                    ChainType.ETHEREUM,
-                    Network.MAINNET,
-                    param.walletName,
-                    null
-                )
-
-            createIdentity(param.walletName, param.password)
-            val importWalletFromKeystore = WalletManager.importWalletFromKeystore(
-                metadata,
-                keystoreContent,
-                param.password,
-                false
-            )
-
-            val cipher = cipher(param.password)
-            val wallet = Wallet(
-                importWalletFromKeystore.address.toWalletAddress(),
-                importWalletFromKeystore.id,
-                param.walletName,
-                cipher,
-                true
-            )
-
-            updateSelectedWallet(wallet)
-            addWalletToMonitorBalance(wallet)
-            wallet
-        }
-    }
-
     override fun addWalletToBalanceMonitor(param: AddWalletToBalanceMonitorUseCase.Param): Completable {
         return Completable.fromCallable {
-            addWalletToMonitorBalance(param.wallet)
+            updateWalletToMonitorBalance(param.wallet)
         }
     }
 
@@ -266,6 +269,7 @@ class WalletDataRepository @Inject constructor(
 
         return Single.fromCallable {
             val generatedPassword = generatePassword()
+
             val identity =
                 Identity.createIdentity(
                     param.walletName,
@@ -274,6 +278,7 @@ class WalletDataRepository @Inject constructor(
                     Network.MAINNET,
                     Metadata.P2WPKH
                 )
+
             val ethereumWallet = identity.wallets[0]
             val wallet = Wallet(
                 ethereumWallet.address.toWalletAddress(),
@@ -284,7 +289,7 @@ class WalletDataRepository @Inject constructor(
             )
 
             updateSelectedWallet(wallet)
-            addWalletToMonitorBalance(wallet)
+            updateWalletToMonitorBalance(wallet)
 
             val words = mutableListOf<Word>()
             WalletManager.exportMnemonic(
@@ -332,7 +337,10 @@ class WalletDataRepository @Inject constructor(
                 )
             }
 
-            WalletManager.exportKeystore(param.wallet.walletId, password)
+            WalletManager.changePassword(param.wallet.walletId, password, param.password)
+            val json = WalletManager.exportKeystore(param.wallet.walletId, param.password)
+            WalletManager.changePassword(param.wallet.walletId, param.password, password)
+            json
         }
     }
 
@@ -386,6 +394,14 @@ class WalletDataRepository @Inject constructor(
             } else {
                 VerifyStatus(false)
             }
+        }
+    }
+
+    override fun saveWallet(param: SaveWalletUseCase.Param): Completable {
+        return Completable.fromCallable {
+
+            val currentWallet = walletDao.findWalletByAddress(param.wallet.address)
+            walletDao.updateWallet(currentWallet.copy(name = param.wallet.name))
         }
     }
 }

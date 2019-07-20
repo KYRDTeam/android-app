@@ -12,7 +12,8 @@ import kotlinx.android.parcel.Parcelize
 data class Contact(
     val walletAddress: String = "",
     val address: String = "",
-    val name: String = ""
+    val name: String = "",
+    val updatedAt: Long = 0
 ) : Parcelable {
     fun areContentsTheSame(other: Contact): Boolean {
         return this.address == other.address &&
@@ -32,4 +33,6 @@ data class Contact(
             ).toString()
 
 
+    val nameAddressDisplay: String
+        get() = "$name - $address"
 }

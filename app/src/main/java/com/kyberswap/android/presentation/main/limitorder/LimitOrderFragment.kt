@@ -17,10 +17,7 @@ import com.kyberswap.android.BR
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentLimitOrderBinding
 import com.kyberswap.android.domain.SchedulerProvider
-import com.kyberswap.android.domain.model.LocalLimitOrder
-import com.kyberswap.android.domain.model.NotificationLimitOrder
-import com.kyberswap.android.domain.model.UserInfo
-import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -62,6 +59,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    private var pendingBalances: PendingBalances? = null
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(LimitOrderViewModel::class.java)
@@ -105,10 +104,11 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
+                        binding.walletName = state.wallet.name
                         if (state.wallet.address != wallet?.address) {
                             this.wallet = state.wallet
-                            binding.walletName = state.wallet.name
                             viewModel.getLimitOrders(wallet)
+                            viewModel.getPendingBalances(state.wallet)
                         }
                     }
                     is GetWalletState.ShowError -> {
@@ -123,11 +123,11 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetLocalLimitOrderState.Success -> {
+                        updateAvailableAmount(pendingBalances)
                         if (binding.order != state.order) {
                             if (state.order.tokenSource.tokenSymbol == state.order.tokenDest.tokenSymbol) {
                                 showAlert(getString(R.string.same_token_alert))
                             }
-
 
                             edtSource.setAmount(state.order.srcAmount)
                             getRate(state.order)
@@ -252,19 +252,12 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                     is GetRelatedOrdersState.Success -> {
                         orderAdapter.submitList(listOf())
                         orderAdapter.submitList(state.orders)
-
-                        val calAvailableAmount = viewModel.calAvailableAmount(
-                            binding.order,
-                            state.orders
-                        )
-                        if (binding.availableAmount != calAvailableAmount
-                        ) {
-                            binding.availableAmount =
-                                calAvailableAmount
-                        }
                     }
                     is GetRelatedOrdersState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }
@@ -286,7 +279,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
 
                     }
                     is GetNonceState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }
@@ -322,16 +318,18 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                                 binding.order?.tokenSource?.tokenSymbol,
                                 order?.getExpectedDestAmount(BigDecimal.ONE)?.toDisplayNumber() + binding.order?.tokenDest?.tokenSymbol
                             )
-
-                            if (!hasUserFocus) {
-                                binding.edtRate.setAmount(order?.combineRate)
-                            }
                             binding.order = order
                             binding.executePendingBindings()
+                            if (!hasUserFocus) {
+                                binding.edtRate.setAmount(order?.displayMarketRate)
+                            }
                         }
                     }
                     is GetMarketRateState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }
@@ -381,7 +379,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                         }
                     }
                     is GetExpectedRateState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }
@@ -401,7 +402,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                         }
                     }
                     is GetGasLimitState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }
@@ -537,7 +541,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                         }
                     }
                     is GetFeeState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }
@@ -552,10 +559,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                 binding.edtSource.text.isNullOrEmpty() -> {
                     showAlert(getString(R.string.specify_amount))
                 }
-                edtSource.text.toString().toBigDecimalOrDefaultZero() >
+                binding.edtSource.toBigDecimalOrDefaultZero() >
                     viewModel.calAvailableAmount(
-                        binding.order,
-                        orderAdapter.getData()
+                        binding.order?.tokenSource,
+                        pendingBalances
                     ).toBigDecimalOrDefaultZero() -> {
                     showAlert(getString(R.string.exceed_balance))
                 }
@@ -590,18 +597,24 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is SaveLimitOrderState.Success -> {
-                        if (viewModel.needConvertWETH(binding.order)) {
-                            navigator.navigateToConvertFragment(
-                                currentFragment, wallet, binding.order
+                        when {
+                            viewModel.needConvertWETH(
+                                binding.order,
+                                pendingBalances
+                            ) -> navigator.navigateToConvertFragment(
+                                currentFragment,
+                                wallet,
+                                binding.order
                             )
-                        } else {
-                            if (viewModel.validate(binding.order, orderAdapter.getData())) {
-                                navigator.navigateToOrderConfirmScreen(
+                            else -> when {
+                                viewModel.validate(
+                                    binding.order,
+                                    orderAdapter.getData()
+                                ) -> navigator.navigateToOrderConfirmScreen(
                                     currentFragment,
                                     wallet
                                 )
-                            } else {
-                                navigator.navigateToLimitOrderSuggestionScreen(
+                                else -> navigator.navigateToLimitOrderSuggestionScreen(
                                     currentFragment,
                                     wallet
                                 )
@@ -609,7 +622,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                         }
                     }
                     is SaveLimitOrderState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
 
                 }
@@ -621,10 +637,14 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                 showProgress(state == CancelOrdersState.Loading)
                 when (state) {
                     is CancelOrdersState.Success -> {
+                        viewModel.getPendingBalances(wallet)
 
                     }
                     is CancelOrdersState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }
@@ -637,12 +657,45 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                         userInfo = state.userInfo
                     }
                     is UserInfoState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }
         })
 
+        viewModel.getPendingBalancesCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetPendingBalancesState.Success -> {
+                        this.pendingBalances = state.pendingBalances
+                        updateAvailableAmount(state.pendingBalances)
+                    }
+                    is GetPendingBalancesState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+                    }
+                }
+            }
+        })
+
+    }
+
+    private fun updateAvailableAmount(pendingBalances: PendingBalances?) {
+        val calAvailableAmount = binding.order?.let { order ->
+            viewModel.calAvailableAmount(
+                order.tokenSource,
+                pendingBalances
+            )
+        }
+        if (binding.availableAmount != calAvailableAmount) {
+            binding.availableAmount = calAvailableAmount
+            binding.executePendingBindings()
+        }
     }
 
     private fun moveToSwapTab() {
@@ -673,9 +726,9 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
 
 
     override fun onDestroyView() {
-        super.onDestroyView()
         handler.removeCallbacksAndMessages(null)
-        viewModel.compositeDisposable.dispose()
+        viewModel.compositeDisposable.clear()
+        super.onDestroyView()
     }
 
     private fun getRate(order: LocalLimitOrder) {

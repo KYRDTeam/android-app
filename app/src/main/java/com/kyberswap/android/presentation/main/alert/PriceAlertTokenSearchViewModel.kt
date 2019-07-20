@@ -57,6 +57,7 @@ class PriceAlertTokenSearchViewModel @Inject constructor(
 
     override fun onCleared() {
         getTokenListUseCase.dispose()
+        compositeDisposable.dispose()
         super.onCleared()
     }
 

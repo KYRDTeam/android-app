@@ -19,6 +19,15 @@ interface LimitOrderDao {
     @Update
     fun updateOrder(order: Order)
 
+    @Transaction
+    fun updateOrders(orders: List<Order>) {
+        deleteAllOrders()
+        insertOrders(orders)
+    }
+
+    @Delete
+    fun deleteOrder(orders: List<Order>)
+
     @Query("SELECT * from orders where userAddr = :address")
     fun findOrderByAddressFlowable(address: String): Flowable<Order>
 

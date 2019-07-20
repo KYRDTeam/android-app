@@ -4,12 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Wallet
-import com.kyberswap.android.domain.usecase.wallet.DeleteWalletUseCase
-import com.kyberswap.android.domain.usecase.wallet.ExportKeystoreWalletUseCase
-import com.kyberswap.android.domain.usecase.wallet.ExportMnemonicWalletUseCase
-import com.kyberswap.android.domain.usecase.wallet.ExportPrivateKeyWalletUseCase
+import com.kyberswap.android.domain.usecase.wallet.*
 import com.kyberswap.android.presentation.common.Event
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
@@ -17,7 +15,8 @@ class EditWalletViewModel @Inject constructor(
     private val deleteWalletUseCase: DeleteWalletUseCase,
     private val exportKeystoreWalletUseCase: ExportKeystoreWalletUseCase,
     private val exportPrivateKeyWalletUseCase: ExportPrivateKeyWalletUseCase,
-    private val exportMnemonicWalletUseCase: ExportMnemonicWalletUseCase
+    private val exportMnemonicWalletUseCase: ExportMnemonicWalletUseCase,
+    private val saveWalletUseCase: SaveWalletUseCase
 ) : ViewModel() {
     private val _deleteWalletCallback = MutableLiveData<Event<DeleteWalletState>>()
     val deleteWalletCallback: LiveData<Event<DeleteWalletState>>
@@ -35,6 +34,10 @@ class EditWalletViewModel @Inject constructor(
     private val _exportMnemonicCallback = MutableLiveData<Event<ExportWalletState>>()
     val exportMnemonicCallback: LiveData<Event<ExportWalletState>>
         get() = _exportMnemonicCallback
+
+    private val _saveWalletCallback = MutableLiveData<Event<SaveWalletState>>()
+    val saveWalletCallback: LiveData<Event<SaveWalletState>>
+        get() = _saveWalletCallback
 
 
     val compositeDisposable = CompositeDisposable()
@@ -70,10 +73,6 @@ class EditWalletViewModel @Inject constructor(
         )
     }
 
-    override fun onCleared() {
-        compositeDisposable.dispose()
-        super.onCleared()
-    }
 
     fun backupPrivateKey(wallet: Wallet) {
         _exportPrivateKeyWalletCallback.postValue(Event(ExportWalletState.Loading))
@@ -105,7 +104,23 @@ class EditWalletViewModel @Inject constructor(
             },
             ExportMnemonicWalletUseCase.Param(wallet)
         )
+    }
 
+    fun save(wallet: Wallet) {
+        saveWalletUseCase.execute(
+            Action {
+                _saveWalletCallback.value = Event(SaveWalletState.Success(""))
+            },
+            Consumer {
+                it.printStackTrace()
+                _saveWalletCallback.value = Event(SaveWalletState.ShowError(it.localizedMessage))
+            },
+            SaveWalletUseCase.Param(wallet)
+        )
+    }
 
+    override fun onCleared() {
+        compositeDisposable.dispose()
+        super.onCleared()
     }
 }

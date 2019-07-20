@@ -10,6 +10,7 @@ import com.kyberswap.android.data.api.token.TokenEntity
 import com.kyberswap.android.data.db.DataTypeConverter
 import com.kyberswap.android.data.db.WalletBalanceTypeConverter
 import com.kyberswap.android.util.ext.toDisplayNumber
+import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -40,12 +41,20 @@ data class Token(
     val priority: Boolean = false,
     val spLimitOrder: Boolean = false,
     @TypeConverters(WalletBalanceTypeConverter::class)
-    val wallets: List<WalletBalance> = listOf()
+    val wallets: List<WalletBalance> = listOf(),
+    val fav: Boolean = false,
+    val isOther: Boolean = false,
+    val limitOrderBalance: BigDecimal = BigDecimal.ZERO
 ) : Parcelable {
 
+    @IgnoredOnParcel
+    var isHide: Boolean = false
+
     val currentBalance: BigDecimal
-        get() = wallets.find { it.isSelected }?.currentBalance
-            ?: wallets.firstOrNull()?.currentBalance ?: BigDecimal.ZERO
+        get() = wallets.find {
+            it.isSelected
+        }?.currentBalance
+            ?: BigDecimal.ZERO
 
     constructor(entity: TokenEntity) : this(
         entity.timestamp,
@@ -73,31 +82,36 @@ data class Token(
 
     )
 
+    val symbol: String
+        get() = if (tokenSymbol == ETH_SYMBOL_STAR) WETH_SYMBOL else tokenSymbol
+
     val currentWalletBalance: WalletBalance?
         get() = wallets.find { it.isSelected }
+
+    val selectedWalletAddress: String
+        get() = currentWalletBalance?.walletAddress ?: ""
+
+    val isListed: Boolean
+        get() = System.currentTimeMillis() - listingTime >= 0
+
+    val shouldShowAsNew: Boolean
+        get() = 7.0 * 24.0 * 60.0 * 60.0 >= System.currentTimeMillis() / 1000 - listingTime && System.currentTimeMillis() / 1000 - listingTime >= 0
 
     val submitOrderTokenSymbol: String
         get() = if (isETHWETH) WETH_SYMBOL else tokenSymbol
 
     fun with(entity: TokenCurrencyEntity): Token {
-        return Token(
-            this.timestamp,
-            entity.symbol,
-            entity.name,
-            entity.address,
-            entity.decimals,
-            this.rateEthNow,
-            this.changeEth24h,
-            this.rateUsdNow,
-            this.changeUsd24h,
-//            this.currentBalance,
-            entity.cgId,
-            entity.gasApprove,
-            entity.gasLimit,
-            entity.listingTime,
-            entity.priority,
-            entity.spLimitOrder ?: false,
-            this.wallets
+        return this.copy(
+            tokenSymbol = entity.symbol,
+            tokenName = entity.name,
+            tokenAddress = entity.address,
+            tokenDecimal = entity.decimals,
+            cgId = entity.cgId,
+            gasApprove = entity.gasApprove,
+            gasLimit = entity.gasLimit,
+            listingTime = entity.listingTime,
+            priority = entity.priority,
+            spLimitOrder = entity.spLimitOrder ?: false
         )
     }
 
@@ -112,13 +126,13 @@ data class Token(
                 WalletBalance(
                     wallet.address,
                     BigDecimal.ZERO,
-                    wallet.isSelected
+                    true
                 )
             )
         } else {
             val idx = walletBalances.indexOf(walletBalance)
             if (idx >= 0) {
-                walletBalances[idx] = walletBalance.copy(isSelected = wallet.isSelected)
+                walletBalances[idx] = walletBalance.copy(isSelected = true)
             }
         }
 
@@ -163,7 +177,10 @@ data class Token(
         get() = changeUsd24h.toDisplayNumber()
 
     val displayCurrentBalance: String
-        get() = currentBalance.toDisplayNumber()
+        get() = if (isHide) "******" else currentBalance.toDisplayNumber()
+
+    val displayLimitOrderBalance: String
+        get() = limitOrderBalance.toDisplayNumber()
 
     val displayCurrentBalanceInEth: String
         get() = StringBuilder()
@@ -214,11 +231,16 @@ data class Token(
             this.rateEthNow == other.rateEthNow &&
             this.rateUsdNow == other.rateUsdNow &&
             this.changeUsd24h == other.changeUsd24h &&
-            this.changeEth24h == other.changeEth24h
+            this.changeEth24h == other.changeEth24h &&
+            this.fav == other.fav
     }
 
     fun change24hStatus(isEth: Boolean): Int {
         return getChange24hStatus(if (isEth) changeEth24h else changeUsd24h)
+    }
+
+    fun change24hValue(isEth: Boolean): BigDecimal {
+        return if (isEth) changeEth24h else changeUsd24h
     }
 
     private fun getChange24hStatus(value: BigDecimal): Int {
@@ -230,7 +252,7 @@ data class Token(
     }
 
     fun updatePrecision(value: BigInteger): BigInteger {
-        return value.divide(BigInteger.TEN.pow(tokenDecimal))
+        return value.div(BigInteger.TEN.pow(tokenDecimal))
     }
 
     fun withTokenDecimal(amount: BigDecimal): BigInteger {

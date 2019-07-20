@@ -77,7 +77,10 @@ class ManageAlertFragment : BaseFragment() {
                         }
                     }
                     is UserInfoState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }
@@ -132,7 +135,10 @@ class ManageAlertFragment : BaseFragment() {
                         showAlert(getString(R.string.delete_alert_success))
                     }
                     is DeleteAlertsState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }
@@ -152,7 +158,10 @@ class ManageAlertFragment : BaseFragment() {
                         })
                     }
                     is GetAlertsState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }

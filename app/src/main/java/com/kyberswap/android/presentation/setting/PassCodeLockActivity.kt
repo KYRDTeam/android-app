@@ -17,7 +17,6 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -78,7 +77,6 @@ class PassCodeLockActivity : BaseActivity() {
         binding.pinLockView.setPinLockListener(object : PinLockListener {
             override fun onComplete(pin: String) {
                 if (binding.title == repeatTitle || binding.title == verifyAccess) {
-                    Timber.e(remainNum.toString())
                     viewModel.verifyPin(pin, remainNum, System.currentTimeMillis())
                 } else {
                     viewModel.save(pin)
@@ -107,7 +105,10 @@ class PassCodeLockActivity : BaseActivity() {
                         binding.content = repeatContent
                     }
                     is SavePinState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }
@@ -146,7 +147,10 @@ class PassCodeLockActivity : BaseActivity() {
                         }
                     }
                     is VerifyPinState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                         binding.title = newPinTitle
                         binding.content = newPinContent
                     }

@@ -89,7 +89,10 @@ class AlertMethodFragment : BaseFragment() {
                         }
                     }
                     is UserInfoState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }
@@ -108,7 +111,10 @@ class AlertMethodFragment : BaseFragment() {
                         }
                     }
                     is GetAlertMethodsState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }
@@ -163,7 +169,10 @@ class AlertMethodFragment : BaseFragment() {
                         )
                     }
                     is UpdateAlertMethodsState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
                     }
                 }
             }

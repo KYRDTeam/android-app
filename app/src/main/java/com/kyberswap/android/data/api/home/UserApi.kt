@@ -103,7 +103,8 @@ interface UserApi {
         @Field("kyc_profile[industry_code]") industryCode: String?,
         @Field("kyc_profile[tax_residency_country]") taxResidencyCountry: String?,
         @Field("kyc_profile[have_tax_indentification]") haveTaxIdentification: Int?,
-        @Field("kyc_profile[tax_indentification_number]") taxIdentificationNumber: String?
+        @Field("kyc_profile[tax_indentification_number]") taxIdentificationNumber: String?,
+        @Field("kyc_profile[source_fund]") sourceFund: String
 
     ): Single<KycResponseStatusEntity>
 
