@@ -57,7 +57,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_weight="1"
-                    android:text="@{isActive ? String.format(@string/alert_leader_board_name, alert.userName) : alert.userEmail}"
+                    android:text="@{isActive ? String.format(@string/alert_leader_board_name, alert.userName) : alert.displayUserInfo}"
                     android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="@color/email_text_view_color"
                     android:textSize="12sp"

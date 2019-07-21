@@ -34,6 +34,7 @@ const val PATTERN_REGEX_PASSWORD =
     "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#\$%^&+=])(?=\\S+\$).{8,}\$"
 
 fun String.toLongSafe(): Long {
+    if (isNullOrEmpty()) return 0
     return try {
         toLong()
     } catch (ex: NumberFormatException) {

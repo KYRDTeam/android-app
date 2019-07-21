@@ -99,33 +99,41 @@ class BalanceDataRepository @Inject constructor(
 
 
     private fun updateBalance(tokens: List<Token>, allTokens: List<Token>): List<Token> {
-        val listWithBalance = tokens.map { token ->
+        val listedTokens = tokens.map { token ->
             val currentToken = allTokens.find {
                 it.tokenAddress == token.tokenAddress
     
 
-            val updatedWithBalance = currentToken?.copy(
+            val tokenWithRate = currentToken?.copy(
                 rateUsdNow = token.rateUsdNow,
                 rateEthNow = token.rateEthNow,
                 changeEth24h = token.changeEth24h,
-                changeUsd24h = token.changeUsd24h
+                changeUsd24h = token.changeUsd24h,
+                isOther = false
             ) ?: token
-            tokenClient.updateBalance(updatedWithBalance)
+            tokenClient.updateBalance(tokenWithRate)
 
-        tokenDao.updateTokens(listWithBalance)
-        return listWithBalance
+
+        val listTokenSymbols = listedTokens.map { it.tokenSymbol }
+
+        val otherTokens = allTokens.filterNot { listTokenSymbols.contains(it.tokenSymbol) }.map {
+            tokenClient.updateBalance(it)
+
+        tokenDao.updateTokens(listedTokens)
+        tokenDao.updateTokens(otherTokens)
+        return listedTokens
     }
 
     override fun getChange24hPolling(owner: String): Flowable<List<Token>> {
         return fetchChange24h()
             .map { tokens ->
-                val allTokens = tokenDao.allTokens
+                val allTokens = tokenDao.allTokens.map {
+                    it.copy(isOther = true)
+        
 //                val startList = tokens.subList(0, tokens.size / 2)
 //                val endList = tokens.subList(tokens.size / 2, tokens.size)
 //                val startWithBalance = updateBalance(startList, allTokens)
 //                val endWithBalance = updateBalance(endList, allTokens)
-
-
 //                startWithBalance.union(endWithBalance).toList()
 
                 updateBalance(tokens, allTokens)

@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.kyberswap.android.data.db.ListTypeConverter
+import com.kyberswap.android.data.db.ListStringConverter
 import com.kyberswap.android.data.db.TokenPairTypeConverter
 import kotlinx.android.parcel.Parcelize
 
@@ -17,9 +17,9 @@ data class OrderFilter(
     var oldest: Boolean = false,
     @TypeConverters(TokenPairTypeConverter::class)
     var pairs: List<Pair<String, String>> = listOf(),
-    @TypeConverters(ListTypeConverter::class)
+    @TypeConverters(ListStringConverter::class)
     var addresses: List<String> = listOf(),
-    @TypeConverters(ListTypeConverter::class)
+    @TypeConverters(ListStringConverter::class)
     var status: List<String> = listOf(),
     @Ignore
     var listOrders: List<FilterItem> = listOf(),

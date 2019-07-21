@@ -151,7 +151,14 @@ data class Transaction(
     )
 
     enum class TransactionType {
-        SEND, RECEIVED, SWAP
+        SEND, RECEIVED, SWAP;
+
+        val value: String
+            get() = when (this) {
+                SWAP -> "SWAP"
+                SEND -> "SEND"
+                RECEIVED -> "RECEIVED"
+    
     }
 
     val isTransactionFail: Boolean
@@ -195,13 +202,10 @@ data class Transaction(
         const val PENDING = 0
         const val MINED = 1
         const val PENDING_TRANSACTION_STATUS = "pending"
-        const val SWAP_TRANSACTION = "SWAP"
-        const val SEND_TRANSACTION = "SEND"
-        const val RECEIVE_TRANSACTION = "RECEIVE"
         val formatterShort = SimpleDateFormat("dd MMM yyyy", Locale.US)
-        val formatterFull = SimpleDateFormat("EEEE, dd MMM yyyy'T'HH:mm:ssZZZZZ", Locale.ENGLISH)
-
+        val formatterFull = SimpleDateFormat("EEEE, dd MMM yyyy'T'HH:mm:ssZZZZZ", Locale.US)
     }
+
 
     val isPendingTransaction: Boolean
         get() = transactionStatus == PENDING_TRANSACTION_STATUS
@@ -213,9 +217,7 @@ data class Transaction(
         get() = if (timeStamp.isNotEmpty()) formatterFull.format(Date(timeStamp.toLong() * 1000L)) else "0"
 
     val displayTransactionType: String
-        get() = if (isTransfer)
-            if (type == TransactionType.SEND) SEND_TRANSACTION else RECEIVE_TRANSACTION
-        else SWAP_TRANSACTION
+        get() = type.value
 
 
     private val isTransfer: Boolean

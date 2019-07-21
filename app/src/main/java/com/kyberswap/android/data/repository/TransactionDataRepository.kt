@@ -5,13 +5,17 @@ import com.kyberswap.android.data.db.*
 import com.kyberswap.android.data.mapper.TransactionMapper
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Transaction
+import com.kyberswap.android.domain.model.TransactionFilter
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.TransactionRepository
+import com.kyberswap.android.domain.usecase.transaction.GetTransactionFilterUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
 import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
+import com.kyberswap.android.domain.usecase.transaction.SaveTransactionFilterUseCase
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.FlowableTransformer
 import io.reactivex.Single
@@ -32,8 +36,10 @@ class TransactionDataRepository @Inject constructor(
     private val tokenDao: TokenDao,
     private val swapDao: SwapDao,
     private val sendDao: SendDao,
-    private val limitOrderDao: LocalLimitOrderDao
+    private val limitOrderDao: LocalLimitOrderDao,
+    private val transactionFilterDao: TransactionFilterDao
 ) : TransactionRepository {
+
     override fun monitorPendingTransactionsPolling(param: MonitorPendingTransactionUseCase.Param): Flowable<List<Transaction>> {
         return Flowable.fromCallable {
             val pendingTransactions = tokenClient.monitorPendingTransactions(param.transactions)
@@ -120,19 +126,29 @@ class TransactionDataRepository @Inject constructor(
         return transactionDao.getTransactionByStatus(Transaction.PENDING_TRANSACTION_STATUS)
     }
 
-    override fun fetchERC20TokenTransactions(address: String): Single<List<Transaction>> {
+    override fun fetchERC20TokenTransactions(wallet: Wallet): Single<List<Transaction>> {
         return transactionApi.getTransaction(
             DEFAULT_MODULE,
             TOKEN_TRANSACTION,
-            address,
+            wallet.address,
             DEFAULT_SORT,
             API_KEY
         )
             .map {
-                it.result
-    
-            .map {
-                transactionMapper.transform(it, address, TOKEN_TRANSACTION)
+                transactionMapper.transform(it.result, wallet.address, TOKEN_TRANSACTION)
+    .doAfterSuccess {
+                val tokensSymbols = tokenDao.allTokens.filter {
+                    !it.isOther
+        .map {
+                    it.tokenSymbol
+        
+                val otherTokenList = it.filterNot { tx ->
+                    tokensSymbols.contains(tx.tokenSymbol)
+        .map { tx ->
+                    Token(tx).copy(isOther = true).updateSelectedWallet(wallet)
+        
+
+                tokenDao.insertTokens(otherTokenList)
     
     }
 
@@ -188,20 +204,20 @@ class TransactionDataRepository @Inject constructor(
 
     override fun fetchAllTransactions(param: GetTransactionsUseCase.Param): Flowable<List<Transaction>> {
         if (param.transactionType == Transaction.PENDING) {
-            return fetchPendingTransaction(param.walletAddress)
+            return fetchPendingTransaction(param.wallet.address)
 
-        return getTransactions(param.walletAddress)
+        return getTransactions(param.wallet)
 
     }
 
-    private fun getTransactions(address: String): Flowable<List<Transaction>> {
-        val sendTransaction = fetchNormalTransaction(address)
+    private fun getTransactions(wallet: Wallet): Flowable<List<Transaction>> {
+        val sendTransaction = fetchNormalTransaction(wallet.address)
             .toFlowable().flatMapIterable { transactions ->
                 transactions
     
             .filter {
                 it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO &&
-                    it.from == address || it.isTransactionFail
+                    it.from == wallet.address || it.isTransactionFail
     .map {
                 it.copy(
                     tokenSymbol = Token.ETH,
@@ -210,7 +226,7 @@ class TransactionDataRepository @Inject constructor(
                 )
     
             .toList()
-        val receivedTransaction = fetchInternalTransactions(address)
+        val receivedTransaction = fetchInternalTransactions(wallet.address)
             .toFlowable().flatMapIterable { transactions ->
                 transactions
     
@@ -222,7 +238,7 @@ class TransactionDataRepository @Inject constructor(
                 )
     .toList()
 
-        val erc20Transaction = fetchERC20TokenTransactions(address)
+        val erc20Transaction = fetchERC20TokenTransactions(wallet)
 
         return Flowable.mergeDelayError(
             transactionDao.getCompletedTransactions(),
@@ -292,6 +308,43 @@ class TransactionDataRepository @Inject constructor(
         
                 .toFlowable()
         )
+    }
+
+    override fun saveTransactionFilter(param: SaveTransactionFilterUseCase.Param): Completable {
+        return Completable.fromCallable {
+            transactionFilterDao.updateTrasactionFilter(param.transactionFilter)
+
+    }
+
+    override fun getTransactionFilter(param: GetTransactionFilterUseCase.Param): Flowable<TransactionFilter> {
+        return Flowable.fromCallable {
+            when (val filter =
+                transactionFilterDao.findTransactionFilterByAddress(param.walletAddress)) {
+                null -> {
+                    tokenDao.allTokens.map {
+                        it.tokenSymbol
+            
+                    val newFilter = TransactionFilter(
+                        walletAddress = param.walletAddress,
+                        types = listOf(
+                            Transaction.TransactionType.SWAP,
+                            Transaction.TransactionType.SEND,
+                            Transaction.TransactionType.RECEIVED
+                        ),
+                        tokens = tokenDao.allTokens.map {
+                            it.tokenSymbol
+                
+                    )
+                    transactionFilterDao.insertTransactionFilter(newFilter)
+                    newFilter
+        
+                else -> filter
+    
+
+.flatMap {
+            transactionFilterDao.findTransactionFilterByAddressFlowable(param.walletAddress)
+                .defaultIfEmpty(it)
+
 
     }
 

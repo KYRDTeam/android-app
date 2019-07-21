@@ -199,8 +199,7 @@ class WalletDataRepository @Inject constructor(
     }
 
     private fun updateSelectedWallet(wallet: Wallet): List<Wallet> {
-        val wallets = mutableListOf<Wallet>()
-        wallets.addAll(walletDao.all)
+        val wallets = walletDao.all.toMutableList()
         if (wallets.find { it.address == wallet.address } == null) {
             wallets.add(wallet)
 

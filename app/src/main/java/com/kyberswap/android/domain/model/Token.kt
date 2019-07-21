@@ -9,6 +9,7 @@ import com.kyberswap.android.data.api.currencies.TokenCurrencyEntity
 import com.kyberswap.android.data.api.token.TokenEntity
 import com.kyberswap.android.data.db.DataTypeConverter
 import com.kyberswap.android.data.db.WalletBalanceTypeConverter
+import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
@@ -66,6 +67,13 @@ data class Token(
         entity.changeEth24h,
         entity.rateUsdNow,
         entity.changeUsd24h
+    )
+
+    constructor(tx: Transaction) : this(
+        tokenName = tx.tokenName,
+        tokenAddress = tx.contractAddress,
+        tokenSymbol = tx.tokenSymbol,
+        tokenDecimal = tx.tokenDecimal.toBigIntegerOrDefaultZero().toInt()
     )
 
     constructor(entity: TokenCurrencyEntity) : this(

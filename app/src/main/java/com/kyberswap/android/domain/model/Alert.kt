@@ -63,6 +63,9 @@ data class Alert(
         entity.message ?: ""
     )
 
+    val displayUserInfo: String
+        get() = if (telegramAccount.isNotBlank()) telegramAccount else userEmail
+
     val displayRank: String
         get() = rank.toString()
 

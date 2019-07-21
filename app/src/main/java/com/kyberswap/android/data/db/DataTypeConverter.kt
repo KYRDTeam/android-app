@@ -77,7 +77,7 @@ class PendingBalancesConverter {
     }
 }
 
-class ListTypeConverter {
+class ListStringConverter {
     @TypeConverter
     fun stringToTokenPairType(value: String): List<String> {
         val listType = object : TypeToken<List<String>>() {
@@ -88,6 +88,22 @@ class ListTypeConverter {
 
     @TypeConverter
     fun tokenPairTypeToString(list: List<String>): String {
+        return Gson().toJson(list)
+    }
+}
+
+
+class TransactionTypesConverter {
+    @TypeConverter
+    fun stringToTransactionTypes(value: String): List<Transaction.TransactionType> {
+        val listType = object : TypeToken<List<Transaction.TransactionType>>() {
+.type
+        return Gson().fromJson(value, listType)
+    }
+
+
+    @TypeConverter
+    fun transactionsTypeToString(list: List<Transaction.TransactionType>): String {
         return Gson().toJson(list)
     }
 }

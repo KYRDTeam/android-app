@@ -7,8 +7,10 @@
     <data>
 
         <variable
-            name="transaction"
-            type="com.kyberswap.android.domain.model.Transaction" />
+            name="filter"
+            type="com.kyberswap.android.domain.model.TransactionFilter" />
+
+        <import type="java.util.List" />
     </data>
 
     <FrameLayout
@@ -78,6 +80,7 @@
                         android:hint="@string/filter_from"
                         android:inputType="none"
                         android:paddingBottom="16dp"
+                        android:text="@{filter.from}"
                         android:textColor="#9ea1aa"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -105,6 +108,7 @@
                         android:hint="@string/filter_to"
                         android:inputType="none"
                         android:paddingBottom="16dp"
+                        android:text="@{filter.to}"
                         android:textColor="#9ea1aa"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -176,7 +180,6 @@
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="24dp"
                     android:background="@drawable/text_background_toggle_drawable"
-                    android:checked="true"
                     android:clickable="true"
                     android:drawableStart="@drawable/ic_checked_filter_toggle"
                     android:drawablePadding="4dp"
@@ -197,12 +200,32 @@
                     android:id="@+id/textView52"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
                     android:layout_marginTop="41dp"
                     android:text="@string/filter_token"
                     android:textColor="#5a5e67"
                     android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/tvSelectAll"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
                     app:layout_constraintStart_toStartOf="@+id/tvSend"
                     app:layout_constraintTop_toBottomOf="@+id/tvSend" />
+
+                <TextView
+                    android:id="@+id/tvSelectAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?selectableItemBackground"
+                    android:padding="8dp"
+                    android:text="@string/filter_select_all"
+                    android:textColor="#ff9008"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView52"
+                    app:layout_constraintEnd_toEndOf="@+id/tvSwap"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/textView52"
+                    app:layout_constraintTop_toTopOf="@+id/textView52" />
+
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvToken"
@@ -238,10 +261,10 @@
                     android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:background="@drawable/border_button"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:gravity="center"
                     android:minHeight="45dp"
                     android:text="@string/filter_reset"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#141927"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toStartOf="@+id/tvApply"
