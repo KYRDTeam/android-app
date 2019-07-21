@@ -47,6 +47,9 @@ class TransactionStatusFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
         wallet = arguments!!.getParcelable(WALLET_PARAM)
         transactionType = arguments!!.getInt(TRANSACTION_TYPE)
+        wallet?.let {
+            viewModel.getTransactionFilter(transactionType, it)
+        }
     }
 
     override fun onCreateView(
@@ -73,19 +76,19 @@ class TransactionStatusFragment : BaseFragment() {
                     val currentFragment = (activity as MainActivity).getCurrentFragment()
 
                     when {
-                        it.displayTransactionType == Transaction.SWAP_TRANSACTION ->
+                        it.type == Transaction.TransactionType.SWAP ->
                             navigator.navigateToSwapTransactionScreen(
                                 currentFragment,
                                 wallet,
                                 it
                             )
-                        it.displayTransactionType == Transaction.SEND_TRANSACTION ->
+                        it.type == Transaction.TransactionType.SEND ->
                             navigator.navigateToSendTransactionScreen(
                                 currentFragment,
                                 wallet,
                                 it
                             )
-                        it.displayTransactionType == Transaction.RECEIVE_TRANSACTION ->
+                        it.type == Transaction.TransactionType.RECEIVED ->
                             navigator.navigateToReceivedTransactionScreen(
                                 currentFragment,
                                 wallet,
@@ -96,7 +99,7 @@ class TransactionStatusFragment : BaseFragment() {
                 }
         binding.rvTransaction.adapter = transactionStatusAdapter
 
-        viewModel.getTransaction(transactionType, wallet!!.address)
+
 
         viewModel.getTransactionCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->

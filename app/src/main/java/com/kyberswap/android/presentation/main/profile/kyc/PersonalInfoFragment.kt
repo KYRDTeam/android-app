@@ -528,7 +528,6 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 
     @SuppressLint("SetTextI18n")
     override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
-        String.format(getString(R.string.date_format_yyyy_mm_dd), year, monthOfYear + 1, dayOfMonth)
         binding.edtBod.setText(
             String.format(
                 getString(R.string.date_format_yyyy_mm_dd),

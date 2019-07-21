@@ -170,6 +170,12 @@ object TextViewBindingAdapter {
         view.visibility = View.VISIBLE
     }
 
+    @BindingAdapter("app:date")
+    @JvmStatic
+    fun transactionDate(view: TextView, time: Long) {
+        view.text = DateTimeHelper.transactionDate(time)
+    }
+
 
     @BindingAdapter("app:documentType")
     @JvmStatic

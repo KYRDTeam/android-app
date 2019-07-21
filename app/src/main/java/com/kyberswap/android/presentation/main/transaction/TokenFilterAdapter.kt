@@ -8,32 +8,31 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.BR
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ItemTokenFilterBinding
-import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.FilterItem
 import com.kyberswap.android.presentation.base.DataBoundListAdapter
 
 class TokenFilterAdapter(
-    appExecutors: AppExecutors,
-    private val onTokenClick: ((Token) -> Unit)?
-) : DataBoundListAdapter<Token, ItemTokenFilterBinding>(
+    appExecutors: AppExecutors
+) : DataBoundListAdapter<FilterItem, ItemTokenFilterBinding>(
     appExecutors,
-    diffCallback = object : DiffUtil.ItemCallback<Token>() {
-        override fun areItemsTheSame(oldItem: Token, newItem: Token): Boolean {
-            return oldItem.tokenSymbol == newItem.tokenSymbol
+    diffCallback = object : DiffUtil.ItemCallback<FilterItem>() {
+        override fun areItemsTheSame(oldItem: FilterItem, newItem: FilterItem): Boolean {
+            return oldItem.name == newItem.name
         }
 
-        override fun areContentsTheSame(oldItem: Token, newItem: Token): Boolean {
-            return oldItem.areContentsTheSame(newItem)
+        override fun areContentsTheSame(oldItem: FilterItem, newItem: FilterItem): Boolean {
+            return oldItem.name == newItem.name && oldItem.isSelected == newItem.isSelected
         }
     }
 ) {
     private var fullMode: Boolean = false
 
-    override fun bind(binding: ItemTokenFilterBinding, item: Token) {
+    override fun bind(binding: ItemTokenFilterBinding, item: FilterItem) {
         binding.tvToken.setOnClickListener {
-            it.isSelected = !it.isSelected
-            onTokenClick?.invoke(item)
+            item.isSelected = !item.isSelected
+            notifyDataSetChanged()
         }
-        binding.setVariable(BR.token, item)
+        binding.setVariable(BR.item, item)
         binding.executePendingBindings()
 
     }
@@ -43,6 +42,22 @@ class TokenFilterAdapter(
             fullMode = isFullMode
             notifyDataSetChanged()
         }
+    }
+
+    fun submitFilterList(items: List<FilterItem>) {
+        val sortedList = items.sortedByDescending {
+            it.isSelected
+        }
+        submitList(sortedList)
+    }
+
+    fun resetFilter(isSelecteAll: Boolean) {
+
+        submitFilterList(getData().map {
+            it.isSelected = isSelecteAll
+            it
+        })
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {

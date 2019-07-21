@@ -109,4 +109,10 @@ class DatabaseModule {
         return appDatabase.pendingBalancesDao()
     }
 
+    @Provides
+    @Singleton
+    fun provideTransactionFilterDao(appDatabase: AppDatabase): TransactionFilterDao {
+        return appDatabase.transactionFilterDao()
+    }
+
 }

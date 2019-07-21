@@ -204,6 +204,8 @@
     <string name="filter_swap">Swap</string>
     <string name="filter_token">Token</string>
     <string name="filter_see_more">see more</string>
+    <string name="filter_select_all">Select All</string>
+    <string name="filter_deselect_all">Deselect All</string>
     <string name="filter_see_less">see less</string>
     <string name="filter_reset">Reset</string>
     <string name="filter_apply">Apply</string>
@@ -508,6 +510,8 @@
     <string name="alert_leader_board_name">You - %s</string>
     <string name="no_alert_message">We will send you notification when prices go above or below your targets</string>
     <string name="add_alert">Add Alert</string>
+    <string name="campaign_start_time">Start: %s</string>
+    <string name="campaign_end_time">End: %s</string>
 
 
 </resources>

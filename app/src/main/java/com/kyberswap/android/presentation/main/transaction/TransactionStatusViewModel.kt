@@ -3,12 +3,18 @@ package com.kyberswap.android.presentation.main.transaction
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.kyberswap.android.domain.model.TransactionFilter
+import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.usecase.transaction.GetTransactionFilterUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.util.ext.toDate
+import com.kyberswap.android.util.ext.toLongSafe
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class TransactionStatusViewModel @Inject constructor(
+    private val getTransactionFilterUseCase: GetTransactionFilterUseCase,
     private val getTransactionsUseCase: GetTransactionsUseCase
 ) : ViewModel() {
 
@@ -17,11 +23,19 @@ class TransactionStatusViewModel @Inject constructor(
         get() = _getTransactionCallback
 
 
-    fun getTransaction(type: Int, address: String) {
+    private fun getTransaction(type: Int, wallet: Wallet, transactionFilter: TransactionFilter) {
+        getTransactionsUseCase.dispose()
         _getTransactionCallback.postValue(Event(GetTransactionState.Loading))
         getTransactionsUseCase.execute(
             Consumer { transactions ->
-                val itemList = transactions.groupBy { it.shortedDateTimeFormat }
+                val itemList = transactions
+                    .filter {
+                        (transactionFilter.from.isEmpty() || it.timeStamp.toLongSafe() * 1000 >= transactionFilter.from.toDate().time) &&
+                            (transactionFilter.to.isEmpty() || it.timeStamp.toLongSafe() * 1000 <= transactionFilter.to.toDate().time) &&
+                            transactionFilter.types.contains(it.type) &&
+                            transactionFilter.tokens.contains(it.tokenSymbol)
+                    }
+                    .groupBy { it.shortedDateTimeFormat }
                     .flatMap { item ->
                         val items = mutableListOf<TransactionItem>()
                         items.add(TransactionItem.Header(item.key))
@@ -42,7 +56,19 @@ class TransactionStatusViewModel @Inject constructor(
                 _getTransactionCallback.value =
                     Event(GetTransactionState.ShowError(it.localizedMessage))
             },
-            GetTransactionsUseCase.Param(type, address)
+            GetTransactionsUseCase.Param(type, wallet)
+        )
+    }
+
+    fun getTransactionFilter(type: Int, wallet: Wallet) {
+        getTransactionFilterUseCase.execute(
+            Consumer {
+                getTransaction(type, wallet, it)
+            },
+            Consumer {
+
+            },
+            GetTransactionFilterUseCase.Param(wallet.address)
         )
     }
 
