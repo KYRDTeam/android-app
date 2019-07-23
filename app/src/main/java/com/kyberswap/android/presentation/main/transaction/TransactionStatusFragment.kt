@@ -12,12 +12,11 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentTransactionStatusBinding
 import com.kyberswap.android.domain.model.Transaction
+import com.kyberswap.android.domain.model.TransactionFilter
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.util.di.ViewModelFactory
-import kotlinx.android.synthetic.main.fragment_transaction_status.*
 import javax.inject.Inject
 
 class TransactionStatusFragment : BaseFragment() {
@@ -38,6 +37,8 @@ class TransactionStatusFragment : BaseFragment() {
 
     private var transactionStatusAdapter: TransactionStatusAdapter? = null
 
+    private var filter: TransactionFilter? = null
+
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory)
             .get(TransactionStatusViewModel::class.java)
@@ -45,8 +46,8 @@ class TransactionStatusFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        wallet = arguments!!.getParcelable(WALLET_PARAM)
-        transactionType = arguments!!.getInt(TRANSACTION_TYPE)
+        wallet = arguments?.getParcelable(WALLET_PARAM)
+        transactionType = arguments?.getInt(TRANSACTION_TYPE) ?: Transaction.PENDING
         wallet?.let {
             viewModel.getTransactionFilter(transactionType, it)
         }
@@ -69,44 +70,40 @@ class TransactionStatusFragment : BaseFragment() {
             RecyclerView.VERTICAL,
             false
         )
-        if (transactionStatusAdapter == null)
-            transactionStatusAdapter =
-                TransactionStatusAdapter(appExecutors) {
 
-                    val currentFragment = (activity as MainActivity).getCurrentFragment()
+        if (transactionStatusAdapter == null) {
+            transactionStatusAdapter = TransactionStatusAdapter(appExecutors) {
 
-                    when {
-                        it.type == Transaction.TransactionType.SWAP ->
-                            navigator.navigateToSwapTransactionScreen(
-                                currentFragment,
-                                wallet,
-                                it
-                            )
-                        it.type == Transaction.TransactionType.SEND ->
-                            navigator.navigateToSendTransactionScreen(
-                                currentFragment,
-                                wallet,
-                                it
-                            )
-                        it.type == Transaction.TransactionType.RECEIVED ->
-                            navigator.navigateToReceivedTransactionScreen(
-                                currentFragment,
-                                wallet,
-                                it
-                            )
-                    }
-
+                when {
+                    it.type == Transaction.TransactionType.SWAP ->
+                        navigator.navigateToSwapTransactionScreen(
+                            currentFragment,
+                            wallet,
+                            it
+                        )
+                    it.type == Transaction.TransactionType.SEND ->
+                        navigator.navigateToSendTransactionScreen(
+                            currentFragment,
+                            wallet,
+                            it
+                        )
+                    it.type == Transaction.TransactionType.RECEIVED ->
+                        navigator.navigateToReceivedTransactionScreen(
+                            currentFragment,
+                            wallet,
+                            it
+                        )
                 }
+
+            }
+        }
         binding.rvTransaction.adapter = transactionStatusAdapter
-
-
 
         viewModel.getTransactionCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
-                showProgress(state == GetTransactionState.Loading)
                 when (state) {
                     is GetTransactionState.Success -> {
-                        updateTransactionList(state.transactions)
+                        updateTransactionList(state.transactions, state.transactionFilter)
                     }
                     is GetTransactionState.ShowError -> {
                         showAlert(
@@ -120,14 +117,19 @@ class TransactionStatusFragment : BaseFragment() {
 
     }
 
-    private fun updateTransactionList(transactions: List<TransactionItem>) {
-        transactionStatusAdapter?.submitList(listOf())
+    private fun updateTransactionList(
+        transactions: List<TransactionItem>,
+        transactionFilter: TransactionFilter
+    ) {
+        if (filter != transactionFilter) {
+            this.filter = transactionFilter
+            transactionStatusAdapter?.submitList(null)
+        } else {
+            transactionStatusAdapter?.submitList(listOf())
+        }
         transactionStatusAdapter?.submitList(transactions)
     }
 
-    override fun showProgress(showProgress: Boolean) {
-        progressBar.visibility = if (showProgress) View.VISIBLE else View.GONE
-    }
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"

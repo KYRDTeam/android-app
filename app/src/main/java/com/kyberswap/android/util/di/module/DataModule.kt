@@ -24,9 +24,10 @@ object DataModule {
         unitDao: UnitDao,
         tokenDao: TokenDao,
         promoApi: PromoApi,
-        promoMapper: PromoMapper
+        promoMapper: PromoMapper,
+        client: TokenClient
     ): WalletRepository =
-        WalletDataRepository(context, walletDao, unitDao, tokenDao, promoApi, promoMapper)
+        WalletDataRepository(context, walletDao, unitDao, tokenDao, promoApi, promoMapper, client)
 
     @Singleton
     @Provides
@@ -122,7 +123,8 @@ object DataModule {
         swapDao: SwapDao,
         sendDao: SendDao,
         limitOrderDao: LocalLimitOrderDao,
-        transactionFilterDao: TransactionFilterDao
+        transactionFilterDao: TransactionFilterDao,
+        context: Context
     ): TransactionRepository =
         TransactionDataRepository(
             api,
@@ -133,7 +135,8 @@ object DataModule {
             swapDao,
             sendDao,
             limitOrderDao,
-            transactionFilterDao
+            transactionFilterDao,
+            context
         )
 
 

@@ -66,9 +66,9 @@ class ManageWalletFragment : BaseFragment() {
             ManageWalletAdapter(appExecutors, handler,
                 {
                     dialogHelper.showBottomSheetManageWalletDialog(
-                        walletAdapter.getData().size == 1,
+                        walletAdapter.getData().size == 1 || it.isSelected,
                         {
-                            viewModel.updateSelectedWallet(it)
+                            viewModel.updateSelectedWallet(it.copy(isSelected = true))
                         }, {
                             navigator.navigateToEditWallet(currentFragment, it)
                         }, {

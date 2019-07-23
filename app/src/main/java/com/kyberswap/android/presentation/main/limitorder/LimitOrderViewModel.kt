@@ -8,17 +8,20 @@ import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.domain.usecase.swap.*
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
+import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.*
 import com.kyberswap.android.util.ext.display
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import java.math.BigDecimal
+import java.math.BigInteger
 import javax.inject.Inject
 
 class LimitOrderViewModel @Inject constructor(
@@ -146,9 +149,11 @@ class LimitOrderViewModel @Inject constructor(
         wallet?.let {
             getLocalLimitOrderDataUseCase.execute(
                 Consumer {
-                    _getLocalLimitOrderCallback.value = Event(GetLocalLimitOrderState.Success(it))
-                    getRelatedOrders(it, wallet)
-                    getNonce(it, wallet)
+                    val order = it.copy(gasLimit = calculateGasLimit(it))
+                    _getLocalLimitOrderCallback.value =
+                        Event(GetLocalLimitOrderState.Success(order))
+                    getRelatedOrders(order, wallet)
+                    getNonce(order, wallet)
                 },
                 Consumer {
                     it.printStackTrace()
@@ -160,6 +165,22 @@ class LimitOrderViewModel @Inject constructor(
         }
 
     }
+
+    private fun calculateGasLimit(limitOrder: LocalLimitOrder): BigInteger {
+        val gasLimitSourceToEth =
+            if (limitOrder.tokenSource.gasLimit.toBigIntegerOrDefaultZero()
+                == BigInteger.ZERO
+            )
+                DEFAULT_GAS_LIMIT
+            else limitOrder.tokenSource.gasLimit.toBigIntegerOrDefaultZero()
+        val gasLimitEthToSource =
+            if (limitOrder.tokenDest.gasLimit.toBigIntegerOrDefaultZero() == BigInteger.ZERO)
+                DEFAULT_GAS_LIMIT
+            else limitOrder.tokenDest.gasLimit.toBigIntegerOrDefaultZero()
+
+        return gasLimitSourceToEth + gasLimitEthToSource
+    }
+
 
     fun cancelOrder(order: Order) {
         _cancelOrderCallback.postValue(Event(CancelOrdersState.Loading))

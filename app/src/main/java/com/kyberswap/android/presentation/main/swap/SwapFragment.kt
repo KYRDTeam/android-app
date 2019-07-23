@@ -126,7 +126,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                     is GetSwapState.Success -> {
                         if (binding.swap != state.swap) {
                             if (state.swap.tokenSource.tokenSymbol == state.swap.tokenDest.tokenSymbol) {
-                                showAlert(getString(R.string.same_token_alert))
+                                showError(getString(R.string.same_token_alert))
                             }
 
                             edtSource.setAmount(state.swap.sourceAmount)
@@ -438,7 +438,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                         .toBigDecimalOrDefaultZero()
                         .abs()
                         .toDisplayNumber()
-                )
+                ),
+                R.drawable.ic_info
             )
         }
 
@@ -458,16 +459,16 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                 when {
                     edtSource.text.isNullOrEmpty() -> {
                         val errorAmount = getString(R.string.specify_amount)
-                        showAlert(errorAmount)
+                        showError(errorAmount)
                     }
                     edtSource.text.toString().toBigDecimalOrDefaultZero() > swap.tokenSource.currentBalance -> {
                         val errorExceedBalance = getString(R.string.exceed_balance)
-                        showAlert(errorExceedBalance)
+                        showError(errorExceedBalance)
                     }
-                    swap.hasSamePair -> showAlert(getString(R.string.same_token_alert))
+                    swap.hasSamePair -> showError(getString(R.string.same_token_alert))
                     swap.amountTooSmall(edtSource.text.toString()) -> {
                         val amountError = getString(R.string.swap_amount_small)
-                        showAlert(amountError)
+                        showError(amountError)
                     }
 
                     swap.copy(gasPrice = getSelectedGasPrice(swap.gas)).insufficientEthBalance -> showAlertWithoutIcon(

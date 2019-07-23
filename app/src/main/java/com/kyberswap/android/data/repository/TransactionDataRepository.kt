@@ -1,5 +1,14 @@
 package com.kyberswap.android.data.repository
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.media.RingtoneManager
+import android.os.Build
+import androidx.core.app.NotificationCompat
+import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.TransactionApi
 import com.kyberswap.android.data.db.*
 import com.kyberswap.android.data.mapper.TransactionMapper
@@ -8,13 +17,12 @@ import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.TransactionFilter
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.TransactionRepository
-import com.kyberswap.android.domain.usecase.transaction.GetTransactionFilterUseCase
-import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
-import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
-import com.kyberswap.android.domain.usecase.transaction.SaveTransactionFilterUseCase
+import com.kyberswap.android.domain.usecase.transaction.*
+import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.toLongSafe
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.FlowableTransformer
@@ -23,7 +31,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.Singles
 import org.web3j.utils.Numeric
 import java.math.BigDecimal
-import java.math.BigInteger
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -37,7 +45,8 @@ class TransactionDataRepository @Inject constructor(
     private val swapDao: SwapDao,
     private val sendDao: SendDao,
     private val limitOrderDao: LocalLimitOrderDao,
-    private val transactionFilterDao: TransactionFilterDao
+    private val transactionFilterDao: TransactionFilterDao,
+    private val context: Context
 ) : TransactionRepository {
 
     override fun monitorPendingTransactionsPolling(param: MonitorPendingTransactionUseCase.Param): Flowable<List<Transaction>> {
@@ -47,18 +56,38 @@ class TransactionDataRepository @Inject constructor(
                 val transaction =
                     transactionDao.findTransaction(tx.hash, Transaction.PENDING_TRANSACTION_STATUS)
                 transaction?.let {
-                    if (Numeric.decodeQuantity(tx.blockHash) > BigInteger.ZERO) {
-                        transactionDao.delete(transaction)
-                        transactionDao.insertTransaction(tx.copy(transactionStatus = ""))
-                        val tokenSource = tokenDao.getTokenBySymbol(it.tokenSource)
-                        val tokenDest = tokenDao.getTokenBySymbol(it.tokenDest)
-                        tokenSource?.let { src ->
-                            updateTokenBalance(src, param.wallet)
+                    if (tx.blockNumber.toLongSafe() > 0) {
+                        transactionDao.delete(it)
+                        val updatedStatus = tx.copy(transactionStatus = "")
+                        transactionDao.insertTransaction(updatedStatus)
+                        sendNotification(updatedStatus)
 
+
+
+                        if (it.tokenSource.isNotBlank()) {
+                            val tokenSource = tokenDao.getTokenBySymbol(it.tokenSource)
+                            tokenSource?.let { src ->
+                                updateTokenBalance(src, param.wallet)
+
+                            }
                         }
 
-                        tokenDest?.let { dest ->
-                            updateTokenBalance(dest, param.wallet)
+                        if (it.tokenDest.isNotBlank()) {
+                            val tokenDest = tokenDao.getTokenBySymbol(it.tokenDest)
+                            tokenDest?.let { dest ->
+                                updateTokenBalance(dest, param.wallet)
+                            }
+                        }
+
+                        if (it.tokenSymbol.isNotBlank() && ((it.tokenSymbol != it.tokenSource) ||
+                                (it.tokenSymbol != it.tokenDest))
+                        ) {
+
+                            val tokenSymbol = tokenDao.getTokenBySymbol(it.tokenSymbol)
+                            tokenSymbol?.let { symbol ->
+                                updateTokenBalance(symbol, param.wallet)
+                            }
+
                         }
 
 
@@ -123,16 +152,23 @@ class TransactionDataRepository @Inject constructor(
     }
 
     override fun fetchPendingTransaction(address: String): Flowable<List<Transaction>> {
-        return transactionDao.getTransactionByStatus(Transaction.PENDING_TRANSACTION_STATUS)
+        return transactionDao.getTransactionByStatus(
+            address,
+            Transaction.PENDING_TRANSACTION_STATUS
+        )
     }
 
-    override fun fetchERC20TokenTransactions(wallet: Wallet): Single<List<Transaction>> {
+    override fun fetchERC20TokenTransactions(
+        wallet: Wallet,
+        startBlock: Long
+    ): Single<List<Transaction>> {
         return transactionApi.getTransaction(
             DEFAULT_MODULE,
             TOKEN_TRANSACTION,
             wallet.address,
             DEFAULT_SORT,
-            API_KEY
+            API_KEY,
+            startBlock
         )
             .map {
                 transactionMapper.transform(it.result, wallet.address, TOKEN_TRANSACTION)
@@ -140,25 +176,31 @@ class TransactionDataRepository @Inject constructor(
                 val tokensSymbols = tokenDao.allTokens.filter {
                     !it.isOther
                 }.map {
-                    it.tokenSymbol
+                    it.tokenSymbol.toLowerCase()
                 }
                 val otherTokenList = it.filterNot { tx ->
-                    tokensSymbols.contains(tx.tokenSymbol)
+                    tokensSymbols.contains(tx.tokenSymbol.toLowerCase())
                 }.map { tx ->
                     Token(tx).copy(isOther = true).updateSelectedWallet(wallet)
+                }.filter {
+                    it.tokenName.isNotEmpty()
                 }
 
                 tokenDao.insertTokens(otherTokenList)
             }
     }
 
-    override fun fetchInternalTransactions(address: String): Single<List<Transaction>> {
+    override fun fetchInternalTransactions(
+        address: String,
+        startBlock: Long
+    ): Single<List<Transaction>> {
         return transactionApi.getTransaction(
             DEFAULT_MODULE,
             INTERNAL_TRANSACTION,
             address,
             DEFAULT_SORT,
-            API_KEY
+            API_KEY,
+            startBlock
         )
             .map {
                 it.result
@@ -172,13 +214,17 @@ class TransactionDataRepository @Inject constructor(
             }
     }
 
-    override fun fetchNormalTransaction(address: String): Single<List<Transaction>> {
+    override fun fetchNormalTransaction(
+        address: String,
+        startBlock: Long
+    ): Single<List<Transaction>> {
         return transactionApi.getTransaction(
             DEFAULT_MODULE,
             NORMAL_TRANSACTION,
             address,
             DEFAULT_SORT,
-            API_KEY
+            API_KEY,
+            startBlock
         )
             .map {
                 it.result
@@ -203,15 +249,153 @@ class TransactionDataRepository @Inject constructor(
     }
 
     override fun fetchAllTransactions(param: GetTransactionsUseCase.Param): Flowable<List<Transaction>> {
-        if (param.transactionType == Transaction.PENDING) {
-            return fetchPendingTransaction(param.wallet.address)
-        }
         return getTransactions(param.wallet)
+    }
+
+    override fun fetchTransactionPeriodically(param: GetTransactionsPeriodicallyUseCase.Param): Flowable<List<Transaction>> {
+        return Flowable.fromCallable {
+            transactionDao.getLatestTransaction()?.blockNumber?.toLongSafe() ?: 1
+        }
+            .flatMap { latestBlockNumber ->
+                getTransactionRemote(param.wallet, latestBlockNumber)
+            }.doOnNext {
+                val latestBlock =
+                    transactionDao.getLatestTransaction()?.blockNumber?.toLongSafe() ?: 1
+                it.forEach {
+                    val blockNumber = it.blockNumber.toLongSafe()
+                    if (blockNumber > latestBlock) {
+                        sendNotification(it)
+                    }
+                }
+                transactionDao.insertTransactionBatch(it)
+
+            }
+            .repeatWhen {
+                it.delay(30, TimeUnit.SECONDS)
+            }
+            .retryWhen { throwable ->
+                throwable.compose(zipWithFlatMap())
+            }
+    }
+
+    private fun sendNotification(transaction: Transaction) {
+        if (Date().time / 1000 - transaction.timeStamp <= 5 * 60) {
+            val intent = Intent(context, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            val pendingIntent = PendingIntent.getActivity(
+                context, 0 /* Request code */, intent,
+                PendingIntent.FLAG_ONE_SHOT
+            )
+            val title: String
+            val message: String
+
+            when (transaction.type) {
+                Transaction.TransactionType.SEND -> {
+                    if (transaction.isTransactionFail) {
+                        title = String.format(
+                            context.getString(R.string.notification_sent_token),
+                            transaction.tokenSymbol
+                        )
+                        message = String.format(
+                            context.getString(R.string.notification_fail_sent),
+                            transaction.displayValue,
+                            transaction.to
+                        )
+                    } else {
+                        title = String.format(
+                            context.getString(R.string.notification_sent_token),
+                            transaction.tokenSymbol
+                        )
+                        message = String.format(
+                            context.getString(R.string.notification_success_sent),
+                            transaction.displayValue,
+                            transaction.to
+                        )
+                    }
+                }
+                Transaction.TransactionType.RECEIVED -> {
+                    if (transaction.isTransactionFail) {
+                        title = String.format(
+                            context.getString(R.string.notification_received_token),
+                            transaction.tokenSymbol
+                        )
+                        message = String.format(
+                            context.getString(R.string.notification_fail_received),
+                            transaction.displayValue,
+                            transaction.from
+                        )
+                    } else {
+                        title = String.format(
+                            context.getString(R.string.notification_received_token),
+                            transaction.tokenSymbol
+                        )
+                        message = String.format(
+                            context.getString(R.string.notification_success_received),
+                            transaction.displayValue,
+                            transaction.from
+                        )
+
+                    }
+                }
+                Transaction.TransactionType.SWAP -> {
+                    if (transaction.isTransactionFail) {
+                        title = context.getString(R.string.notification_swap_token)
+                        message = String.format(
+                            context.getString(R.string.notification_fail_swap),
+                            transaction.displayTransaction
+                        )
+                    } else {
+                        title = context.getString(R.string.notification_swap_token)
+                        message = String.format(
+                            context.getString(R.string.notification_success_swap),
+                            transaction.displayTransaction
+                        )
+                    }
+
+                }
+            }
+
+
+            val channelId = context.getString(R.string.default_notification_channel_id)
+            val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            val notificationBuilder = NotificationCompat.Builder(context, channelId)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(
+                    title
+                )
+                .setContentText(
+                    message
+                )
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setContentIntent(pendingIntent)
+
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            // Since android Oreo notification channel is needed.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channel = NotificationChannel(
+                    channelId,
+                    "Channel human readable title",
+                    NotificationManager.IMPORTANCE_DEFAULT
+                )
+                notificationManager.createNotificationChannel(channel)
+            }
+
+            notificationManager.notify(
+                Numeric.toBigInt(transaction.hash).toInt(),
+                notificationBuilder.build()
+            )
+        }
 
     }
 
-    private fun getTransactions(wallet: Wallet): Flowable<List<Transaction>> {
-        val sendTransaction = fetchNormalTransaction(wallet.address)
+    private fun getTransactionRemote(
+        wallet: Wallet,
+        startBlock: Long = 1
+    ): Flowable<List<Transaction>> {
+        val sendTransaction = fetchNormalTransaction(wallet.address, startBlock)
             .toFlowable().flatMapIterable { transactions ->
                 transactions
             }
@@ -226,7 +410,7 @@ class TransactionDataRepository @Inject constructor(
                 )
             }
             .toList()
-        val receivedTransaction = fetchInternalTransactions(wallet.address)
+        val receivedTransaction = fetchInternalTransactions(wallet.address, startBlock)
             .toFlowable().flatMapIterable { transactions ->
                 transactions
             }
@@ -238,75 +422,92 @@ class TransactionDataRepository @Inject constructor(
                 )
             }.toList()
 
-        val erc20Transaction = fetchERC20TokenTransactions(wallet)
+        val erc20Transaction = fetchERC20TokenTransactions(wallet, startBlock)
 
-        return Flowable.mergeDelayError(
-            transactionDao.getCompletedTransactions(),
-            Singles.zip(
-                sendTransaction,
-                receivedTransaction,
-                erc20Transaction
-            )
-            { send, received, erc20 ->
-                val transactions = send.toMutableList()
-                transactions.addAll(received)
-                transactions.addAll(erc20)
-                transactions.toList().sortedByDescending { it.timeStamp.toLong() }
+        return Singles.zip(
+            sendTransaction,
+            receivedTransaction,
+            erc20Transaction
+        )
+        { send, received, erc20 ->
+            val transactions = send.toMutableList()
+            transactions.addAll(received)
+            transactions.addAll(erc20)
+            transactions.toList().sortedByDescending { it.timeStamp }
+        }
+            .map {
+                it.groupBy { transaction -> transaction.hash }
             }
-                .map {
-                    it.groupBy { transaction -> transaction.hash }
-                }
-                .map {
-                    val transactionList = mutableListOf<Transaction>()
-                    for ((_, transactions) in it) {
-                        if (transactions.size == 2) {
-                            val send = transactions.find {
-                                it.type == Transaction.TransactionType.SEND
-                            }
+            .map {
+                val transactionList = mutableListOf<Transaction>()
+                for ((_, transactions) in it) {
+                    if (transactions.size == 2) {
+                        val send = transactions.find {
+                            it.type == Transaction.TransactionType.SEND
+                        }
 
-                            val received = transactions.find {
-                                it.type == Transaction.TransactionType.RECEIVED
-                            }
+                        val received = transactions.find {
+                            it.type == Transaction.TransactionType.RECEIVED
+                        }
 
-                            val sourceAmount = send?.value.toBigDecimalOrDefaultZero()
-                                .divide(
-                                    BigDecimal.TEN
-                                        .pow(
-                                            (send?.tokenDecimal ?: Token.ETH_DECIMAL.toString())
-                                                .toBigDecimalOrDefaultZero().toInt()
-                                        )
-                                )
-
-                            val destAmount = received?.value.toBigDecimalOrDefaultZero()
-                                .divide(
-                                    BigDecimal.TEN
-                                        .pow(
-                                            (received?.tokenDecimal ?: Token.ETH_DECIMAL.toString())
-                                                .toBigDecimalOrDefaultZero().toInt()
-                                        )
-                                )
-                            val tx =
-                                if (transactions.first().gasPrice.isEmpty()) transactions.last() else transactions.first()
-
-                            val transaction = tx.copy(
-                                tokenSource = send?.tokenSymbol ?: "",
-                                sourceAmount = sourceAmount.toDisplayNumber(),
-                                tokenDest = received?.tokenSymbol ?: "",
-                                destAmount = destAmount.toDisplayNumber()
-
+                        val sourceAmount = send?.value.toBigDecimalOrDefaultZero()
+                            .divide(
+                                BigDecimal.TEN
+                                    .pow(
+                                        (send?.tokenDecimal ?: Token.ETH_DECIMAL.toString())
+                                            .toBigDecimalOrDefaultZero().toInt()
+                                    )
                             )
 
-                            transactionList.add(transaction)
+                        val destAmount = received?.value.toBigDecimalOrDefaultZero()
+                            .divide(
+                                BigDecimal.TEN
+                                    .pow(
+                                        (received?.tokenDecimal ?: Token.ETH_DECIMAL.toString())
+                                            .toBigDecimalOrDefaultZero().toInt()
+                                    )
+                            )
+                        val tx =
+                            if (transactions.first().gasPrice.isEmpty()) transactions.last() else transactions.first()
 
-                        } else {
-                            transactionList.addAll(transactions)
-                        }
+                        val transaction = tx.copy(
+                            tokenSource = send?.tokenSymbol ?: "",
+                            sourceAmount = sourceAmount.toDisplayNumber(),
+                            tokenDest = received?.tokenSymbol ?: "",
+                            destAmount = destAmount.toDisplayNumber(),
+                            walletAddress = wallet.address
+
+                        )
+
+                        transactionList.add(
+                            transaction.copy(
+                                type = if (transaction.isTransfer)
+                                    transaction.type
+                                else Transaction.TransactionType.SWAP
+                            )
+                        )
+
+                    } else {
+                        transactionList.addAll(transactions.map { tx ->
+                            tx.copy(
+                                walletAddress = wallet.address,
+                                type = if (tx.isTransfer)
+                                    tx.type
+                                else Transaction.TransactionType.SWAP
+                            )
+                        })
                     }
-                    transactionList.toList()
-                }.doAfterSuccess {
-                    transactionDao.updateTransactionList(it)
                 }
-                .toFlowable()
+                transactionList.toList()
+            }.toFlowable()
+    }
+
+    private fun getTransactions(wallet: Wallet): Flowable<List<Transaction>> {
+        return Flowable.mergeDelayError(
+            transactionDao.getCompletedTransactions(wallet.address),
+            getTransactionRemote(wallet).doOnNext {
+                transactionDao.insertTransactionBatch(it)
+            }
         )
     }
 

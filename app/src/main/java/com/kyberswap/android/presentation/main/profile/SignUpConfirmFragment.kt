@@ -139,7 +139,7 @@ class SignUpConfirmFragment : BaseFragment() {
         }
 
         binding.tvLogin.setOnClickListener {
-            navigator.navigateToSignUpScreen(
+            navigator.navigateToSignInScreen(
                 (activity as MainActivity).getCurrentFragment()
             )
         }

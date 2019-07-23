@@ -130,12 +130,6 @@ class BalanceDataRepository @Inject constructor(
                 val allTokens = tokenDao.allTokens.map {
                     it.copy(isOther = true)
                 }
-//                val startList = tokens.subList(0, tokens.size / 2)
-//                val endList = tokens.subList(tokens.size / 2, tokens.size)
-//                val startWithBalance = updateBalance(startList, allTokens)
-//                val endWithBalance = updateBalance(endList, allTokens)
-//                startWithBalance.union(endWithBalance).toList()
-
                 updateBalance(tokens, allTokens)
             }
             .doAfterSuccess {

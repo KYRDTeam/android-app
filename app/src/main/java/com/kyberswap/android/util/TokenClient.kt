@@ -509,6 +509,8 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         gasLimit: BigInteger,
         transactionManager: TransactionManager
     ) {
+
+
         if (allowanceAmount > BigInteger.ZERO) {
             sendContractApproveTransfer(
                 BigInteger.ZERO,
@@ -552,33 +554,31 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     }
 
     fun monitorPendingTransactions(transactions: List<com.kyberswap.android.domain.model.Transaction>): List<com.kyberswap.android.domain.model.Transaction> {
-        val ethTransactions = mutableListOf<com.kyberswap.android.domain.model.Transaction>()
-        for (s in transactions.map {
-            it.hash
-        }) {
-            val transaction = web3j.ethGetTransactionByHash(s).send().transaction
+        val transactionsList = mutableListOf<com.kyberswap.android.domain.model.Transaction>()
+        for (s in transactions) {
+            val transaction = web3j.ethGetTransactionByHash(s.hash).send().transaction
             if (transaction.isPresent) {
                 val tx = transaction.get()
                 if (tx.hash.isNotEmpty()) {
-                    val ethGetTransactionReceipt =
+                    val transactionReceipt =
                         web3j.ethGetTransactionReceipt(tx.hash).send().transactionReceipt
-                    if (ethGetTransactionReceipt.isPresent) {
-                        val txReceipt = ethGetTransactionReceipt.get()
-                        ethTransactions.add(com.kyberswap.android.domain.model.Transaction(txReceipt))
+                    if (transactionReceipt.isPresent) {
+                        val txReceipt = transactionReceipt.get()
+                        transactionsList.add(s.with(txReceipt))
                     } else {
-                        ethTransactions.add(
-                            com.kyberswap.android.domain.model.Transaction(
-                                tx
-                            )
-                        )
+                        transactionsList.add(s.with(tx))
                     }
                 } else {
-                    ethTransactions.add(com.kyberswap.android.domain.model.Transaction(tx).copy(hash = s))
+                    transactionsList.add(
+                        com.kyberswap.android.domain.model.Transaction(tx).copy(
+                            hash = s.hash
+                        )
+                    )
                 }
             }
         }
-        if (ethTransactions.isEmpty()) return transactions
-        return ethTransactions.toList()
+        if (transactionsList.isEmpty()) return transactions
+        return transactionsList.toList()
     }
 
     fun signOrder(
@@ -588,6 +588,12 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     ): String {
 
         val txManager = RawTransactionManager(web3j, credentials)
+
+        val gasLimit =
+            if (order.gasLimit == BigInteger.ZERO) DEFAULT_GAS_LIMIT
+            else order.gasLimit
+
+
         val allowanceAmount =
             getContractAllowanceAmount(
                 order.userAddr,
@@ -604,7 +610,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                     order.gasPrice.toBigDecimalOrDefaultZero(),
                     Convert.Unit.GWEI
                 ).toBigInteger(),
-                order.gasLimit,
+                gasLimit,
                 txManager
             )
         }

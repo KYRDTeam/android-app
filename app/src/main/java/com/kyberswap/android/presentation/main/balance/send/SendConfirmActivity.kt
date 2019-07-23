@@ -71,11 +71,9 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
                 showProgress(state == TransferTokenTransactionState.Loading)
                 when (state) {
                     is TransferTokenTransactionState.Success -> {
-
-                        showAlert(
-                            String.format(
-                                getString(R.string.payment_send_success),
-                                binding.send?.contact?.name
+                        showAlertWithoutIcon(
+                            getString(R.string.transaction_broadcasted), getString(
+                                R.string.transaction_broadcasted_message
                             )
                         )
                         onBackPressed()

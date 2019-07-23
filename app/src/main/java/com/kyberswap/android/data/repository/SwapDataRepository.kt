@@ -113,7 +113,7 @@ class SwapDataRepository @Inject constructor(
                     Transaction(
                         hash = it,
                         transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
-                        timeStamp = (System.currentTimeMillis() / 1000L).toString(),
+                        timeStamp = System.currentTimeMillis() / 1000L,
                         from = swap.tokenSource.tokenAddress,
                         gas = swap.gasLimit,
                         gasUsed = swap.gasLimit,
@@ -125,7 +125,9 @@ class SwapDataRepository @Inject constructor(
                         tokenSource = swap.tokenSource.tokenSymbol,
                         tokenDest = swap.tokenDest.tokenSymbol,
                         sourceAmount = swap.sourceAmount,
-                        destAmount = swap.destAmount
+                        destAmount = swap.destAmount,
+                        walletAddress = swap.walletAddress,
+                        type = Transaction.TransactionType.SWAP
                     )
                 )
             }
@@ -168,7 +170,7 @@ class SwapDataRepository @Inject constructor(
                     Transaction(
                         hash = it,
                         transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
-                        timeStamp = (System.currentTimeMillis() / 1000L).toString(),
+                        timeStamp = System.currentTimeMillis() / 1000L,
                         from = transfer.tokenSource.tokenAddress,
                         gas = transfer.gasLimit,
                         gasUsed = transfer.gasLimit,
@@ -177,9 +179,11 @@ class SwapDataRepository @Inject constructor(
                             Convert.Unit.GWEI
                         ).toString(),
                         to = transfer.contact.address,
-                        value = transfer.sourceAmount,
+                        value = transfer.amountUnit.toString(),
                         tokenDecimal = transfer.tokenSource.tokenDecimal.toString(),
-                        tokenSymbol = transfer.tokenSource.tokenSymbol
+                        tokenSymbol = transfer.tokenSource.tokenSymbol,
+                        walletAddress = param.send.walletAddress,
+                        type = Transaction.TransactionType.SEND
                     )
                 )
             }

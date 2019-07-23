@@ -213,6 +213,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                             wallet?.let {
                                 mainViewModel.getPendingTransaction(it)
                                 mainViewModel.pollingTokenBalance(it)
+                                mainViewModel.getTransactionPeriodically(it)
 
                             }
                         }

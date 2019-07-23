@@ -359,7 +359,7 @@ class LimitOrderDataRepository @Inject constructor(
 
     override fun getLimitOrders(param: GetLimitOrdersUseCase.Param): Flowable<List<Order>> {
         return Flowable.mergeDelayError(limitOrderDao.findOrdersByAddressFlowable(param.walletAddress),
-            limitOrderApi.getOrders(param.walletAddress)
+            limitOrderApi.getOrders()
                 .map {
                     it.orders
                 }
