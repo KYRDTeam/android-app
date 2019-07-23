@@ -56,8 +56,11 @@ class ManageWalletAdapter(
 
         binding.btnSwitch.visibility = if (getData().size > 1) View.VISIBLE else View.GONE
 
+        binding.btnSwitch.visibility =
+            if (getData().size > 1 && item.isSelected) View.GONE else View.VISIBLE
+
         binding.lnItem.setOnClickListener {
-            onItemClick?.invoke(item.copy(isSelected = true))
+            onItemClick?.invoke(item)
 
         binding.btnSwitch.setOnClickListener {
 

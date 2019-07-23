@@ -158,7 +158,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:backgroundTint="@color/edt_background_tint"
-                    android:hint="@string/signup_display_name"
                     android:inputType="textEmailAddress"
                     android:singleLine="true"
                     android:textAppearance="@style/TextAppearance.Montserrat.Medium"

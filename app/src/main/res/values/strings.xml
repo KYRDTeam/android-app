@@ -339,7 +339,7 @@
     <string name="salary">Salary</string>
     <string name="occupation_code">Occupation code</string>
     <string name="industry_code">Industry code</string>
-    <string name="your_country_of_tax_residency">Your Country of Tax Residency</string>
+    <string name="your_country_of_tax_residency">Tax Residency Country</string>
     <string name="tax_identification_no_tin_or_equivalent">Tax Identification No.(TIN) or equivalent</string>
     <string name="middle_name">Middle Name</string>
     <string name="last_name">Last Name</string>
@@ -512,6 +512,17 @@
     <string name="add_alert">Add Alert</string>
     <string name="campaign_start_time">Start: %s</string>
     <string name="campaign_end_time">End: %s</string>
+    <string name="notification_received_token">Received %s</string>
+    <string name="notification_success_received">Successfully received %s from %s</string>
+    <string name="notification_fail_received">Fail to receive %s from %s</string>
+    <string name="notification_sent_token">Sent %s</string>
+    <string name="notification_success_sent">Successfully sent %s to %s</string>
+    <string name="notification_fail_sent">Fail to send %s to %s</string>
+    <string name="notification_swap_token">Swap</string>
+    <string name="notification_success_swap">Successfully swap %s </string>
+    <string name="notification_fail_swap">Fail to swap %s </string>
+    <string name="transaction_broadcasted">Broadcasted</string>
+    <string name="transaction_broadcasted_message">Your transaction has been broadcasted!</string>
 
 
 </resources>

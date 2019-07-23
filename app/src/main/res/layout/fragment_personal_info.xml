@@ -843,7 +843,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:backgroundTint="@color/edt_background_tint"
-                                android:drawableEnd="@drawable/ic_expand_more"
                                 android:drawablePadding="8dp"
                                 android:letterSpacing="0.07"
                                 android:minHeight="60dp"

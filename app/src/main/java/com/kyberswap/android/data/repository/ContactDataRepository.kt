@@ -29,10 +29,10 @@ class ContactDataRepository @Inject constructor(
             val updatedAt = System.currentTimeMillis() / 1000
             val contact = findContactByAddress?.copy(
                 walletAddress = param.walletAddress,
-                address = param.address,
-                name = param.name,
+                address = param.address.toLowerCase(),
+                name = name,
                 updatedAt = updatedAt
-            ) ?: Contact(param.walletAddress, param.address, name, updatedAt)
+            ) ?: Contact(param.walletAddress, param.address.toLowerCase(), name, updatedAt)
             contactDao.insertContact(contact)
 
             if (param.isSend) {

@@ -58,6 +58,8 @@ class PriceAlertFragment : BaseFragment() {
 
     private var previousTokenPair: CharSequence? = null
 
+    private var priceCurrency: Int = 0
+
     private val handler by lazy {
         Handler()
     }
@@ -162,6 +164,7 @@ class PriceAlertFragment : BaseFragment() {
             .skipInitialValue()
             .observeOn(schedulerProvider.ui())
             .subscribe {
+                priceCurrency = it
                 updateAlert()
                 if (clearAlertPrice) {
                     binding.edtRate.setText("")
@@ -238,14 +241,24 @@ class PriceAlertFragment : BaseFragment() {
     }
 
     private fun setupCurrency() {
-        val ethBase = this.alert?.isEthBase ?: false
-        binding.rgCurrencies.check(
+        val id = if (priceCurrency > 0) {
+            priceCurrency
+ else {
+            val ethBase = this.alert?.isEthBase ?: false
             if (ethBase) R.id.rbEth else
                 R.id.rbUsd
+
+        binding.rgCurrencies.check(
+            id
         )
         binding.alert?.let {
+            val isEthWeth = it.token.isETH || it.token.isWETH
             binding.rbEth.isEnabled =
-                !(it.token.isETH || it.token.isWETH)
+                !isEthWeth
+
+            if (isEthWeth) {
+                binding.rgCurrencies.check(R.id.rbUsd)
+    
 
 
         handler.post {

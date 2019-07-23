@@ -7,6 +7,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetPendingTransactionsUseCase
+import com.kyberswap.android.domain.usecase.transaction.GetTransactionsPeriodicallyUseCase
 import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
 import com.kyberswap.android.domain.usecase.wallet.CreateWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetAllWalletUseCase
@@ -30,7 +31,8 @@ class MainViewModel @Inject constructor(
     private val createWalletUseCase: CreateWalletUseCase,
     private val updateSelectedWalletUseCase: UpdateSelectedWalletUseCase,
     private val getLoginStatusUseCase: GetLoginStatusUseCase,
-    private val getBalancePollingUseCase: GetBalancePollingUseCase
+    private val getBalancePollingUseCase: GetBalancePollingUseCase,
+    private val getTransactionsPeriodicallyUseCase: GetTransactionsPeriodicallyUseCase
 ) : ViewModel() {
 
     private val _getAllWalletStateCallback = MutableLiveData<Event<GetAllWalletState>>()
@@ -104,6 +106,16 @@ class MainViewModel @Inject constructor(
             GetBalancePollingUseCase.Param(wallet.address)
         )
 
+    }
+
+    fun getTransactionPeriodically(wallet: Wallet) {
+        getTransactionsPeriodicallyUseCase.execute(
+            Consumer { },
+            Consumer {
+                it.printStackTrace()
+    ,
+            GetTransactionsPeriodicallyUseCase.Param(wallet)
+        )
     }
 
     fun getPendingTransaction(wallet: Wallet) {

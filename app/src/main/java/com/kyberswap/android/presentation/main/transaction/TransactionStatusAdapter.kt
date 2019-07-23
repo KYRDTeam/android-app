@@ -35,8 +35,12 @@ class TransactionStatusAdapter(
         ): Boolean {
             return when {
                 oldItem is TransactionItem.Header && newItem is TransactionItem.Header && oldItem.date == newItem.date -> true
-                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemOdd && oldItem.transaction == newItem.transaction -> true
-                else -> oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemEven && oldItem.transaction == newItem.transaction
+                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemOdd && oldItem.transaction.sameDisplay(
+                    newItem.transaction
+                ) -> true
+                else -> oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemEven && oldItem.transaction.sameDisplay(
+                    newItem.transaction
+                )
     
 
     }

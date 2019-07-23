@@ -13,7 +13,6 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import retrofit2.Response
-import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -90,7 +89,6 @@ class AlertDataRepository @Inject constructor(
     
 
             if (currentAlert != alert) {
-                Timber.e("insert")
                 alertDao.insertAlert(alert)
     
             alert

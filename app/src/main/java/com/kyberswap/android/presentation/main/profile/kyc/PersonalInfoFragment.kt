@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
+import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
@@ -204,6 +205,21 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
         
     
 )
+
+
+        viewModel.compositeDisposable.add(
+            binding.rgTin.checkedChanges()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
+                    val enable = R.id.rbYes == it
+                    binding.edtTin.isEnabled = enable
+                    if (enable) {
+                        binding.edtTin.requestFocus()
+             else {
+                        binding.edtTin.setText("")
+            
+
+        )
 
 
 

@@ -95,12 +95,13 @@ class EditWalletFragment : BaseFragment() {
 
 
         binding.imgDone.setOnClickListener {
-            if (binding.edtWalletName.text.isNullOrBlank()) {
-                showAlertWithoutIcon(message = getString(R.string.wallet_empty_name))
+            val name = if (binding.edtWalletName.text.isNullOrBlank()) {
+                getString(R.string.default_wallet_name)
      else {
-                wallet?.copy(name = binding.edtWalletName.text.toString())?.let { wl ->
-                    viewModel.save(wl)
-        
+                binding.edtWalletName.text.toString()
+    
+            wallet?.copy(name = name)?.let { wl ->
+                viewModel.save(wl)
     
 
 

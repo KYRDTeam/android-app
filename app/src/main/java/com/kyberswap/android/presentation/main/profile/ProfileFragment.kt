@@ -111,7 +111,15 @@ class ProfileFragment : BaseFragment() {
                 override fun onError(error: FacebookException?) {
                     Timber.e(error?.localizedMessage)
                     error?.printStackTrace()
+                    if (error is FacebookAuthorizationException) {
+                        if (AccessToken.getCurrentAccessToken() != null) {
+                            LoginManager.getInstance().logOut()
+                            loginWithReadPermission()
+                
+            
         
+
+
     )
 
         binding.tvSignUp.setOnClickListener {
@@ -307,6 +315,14 @@ class ProfileFragment : BaseFragment() {
                 .subscribe {
                     binding.ilPassword.error = null
         )
+    }
+
+    private fun loginWithReadPermission() {
+        LoginManager.getInstance()
+            .logInWithReadPermissions(
+                this,
+                Arrays.asList("email", "public_profile")
+            )
     }
 
     private fun moveToLimitOrder() {

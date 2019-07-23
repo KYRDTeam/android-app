@@ -99,7 +99,7 @@ class TokenAdapter(
 
 
         val filterList = when (tokenType) {
-            TokenType.LISTED -> orderList.filter { it.isListed }
+            TokenType.LISTED -> orderList.filter { it.isListed && !it.isOther }
             TokenType.FAVOURITE -> orderList.filter {
                 it.fav
     

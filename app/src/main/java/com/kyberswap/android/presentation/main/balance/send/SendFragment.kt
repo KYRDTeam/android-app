@@ -189,6 +189,7 @@ class SendFragment : BaseFragment() {
                 .skipInitialValue()
                 .observeOn(schedulerProvider.ui())
                 .subscribe {
+                    ilAddress.error = null
                     if (currentSelection != null) {
                         tvAddContact.text = getString(R.string.edit_contact)
              else {
@@ -350,19 +351,23 @@ class SendFragment : BaseFragment() {
 
         binding.tvContinue.setOnClickListener {
             when {
-                edtSource.text.isNullOrEmpty() -> showAlert(getString(R.string.specify_amount))
-                edtAddress.text.isNullOrEmpty() -> showAlert(getString(R.string.specify_contact_address))
+                edtSource.text.isNullOrEmpty() -> showError(message = getString(R.string.specify_amount))
+                edtAddress.text.isNullOrEmpty() -> showError(message = getString(R.string.specify_contact_address))
                 binding.edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.send?.tokenSource?.currentBalance -> {
-                    showAlert(getString(R.string.exceed_balance))
+                    showError(message = getString(R.string.exceed_balance))
         
-                !onlyAddress(edtAddress.text.toString()).isContact() -> showAlert(getString(R.string.invalid_contact_address))
-                hasPendingTransaction -> showAlert(getString(R.string.pending_transaction))
+                !onlyAddress(edtAddress.text.toString()).isContact() -> showError(
+                    message = getString(
+                        R.string.invalid_contact_address
+                    )
+                )
+                hasPendingTransaction -> showError(message = getString(R.string.pending_transaction))
                 else -> viewModel.saveSend(
                     binding.send?.copy(
                         sourceAmount = edtSource.text.toString(),
                         gasPrice = getSelectedGasPrice(binding.send!!.gas)
                     ),
-                    binding.edtAddress.text.toString()
+                    onlyAddress(edtAddress.text.toString())
                 )
     
 
@@ -418,11 +423,11 @@ class SendFragment : BaseFragment() {
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null) {
             if (result.contents == null) {
-                showAlert(getString(R.string.message_cancelled))
+                showAlertWithoutIcon(message = getString(R.string.message_cancelled))
      else {
 
                 val contact = contacts.find {
-                    it.address == result.contents.toString()
+                    it.address.toLowerCase() == result.contents.toString().toLowerCase()
         
                 if (contact != null) {
                     currentSelection = contact
@@ -432,7 +437,9 @@ class SendFragment : BaseFragment() {
         
 
                 if (!result.contents.toString().isContact()) {
-                    showAlert(getString(R.string.invalid_contact_address))
+                    val error = getString(R.string.invalid_contact_address)
+                    showError(message = error)
+                    binding.ilAddress.error = error
         
     
  else {

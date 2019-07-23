@@ -70,7 +70,7 @@ data class Alert(
         get() = rank.toString()
 
     val baseInt: Int
-        get() = if (base.toLowerCase() === BASE_ETH) 0 else 1
+        get() = if (base.toLowerCase() == BASE_ETH.toLowerCase()) 0 else 1
 
     val isNotLocal: Boolean
         get() = state.toLowerCase() != STATE_LOCAL

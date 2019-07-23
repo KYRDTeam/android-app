@@ -104,7 +104,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                     is GetWalletState.Success -> {
                         binding.walletName = state.wallet.name
                         if (state.wallet.address != wallet?.address) {
-                            this.wallet = state.wallet
+                            wallet = state.wallet
                             viewModel.getLimitOrders(wallet)
                             viewModel.getPendingBalances(state.wallet)
                 

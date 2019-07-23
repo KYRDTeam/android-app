@@ -36,6 +36,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:backgroundTint="@color/colorAccent" />
+            android:backgroundTint="@color/colorAccent"
+            android:visibility="gone" />
     </FrameLayout>
 </layout>
