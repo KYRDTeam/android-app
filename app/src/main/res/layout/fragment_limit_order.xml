@@ -31,11 +31,11 @@
     </data>
 
     <FrameLayout
-        android:fitsSystemWindows="true"
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/screen_background">
+        android:background="@drawable/screen_background"
+        android:fitsSystemWindows="true">
 
         <View
             android:layout_width="0dp"
@@ -543,33 +543,33 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:layout_marginTop="24dp"
                         android:gravity="center|start"
                         android:text="@string/related_orders"
                         android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#5a5e67"
                         android:textSize="14sp"
+                        android:textAllCaps="true"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvManageOrder"
                         app:layout_constraintEnd_toStartOf="@+id/tvManageOrder"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="@+id/tvSubmitOrder"
-                        app:layout_constraintTop_toBottomOf="@+id/tvSubmitOrder" />
+                        app:layout_constraintTop_toTopOf="@+id/tvManageOrder" />
 
                     <TextView
-
                         android:id="@+id/tvManageOrder"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:gravity="center|end"
+                        android:layout_marginTop="48dp"
+                        android:gravity="center"
                         android:text="@string/manage_orders"
                         android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#ff9008"
                         android:textSize="14sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/tvRelatedOrder"
                         app:layout_constraintEnd_toEndOf="@+id/tvSubmitOrder"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toEndOf="@+id/tvRelatedOrder"
-                        app:layout_constraintTop_toTopOf="@+id/tvRelatedOrder" />
+                        app:layout_constraintTop_toBottomOf="@+id/tvSubmitOrder" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvRelatedOrder"

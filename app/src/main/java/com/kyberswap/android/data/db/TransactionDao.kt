@@ -19,6 +19,12 @@ interface TransactionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertTransactionBatch(transactions: List<Transaction>)
 
+    @androidx.room.Transaction
+    fun forceUpdateTransactions(transactions: List<Transaction>) {
+        deleteAllTransactions()
+        insertTransactionBatch(transactions)
+    }
+
     @Update
     fun updateTransaction(transaction: Transaction)
 
@@ -36,6 +42,9 @@ interface TransactionDao {
 
     @Delete
     fun delete(model: Transaction)
+
+    @Delete
+    fun deleteTransactions(transactions: List<Transaction>)
 
     @get:Query("SELECT * FROM transactions")
     val all: Flowable<List<Transaction>>

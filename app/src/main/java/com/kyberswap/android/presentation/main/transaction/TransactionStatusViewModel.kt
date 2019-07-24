@@ -25,11 +25,12 @@ class TransactionStatusViewModel @Inject constructor(
     val getTransactionCallback: LiveData<Event<GetTransactionState>>
         get() = _getTransactionCallback
 
-    private val currentFilter: TransactionFilter? = null
+    private var currentFilter: TransactionFilter? = null
 
 
     private fun getTransaction(type: Int, wallet: Wallet, transactionFilter: TransactionFilter) {
         if (type == Transaction.PENDING) {
+            getPendingTransactionsUseCase.dispose()
             getPendingTransactionsUseCase.execute(
                 Consumer {
                     _getTransactionCallback.value = Event(
@@ -38,7 +39,7 @@ class TransactionStatusViewModel @Inject constructor(
                                 it,
                                 transactionFilter
                             ),
-                            transactionFilter
+                            currentFilter != transactionFilter
                         )
                     )
                 },
@@ -50,6 +51,7 @@ class TransactionStatusViewModel @Inject constructor(
                 wallet.address
             )
         } else {
+            getTransactionsUseCase.dispose()
             getTransactionsUseCase.execute(
                 Consumer { transactions ->
                     _getTransactionCallback.value = Event(
@@ -58,7 +60,7 @@ class TransactionStatusViewModel @Inject constructor(
                                 transactions,
                                 transactionFilter
                             ),
-                            transactionFilter
+                            currentFilter != transactionFilter
                         )
                     )
                 },
@@ -104,9 +106,11 @@ class TransactionStatusViewModel @Inject constructor(
     }
 
     fun getTransactionFilter(type: Int, wallet: Wallet) {
+        getTransactionFilterUseCase.dispose()
         getTransactionFilterUseCase.execute(
             Consumer {
                 if (currentFilter != it) {
+                    currentFilter = it
                     getTransaction(type, wallet, it)
                 }
             },
