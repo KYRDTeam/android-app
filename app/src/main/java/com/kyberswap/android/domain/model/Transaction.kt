@@ -3,6 +3,7 @@ package com.kyberswap.android.domain.model
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.Index
+import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.kyberswap.android.data.api.transaction.TransactionEntity
 import com.kyberswap.android.data.db.TransactionTypeConverter
@@ -16,7 +17,6 @@ import java.util.*
 
 @Entity(
     tableName = "transactions",
-    primaryKeys = ["hash", "from", "to"],
     indices = [Index(value = ["hash", "transactionStatus", "walletAddress"])]
 )
 @Parcelize
@@ -30,6 +30,7 @@ data class Transaction(
     val gas: String = "",
     val gasPrice: String = "",
     val gasUsed: String = "",
+    @PrimaryKey
     val hash: String = "",
     val input: String = "",
     val isError: String = "",
@@ -251,7 +252,8 @@ data class Transaction(
         return this.displayTransaction == other.displayTransaction &&
             this.displayRate == other.displayRate &&
             this.displayTransactionType == other.displayTransactionType &&
-            this.isTransactionFail == other.isTransactionFail
+            this.isTransactionFail == other.isTransactionFail &&
+            this.timeStamp == other.timeStamp
     }
 
 

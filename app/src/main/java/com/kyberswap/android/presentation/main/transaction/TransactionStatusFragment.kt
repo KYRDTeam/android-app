@@ -12,7 +12,6 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentTransactionStatusBinding
 import com.kyberswap.android.domain.model.Transaction
-import com.kyberswap.android.domain.model.TransactionFilter
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
@@ -37,7 +36,6 @@ class TransactionStatusFragment : BaseFragment() {
 
     private var transactionStatusAdapter: TransactionStatusAdapter? = null
 
-    private var filter: TransactionFilter? = null
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory)
@@ -50,6 +48,7 @@ class TransactionStatusFragment : BaseFragment() {
         transactionType = arguments?.getInt(TRANSACTION_TYPE) ?: Transaction.PENDING
         wallet?.let {
             viewModel.getTransactionFilter(transactionType, it)
+
 
     }
 
@@ -103,7 +102,7 @@ class TransactionStatusFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetTransactionState.Success -> {
-                        updateTransactionList(state.transactions, state.transactionFilter)
+                        updateTransactionList(state.transactions, state.isFilterChanged)
             
                     is GetTransactionState.ShowError -> {
                         showAlert(
@@ -119,10 +118,9 @@ class TransactionStatusFragment : BaseFragment() {
 
     private fun updateTransactionList(
         transactions: List<TransactionItem>,
-        transactionFilter: TransactionFilter
+        isFilterChanged: Boolean
     ) {
-        if (filter != transactionFilter) {
-            this.filter = transactionFilter
+        if (isFilterChanged) {
             transactionStatusAdapter?.submitList(null)
  else {
             transactionStatusAdapter?.submitList(listOf())

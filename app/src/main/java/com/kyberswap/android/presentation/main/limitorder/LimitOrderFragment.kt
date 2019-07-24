@@ -251,6 +251,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                     is GetRelatedOrdersState.Success -> {
                         orderAdapter.submitList(listOf())
                         orderAdapter.submitList(state.orders)
+                        binding.tvRelatedOrder.visibility =
+                            if (state.orders.isEmpty()) View.GONE else View.VISIBLE
             
                     is GetRelatedOrdersState.ShowError -> {
                         showAlert(
