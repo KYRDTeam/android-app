@@ -23,6 +23,8 @@ data class TokenCurrencyEntity(
     @SerializedName("symbol")
     val symbol: String = "",
     @SerializedName("sp_limit_order")
-    val spLimitOrder: Boolean? = false
+    val spLimitOrder: Boolean? = false,
+    @SerializedName("is_quote")
+    val isQuote: Boolean? = false
 
 )

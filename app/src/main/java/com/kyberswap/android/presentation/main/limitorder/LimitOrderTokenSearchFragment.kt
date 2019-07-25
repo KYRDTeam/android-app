@@ -58,6 +58,7 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
         wallet = arguments?.getParcelable(WALLET_PARAM)
         isSourceToken = arguments?.getBoolean(TARGET_PARAM, false)
+        wallet?.let { viewModel.getPendingBalances(it) }
     }
 
     override fun onCreateView(
@@ -84,7 +85,6 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
 
     
         binding.rvToken.adapter = tokenAdapter
-        wallet?.let { viewModel.getPendingBalances(it) }
 
         viewModel.getTokenListCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -95,17 +95,29 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
                         val ethToken = combineList.find { it.isETH }
                         val wethToken = combineList.find { it.isWETH }
 
-                        val ethBalance = ethToken?.limitOrderBalance ?: BigDecimal.ZERO
-                        val wethBalance = wethToken?.limitOrderBalance ?: BigDecimal.ZERO
+                        val ethBalance = ethToken?.currentBalance ?: BigDecimal.ZERO
+                        val wethBalance = wethToken?.currentBalance ?: BigDecimal.ZERO
 
                         combineList.remove(ethToken)
                         combineList.remove(wethToken)
 
+                        val pendingAmountEth =
+                            state.pendingBalances?.data?.get(ethToken?.tokenSymbol)
+                                ?: BigDecimal.ZERO
+
+                        val pendingAmountWeth =
+                            state.pendingBalances?.data?.get(wethToken?.tokenSymbol)
+                                ?: BigDecimal.ZERO
+
                         val combineToken = wethToken?.copy(
                             tokenSymbol = getString(R.string.token_eth_star),
                             tokenName = getString(R.string.token_eth_star_name),
-                            limitOrderBalance = ethBalance.plus(wethBalance)
-                        )?.updateBalance(ethBalance.plus(wethBalance))
+                            limitOrderBalance = ethBalance.plus(wethBalance).minus(pendingAmountEth).minus(
+                                pendingAmountWeth
+                            )
+                        )?.updateBalance(
+                            ethBalance.plus(wethBalance)
+                        )
 
                         combineToken?.let { token -> combineList.add(0, token) }
                         tokenList.clear()

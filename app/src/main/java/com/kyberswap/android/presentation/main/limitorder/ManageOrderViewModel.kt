@@ -45,7 +45,7 @@ class ManageOrderViewModel @Inject constructor(
                 orderList = it
                 getFilter(wallet)
                 _getRelatedOrderCallback.value =
-                    Event(GetRelatedOrdersState.Success(it))
+                    Event(GetRelatedOrdersState.Success(toOrderItems(it)))
     ,
             Consumer {
                 it.printStackTrace()
@@ -57,14 +57,14 @@ class ManageOrderViewModel @Inject constructor(
         )
     }
 
-    fun getCurrentFilterList(): List<Order> {
+    fun getCurrentFilterList(): List<OrderItem> {
         return orderFilter?.let {
             filterOrders(it)
  ?: listOf()
 
     }
 
-    fun filterOrders(filter: OrderFilter): List<Order> {
+    fun filterOrders(filter: OrderFilter): List<OrderItem> {
         orderFilter = filter
         val orderByOldest = filter.oldest
         val addresses = filter.listAddress.filter {
@@ -79,7 +79,7 @@ class ManageOrderViewModel @Inject constructor(
             it.name
 
 
-        return if (orderByOldest) {
+        return toOrderItems(if (orderByOldest) {
             orderList.sortedBy { it.createdAt }
  else {
             orderList.sortedByDescending {
@@ -108,8 +108,25 @@ class ManageOrderViewModel @Inject constructor(
      else {
                 true
     
+)
 
+    }
 
+    private fun toOrderItems(orders: List<Order>): List<OrderItem> {
+        return orders.groupBy { it.shortedDateTimeFormat }
+            .flatMap { item ->
+                val items = mutableListOf<OrderItem>()
+                items.add(OrderItem.Header(item.key))
+                val list = item.value.sortedByDescending { it.time }
+                list.forEachIndexed { index, transaction ->
+                    if (index % 2 == 0) {
+                        items.add(OrderItem.ItemEven(transaction))
+             else {
+                        items.add(OrderItem.ItemOdd(transaction))
+            
+        
+                items
+    
     }
 
     private fun getFilter(wallet: Wallet) {

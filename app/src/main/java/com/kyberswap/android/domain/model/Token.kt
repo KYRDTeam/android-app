@@ -45,7 +45,8 @@ data class Token(
     val wallets: List<WalletBalance> = listOf(),
     val fav: Boolean = false,
     val isOther: Boolean = false,
-    val limitOrderBalance: BigDecimal = BigDecimal.ZERO
+    val limitOrderBalance: BigDecimal = BigDecimal.ZERO,
+    val isQuote: Boolean = false
 ) : Parcelable {
 
     @IgnoredOnParcel
@@ -56,6 +57,7 @@ data class Token(
             it.isSelected
 ?.currentBalance
             ?: BigDecimal.ZERO
+
 
     constructor(entity: TokenEntity) : this(
         entity.timestamp,
@@ -86,7 +88,8 @@ data class Token(
         gasLimit = entity.gasLimit,
         listingTime = entity.listingTime,
         priority = entity.priority,
-        spLimitOrder = entity.spLimitOrder ?: false
+        spLimitOrder = entity.spLimitOrder ?: false,
+        isQuote = entity.isQuote ?: false
 
     )
 
@@ -119,7 +122,8 @@ data class Token(
             gasLimit = entity.gasLimit,
             listingTime = entity.listingTime,
             priority = entity.priority,
-            spLimitOrder = entity.spLimitOrder ?: false
+            spLimitOrder = entity.spLimitOrder ?: false,
+            isQuote = entity.isQuote ?: false
         )
     }
 

@@ -273,14 +273,35 @@ object TextViewBindingAdapter {
     @BindingAdapter("app:orderStatus")
     @JvmStatic
     fun orderStatus(view: TextView, orderStatus: String) {
-        val background = when (orderStatus) {
-            Order.Status.OPEN.value -> R.drawable.rounded_corner_order_open_background
-            Order.Status.FILLED.value -> R.drawable.rounded_corner_order_filled_background
-            Order.Status.IN_PROGRESS.value -> R.drawable.rounded_corner_order_in_progress_background
-            Order.Status.CANCELLED.value -> R.drawable.rounded_corner_order_cancelled_background
-            else -> R.drawable.rounded_corner_order_invalidated_background
+
+
+        val background: Int
+        val textColor: Int
+        when (orderStatus) {
+            Order.Status.OPEN.value -> {
+                background = R.drawable.rounded_corner_order_open_background
+                textColor = R.color.text_order_status_open
+    
+            Order.Status.FILLED.value -> {
+                background = R.drawable.rounded_corner_order_filled_background
+                textColor = R.color.text_order_status_filled
+
+    
+            Order.Status.IN_PROGRESS.value -> {
+                background = R.drawable.rounded_corner_order_in_progress_background
+                textColor = R.color.text_order_status_in_progress
+    
+            Order.Status.CANCELLED.value -> {
+                background = R.drawable.rounded_corner_order_cancelled_background
+                textColor = R.color.text_order_status_cancelled
+    
+            else -> {
+                background = R.drawable.rounded_corner_order_invalidated_background
+                textColor = R.color.text_order_status_invalidated
+    
 
         view.text = orderStatus
+        view.setTextColor(textColor)
         view.setBackgroundResource(background)
 
     }

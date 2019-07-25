@@ -348,10 +348,30 @@ class LimitOrderDataRepository @Inject constructor(
         return Completable.fromCallable {
             val currentLimitOrderForWalletAddress =
                 localLimitOrderDao.findLocalLimitOrderByAddress(param.walletAddress)
-            val order = if (param.isSourceToken) {
-                currentLimitOrderForWalletAddress?.copy(tokenSource = param.token)
+
+            val tokenPairUnChanged = if (param.isSourceToken) {
+                currentLimitOrderForWalletAddress?.tokenSource?.tokenSymbol == param.token.tokenSymbol
      else {
-                currentLimitOrderForWalletAddress?.copy(tokenDest = param.token)
+                currentLimitOrderForWalletAddress?.tokenDest?.tokenSymbol == param.token.tokenSymbol
+    
+
+            val resetRate = if (!tokenPairUnChanged) {
+                ""
+     else {
+                currentLimitOrderForWalletAddress?.expectedRate ?: ""
+    
+
+
+            val order = if (param.isSourceToken) {
+                currentLimitOrderForWalletAddress?.copy(
+                    tokenSource = param.token,
+                    expectedRate = resetRate
+                )
+     else {
+                currentLimitOrderForWalletAddress?.copy(
+                    tokenDest = param.token,
+                    expectedRate = resetRate
+                )
     
             order?.let { localLimitOrderDao.updateOrder(it) }
 
@@ -374,12 +394,11 @@ class LimitOrderDataRepository @Inject constructor(
 
     override fun getRelatedLimitOrders(param: GetRelatedLimitOrdersUseCase.Param): Flowable<List<Order>> {
         return Flowable.mergeDelayError(
-            limitOrderDao.findOrdersByAddressFlowable(param.walletAddress).map {
-                it.filter { order ->
-                    order.src ==
-                        param.tokenSource.submitOrderTokenSymbol && order.dst == param.tokenDest.submitOrderTokenSymbol &&
-                        order.isPending
-        
+            limitOrderDao.findRelatedOrdersByAddressFlowable(
+                param.walletAddress, param.tokenSource.submitOrderTokenSymbol,
+                param.tokenDest.submitOrderTokenSymbol
+            ).map {
+                it.filter { it.isPending }
     ,
             limitOrderApi.getRelatedOrders(
                 param.walletAddress,
@@ -405,12 +424,12 @@ class LimitOrderDataRepository @Inject constructor(
 
     override fun getPendingBalances(param: GetPendingBalancesUseCase.Param): Flowable<PendingBalances> {
         return Flowable.mergeDelayError(
-            pendingBalancesDao.all,
+            pendingBalancesDao.pendingBalancesByWalletAddress(param.wallet.address),
             limitOrderApi.getPendingBalances(param.wallet.address)
                 .map {
                     orderMapper.transform(it)
         .doAfterSuccess {
-                    pendingBalancesDao.createNewPendingBalances(it)
+                    pendingBalancesDao.createNewPendingBalances(it.copy(walletAddress = param.wallet.address))
         .toFlowable()
                 .repeatWhen {
                     it.delay(5, TimeUnit.SECONDS)

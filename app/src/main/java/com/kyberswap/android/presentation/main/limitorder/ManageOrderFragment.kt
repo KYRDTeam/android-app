@@ -13,7 +13,6 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentManageOrderBinding
 import com.kyberswap.android.domain.SchedulerProvider
-import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -108,7 +107,7 @@ class ManageOrderFragment : BaseFragment() {
             
                     it.isSelected = true
 
-                    filterByDate(orderAdapter)
+//                    filterByDate(orderAdapter)
         
     
 
@@ -126,7 +125,7 @@ class ManageOrderFragment : BaseFragment() {
                                 state.orderFilter
                             )
                         )
-                        filterByDate(orderAdapter)
+//                        filterByDate(orderAdapter)
             
                     is GetFilterState.ShowError -> {
                         showAlert(
@@ -157,35 +156,35 @@ class ManageOrderFragment : BaseFragment() {
 )
     }
 
-    private fun filterByDate(orderAdapter: OrderAdapter) {
-        currentSelectedView?.let {
-            orderAdapter.submitList(listOf())
-            orderAdapter.submitList(getFilterList(it.id))
+//    private fun filterByDate(orderAdapter: OrderAdapter) {
+//        currentSelectedView?.let {
+//            orderAdapter.submitList(listOf())
+//            orderAdapter.submitList(getFilterList(it.id))
+//
+//    }
 
-    }
-
-    private fun getFilterList(id: Int): List<Order> {
-        val value = when (id) {
-            R.id.tv1Day -> {
-                DAY_IN_SEC
-    
-            R.id.tv1Week -> {
-                7 * DAY_IN_SEC
-    
-            R.id.tv1Month -> {
-                30 * DAY_IN_SEC
-    
-            else -> {
-                Int.MAX_VALUE
-    
-
-
-        val now = System.currentTimeMillis() / 1000
-        return viewModel.getCurrentFilterList().filter {
-            it.createdAt >= now - value
-
-
-    }
+//    private fun getFilterList(id: Int): List<Order> {
+//        val value = when (id) {
+//            R.id.tv1Day -> {
+//                DAY_IN_SEC
+//    
+//            R.id.tv1Week -> {
+//                7 * DAY_IN_SEC
+//    
+//            R.id.tv1Month -> {
+//                30 * DAY_IN_SEC
+//    
+//            else -> {
+//                Int.MAX_VALUE
+//    
+//
+//
+//        val now = System.currentTimeMillis() / 1000
+//        return viewModel.getCurrentFilterList().filter {
+//            it.createdAt >= now - value
+//
+//
+//    }
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"

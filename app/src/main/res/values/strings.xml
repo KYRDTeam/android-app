@@ -223,23 +223,24 @@
     <string name="token_eth_star">ETH*</string>
     <string name="token_eth_star_name">Ether that is compatible to ERC20 standard. 1 WETH is equal to 1 ETH. Limit Order works with WETH (not ETH).</string>
     <string name="token_amount_available">%s Available</string>
-    <string name="limit_order_current_rate">Current Rate: 1 %s = %s</string>
-    <string name="limit_order_rate_lower_market">Your price is %s%% lower than current market</string>
-    <string name="limit_order_rate_higher_market">Your price is %s%% higher than current market</string>
-    <string name="limit_order_rate_equal_market">Your price is same with current market</string>
+    <string name="limit_order_current_rate">1 %s = %s</string>
+    <string name="rate_percent">%s%%</string>
+    <string name="limit_order_rate_lower_market">Your target rate is %s lower than current Market rate</string>
+    <string name="limit_order_rate_higher_market">Your target rate is %s higher than current Market rate</string>
+    <string name="limit_order_rate_equal_market">Your target rate is same with current market</string>
     <string name="percent_25">25%</string>
     <string name="percent_50">50%</string>
     <string name="percent_100">100%</string>
     <string name="limit_order_rate_of">Rate of</string>
     <string name="limit_order_discount">Hold from 2000 KNC to get discount for your orders</string>
-    <string name="limit_order_fee">Fee: %s %s (%s%% of %s %s)</string>
+    <string name="limit_order_fee">%s %s </string>
+    <string name="discount_fee">%.2f%% OFF</string>
     <string name="transaction_from">From</string>
     <string name="day_1">1 Day</string>
     <string name="week_1">1 Week</string>
     <string name="month_1">1 Month</string>
     <string name="month_3">3 Month</string>
     <string name="transaction_failed">failed</string>
-    <string name="change_rate">Change Rate</string>
     <string name="order_warning">This new order has a lower rate than some orders you have created. Below orders will be cancelled when you submitted this order.</string>
     <string name="limit_order_yes">Yes</string>
     <string name="limit_order_broadcasted_message">Your transaction will be broadcasted when rate of %s</string>
@@ -523,6 +524,16 @@
     <string name="notification_fail_swap">Fail to swap %s </string>
     <string name="transaction_broadcasted">Broadcasted</string>
     <string name="transaction_broadcasted_message">Your transaction has been broadcasted!</string>
+    <string name="learn_more">Learn more</string>
+    <string name="order_fee">Fee:</string>
+    <string name="cancel_order_why">Why?</string>
+    <string name="cancel_order_confirm">By submitting this order, you also CANCEL the following orders:</string>
+    <string name="cancel_order_understand">I understand</string>
+    <string name="change_rate">Change Rate</string>
+    <string name="hold_from_2000_knc_to_get_discount_for_your_orders_learn_more">Hold from 2000 KNC to get discount for your orders. Learn more</string>
+    <string name="limit_order_fee_no_discount">Fee: %s %s </string>
+    <string name="market_rate">Market\n Rate</string>
+    <string name="current_rate">Current Rate:</string>
 
 
 </resources>
