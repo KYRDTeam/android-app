@@ -16,8 +16,8 @@ data class PendingBalances(
     val success: Boolean = false,
     @TypeConverters(PendingBalancesConverter::class)
     val `data`: Map<String, BigDecimal> = HashMap(),
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0
+    @PrimaryKey
+    val walletAddress: String = ""
 ) : Parcelable {
     constructor(entity: PendingBalancesEntity) : this(
         entity.success,

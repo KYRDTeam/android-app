@@ -53,6 +53,7 @@ class TokenDataRepository @Inject constructor(
                 .toFlowable()
         )
             .map { rates ->
+
                 val sourceTokenToEtherRate =
                     rates.firstOrNull { it.source == param.src && it.dest == Token.ETH }
                 val etherToDestTokenRate =

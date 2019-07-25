@@ -45,6 +45,12 @@ data class Order(
         entity.updatedAt
     )
 
+    val time: Long
+        get() = if (updatedAt > 0) updatedAt else createdAt
+
+    val shortedDateTimeFormat: String
+        get() = Transaction.formatterShort.format(Date(time * 1000L))
+
     constructor(notification: NotificationLimitOrder) : this(
         if (notification.orderId > 0) notification.orderId else notification.testOrderId.toLongSafe(),
         notification.sender,
@@ -108,6 +114,19 @@ data class Order(
 
     companion object {
         val formatterShort = SimpleDateFormat("dd MMM yyyy", Locale.US)
+    }
+
+    fun sameDisplay(other: Order): Boolean {
+        return this.id == other.id &&
+            this.displayTokenPair == other.displayTokenPair &&
+            this.displayedDate == other.displayedDate &&
+            this.displayAddress == other.displayAddress &&
+            this.status == other.status &&
+            this.sourceDisplay == other.sourceDisplay &&
+            this.destDisplay == other.destDisplay &&
+            this.destDisplayFee == other.destDisplayFee
+
+
     }
 
     enum class Status {

@@ -73,6 +73,10 @@ class LimitOrderViewModel @Inject constructor(
     val getGetGasLimitCallback: LiveData<Event<GetGasLimitState>>
         get() = _getGetGasLimitCallback
 
+    private val _cancelRelatedOrderCallback = MutableLiveData<Event<CancelOrdersState>>()
+    val cancelRelatedOrderCallback: LiveData<Event<CancelOrdersState>>
+        get() = _cancelRelatedOrderCallback
+
     val compositeDisposable by lazy {
         CompositeDisposable()
     }
@@ -106,6 +110,9 @@ class LimitOrderViewModel @Inject constructor(
     private val _getPendingBalancesCallback = MutableLiveData<Event<GetPendingBalancesState>>()
     val getPendingBalancesCallback: LiveData<Event<GetPendingBalancesState>>
         get() = _getPendingBalancesCallback
+
+    var relatedOrders = mutableListOf<Order>()
+
 
     fun getLoginStatus() {
         getLoginStatusUseCase.dispose()
@@ -145,8 +152,8 @@ class LimitOrderViewModel @Inject constructor(
 
     fun getLimitOrders(wallet: Wallet?) {
         getLocalLimitOrderDataUseCase.dispose()
-        getLocalLimitOrderDataUseCase.dispose()
         wallet?.let {
+            _getLocalLimitOrderCallback.postValue(Event(GetLocalLimitOrderState.Loading))
             getLocalLimitOrderDataUseCase.execute(
                 Consumer {
                     val order = it.copy(gasLimit = calculateGasLimit(it))
@@ -231,9 +238,13 @@ class LimitOrderViewModel @Inject constructor(
 
     fun getRelatedOrders(order: LocalLimitOrder, wallet: Wallet) {
         getRelatedLimitOrdersUseCase.dispose()
+        _getRelatedOrderCallback.postValue(Event(GetRelatedOrdersState.Loading))
         getRelatedLimitOrdersUseCase.execute(
             Consumer { orderList ->
-                _getRelatedOrderCallback.value = Event(GetRelatedOrdersState.Success(orderList))
+                relatedOrders.clear()
+                relatedOrders.addAll(orderList)
+                _getRelatedOrderCallback.value =
+                    Event(GetRelatedOrdersState.Success(toOrderItems(orderList)))
             },
             Consumer {
                 it.printStackTrace()
@@ -247,6 +258,25 @@ class LimitOrderViewModel @Inject constructor(
             )
         )
 
+    }
+
+    fun toOrderItems(orders: List<Order>): List<OrderItem> {
+        return orders.sortedByDescending {
+            it.time
+        }.groupBy { it.shortedDateTimeFormat }
+            .flatMap { item ->
+                val items = mutableListOf<OrderItem>()
+                items.add(OrderItem.Header(item.key))
+                val list = item.value.sortedByDescending { it.time }
+                list.forEachIndexed { index, transaction ->
+                    if (index % 2 == 0) {
+                        items.add(OrderItem.ItemEven(transaction))
+                    } else {
+                        items.add(OrderItem.ItemOdd(transaction))
+                    }
+                }
+                items
+            }
     }
 
     fun getMarketRate(order: LocalLimitOrder) {
@@ -267,8 +297,8 @@ class LimitOrderViewModel @Inject constructor(
                     Event(GetMarketRateState.ShowError(it.localizedMessage))
             },
             GetMarketRateUseCase.Param(
-                order.tokenSource.tokenSymbol,
-                order.tokenDest.tokenSymbol
+                order.tokenSource.symbol,
+                order.tokenDest.symbol
             )
         )
     }
@@ -355,14 +385,10 @@ class LimitOrderViewModel @Inject constructor(
         )
     }
 
-    fun validate(order: LocalLimitOrder?, pendingOrders: List<Order>): Boolean {
-        if (order == null) return false
-        pendingOrders.forEach {
-            if (order.minRate < it.minRate) {
-                return false
-            }
+    fun warningOrderList(rate: BigDecimal, pendingOrders: List<Order>): List<Order> {
+        return pendingOrders.filter {
+            it.minRate > rate
         }
-        return true
     }
 
     fun needConvertWETH(order: LocalLimitOrder?, pendingBalances: PendingBalances?): Boolean {
@@ -469,12 +495,29 @@ class LimitOrderViewModel @Inject constructor(
         return availableAmount.toDisplayNumber()
     }
 
-    fun cancelHigherRateOrder(order: LocalLimitOrder?, orders: List<Order>) {
-        if (order == null) return
-        orders.forEach {
+    fun cancelHigherRateOrder(rate: BigDecimal) {
+        val warningOrderList = warningOrderList(
+            rate,
+            relatedOrders
+        )
+
+        var numOfSuccess = 0
+
+        warningOrderList.forEach {
             cancelOrderUseCase.execute(
-                Consumer { },
-                Consumer { },
+                Consumer {
+                    numOfSuccess++
+                    if (numOfSuccess == warningOrderList.size) {
+                        _cancelRelatedOrderCallback.value =
+                            Event(CancelOrdersState.Success(Cancelled(true)))
+                    }
+                },
+                Consumer {
+                    it.printStackTrace()
+                    _cancelRelatedOrderCallback.value =
+                        Event(CancelOrdersState.ShowError(it.localizedMessage))
+                    cancelOrderUseCase.dispose()
+                },
                 CancelOrderUseCase.Param(it)
             )
         }

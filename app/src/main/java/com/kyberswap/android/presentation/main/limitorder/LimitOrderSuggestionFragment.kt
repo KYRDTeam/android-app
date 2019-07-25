@@ -113,9 +113,9 @@ class LimitOrderSuggestionFragment : BaseFragment() {
                 when (state) {
                     is GetRelatedOrdersState.Success -> {
                         relatedOrderAdapter.submitList(listOf())
-                        relatedOrderAdapter.submitList(state.orders.filter {
-                            it.minRate > binding.order?.minRate && it.isOpen
-                        })
+//                        relatedOrderAdapter.submitList(state.orders.filter {
+//                            it.minRate > binding.order?.minRate && it.isOpen
+//                        })
                     }
                     is GetRelatedOrdersState.ShowError -> {
                         showAlert(
@@ -138,7 +138,7 @@ class LimitOrderSuggestionFragment : BaseFragment() {
         }
 
         binding.tvConfirm.setOnClickListener {
-            viewModel.cancelHigherRateOrder(binding.order, relatedOrderAdapter.getData())
+            //            viewModel.cancelHigherRateOrder(binding.order, relatedOrderAdapter.getData())
             navigator.navigateToOrderConfirmScreen(
                 (activity as MainActivity).getCurrentFragment(),
                 wallet

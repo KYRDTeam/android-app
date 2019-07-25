@@ -39,23 +39,24 @@ class LimitOrderTokenSearchViewModel @Inject constructor(
         CompositeDisposable()
     }
 
-    fun getTokenList(address: String, pendingBalances: PendingBalances) {
+    private fun getTokenList(address: String, pendingBalances: PendingBalances) {
+        getTokenListUseCase.dispose()
         getTokenListUseCase.execute(
             Consumer { tokens ->
                 _getTokenListCallback.value = Event(
                     GetBalanceState.Success(
-                        tokens
+                        tokens.sortedByDescending { it.currentBalance }
                             .filter { it.spLimitOrder }.map {
                                 val pendingAmount =
                                     pendingBalances.data[it.tokenSymbol] ?: BigDecimal.ZERO
-                                if (pendingAmount > BigDecimal.ZERO) {
+                                if (!it.isETHWETH && pendingAmount > BigDecimal.ZERO) {
                                     val availableAmount = it.currentBalance - pendingAmount
                                     it.copy(limitOrderBalance = if (availableAmount > BigDecimal.ZERO) availableAmount else BigDecimal.ZERO)
                                 } else {
                                     it.copy(limitOrderBalance = it.currentBalance)
                                 }
 
-                            }
+                            }, pendingBalances
                     )
                 )
             },

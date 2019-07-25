@@ -34,6 +34,13 @@ interface LimitOrderDao {
     @Query("SELECT * from orders where userAddr = :address")
     fun findOrdersByAddressFlowable(address: String): Flowable<List<Order>>
 
+    @Query("SELECT * from orders where userAddr = :address AND src = :src AND dst = :dest")
+    fun findRelatedOrdersByAddressFlowable(
+        address: String,
+        src: String,
+        dest: String
+    ): Flowable<List<Order>>
+
     @Query("SELECT * from orders where userAddr = :address LIMIT 1")
     fun findOrderByAddress(address: String): Order?
 
