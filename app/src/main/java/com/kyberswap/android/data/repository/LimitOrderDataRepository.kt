@@ -12,7 +12,6 @@ import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.domain.repository.LimitOrderRepository
 import com.kyberswap.android.domain.usecase.limitorder.*
 import com.kyberswap.android.util.TokenClient
-import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.hexWithPrefix
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -56,108 +55,33 @@ class LimitOrderDataRepository @Inject constructor(
 
     override fun saveOrderFilter(param: SaveLimitOrderFilterUseCase.Param): Completable {
         return Completable.fromCallable {
-            val addresses = param.orderFilter.listAddress.filter {
-                it.isSelected
-    .map {
-                it.name
-    
-
-            val pairs = param.orderFilter.listOrders.filter {
-                it.isSelected
-    .map {
-                val pair = it.name.split(TOKEN_PAIR_SEPARATOR)
-                pair.first() to pair.last()
-    
-
-            val status = param.orderFilter.listStatus.filter {
-                it.isSelected
-    .map {
-                when (it.name) {
-                    context.getString(R.string.order_status_open) -> Order.Status.OPEN
-                    context.getString(R.string.order_status_invalidated) -> Order.Status.INVALIDATED
-                    context.getString(R.string.order_status_in_progress) -> Order.Status.IN_PROGRESS
-                    context.getString(R.string.order_status_cancelled) -> Order.Status.CANCELLED
-                    context.getString(R.string.order_status_filled) -> Order.Status.FILLED
-                    else -> Order.Status.UNKNOWN
-        .value
-    
-
-            val filter = param.orderFilter.apply {
-                this.addresses = addresses
-                this.status = status
-                this.pairs = pairs
-    
-            orderFilterDao.updateOrderFilter(filter)
+            orderFilterDao.updateOrderFilter(param.orderFilter)
 
     }
 
-    override fun getOrderFilter(param: GetLimitOrderFilterUseCase.Param): Flowable<OrderFilter> {
-        val filter = orderFilterDao.findOrderFilterByAddress(param.walletAddress)
-        val orderFilter = filter ?: OrderFilter(
-            status = listOf(Order.Status.OPEN.value, Order.Status.IN_PROGRESS.value)
-        )
+    override fun getOrderFilter(): Flowable<OrderFilter> {
+        return Flowable.fromCallable {
+            val orderFilter = orderFilterDao.filter
+            if (orderFilterDao.filter == null) {
+                val pairs = mutableMapOf<String, String>()
+                val address = mutableSetOf<String>()
+                limitOrderDao.all.forEach {
+                    pairs[it.src] = it.dst
+                    address.add(it.userAddr)
+        
 
-        val orders = limitOrderDao.findAllOrdersByAddress(param.walletAddress)
-        val pairs = mutableSetOf<Pair<String, String>>()
-        val address = mutableSetOf<String>()
-
-        orders.forEach {
-            pairs.add(Pair(it.src, it.dst))
-            address.add(it.userAddr)
-
-
-        val listOrders = pairs.map {
-            FilterItem(
-                orderFilter.pairs.indexOf(it) >= 0,
-                StringBuilder().append(it.first).append(TOKEN_PAIR_SEPARATOR).append(it.second)
-                    .toString()
-            )
-
-
-        val listAddress = address.map {
-            FilterItem(
-                orderFilter.addresses.indexOf(it.displayWalletAddress()) >= 0,
-                it.displayWalletAddress()
-            )
-
-
-        val listStatus = listOf(
-            Order.Status.OPEN,
-            Order.Status.IN_PROGRESS,
-            Order.Status.FILLED,
-            Order.Status.CANCELLED,
-            Order.Status.INVALIDATED
-        ).map {
-            val display = when (it) {
-                Order.Status.OPEN -> context.getString(R.string.order_status_open)
-                Order.Status.INVALIDATED -> context.getString(R.string.order_status_invalidated)
-                Order.Status.IN_PROGRESS -> context.getString(R.string.order_status_in_progress)
-                Order.Status.CANCELLED -> context.getString(R.string.order_status_cancelled)
-                Order.Status.FILLED -> context.getString(R.string.order_status_filled)
-                Order.Status.UNKNOWN -> it.value
+                val default = OrderFilter(
+                    status = FilterSetting.DEFAULT_ORDER_STATUS,
+                    pairs = pairs,
+                    addresses = address.toList()
+                )
+                orderFilterDao.insertOrderFilter(default)
+                default
+     else {
+                orderFilter
     
-
-            FilterItem(orderFilter.status.indexOf(it.value) >= 0, display)
-
-
-        val update = orderFilter.copy(
-            walletAddress = param.walletAddress,
-            listOrders = listOrders,
-            listAddress = listAddress,
-            listStatus = listStatus
-        )
-        if (orderFilter != update) {
-            orderFilterDao.insertOrderFilter(update)
-
-        return orderFilterDao.findOrderFilterByAddressFlowable(param.walletAddress).defaultIfEmpty(
-            update
-        ).map {
-            it.copy(
-                walletAddress = param.walletAddress,
-                listOrders = listOrders,
-                listAddress = listAddress,
-                listStatus = listStatus
-            )
+.flatMap {
+            orderFilterDao.filterFlowable.defaultIfEmpty(it)
 
     }
 
@@ -377,8 +301,9 @@ class LimitOrderDataRepository @Inject constructor(
 
     }
 
-    override fun getLimitOrders(param: GetLimitOrdersUseCase.Param): Flowable<List<Order>> {
-        return Flowable.mergeDelayError(limitOrderDao.findOrdersByAddressFlowable(param.walletAddress),
+    override fun getLimitOrders(): Flowable<List<Order>> {
+        return Flowable.mergeDelayError(
+            limitOrderDao.allFlowable,
             limitOrderApi.getOrders()
                 .map {
                     it.orders
@@ -387,7 +312,7 @@ class LimitOrderDataRepository @Inject constructor(
                     orderMapper.transform(it)
         
                 .doAfterSuccess {
-                    limitOrderDao.insertOrders(it)
+                    limitOrderDao.updateOrders(it)
         .toFlowable()
         )
     }
@@ -416,7 +341,7 @@ class LimitOrderDataRepository @Inject constructor(
                     it.filter { it.isPending }
         
                 .doAfterSuccess {
-                    limitOrderDao.updateOrders(it)
+                    limitOrderDao.insertOrders(it)
         .toFlowable()
         )
 
@@ -442,8 +367,6 @@ class LimitOrderDataRepository @Inject constructor(
     }
 
     companion object {
-        const val TOKEN_PAIR_SEPARATOR = "  ➞  "
-        const val ADDRESS_SEPARATOR = "..."
         private const val COUNTER_START = 1
         private const val ATTEMPTS = 5
     }

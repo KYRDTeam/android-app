@@ -13,14 +13,20 @@ interface OrderFilterDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrderFilter(filter: OrderFilter)
 
-    @Update
-    fun updateOrderFilter(orderFilter: OrderFilter)
+    @Transaction
+    fun updateOrderFilter(orderFilter: OrderFilter) {
+        deleteAllOrderFilters()
+        insertOrderFilter(orderFilter)
+    }
 
     @Query("SELECT * from order_filter where walletAddress = :address")
     fun findOrderFilterByAddressFlowable(address: String): Flowable<OrderFilter>
 
-    @Query("SELECT * from order_filter where walletAddress = :address LIMIT 1")
-    fun findOrderFilterByAddress(address: String): OrderFilter?
+    @get:Query("SELECT * from order_filter LIMIT 1")
+    val filter: OrderFilter?
+
+    @get:Query("SELECT * from order_filter")
+    val filterFlowable: Flowable<OrderFilter>
 
     @Query("DELETE FROM order_filter")
     fun deleteAllOrderFilters()

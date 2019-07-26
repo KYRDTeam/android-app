@@ -57,6 +57,9 @@ interface LimitOrderDao {
     fun delete(model: Order)
 
     @get:Query("SELECT * FROM orders")
-    val all: Flowable<List<Order>>
+    val all: List<Order>
+
+    @get:Query("SELECT * FROM orders")
+    val allFlowable: Flowable<List<Order>>
 }
 

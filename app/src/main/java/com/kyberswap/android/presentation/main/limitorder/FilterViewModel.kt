@@ -4,8 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.OrderFilter
-import com.kyberswap.android.domain.model.Wallet
-import com.kyberswap.android.domain.usecase.limitorder.GetLimitOrderFilterUseCase
+import com.kyberswap.android.domain.usecase.limitorder.GetLimitOrdersFilterSettingUseCase
 import com.kyberswap.android.domain.usecase.limitorder.SaveLimitOrderFilterUseCase
 import com.kyberswap.android.presentation.common.Event
 import io.reactivex.functions.Action
@@ -13,30 +12,33 @@ import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class FilterViewModel @Inject constructor(
-    private val getLimitOrderFilterUseCase: GetLimitOrderFilterUseCase,
-    private val saveLimitOrderFilterUseCase: SaveLimitOrderFilterUseCase
+    private val saveLimitOrderFilterUseCase: SaveLimitOrderFilterUseCase,
+    private val getLimitOrdersFilterSettingUseCase: GetLimitOrdersFilterSettingUseCase
 ) : ViewModel() {
 
-    private val _getFilterStateCallback = MutableLiveData<Event<GetFilterState>>()
-    val getFilterStateCallback: LiveData<Event<GetFilterState>>
-        get() = _getFilterStateCallback
+    private val _getFilterSettingCallback = MutableLiveData<Event<GetFilterSettingState>>()
+    val getFilterSettingCallback: LiveData<Event<GetFilterSettingState>>
+        get() = _getFilterSettingCallback
 
     private val _saveFilterStateCallback = MutableLiveData<Event<SaveFilterState>>()
     val saveFilterStateCallback: LiveData<Event<SaveFilterState>>
         get() = _saveFilterStateCallback
 
-    fun getFilter(wallet: Wallet) {
-        getLimitOrderFilterUseCase.execute(
+
+    fun getFilterSettings() {
+
+        getLimitOrdersFilterSettingUseCase.execute(
             Consumer {
-                _getFilterStateCallback.value = Event(GetFilterState.Success(it))
+                _getFilterSettingCallback.value = Event(GetFilterSettingState.Success(it))
     ,
             Consumer {
                 it.printStackTrace()
-                _getFilterStateCallback.value =
-                    Event(GetFilterState.ShowError(it.localizedMessage))
+                _getFilterSettingCallback.value =
+                    Event(GetFilterSettingState.ShowError(it.localizedMessage))
     ,
-            GetLimitOrderFilterUseCase.Param(wallet.address)
+            null
         )
+
     }
 
     fun saveOrderFilter(orderFilter: OrderFilter) {

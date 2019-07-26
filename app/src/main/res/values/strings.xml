@@ -254,6 +254,7 @@
     <string name="order_status_in_progress">In Progress</string>
     <string name="order_status_cancelled">Cancelled</string>
     <string name="order_status_filled">Filled</string>
+    <string name="order_status_unknown">Unknown</string>
     <string name="order_status_invalidated">Invalidated</string>
     <string name="convert_eth_to_weth">Convert ETH to WETH</string>
     <string name="your_balance">Your available balance:</string>
@@ -534,6 +535,10 @@
     <string name="limit_order_fee_no_discount">Fee: %s %s </string>
     <string name="market_rate">Market\n Rate</string>
     <string name="current_rate">Current Rate:</string>
+    <string name="open_order">Open Order</string>
+    <string name="order_history">Order History</string>
+    <string name="wonder_why_your_orders_are_not_filled">Wonder why your orders are not filled?</string>
+    <string name="swipe_left_to_cancel_order">Swipe left to cancel order</string>
 
 
 </resources>
