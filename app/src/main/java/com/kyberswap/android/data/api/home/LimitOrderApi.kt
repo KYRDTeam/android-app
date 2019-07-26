@@ -7,7 +7,6 @@ import retrofit2.http.*
 interface LimitOrderApi {
     @GET("api/orders")
     fun getOrders(
-//        @Query("user_address") userAddress: String
     ): Single<ListLimitOrderResponseEntity>
 
     @GET("api/orders/fee")

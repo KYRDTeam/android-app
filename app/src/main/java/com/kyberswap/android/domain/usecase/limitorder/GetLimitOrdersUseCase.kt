@@ -11,11 +11,9 @@ import javax.inject.Inject
 class GetLimitOrdersUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val limitOrderRepository: LimitOrderRepository
-) : MergeDelayErrorUseCase<GetLimitOrdersUseCase.Param, List<Order>>(schedulerProvider) {
+) : MergeDelayErrorUseCase<String?, List<Order>>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    override fun buildUseCaseFlowable(param: Param): Flowable<List<Order>> {
-        return limitOrderRepository.getLimitOrders(param)
+    override fun buildUseCaseFlowable(param: String?): Flowable<List<Order>> {
+        return limitOrderRepository.getLimitOrders()
     }
-
-    class Param(val walletAddress: String)
 }

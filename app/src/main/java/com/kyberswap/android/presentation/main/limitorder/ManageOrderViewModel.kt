@@ -3,15 +3,12 @@ package com.kyberswap.android.presentation.main.limitorder
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.kyberswap.android.data.repository.LimitOrderDataRepository
 import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.domain.model.OrderFilter
-import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.limitorder.CancelOrderUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetLimitOrderFilterUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetLimitOrdersUseCase
 import com.kyberswap.android.presentation.common.Event
-import com.kyberswap.android.util.ext.displayWalletAddress
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
@@ -39,13 +36,20 @@ class ManageOrderViewModel @Inject constructor(
     private var orderFilter: OrderFilter? = null
 
 
-    fun getRelatedOrders(wallet: Wallet) {
+    private fun getAllOrders(orderFilter: OrderFilter) {
         getLimitOrdersUseCase.execute(
             Consumer {
                 orderList = it
-                getFilter(wallet)
+
                 _getRelatedOrderCallback.value =
-                    Event(GetRelatedOrdersState.Success(toOrderItems(it)))
+                    Event(
+                        GetRelatedOrdersState.Success(
+                            toOrderItems(
+                                filterOrders(it, orderFilter),
+                                orderFilter.oldest
+                            )
+                        )
+                    )
             },
             Consumer {
                 it.printStackTrace()
@@ -53,71 +57,39 @@ class ManageOrderViewModel @Inject constructor(
                     Event(GetRelatedOrdersState.ShowError(it.localizedMessage))
 
             },
-            GetLimitOrdersUseCase.Param(wallet.address)
+            null
         )
     }
 
-    fun getCurrentFilterList(): List<OrderItem> {
-        return orderFilter?.let {
-            filterOrders(it)
-        } ?: listOf()
+    private fun filterOrders(
+        orders: List<Order>,
+        orderFilter: OrderFilter
+    ): List<Order> {
+        return orders
+            .filter {
+                orderFilter.status.map { it.toLowerCase() }.contains(it.status.toLowerCase()) &&
+                    orderFilter.pairs[it.src] == it.dst &&
+                    orderFilter.addresses.contains(it.userAddr)
+            }
 
     }
 
-    fun filterOrders(filter: OrderFilter): List<OrderItem> {
-        orderFilter = filter
-        val orderByOldest = filter.oldest
-        val addresses = filter.listAddress.filter {
-            it.isSelected
-        }.map {
-            it.name
-        }
-
-        val pairs = filter.listOrders.filter {
-            it.isSelected
-        }.map {
-            it.name
-        }
-
-        return toOrderItems(if (orderByOldest) {
-            orderList.sortedBy { it.createdAt }
+    private fun toOrderItems(orders: List<Order>, asc: Boolean): List<OrderItem> {
+        return if (asc) {
+            orders.sortedBy { it.time }
         } else {
-            orderList.sortedByDescending {
-                it.createdAt
-            }
-        }.filter {
-            if (addresses.isNotEmpty()) {
-                addresses.contains(it.userAddr.displayWalletAddress())
-            } else {
-                true
-            }
-        }.filter {
-            if (filter.status.isNotEmpty()) {
-                filter.status.contains(it.status)
-            } else {
-                true
-            }
-        }.filter {
-            if (pairs.isNotEmpty()) {
-                pairs.contains(
-                    StringBuilder().append(it.src).append(LimitOrderDataRepository.TOKEN_PAIR_SEPARATOR).append(
-                        it.dst
-                    )
-                        .toString()
-                )
-            } else {
-                true
-            }
-        })
-
-    }
-
-    private fun toOrderItems(orders: List<Order>): List<OrderItem> {
-        return orders.groupBy { it.shortedDateTimeFormat }
+            orders.sortedByDescending { it.time }
+        }.groupBy { it.shortedDateTimeFormat }
             .flatMap { item ->
                 val items = mutableListOf<OrderItem>()
                 items.add(OrderItem.Header(item.key))
-                val list = item.value.sortedByDescending { it.time }
+                val list =
+                    if (asc) {
+                        item.value.sortedBy { it.time }
+                    } else {
+                        item.value.sortedByDescending { it.time }
+                    }
+
                 list.forEachIndexed { index, transaction ->
                     if (index % 2 == 0) {
                         items.add(OrderItem.ItemEven(transaction))
@@ -129,9 +101,14 @@ class ManageOrderViewModel @Inject constructor(
             }
     }
 
-    private fun getFilter(wallet: Wallet) {
+    fun getFilter() {
+        getLimitOrderFilterUseCase.dispose()
         getLimitOrderFilterUseCase.execute(
             Consumer {
+                if (orderFilter != it) {
+                    orderFilter = it
+                    getAllOrders(it)
+                }
                 _getFilterCallback.value = Event(GetFilterState.Success(it))
             },
             Consumer {
@@ -139,7 +116,7 @@ class ManageOrderViewModel @Inject constructor(
                 _getFilterCallback.value =
                     Event(GetFilterState.ShowError(it.localizedMessage))
             },
-            GetLimitOrderFilterUseCase.Param(wallet.address)
+            null
         )
     }
 

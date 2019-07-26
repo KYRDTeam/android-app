@@ -17,7 +17,6 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
 
@@ -88,17 +87,17 @@ class ManageOrderFragment : BaseFragment() {
             activity?.onBackPressed()
         }
 
-        binding.tvFilter.setOnClickListener {
+        binding.imgFilter.setOnClickListener {
             navigator.navigateToLimitOrderFilterScreen(
-                (activity as MainActivity).getCurrentFragment(),
+                currentFragment,
                 wallet
             )
         }
 
-        binding.tv1Day.isSelected = true
-        currentSelectedView = binding.tv1Day
+        binding.tvOpenOrder.isSelected = true
+        currentSelectedView = binding.tvOpenOrder
 
-        listOf(binding.tv1Day, binding.tv1Week, binding.tv1Month, binding.tv3Month)
+        listOf(binding.tvOpenOrder, binding.tvOrderHistory)
             .forEach { tv ->
                 tv.setOnClickListener {
                     if (currentSelectedView != it) {
@@ -107,35 +106,34 @@ class ManageOrderFragment : BaseFragment() {
                     }
                     it.isSelected = true
 
-//                    filterByDate(orderAdapter)
                 }
             }
 
         wallet?.let {
-            viewModel.getRelatedOrders(it)
+            viewModel.getFilter()
         }
 
-        viewModel.getFilterCallback.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is GetFilterState.Success -> {
-                        orderAdapter.submitList(listOf())
-                        orderAdapter.submitList(
-                            viewModel.filterOrders(
-                                state.orderFilter
-                            )
-                        )
-//                        filterByDate(orderAdapter)
-                    }
-                    is GetFilterState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
-                    }
-                }
-            }
-        })
+//        viewModel.getFilterCallback.observe(viewLifecycleOwner, Observer {
+//            it?.getContentIfNotHandled()?.let { state ->
+//                when (state) {
+//                    is GetFilterState.Success -> {
+//                        orderAdapter.submitList(listOf())
+//                        orderAdapter.submitList(
+//                            viewModel.filterOrders(
+//                                state.orderFilter
+//                            )
+//                        )
+////                        filterByDate(orderAdapter)
+//                    }
+//                    is GetFilterState.ShowError -> {
+//                        showAlert(
+//                            state.message ?: getString(R.string.something_wrong),
+//                            R.drawable.ic_info_error
+//                        )
+//                    }
+//                }
+//            }
+//        })
 
 
         viewModel.cancelOrderCallback.observe(viewLifecycleOwner, Observer {

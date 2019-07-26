@@ -48,15 +48,15 @@ class TransactionTypeConverter {
 
 class TokenPairTypeConverter {
     @TypeConverter
-    fun stringToTokenPairType(value: String): List<Pair<String, String>> {
-        val listType = object : TypeToken<List<Pair<String, String>>>() {
+    fun stringToTokenPairType(value: String): Map<String, String> {
+        val listType = object : TypeToken<Map<String, String>>() {
         }.type
         return Gson().fromJson(value, listType)
     }
 
 
     @TypeConverter
-    fun tokenPairTypeToString(list: List<Pair<String, String>>): String {
+    fun tokenPairTypeToString(list: Map<String, String>): String {
         return Gson().toJson(list)
     }
 }

@@ -11,11 +11,10 @@ import javax.inject.Inject
 class GetLimitOrderFilterUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val limitOrderRepository: LimitOrderRepository
-) : FlowableUseCase<GetLimitOrderFilterUseCase.Param, OrderFilter>(schedulerProvider) {
+) : FlowableUseCase<String?, OrderFilter>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    override fun buildUseCaseFlowable(param: Param): Flowable<OrderFilter> {
-        return limitOrderRepository.getOrderFilter(param)
+    override fun buildUseCaseFlowable(param: String?): Flowable<OrderFilter> {
+        return limitOrderRepository.getOrderFilter()
     }
 
-    class Param(val walletAddress: String)
 }
