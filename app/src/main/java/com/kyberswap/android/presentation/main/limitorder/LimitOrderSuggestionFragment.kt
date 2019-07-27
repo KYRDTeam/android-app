@@ -102,9 +102,11 @@ class LimitOrderSuggestionFragment : BaseFragment() {
         val relatedOrderAdapter =
             OrderAdapter(
                 appExecutors
-            ) {
+                , {
 
-    
+        , {
+
+        )
         relatedOrderAdapter.mode = Attributes.Mode.Single
         binding.rvRelatedOrder.adapter = relatedOrderAdapter
 

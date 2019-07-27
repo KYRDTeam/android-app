@@ -2,22 +2,21 @@ package com.kyberswap.android.presentation.main.limitorder
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Order
-import com.kyberswap.android.domain.model.OrderFilter
 import com.kyberswap.android.domain.usecase.limitorder.CancelOrderUseCase
-import com.kyberswap.android.domain.usecase.limitorder.GetLimitOrderFilterUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetLimitOrdersUseCase
+import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.main.GetLoginStatusViewModel
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class ManageOrderViewModel @Inject constructor(
-    private val getLimitOrderFilterUseCase: GetLimitOrderFilterUseCase,
     private val getLimitOrdersUseCase: GetLimitOrdersUseCase,
-    private val cancelOrderUseCase: CancelOrderUseCase
+    private val cancelOrderUseCase: CancelOrderUseCase,
+    val getLoginStatusUseCase: GetLoginStatusUseCase
 
-) : ViewModel() {
+) : GetLoginStatusViewModel(getLoginStatusUseCase) {
 
     private val _getRelatedOrderCallback = MutableLiveData<Event<GetRelatedOrdersState>>()
     val getRelatedOrderCallback: LiveData<Event<GetRelatedOrdersState>>
@@ -27,28 +26,22 @@ class ManageOrderViewModel @Inject constructor(
     val cancelOrderCallback: LiveData<Event<CancelOrdersState>>
         get() = _cancelOrderCallback
 
-    private val _getFilterCallback = MutableLiveData<Event<GetFilterState>>()
-    val getFilterCallback: LiveData<Event<GetFilterState>>
-        get() = _getFilterCallback
+    var ordersWrapper: OrdersWrapper? = null
 
-    private var orderList: List<Order> = listOf()
+    override fun onCleared() {
+        getLimitOrdersUseCase.dispose()
+        cancelOrderUseCase.dispose()
+        super.onCleared()
+    }
 
-    private var orderFilter: OrderFilter? = null
 
-
-    private fun getAllOrders(orderFilter: OrderFilter) {
+    fun getAllOrders() {
         getLimitOrdersUseCase.execute(
             Consumer {
-                orderList = it
-
+                ordersWrapper = it
                 _getRelatedOrderCallback.value =
                     Event(
-                        GetRelatedOrdersState.Success(
-                            toOrderItems(
-                                filterOrders(it, orderFilter),
-                                orderFilter.oldest
-                            )
-                        )
+                        GetRelatedOrdersState.Success(toOrderItems(it.orders, it.asc))
                     )
     ,
             Consumer {
@@ -61,20 +54,7 @@ class ManageOrderViewModel @Inject constructor(
         )
     }
 
-    private fun filterOrders(
-        orders: List<Order>,
-        orderFilter: OrderFilter
-    ): List<Order> {
-        return orders
-            .filter {
-                orderFilter.status.map { it.toLowerCase() }.contains(it.status.toLowerCase()) &&
-                    orderFilter.pairs[it.src] == it.dst &&
-                    orderFilter.addresses.contains(it.userAddr)
-    
-
-    }
-
-    private fun toOrderItems(orders: List<Order>, asc: Boolean): List<OrderItem> {
+    fun toOrderItems(orders: List<Order>, asc: Boolean): List<OrderItem> {
         return if (asc) {
             orders.sortedBy { it.time }
  else {
@@ -101,24 +81,6 @@ class ManageOrderViewModel @Inject constructor(
     
     }
 
-    fun getFilter() {
-        getLimitOrderFilterUseCase.dispose()
-        getLimitOrderFilterUseCase.execute(
-            Consumer {
-                if (orderFilter != it) {
-                    orderFilter = it
-                    getAllOrders(it)
-        
-                _getFilterCallback.value = Event(GetFilterState.Success(it))
-    ,
-            Consumer {
-                it.printStackTrace()
-                _getFilterCallback.value =
-                    Event(GetFilterState.ShowError(it.localizedMessage))
-    ,
-            null
-        )
-    }
 
     fun cancelOrder(order: Order) {
         _cancelOrderCallback.postValue(Event(CancelOrdersState.Loading))

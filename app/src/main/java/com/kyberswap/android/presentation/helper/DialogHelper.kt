@@ -1,7 +1,9 @@
 package com.kyberswap.android.presentation.helper
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
@@ -20,6 +22,8 @@ import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.presentation.main.alert.EligibleTokenAdapter
 import com.kyberswap.android.presentation.main.alert.Passport
 import com.kyberswap.android.presentation.main.alert.PassportAdapter
+import com.kyberswap.android.util.ext.colorize
+import com.kyberswap.android.util.ext.underline
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
@@ -128,6 +132,40 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
 
         dialog.show()
+    }
+
+    fun showBottomSheetExtraDialog(order: Order) {
+
+        val binding = DataBindingUtil.inflate<DialogExtraBottomSheetBinding>(
+            LayoutInflater.from(activity), R.layout.dialog_extra_bottom_sheet, null, false
+        )
+
+        val dialog = BottomSheetDialog(activity)
+        dialog.setContentView(binding.root)
+
+        binding.order = order
+        binding.executePendingBindings()
+        binding.tvWhy.setOnClickListener {
+            openUrl(activity.getString(R.string.extra_url))
+
+
+        binding.tvWhy.underline(activity.getString(R.string.question_why))
+
+        binding.tvExtra.colorize(order.extraDisplay, R.color.color_order_extra)
+
+        dialog.show()
+    }
+
+    private fun openUrl(url: String?) {
+        if (url.isNullOrEmpty()) return
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse(url)
+
+        val packageManager = activity.packageManager
+        if (packageManager != null && intent.resolveActivity(packageManager) != null) {
+            activity.startActivity(intent)
+
+
     }
 
 

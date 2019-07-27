@@ -117,6 +117,18 @@ fun TextView.colorRate(rate: BigDecimal) {
     }
 }
 
+fun TextView.colorize(colorString: String, color: Int) {
+    val spannableString = SpannableString(text)
+    spannableString.setSpan(
+        ForegroundColorSpan(ContextCompat.getColor(context, color)),
+        spannableString.indexOf(colorString),
+        spannableString.indexOf(colorString) + colorString.length,
+        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+    )
+
+    setText(spannableString, TextView.BufferType.SPANNABLE)
+}
+
 fun TextView.underline(underline: String) {
     try {
 

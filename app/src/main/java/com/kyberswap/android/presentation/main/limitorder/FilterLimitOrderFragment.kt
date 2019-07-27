@@ -14,6 +14,7 @@ import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_limit_order_filter.*
 import javax.inject.Inject
@@ -120,20 +121,20 @@ class FilterLimitOrderFragment : BaseFragment() {
 
         binding.tvApply.setOnClickListener {
             filterSetting?.orderFilter?.apply {
-                addresses = addressAdapter.getData().filter {
-                    it.isSelected
+                unSelectedAddresses = addressAdapter.getData().filter {
+                    !it.isSelected
         .map {
                     it.name
         
-                pairs = tokenPairAdapter.getData().filter {
-                    it.isSelected
+                unSelectedPairs = tokenPairAdapter.getData().filter {
+                    !it.isSelected
         .map {
                     val pair = it.name.split(OrderFilter.TOKEN_PAIR_SEPARATOR)
                     pair.first() to pair.last()
-        .toMap()
+        
 
-                status = statusAdapter.getData().filter {
-                    it.isSelected
+                unSelectedStatus = statusAdapter.getData().filter {
+                    !it.isSelected
         .map {
                     it.name
         
@@ -169,6 +170,27 @@ class FilterLimitOrderFragment : BaseFragment() {
     
 )
 
+    }
+
+    fun getLoginStatus() {
+        viewModel.getLoginStatus()
+        viewModel.getLoginStatusCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is UserInfoState.Success -> {
+                        if (!(state.userInfo != null && state.userInfo.uid > 0)) {
+                            activity?.onBackPressed()
+                
+            
+                    is UserInfoState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+            
+        
+    
+)
     }
 
     private fun toDisplayStatus(status: List<FilterItem>): List<FilterItem> {

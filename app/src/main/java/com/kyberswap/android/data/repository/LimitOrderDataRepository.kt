@@ -63,17 +63,11 @@ class LimitOrderDataRepository @Inject constructor(
         return Flowable.fromCallable {
             val orderFilter = orderFilterDao.filter
             if (orderFilterDao.filter == null) {
-                val pairs = mutableMapOf<String, String>()
-                val address = mutableSetOf<String>()
-                limitOrderDao.all.forEach {
-                    pairs[it.src] = it.dst
-                    address.add(it.userAddr)
-        
 
                 val default = OrderFilter(
-                    status = FilterSetting.DEFAULT_ORDER_STATUS,
-                    pairs = pairs,
-                    addresses = address.toList()
+                    unSelectedStatus = listOf(),
+                    unSelectedPairs = listOf(),
+                    unSelectedAddresses = listOf()
                 )
                 orderFilterDao.insertOrderFilter(default)
                 default

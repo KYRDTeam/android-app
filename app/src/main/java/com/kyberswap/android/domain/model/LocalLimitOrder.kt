@@ -79,6 +79,12 @@ data class LocalLimitOrder(
             this.fee == other.fee
     }
 
+    fun isSameTokenPairForAddress(other: LocalLimitOrder?): Boolean {
+        return this.tokenSource.tokenSymbol == other?.tokenSource?.tokenSymbol &&
+            this.tokenDest.tokenSymbol == other.tokenDest.tokenSymbol &&
+            this.userAddr == other.userAddr
+    }
+
     val displayGasFee: String
         get() = StringBuilder()
             .append("≈ ")

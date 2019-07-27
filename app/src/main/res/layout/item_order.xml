@@ -9,6 +9,8 @@
             name="order"
             type="com.kyberswap.android.domain.model.Order" />
 
+        <import type="android.view.View" />
+
     </data>
 
     <com.daimajia.swipe.SwipeLayout
@@ -190,6 +192,24 @@
                 app:layout_constraintStart_toStartOf="@+id/textView70"
                 app:layout_constraintTop_toBottomOf="@+id/textView70"
                 tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/tvExtra"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:background="?selectableItemBackground"
+                android:gravity="start"
+                android:padding="2dp"
+                android:text="@{order.extraDisplay}"
+                android:textColor="@color/color_order_extra"
+                android:textSize="10sp"
+                android:visibility="@{order.hasExtra ? View.VISIBLE : View.GONE}"
+                app:layout_constraintEnd_toEndOf="@+id/textView69"
+                app:layout_constraintStart_toStartOf="@+id/textView69"
+                app:layout_constraintTop_toBottomOf="@+id/textView69"
+                tools:ignore="SmallSp"
+                tools:text="+ 12.987 KNC" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

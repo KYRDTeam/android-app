@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "e274a095695f35a2d54c44543a529bdd",
+    "identityHash": "8d4679e24b33fe0e7fa05b336abf38f4",
     "entities": [
       {
         "tableName": "tokens",
@@ -1291,7 +1291,7 @@
       },
       {
         "tableName": "orders",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `userAddr` TEXT NOT NULL, `src` TEXT NOT NULL, `dst` TEXT NOT NULL, `srcAmount` TEXT NOT NULL, `minRate` TEXT NOT NULL, `nonce` TEXT NOT NULL, `fee` TEXT NOT NULL, `status` TEXT NOT NULL, `txHash` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `userAddr` TEXT NOT NULL, `src` TEXT NOT NULL, `dst` TEXT NOT NULL, `srcAmount` TEXT NOT NULL, `minRate` TEXT NOT NULL, `nonce` TEXT NOT NULL, `fee` TEXT NOT NULL, `receive` TEXT NOT NULL, `status` TEXT NOT NULL, `txHash` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -1338,6 +1338,12 @@
           {
             "fieldPath": "fee",
             "columnName": "fee",
+            "affinity": "TEXT",
+            "notNull": true
+  ,
+          {
+            "fieldPath": "receive",
+            "columnName": "receive",
             "affinity": "TEXT",
             "notNull": true
   ,
@@ -2263,7 +2269,7 @@
       },
       {
         "tableName": "order_filter",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`walletAddress` TEXT NOT NULL, `oldest` INTEGER NOT NULL, `pairs` TEXT NOT NULL, `addresses` TEXT NOT NULL, `status` TEXT NOT NULL, PRIMARY KEY(`walletAddress`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`walletAddress` TEXT NOT NULL, `oldest` INTEGER NOT NULL, `unSelectedPairs` TEXT NOT NULL, `unSelectedAddresses` TEXT NOT NULL, `unSelectedStatus` TEXT NOT NULL, PRIMARY KEY(`walletAddress`))",
         "fields": [
           {
             "fieldPath": "walletAddress",
@@ -2278,20 +2284,20 @@
             "notNull": true
   ,
           {
-            "fieldPath": "pairs",
-            "columnName": "pairs",
+            "fieldPath": "unSelectedPairs",
+            "columnName": "unSelectedPairs",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
-            "fieldPath": "addresses",
-            "columnName": "addresses",
+            "fieldPath": "unSelectedAddresses",
+            "columnName": "unSelectedAddresses",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
-            "fieldPath": "status",
-            "columnName": "status",
+            "fieldPath": "unSelectedStatus",
+            "columnName": "unSelectedStatus",
             "affinity": "TEXT",
             "notNull": true
   
@@ -2695,7 +2701,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e274a095695f35a2d54c44543a529bdd')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8d4679e24b33fe0e7fa05b336abf38f4')"
     ]
   }
 }

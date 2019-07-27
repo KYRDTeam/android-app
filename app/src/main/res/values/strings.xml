@@ -209,7 +209,7 @@
     <string name="filter_see_less">see less</string>
     <string name="filter_reset">Reset</string>
     <string name="filter_apply">Apply</string>
-    <string name="manage_orders">Manage Orders</string>
+    <string name="manage_orders">Manage Yours Orders</string>
     <string name="related_orders">Related Orders</string>
     <string name="submit_order">Submit Order</string>
     <string name="condition">Condition</string>
@@ -246,7 +246,7 @@
     <string name="limit_order_broadcasted_message">Your transaction will be broadcasted when rate of %s</string>
     <string name="limit_order_to">To:</string>
     <string name="limit_order_confirm_info"><![CDATA[Don’t worry. You will not be charged now. You pay fees only when transaction is executed (broadcasted & mined).]]></string>
-    <string name="eth_star_notification">ETH* Ether that is compatible to ERC20 standard. 1 WETH is equal to 1 ETH. Limit Order works with WETH (not ETH).</string>
+    <string name="eth_star_notification">ETH* is the combination of ETH and WETH.</string>
     <string name="date">Date</string>
     <string name="sort_latest">Latest</string>
     <string name="sort_oldest">Oldest</string>
@@ -471,6 +471,9 @@
     <string name="setting_medium_url">https://medium.com/@kyberswap</string>
     <string name="setting_linkedin_url">https://www.linkedin.com/company/kybernetwork</string>
     <string name="setting_share_info">I just found an awesome wallet app. Check out here https://apple.co/2USHOtx</string>
+    <string name="order_why_order_not_filled">https://kyberswap.com/faq#I-submitted-the-limit-order-but-it-was-not-triggered-even-though-my-desired-price-was-hit</string>
+    <string name="extra_url">https://kyberswap.com/faq#Why-received-amount-is-higher-than-estimated-amount</string>
+    <string name="order_fee_url">https://kyberswap.com/faq#Why-received-amount-is-higher-than-estimated-amount</string>
     <string name="item_token_header_bal">Bal</string>
     <string name="token_new">New</string>
     <string name="add_fav_success">Successfully added to your favourite</string>
@@ -533,12 +536,20 @@
     <string name="change_rate">Change Rate</string>
     <string name="hold_from_2000_knc_to_get_discount_for_your_orders_learn_more">Hold from 2000 KNC to get discount for your orders. Learn more</string>
     <string name="limit_order_fee_no_discount">Fee: %s %s </string>
-    <string name="market_rate">Market\n Rate</string>
+    <string name="market_rate">Market Rate</string>
     <string name="current_rate">Current Rate:</string>
     <string name="open_order">Open Order</string>
     <string name="order_history">Order History</string>
     <string name="wonder_why_your_orders_are_not_filled">Wonder why your orders are not filled?</string>
     <string name="swipe_left_to_cancel_order">Swipe left to cancel order</string>
+    <string name="sign_in_required_title">Sign in required</string>
+    <string name="sign_in_to_use_limit_order_feature">You must sign in to use Limit Order feature</string>
+    <string name="question_why">Why?</string>
+    <string name="actual_receive_amount">Actual receive amount: %s</string>
+    <string name="estimated_amount">Estimated amount: %s</string>
+    <string name="extra_amount">You got extra amount: %s</string>
+    <string name="you_do_not_have_any_orders">You do not have any orders</string>
+    <string name="order_submitted_message">Your order have been submitted successfully to the server. Your can check your order in the order list</string>
 
 
 </resources>
