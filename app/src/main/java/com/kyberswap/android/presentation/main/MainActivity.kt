@@ -34,7 +34,9 @@ import com.kyberswap.android.presentation.main.alert.ManageAlertFragment
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
 import com.kyberswap.android.presentation.main.balance.WalletAdapter
+import com.kyberswap.android.presentation.main.limitorder.FilterLimitOrderFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
+import com.kyberswap.android.presentation.main.limitorder.ManageOrderFragment
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.profile.kyc.PassportFragment
 import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
@@ -144,9 +146,19 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                 currentFragment = adapter?.getRegisteredFragment(position)
                 showPendingTransaction()
                 when (currentFragment) {
-                    is LimitOrderFragment -> (currentFragment as LimitOrderFragment).run {
-                        getLoginStatus()
-                        getNonce()
+                    is LimitOrderFragment -> {
+                        (currentFragment as LimitOrderFragment).run {
+                            getLoginStatus()
+                        }
+
+                        currentFragment?.childFragmentManager?.fragments?.forEach {
+                            if (it is ManageOrderFragment) {
+                                it.getLoginStatus()
+                                return
+                            } else if (it is FilterLimitOrderFragment) {
+                                it.getLoginStatus()
+                            }
+                        }
                     }
                     is SettingFragment -> {
                         (currentFragment as SettingFragment).getLoginStatus()

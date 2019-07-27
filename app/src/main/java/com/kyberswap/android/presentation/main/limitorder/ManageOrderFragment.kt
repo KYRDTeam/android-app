@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,7 +18,9 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.openUrl
 import javax.inject.Inject
 
 
@@ -36,6 +39,10 @@ class ManageOrderFragment : BaseFragment() {
 
     private var wallet: Wallet? = null
 
+    private var isHideFaq: Boolean = false
+
+    private var isHideInstruction: Boolean = false
+
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -43,10 +50,15 @@ class ManageOrderFragment : BaseFragment() {
         ViewModelProviders.of(this, viewModelFactory).get(ManageOrderViewModel::class.java)
     }
 
-    private var currentSelectedView: View? = null
+    private var currentSelectedView: TextView? = null
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
+
+
+    var orders: List<OrderItem> = mutableListOf()
+
+    var orderAdapter: OrderAdapter? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,16 +83,24 @@ class ManageOrderFragment : BaseFragment() {
             RecyclerView.VERTICAL,
             false
         )
-        val orderAdapter =
-            OrderAdapter(
-                appExecutors
-            ) {
 
-                dialogHelper.showCancelOrder(it) {
-                    viewModel.cancelOrder(it)
-                }
-            }
-        orderAdapter.mode = Attributes.Mode.Single
+        if (orderAdapter == null) {
+            orderAdapter =
+                OrderAdapter(
+                    appExecutors
+                    , {
+
+                        dialogHelper.showCancelOrder(it) {
+                            viewModel.cancelOrder(it)
+                        }
+                    }, {
+                        dialogHelper.showBottomSheetExtraDialog(it)
+
+                    }, {
+                        openUrl(getString(R.string.transaction_etherscan_endpoint_url) + it.txHash)
+                    })
+        }
+        orderAdapter?.mode = Attributes.Mode.Single
         binding.rvOrder.adapter = orderAdapter
 
         binding.imgBack.setOnClickListener {
@@ -94,46 +114,58 @@ class ManageOrderFragment : BaseFragment() {
             )
         }
 
-        binding.tvOpenOrder.isSelected = true
-        currentSelectedView = binding.tvOpenOrder
+        if (currentSelectedView != null) {
+            if (currentSelectedView?.text == binding.tvOpenOrder.text) {
+                binding.tvOpenOrder.isSelected = true
+                currentSelectedView = binding.tvOpenOrder
+            } else {
+                binding.tvOrderHistory.isSelected = true
+                currentSelectedView = binding.tvOrderHistory
+            }
+        } else {
+
+            binding.tvOpenOrder.isSelected = true
+            currentSelectedView = binding.tvOpenOrder
+        }
 
         listOf(binding.tvOpenOrder, binding.tvOrderHistory)
             .forEach { tv ->
                 tv.setOnClickListener {
                     if (currentSelectedView != it) {
                         currentSelectedView?.isSelected = false
-                        currentSelectedView = it
+                        currentSelectedView = tv
                     }
                     it.isSelected = true
+                    orderAdapter?.submitList(null)
+                    filterByTab(tv == binding.tvOpenOrder)
+                    showFaq(!isHideFaq)
+                    showInstruction(!isHideInstruction)
 
                 }
             }
 
         wallet?.let {
-            viewModel.getFilter()
+            viewModel.getAllOrders()
         }
 
-//        viewModel.getFilterCallback.observe(viewLifecycleOwner, Observer {
-//            it?.getContentIfNotHandled()?.let { state ->
-//                when (state) {
-//                    is GetFilterState.Success -> {
-//                        orderAdapter.submitList(listOf())
-//                        orderAdapter.submitList(
-//                            viewModel.filterOrders(
-//                                state.orderFilter
-//                            )
-//                        )
-////                        filterByDate(orderAdapter)
-//                    }
-//                    is GetFilterState.ShowError -> {
-//                        showAlert(
-//                            state.message ?: getString(R.string.something_wrong),
-//                            R.drawable.ic_info_error
-//                        )
-//                    }
-//                }
-//            }
-//        })
+
+        viewModel.getRelatedOrderCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetRelatedOrdersState.Success -> {
+                        orders = state.orders
+
+                        filterByTab(currentSelectedView == binding.tvOpenOrder)
+                    }
+                    is GetRelatedOrdersState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+                    }
+                }
+            }
+        })
 
 
         viewModel.cancelOrderCallback.observe(viewLifecycleOwner, Observer {
@@ -141,6 +173,7 @@ class ManageOrderFragment : BaseFragment() {
                 showProgress(state == CancelOrdersState.Loading)
                 when (state) {
                     is CancelOrdersState.Success -> {
+                        viewModel.getAllOrders()
 
                     }
                     is CancelOrdersState.ShowError -> {
@@ -152,41 +185,76 @@ class ManageOrderFragment : BaseFragment() {
                 }
             }
         })
+
+        binding.imgFaq.setOnClickListener {
+            isHideFaq = true
+            showFaq(false)
+        }
+
+        binding.imgInstruction.setOnClickListener {
+            isHideInstruction = true
+            showInstruction(false)
+        }
+
+        binding.tvFaq.setOnClickListener {
+            openUrl(getString(R.string.order_why_order_not_filled))
+        }
+
     }
 
-//    private fun filterByDate(orderAdapter: OrderAdapter) {
-//        currentSelectedView?.let {
-//            orderAdapter.submitList(listOf())
-//            orderAdapter.submitList(getFilterList(it.id))
-//        }
-//    }
+    private fun showFaq(isShow: Boolean) {
+        binding.tvFaq.visibility = if (isShow) View.VISIBLE else View.GONE
+        binding.imgFaq.visibility = if (isShow) View.VISIBLE else View.GONE
+    }
 
-//    private fun getFilterList(id: Int): List<Order> {
-//        val value = when (id) {
-//            R.id.tv1Day -> {
-//                DAY_IN_SEC
-//            }
-//            R.id.tv1Week -> {
-//                7 * DAY_IN_SEC
-//            }
-//            R.id.tv1Month -> {
-//                30 * DAY_IN_SEC
-//            }
-//            else -> {
-//                Int.MAX_VALUE
-//            }
-//        }
-//
-//        val now = System.currentTimeMillis() / 1000
-//        return viewModel.getCurrentFilterList().filter {
-//            it.createdAt >= now - value
-//        }
-//
-//    }
+    private fun showInstruction(isShow: Boolean) {
+        binding.tvInstruction.visibility = if (isShow) View.VISIBLE else View.GONE
+        binding.imgInstruction.visibility = if (isShow) View.VISIBLE else View.GONE
+    }
+
+
+    fun getLoginStatus() {
+        viewModel.getLoginStatus()
+        viewModel.getLoginStatusCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is UserInfoState.Success -> {
+                        if (!(state.userInfo != null && state.userInfo.uid > 0)) {
+                            activity?.onBackPressed()
+                        }
+                    }
+                    is UserInfoState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+                    }
+                }
+            }
+        })
+    }
+
+    private fun filterByTab(isOpenTab: Boolean) {
+
+        val orders = viewModel.ordersWrapper?.orders?.filter {
+            it.isOpen == isOpenTab
+        } ?: listOf()
+
+        val items = viewModel.toOrderItems(
+            orders,
+            viewModel.ordersWrapper?.asc == true
+        )
+        orderAdapter?.submitList(listOf())
+        orderAdapter?.submitList(
+            items
+        )
+
+        binding.isEmpty = items.isEmpty()
+        binding.executePendingBindings()
+    }
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"
-        const val DAY_IN_SEC = 24 * 60 * 60
         fun newInstance(wallet: Wallet?) =
             ManageOrderFragment().apply {
                 arguments = Bundle().apply {

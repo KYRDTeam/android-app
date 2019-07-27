@@ -24,6 +24,7 @@ data class Order(
     val minRate: BigDecimal = BigDecimal.ZERO,
     val nonce: String = "",
     val fee: BigDecimal = BigDecimal.ZERO,
+    val receive: BigDecimal = BigDecimal.ZERO,
     val status: String = "",
     val txHash: String = "",
     val createdAt: Long = 0,
@@ -39,6 +40,7 @@ data class Order(
         entity.minRate,
         entity.nonce,
         entity.fee,
+        entity.receive,
         entity.status,
         entity.txHash,
         entity.createdAt,
@@ -60,6 +62,7 @@ data class Order(
         notification.minRate,
         "",
         notification.fee,
+        notification.receive,
         Status.FILLED.value,
         notification.txHash,
         notification.createdAt,
@@ -92,6 +95,13 @@ data class Order(
             .append(dst)
             .toString()
 
+    val receviedDisplay: String
+        get() = StringBuilder()
+            .append(receive.toDisplayNumber())
+            .append(" ")
+            .append(dst)
+            .toString()
+
 
     val destDisplayFee: String
         get() = StringBuilder()
@@ -100,11 +110,34 @@ data class Order(
             .append(src)
             .toString()
 
+    private val extra: BigDecimal
+        get() = receive.minus((srcAmount - fee).multiply(minRate))
+
+    private val extraValue: String
+        get() = if (extra > BigDecimal.ZERO) extra.toDisplayNumber() else ""
+
+    val extraDisplay: String
+        get() = if (extraValue.isNotEmpty())
+            StringBuilder().append(
+                "+ "
+            ).append(extraValue)
+                .append(" ")
+                .append(dst)
+                .toString()
+        else ""
+
+    val hasExtra: Boolean
+        get() = extraDisplay.isNotEmpty()
+
+
     val isPending: Boolean
         get() = status.toLowerCase() == Status.OPEN.value || status.toLowerCase() == Status.IN_PROGRESS.value
 
     val isOpen: Boolean
         get() = status.toLowerCase() == Status.OPEN.value
+
+    val isMined: Boolean
+        get() = status.toLowerCase() == Status.FILLED.value
 
     val displayedDate: String
         get() = formatterShort.format(Date(createdAt * 1000L))

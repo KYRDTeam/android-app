@@ -113,6 +113,8 @@ class LimitOrderViewModel @Inject constructor(
 
     var relatedOrders = mutableListOf<Order>()
 
+    private var currentLimitOrder: LocalLimitOrder? = null
+
 
     fun getLoginStatus() {
         getLoginStatusUseCase.dispose()
@@ -161,6 +163,7 @@ class LimitOrderViewModel @Inject constructor(
                         Event(GetLocalLimitOrderState.Success(order))
                     getRelatedOrders(order, wallet)
                     getNonce(order, wallet)
+                    currentLimitOrder = it
                 },
                 Consumer {
                     it.printStackTrace()
@@ -366,6 +369,7 @@ class LimitOrderViewModel @Inject constructor(
     ) {
         if (order == null || wallet == null) return
         getLimitOrderFee.dispose()
+        _getFeeCallback.postValue(Event(GetFeeState.Loading))
         getLimitOrderFee.execute(
             Consumer {
                 _getFeeCallback.value = Event(GetFeeState.Success(it))

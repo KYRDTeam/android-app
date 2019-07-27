@@ -109,6 +109,10 @@ class OrderConfirmFragment : BaseFragment() {
     }
 
     private fun onSubmitOrderSuccess() {
+        showAlertWithoutIcon(
+            title = getString(R.string.title_success),
+            message = getString(R.string.order_submitted_message)
+        )
         val fm = (activity as MainActivity).getCurrentFragment()?.childFragmentManager
         if (fm != null)
             for (i in 0 until fm.backStackEntryCount) {

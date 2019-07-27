@@ -18,7 +18,9 @@ import com.kyberswap.android.presentation.base.DataBoundViewHolder
 
 class OrderAdapter(
     appExecutors: AppExecutors,
-    private val onCancelClick: ((Order) -> Unit)?
+    private val onCancelClick: ((Order) -> Unit)?,
+    private val onExtraClick: ((Order) -> Unit)? = {},
+    private val onMinedOrderClick: ((Order) -> Unit)? = {}
 
 ) : DataBoundListSwipeAdapter<OrderItem, ViewDataBinding>(
     appExecutors,
@@ -49,7 +51,6 @@ class OrderAdapter(
         }
     }
 ) {
-
 
     val orderList: List<Order>
         get() = getData().map {
@@ -94,6 +95,11 @@ class OrderAdapter(
         }
         binding.order = item
         binding.executePendingBindings()
+        if (item.isMined) {
+            binding.clHolder.setOnClickListener {
+                onMinedOrderClick?.invoke(item)
+            }
+        }
 
 
     }
@@ -116,6 +122,10 @@ class OrderAdapter(
 
                 binding.clHolder.setBackgroundColor(background)
 
+                binding.tvExtra.setOnClickListener {
+                    onExtraClick?.invoke(item.order)
+                }
+
             }
 
             is OrderItem.ItemOdd -> {
@@ -127,6 +137,9 @@ class OrderAdapter(
                 )
 
                 binding.clHolder.setBackgroundColor(background)
+                binding.tvExtra.setOnClickListener {
+                    onExtraClick?.invoke(item.order)
+                }
             }
         }
     }
@@ -160,3 +173,4 @@ class OrderAdapter(
         private const val TYPE_ITEM = 2
     }
 }
+

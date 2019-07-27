@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="order"
+            type="com.kyberswap.android.domain.model.Order" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_info_extra" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvReceivedAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{String.format(@string/actual_receive_amount, order.receviedDisplay)}"
+                android:textColor="#141927"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@{String.format(@string/estimated_amount, order.destDisplay)}"
+                android:textColor="#141927"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvExtra"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@{String.format(@string/extra_amount, order.extraDisplay)}"
+                android:textColor="#141927"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvWhy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="?selectableItemBackground"
+                android:padding="4dp"
+                android:text="@string/question_why"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#ff9008"
+                android:textSize="14sp" />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>

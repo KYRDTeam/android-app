@@ -24,29 +24,29 @@ class GetLimitOrdersFilterSettingUseCase @Inject constructor(
             limitOrderRepository.getLimitOrders()
         ) { filter, orders ->
 
-            val pairs = mutableMapOf<String, String>()
+            val pairs = mutableSetOf<Pair<String, String>>()
             val address = mutableSetOf<String>()
             orders.forEach {
-                pairs[it.src] = it.dst
+                pairs.add(it.src to it.dst)
                 address.add(it.userAddr)
             }
-            val selectedStatus = filter.status
-            val selectedAddress = filter.addresses
-            val selectedPair = filter.pairs
+            val unSelectedStatus = filter.unSelectedStatus
+            val unSelectedAddress = filter.unSelectedAddresses
+            val unSelectedPair = filter.unSelectedPairs
             val pairsSetting = pairs.map {
                 FilterItem(
-                    selectedPair[it.key] == it.value, StringBuilder().append(it.key).append(
+                    !unSelectedPair.contains(it), StringBuilder().append(it.first).append(
                         TOKEN_PAIR_SEPARATOR
-                    ).append(it.value).toString()
+                    ).append(it.second).toString()
                 )
             }
 
             val addressSetting = address.map {
-                FilterItem(selectedAddress.contains(it), it, it.displayWalletAddress())
+                FilterItem(!unSelectedAddress.contains(it), it, it.displayWalletAddress())
             }
 
             val statusSettings = FilterSetting.DEFAULT_ORDER_STATUS.map {
-                FilterItem(selectedStatus.contains(it), it)
+                FilterItem(!unSelectedStatus.contains(it), it)
             }
 
             FilterSetting(pairsSetting, statusSettings, addressSetting, filter.oldest, filter)

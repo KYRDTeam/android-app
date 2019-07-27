@@ -126,27 +126,41 @@ class TransactionDataRepository @Inject constructor(
         val orderByAddress =
             limitOrderDao.findLocalLimitOrderByAddress(wallet.address)
         orderByAddress?.let { order ->
-            if (order.tokenSource.symbol == updatedBalanceToken.tokenSymbol) {
-                limitOrderDao.updateOrder(
+            when {
+                order.tokenSource.tokenSymbol == updatedBalanceToken.tokenSymbol -> limitOrderDao.updateOrder(
                     order.copy(
                         tokenSource = order.tokenSource.updateBalance(
                             updatedBalanceToken.currentBalance
                         )
                     )
                 )
-            } else if (order.tokenSource.tokenSymbol == Token.ETH_SYMBOL_STAR && updatedBalanceToken.tokenSymbol == Token.ETH_SYMBOL) {
-                val wethToken = tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)
-                val ethBalance = updatedBalanceToken.currentBalance
-                val wethBalance = wethToken?.currentBalance ?: BigDecimal.ZERO
+                order.tokenSource.tokenSymbol == Token.ETH_SYMBOL_STAR && updatedBalanceToken.tokenSymbol == Token.ETH_SYMBOL -> {
+                    val wethToken = tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)
+                    val ethBalance = updatedBalanceToken.currentBalance
+                    val wethBalance = wethToken?.currentBalance ?: BigDecimal.ZERO
 
-                limitOrderDao.updateOrder(
-                    order.copy(
-                        tokenSource = order.tokenSource.updateBalance(
-                            ethBalance.plus(wethBalance)
+                    limitOrderDao.updateOrder(
+                        order.copy(
+                            tokenSource = order.tokenSource.updateBalance(
+                                ethBalance.plus(wethBalance)
+                            )
                         )
                     )
-                )
 
+                }
+                order.tokenSource.tokenSymbol == Token.ETH_SYMBOL_STAR && updatedBalanceToken.tokenSymbol == Token.WETH_SYMBOL -> {
+                    val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)
+                    val wethBalance = updatedBalanceToken.currentBalance
+                    val ethBalance = ethToken?.currentBalance ?: BigDecimal.ZERO
+
+                    limitOrderDao.updateOrder(
+                        order.copy(
+                            tokenSource = order.tokenSource.updateBalance(
+                                ethBalance.plus(wethBalance)
+                            )
+                        )
+                    )
+                }
             }
         }
     }

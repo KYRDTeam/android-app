@@ -2,19 +2,21 @@ package com.kyberswap.android.presentation.main.limitorder
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.OrderFilter
 import com.kyberswap.android.domain.usecase.limitorder.GetLimitOrdersFilterSettingUseCase
 import com.kyberswap.android.domain.usecase.limitorder.SaveLimitOrderFilterUseCase
+import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.main.GetLoginStatusViewModel
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class FilterViewModel @Inject constructor(
     private val saveLimitOrderFilterUseCase: SaveLimitOrderFilterUseCase,
-    private val getLimitOrdersFilterSettingUseCase: GetLimitOrdersFilterSettingUseCase
-) : ViewModel() {
+    private val getLimitOrdersFilterSettingUseCase: GetLimitOrdersFilterSettingUseCase,
+    val getLoginStatusUseCase: GetLoginStatusUseCase
+) : GetLoginStatusViewModel(getLoginStatusUseCase) {
 
     private val _getFilterSettingCallback = MutableLiveData<Event<GetFilterSettingState>>()
     val getFilterSettingCallback: LiveData<Event<GetFilterSettingState>>
@@ -39,6 +41,12 @@ class FilterViewModel @Inject constructor(
             null
         )
 
+    }
+
+    override fun onCleared() {
+        saveLimitOrderFilterUseCase.dispose()
+        getLimitOrdersFilterSettingUseCase.dispose()
+        super.onCleared()
     }
 
     fun saveOrderFilter(orderFilter: OrderFilter) {

@@ -15,11 +15,11 @@ data class OrderFilter(
     var walletAddress: String = "",
     var oldest: Boolean = false,
     @TypeConverters(TokenPairTypeConverter::class)
-    var pairs: Map<String, String> = hashMapOf(),
+    var unSelectedPairs: List<Pair<String, String>> = listOf(),
     @TypeConverters(ListStringConverter::class)
-    var addresses: List<String> = listOf(),
+    var unSelectedAddresses: List<String> = listOf(),
     @TypeConverters(ListStringConverter::class)
-    var status: List<String> = listOf()
+    var unSelectedStatus: List<String> = listOf()
 ) : Parcelable {
 
     companion object {

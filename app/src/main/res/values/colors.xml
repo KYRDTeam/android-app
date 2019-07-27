@@ -62,6 +62,7 @@
     <color name="text_order_status_invalidated">#172b4d</color>
     <color name="text_color_trigger_alert_price">#9ea1aa</color>
     <color name="step_completed">#fb795d</color>
+    <color name="color_order_extra">#31cb9e</color>
 
     <array name="tab_colors">
         <item name="tab_1">#fea34c</item>
