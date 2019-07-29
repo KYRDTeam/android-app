@@ -25,18 +25,15 @@ import com.kyberswap.android.domain.model.NotificationLimitOrder
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
+import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.landing.CreateWalletState
-import com.kyberswap.android.presentation.main.alert.AlertMethodFragment
-import com.kyberswap.android.presentation.main.alert.ManageAlertFragment
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
 import com.kyberswap.android.presentation.main.balance.WalletAdapter
-import com.kyberswap.android.presentation.main.limitorder.FilterLimitOrderFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
-import com.kyberswap.android.presentation.main.limitorder.ManageOrderFragment
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.profile.kyc.PassportFragment
 import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
@@ -152,22 +149,16 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                         }
 
                         currentFragment?.childFragmentManager?.fragments?.forEach {
-                            if (it is ManageOrderFragment) {
-                                it.getLoginStatus()
-                                return
-                            } else if (it is FilterLimitOrderFragment) {
-                                it.getLoginStatus()
+                            when (it) {
+                                is LoginState -> it.getLoginStatus()
                             }
                         }
                     }
                     is SettingFragment -> {
                         (currentFragment as SettingFragment).getLoginStatus()
                         currentFragment?.childFragmentManager?.fragments?.forEach {
-                            if (it is ManageAlertFragment) {
-                                it.getLoginStatus()
-                                return
-                            } else if (it is AlertMethodFragment) {
-                                it.getLoginStatus()
+                            when (it) {
+                                is LoginState -> it.getLoginStatus()
                             }
                         }
                     }

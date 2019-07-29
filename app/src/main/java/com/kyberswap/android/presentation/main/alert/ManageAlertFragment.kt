@@ -16,6 +16,7 @@ import com.kyberswap.android.databinding.FragmentManageAlertBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.profile.UserInfoState
@@ -25,7 +26,7 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
 
 
-class ManageAlertFragment : BaseFragment() {
+class ManageAlertFragment : BaseFragment(), LoginState {
 
     private lateinit var binding: FragmentManageAlertBinding
 
@@ -64,7 +65,7 @@ class ManageAlertFragment : BaseFragment() {
     }
 
 
-    fun getLoginStatus() {
+    override fun getLoginStatus() {
         viewModel.getLoginStatus()
     }
 

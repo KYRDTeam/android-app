@@ -13,6 +13,7 @@ import com.kyberswap.android.databinding.FragmentLimitOrderFilterBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.di.ViewModelFactory
@@ -20,7 +21,7 @@ import kotlinx.android.synthetic.main.fragment_limit_order_filter.*
 import javax.inject.Inject
 
 
-class FilterLimitOrderFragment : BaseFragment() {
+class FilterLimitOrderFragment : BaseFragment(), LoginState {
 
     private lateinit var binding: FragmentLimitOrderFilterBinding
 
@@ -172,7 +173,7 @@ class FilterLimitOrderFragment : BaseFragment() {
 
     }
 
-    fun getLoginStatus() {
+    override fun getLoginStatus() {
         viewModel.getLoginStatus()
         viewModel.getLoginStatusCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->

@@ -218,6 +218,7 @@
                         android:ellipsize="start"
                         android:gravity="end"
                         android:hint="@string/default_swap_amount"
+                        android:imeOptions="actionDone"
                         android:inputType="numberDecimal"
                         android:singleLine="true"
                         android:textColor="#fea34c"
@@ -267,6 +268,7 @@
                         android:ellipsize="start"
                         android:gravity="end"
                         android:hint="@string/default_swap_amount"
+                        android:imeOptions="actionDone"
                         android:inputType="numberDecimal"
                         android:singleLine="true"
                         android:textColor="#141927"
@@ -452,7 +454,7 @@
 
                         tools:layout_editor_absoluteX="121dp" />
 
-                    <EditText
+                    <com.kyberswap.android.presentation.common.ClearableEditText
                         android:id="@+id/edtRate"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
@@ -461,12 +463,13 @@
                         android:layout_marginEnd="2dp"
                         android:layout_marginBottom="2dp"
                         android:background="@android:color/white"
+                        android:drawablePadding="8dp"
                         android:gravity="center|end"
                         android:hint="@string/default_swap_amount"
                         android:imeOptions="actionDone"
                         android:inputType="numberDecimal"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="20dp"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
                         android:textColor="#141927"
                         android:textSize="24sp"
                         app:layout_constraintBottom_toBottomOf="@+id/vRate"
