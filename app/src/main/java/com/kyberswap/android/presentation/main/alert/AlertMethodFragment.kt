@@ -17,6 +17,7 @@ import com.kyberswap.android.domain.model.AlertMethods
 import com.kyberswap.android.domain.model.Email
 import com.kyberswap.android.domain.model.Telegram
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.profile.UserInfoState
@@ -26,7 +27,7 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
 
 
-class AlertMethodFragment : BaseFragment() {
+class AlertMethodFragment : BaseFragment(), LoginState {
 
     private lateinit var binding: FragmentAlertMethodBinding
 
@@ -73,7 +74,7 @@ class AlertMethodFragment : BaseFragment() {
     }
 
 
-    fun getLoginStatus() {
+    override fun getLoginStatus() {
         viewModel.getLoginStatus()
     }
 
@@ -186,12 +187,15 @@ class AlertMethodFragment : BaseFragment() {
         emailList.addAll(emails.map {
             it.id
 )
+        activity?.let {
+            emailAdapter = ArrayAdapter(
+                it,
+                android.R.layout.simple_spinner_item,
+                emailList
+            )
 
-        emailAdapter = ArrayAdapter(
-            activity,
-            android.R.layout.simple_spinner_item,
-            emailList
-        )
+
+
 
         emailAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spnEmail.adapter = emailAdapter
@@ -209,12 +213,15 @@ class AlertMethodFragment : BaseFragment() {
                 telegramList.add(telegram.name)
     
 
-            telegramAdapter =
-                ArrayAdapter(
-                    activity,
-                    android.R.layout.simple_spinner_item,
-                    telegramList
-                )
+            activity?.let {
+                telegramAdapter =
+                    ArrayAdapter(
+                        it,
+                        android.R.layout.simple_spinner_item,
+                        telegramList
+                    )
+    
+
             telegramAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.spnTelegram.adapter = telegramAdapter
             if (telegram.active) {

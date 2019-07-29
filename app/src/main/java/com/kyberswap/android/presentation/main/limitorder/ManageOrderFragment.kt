@@ -16,6 +16,7 @@ import com.kyberswap.android.databinding.FragmentManageOrderBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.profile.UserInfoState
@@ -24,7 +25,7 @@ import com.kyberswap.android.util.ext.openUrl
 import javax.inject.Inject
 
 
-class ManageOrderFragment : BaseFragment() {
+class ManageOrderFragment : BaseFragment(), LoginState {
 
     private lateinit var binding: FragmentManageOrderBinding
 
@@ -213,7 +214,7 @@ class ManageOrderFragment : BaseFragment() {
     }
 
 
-    fun getLoginStatus() {
+    override fun getLoginStatus() {
         viewModel.getLoginStatus()
         viewModel.getLoginStatusCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->

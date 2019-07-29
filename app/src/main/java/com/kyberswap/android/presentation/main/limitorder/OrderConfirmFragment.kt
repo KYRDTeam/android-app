@@ -12,13 +12,15 @@ import com.kyberswap.android.databinding.FragmentOrderConfirmBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
 
 
-class OrderConfirmFragment : BaseFragment() {
+class OrderConfirmFragment : BaseFragment(), LoginState {
 
     private lateinit var binding: FragmentOrderConfirmBinding
 
@@ -118,6 +120,27 @@ class OrderConfirmFragment : BaseFragment() {
             for (i in 0 until fm.backStackEntryCount) {
                 fm.popBackStack()
     
+    }
+
+    override fun getLoginStatus() {
+        viewModel.getLoginStatus()
+        viewModel.getLoginStatusCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is UserInfoState.Success -> {
+                        if (!(state.userInfo != null && state.userInfo.uid > 0)) {
+                            activity?.onBackPressed()
+                
+            
+                    is UserInfoState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+            
+        
+    
+)
     }
 
     companion object {

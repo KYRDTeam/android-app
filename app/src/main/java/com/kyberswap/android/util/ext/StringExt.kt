@@ -73,6 +73,16 @@ fun String?.toBigDecimalOrDefaultZero(): BigDecimal {
     }
 }
 
+fun CharSequence?.toBigDecimalOrDefaultZero(): BigDecimal {
+    if (this.isNullOrEmpty()) return BigDecimal.ZERO
+    return try {
+        BigDecimal(this.toString())
+    } catch (ex: Exception) {
+        ex.printStackTrace()
+        BigDecimal.ZERO
+    }
+}
+
 fun String.displayWalletAddress(): String {
     return StringBuilder()
         .append(substring(0, if (length > 5) 5 else length))

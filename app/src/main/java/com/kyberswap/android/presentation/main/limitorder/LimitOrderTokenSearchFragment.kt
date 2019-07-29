@@ -21,6 +21,7 @@ import com.kyberswap.android.presentation.main.balance.GetBalanceState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.presentation.main.swap.TokenSearchLimitOrderAdapter
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.hideKeyboard
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -168,12 +169,14 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
         )
 
         binding.imgBack.setOnClickListener {
+            hideKeyboard()
             activity!!.onBackPressed()
 
 
     }
 
     private fun onSelectionComplete() {
+        hideKeyboard()
         activity?.onBackPressed()
     }
 
