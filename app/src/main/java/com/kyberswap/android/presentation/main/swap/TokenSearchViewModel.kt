@@ -43,7 +43,7 @@ class TokenSearchViewModel @Inject constructor(
             Consumer {
                 _getTokenListCallback.value = Event(
                     GetBalanceState.Success(
-                        it
+                        it.sortedByDescending { it.currentBalance }
                     )
                 )
     ,

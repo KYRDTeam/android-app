@@ -10,6 +10,7 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentOrderConfirmBinding
 import com.kyberswap.android.domain.SchedulerProvider
+import com.kyberswap.android.domain.model.LocalLimitOrder
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.LoginState
@@ -32,6 +33,8 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
 
     private var wallet: Wallet? = null
 
+    private var limitOrder: LocalLimitOrder? = null
+
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -44,7 +47,8 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        wallet = arguments!!.getParcelable(WALLET_PARAM)
+        wallet = arguments?.getParcelable(WALLET_PARAM)
+        limitOrder = arguments?.getParcelable(LIMIT_ORDER)
     }
 
     override fun onCreateView(
@@ -62,20 +66,23 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
             activity?.onBackPressed()
 
 
-        viewModel.getLimitOrders(wallet)
-        viewModel.getLocalLimitOrderCallback.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is GetLocalLimitOrderState.Success -> {
-                        binding.order = state.order
-                        binding.executePendingBindings()
-            
-                    is GetLocalLimitOrderState.ShowError -> {
+        binding.order = limitOrder
+        binding.executePendingBindings()
 
-            
-        
-    
-)
+//        viewModel.getLimitOrders(wallet)
+//        viewModel.getLocalLimitOrderCallback.observe(viewLifecycleOwner, Observer {
+//            it?.getContentIfNotHandled()?.let { state ->
+//                when (state) {
+//                    is GetLocalLimitOrderState.Success -> {
+//                        binding.order = state.order
+//                        binding.executePendingBindings()
+//            
+//                    is GetLocalLimitOrderState.ShowError -> {
+//
+//            
+//        
+//    
+//)
 
         binding.imgInfo.setOnClickListener {
             showAlert(
@@ -85,7 +92,7 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
 
 
         binding.tvCancel.setOnClickListener {
-            activity?.onBackPressed()
+            onBackPress()
 
 
         binding.tvContinue.setOnClickListener {
@@ -122,6 +129,14 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
     
     }
 
+    fun onBackPress() {
+        val fm = currentFragment.childFragmentManager
+        for (i in 0 until fm.backStackEntryCount) {
+            fm.popBackStack()
+
+
+    }
+
     override fun getLoginStatus() {
         viewModel.getLoginStatus()
         viewModel.getLoginStatusCallback.observe(viewLifecycleOwner, Observer {
@@ -145,10 +160,12 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"
-        fun newInstance(wallet: Wallet?) =
+        private const val LIMIT_ORDER = "limit_order_param"
+        fun newInstance(wallet: Wallet?, limitOrder: LocalLimitOrder?) =
             OrderConfirmFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(WALLET_PARAM, wallet)
+                    putParcelable(LIMIT_ORDER, limitOrder)
         
     
     }

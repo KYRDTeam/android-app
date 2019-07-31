@@ -18,12 +18,12 @@ interface LimitOrderApi {
         @Query("user_addr") userAddr: String
     ): Single<FeeEntity>
 
-    @GET("api/orders")
+    @GET("api/orders/related_orders")
     fun getRelatedOrders(
-        @Query("user_address") address: String,
-        @Query("src_token") src: String,
-        @Query("dest_token") dest: String,
-        @Query("status") status: String?
+        @Query("user_addr") address: String,
+        @Query("src") src: String,
+        @Query("dst") dest: String,
+        @Query("min_rate") status: String?
     ): Single<ListLimitOrderResponseEntity>
 
     @GET("api/orders/nonce")

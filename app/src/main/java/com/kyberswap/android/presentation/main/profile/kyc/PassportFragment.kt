@@ -109,7 +109,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                 
             
                     is UserInfoState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showError(state.message ?: getString(R.string.something_wrong))
             
         
     
@@ -185,7 +185,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                                     if (granted) {
                                         easyImage.openCameraForImage(this)
                              else {
-                                        showAlert(getString(R.string.permission_required))
+                                        showError(getString(R.string.permission_required))
                             
                         
                 ,
@@ -195,7 +195,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                                     if (granted) {
                                         easyImage.openGallery(this)
                              else {
-                                        showAlert(getString(R.string.permission_required))
+                                        showError(getString(R.string.permission_required))
                             
                         
                 
@@ -205,30 +205,40 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
 
         viewModel.compositeDisposable.add(
             binding.cbIssueDate.checkedChanges()
-            .observeOn(schedulerProvider.ui())
-            .subscribe {
-                binding.edtIssueDate.isEnabled = !it
-                if (!it) {
-                    binding.edtIssueDate.requestFocus()
-         else {
-                    binding.edtIssueDate.setText("")
-        
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
+                    binding.edtIssueDate.isEnabled = !it
+                    if (!it) {
+                        binding.edtIssueDate.requestFocus()
+             else {
+                        binding.edtIssueDate.setText("")
+            
 
-    )
+        )
 
         viewModel.compositeDisposable.add(
             binding.cbExpiryDate.checkedChanges()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
+                    binding.edtExpiryDate.isEnabled = !it
+                    if (!it) {
+                        binding.edtExpiryDate.requestFocus()
+             else {
+                        binding.edtExpiryDate.setText("")
+            
+
+        )
+
+        viewModel.compositeDisposable.add(binding.rgIdentity.checkedChanges()
+            .skipInitialValue()
             .observeOn(schedulerProvider.ui())
             .subscribe {
-                binding.edtExpiryDate.isEnabled = !it
-                if (!it) {
-                    binding.edtExpiryDate.requestFocus()
-         else {
-                    binding.edtExpiryDate.setText("")
+                if (it == R.id.rbId) {
+
+         else if (it == R.id.rbPassport) {
+
         
-
     )
-
         binding.tvNext.setOnClickListener {
             val info = binding.info
             info?.let {
@@ -294,7 +304,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                         navigator.navigateToSubmitKYC(currentFragment)
             
                     is SavePersonalInfoState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showError(state.message ?: getString(R.string.something_wrong))
             
         
     
@@ -349,7 +359,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                             displayImage(state.stringImage)
                 
                         is ResizeImageState.ShowError -> {
-                            showAlert(state.message ?: getString(R.string.something_wrong))
+                            showError(state.message ?: getString(R.string.something_wrong))
                 
             
         
@@ -369,7 +379,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                         glideDisplayImage(state.byteArray, state.imageView)
             
                     is DecodeBase64State.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showError(state.message ?: getString(R.string.something_wrong))
             
         
     

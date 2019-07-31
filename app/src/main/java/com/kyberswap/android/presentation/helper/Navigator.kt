@@ -294,12 +294,6 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         activity.startActivity(TermConditionActivity.newIntent(activity))
     }
 
-    fun navigateToLimitOrderSuggestionScreen(currentFragment: Fragment?, wallet: Wallet?) {
-        navigateByChildFragmentManager(
-            currentFragment,
-            LimitOrderSuggestionFragment.newInstance(wallet)
-        )
-    }
 
     fun navigateToSignUpConfirmScreen(
         currentFragment: Fragment?,
@@ -357,12 +351,13 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     fun navigateToOrderConfirmScreen(
         currentFragment: Fragment?,
-        wallet: Wallet?
+        wallet: Wallet?,
+        limitOrder: LocalLimitOrder?
     ) {
 
         navigateByChildFragmentManager(
             currentFragment,
-            OrderConfirmFragment.newInstance(wallet)
+            OrderConfirmFragment.newInstance(wallet, limitOrder)
         )
     }
 

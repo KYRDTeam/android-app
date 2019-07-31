@@ -91,7 +91,34 @@ class SendFragment : BaseFragment() {
         wallet?.let {
             viewModel.getSendInfo(it.address)
 
-        viewModel.getGasPrice()
+
+        viewModel.getSendCallback.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetSendState.Success -> {
+                        if (!state.send.isSameTokenPair(binding.send)) {
+                            binding.send = state.send
+                            edtSource.setAmount(state.send.sourceAmount)
+                            viewModel.getGasLimit(
+                                state.send,
+                                wallet
+                            )
+                            viewModel.getGasPrice()
+                            if (state.send.contact.address.isNotBlank()) {
+                                sendToContact(state.send.contact)
+                    
+                
+            
+                    is GetSendState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+
+            
+        
+    
+)
         viewModel.getGetGasPriceCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -313,31 +340,6 @@ class SendFragment : BaseFragment() {
                 .setBeepEnabled(false)
                 .initiateScan()
 
-
-        viewModel.getSendCallback.observe(this, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is GetSendState.Success -> {
-                        binding.send = state.send
-                        edtSource.setAmount(state.send.sourceAmount)
-                        viewModel.getGasLimit(
-                            state.send,
-                            wallet
-                        )
-                        if (state.send.contact.address.isNotBlank()) {
-                            sendToContact(state.send.contact)
-                
-            
-                    is GetSendState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
-
-            
-        
-    
-)
 
         viewModel.compositeDisposable.add(binding.edtSource.textChanges().skipInitialValue()
             .observeOn(schedulerProvider.ui())

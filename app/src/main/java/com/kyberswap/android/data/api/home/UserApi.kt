@@ -90,6 +90,7 @@ interface UserApi {
     fun savePersonalInfo(
         @Field("kyc_profile[first_name]") firstName: String,
         @Field("kyc_profile[last_name]") lastName: String,
+        @Field("kyc_profile[native_full_name]") fullName: String?,
         @Field("kyc_profile[nationality]") nationality: String,
         @Field("kyc_profile[country]") country: String,
         @Field("kyc_profile[dob]") dob: String,
@@ -131,7 +132,9 @@ interface UserApi {
 
     @PATCH("api/update_push_token")
     @FormUrlEncoded
-    fun updatePushToken(@Field("push_token_mobile") token: String): Single<ResponseStatusEntity>
+    fun updatePushToken(
+        @Field("player_id") playerId: String
+    ): Single<ResponseStatusEntity>
 
     @GET("api/get_alert_methods")
     fun getAlertMethod(): Single<AlertMethodsResponseEntity>

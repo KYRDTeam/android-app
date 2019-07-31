@@ -33,6 +33,8 @@ import com.kyberswap.android.util.ext.*
 import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.android.synthetic.main.layout_expanable.*
 import net.cachapa.expandablelayout.ExpandableLayout
+import timber.log.Timber
+import java.math.BigDecimal
 import javax.inject.Inject
 
 
@@ -124,9 +126,13 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSwapState.Success -> {
-                        if (binding.swap != state.swap) {
+                        if (!state.swap.isSameTokenPair(binding.swap)) {
+                            Timber.e("swap token pair change")
                             if (state.swap.tokenSource.tokenSymbol == state.swap.tokenDest.tokenSymbol) {
-                                showError(getString(R.string.same_token_alert))
+                                showAlertWithoutIcon(
+                                    title = getString(R.string.title_unsupported),
+                                    message = getString(R.string.can_not_swap_same_token)
+                                )
                     
 
                             edtSource.setAmount(state.swap.sourceAmount)
@@ -134,7 +140,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
 
                             binding.swap = state.swap
                             binding.executePendingBindings()
-
                 
                         viewModel.getGasPrice()
                         viewModel.getGasLimit(wallet, binding.swap)
@@ -257,9 +262,18 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetExpectedRateState.Success -> {
-                        val swap = binding.swap?.copy(
-                            expectedRate = state.list[0]
-                        )
+
+                        val swap =
+                            if (state.list.first().toBigDecimalOrDefaultZero() > BigDecimal.ZERO) {
+                                binding.swap?.copy(
+                                    expectedRate = state.list[0]
+                                )
+                     else {
+                                binding.swap?.copy(
+                                    expectedRate = binding.swap?.marketRate ?: ""
+                                )
+                    
+
 
                         if (swap != null) {
                             edtDest.setAmount(

@@ -32,6 +32,12 @@ data class Send(
 
 ) : Parcelable {
 
+    fun isSameTokenPair(other: Send?): Boolean {
+        return this.walletAddress == other?.walletAddress &&
+            this.tokenSource.tokenSymbol == other.tokenSource.tokenSymbol &&
+            this.tokenSource.currentBalance == other.tokenSource.currentBalance
+    }
+
     val amountUnit: BigInteger
         get() = sourceAmount.toBigDecimalOrDefaultZero().multiply(BigDecimal.TEN.pow(tokenSource.tokenDecimal)).toBigInteger()
 

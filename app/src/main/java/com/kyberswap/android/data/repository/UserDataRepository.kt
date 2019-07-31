@@ -169,6 +169,7 @@ class UserDataRepository @Inject constructor(
         return userApi.savePersonalInfo(
             info.firstName,
             info.lastName,
+            info.nativeFullName,
             info.nationality,
             info.country,
             info.dob,
@@ -314,7 +315,7 @@ class UserDataRepository @Inject constructor(
     }
 
     override fun updatePushNotification(param: UpdatePushTokenUseCase.Param): Single<ResponseStatus> {
-        return userApi.updatePushToken(param.token).map {
+        return userApi.updatePushToken(param.userId).map {
             userMapper.transform(it)
 
     }

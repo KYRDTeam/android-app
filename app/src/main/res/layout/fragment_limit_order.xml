@@ -413,7 +413,7 @@
                         android:layout_height="74dp"
                         android:layout_marginStart="12dp"
                         android:layout_marginTop="24dp"
-                        android:layout_marginEnd="12dp"
+                        android:layout_marginEnd="24dp"
                         android:background="@drawable/rounded_corner_rate_toggle_background"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -786,12 +786,15 @@
                             android:visibility="@{ isWarning ? View.VISIBLE : View.GONE}" />
 
                         <TextView
+                            android:id="@+id/tvCancelWhy"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="24dp"
                             android:layout_marginTop="8dp"
                             android:layout_marginEnd="24dp"
                             android:layout_marginBottom="19dp"
+                            android:background="?selectableItemBackground"
+                            android:padding="4dp"
                             android:text="@string/cancel_order_why"
                             android:textColor="#ff9008"
                             android:textSize="12sp"

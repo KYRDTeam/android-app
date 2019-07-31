@@ -76,12 +76,16 @@ data class LocalLimitOrder(
             this.gasLimit == other.gasLimit &&
             this.gasPrice == other.gasPrice &&
             this.minRate == other.minRate &&
-            this.fee == other.fee
+            this.fee == other.fee &&
+            this.tokenSource.currentBalance == other.tokenSource.currentBalance &&
+            this.tokenDest.currentBalance == other.tokenDest.currentBalance
     }
 
     fun isSameTokenPairForAddress(other: LocalLimitOrder?): Boolean {
         return this.tokenSource.tokenSymbol == other?.tokenSource?.tokenSymbol &&
             this.tokenDest.tokenSymbol == other.tokenDest.tokenSymbol &&
+            this.tokenSource.currentBalance == other.tokenSource.currentBalance &&
+            this.tokenDest.currentBalance == other.tokenDest.currentBalance &&
             this.userAddr == other.userAddr
     }
 
