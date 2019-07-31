@@ -34,6 +34,7 @@ import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
 import com.kyberswap.android.presentation.main.balance.WalletAdapter
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
+import com.kyberswap.android.presentation.main.limitorder.OrderConfirmFragment
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.profile.kyc.PassportFragment
 import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
@@ -392,6 +393,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                 } else if (it is SubmitFragment) {
                     it.onBackPress()
                     return
+                } else if (it is OrderConfirmFragment) {
+                    it.onBackPress()
                 }
             }
 

@@ -209,7 +209,7 @@
     <string name="filter_see_less">see less</string>
     <string name="filter_reset">Reset</string>
     <string name="filter_apply">Apply</string>
-    <string name="manage_orders">Manage Yours Orders</string>
+    <string name="manage_orders">Manage Your Orders</string>
     <string name="related_orders">Related Orders</string>
     <string name="submit_order">Submit Order</string>
     <string name="condition">Condition</string>
@@ -221,7 +221,7 @@
     <string name="z_to_a"><![CDATA[A —> Z]]></string>
     <string name="order_confirm">Order Confirm</string>
     <string name="token_eth_star">ETH*</string>
-    <string name="token_eth_star_name">Ether that is compatible to ERC20 standard. 1 WETH is equal to 1 ETH. Limit Order works with WETH (not ETH).</string>
+    <string name="token_eth_star_name">ETH* is the combination of ETH and WETH.</string>
     <string name="token_amount_available">%s Available</string>
     <string name="limit_order_current_rate">1 %s = %s</string>
     <string name="rate_percent">%s%%</string>
@@ -246,7 +246,6 @@
     <string name="limit_order_broadcasted_message">Your transaction will be broadcasted when rate of %s</string>
     <string name="limit_order_to">To:</string>
     <string name="limit_order_confirm_info"><![CDATA[Don’t worry. You will not be charged now. You pay fees only when transaction is executed (broadcasted & mined).]]></string>
-    <string name="eth_star_notification">ETH* is the combination of ETH and WETH.</string>
     <string name="date">Date</string>
     <string name="sort_latest">Latest</string>
     <string name="sort_oldest">Oldest</string>
@@ -319,10 +318,10 @@
     <string name="issue_date">Issue Date</string>
     <string name="dont_have_this">None applicable</string>
     <string name="expiry_date">Expiry Date</string>
-    <string name="photo_of_your_passport_front_side">Photo of your Passport - Front Side</string>
+    <string name="photo_of_your_document_front_side">Photo of your Document - Front Side</string>
     <string name="browse">Browse</string>
     <string name="maximum_file_size_is_1mb">(Maximum file size is 1Mb)</string>
-    <string name="photo_of_your_passport_back_side">Photo of your Passport - Back Side</string>
+    <string name="photo_of_your_document_back_side">Photo of your Document - Back Side</string>
 
     <string name="gender">Gender</string>
     <string name="date_of_birth_yyyy_mm_dd">Date of birth (YYYY-MM-DD)</string>
@@ -368,7 +367,7 @@
     <string name="this_is_right">This is right!</string>
     <string name="please_hold_the_passport_tip">Please hold the Passport/ID/Driving  License in your hand next to your face.</string>
     <string name="your_face_and_the_passport_tip">Your face and the Passport/ID must be clearly visible and any text, numbers or photos on the passport must be readable and not covered by your fingers.</string>
-    <string name="photo_of_you_holding_your_passport">Photo of you holding your Passport</string>
+    <string name="photo_of_you_holding_your_document">Photo of you holding your Document</string>
     <string name="passport_hold_incorrect">Incorrect</string>
     <string name="passport_hold_correct">This is right!</string>
     <string name="err_file_size">Maximum file size is 1Mb</string>
@@ -397,7 +396,7 @@
     <string name="swap_and_send_to_the_organizer">Swap and Send to the Organizer</string>
     <string name="expired_date_notification">After swapping please transfer your token to your personal wallet before %s</string>
     <string name="promo_gift">1 Gift</string>
-    <string name="insufficient_eth">Insufficient Eth</string>
+    <string name="insufficient_eth">Insufficient ETH</string>
     <string name="not_enough_eth_blance">Not have enough ETH to pay for transaction fee</string>
     <string name="can_not_tranfer_token">Can not transfer this token</string>
     <string name="import_success_notification">Congratulations!!!</string>
@@ -474,6 +473,7 @@
     <string name="order_why_order_not_filled">https://kyberswap.com/faq#I-submitted-the-limit-order-but-it-was-not-triggered-even-though-my-desired-price-was-hit</string>
     <string name="extra_url">https://kyberswap.com/faq#Why-received-amount-is-higher-than-estimated-amount</string>
     <string name="order_fee_url">https://kyberswap.com/faq#Why-received-amount-is-higher-than-estimated-amount</string>
+    <string name="same_token_pair_url">https://kyberswap.com/faq#can-I-submit-multiple-limit-orders-for-same-token-pair</string>
     <string name="item_token_header_bal">Bal</string>
     <string name="token_new">New</string>
     <string name="add_fav_success">Successfully added to your favourite</string>
@@ -501,7 +501,7 @@
     <string name="min_eth_amount">You should convert at least %s ETH to continue with your order</string>
     <string name="invalid_amount">Invalid amount</string>
     <string name="eth_balance_not_enough">You ETH balance is not enough to make the transaction</string>
-    <string name="eth_balance_not_enough_for_fee">You don\'t have enough ETH pay for transaction fee of %s</string>
+    <string name="eth_balance_not_enough_for_fee">You don\'t have enough ETH to pay for transaction fee of %s</string>
     <string name="login_invalid_email_address">Please enter a valid email address to continue</string>
     <string name="login_email_address_required">Please enter a email address to continue</string>
     <string name="login_password_required">Please enter the password</string>
@@ -549,7 +549,9 @@
     <string name="estimated_amount">Estimated amount: %s</string>
     <string name="extra_amount">You got extra amount: %s</string>
     <string name="you_do_not_have_any_orders">You do not have any orders</string>
-    <string name="order_submitted_message">Your order have been submitted successfully to the server. Your can check your order in the order list</string>
+    <string name="order_submitted_message">Your order have been submitted successfully to the server. You can check your order in the order list</string>
+    <string name="title_unsupported">Unsupported</string>
+    <string name="can_not_swap_same_token">Can not swap the same token</string>
 
 
 </resources>

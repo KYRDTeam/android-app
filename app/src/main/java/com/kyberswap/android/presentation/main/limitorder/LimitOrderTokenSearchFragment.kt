@@ -170,7 +170,7 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
 
         binding.imgBack.setOnClickListener {
             hideKeyboard()
-            activity!!.onBackPressed()
+            activity?.onBackPressed()
         }
 
     }

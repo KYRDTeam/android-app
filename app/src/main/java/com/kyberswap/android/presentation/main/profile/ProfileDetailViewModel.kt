@@ -137,7 +137,7 @@ class ProfileDetailViewModel @Inject constructor(
         super.onCleared()
     }
 
-    fun updatePushToken(token: String) {
+    fun updatePushToken(userId: String, token: String) {
         updatePushTokenUseCase.execute(
             Consumer {
 
@@ -146,7 +146,10 @@ class ProfileDetailViewModel @Inject constructor(
                 it.printStackTrace()
                 Timber.e(it.localizedMessage)
             },
-            UpdatePushTokenUseCase.Param(token)
+            UpdatePushTokenUseCase.Param(
+                userId,
+                token
+            )
         )
     }
 }

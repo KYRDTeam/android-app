@@ -77,9 +77,7 @@ class LimitOrderViewModel @Inject constructor(
     val cancelRelatedOrderCallback: LiveData<Event<CancelOrdersState>>
         get() = _cancelRelatedOrderCallback
 
-    val compositeDisposable by lazy {
-        CompositeDisposable()
-    }
+    val compositeDisposable = CompositeDisposable()
 
     private val _getGetMarketRateCallback = MutableLiveData<Event<GetMarketRateState>>()
     val getGetMarketRateCallback: LiveData<Event<GetMarketRateState>>
@@ -102,6 +100,11 @@ class LimitOrderViewModel @Inject constructor(
         MutableLiveData<Event<SwapTokenTransactionState>>()
     val swapTokenTransactionCallback: LiveData<Event<SwapTokenTransactionState>>
         get() = _swapTokenTransactionCallback
+
+    private val _convertCallback =
+        MutableLiveData<Event<ConvertState>>()
+    val convertCallback: LiveData<Event<ConvertState>>
+        get() = _convertCallback
 
     private val _getLoginStatusCallback = MutableLiveData<Event<UserInfoState>>()
     val getLoginStatusCallback: LiveData<Event<UserInfoState>>
@@ -461,9 +464,9 @@ class LimitOrderViewModel @Inject constructor(
         )
     }
 
-    fun convert(wallet: Wallet?, limitOrder: LocalLimitOrder) {
-        val swap = Swap(limitOrder)
-        _swapTokenTransactionCallback.postValue(Event(SwapTokenTransactionState.Loading))
+    fun convert(wallet: Wallet?, limitOrder: LocalLimitOrder, minConvertedAmount: BigDecimal) {
+        val swap = Swap(limitOrder, minConvertedAmount)
+        _convertCallback.postValue(Event(ConvertState.Loading))
         swapTokenUseCase.execute(
             Consumer {
                 val wethBalance =
@@ -473,14 +476,14 @@ class LimitOrderViewModel @Inject constructor(
                         wethBalance
                     )
                 )
-                saveLimitOrder(
-                    order, fromConvert = true
-                )
+
+                _convertCallback.value = Event(ConvertState.Success(order))
+
             },
             Consumer {
                 it.printStackTrace()
-                _swapTokenTransactionCallback.value =
-                    Event(SwapTokenTransactionState.ShowError(it.localizedMessage))
+                _convertCallback.value =
+                    Event(ConvertState.ShowError(it.localizedMessage))
             },
             SwapTokenUseCase.Param(wallet!!, swap)
 

@@ -312,32 +312,30 @@ class LimitOrderDataRepository @Inject constructor(
     }
 
     override fun getRelatedLimitOrders(param: GetRelatedLimitOrdersUseCase.Param): Flowable<List<Order>> {
-        return Flowable.mergeDelayError(
-            limitOrderDao.findRelatedOrdersByAddressFlowable(
-                param.walletAddress, param.tokenSource.submitOrderTokenSymbol,
-                param.tokenDest.submitOrderTokenSymbol
-            ).map {
-                it.filter { it.isPending }
-            },
-            limitOrderApi.getRelatedOrders(
-                param.walletAddress,
-                param.tokenSource.tokenAddress,
-                param.tokenDest.tokenAddress,
-                param.status
-            )
-                .map {
-                    it.orders
-                }
-                .map {
-                    orderMapper.transform(it)
-                }
-                .map {
-                    it.filter { it.isPending }
-                }
-                .doAfterSuccess {
-                    limitOrderDao.insertOrders(it)
-                }.toFlowable()
+        return limitOrderApi.getRelatedOrders(
+            param.walletAddress,
+            param.tokenSource.tokenAddress,
+            param.tokenDest.tokenAddress,
+            "0"
         )
+            .map {
+                it.orders
+            }
+            .map {
+                orderMapper.transform(it)
+            }
+            .map {
+                it.filter { it.isPending }
+            }
+            .doAfterSuccess {
+                limitOrderDao.insertOrders(it)
+            }.toFlowable()
+            .repeatWhen {
+                it.delay(10, TimeUnit.SECONDS)
+            }
+            .retryWhen { throwable ->
+                throwable.compose(zipWithFlatMap())
+            }
 
     }
 

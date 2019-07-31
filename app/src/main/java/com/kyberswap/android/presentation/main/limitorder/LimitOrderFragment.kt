@@ -13,12 +13,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
-import com.google.gson.Gson
 import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
-import com.kyberswap.android.BR
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentLimitOrderBinding
 import com.kyberswap.android.domain.SchedulerProvider
@@ -78,7 +76,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
-    var hasUserFocus: Boolean = false
+    var hasUserFocus: Boolean? = false
 
 
     private var userInfo: UserInfo? = null
@@ -166,11 +164,9 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetLocalLimitOrderState.Success -> {
-                        updateAvailableAmount(pendingBalances)
                         if (!state.order.isSameTokenPairForAddress(binding.order)) {
                             hasUserFocus = false
-                        }
-                        if (!state.order.isSameTokenPair(binding.order)) {
+                            Timber.e("limit order token pair change")
                             if (state.order.tokenSource.tokenSymbol == state.order.tokenDest.tokenSymbol) {
                                 showError(getString(R.string.same_token_alert))
                             }
@@ -181,7 +177,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                             binding.order = state.order
                             binding.isQuote = state.order.tokenSource.isQuote
                             binding.executePendingBindings()
-
+                            getPendingBalance()
                             viewModel.getFee(
                                 binding.order,
                                 srcAmount,
@@ -191,10 +187,11 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
                             edtSource.setAmount(state.order.srcAmount)
                             getRate(state.order)
+                            viewModel.getGasPrice()
+                            viewModel.getGasLimit(wallet, binding.order)
                         }
 
-                        viewModel.getGasPrice()
-                        viewModel.getGasLimit(wallet, binding.order)
+
                     }
                     is GetLocalLimitOrderState.ShowError -> {
 
@@ -230,7 +227,19 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         }
 
         binding.tvBalance.setOnClickListener {
-            binding.edtSource.setAmount(tvBalance.text.toString())
+            binding.order?.let {
+                if (it.tokenSource.isETHWETH) {
+                    binding.edtSource.setAmount(
+                        it.availableAmountForTransfer(
+                            tvBalance.toBigDecimalOrDefaultZero(),
+                            it.gasPrice.toBigDecimalOrDefaultZero()
+                        ).toDisplayNumber()
+                    )
+                } else {
+                    binding.edtSource.setAmount(tvBalance.text.toString())
+                }
+
+            }
         }
 
         binding.tv25Percent.setOnClickListener {
@@ -277,6 +286,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         }
 
         binding.imgSwap.setOnClickListener {
+            hasUserFocus = false
             resetAmount()
             val limitOrder = binding.order?.swapToken()
             limitOrder?.let {
@@ -288,9 +298,15 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                     wallet
                 )
                 viewModel.saveLimitOrder(it)
+                binding.order = limitOrder
+                binding.isQuote = limitOrder.tokenSource.isQuote
+                binding.executePendingBindings()
+                viewModel.getGasPrice()
+                viewModel.getGasLimit(wallet, it)
+                updateAvailableAmount(pendingBalances)
             }
-            binding.setVariable(BR.order, limitOrder)
-            binding.executePendingBindings()
+
+            hasUserFocus = false
 
         }
 
@@ -319,7 +335,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                     is GetRelatedOrdersState.Success -> {
                         orderAdapter.submitList(listOf())
                         orderAdapter.submitList(state.orders)
-                        Timber.e(Gson().toJson(viewModel.relatedOrders))
+
                         binding.tvRelatedOrder.visibility =
                             if (hasRelatedOrder) View.VISIBLE else View.GONE
                     }
@@ -335,7 +351,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
         binding.imgInfo.setOnClickListener {
             showAlert(
-                getString(R.string.eth_star_notification),
+                getString(R.string.token_eth_star_name),
                 R.drawable.ic_confirm_info
             )
         }
@@ -382,6 +398,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         }
 
         viewModel.compositeDisposable.add(binding.edtRate.focusChanges()
+            .skipInitialValue()
             .observeOn(schedulerProvider.ui())
             .subscribe {
                 if (it) {
@@ -414,7 +431,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                             "$revertedMarketRate $tokenSourceSymbol"
                         )
 
-                        if (!hasUserFocus) {
+                        if (hasUserFocus != true) {
                             binding.edtRate.setAmount(order?.displayMarketRate)
                         }
 
@@ -684,19 +701,19 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
                         binding.tvFee.text = String.format(
                             getString(R.string.limit_order_fee),
-                            srcAmount.toBigDecimalOrDefaultZero().times(state.fee.fee.toBigDecimal()).toDisplayNumber(),
+                            srcAmount.toBigDecimalOrDefaultZero().times(state.fee.fee.toBigDecimal()).toDisplayNumber().exactAmount(),
                             tokenSourceSymbol
                         )
 
                         binding.tvFeeNoDiscount.text = String.format(
                             getString(R.string.limit_order_fee_no_discount),
-                            srcAmount.toBigDecimalOrDefaultZero().times(state.fee.fee.toBigDecimal()).toDisplayNumber(),
+                            srcAmount.toBigDecimalOrDefaultZero().times(state.fee.fee.toBigDecimal()).toDisplayNumber().exactAmount(),
                             tokenSourceSymbol
                         )
 
                         binding.tvOriginalFee.text = String.format(
                             getString(R.string.limit_order_fee),
-                            srcAmount.toBigDecimalOrDefaultZero().times(state.fee.nonDiscountedFee.toBigDecimal()).toDisplayNumber(),
+                            srcAmount.toBigDecimalOrDefaultZero().times(state.fee.nonDiscountedFee.toBigDecimal()).toDisplayNumber().exactAmount(),
                             tokenSourceSymbol
                         )
 
@@ -790,7 +807,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                                 hideKeyboard()
                                 navigator.navigateToOrderConfirmScreen(
                                     currentFragment,
-                                    wallet
+                                    wallet,
+                                    binding.order
                                 )
                             }
                         }
@@ -898,6 +916,11 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         binding.tvMore.setOnClickListener {
             openUrl(getString(R.string.order_fee_url))
         }
+
+        binding.tvCancelWhy.setOnClickListener {
+            openUrl(getString(R.string.same_token_pair_url))
+        }
+
 
         binding.tvLearnMore.setOnClickListener {
             openUrl(getString(R.string.order_fee_url))

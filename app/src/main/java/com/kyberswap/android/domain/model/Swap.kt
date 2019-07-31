@@ -44,11 +44,11 @@ data class Swap(
 ) : Parcelable {
 
 
-    constructor(limitOrder: LocalLimitOrder) : this(
+    constructor(limitOrder: LocalLimitOrder, minConvertedAmount: BigDecimal) : this(
         limitOrder.userAddr,
         limitOrder.ethToken,
         limitOrder.wethToken,
-        limitOrder.minConvertedAmount,
+        minConvertedAmount.toDisplayNumber(),
         "",
         BigDecimal.ONE.toDisplayNumber(),
         "",
@@ -61,6 +61,14 @@ data class Swap(
         BigDecimal.ONE.toDisplayNumber(),
         3.toString()
     )
+
+    fun isSameTokenPair(other: Swap?): Boolean {
+        return this.walletAddress == other?.walletAddress &&
+            this.tokenSource.tokenSymbol == other.tokenSource.tokenSymbol &&
+            this.tokenDest.tokenSymbol == other.tokenDest.tokenSymbol &&
+            this.tokenSource.currentBalance == other.tokenSource.currentBalance &&
+            this.tokenDest.currentBalance == other.tokenDest.currentBalance
+    }
 
     val defaultGasLimit: String
         get() = if (tokenSource.gasLimit.toBigIntegerOrDefaultZero()
