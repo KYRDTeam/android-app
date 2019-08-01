@@ -200,7 +200,6 @@ object TextViewBindingAdapter {
             .append(alertPrice?.toDisplayNumber())
     }
 
-
     @BindingAdapter("app:isAbove", "app:percentChange")
     @JvmStatic
     fun percentChange(

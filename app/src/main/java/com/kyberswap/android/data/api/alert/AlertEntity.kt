@@ -14,11 +14,11 @@ data class AlertEntity(
     @SerializedName("alert_type")
     val alertType: String = "",
     @SerializedName("alert_price")
-    val alertPrice: BigDecimal = BigDecimal.ZERO,
+    val alertPrice: BigDecimal? = BigDecimal.ZERO,
     @SerializedName("created_at_price")
-    val createdAtPrice: BigDecimal = BigDecimal.ZERO,
+    val createdAtPrice: BigDecimal? = BigDecimal.ZERO,
     @SerializedName("percent_change")
-    val percentChange: BigDecimal = BigDecimal.ZERO,
+    val percentChange: BigDecimal? = BigDecimal.ZERO,
     @SerializedName("is_above")
     val isAbove: Boolean = false,
     @SerializedName("status")
@@ -42,5 +42,7 @@ data class AlertEntity(
     @SerializedName("reward")
     val reward: String? = "",
     @SerializedName("message")
-    var message: String? = ""
+    var message: String? = "",
+    @SerializedName("reward_id")
+    val rewardId: Long? = 0
 )

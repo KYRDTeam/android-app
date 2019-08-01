@@ -87,10 +87,10 @@ data class KycInfo(
     )
 
     val isIdentityCard: Boolean
-        get() = TYPE_PASSPORT == documentType
-
-    val isNationalId: Boolean
         get() = TYPE_NATIONAL_ID == documentType
+
+    val isPassport: Boolean
+        get() = TYPE_PASSPORT == documentType
 
     val displayDob: String
         get() = dob.replace("-", "/")

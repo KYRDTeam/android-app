@@ -3,12 +3,14 @@ package com.kyberswap.android.presentation.main.profile.kyc
 
 import android.Manifest
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
@@ -91,7 +93,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                             val info = binding.info
                             info?.let {
                                 binding.rbId.isChecked = info.isIdentityCard
-                                binding.rbPassport.isChecked = info.isNationalId
+                                binding.rbPassport.isChecked = info.isPassport
                                 binding.cbIssueDate.isChecked = info.documentIssueDate.isEmpty()
                                 binding.cbExpiryDate.isChecked = info.documentExpiryDate.isEmpty()
 
@@ -233,10 +235,19 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
             .skipInitialValue()
             .observeOn(schedulerProvider.ui())
             .subscribe {
+                binding.lnBackSide.visibility =
+                    if (it == R.id.rbPassport) View.GONE else View.VISIBLE
                 if (it == R.id.rbId) {
+                    context?.let {
+                        binding.lnHoldingDocument.setBackgroundColor(
+                            ContextCompat.getColor(it, R.color.identity_info_gray)
+                        )
+                    }
 
                 } else if (it == R.id.rbPassport) {
-
+                    binding.lnHoldingDocument.setBackgroundColor(
+                        Color.TRANSPARENT
+                    )
                 }
             })
         binding.tvNext.setOnClickListener {
@@ -379,7 +390,6 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                         glideDisplayImage(state.byteArray, state.imageView)
                     }
                     is DecodeBase64State.ShowError -> {
-                        showError(state.message ?: getString(R.string.something_wrong))
                     }
                 }
             }

@@ -127,14 +127,14 @@ data class Order(
         else ""
 
     val hasExtra: Boolean
-        get() = extraDisplay.isNotEmpty()
+        get() = isMined && extraDisplay.isNotEmpty()
 
 
     val isPending: Boolean
         get() = status.toLowerCase() == Status.OPEN.value || status.toLowerCase() == Status.IN_PROGRESS.value
 
     val isOpen: Boolean
-        get() = status.toLowerCase() == Status.OPEN.value
+        get() = status.toLowerCase() == Status.OPEN.value || status.toLowerCase() == Status.IN_PROGRESS.value
 
     val isMined: Boolean
         get() = status.toLowerCase() == Status.FILLED.value

@@ -6,5 +6,9 @@ import com.kyberswap.android.domain.model.CampaignInfo
 sealed class GetLeaderBoardState {
     object Loading : GetLeaderBoardState()
     class ShowError(val message: String?) : GetLeaderBoardState()
-    class Success(val alerts: List<Alert>, val campaignInfo: CampaignInfo) : GetLeaderBoardState()
+    class Success(
+        val alerts: List<Alert>,
+        val campaignInfo: CampaignInfo,
+        val lastCampaignTitle: String
+    ) : GetLeaderBoardState()
 }

@@ -9,5 +9,7 @@ data class ListLimitOrderResponseEntity(
     @SerializedName("fields")
     val fields: List<String> = listOf(),
     @SerializedName("orders")
-    val orders: List<OrderEntity> = listOf()
+    val orders: List<OrderEntity> = listOf(),
+    @SerializedName("paging_info")
+    val pagingInfo: PagingInfoEntity = PagingInfoEntity()
 )

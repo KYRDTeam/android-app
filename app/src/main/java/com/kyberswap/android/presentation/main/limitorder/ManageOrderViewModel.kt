@@ -36,6 +36,8 @@ class ManageOrderViewModel @Inject constructor(
 
 
     fun getAllOrders() {
+        getLimitOrdersUseCase.dispose()
+        _getRelatedOrderCallback.postValue(Event(GetRelatedOrdersState.Loading))
         getLimitOrdersUseCase.execute(
             Consumer {
                 ordersWrapper = it

@@ -35,7 +35,8 @@ data class Send(
     fun isSameTokenPair(other: Send?): Boolean {
         return this.walletAddress == other?.walletAddress &&
             this.tokenSource.tokenSymbol == other.tokenSource.tokenSymbol &&
-            this.tokenSource.currentBalance == other.tokenSource.currentBalance
+            this.tokenSource.currentBalance == other.tokenSource.currentBalance &&
+            this.ethToken.currentBalance == other.ethToken.currentBalance
     }
 
     val amountUnit: BigInteger

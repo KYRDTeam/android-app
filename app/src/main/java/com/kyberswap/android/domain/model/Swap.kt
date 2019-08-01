@@ -67,7 +67,8 @@ data class Swap(
             this.tokenSource.tokenSymbol == other.tokenSource.tokenSymbol &&
             this.tokenDest.tokenSymbol == other.tokenDest.tokenSymbol &&
             this.tokenSource.currentBalance == other.tokenSource.currentBalance &&
-            this.tokenDest.currentBalance == other.tokenDest.currentBalance
+            this.tokenDest.currentBalance == other.tokenDest.currentBalance &&
+            this.ethToken.currentBalance == other.ethToken.currentBalance
     }
 
     val defaultGasLimit: String

@@ -39,7 +39,6 @@ import com.kyberswap.android.util.ext.*
 import kotlinx.android.synthetic.main.fragment_limit_order.*
 import kotlinx.android.synthetic.main.fragment_swap.edtDest
 import kotlinx.android.synthetic.main.fragment_swap.edtSource
-import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.concurrent.atomic.AtomicBoolean
@@ -122,6 +121,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
     private val sourceLock = AtomicBoolean()
     private val destLock = AtomicBoolean()
 
+    private var orderAdapter: OrderAdapter? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -144,8 +145,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 when (state) {
                     is GetWalletState.Success -> {
                         binding.walletName = state.wallet.name
-
-                        if (state.wallet.address != wallet?.address) {
+                        if (!state.wallet.isSameWallet(wallet)) {
                             wallet = state.wallet
                             viewModel.getLimitOrders(wallet)
                             viewModel.getPendingBalances(wallet)
@@ -166,7 +166,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                     is GetLocalLimitOrderState.Success -> {
                         if (!state.order.isSameTokenPairForAddress(binding.order)) {
                             hasUserFocus = false
-                            Timber.e("limit order token pair change")
                             if (state.order.tokenSource.tokenSymbol == state.order.tokenDest.tokenSymbol) {
                                 showError(getString(R.string.same_token_alert))
                             }
@@ -315,29 +314,33 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
             RecyclerView.VERTICAL,
             false
         )
-        val orderAdapter =
-            OrderAdapter(
-                appExecutors
-                , {
+        if (orderAdapter == null) {
+            orderAdapter =
+                OrderAdapter(
+                    appExecutors
+                    , {
 
-                    dialogHelper.showCancelOrder(it) {
-                        viewModel.cancelOrder(it)
-                    }
-                }, {
+                        dialogHelper.showCancelOrder(it) {
+                            viewModel.cancelOrder(it)
+                        }
+                    }, {
 
-                })
-        orderAdapter.mode = Attributes.Mode.Single
+                    })
+        }
+        orderAdapter?.mode = Attributes.Mode.Single
         binding.rvRelatedOrder.adapter = orderAdapter
 
         viewModel.getRelatedOrderCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetRelatedOrdersState.Success -> {
-                        orderAdapter.submitList(listOf())
-                        orderAdapter.submitList(state.orders)
+                        if (binding.isWarning != true) {
+                            orderAdapter?.submitList(listOf())
+                            orderAdapter?.submitList(state.orders)
 
-                        binding.tvRelatedOrder.visibility =
-                            if (hasRelatedOrder) View.VISIBLE else View.GONE
+                            binding.tvRelatedOrder.visibility =
+                                if (hasRelatedOrder) View.VISIBLE else View.GONE
+                        }
                     }
                     is GetRelatedOrdersState.ShowError -> {
                         showAlert(
@@ -677,14 +680,15 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 })
 
         binding.tvChangeRate.setOnClickListener {
-            orderAdapter.submitList(viewModel.toOrderItems(viewModel.relatedOrders))
+            orderAdapter?.submitList(viewModel.toOrderItems(viewModel.relatedOrders))
             playAnimation(false)
             binding.edtRate.requestFocus()
             binding.edtRate.setSelection(binding.edtRate.text.length)
         }
 
         binding.tvSubmitOrderWarning.setOnClickListener {
-            viewModel.cancelHigherRateOrder(binding.edtRate.toBigDecimalOrDefaultZero())
+            setWarning(false)
+            saveLimitOrder()
         }
 
         viewModel.getFeeCallback.observe(viewLifecycleOwner, Observer {
@@ -741,7 +745,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         binding.tvSubmitOrder.setOnClickListener {
             val warningOrderList = viewModel.warningOrderList(
                 binding.edtRate.toBigDecimalOrDefaultZero(),
-                orderAdapter.orderList
+                orderAdapter?.orderList ?: listOf()
             )
 
             when {
@@ -770,7 +774,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 }
 
                 warningOrderList.isNotEmpty() -> {
-                    orderAdapter.submitList(
+                    orderAdapter?.submitList(
                         viewModel.toOrderItems(
                             warningOrderList
                         )
@@ -835,9 +839,12 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                                     it1,
                                     it2
                                 )
+
+                                viewModel.getRelatedOrders(it1, it2)
                             }
                         }
                         viewModel.getPendingBalances(wallet)
+
 
                     }
                     is CancelOrdersState.ShowError -> {
@@ -857,7 +864,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         userInfo = state.userInfo
                         when {
                             !(state.userInfo != null && state.userInfo.uid > 0) -> {
-                                orderAdapter.submitList(listOf())
+                                orderAdapter?.submitList(listOf())
                                 pendingBalances = null
                                 updateAvailableAmount(pendingBalances)
                                 binding.tvRelatedOrder.visibility = View.GONE
@@ -947,6 +954,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
     }
 
+
     fun getPendingBalance() {
         viewModel.getPendingBalances(wallet)
     }
@@ -990,6 +998,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         binding.vRate.isSelected = isWarning
         binding.isWarning = isWarning
         binding.edtRate.isEnabled = !isWarning
+        orderAdapter?.setWarning(isWarning)
     }
 
     private fun updateAvailableAmount(pendingBalances: PendingBalances?) {
@@ -1018,7 +1027,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         edtDest.setText("")
     }
 
-
     override fun onDestroyView() {
         handler.removeCallbacksAndMessages(null)
         viewModel.compositeDisposable.clear()
@@ -1035,6 +1043,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
     fun getNonce() {
         binding.order?.let { wallet?.let { it1 -> viewModel.getNonce(it, it1) } }
+    }
+
+    fun getRelatedOrders() {
+        binding.order?.let { wallet?.let { it1 -> viewModel.getRelatedOrders(it, it1) } }
     }
 
     override fun showNotification(showNotification: Boolean) {

@@ -82,6 +82,9 @@ class SubmitFragment : BaseFragment() {
                             val info = binding.info
                             info?.let {
 
+                                binding.lnBackSide.visibility =
+                                    if (it.isPassport) View.GONE else View.VISIBLE
+
                                 val photoProofAddress =
                                     info.photoProofAddress.removePrefix(BASE64_PREFIX)
                                 displayImage(photoProofAddress, binding.imgPhotoProofAddress)
@@ -96,6 +99,7 @@ class SubmitFragment : BaseFragment() {
 
                                 val photoSelfie = info.photoSelfie.removePrefix(BASE64_PREFIX)
                                 displayImage(photoSelfie, binding.imgPassportHolding)
+
                             }
 
 
@@ -137,6 +141,7 @@ class SubmitFragment : BaseFragment() {
     }
 
     private fun displayImage(stringImage: String, imageView: ImageView) {
+        if (stringImage.isEmpty()) return
         viewModel.decode(stringImage, imageView)
         viewModel.decodeImageCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
