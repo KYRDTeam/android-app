@@ -64,6 +64,10 @@
     <color name="step_completed">#fb795d</color>
     <color name="color_order_extra">#31cb9e</color>
     <color name="document_background_gray">#f2f3f6</color>
+    <color name="text_alert_active_color">#5a5e67</color>
+    <color name="text_alert_reward_color">#31cb9e</color>
+    <color name="text_alert_normal_color">#ffffff</color>
+    <color name="identity_info_gray">#f2f3f6</color>
 
     <array name="tab_colors">
         <item name="tab_1">#fea34c</item>

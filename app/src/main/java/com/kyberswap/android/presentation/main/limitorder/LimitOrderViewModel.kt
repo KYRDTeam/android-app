@@ -164,7 +164,6 @@ class LimitOrderViewModel @Inject constructor(
                     val order = it.copy(gasLimit = calculateGasLimit(it))
                     _getLocalLimitOrderCallback.value =
                         Event(GetLocalLimitOrderState.Success(order))
-                    getRelatedOrders(order, wallet)
                     getNonce(order, wallet)
                     currentLimitOrder = it
         ,

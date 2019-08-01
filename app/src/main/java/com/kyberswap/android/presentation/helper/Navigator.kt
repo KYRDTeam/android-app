@@ -386,10 +386,14 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         )
     }
 
-    fun navigateToLeaderBoard(currentFragment: Fragment?, userInfo: UserInfo?) {
+    fun navigateToLeaderBoard(
+        currentFragment: Fragment?,
+        userInfo: UserInfo?,
+        isCampaignResult: Boolean = false
+    ) {
         navigateByChildFragmentManager(
             currentFragment,
-            LeaderBoardFragment.newInstance(userInfo)
+            LeaderBoardFragment.newInstance(userInfo, isCampaignResult)
         )
     }
 

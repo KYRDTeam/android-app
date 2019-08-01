@@ -39,6 +39,11 @@ data class Wallet(
         wallet.metadata.name
     )
 
+    fun isSameWallet(other: com.kyberswap.android.domain.model.Wallet?): Boolean {
+        return this.address == other?.address &&
+            this.balance == other.balance
+    }
+
     fun display(): String {
         val displayBuilder = StringBuilder()
         if (name.isNotEmpty()) {

@@ -398,6 +398,10 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         
     
 
+            if (currentFragment is LimitOrderFragment) {
+                (currentFragment as LimitOrderFragment).getRelatedOrders()
+    
+
             currentFragment!!.childFragmentManager.popBackStack()
  else {
             super.onBackPressed()

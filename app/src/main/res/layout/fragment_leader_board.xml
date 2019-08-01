@@ -4,10 +4,24 @@
     <data>
 
         <variable
+            name="title"
+            type="String" />
+
+        <variable
             name="campaign"
             type="com.kyberswap.android.domain.model.CampaignInfo" />
 
+        <variable
+            name="lastCampaignTitle"
+            type="String" />
+
         <import type="android.view.View" />
+
+        <variable
+            name="isNoData"
+            type="Boolean" />
+
+        <import type="android.text.TextUtils" />
     </data>
 
     <LinearLayout
@@ -33,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="@string/alerts_leader_board"
+                android:text="@{title}"
                 android:textColor="#ffffff"
                 android:textSize="18sp" />
 
@@ -104,6 +118,7 @@
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/linearLayout9"
                             android:layout_width="match_parent"
+                            android:paddingBottom="16dp"
                             android:layout_height="match_parent"
                             app:layout_constraintBottom_toTopOf="@+id/tvCampainTitle"
                             app:layout_constraintTop_toTopOf="@+id/tvCampainTitle">
@@ -195,7 +210,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:layout_marginBottom="16dp"
                                 android:background="?selectableItemBackground"
                                 android:paddingStart="16dp"
                                 android:paddingEnd="16dp"
@@ -203,11 +217,79 @@
                                 android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                                 android:textColor="#ff9008"
                                 android:textSize="12sp"
-                                app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintHorizontal_bias="0.0"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/tvCampaignDescription" />
+
+                            <View
+                                android:id="@+id/view26"
+                                android:layout_width="match_parent"
+                                android:layout_height="2dp"
+                                android:layout_marginTop="16dp"
+                                android:background="@drawable/dash_line"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/tvEligibleToken" />
+
+                            <TextView
+                                android:id="@+id/textView117"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="14dp"
+                                android:lineSpacingExtra="6sp"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:text="@{lastCampaignTitle}"
+                                android:textColor="#141927"
+                                android:textSize="14sp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/view26" />
+
+                            <TextView
+                                android:id="@+id/textView119"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="18dp"
+                                android:layout_marginBottom="5dp"
+                                android:lineSpacingExtra="8sp"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:text="@string/campaign_has_ended"
+                                android:textColor="#5a5e67"
+                                android:textSize="14sp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toStartOf="@+id/tvWinner"
+                                app:layout_constraintHorizontal_bias="0.5"
+                                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/textView117" />
+
+                            <TextView
+                                android:id="@+id/tvWinner"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="?selectableItemBackground"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:text="@string/see_the_winner"
+                                android:textAllCaps="true"
+                                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                                android:textColor="#ff9008"
+                                android:textSize="12sp"
+                                app:layout_constraintBottom_toBottomOf="@+id/textView119"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_bias="0.5"
+                                app:layout_constraintStart_toEndOf="@+id/textView119"
+                                app:layout_constraintTop_toTopOf="@+id/textView119" />
+
+                            <androidx.constraintlayout.widget.Group
+                                android:id="@+id/grCampaignResult"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:visibility="@{TextUtils.isEmpty(lastCampaignTitle) ? View.GONE : View.VISIBLE}"
+                                app:constraint_referenced_ids="textView119,textView117,view26,tvWinner" />
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -246,10 +328,30 @@
                         android:background="@android:color/white"
                         android:clipToPadding="false"
                         android:nestedScrollingEnabled="false"
+                        android:visibility="@{isNoData ? View.GONE : View.VISIBLE}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="1.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textView44" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:lineSpacingExtra="6sp"
+                        android:text="@string/no_alert"
+                        android:textColor="#141927"
+                        android:textSize="14sp"
+                        android:visibility="@{isNoData ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/rvLeaderBoard" />
+
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
 

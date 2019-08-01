@@ -552,6 +552,12 @@
     <string name="order_submitted_message">Your order have been submitted successfully to the server. You can check your order in the order list</string>
     <string name="title_unsupported">Unsupported</string>
     <string name="can_not_swap_same_token">Can not swap the same token</string>
+    <string name="see_the_winner">See the winner</string>
+    <string name="campaign_has_ended">Campaign has ended.</string>
+    <string name="no_alert">No data to show right now</string>
+    <string name="campaign_result">Result</string>
+    <string name="identity_info">Identity Info</string>
+    <string name="wallet_file_prefix">kyber_swap_</string>
 
 
 </resources>

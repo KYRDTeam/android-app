@@ -14,6 +14,7 @@ import java.math.RoundingMode
 @Entity(tableName = "alerts")
 @Parcelize
 data class Alert(
+    val rewardId: Long = 0,
     @PrimaryKey
     val id: Long = 0,
     val base: String = "",
@@ -42,13 +43,14 @@ data class Alert(
 
 ) : Parcelable {
     constructor(entity: AlertEntity) : this(
+        entity.rewardId ?: 0,
         entity.id,
         entity.base,
         entity.symbol,
         entity.alertType,
-        entity.alertPrice,
-        entity.createdAtPrice,
-        entity.percentChange,
+        entity.alertPrice ?: BigDecimal.ZERO,
+        entity.createdAtPrice ?: BigDecimal.ZERO,
+        entity.percentChange ?: BigDecimal.ZERO,
         entity.isAbove,
         entity.status,
         entity.createdAt,

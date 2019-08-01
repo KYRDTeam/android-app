@@ -54,10 +54,12 @@ class ManageWalletAdapter(
         binding.setVariable(BR.wallet, item)
         binding.executePendingBindings()
 
-        binding.btnSwitch.visibility = if (getData().size > 1) View.VISIBLE else View.GONE
-
         binding.btnSwitch.visibility =
             if (getData().size > 1 && item.isSelected) View.GONE else View.VISIBLE
+
+        if (getData().size <= 1) {
+            binding.btnSwitch.visibility = View.GONE
+
 
         binding.lnItem.setOnClickListener {
             onItemClick?.invoke(item)

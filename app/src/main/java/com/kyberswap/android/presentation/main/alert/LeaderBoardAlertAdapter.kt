@@ -36,6 +36,7 @@ class LeaderBoardAlertAdapter(
     override fun bind(binding: ItemLeaderBoardBinding, item: Alert) {
         binding.isActive = item.userName.isNotBlank()
         binding.setVariable(BR.alert, item)
+        binding.setVariable(BR.isReward, item.rewardId > 0)
         binding.executePendingBindings()
     }
 

@@ -2,9 +2,11 @@ package com.kyberswap.android.data.repository
 
 import android.content.Context
 import android.util.Base64
+import com.google.common.collect.ImmutableList
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.LimitOrderApi
+import com.kyberswap.android.data.api.limitorder.OrderEntity
 import com.kyberswap.android.data.db.*
 import com.kyberswap.android.data.mapper.FeeMapper
 import com.kyberswap.android.data.mapper.OrderMapper
@@ -296,19 +298,28 @@ class LimitOrderDataRepository @Inject constructor(
     }
 
     override fun getLimitOrders(): Flowable<List<Order>> {
-        return Flowable.mergeDelayError(
-            limitOrderDao.allFlowable,
-            limitOrderApi.getOrders()
-                .map {
-                    it.orders
-        
-                .map {
-                    orderMapper.transform(it)
-        
-                .doAfterSuccess {
-                    limitOrderDao.updateOrders(it)
-        .toFlowable()
-        )
+
+        return Flowable.range(1, Integer.MAX_VALUE)
+            .concatMap {
+                limitOrderApi.getOrders(it).toFlowable()
+    
+            .takeUntil {
+                it.pagingInfo.pageIndex > it.pagingInfo.pageCount
+    .reduce(
+                ImmutableList.builder<OrderEntity>(),
+                { builder, response -> builder.addAll(response.orders) })
+            .map {
+                it.build()
+    
+            .map {
+                orderMapper.transform(it)
+    
+            .repeatWhen {
+                it.delay(10, TimeUnit.SECONDS)
+    
+            .retryWhen { throwable ->
+                throwable.compose(zipWithFlatMap())
+    
     }
 
     override fun getRelatedLimitOrders(param: GetRelatedLimitOrdersUseCase.Param): Flowable<List<Order>> {
@@ -324,12 +335,7 @@ class LimitOrderDataRepository @Inject constructor(
             .map {
                 orderMapper.transform(it)
     
-            .map {
-                it.filter { it.isPending }
-    
-            .doAfterSuccess {
-                limitOrderDao.insertOrders(it)
-    .toFlowable()
+            .toFlowable()
             .repeatWhen {
                 it.delay(10, TimeUnit.SECONDS)
     

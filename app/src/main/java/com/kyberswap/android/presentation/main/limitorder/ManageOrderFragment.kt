@@ -152,6 +152,7 @@ class ManageOrderFragment : BaseFragment(), LoginState {
 
         viewModel.getRelatedOrderCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == GetRelatedOrdersState.Loading)
                 when (state) {
                     is GetRelatedOrdersState.Success -> {
                         orders = state.orders
@@ -201,6 +202,10 @@ class ManageOrderFragment : BaseFragment(), LoginState {
             openUrl(getString(R.string.order_why_order_not_filled))
 
 
+    }
+
+    override fun showProgress(showProgress: Boolean) {
+        binding.progressBar.visibility = if (showProgress) View.VISIBLE else View.GONE
     }
 
     private fun showFaq(isShow: Boolean) {

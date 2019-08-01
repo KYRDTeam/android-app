@@ -33,7 +33,6 @@ import com.kyberswap.android.util.ext.*
 import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.android.synthetic.main.layout_expanable.*
 import net.cachapa.expandablelayout.ExpandableLayout
-import timber.log.Timber
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -127,7 +126,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                 when (state) {
                     is GetSwapState.Success -> {
                         if (!state.swap.isSameTokenPair(binding.swap)) {
-                            Timber.e("swap token pair change")
                             if (state.swap.tokenSource.tokenSymbol == state.swap.tokenDest.tokenSymbol) {
                                 showAlertWithoutIcon(
                                     title = getString(R.string.title_unsupported),

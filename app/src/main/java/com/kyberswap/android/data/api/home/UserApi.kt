@@ -85,6 +85,9 @@ interface UserApi {
     @GET("api/alerts/ranks")
     fun getLeaderBoard(): Single<LeaderBoardEntity>
 
+    @GET("api/alerts/campaign_prizes")
+    fun getCampaignResult(): Single<LeaderBoardEntity>
+
     @POST("api/kyc_profile/personal_info")
     @FormUrlEncoded
     fun savePersonalInfo(

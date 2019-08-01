@@ -22,6 +22,11 @@ class AlertDataRepository @Inject constructor(
     private val userApi: UserApi,
     private val alertMapper: AlertMapper
 ) : AlertRepository {
+    override fun getCampaignResult(): Single<LeaderBoard> {
+        return userApi.getCampaignResult().map {
+            alertMapper.transform(it)
+
+    }
 
     override fun getLeaderBoardAlert(): Single<LeaderBoard> {
         return userApi.getLeaderBoard().map {

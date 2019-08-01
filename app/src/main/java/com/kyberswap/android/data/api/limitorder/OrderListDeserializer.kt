@@ -17,6 +17,7 @@ class OrderListDeserializer : JsonDeserializer<ListLimitOrderResponseEntity> {
         val jsonObject = json.asJsonObject
         val fields = jsonObject.getAsJsonArray("fields")
         val orders = jsonObject.getAsJsonArray("orders")
+        val pagingInfo = jsonObject.getAsJsonObject("paging_info")
         if (fields == null || orders == null) return ListLimitOrderResponseEntity()
 
         for (i in 0 until orders.size()) {
@@ -24,9 +25,11 @@ class OrderListDeserializer : JsonDeserializer<ListLimitOrderResponseEntity> {
             entities.add(jsonOrder.toOrderEntity(fields))
 
 
+
+
         return ListLimitOrderResponseEntity(fields.toList().map {
             it.asString
-, entities)
+, entities, pagingInfo?.toPagingInfo() ?: PagingInfoEntity())
 
     }
 }

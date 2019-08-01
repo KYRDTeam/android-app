@@ -15,7 +15,6 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
@@ -122,11 +121,13 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
             title = getString(R.string.title_success),
             message = getString(R.string.order_submitted_message)
         )
-        val fm = (activity as MainActivity).getCurrentFragment()?.childFragmentManager
-        if (fm != null)
-            for (i in 0 until fm.backStackEntryCount) {
-                fm.popBackStack()
-    
+        val fm = currentFragment.childFragmentManager
+        for (i in 0 until fm.backStackEntryCount) {
+            fm.popBackStack()
+
+        if (currentFragment is LimitOrderFragment) {
+            (currentFragment as LimitOrderFragment).getRelatedOrders()
+
     }
 
     fun onBackPress() {

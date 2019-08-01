@@ -10,6 +10,10 @@
             type="Boolean" />
 
         <variable
+            name="isReward"
+            type="Boolean" />
+
+        <variable
             name="alert"
             type="com.kyberswap.android.domain.model.Alert" />
 
@@ -30,26 +34,25 @@
                 android:id="@+id/lnHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/alert_toggle_drawable"
                 android:gravity="center"
                 android:minHeight="44dp"
                 android:orientation="horizontal"
+                app:isActive="@{isActive}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:selected="@{isActive}">
+                app:isReward="@{isReward}">
 
                 <TextView
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_marginStart="12dp"
-                    android:background="@drawable/circle_alert_rank_toggle_bg"
                     android:gravity="center"
                     android:text="@{alert.displayRank}"
                     android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-                    android:textColor="@color/rank_text_view_color"
                     android:textSize="16sp"
-                    app:selected="@{isActive}"
+                    app:isActive="@{isActive}"
+                    app:isReward="@{isReward}"
                     tools:text="1" />
 
                 <TextView
@@ -60,7 +63,6 @@
                     android:text="@{isActive ? String.format(@string/alert_leader_board_name, alert.userName) : alert.displayUserInfo}"
                     android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="@color/email_text_view_color"
-                    android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:selected="@{isActive}"

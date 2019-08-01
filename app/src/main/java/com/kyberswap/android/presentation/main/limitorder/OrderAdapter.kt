@@ -52,6 +52,8 @@ class OrderAdapter(
     }
 ) {
 
+    private var isWarning: Boolean = false
+
     val orderList: List<Order>
         get() = getData().map {
             when (it) {
@@ -83,7 +85,7 @@ class OrderAdapter(
     }
 
     private fun binding(binding: ItemOrderBinding, item: Order) {
-        binding.swipe.isSwipeEnabled = item.isPending
+        binding.swipe.isSwipeEnabled = item.isPending && !isWarning
         binding.swipe.addSwipeListener(object : SimpleSwipeListener() {
             override fun onStartOpen(layout: SwipeLayout?) {
                 mItemManger.closeAllExcept(layout)
@@ -100,8 +102,11 @@ class OrderAdapter(
                 onMinedOrderClick?.invoke(item)
     
 
+    }
 
-
+    fun setWarning(isWarning: Boolean) {
+        this.isWarning = isWarning
+        notifyDataSetChanged()
     }
 
     override fun bind(binding: ViewDataBinding, item: OrderItem) {

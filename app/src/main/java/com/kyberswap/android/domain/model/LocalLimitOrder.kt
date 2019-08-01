@@ -86,6 +86,8 @@ data class LocalLimitOrder(
             this.tokenDest.tokenSymbol == other.tokenDest.tokenSymbol &&
             this.tokenSource.currentBalance == other.tokenSource.currentBalance &&
             this.tokenDest.currentBalance == other.tokenDest.currentBalance &&
+            this.ethToken.currentBalance == other.ethToken.currentBalance &&
+            this.wethToken.currentBalance == other.wethToken.currentBalance &&
             this.userAddr == other.userAddr
     }
 
@@ -135,7 +137,7 @@ data class LocalLimitOrder(
         get() = StringBuilder()
             .append(srcAmount)
             .append(" ")
-            .append(tokenSource.tokenSymbol)
+            .append(tokenSource.symbol)
             .toString()
     val displayedDestAmount: String
         get() = StringBuilder()
@@ -151,7 +153,7 @@ data class LocalLimitOrder(
                     minRate
                 ).toDisplayNumber()
             ).append(" ")
-            .append(tokenDest.tokenSymbol)
+            .append(tokenDest.symbol)
             .toString()
     val displayedCalculatedRate: String
         get() = StringBuilder()
@@ -160,7 +162,7 @@ data class LocalLimitOrder(
             .append(" - ")
             .append(fee.multiply(srcAmount.toBigDecimalOrDefaultZero()).toDisplayNumber())
             .append(")")
-            .append(tokenSource.tokenSymbol)
+            .append(tokenSource.symbol)
             .append(" * ")
             .append(minRate.toDisplayNumber())
             .append(" = ")
@@ -171,7 +173,7 @@ data class LocalLimitOrder(
         get() = StringBuilder()
             .append(feeAmount.toDisplayNumber())
             .append(" ")
-            .append(tokenSource.tokenSymbol)
+            .append(tokenSource.symbol)
             .toString()
 
     val feeAmount: BigDecimal
@@ -196,9 +198,9 @@ data class LocalLimitOrder(
 
     val displayTokenPair: String
         get() = StringBuilder()
-            .append(tokenSource.tokenSymbol)
+            .append(tokenSource.symbol)
             .append("/")
-            .append(tokenDest.tokenSymbol)
+            .append(tokenDest.symbol)
             .append(" >= ")
             .append(minRate.toDisplayNumber())
             .toString()
