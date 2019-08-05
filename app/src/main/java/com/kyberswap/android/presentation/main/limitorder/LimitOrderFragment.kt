@@ -303,6 +303,9 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 viewModel.getGasPrice()
                 viewModel.getGasLimit(wallet, it)
                 updateAvailableAmount(pendingBalances)
+                getRelatedOrders()
+                getPendingBalance()
+                getNonce()
             }
 
             hasUserFocus = false
@@ -833,16 +836,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 showProgress(state == CancelOrdersState.Loading)
                 when (state) {
                     is CancelOrdersState.Success -> {
-                        binding.order?.let { it1 ->
-                            wallet?.let { it2 ->
-                                viewModel.getNonce(
-                                    it1,
-                                    it2
-                                )
-
-                                viewModel.getRelatedOrders(it1, it2)
-                            }
-                        }
+                        getRelatedOrders()
+                        getNonce()
                         viewModel.getPendingBalances(wallet)
 
 
@@ -870,14 +865,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                                 binding.tvRelatedOrder.visibility = View.GONE
                             }
                             else -> {
-                                binding.order?.let { it1 ->
-                                    wallet?.let { it2 ->
-                                        viewModel.getRelatedOrders(
-                                            it1,
-                                            it2
-                                        )
-                                    }
-                                }
+                                getRelatedOrders()
                                 getPendingBalance()
                                 getNonce()
                             }

@@ -41,7 +41,8 @@ data class Wallet(
 
     fun isSameWallet(other: com.kyberswap.android.domain.model.Wallet?): Boolean {
         return this.address == other?.address &&
-            this.balance == other.balance
+            this.isSelected == other.isSelected &&
+            this.unit == other.unit
     }
 
     fun display(): String {

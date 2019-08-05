@@ -1,6 +1,7 @@
 package com.kyberswap.android.domain.model
 
 
+import com.kyberswap.android.data.api.alert.CampaignInfoEntity
 import com.kyberswap.android.data.api.alert.LeaderBoardEntity
 
 data class LeaderBoard(
@@ -14,7 +15,7 @@ data class LeaderBoard(
         entity.data.map {
             Alert(it)
         },
-        CampaignInfo(entity.campaignInfo),
+        CampaignInfo(entity.campaignInfo ?: CampaignInfoEntity()),
         entity.lastCampaignTitle ?: ""
     )
 }

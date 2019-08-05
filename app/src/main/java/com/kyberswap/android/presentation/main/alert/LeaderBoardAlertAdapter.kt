@@ -18,25 +18,25 @@ class LeaderBoardAlertAdapter(
     appExecutors,
     diffCallback = object : DiffUtil.ItemCallback<Alert>() {
         override fun areItemsTheSame(oldItem: Alert, newItem: Alert): Boolean {
-            return oldItem == newItem
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(oldItem: Alert, newItem: Alert): Boolean {
-            return oldItem == newItem
+            return oldItem.areContentsTheSame(newItem)
         }
     }
 ) {
 
 
-    fun submitAlerts(tokens: List<Alert>) {
+    fun submitAlerts(alerts: List<Alert>) {
         submitList(listOf())
-        submitList(tokens)
+        submitList(alerts)
     }
 
     override fun bind(binding: ItemLeaderBoardBinding, item: Alert) {
         binding.isActive = item.userName.isNotBlank()
         binding.setVariable(BR.alert, item)
-        binding.setVariable(BR.isReward, item.rewardId > 0)
+        binding.setVariable(BR.isReward, item.rewardId > 0 || item.reward.isNotEmpty())
         binding.executePendingBindings()
     }
 

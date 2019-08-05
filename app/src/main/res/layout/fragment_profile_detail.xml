@@ -302,7 +302,6 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="36dp"
                     android:gravity="center"
                     android:lineSpacingExtra="8sp"
                     android:paddingStart="24dp"
@@ -311,11 +310,14 @@
                     android:textColor="#5a5e67"
                     android:textSize="14sp"
                     android:visibility="@{isEmpty ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvMoreAlert" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+
         </androidx.core.widget.NestedScrollView>
 
 

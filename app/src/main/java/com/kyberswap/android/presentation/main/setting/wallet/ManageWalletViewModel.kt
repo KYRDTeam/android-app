@@ -40,7 +40,7 @@ class ManageWalletViewModel @Inject constructor(
         get() = _deleteWalletCallback
 
 
-    fun createWallet(pinLock: String = "", walletName: String = "Untitled") {
+    fun createWallet(walletName: String = "Untitled") {
         _getMnemonicCallback.postValue(Event(CreateWalletState.Loading))
         createWalletUseCase.execute(
             Consumer {
@@ -52,7 +52,7 @@ class ManageWalletViewModel @Inject constructor(
                 _getMnemonicCallback.value =
                     Event(CreateWalletState.ShowError(it.localizedMessage))
             },
-            CreateWalletUseCase.Param(pinLock, walletName)
+            CreateWalletUseCase.Param(walletName)
         )
     }
 

@@ -96,9 +96,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
-                        this.wallet = state.wallet
-                        binding.walletName = state.wallet.name
-                        if (binding.swap?.walletAddress != state.wallet.address) {
+                        if (!state.wallet.isSameWallet(wallet)) {
+                            this.wallet = state.wallet
+                            binding.walletName = state.wallet.name
                             val promo = wallet?.promo
                             if (wallet?.isPromo == true) {
                                 enableTokenSearch(isSourceToken = true, isEnable = false)
@@ -113,6 +113,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                             viewModel.getSwapData(state.wallet, alertNotification)
                             viewModel.getCap(state.wallet.address)
                         }
+
                     }
                     is GetWalletState.ShowError -> {
 

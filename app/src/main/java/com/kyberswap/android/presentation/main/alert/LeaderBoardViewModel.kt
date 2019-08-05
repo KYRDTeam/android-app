@@ -2,6 +2,7 @@ package com.kyberswap.android.presentation.main.alert
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.usecase.alert.GetCampaignResultUseCase
 import com.kyberswap.android.domain.usecase.alert.GetLeaderBoardAlertsUseCase
@@ -29,10 +30,13 @@ class LeaderBoardViewModel @Inject constructor(
                 val meAlert = lb.data.find {
                     it.userId == userInfo.uid
                 }
-                val alerts = lb.data.toMutableList()
+
+                val alerts = mutableListOf<Alert>()
+
                 if (meAlert != null) {
-                    alerts[lb.data.indexOf(meAlert)] = meAlert.copy(userName = userInfo.name)
+                    alerts.add(meAlert.copy(userName = userInfo.name))
                 }
+                alerts.addAll(lb.data)
 
                 _getAlertsCallback.value =
                     Event(

@@ -22,11 +22,8 @@ interface TokenDao {
     @Delete
     fun deleteToken(token: Token)
 
-    @Transaction
-    fun updateToken(token: Token) {
-        deleteToken(token)
-        insertToken(token)
-    }
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    fun updateToken(token: Token)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateTokens(tokens: List<Token>)

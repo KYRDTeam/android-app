@@ -200,6 +200,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                 showDrawer(false)
                 handler.postDelayed(
                     {
+
                         mainViewModel.updateSelectedWallet(it)
                     }, 250
                 )
@@ -213,10 +214,10 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                     is GetAllWalletState.Success -> {
                         val selectedWallet = state.wallets.find { it.isSelected }
                         if (wallet?.address != selectedWallet?.address) {
+                            mainViewModel.pollingTokenBalance(state.wallets)
                             wallet = selectedWallet
                             wallet?.let {
                                 mainViewModel.getPendingTransaction(it)
-                                mainViewModel.pollingTokenBalance(it)
                                 mainViewModel.getTransactionPeriodically(it)
 
                             }

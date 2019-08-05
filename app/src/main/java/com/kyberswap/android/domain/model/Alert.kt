@@ -112,6 +112,19 @@ data class Alert(
     val displayTriggerAt: String
         get() = DateTimeHelper.displayDate(triggeredAt)
 
+    fun areContentsTheSame(other: Alert): Boolean {
+        return this.userName == other.userName &&
+            this.reward == other.reward &&
+            this.rewardId == other.rewardId &&
+            this.displayRank == other.displayRank &&
+            this.userName == other.userName &&
+            this.displayUserInfo == other.displayUserInfo &&
+            this.pair == other.pair &&
+            this.displayCreatedAtPrice == other.displayCreatedAtPrice &&
+            this.displayAlertPrice == other.displayAlertPrice &&
+            this.displayPercentChange == other.displayPercentChange
+    }
+
 
     companion object {
         const val STATE_LOCAL = "local"

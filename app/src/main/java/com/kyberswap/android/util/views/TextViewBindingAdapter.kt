@@ -300,7 +300,7 @@ object TextViewBindingAdapter {
             }
         }
         view.text = orderStatus
-        view.setTextColor(textColor)
+        view.setTextColor(ContextCompat.getColor(view.context, textColor))
         view.setBackgroundResource(background)
 
     }

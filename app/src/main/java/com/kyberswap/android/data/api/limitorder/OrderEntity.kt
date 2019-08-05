@@ -33,7 +33,23 @@ data class OrderEntity(
     val createdAt: Long = 0,
     @SerializedName("updated_at")
     val updatedAt: Long = 0
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as OrderEntity
+
+        if (id != other.id) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
+}
+
 
 fun JsonObject.toMessage(): Map<String, List<String>> {
     val entries = entrySet()

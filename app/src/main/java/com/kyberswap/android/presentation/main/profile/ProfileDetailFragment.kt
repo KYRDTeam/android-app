@@ -176,21 +176,21 @@ class ProfileDetailFragment : BaseFragment() {
             }
         })
 
-        viewModel.getAlertsCallback.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is GetAlertsState.Success -> {
-                        alertAdapter.submitAlerts(state.alerts.take(2))
-                    }
-                    is GetAlertsState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
-                    }
-                }
-            }
-        })
+//        viewModel.getAlertsCallback.observe(viewLifecycleOwner, Observer {
+//            it?.getContentIfNotHandled()?.let { state ->
+//                when (state) {
+//                    is GetAlertsState.Success -> {
+//                        alertAdapter.submitAlerts(state.alerts.take(2))
+//                    }
+//                    is GetAlertsState.ShowError -> {
+//                        showAlert(
+//                            state.message ?: getString(R.string.something_wrong),
+//                            R.drawable.ic_info_error
+//                        )
+//                    }
+//                }
+//            }
+//        })
 
         viewModel.logoutCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->

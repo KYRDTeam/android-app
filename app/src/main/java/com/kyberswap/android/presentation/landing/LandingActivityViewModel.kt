@@ -18,7 +18,7 @@ class LandingActivityViewModel @Inject constructor(
     val createWalletCallback: LiveData<Event<CreateWalletState>>
         get() = _getMnemonicCallback
 
-    fun createWallet(pinLock: String = "", walletName: String = "Untitled") {
+    fun createWallet(walletName: String = "Untitled") {
         _getMnemonicCallback.postValue(Event(CreateWalletState.Loading))
         createWalletUseCase.execute(
             Consumer {
@@ -30,7 +30,7 @@ class LandingActivityViewModel @Inject constructor(
                 _getMnemonicCallback.value =
                     Event(CreateWalletState.ShowError(it.localizedMessage))
             },
-            CreateWalletUseCase.Param(pinLock, walletName)
+            CreateWalletUseCase.Param(walletName)
         )
     }
 
