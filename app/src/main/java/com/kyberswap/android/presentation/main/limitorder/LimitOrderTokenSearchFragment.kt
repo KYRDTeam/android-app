@@ -59,7 +59,9 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
         wallet = arguments?.getParcelable(WALLET_PARAM)
         isSourceToken = arguments?.getBoolean(TARGET_PARAM, false)
-        wallet?.let { viewModel.getPendingBalances(it) }
+        wallet?.let {
+            viewModel.getPendingBalances(it)
+
     }
 
     override fun onCreateView(

@@ -18,9 +18,9 @@ class ManageOrderViewModel @Inject constructor(
 
 ) : GetLoginStatusViewModel(getLoginStatusUseCase) {
 
-    private val _getRelatedOrderCallback = MutableLiveData<Event<GetRelatedOrdersState>>()
-    val getRelatedOrderCallback: LiveData<Event<GetRelatedOrdersState>>
-        get() = _getRelatedOrderCallback
+    private val _getOrdersCallback = MutableLiveData<Event<GetRelatedOrdersState>>()
+    val getOrdersCallback: LiveData<Event<GetRelatedOrdersState>>
+        get() = _getOrdersCallback
 
     private val _cancelOrderCallback = MutableLiveData<Event<CancelOrdersState>>()
     val cancelOrderCallback: LiveData<Event<CancelOrdersState>>
@@ -37,18 +37,23 @@ class ManageOrderViewModel @Inject constructor(
 
     fun getAllOrders() {
         getLimitOrdersUseCase.dispose()
-        _getRelatedOrderCallback.postValue(Event(GetRelatedOrdersState.Loading))
+        _getOrdersCallback.postValue(Event(GetRelatedOrdersState.Loading))
         getLimitOrdersUseCase.execute(
             Consumer {
                 ordersWrapper = it
-                _getRelatedOrderCallback.value =
+                _getOrdersCallback.value =
                     Event(
-                        GetRelatedOrdersState.Success(toOrderItems(it.orders, it.asc))
+                        GetRelatedOrdersState.Success(
+                            toOrderItems(
+                                it.orders,
+                                it.asc
+                            )
+                        )
                     )
     ,
             Consumer {
                 it.printStackTrace()
-                _getRelatedOrderCallback.value =
+                _getOrdersCallback.value =
                     Event(GetRelatedOrdersState.ShowError(it.localizedMessage))
 
     ,

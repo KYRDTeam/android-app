@@ -2,7 +2,6 @@ package com.kyberswap.android.presentation.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
@@ -27,13 +26,13 @@ class MainViewModel @Inject constructor(
     private val getAllWalletUseCase: GetAllWalletUseCase,
     private val getPendingTransactionsUseCase: GetPendingTransactionsUseCase,
     private val monitorPendingTransactionsUseCase: MonitorPendingTransactionUseCase,
-    private val getWalletUseCase: GetSelectedWalletUseCase,
+    getWalletUseCase: GetSelectedWalletUseCase,
     private val createWalletUseCase: CreateWalletUseCase,
     private val updateSelectedWalletUseCase: UpdateSelectedWalletUseCase,
     private val getLoginStatusUseCase: GetLoginStatusUseCase,
     private val getBalancePollingUseCase: GetBalancePollingUseCase,
     private val getTransactionsPeriodicallyUseCase: GetTransactionsPeriodicallyUseCase
-) : ViewModel() {
+) : SelectedWalletViewModel(getWalletUseCase) {
 
     private val _getAllWalletStateCallback = MutableLiveData<Event<GetAllWalletState>>()
     val getAllWalletStateCallback: LiveData<Event<GetAllWalletState>>
@@ -94,8 +93,11 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    fun pollingTokenBalance(wallet: Wallet) {
+    fun disposePolling() {
         getBalancePollingUseCase.dispose()
+    }
+
+    fun pollingTokenBalance(wallets: List<Wallet>) {
         getBalancePollingUseCase.execute(
             Consumer {
 
@@ -103,12 +105,13 @@ class MainViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
     ,
-            GetBalancePollingUseCase.Param(wallet.address)
+            GetBalancePollingUseCase.Param(wallets)
         )
 
     }
 
     fun getTransactionPeriodically(wallet: Wallet) {
+        getTransactionsPeriodicallyUseCase.dispose()
         getTransactionsPeriodicallyUseCase.execute(
             Consumer { },
             Consumer {
@@ -163,7 +166,7 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    fun createWallet(pinLock: String = "", walletName: String = "Untitled") {
+    fun createWallet(walletName: String = "Untitled") {
         _getMnemonicCallback.postValue(Event(CreateWalletState.Loading))
         createWalletUseCase.execute(
             Consumer {
@@ -175,7 +178,7 @@ class MainViewModel @Inject constructor(
                 _getMnemonicCallback.value =
                     Event(CreateWalletState.ShowError(it.localizedMessage))
     ,
-            CreateWalletUseCase.Param(pinLock, walletName)
+            CreateWalletUseCase.Param(walletName)
         )
     }
 
@@ -187,7 +190,6 @@ class MainViewModel @Inject constructor(
 
     ,
             Consumer {
-                pollingTokenBalance(wallet)
                 it.printStackTrace()
                 _getWalletStateCallback.value =
                     Event(GetWalletState.ShowError(it.localizedMessage))

@@ -150,7 +150,7 @@ class ManageOrderFragment : BaseFragment(), LoginState {
 
 
 
-        viewModel.getRelatedOrderCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getOrdersCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == GetRelatedOrdersState.Loading)
                 when (state) {
@@ -250,10 +250,8 @@ class ManageOrderFragment : BaseFragment(), LoginState {
             orders,
             viewModel.ordersWrapper?.asc == true
         )
-        orderAdapter?.submitList(listOf())
-        orderAdapter?.submitList(
-            items
-        )
+
+        orderAdapter?.submitOrdersList(items)
 
         binding.isEmpty = items.isEmpty()
         binding.executePendingBindings()

@@ -2,6 +2,7 @@ package com.kyberswap.android.domain.usecase.wallet
 
 import androidx.annotation.VisibleForTesting
 import com.kyberswap.android.domain.SchedulerProvider
+import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.domain.repository.WalletRepository
@@ -12,14 +13,15 @@ import javax.inject.Inject
 class CreateWalletUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val walletRepository: WalletRepository
-) : SequentialUseCase<CreateWalletUseCase.Param, Pair<Wallet, List<Word>>>(schedulerProvider) {
+) : SequentialUseCase<CreateWalletUseCase.Param, Triple<Wallet, List<Word>, List<Token>>>(
+    schedulerProvider
+) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public override fun buildUseCaseSingle(param: Param): Single<Pair<Wallet, List<Word>>> {
+    public override fun buildUseCaseSingle(param: Param): Single<Triple<Wallet, List<Word>, List<Token>>> {
         return walletRepository.createWallet(param)
     }
 
     class Param(
-        val pinLock: String,
         val walletName: String
 
     )

@@ -264,7 +264,7 @@ class SwapDataRepository @Inject constructor(
     override fun saveSwapData(param: SaveSwapDataTokenUseCase.Param): Completable {
         return Completable.fromCallable {
             val swapByWalletAddress =
-                swapDao.findSwapDataByAddress(param.walletAddress).blockingFirst()
+                swapDao.findSwapByAddressFlowable(param.walletAddress).blockingFirst()
             val tokenBySymbol = tokenDao.getTokenBySymbol(param.token.tokenSymbol)
             val swap = if (param.isSourceToken) {
                 swapByWalletAddress.copy(tokenSource = tokenBySymbol ?: Token())
@@ -342,7 +342,7 @@ class SwapDataRepository @Inject constructor(
 
 
         swapDao.insertSwap(swap)
-        return swapDao.findSwapDataByAddress(wallet.address).defaultIfEmpty(
+        return swapDao.findSwapByAddressFlowable(wallet.address).defaultIfEmpty(
             swap
         ).map {
             it.ethToken = eth

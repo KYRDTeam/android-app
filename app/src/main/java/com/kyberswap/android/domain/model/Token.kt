@@ -53,10 +53,12 @@ data class Token(
     var isHide: Boolean = false
 
     val currentBalance: BigDecimal
-        get() = wallets.find {
-            it.isSelected
-?.currentBalance
-            ?: BigDecimal.ZERO
+        get() {
+            return wallets.find {
+                it.isSelected
+    ?.currentBalance
+                ?: BigDecimal.ZERO
+
 
 
     constructor(entity: TokenEntity) : this(
@@ -96,7 +98,7 @@ data class Token(
     val symbol: String
         get() = if (tokenSymbol == ETH_SYMBOL_STAR) WETH_SYMBOL else tokenSymbol
 
-    val currentWalletBalance: WalletBalance?
+    private val currentWalletBalance: WalletBalance?
         get() = wallets.find { it.isSelected }
 
     val selectedWalletAddress: String
@@ -127,7 +129,8 @@ data class Token(
         )
     }
 
-    fun updateSelectedWallet(wallet: Wallet): Token {
+    fun updateSelectedWallet(wallet: Wallet?): Token {
+        if (wallet == null) return this
         val walletBalances = wallets.map {
             it.copy(isSelected = false)
 .toMutableList()
@@ -150,6 +153,30 @@ data class Token(
 
         return copy(wallets = walletBalances)
     }
+
+    fun updateSelectedWallet(listWallets: List<Wallet>): Token {
+        val walletBalances = listWallets.map { wallet ->
+            val walletBalance = wallets.find { it.walletAddress == wallet.address }
+            WalletBalance(
+                wallet.address,
+                walletBalance?.currentBalance ?: BigDecimal.ZERO,
+                wallet.isSelected
+            )
+
+
+        return this.copy(wallets = walletBalances)
+    }
+
+    fun deleteWallet(wallet: Wallet): Token {
+        val walletBalance = wallets.find { it.walletAddress == wallet.address }
+        walletBalance?.let {
+            val updateBalances = wallets.toMutableList()
+            updateBalances.remove(walletBalance)
+            return copy(wallets = updateBalances)
+
+        return this
+    }
+
 
     private fun updateBalance(walletBalance: WalletBalance?): Token {
         if (walletBalance == null) return this

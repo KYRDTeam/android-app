@@ -25,9 +25,23 @@ object DataModule {
         tokenDao: TokenDao,
         promoApi: PromoApi,
         promoMapper: PromoMapper,
-        client: TokenClient
+        client: TokenClient,
+        swapDao: SwapDao,
+        sendDao: SendDao,
+        limitOrderDao: LocalLimitOrderDao
     ): WalletRepository =
-        WalletDataRepository(context, walletDao, unitDao, tokenDao, promoApi, promoMapper, client)
+        WalletDataRepository(
+            context,
+            walletDao,
+            unitDao,
+            tokenDao,
+            promoApi,
+            promoMapper,
+            client,
+            swapDao,
+            sendDao,
+            limitOrderDao
+        )
 
     @Singleton
     @Provides
@@ -37,9 +51,17 @@ object DataModule {
         currencyApi: CurrencyApi,
         tokenMapper: TokenMapper,
         client: TokenClient,
-        tokenDao: TokenDao
+        tokenDao: TokenDao,
+        walletDao: WalletDao
     ): BalanceRepository =
-        BalanceDataRepository(api, currencyApi, tokenMapper, client, tokenDao)
+        BalanceDataRepository(
+            api,
+            currencyApi,
+            tokenMapper,
+            client,
+            tokenDao,
+            walletDao
+        )
 
     @Singleton
     @Provides

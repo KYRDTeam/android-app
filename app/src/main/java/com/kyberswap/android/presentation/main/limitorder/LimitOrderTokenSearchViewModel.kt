@@ -39,7 +39,10 @@ class LimitOrderTokenSearchViewModel @Inject constructor(
         CompositeDisposable()
     }
 
-    private fun getTokenList(address: String, pendingBalances: PendingBalances) {
+    private fun getTokenList(
+        address: String,
+        pendingBalances: PendingBalances = PendingBalances()
+    ) {
         getTokenListUseCase.dispose()
         getTokenListUseCase.execute(
             Consumer { tokens ->

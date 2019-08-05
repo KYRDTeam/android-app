@@ -1,23 +1,22 @@
 package com.kyberswap.android.presentation.wallet
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import com.kyberswap.android.domain.usecase.token.GetTokenBalanceUseCase
 import com.kyberswap.android.domain.usecase.wallet.ImportWalletFromSeedUseCase
 import com.kyberswap.android.presentation.landing.ImportWalletState
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class ImportSeedViewModel @Inject constructor(
-    private val importWalletFromSeedUseCase: ImportWalletFromSeedUseCase
-) : ViewModel() {
+    private val importWalletFromSeedUseCase: ImportWalletFromSeedUseCase,
+    getTokenBalanceUseCase: GetTokenBalanceUseCase
+) : ImportWalletViewModel(getTokenBalanceUseCase) {
 
-    val importWalletCallback: MutableLiveData<ImportWalletState> = MutableLiveData()
 
     fun importFromSeed(seed: String, walletName: String) {
         importWalletCallback.postValue(ImportWalletState.Loading)
         importWalletFromSeedUseCase.execute(
             Consumer {
-                importWalletCallback.value = ImportWalletState.Success(it)
+                loadBalances(it)
     ,
             Consumer {
                 it.printStackTrace()
@@ -25,5 +24,10 @@ class ImportSeedViewModel @Inject constructor(
     ,
             ImportWalletFromSeedUseCase.Param(seed, walletName)
         )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        importWalletFromSeedUseCase.dispose()
     }
 }

@@ -2,7 +2,6 @@ package com.kyberswap.android.data.repository
 
 import android.content.Context
 import android.util.Base64
-import com.google.common.collect.ImmutableList
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.LimitOrderApi
@@ -298,7 +297,6 @@ class LimitOrderDataRepository @Inject constructor(
     }
 
     override fun getLimitOrders(): Flowable<List<Order>> {
-
         return Flowable.range(1, Integer.MAX_VALUE)
             .concatMap {
                 limitOrderApi.getOrders(it).toFlowable()
@@ -306,20 +304,18 @@ class LimitOrderDataRepository @Inject constructor(
             .takeUntil {
                 it.pagingInfo.pageIndex > it.pagingInfo.pageCount
     .reduce(
-                ImmutableList.builder<OrderEntity>(),
-                { builder, response -> builder.addAll(response.orders) })
-            .map {
-                it.build()
-    
+                mutableListOf<OrderEntity>(),
+                { builder, response ->
+                    if (response.pagingInfo.pageIndex == 1) {
+                        builder.clear()
+            
+                    builder.addAll(response.orders)
+                    builder
+        )
             .map {
                 orderMapper.transform(it)
-    
-            .repeatWhen {
-                it.delay(10, TimeUnit.SECONDS)
-    
-            .retryWhen { throwable ->
-                throwable.compose(zipWithFlatMap())
-    
+    .toFlowable()
+
     }
 
     override fun getRelatedLimitOrders(param: GetRelatedLimitOrdersUseCase.Param): Flowable<List<Order>> {
@@ -347,7 +343,14 @@ class LimitOrderDataRepository @Inject constructor(
 
     override fun getPendingBalances(param: GetPendingBalancesUseCase.Param): Flowable<PendingBalances> {
         return Flowable.mergeDelayError(
-            pendingBalancesDao.pendingBalancesByWalletAddress(param.wallet.address),
+            if (pendingBalancesDao.pendingBalancesByWalletAddress(param.wallet.address) != null) {
+                pendingBalancesDao.pendingBalancesByWalletAddressFlowable(param.wallet.address)
+     else {
+                Flowable.fromCallable {
+                    PendingBalances()
+        
+    
+            ,
             limitOrderApi.getPendingBalances(param.wallet.address)
                 .map {
                     orderMapper.transform(it)

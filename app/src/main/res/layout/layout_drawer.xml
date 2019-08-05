@@ -15,9 +15,9 @@
 
         <ImageView
             android:id="@+id/imgClose"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="29dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="48dp"
             android:layout_marginEnd="7dp"
             android:padding="8dp"
             android:scaleType="centerInside"

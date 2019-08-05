@@ -124,30 +124,19 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
         viewModel.getSelectedWallet()
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
-                        if (state.wallet.address != binding.wallet?.address) {
-                            viewModel.getTokenBalance()
-                            tokenAdapter?.let {
-                                forceUpdate = true
-                                setNameBalanceSelectedOption(balanceIndex)
-                    
+                        if (state.wallet.address != wallet?.address) {
+                            // Wallet address change, need to reload the balance
+                            refreshBalances()
+                            binding.walletAddress = state.wallet.display()
+                            // Unit could be changed by user selection
+                            binding.tvUnit.setTextIfChange(state.wallet.unit)
+                            this.wallet = state.wallet
                 
-
-                        binding.tvUnit.setTextIfChange(state.wallet.unit)
-                        if (tokenAdapter?.hideBlance != true) {
-                            binding.tvBalance.setTextIfChange(state.wallet.displayBalance)
-                
-
-                        if (binding.wallet != state.wallet) {
-                            binding.wallet = state.wallet
-                
-
-                        this.wallet = state.wallet
 
             
                     is GetWalletState.ShowError -> {
@@ -156,6 +145,8 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         
     
 )
+
+
 
         viewModel.visibilityCallback.observe(viewLifecycleOwner, Observer {
             it?.peekContent()?.let { visibility ->
@@ -266,28 +257,9 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                             binding.swipeLayout.isRefreshing = false
                 
 
-                        tokenAdapter?.let {
-                            it.setFullTokenList(state.tokens)
-                            if (forceUpdate) {
-                                forceUpdate = false
-                                it.submitList(null)
-                    
-                            it.submitFilterList(
-                                getFilterTokenList(
-                                    currentSearchString,
-                                    state.tokens
-                                )
-                            )
-                
-
-                        val isETH = wallet?.unit == eth
-                        setCurrencyDisplay(isETH)
-
-                        val balance = calcBalance(state.tokens, isETH)
-                        if (balance.toDisplayNumber() != wallet?.balance) {
-                            wallet?.balance = balance.toDisplayNumber()
-                            viewModel.updateWallet(wallet)
-                
+                        updateTokenBalance(state.tokens.map {
+                            it.updateSelectedWallet(wallet)
+                )
             
                     is GetBalanceState.ShowError -> {
 
@@ -432,6 +404,31 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 )
     }
 
+    private fun updateTokenBalance(tokens: List<Token>) {
+        tokenAdapter?.let {
+            it.setFullTokenList(tokens)
+            if (forceUpdate) {
+                forceUpdate = false
+                it.submitList(null)
+    
+            it.submitFilterList(
+                getFilterTokenList(
+                    currentSearchString,
+                    tokens
+                )
+            )
+
+
+        val isETH = wallet?.unit == eth
+        setCurrencyDisplay(isETH)
+
+        val balance = calcBalance(tokens, isETH)
+        binding.tvBalance.setTextIfChange(balance.toDisplayNumber())
+//        if (balance.toDisplayNumber() != wallet?.balance) {
+//            viewModel.updateWallet(wallet?.copy(balance = balance.toDisplayNumber()))
+//
+    }
+
     private fun getNameBalNextSelectedIndex(index: Int): Int {
         return if (index == nameBalSelectedIndex && tokenAdapter?.isNameBalOrder == true) {
             (nameBalSelectedIndex + 1) % 2
@@ -442,7 +439,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     private fun hideBalance(isHide: Boolean) {
-        binding.tvBalance.text = if (isHide) "******" else binding.wallet?.displayBalance
+        binding.tvBalance.text = if (isHide) "******" else wallet?.displayBalance
     }
 
     override fun showNotification(showNotification: Boolean) {
@@ -458,17 +455,35 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     private fun orderByCurrency(isEth: Boolean, type: OrderType, view: TextView) {
         tokenAdapter?.let {
             it.setOrderBy(type)
-            val balance = calcBalance(it.getData(), isEth)
             it.showEth(isEth)
             val unit = if (isEth) eth else usd
-            val updatedWallet = wallet?.copy(unit = unit, balance = balance.toDisplayNumber())
+            val updatedWallet = wallet?.copy(unit = unit)
             if (updatedWallet != wallet) {
+                wallet = updatedWallet
                 viewModel.updateWallet(updatedWallet)
     
             updateOrderDrawable(it.isAsc, view)
 
         setCurrencyDisplay(isEth)
         updateOrderOption(orderByOptions.indexOf(view), view)
+        binding.tvBalance.text = walletBalance.toDisplayNumber()
+        wallet?.let {
+            binding.tvUnit.setTextIfChange(it.unit)
+
+
+    }
+
+    private val walletBalance: BigDecimal
+        get() {
+            return calcBalance(tokenAdapter?.getFullTokenList() ?: listOf(), wallet?.unit == eth)
+
+
+    private fun refreshBalances() {
+        viewModel.getTokenBalance()
+        tokenAdapter?.let {
+            forceUpdate = true
+            setNameBalanceSelectedOption(balanceIndex)
+
     }
 
     private fun orderByChange24h(type: OrderType, view: TextView) {

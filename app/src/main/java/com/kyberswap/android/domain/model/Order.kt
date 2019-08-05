@@ -111,7 +111,7 @@ data class Order(
             .toString()
 
     private val extra: BigDecimal
-        get() = receive.minus((srcAmount - fee).multiply(minRate))
+        get() = receive.minus(receivedSource.multiply(minRate))
 
     private val extraValue: String
         get() = if (extra > BigDecimal.ZERO) extra.toDisplayNumber() else ""
@@ -140,7 +140,7 @@ data class Order(
         get() = status.toLowerCase() == Status.FILLED.value
 
     val displayedDate: String
-        get() = formatterShort.format(Date(createdAt * 1000L))
+        get() = formatterShort.format(Date(time * 1000L))
 
     val displayAddress: String
         get() = userAddr.displayWalletAddress()
@@ -152,14 +152,12 @@ data class Order(
     fun sameDisplay(other: Order): Boolean {
         return this.id == other.id &&
             this.displayTokenPair == other.displayTokenPair &&
-            this.displayedDate == other.displayedDate &&
             this.displayAddress == other.displayAddress &&
             this.status == other.status &&
             this.sourceDisplay == other.sourceDisplay &&
             this.destDisplay == other.destDisplay &&
-            this.destDisplayFee == other.destDisplayFee
-
-
+            this.destDisplayFee == other.destDisplayFee &&
+            this.extraDisplay == other.extraDisplay
     }
 
     enum class Status {

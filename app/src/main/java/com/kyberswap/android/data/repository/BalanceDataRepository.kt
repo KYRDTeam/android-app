@@ -3,11 +3,15 @@ package com.kyberswap.android.data.repository
 import com.kyberswap.android.data.api.home.CurrencyApi
 import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.db.WalletDao
 import com.kyberswap.android.data.mapper.TokenMapper
 import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.BalanceRepository
+import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.PrepareBalanceUseCase
 import com.kyberswap.android.util.TokenClient
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.FlowableTransformer
 import io.reactivex.Single
@@ -22,9 +26,17 @@ class BalanceDataRepository @Inject constructor(
     private val currencyApi: CurrencyApi,
     private val tokenMapper: TokenMapper,
     private val tokenClient: TokenClient,
-    private val tokenDao: TokenDao
+    private val tokenDao: TokenDao,
+    private val walletDao: WalletDao
 ) :
     BalanceRepository {
+
+    override fun getTokenBalance(token: Token): Completable {
+        return Completable.fromCallable {
+            val updatedToken = tokenClient.updateBalance(token)
+            tokenDao.updateToken(updatedToken)
+
+    }
 
     override fun getChange24h(): Flowable<List<Token>> {
         return tokenDao.all
@@ -98,45 +110,59 @@ class BalanceDataRepository @Inject constructor(
     }
 
 
-    private fun updateBalance(tokens: List<Token>, allTokens: List<Token>): List<Token> {
-        val listedTokens = tokens.map { token ->
-            val currentToken = allTokens.find {
-                it.tokenAddress == token.tokenAddress
+    private fun updateBalance(
+        remoteTokens: List<Token>,
+        wallets: List<Wallet>
+    ): List<Token> {
+
+        val localTokens = tokenDao.allTokens.map {
+            it.updateSelectedWallet(wallets).copy(isOther = true)
+
+
+        val listedTokens = remoteTokens.map { remoteToken ->
+            val localToken = localTokens.find {
+                it.tokenAddress == remoteToken.tokenAddress
     
 
-            val tokenWithRate = currentToken?.copy(
-                rateUsdNow = token.rateUsdNow,
-                rateEthNow = token.rateEthNow,
-                changeEth24h = token.changeEth24h,
-                changeUsd24h = token.changeUsd24h,
+            val updatedRateToken = localToken?.copy(
+                rateUsdNow = remoteToken.rateUsdNow,
+                rateEthNow = remoteToken.rateEthNow,
+                changeEth24h = remoteToken.changeEth24h,
+                changeUsd24h = remoteToken.changeUsd24h,
                 isOther = false
-            ) ?: token
-            tokenClient.updateBalance(tokenWithRate)
+            ) ?: remoteToken
+
+            tokenClient.updateBalance(updatedRateToken)
 
 
         val listTokenSymbols = listedTokens.map { it.tokenSymbol }
 
-        val otherTokens = allTokens.filterNot { listTokenSymbols.contains(it.tokenSymbol) }.map {
+        val otherTokens = localTokens.filterNot { listTokenSymbols.contains(it.tokenSymbol) }.map {
             tokenClient.updateBalance(it)
 
-        tokenDao.updateTokens(listedTokens)
-        tokenDao.updateTokens(otherTokens)
-        return listedTokens
+
+        val currentWallets = walletDao.all
+        val localSelected = currentWallets.find { it.isSelected }
+        val selectedWallet = wallets.find { it.isSelected }
+
+        return if (selectedWallet?.address == localSelected?.address) {
+            tokenDao.updateTokens(listedTokens)
+            tokenDao.updateTokens(otherTokens)
+            listedTokens
+ else {
+            updateBalance(remoteTokens, currentWallets)
+
+
+
     }
 
-    override fun getChange24hPolling(owner: String): Flowable<List<Token>> {
+    override fun getChange24hPolling(param: GetBalancePollingUseCase.Param): Flowable<List<Token>> {
         return fetchChange24h()
-            .map { tokens ->
-                val allTokens = tokenDao.allTokens.map {
-                    it.copy(isOther = true)
-        
-                updateBalance(tokens, allTokens)
-    
-            .doAfterSuccess {
-                tokenDao.updateTokens(it)
+            .map { remoteTokens ->
+                updateBalance(remoteTokens, param.wallets)
     
             .repeatWhen {
-                it.delay(15, TimeUnit.SECONDS)
+                it.delay(12, TimeUnit.SECONDS)
     
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())

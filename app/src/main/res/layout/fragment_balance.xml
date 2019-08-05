@@ -7,8 +7,8 @@
     <data>
 
         <variable
-            name="wallet"
-            type="com.kyberswap.android.domain.model.Wallet" />
+            name="walletAddress"
+            type="String" />
 
     </data>
 
@@ -101,7 +101,7 @@
                 android:layout_marginTop="8dp"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:text="@{wallet.display()}"
+                android:text="@{walletAddress}"
                 android:textColor="#ffffff"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toStartOf="@+id/tvQr"

@@ -82,7 +82,6 @@ class BalanceViewModel @Inject constructor(
 
     fun getTokenBalance() {
         getBalanceUseCase.dispose()
-        _getBalanceStateCallback.postValue(Event(GetBalanceState.Loading))
         getBalanceUseCase.execute(
             Consumer {
                 _getBalanceStateCallback.value = Event(GetBalanceState.Success(it))
