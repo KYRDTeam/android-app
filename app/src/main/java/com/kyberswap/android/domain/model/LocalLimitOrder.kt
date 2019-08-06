@@ -116,7 +116,7 @@ data class LocalLimitOrder(
         get() = ethToken.limitOrderBalance
 
     val minConvertedAmount: String
-        get() = (srcAmount.toBigDecimalOrDefaultZero() - wethToken.currentBalance).toDisplayNumber()
+        get() = (srcAmount.toBigDecimalOrDefaultZero() - wethToken.currentBalance).toPlainString()
 
     val displayEthBalance: String
         get() = StringBuilder()

@@ -32,6 +32,7 @@ import org.web3j.utils.Numeric
 import java.io.IOException
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.math.RoundingMode
 import java.util.*
 import javax.inject.Inject
 import kotlin.math.pow
@@ -125,7 +126,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                 (updateBalance(token.owner, token.tokenAddress) ?: BigDecimal.ZERO).divide(
                     BigDecimal(10).pow(
                         token.tokenDecimal
-                    )
+                    ), 18, RoundingMode.HALF_EVEN
                 )
             }
         )
@@ -277,8 +278,12 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             if (param.swap.gasLimit.toBigInteger() == BigInteger.ZERO) DEFAULT_GAS_LIMIT
             else param.swap.gasLimit.toBigInteger()
 
-        val tradeWithHintAmount = param.swap.sourceAmount.toBigDecimalOrDefaultZero()
-            .times(10.0.pow(param.swap.tokenSource.tokenDecimal).toBigDecimal()).toBigInteger()
+
+        val tradeWithHintAmount = if (param.swap.isSwapAll) {
+            param.swap.tokenSource.currentBalance
+        } else {
+            param.swap.sourceAmount.toBigDecimalOrDefaultZero()
+        }.times(10.0.pow(param.swap.tokenSource.tokenDecimal).toBigDecimal()).toBigInteger()
 
         val transactionAmount =
             if (param.swap.tokenSource.isETH) tradeWithHintAmount else BigInteger.ZERO
@@ -340,11 +345,13 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         val isEth = param.send.tokenSource.isETH
 
 
-        val amount = param.send
-            .sourceAmount
-            .toBigDecimalOrDefaultZero().multiply(
-                10.toBigDecimal().pow(param.send.tokenSource.tokenDecimal)
-            ).toBigInteger()
+        val amount = if (param.send.isSendAll) {
+            param.send.tokenSource.currentBalance
+        } else {
+            param.send.sourceAmount.toBigDecimalOrDefaultZero()
+        }.multiply(
+            10.toBigDecimal().pow(param.send.tokenSource.tokenDecimal)
+        ).toBigInteger()
 
         val transactionAmount = if (isEth) amount else BigInteger.ZERO
 

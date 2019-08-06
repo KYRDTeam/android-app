@@ -12,6 +12,7 @@ import kotlinx.android.parcel.Parcelize
 import org.web3j.protocol.core.methods.response.TransactionReceipt
 import org.web3j.utils.Convert
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -208,7 +209,7 @@ data class Transaction(
                                 .pow(
                                     tokenDecimal
                                         .toBigDecimalOrDefaultZero().toInt()
-                                )
+                                ), 18, RoundingMode.HALF_EVEN
                         ).toDisplayNumber()
                 )
                 .append(" ")

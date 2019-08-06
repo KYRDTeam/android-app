@@ -59,4 +59,9 @@ interface LimitOrderApi {
     fun getPendingBalances(
         @Query("user_addr") address: String
     ): Single<PendingBalancesEntity>
+
+    @GET("api/orders/eligible_address")
+    fun eligibleAddress(
+        @Query("user_addr") address: String
+    ): Single<EligibleAddressEntity>
 }

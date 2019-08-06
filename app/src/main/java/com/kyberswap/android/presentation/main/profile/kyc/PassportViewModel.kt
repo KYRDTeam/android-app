@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.KycInfo
 import com.kyberswap.android.domain.usecase.profile.Base64DecodeUseCase
-import com.kyberswap.android.domain.usecase.profile.GetUserInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.FetchUserInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.ResizeImageUseCase
 import com.kyberswap.android.domain.usecase.profile.SaveIdPassportUseCase
 import com.kyberswap.android.presentation.common.Event
@@ -17,7 +17,7 @@ import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class PassportViewModel @Inject constructor(
-    private val getUserInfoUseCase: GetUserInfoUseCase,
+    private val getUserInfoUseCase: FetchUserInfoUseCase,
     private val resizeImageUseCase: ResizeImageUseCase,
     private val decodeBase64DecodeUseCase: Base64DecodeUseCase,
     private val saveIdPassportUseCase: SaveIdPassportUseCase
@@ -109,8 +109,12 @@ class PassportViewModel @Inject constructor(
 
     }
 
-    override fun onCleared() {
+    public override fun onCleared() {
         compositeDisposable.dispose()
+        decodeBase64DecodeUseCase.dispose()
+        getUserInfoUseCase.dispose()
+        resizeImageUseCase.dispose()
+        saveIdPassportUseCase.dispose()
         super.onCleared()
     }
 

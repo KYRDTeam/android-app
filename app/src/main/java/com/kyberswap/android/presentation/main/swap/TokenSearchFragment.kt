@@ -80,7 +80,7 @@ class TokenSearchFragment : BaseFragment() {
 
         val tokenAdapter =
             TokenSearchAdapter(appExecutors) { token ->
-                if (token.tokenSymbol == getString(R.string.promo_source_token)) {
+                if (wallet?.isPromo == true && token.tokenSymbol == getString(R.string.promo_source_token)) {
                     showAlertWithoutIcon(message = getString(R.string.can_not_tranfer_token))
                 }
 

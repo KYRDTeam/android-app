@@ -81,8 +81,9 @@
     <string name="text_counter">word count: %d</string>
     <string name="message_cancelled">Cancelled</string>
     <string name="balance">Balance</string>
-    <string name="kyber_list">Kyber List</string>
-    <string name="other">Other</string>
+    <string name="token_balance">%s Balance</string>
+    <string name="kyber_list">Kyber Listed</string>
+    <string name="other">Others</string>
     <string name="favourite">Favourite</string>
     <string name="name">Name</string>
     <string name="limit_order">Limit Order</string>
@@ -117,9 +118,10 @@
     <string name="dest_balance_usd_format" formatted="false" translatable="false">"≈ %s USD"</string>
     <string name="default_dest_balance_usd">≈ 0.0 USD</string>
     <string name="gas_fee_gwei">GAS fee (Gwei)</string>
-    <string name="gas_fast">%s\n FAST</string>
-    <string name="gas_regular">%s\n REGULAR</string>
-    <string name="gas_slow">%s\n SLOW</string>
+    <string name="gas_super_fast">%s\nSUPER FAST</string>
+    <string name="gas_fast">%s\nFAST</string>
+    <string name="gas_regular">%s\nREGULAR</string>
+    <string name="gas_slow">%s\nSLOW</string>
     <string name="swap_rate_condition">Still proceed if %s-%s rate goes down by:</string>
     <string name="three_percentage">3%</string>
     <string name="percentage">%</string>
@@ -136,6 +138,7 @@
     <string name="cancel">Cancel</string>
     <string name="swap_to">To:</string>
     <string name="gas_fee_eth">Transaction fee (ETH)</string>
+    <string name="swap_gas_fee_eth">Transaction fee (Gwei)</string>
     <string name="swap_done">Your Swap is Done</string>
     <string name="maker_time">Time: %s</string>
     <string name="maker_price">Price: %s</string>
@@ -558,6 +561,12 @@
     <string name="campaign_result">Result</string>
     <string name="identity_info">Identity Info</string>
     <string name="wallet_file_prefix">kyber_swap_</string>
+    <string name="address_not_eligible">This address has been used by another account. Please place order with other address.</string>
+    <string name="small_amount_of_eth_transaction_fee">A small amount of ETH will be used for transaction fee</string>
+    <string name="two_factor_authentication_2fa">Two Factor Authentication (2FA)</string>
+    <string name="two_fa_hint_token">Token</string>
+    <string name="two_fa_continue">Continue</string>
+    <string name="two_fa_paste">Paste</string>
 
 
 </resources>

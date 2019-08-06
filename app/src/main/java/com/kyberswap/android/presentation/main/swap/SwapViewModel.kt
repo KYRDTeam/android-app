@@ -143,6 +143,7 @@ class SwapViewModel @Inject constructor(
     }
 
     fun getGasPrice() {
+        getGasPriceUseCase.dispose()
         getGasPriceUseCase.execute(
             Consumer {
                 _getGetGasPriceCallback.value = Event(GetGasPriceState.Success(it))
@@ -189,6 +190,7 @@ class SwapViewModel @Inject constructor(
 
     fun getGasLimit(wallet: Wallet?, swap: Swap?) {
         if (wallet == null || swap == null) return
+        estimateGasUseCase.dispose()
         estimateGasUseCase.execute(
             Consumer {
                 if (it.error == null) {
@@ -201,7 +203,7 @@ class SwapViewModel @Inject constructor(
                             swap.gasLimit.toBigIntegerOrDefaultZero().max(
                                 (it.amountUsed.toBigDecimal().multiply(1.2.toBigDecimal()))
                                     .toBigInteger()
-                            )
+                            ).plus(100000.toBigInteger())
                         } else {
                             (it.amountUsed.toBigDecimal().multiply(1.2.toBigDecimal())).toBigInteger()
                                 .plus(100000.toBigInteger())

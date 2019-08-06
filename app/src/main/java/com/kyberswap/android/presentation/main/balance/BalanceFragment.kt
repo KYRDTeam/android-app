@@ -27,10 +27,7 @@ import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
-import com.kyberswap.android.util.ext.setTextIfChange
-import com.kyberswap.android.util.ext.showDrawer
-import com.kyberswap.android.util.ext.showKeyboard
-import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_token_header.view.*
 import java.math.BigDecimal
@@ -404,6 +401,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         })
     }
 
+    fun getSelectedWallet() {
+        viewModel.getSelectedWallet()
+    }
+
     private fun updateTokenBalance(tokens: List<Token>) {
         tokenAdapter?.let {
             it.setFullTokenList(tokens)
@@ -423,7 +424,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         setCurrencyDisplay(isETH)
 
         val balance = calcBalance(tokens, isETH)
-        binding.tvBalance.setTextIfChange(balance.toDisplayNumber())
+        binding.tvBalance.setTextIfChange(balance.toDisplayNumber().exactAmount())
 //        if (balance.toDisplayNumber() != wallet?.balance) {
 //            viewModel.updateWallet(wallet?.copy(balance = balance.toDisplayNumber()))
 //        }
@@ -439,7 +440,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     private fun hideBalance(isHide: Boolean) {
-        binding.tvBalance.text = if (isHide) "******" else wallet?.displayBalance
+        binding.tvBalance.text = if (isHide) "******" else wallet?.displayBalance?.exactAmount()
     }
 
     override fun showNotification(showNotification: Boolean) {
@@ -466,7 +467,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         }
         setCurrencyDisplay(isEth)
         updateOrderOption(orderByOptions.indexOf(view), view)
-        binding.tvBalance.text = walletBalance.toDisplayNumber()
+        binding.tvBalance.text = walletBalance.toDisplayNumber().exactAmount()
         wallet?.let {
             binding.tvUnit.setTextIfChange(it.unit)
         }

@@ -57,7 +57,9 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSendState.Success -> {
-                        binding.send = state.send
+                        if (binding.send != state.send) {
+                            binding.send = state.send
+                        }
                     }
                     is GetSendState.ShowError -> {
 

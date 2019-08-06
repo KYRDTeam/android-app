@@ -30,6 +30,7 @@ import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.landing.CreateWalletState
+import com.kyberswap.android.presentation.main.balance.BalanceFragment
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
 import com.kyberswap.android.presentation.main.balance.WalletAdapter
@@ -40,6 +41,7 @@ import com.kyberswap.android.presentation.main.profile.kyc.PassportFragment
 import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
 import com.kyberswap.android.presentation.main.profile.kyc.SubmitFragment
 import com.kyberswap.android.presentation.main.setting.SettingFragment
+import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_drawer.*
@@ -144,9 +146,14 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                 currentFragment = adapter?.getRegisteredFragment(position)
                 showPendingTransaction()
                 when (currentFragment) {
+                    is BalanceFragment -> {
+//                        (currentFragment as BalanceFragment).getSelectedWallet()
+                    }
                     is LimitOrderFragment -> {
-                        (currentFragment as LimitOrderFragment).run {
+                        with((currentFragment as LimitOrderFragment)) {
+                            getLimitOrder()
                             getLoginStatus()
+                            checkEligibleAddress()
                         }
 
                         currentFragment?.childFragmentManager?.fragments?.forEach {
@@ -154,6 +161,13 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                                 is LoginState -> it.getLoginStatus()
                             }
                         }
+                    }
+
+                    is SwapFragment -> {
+                        with((currentFragment as SwapFragment)) {
+                            getSwap()
+                        }
+
                     }
                     is SettingFragment -> {
                         (currentFragment as SettingFragment).getLoginStatus()
@@ -401,6 +415,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
             if (currentFragment is LimitOrderFragment) {
                 (currentFragment as LimitOrderFragment).getRelatedOrders()
+            } else if (currentFragment is SwapFragment) {
+                (currentFragment as SwapFragment).getSwap()
             }
 
             currentFragment!!.childFragmentManager.popBackStack()

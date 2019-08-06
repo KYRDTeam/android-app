@@ -18,6 +18,7 @@ import com.kyberswap.android.presentation.main.profile.kyc.KycInfoType
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
+import io.reactivex.rxkotlin.Flowables
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import java.io.ByteArrayOutputStream
@@ -82,12 +83,23 @@ class UserDataRepository @Inject constructor(
     override fun fetchUserInfo(): Flowable<UserInfo> {
         return Flowable.mergeDelayError(
             userDao.all,
-            userApi.getUserInfo().map {
-                userMapper.transform(it)
-            }
-                .doAfterSuccess {
-                    userDao.updateUser(it)
+            Flowables.zip(
+                userDao.all,
+                userApi.getUserInfo().map {
+                    userMapper.transform(it)
                 }.toFlowable()
+            ) { local, remote ->
+                val kyc = remote.kycInfo
+                val kycInfo = local.kycInfo.copy(
+                    photoSelfie = kyc.photoSelfie,
+                    photoIdentityBackSide = kyc.photoIdentityBackSide,
+                    photoIdentityFrontSide = kyc.photoIdentityFrontSide,
+                    photoProofAddress = kyc.photoProofAddress
+                )
+
+                local.copy(kycInfo = kycInfo)
+
+            }
         )
     }
 
@@ -115,7 +127,8 @@ class UserDataRepository @Inject constructor(
             param.socialInfo.displayName,
             param.socialInfo.oAuthToken,
             param.socialInfo.oAuthTokenSecret,
-            param.confirmSignUp
+            param.confirmSignUp,
+            param.socialInfo.twoFa
         )
             .map { userMapper.transform(it) }
             .doAfterSuccess {
@@ -125,7 +138,7 @@ class UserDataRepository @Inject constructor(
     }
 
     override fun login(param: LoginUseCase.Param): Single<LoginUser> {
-        return userApi.login(param.email, param.password)
+        return userApi.login(param.email, param.password, param.twoFa)
             .map { userMapper.transform(it) }
             .doAfterSuccess {
                 userDao.updateUser(it.userInfo)
@@ -239,6 +252,7 @@ class UserDataRepository @Inject constructor(
             info.documentId,
             info.documentType,
             info.documentIssueDate,
+            info.documentExpiryDate,
             info.photoSelfie,
             info.photoIdentityFrontSide,
             info.photoIdentityBackSide

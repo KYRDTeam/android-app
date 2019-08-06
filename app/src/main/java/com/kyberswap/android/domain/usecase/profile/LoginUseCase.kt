@@ -19,6 +19,7 @@ class LoginUseCase @Inject constructor(
 
     class Param(
         val email: String,
-        val password: String
+        val password: String,
+        val twoFa: String?
     )
 }

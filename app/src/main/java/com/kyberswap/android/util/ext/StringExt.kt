@@ -43,6 +43,16 @@ fun String.toLongSafe(): Long {
     }
 }
 
+fun String.toDoubleSafe(): Double {
+    if (isNullOrEmpty()) return 0.0
+    return try {
+        toDouble()
+    } catch (ex: NumberFormatException) {
+        ex.printStackTrace()
+        0.0
+    }
+}
+
 
 fun String?.percentage(other: String?): BigDecimal {
     if (other.isNullOrEmpty() || this.isNullOrEmpty()) return BigDecimal.ZERO
@@ -107,7 +117,7 @@ fun String?.toBigIntegerOrDefaultZero(): BigInteger {
     }
 }
 
-fun String.exactAmount(): String? {
+fun String.exactAmount(): String {
     return if (this.toDoubleOrDefaultZero() != 0.0) {
         this
     } else {

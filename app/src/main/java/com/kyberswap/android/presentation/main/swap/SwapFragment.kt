@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
+import android.widget.CompoundButton
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.jakewharton.rxbinding3.widget.checkedChanges
@@ -33,6 +34,7 @@ import com.kyberswap.android.util.ext.*
 import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.android.synthetic.main.layout_expanable.*
 import net.cachapa.expandablelayout.ExpandableLayout
+import timber.log.Timber
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -69,6 +71,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
         listOf(binding.imgTokenDest, binding.tvDest)
     }
 
+    private var selectedGasFeeView: CompoundButton? = null
+
+
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
@@ -88,10 +93,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
+        viewModel.getSelectedWallet()
         alertNotification?.let { viewModel.getAlert(it) }
 
-        viewModel.getSelectedWallet()
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -139,7 +143,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
 
                             binding.swap = state.swap
                             binding.executePendingBindings()
+
                         }
+                        Timber.e("getSwapDataCallback")
                         viewModel.getGasPrice()
                         viewModel.getGasLimit(wallet, binding.swap)
                     }
@@ -216,8 +222,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                                 val updatedSwap = swap.copy(
                                     sourceAmount = edtSource.text.toString(),
                                     minAcceptedRatePercent =
-                                    getMinAcceptedRatePercent(rgRate.checkedRadioButtonId),
-                                    gasPrice = getSelectedGasPrice(swap.gas)
+                                    getMinAcceptedRatePercent(rgRate.checkedRadioButtonId)
                                 )
                                 binding.swap = updatedSwap
                                 viewModel.getGasLimit(
@@ -251,9 +256,22 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
         }
 
         binding.tvTokenBalanceValue.setOnClickListener {
-            val balance = binding.tvTokenBalanceValue.text
-            if (balance.isNotEmpty()) {
-                binding.edtSource.setText(balance)
+            binding.swap?.let {
+                if (it.tokenSource.isETH) {
+                    showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
+                    binding.edtSource.setAmount(
+                        it.availableAmountForSwap(
+                            binding.tvTokenBalanceValue.text.toBigDecimalOrDefaultZero(),
+                            getSelectedGasPrice(
+                                it.gas,
+                                selectedGasFeeView?.id
+                            ).toBigDecimalOrDefaultZero()
+                        ).toDisplayNumber()
+                    )
+                } else {
+                    binding.edtSource.setText(binding.tvTokenBalanceValue.text)
+                }
+
             }
         }
 
@@ -378,14 +396,58 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                 })
 
 
-        viewModel.compositeDisposable.add(
-            rgGas.checkedChanges()
-                .observeOn(schedulerProvider.ui())
-                .subscribe {
-                    binding.swap?.let { swap ->
-                        viewModel.saveSwap(swap.copy(gasPrice = getSelectedGasPrice(swap.gas)))
+//        viewModel.compositeDisposable.add(
+//            rgGas.checkedChanges()
+//                .observeOn(schedulerProvider.ui())
+//                .subscribe {
+//                    binding.swap?.let { swap ->
+//                        viewModel.saveSwap(swap.copy(gasPrice = getSelectedGasPrice(swap.gas)))
+//                    }
+//                })
+
+//        viewModel.compositeDisposable.add(
+//            rbSuperFast.checkedChanges()
+//                .observeOn(schedulerProvider.ui())
+//                .subscribe {
+//                    binding.swap?.let { swap ->
+//                        viewModel.saveSwap(swap.copy(gasPrice = swap.gas.superFast))
+//                    }
+//                }
+//        )
+//
+//        viewModel.compositeDisposable.add(
+//            rbFast.checkedChanges()
+//                .observeOn(schedulerProvider.ui())
+//                .subscribe {
+//                    binding.swap?.let { swap ->
+//                        viewModel.saveSwap(swap.copy(gasPrice = swap.gas.fast))
+//                    }
+//                }
+//        )
+
+        listOf(rbSuperFast, rbFast, rbRegular, rbSlow).forEach {
+            it.setOnCheckedChangeListener { rb, isChecked ->
+                if (isChecked) {
+                    if (rb != selectedGasFeeView) {
+                        selectedGasFeeView?.isChecked = false
+                        rb.isSelected = true
+                        selectedGasFeeView = rb
+                        binding.swap?.let { swap ->
+                            viewModel.saveSwap(
+                                swap.copy(
+                                    gasPrice = getSelectedGasPrice(
+                                        swap.gas,
+                                        rb.id
+                                    )
+                                )
+                            )
+                        }
                     }
-                })
+                }
+
+            }
+        }
+
 
         viewModel.getGetGasPriceCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -484,7 +546,12 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                         showError(amountError)
                     }
 
-                    swap.copy(gasPrice = getSelectedGasPrice(swap.gas)).insufficientEthBalance -> showAlertWithoutIcon(
+                    swap.copy(
+                        gasPrice = getSelectedGasPrice(
+                            swap.gas,
+                            selectedGasFeeView?.id
+                        )
+                    ).insufficientEthBalance -> showAlertWithoutIcon(
                         getString(R.string.insufficient_eth),
                         getString(R.string.not_enough_eth_blance)
                     )
@@ -495,7 +562,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                                 destAmount = edtDest.text.toString(),
                                 minAcceptedRatePercent =
                                 getMinAcceptedRatePercent(rgRate.checkedRadioButtonId),
-                                gasPrice = getSelectedGasPrice(swap.gas)
+                                gasPrice = getSelectedGasPrice(swap.gas, selectedGasFeeView?.id)
                             ), true
                         )
                     }
@@ -506,6 +573,17 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
 
         rbFast.isChecked = true
         rbDefaultRate.isChecked = true
+
+    }
+
+    fun getSelectedWallet() {
+        viewModel.getSelectedWallet()
+    }
+
+    fun getSwap() {
+        wallet?.let {
+            viewModel.getSwapData(it)
+        }
 
     }
 
@@ -566,8 +644,17 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
         }
     }
 
-    private fun getSelectedGasPrice(gas: Gas): String {
-        return when (rgGas.checkedRadioButtonId) {
+//    private fun getSelectedGasPrice(gas: Gas): String {
+//        return when (rgGas.checkedRadioButtonId) {
+//            R.id.rbRegular -> gas.standard
+//            R.id.rbSlow -> gas.low
+//            else -> gas.fast
+//        }
+//    }
+
+    private fun getSelectedGasPrice(gas: Gas, id: Int?): String {
+        return when (id) {
+            R.id.rbSuperFast -> gas.superFast
             R.id.rbRegular -> gas.standard
             R.id.rbSlow -> gas.low
             else -> gas.fast

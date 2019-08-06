@@ -17,6 +17,7 @@ import java.util.*
 import javax.inject.Inject
 
 class PersonalInfoViewModel @Inject constructor(
+    private val fetchUserInfoUseCase: FetchUserInfoUseCase,
     private val getUserInfoUseCase: GetUserInfoUseCase,
     private val savePersonalInfoUseCase: SavePersonalInfoUseCase,
     private val saveLocalPersonalInfoUseCase: SaveLocalPersonalInfoUseCase,
@@ -47,6 +48,33 @@ class PersonalInfoViewModel @Inject constructor(
 
     val compositeDisposable = CompositeDisposable()
 
+
+    fun fetchUserInfo() {
+        fetchUserInfoUseCase.dispose()
+        fetchUserInfoUseCase.execute(
+            Consumer {
+                _getUserInfoCallback.value = Event(UserInfoState.Success(it))
+
+            },
+            Consumer {
+                it.printStackTrace()
+                _getUserInfoCallback.value =
+                    Event(UserInfoState.ShowError(it.localizedMessage))
+            },
+            null
+        )
+    }
+
+    fun getUserInfo(fromRemote: Boolean) {
+        fetchUserInfoUseCase.dispose()
+        getUserInfoUseCase.dispose()
+        if (fromRemote) {
+            fetchUserInfo()
+        } else {
+            getUserInfo()
+        }
+    }
+
     fun getUserInfo() {
         getUserInfoUseCase.dispose()
         getUserInfoUseCase.execute(
@@ -62,6 +90,7 @@ class PersonalInfoViewModel @Inject constructor(
             null
         )
     }
+
 
     fun inValidDob(dob: Date): Boolean {
         return System.currentTimeMillis() / 1000 - dob.time / 1000 <= 18 * 12 * 30 * 24 * 60 * 60
@@ -139,8 +168,8 @@ class PersonalInfoViewModel @Inject constructor(
         SOURCE_FUND
     }
 
-    override fun onCleared() {
-        getUserInfoUseCase.dispose()
+    public override fun onCleared() {
+        fetchUserInfoUseCase.dispose()
         savePersonalInfoUseCase.dispose()
         resizeImageUseCase.dispose()
         decodeBase64DecodeUseCase.dispose()

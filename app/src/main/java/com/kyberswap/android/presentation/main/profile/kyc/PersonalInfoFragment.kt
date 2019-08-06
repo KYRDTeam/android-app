@@ -4,6 +4,8 @@ package com.kyberswap.android.presentation.main.profile.kyc
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +13,8 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.gson.Gson
 import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.jakewharton.rxbinding3.widget.textChanges
@@ -61,6 +65,11 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
+    private var currentSelectedView: View? = null
+
+    private var hasLocalImage: Boolean = false
+
+
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(PersonalInfoViewModel::class.java)
     }
@@ -75,6 +84,8 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
     }
 
     private var stringImage: String? = null
+
+    private var currentDisplayString: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -134,7 +145,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
             industrialCodes.putAll(kycOccupationCode.data)
         }
 
-        viewModel.getUserInfo()
+        viewModel.fetchUserInfo()
 
         viewModel.getUserInfoCallback.observe(viewLifecycleOwner, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
@@ -168,16 +179,26 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                             tin?.let {
                                 if (it) {
                                     binding.rgTin.check(R.id.rbYes)
+                                    binding.edtTin.isEnabled = true
                                 } else {
                                     binding.rgTin.check(R.id.rbNo)
+                                    binding.edtTin.isEnabled = false
                                 }
                             }
 
-                            val stringImage =
-                                binding.info?.photoProofAddress?.removePrefix(BASE64_PREFIX)
+                            if (!binding.info?.photoProofAddress.isNullOrEmpty() && !hasLocalImage) {
+                                if (stringImage != binding.info?.photoProofAddress?.removePrefix(
+                                        BASE64_PREFIX
+                                    )
+                                ) {
+                                    this.stringImage =
+                                        binding.info?.photoProofAddress?.removePrefix(BASE64_PREFIX)
+                                }
+                            }
 
-                            stringImage?.let { it1 -> displayImage(it1) }
+                            this.stringImage?.let { it1 -> displayImage(it1) }
                         }
+
                     }
                     is UserInfoState.ShowError -> {
                         showAlert(
@@ -207,6 +228,23 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
         })
 
 
+        viewModel.saveKycInfoCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is SaveKycInfoState.Success -> {
+                        navigateToSearch()
+                    }
+                    is SaveKycInfoState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+                    }
+                }
+            }
+        })
+
+
         viewModel.compositeDisposable.add(
             binding.rgTin.checkedChanges()
                 .observeOn(schedulerProvider.ui())
@@ -224,25 +262,14 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 
 
         binding.edtNationality.setOnClickListener {
+            currentSelectedView = it
             saveCurrentKycInfo()
-            kycData?.let {
-                navigator.navigateToSearch(
-                    currentFragment,
-                    it.nationalities,
-                    KycInfoType.NATIONALITY
-                )
-            }
         }
 
         binding.edtCountryResident.setOnClickListener {
+            currentSelectedView = it
             saveCurrentKycInfo()
-            kycData?.let {
-                navigator.navigateToSearch(
-                    currentFragment,
-                    it.countries,
-                    KycInfoType.COUNTRY_OF_RESIDENCE
-                )
-            }
+
         }
 
         binding.flToggle.setOnClickListener {
@@ -269,58 +296,31 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
         }
 
         binding.edtOccupationCode.setOnClickListener {
+            currentSelectedView = it
             saveCurrentKycInfo()
-            kycData?.let {
-                navigator.navigateToSearch(
-                    currentFragment,
-                    listOf(),
-                    KycInfoType.OCCUPATION_CODE
-                )
-            }
+
         }
 
         binding.edtProofAddress.setOnClickListener {
+            currentSelectedView = it
             saveCurrentKycInfo()
-            kycData?.let {
-                navigator.navigateToSearch(
-                    currentFragment,
-                    it.proofAddress,
-                    KycInfoType.PROOF_ADDRESS
-                )
-            }
         }
 
-        binding.edtSourceFund.setOnClickListener {
+        binding.imgSrcFund.setOnClickListener {
+            currentSelectedView = it
             saveCurrentKycInfo()
-            kycData?.let {
-                navigator.navigateToSearch(
-                    currentFragment,
-                    it.sourceFunds,
-                    KycInfoType.SOURCE_FUND
-                )
-            }
+
         }
 
         binding.edtIndus.setOnClickListener {
+            currentSelectedView = it
             saveCurrentKycInfo()
-            kycData?.let {
-                navigator.navigateToSearch(
-                    currentFragment,
-                    listOf(),
-                    KycInfoType.INDUSTRY_CODE
-                )
-            }
         }
 
         binding.edtTaxCountry.setOnClickListener {
+            currentSelectedView = it
             saveCurrentKycInfo()
-            kycData?.let {
-                navigator.navigateToSearch(
-                    currentFragment,
-                    it.countries,
-                    KycInfoType.TAX_RESIDENCY_COUNTRY
-                )
-            }
+
         }
 
         binding.imgBack.setOnClickListener {
@@ -499,11 +499,12 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
             haveTaxIdentification = binding.rbYes.isChecked,
             taxIdentificationNumber = binding.edtTaxCountry.text.toString(),
             sourceFund = binding.edtSourceFund.text.toString()
-        )?.let {
-            viewModel.saveLocal(
-                it
-            )
-        }
+        )
+            ?.let {
+                viewModel.saveLocal(
+                    it
+                )
+            }
     }
 
 
@@ -541,6 +542,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 
     override fun onDestroyView() {
         viewModel.compositeDisposable.clear()
+        viewModel.onCleared()
         super.onDestroyView()
     }
 
@@ -556,6 +558,82 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
         )
     }
 
+    private fun navigateToSearch() {
+        when (currentSelectedView) {
+            binding.edtNationality -> {
+                kycData?.let {
+                    navigator.navigateToSearch(
+                        currentFragment,
+                        it.nationalities,
+                        KycInfoType.NATIONALITY
+                    )
+                }
+            }
+
+            binding.edtCountryResident -> {
+                kycData?.let {
+                    navigator.navigateToSearch(
+                        currentFragment,
+                        it.countries,
+                        KycInfoType.COUNTRY_OF_RESIDENCE
+                    )
+                }
+            }
+
+            binding.edtOccupationCode -> {
+                kycData?.let {
+                    navigator.navigateToSearch(
+                        currentFragment,
+                        listOf(),
+                        KycInfoType.OCCUPATION_CODE
+                    )
+                }
+            }
+
+            binding.edtProofAddress -> {
+                kycData?.let {
+                    navigator.navigateToSearch(
+                        currentFragment,
+                        it.proofAddress,
+                        KycInfoType.PROOF_ADDRESS
+                    )
+                }
+            }
+
+            binding.imgSrcFund -> {
+                kycData?.let {
+                    navigator.navigateToSearch(
+                        currentFragment,
+                        it.sourceFunds,
+                        KycInfoType.SOURCE_FUND
+                    )
+                }
+            }
+
+            binding.edtIndus -> {
+                kycData?.let {
+                    navigator.navigateToSearch(
+                        currentFragment,
+                        listOf(),
+                        KycInfoType.INDUSTRY_CODE
+                    )
+                }
+            }
+
+
+            binding.edtTaxCountry -> {
+                kycData?.let {
+                    navigator.navigateToSearch(
+                        currentFragment,
+                        it.countries,
+                        KycInfoType.TAX_RESIDENCY_COUNTRY
+                    )
+                }
+            }
+
+        }
+    }
+
     private fun onPhotosReturned(returnedPhotos: Array<MediaFile>) {
         returnedPhotos.first().file.absolutePath?.let {
             viewModel.resizeImage(it)
@@ -564,6 +642,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                     showProgress(state == ResizeImageState.Loading)
                     when (state) {
                         is ResizeImageState.Success -> {
+                            hasLocalImage = state.stringImage.isNotEmpty()
                             displayImage(state.stringImage)
                         }
                         is ResizeImageState.ShowError -> {
@@ -579,6 +658,8 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
     }
 
     private fun displayImage(stringImage: String) {
+        if (stringImage.isEmpty()) return
+        binding.progressBar.visibility = View.VISIBLE
         this.stringImage = stringImage
         viewModel.decode(stringImage)
         viewModel.decodeImageCallback.observe(viewLifecycleOwner, Observer {
@@ -589,6 +670,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                         glideDisplayImage(state.byteArray)
                     }
                     is DecodeBase64State.ShowError -> {
+                        binding.progressBar.visibility = View.GONE
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
@@ -597,14 +679,30 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                 }
             }
         })
+
     }
 
     private fun glideDisplayImage(byteArray: ByteArray) {
         Glide.with(binding.imgAddress)
+            .asBitmap()
             .load(
                 byteArray
             )
-            .into(binding.imgAddress)
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    binding.progressBar.visibility = View.GONE
+                    binding.imgAddress.setImageBitmap(resource)
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    binding.progressBar.visibility = View.GONE
+                    // this is called when imageView is cleared on lifecycle call or for
+                    // some other reason.
+                    // if you are referencing the bitmap somewhere else too other than this imageView
+                    // clear it here as you can no longer have the bitmap
+                }
+            })
+
     }
 
     companion object {

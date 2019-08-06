@@ -20,7 +20,10 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.util.di.ViewModelFactory
-import com.kyberswap.android.util.ext.*
+import com.kyberswap.android.util.ext.exactAmount
+import com.kyberswap.android.util.ext.hideKeyboard
+import com.kyberswap.android.util.ext.setAmount
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import kotlinx.android.synthetic.main.fragment_convert.*
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -293,8 +296,8 @@ class ConvertFragment : BaseFragment() {
                     binding.order?.minConvertedAmount.toBigDecimalOrDefaultZero() + pendingAmount
 
                 if (minCovertAmount < BigDecimal.ZERO) minCovertAmount = BigDecimal.ZERO
-                if (binding.edtConvertedAmount.text.toString() != minCovertAmount.toDisplayNumber()) {
-                    binding.edtConvertedAmount.setAmount(minCovertAmount.toDisplayNumber().exactAmount())
+                if (binding.edtConvertedAmount.text.toString() != minCovertAmount.toPlainString()) {
+                    binding.edtConvertedAmount.setAmount(minCovertAmount.stripTrailingZeros().toPlainString())
                 }
             }
         }

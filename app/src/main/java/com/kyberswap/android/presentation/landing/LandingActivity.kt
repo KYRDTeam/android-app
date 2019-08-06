@@ -61,6 +61,10 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
             navigator.navigateToKyberCodeFromLandingPage(R.id.flContainer)
         }
 
+        binding.tvTermAndCondition.setOnClickListener {
+            navigator.navigateToTermAndCondition()
+        }
+
         viewModel.createWalletCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == CreateWalletState.Loading)

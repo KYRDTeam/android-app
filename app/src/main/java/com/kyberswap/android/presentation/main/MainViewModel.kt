@@ -98,6 +98,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun pollingTokenBalance(wallets: List<Wallet>) {
+        getBalancePollingUseCase.dispose()
         getBalancePollingUseCase.execute(
             Consumer {
 

@@ -26,6 +26,8 @@ interface LimitOrderRepository {
 
     fun getNonce(param: GetNonceUseCase.Param): Single<String>
 
+    fun eligibleAddress(param: CheckEligibleAddressUseCase.Param): Single<EligibleAddress>
+
     fun getOrderFilter(): Flowable<OrderFilter>
 
     fun saveOrderFilter(param: SaveLimitOrderFilterUseCase.Param): Completable
