@@ -116,6 +116,7 @@ class SendViewModel @Inject constructor(
 
 
     fun getGasPrice() {
+        getGasPriceUseCase.dispose()
         getGasPriceUseCase.execute(
             Consumer {
                 _getGetGasPriceCallback.value = Event(GetGasPriceState.Success(it))
@@ -162,6 +163,7 @@ class SendViewModel @Inject constructor(
 
     fun getGasLimit(send: Send?, wallet: Wallet?) {
         if (send == null || wallet == null) return
+        estimateTransferGasUseCase.dispose()
         estimateTransferGasUseCase.execute(
             Consumer {
                 _getGetGasLimitCallback.value = Event(

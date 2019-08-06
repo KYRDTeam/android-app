@@ -327,15 +327,29 @@
                         android:textColor="#141927"
                         android:textSize="14sp" />
 
-                    <ImageView
-                        android:id="@+id/imgPassportFrontSide"
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="25dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="#ffffff"
-                        android:maxHeight="196dp" />
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/imgPassportFrontSide"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="25dp"
+                            android:layout_marginEnd="16dp"
+                            android:background="#ffffff"
+                            android:maxHeight="196dp" />
+
+                        <ProgressBar
+                            android:id="@+id/progressBarPassportFrontSide"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:indeterminateTint="@color/colorAccent"
+                            android:visibility="gone" />
+                    </FrameLayout>
+
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -385,15 +399,28 @@
                         android:textColor="#141927"
                         android:textSize="14sp" />
 
-                    <ImageView
-                        android:id="@+id/imgPassportBackSide"
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="25dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="#ffffff"
-                        android:maxHeight="196dp" />
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/imgPassportBackSide"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="25dp"
+                            android:layout_marginEnd="16dp"
+                            android:background="#ffffff"
+                            android:maxHeight="196dp" />
+
+                        <ProgressBar
+                            android:id="@+id/progressBarPassportBackSide"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:indeterminateTint="@color/colorAccent"
+                            android:visibility="gone" />
+                    </FrameLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -445,15 +472,29 @@
                         android:textColor="#141927"
                         android:textSize="14sp" />
 
-                    <ImageView
-                        android:id="@+id/imgPassportHolding"
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="25dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="#ffffff"
-                        android:maxHeight="196dp" />
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/imgPassportHolding"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="25dp"
+                            android:layout_marginEnd="16dp"
+                            android:background="#ffffff"
+                            android:maxHeight="196dp" />
+
+                        <ProgressBar
+                            android:id="@+id/progressBarPassportHolding"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:indeterminateTint="@color/colorAccent"
+                            android:visibility="gone" />
+
+                    </FrameLayout>
 
                     <TextView
                         android:layout_width="wrap_content"

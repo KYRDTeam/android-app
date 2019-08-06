@@ -134,12 +134,27 @@ class ProfileFragment : BaseFragment() {
                 when (state) {
                     is LoginState.Success -> {
                         if (state.login.success) {
+
                             if (state.login.confirmSignUpRequired) {
                                 navigator.navigateToSignUpConfirmScreen(
                                     currentFragment,
                                     state.socialInfo
                                 )
+                     else if (state.login.twoFaRequired) {
+                                dialogHelper.show2FaDialog {
+                                    if (!state.socialInfo.isNormalLogin) {
+                                        viewModel.login(state.socialInfo.copy(twoFa = it))
+                             else {
+                                        viewModel.login(
+                                            edtEmail.text.toString(),
+                                            edtPassword.text.toString(),
+                                            it
+                                        )
+                            
+
+                        
                      else {
+
                                 showAlertWithoutIcon(
                                     message = String.format(
                                         getString(R.string.wellcome_back),

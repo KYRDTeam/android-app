@@ -35,11 +35,6 @@ android {
         kotlinOptions {
             jvmTarget = '1.8'
 
-
-        manifestPlaceholders = [
-                onesignal_app_id               : '',
-                onesignal_google_project_number: 'REMOTE'
-        ]
     }
 
     defaultConfig {
@@ -78,11 +73,23 @@ android {
         //todo fix app name and app icon
         dev {
             applicationIdSuffix ".dev"
+            manifestPlaceholders = [
+                    onesignal_app_id               : 'cb5c709a-a471-4fe3-afbc-0406c49dc768',
+                    onesignal_google_project_number: 'REMOTE'
+            ]
 
         stg {
             applicationIdSuffix ".stg"
+            manifestPlaceholders = [
+                    onesignal_app_id               : '',
+                    onesignal_google_project_number: 'REMOTE'
+            ]
 
         prod {
+            manifestPlaceholders = [
+                    onesignal_app_id               : '',
+                    onesignal_google_project_number: 'REMOTE'
+            ]
 
 
     }

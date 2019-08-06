@@ -7,6 +7,7 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
+import com.kyberswap.android.presentation.common.KEEP_ETH_BALANCE_FOR_GAS
 import com.kyberswap.android.presentation.common.MIN_SUPPORT_SWAP_SOURCE_AMOUNT
 import com.kyberswap.android.util.ext.*
 import kotlinx.android.parcel.Parcelize
@@ -48,7 +49,7 @@ data class Swap(
         limitOrder.userAddr,
         limitOrder.ethToken,
         limitOrder.wethToken,
-        minConvertedAmount.toDisplayNumber(),
+        minConvertedAmount.stripTrailingZeros().toPlainString(),
         "",
         BigDecimal.ONE.toDisplayNumber(),
         "",
@@ -69,6 +70,20 @@ data class Swap(
             this.tokenSource.currentBalance == other.tokenSource.currentBalance &&
             this.tokenDest.currentBalance == other.tokenDest.currentBalance &&
             this.ethToken.currentBalance == other.ethToken.currentBalance
+    }
+
+    val isSwapAll: Boolean
+        get() = sourceAmount == tokenSource.currentBalance.toDisplayNumber()
+
+
+    fun availableAmountForSwap(
+        calAvailableAmount: BigDecimal,
+        gasPrice: BigDecimal
+    ): BigDecimal {
+        return calAvailableAmount - Convert.fromWei(
+            Convert.toWei(gasPrice, Convert.Unit.GWEI)
+                .multiply(KEEP_ETH_BALANCE_FOR_GAS), Convert.Unit.ETHER
+        )
     }
 
     val defaultGasLimit: String
@@ -156,6 +171,12 @@ data class Swap(
             .append(" USD")
             .toString()
 
+    val sourceSymbol: String
+        get() = tokenSource.tokenSymbol
+
+    val destSymbol: String
+        get() = tokenDest.tokenSymbol
+
 
     val displayDestRateEthUsd: String
         get() = StringBuilder()
@@ -197,7 +218,10 @@ data class Swap(
     val displayMinAcceptedRate: String
         get() = ((BigDecimal.ONE - minAcceptedRatePercent
             .toBigDecimalOrDefaultZero()
-            .div(100.toBigDecimal())).multiply(
+            .divide(
+                100.toBigDecimal(),
+                18, RoundingMode.HALF_EVEN
+            )).multiply(
             expectedRate.toBigDecimalOrDefaultZero()
         ))
             .toDisplayNumber()

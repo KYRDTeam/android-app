@@ -8,6 +8,7 @@ import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.TransactionApi
 import com.kyberswap.android.data.db.*
@@ -31,6 +32,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.Singles
 import org.web3j.utils.Numeric
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -428,7 +430,8 @@ class TransactionDataRepository @Inject constructor(
             val channelId = context.getString(R.string.default_notification_channel_id)
             val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
             val notificationBuilder = NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_stat_onesignal_default)
+                .setColor(ContextCompat.getColor(context, R.color.colorAccent))
                 .setContentTitle(
                     title
                 )
@@ -525,7 +528,9 @@ class TransactionDataRepository @Inject constructor(
                                     .pow(
                                         (send?.tokenDecimal ?: Token.ETH_DECIMAL.toString())
                                             .toBigDecimalOrDefaultZero().toInt()
-                                    )
+                                    ),
+                                18,
+                                RoundingMode.HALF_EVEN
                             )
 
                         val destAmount = received?.value.toBigDecimalOrDefaultZero()
@@ -535,6 +540,8 @@ class TransactionDataRepository @Inject constructor(
                                         (received?.tokenDecimal ?: Token.ETH_DECIMAL.toString())
                                             .toBigDecimalOrDefaultZero().toInt()
                                     )
+                                , 18,
+                                RoundingMode.HALF_EVEN
                             )
                         val tx =
                             if (transactions.first().gasPrice.isEmpty()) transactions.last() else transactions.first()

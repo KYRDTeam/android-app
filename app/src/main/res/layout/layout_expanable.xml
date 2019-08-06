@@ -59,43 +59,78 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:weightSum="2">
 
-                <RadioButton
-                    android:id="@+id/rbFast"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:backgroundTint="#fea34c"
-                    android:text="@{String.format(@string/gas_fast, gas.fast)}"
-                    android:textSize="12sp"
-                    android:theme="@style/CustomRadioTheme"
-                    app:font="@{@string/semi_bold_font_path}"
-                    app:styleBold="@{gas.fast}" />
+                    android:orientation="horizontal">
 
-                <RadioButton
-                    android:id="@+id/rbRegular"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:backgroundTint="#fea34c"
-                    android:text="@{String.format(@string/gas_regular, gas.standard)}"
-                    android:textSize="12sp"
-                    android:theme="@style/CustomRadioTheme"
-                    app:font="@{@string/semi_bold_font_path}"
-                    app:styleBold="@{gas.standard}" />
+                    <RadioButton
+                        android:id="@+id/rbSuperFast"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:backgroundTint="#fea34c"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="0dp"
+                        android:text="@{String.format(@string/gas_super_fast, gas.superFast)}"
+                        android:textSize="12sp"
+                        android:theme="@style/CustomRadioTheme"
+                        app:font="@{@string/semi_bold_font_path}"
+                        app:styleBold="@{gas.superFast}" />
 
-                <RadioButton
-                    android:id="@+id/rbSlow"
-                    android:layout_width="0dp"
+                    <RadioButton
+                        android:id="@+id/rbFast"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:backgroundTint="#fea34c"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="0dp"
+                        android:text="@{String.format(@string/gas_fast, gas.fast)}"
+                        android:textSize="12sp"
+                        android:theme="@style/CustomRadioTheme"
+                        app:font="@{@string/semi_bold_font_path}"
+                        app:styleBold="@{gas.fast}" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:backgroundTint="#fea34c"
-                    android:text="@{String.format(@string/gas_slow, gas.low)}"
-                    android:textSize="12sp"
-                    android:theme="@style/CustomRadioTheme"
-                    app:font="@{@string/semi_bold_font_path}"
-                    app:styleBold="@{gas.low}" />
+                    android:layout_marginTop="4dp"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/rbRegular"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:backgroundTint="#fea34c"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="0dp"
+                        android:text="@{String.format(@string/gas_regular, gas.standard)}"
+                        android:textSize="12sp"
+                        android:theme="@style/CustomRadioTheme"
+                        app:font="@{@string/semi_bold_font_path}"
+                        app:styleBold="@{gas.standard}" />
+
+                    <RadioButton
+                        android:id="@+id/rbSlow"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:backgroundTint="#fea34c"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="0dp"
+                        android:text="@{String.format(@string/gas_slow, gas.low)}"
+                        android:textSize="12sp"
+                        android:theme="@style/CustomRadioTheme"
+                        app:font="@{@string/semi_bold_font_path}"
+                        app:styleBold="@{gas.low}" />
+                </LinearLayout>
+
             </RadioGroup>
 
             <View

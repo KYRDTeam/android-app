@@ -37,10 +37,10 @@ object DataModule {
             tokenDao,
             promoApi,
             promoMapper,
-            client,
             swapDao,
             sendDao,
-            limitOrderDao
+            limitOrderDao,
+            client
         )
 
     @Singleton

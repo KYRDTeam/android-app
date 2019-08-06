@@ -4,6 +4,7 @@ package com.kyberswap.android.presentation.main.profile.kyc
 import android.Manifest
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,10 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
@@ -97,16 +102,32 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                                 binding.cbIssueDate.isChecked = info.documentIssueDate.isEmpty()
                                 binding.cbExpiryDate.isChecked = info.documentExpiryDate.isEmpty()
 
-                                val photoIdentityFrontSide =
-                                    info.photoIdentityFrontSide.removePrefix(BASE64_PREFIX)
-                                displayImage(photoIdentityFrontSide, binding.imgPassportFrontSide)
+                                info.photoIdentityFrontSide.removePrefix(BASE64_PREFIX)
 
-                                val photoIdentityBackSide =
-                                    info.photoIdentityBackSide.removePrefix(BASE64_PREFIX)
-                                displayImage(photoIdentityBackSide, binding.imgPassportBackSide)
 
-                                val photoSelfie = info.photoSelfie.removePrefix(BASE64_PREFIX)
-                                displayImage(photoSelfie, binding.imgPassportHolding)
+                                if (info.photoIdentityFrontSide.isNotEmpty()) {
+                                    this.frontImageString =
+                                        info.photoIdentityFrontSide.removePrefix(BASE64_PREFIX)
+                        
+                                displayImage(this.frontImageString, binding.imgPassportFrontSide)
+
+                                info.photoIdentityBackSide.removePrefix(BASE64_PREFIX)
+
+                                if (info.photoIdentityBackSide.isNotEmpty()) {
+                                    this.backImageString =
+                                        info.photoIdentityBackSide.removePrefix(BASE64_PREFIX)
+                        
+
+                                displayImage(this.backImageString, binding.imgPassportBackSide)
+
+                                info.photoSelfie.removePrefix(BASE64_PREFIX)
+
+                                if (info.photoSelfie.isNotEmpty()) {
+                                    this.selfieImageString =
+                                        info.photoSelfie.removePrefix(BASE64_PREFIX)
+                        
+
+                                displayImage(this.selfieImageString, binding.imgPassportHolding)
                     
                 
             
@@ -379,7 +400,9 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
 
     }
 
-    private fun displayImage(stringImage: String, imageView: ImageView? = null) {
+    private fun displayImage(stringImage: String?, imageView: ImageView? = null) {
+        if (stringImage.isNullOrEmpty()) return
+        showLoadingImage(true, imageView)
         setStringImage(stringImage, imageView)
         viewModel.decode(stringImage, imageView)
         viewModel.decodeImageCallback.observe(viewLifecycleOwner, Observer {
@@ -390,10 +413,24 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                         glideDisplayImage(state.byteArray, state.imageView)
             
                     is DecodeBase64State.ShowError -> {
+                        showLoadingImage(false, imageView)
             
         
     
 )
+    }
+
+    private fun showLoadingImage(isShown: Boolean, imageView: ImageView?) {
+        imageView?.let {
+            when (it) {
+                binding.imgPassportFrontSide -> binding.progressBarPassportFrontSide.visibility =
+                    if (isShown) View.VISIBLE else View.GONE
+                binding.imgPassportBackSide -> binding.progressBarPassportBackSide.visibility =
+                    if (isShown) View.VISIBLE else View.GONE
+                binding.imgPassportHolding -> binding.progressBarPassportHolding.visibility =
+                    if (isShown) View.VISIBLE else View.GONE
+    
+
     }
 
     private fun setStringImage(stringImage: String, imageView: ImageView?) {
@@ -422,6 +459,29 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
         image?.let {
             Glide.with(it)
                 .load(byteArray)
+                .addListener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        showLoadingImage(false, imageView)
+                        return false
+            
+
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        showLoadingImage(false, imageView)
+                        return false
+            
+
+        )
                 .into(image)
 
     }
@@ -438,6 +498,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
     }
 
     override fun onDestroyView() {
+        viewModel.onCleared()
         viewModel.compositeDisposable.clear()
         super.onDestroyView()
     }

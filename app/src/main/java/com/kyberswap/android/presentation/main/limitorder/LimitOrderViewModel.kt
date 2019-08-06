@@ -13,10 +13,7 @@ import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.*
-import com.kyberswap.android.util.ext.display
-import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
-import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
-import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.*
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -40,6 +37,7 @@ class LimitOrderViewModel @Inject constructor(
     private val swapTokenUseCase: SwapTokenUseCase,
     private val getLoginStatusUseCase: GetLoginStatusUseCase,
     private val pendingBalancesUseCase: GetPendingBalancesUseCase,
+    private val elegibleAddressUseCase: CheckEligibleAddressUseCase,
     getSelectedWalletUseCase: GetSelectedWalletUseCase
 ) : SelectedWalletViewModel(getSelectedWalletUseCase) {
 
@@ -59,6 +57,10 @@ class LimitOrderViewModel @Inject constructor(
     private val _getGetNonceStateCallback = MutableLiveData<Event<GetNonceState>>()
     val getGetNonceStateCallback: LiveData<Event<GetNonceState>>
         get() = _getGetNonceStateCallback
+
+    private val _getEligibleAddressCallback = MutableLiveData<Event<CheckEligibleAddressState>>()
+    val getEligibleAddressCallback: LiveData<Event<CheckEligibleAddressState>>
+        get() = _getEligibleAddressCallback
 
     private val _getRelatedOrderCallback = MutableLiveData<Event<GetRelatedOrdersState>>()
     val getRelatedOrderCallback: LiveData<Event<GetRelatedOrdersState>>
@@ -222,6 +224,22 @@ class LimitOrderViewModel @Inject constructor(
                     Event(GetNonceState.ShowError(it.localizedMessage))
     ,
             GetNonceUseCase.Param(order, wallet)
+        )
+    }
+
+    fun checkEligibleAddress(wallet: Wallet) {
+        elegibleAddressUseCase.dispose()
+        elegibleAddressUseCase.execute(
+            Consumer {
+                _getEligibleAddressCallback.value = Event(CheckEligibleAddressState.Success(it))
+
+    ,
+            Consumer {
+                it.printStackTrace()
+                _getEligibleAddressCallback.value =
+                    Event(CheckEligibleAddressState.ShowError(it.localizedMessage))
+    ,
+            CheckEligibleAddressUseCase.Param(wallet)
         )
     }
 
@@ -498,7 +516,7 @@ class LimitOrderViewModel @Inject constructor(
             availableAmount = BigDecimal.ZERO
 
 
-        return availableAmount.toDisplayNumber()
+        return availableAmount.toDisplayNumber().exactAmount()
     }
 
     fun cancelHigherRateOrder(rate: BigDecimal) {
@@ -529,7 +547,7 @@ class LimitOrderViewModel @Inject constructor(
 
     }
 
-    override fun onCleared() {
+    public override fun onCleared() {
         getRelatedLimitOrdersUseCase.dispose()
         getLocalLimitOrderDataUseCase.dispose()
         getWalletByAddressUseCase.dispose()

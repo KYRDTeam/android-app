@@ -50,7 +50,7 @@ class ProfileViewModel @Inject constructor(
         )
     }
 
-    fun login(email: String, password: String) {
+    fun login(email: String, password: String, twoFa: String? = null) {
         _loginCallback.postValue(Event(LoginState.Loading))
         loginUseCase.execute(
             Consumer {
@@ -62,7 +62,7 @@ class ProfileViewModel @Inject constructor(
                 _loginCallback.value =
                     Event(LoginState.ShowError(it.localizedMessage))
     ,
-            LoginUseCase.Param(email, password)
+            LoginUseCase.Param(email, password, twoFa)
         )
     }
 

@@ -83,6 +83,7 @@ class LeaderBoardFragment : BaseFragment() {
     
 
 
+        binding.isCampaignResult = isCampaignResult
         binding.rvLeaderBoard.layoutManager = LinearLayoutManager(
             activity,
             RecyclerView.VERTICAL,
@@ -103,6 +104,7 @@ class LeaderBoardFragment : BaseFragment() {
                         binding.campaign = state.campaignInfo
                         binding.isNoData = state.alerts.isEmpty()
                         binding.lastCampaignTitle = state.lastCampaignTitle
+                        binding.executePendingBindings()
             
                     is GetLeaderBoardState.ShowError -> {
                         showAlert(

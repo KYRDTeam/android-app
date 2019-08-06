@@ -9,6 +9,7 @@ import com.kyberswap.android.data.api.currencies.TokenCurrencyEntity
 import com.kyberswap.android.data.api.token.TokenEntity
 import com.kyberswap.android.data.db.DataTypeConverter
 import com.kyberswap.android.data.db.WalletBalanceTypeConverter
+import com.kyberswap.android.util.ext.exactAmount
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.parcel.IgnoredOnParcel
@@ -216,10 +217,10 @@ data class Token(
         get() = changeUsd24h.toDisplayNumber()
 
     val displayCurrentBalance: String
-        get() = if (isHide) "******" else currentBalance.toDisplayNumber()
+        get() = if (isHide) "******" else currentBalance.toDisplayNumber().exactAmount()
 
     val displayLimitOrderBalance: String
-        get() = limitOrderBalance.toDisplayNumber()
+        get() = limitOrderBalance.toDisplayNumber().exactAmount()
 
     val displayCurrentBalanceInEth: String
         get() = StringBuilder()

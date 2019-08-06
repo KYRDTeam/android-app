@@ -123,6 +123,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
     private var orderAdapter: OrderAdapter? = null
 
+    private var eleigibleAddress: EligibleAddress? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -149,6 +151,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                             wallet = state.wallet
                             viewModel.getLimitOrders(wallet)
                             viewModel.getPendingBalances(wallet)
+                            viewModel.getLoginStatus()
+
                 
             
                     is GetWalletState.ShowError -> {
@@ -158,7 +162,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
     
 )
 
-        viewModel.getLoginStatus()
 
         viewModel.getLocalLimitOrderCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -188,6 +191,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                             getRate(state.order)
                             viewModel.getGasPrice()
                             viewModel.getGasLimit(wallet, binding.order)
+                            getRelatedOrders()
                 
 
 
@@ -354,6 +358,31 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         
     
 )
+
+
+        viewModel.getEligibleAddressCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is CheckEligibleAddressState.Success -> {
+                        this.eleigibleAddress = state.eligibleAddress
+                        if (state.eligibleAddress.success && !state.eligibleAddress.eligibleAddress) {
+                            showAlertWithoutIcon(
+                                title = getString(R.string.title_error),
+                                message = getString(R.string.address_not_eligible)
+                            )
+                
+
+            
+                    is CheckEligibleAddressState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+            
+        
+    
+)
+
 
         binding.imgInfo.setOnClickListener {
             showAlert(
@@ -776,6 +805,13 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                     )
         
 
+                eleigibleAddress?.success == true && eleigibleAddress?.eligibleAddress != true -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_error),
+                        message = getString(R.string.address_not_eligible)
+                    )
+        
+
                 warningOrderList.isNotEmpty() -> {
                     orderAdapter?.submitList(
                         viewModel.toOrderItems(
@@ -942,6 +978,21 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
     }
 
+    fun getSelectedWallet() {
+        viewModel.getSelectedWallet()
+    }
+
+    fun getLimitOrder() {
+        wallet?.let {
+            viewModel.getLimitOrders(it)
+
+    }
+
+    fun checkEligibleAddress() {
+        wallet?.let {
+            viewModel.checkEligibleAddress(it)
+
+    }
 
     fun getPendingBalance() {
         viewModel.getPendingBalances(wallet)

@@ -65,6 +65,7 @@ class EditWalletFragment : BaseFragment() {
         binding.wallet = wallet
         binding.tvShowBackupPhrase.setOnClickListener {
             dialogHelper.showBottomSheetBackupPhraseDialog(
+                wallet?.mnemonicAvailable == true,
                 {
                     dialogHelper.showInputPassword(viewModel.compositeDisposable) {
                         wallet?.let { it1 -> viewModel.backupKeyStore(it, it1) }

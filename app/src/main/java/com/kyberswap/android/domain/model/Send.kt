@@ -5,6 +5,7 @@ import androidx.annotation.NonNull
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.kyberswap.android.presentation.common.KEEP_ETH_BALANCE_FOR_GAS
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.parcel.Parcelize
@@ -45,6 +46,9 @@ data class Send(
 
     val displaySourceAmount: String
         get() = StringBuilder().append(sourceAmount).append(" ").append(tokenSource.tokenSymbol).toString()
+
+    val isSendAll: Boolean
+        get() = sourceAmount == tokenSource.currentBalance.toDisplayNumber()
 
     val displaySourceAmountUsd: String
         get() = StringBuilder()
@@ -88,5 +92,15 @@ data class Send(
 
     fun reset() {
         this.sourceAmount = ""
+    }
+
+    fun availableAmountForTransfer(
+        calAvailableAmount: BigDecimal,
+        gasPrice: BigDecimal
+    ): BigDecimal {
+        return calAvailableAmount - Convert.fromWei(
+            Convert.toWei(gasPrice, Convert.Unit.GWEI)
+                .multiply(KEEP_ETH_BALANCE_FOR_GAS), Convert.Unit.ETHER
+        )
     }
 }

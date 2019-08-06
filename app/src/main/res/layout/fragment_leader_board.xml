@@ -21,6 +21,10 @@
             name="isNoData"
             type="Boolean" />
 
+        <variable
+            name="isCampaignResult"
+            type="Boolean" />
+
         <import type="android.text.TextUtils" />
     </data>
 
@@ -68,8 +72,7 @@
                     android:id="@+id/lnCampaignInfo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="@{(campaign.id > 0) ? View.VISIBLE : View.GONE}">
+                    android:orientation="vertical">
 
                     <FrameLayout
                         android:id="@+id/flToggle"
@@ -118,8 +121,8 @@
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/linearLayout9"
                             android:layout_width="match_parent"
-                            android:paddingBottom="16dp"
                             android:layout_height="match_parent"
+                            android:paddingBottom="16dp"
                             app:layout_constraintBottom_toTopOf="@+id/tvCampainTitle"
                             app:layout_constraintTop_toTopOf="@+id/tvCampainTitle">
 
@@ -228,9 +231,17 @@
                                 android:layout_height="2dp"
                                 android:layout_marginTop="16dp"
                                 android:background="@drawable/dash_line"
+                                android:visibility="@{(campaign.id > 0 &amp;&amp; !isCampaignResult) ? View.VISIBLE : View.GONE}"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/tvEligibleToken" />
+
+                            <androidx.constraintlayout.widget.Group
+                                android:id="@+id/grActiveCampaign"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:visibility="@{campaign.id > 0 ? View.VISIBLE : View.GONE}"
+                                app:constraint_referenced_ids="tvCampainTitle,tvEndTime,tvEligibleToken,tvCampaignDescription,tvStartTime,tvRewardUnit" />
 
                             <TextView
                                 android:id="@+id/textView117"
@@ -289,7 +300,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:visibility="@{TextUtils.isEmpty(lastCampaignTitle) ? View.GONE : View.VISIBLE}"
-                                app:constraint_referenced_ids="textView119,textView117,view26,tvWinner" />
+                                app:constraint_referenced_ids="textView119,textView117,tvWinner" />
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -38,6 +38,11 @@ class LimitOrderDataRepository @Inject constructor(
     private val orderMapper: OrderMapper,
     private val feeMapper: FeeMapper
 ) : LimitOrderRepository {
+    override fun eligibleAddress(param: CheckEligibleAddressUseCase.Param): Single<EligibleAddress> {
+        return limitOrderApi.eligibleAddress(param.wallet.address).map {
+            orderMapper.transform(it)
+
+    }
 
     override fun cancelOrder(param: CancelOrderUseCase.Param): Single<Cancelled> {
         return limitOrderApi.cancelOrder(

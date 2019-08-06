@@ -37,7 +37,9 @@ interface UserApi {
     @POST("api/users/login")
     fun login(
         @Field("email") email: String,
-        @Field("password") password: String
+        @Field("password") password: String,
+        @Field("two_factor_code") twoFactorCode: String?
+
     ): Single<LoginUserEntity>
 
 
@@ -52,7 +54,8 @@ interface UserApi {
         @Field("display_name") displayName: String?,
         @Field("oauth_token") oauthToken: String?,
         @Field("oauth_token_secret") oauthTokenSecret: String?,
-        @Field("confirm_signup") confirmSignUp: Boolean
+        @Field("confirm_signup") confirmSignUp: Boolean,
+        @Field("two_factor_code") twoFactorCode: String?
     ): Single<LoginUserEntity>
 
     @GET("api/alerts")
@@ -117,7 +120,8 @@ interface UserApi {
     fun saveIdentityInfo(
         @Field("kyc_profile[document_id]") documentId: String,
         @Field("kyc_profile[document_type]") documentType: String,
-        @Field("kyc_profile[document_issue_date]") documentIssueDate: String,
+        @Field("kyc_profile[document_issue_date]") documentIssueDate: String?,
+        @Field("kyc_profile[document_expiry_date]") documentExpiriedDate: String?,
         @Field("kyc_profile[photo_selfie]") photoSelfie: String,
         @Field("kyc_profile[photo_identity_front_side]") photoFrontSide: String,
         @Field("kyc_profile[photo_identity_back_side]") photoBackSide: String

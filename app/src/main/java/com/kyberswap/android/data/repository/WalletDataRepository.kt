@@ -35,10 +35,10 @@ class WalletDataRepository @Inject constructor(
     private val tokenDao: TokenDao,
     private val promoApi: PromoApi,
     private val promoMapper: PromoMapper,
-    private val tokenClient: TokenClient,
     private val swapDao: SwapDao,
     private val sendDao: SendDao,
-    private val limitOrderDao: LocalLimitOrderDao
+    private val limitOrderDao: LocalLimitOrderDao,
+    private val tokenClient: TokenClient
 ) : WalletRepository {
 
     override fun updatedSelectedWallet(param: UpdateSelectedWalletUseCase.Param): Single<Wallet> {
@@ -106,7 +106,8 @@ class WalletDataRepository @Inject constructor(
                 importWalletFromMnemonic.id,
                 param.walletName,
                 cipher(generatedPassword),
-                true
+                isSelected = true,
+                mnemonicAvailable = true
             )
             val tokens = updateWalletToMonitorBalance(updateSelectedWallet(wallet))
             Pair(wallet, tokens)
@@ -136,6 +137,7 @@ class WalletDataRepository @Inject constructor(
                         true
                     )
 
+
          else {
                     WalletManager.importWalletFromPrivateKey(
                         metadata,
@@ -151,6 +153,7 @@ class WalletDataRepository @Inject constructor(
                 importWalletFromPrivateKey.id,
                 param.walletName,
                 cipher(generatedPassword),
+                isSelected = true,
                 promo = param.promo
             )
             val tokens = updateWalletToMonitorBalance(updateSelectedWallet(wallet))
@@ -188,7 +191,7 @@ class WalletDataRepository @Inject constructor(
                 importWalletFromKeystore.id,
                 param.walletName,
                 cipher(param.password),
-                true
+                isSelected = true
             )
 
             val tokens = updateWalletToMonitorBalance(updateSelectedWallet(wallet))
@@ -301,7 +304,8 @@ class WalletDataRepository @Inject constructor(
                 ethereumWallet.id,
                 param.walletName,
                 cipher(generatedPassword),
-                true
+                isSelected = true,
+                mnemonicAvailable = true
             )
 
 
@@ -400,9 +404,10 @@ class WalletDataRepository @Inject constructor(
                 val status = VerifyStatus(true)
                 val wallets = walletDao.all.toMutableList()
                 if (wallet.isSelected) {
-                    val firstOrNull = wallets.firstOrNull()
+                    val firstOrNull = wallets.firstOrNull {
+                        it.address != wallet.address
+            
                     firstOrNull?.let {
-
                         updateWalletToMonitorBalance(updateSelectedWallet(it))
             
         

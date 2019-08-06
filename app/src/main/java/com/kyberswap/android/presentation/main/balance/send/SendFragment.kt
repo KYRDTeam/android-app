@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
+import android.widget.CompoundButton
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,12 +29,10 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.swap.*
 import com.kyberswap.android.util.di.ViewModelFactory
-import com.kyberswap.android.util.ext.isContact
-import com.kyberswap.android.util.ext.setAllOnClickListener
-import com.kyberswap.android.util.ext.setAmount
-import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.*
 import kotlinx.android.synthetic.main.fragment_send.*
 import net.cachapa.expandablelayout.ExpandableLayout
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -64,6 +63,8 @@ class SendFragment : BaseFragment() {
     }
 
     private var currentSelection: Contact? = null
+
+    private var selectedGasFeeView: CompoundButton? = null
 
     private val contacts = mutableListOf<Contact>()
 
@@ -99,15 +100,17 @@ class SendFragment : BaseFragment() {
                         if (!state.send.isSameTokenPair(binding.send)) {
                             binding.send = state.send
                             edtSource.setAmount(state.send.sourceAmount)
-                            viewModel.getGasLimit(
-                                state.send,
-                                wallet
-                            )
-                            viewModel.getGasPrice()
+
                             if (state.send.contact.address.isNotBlank()) {
                                 sendToContact(state.send.contact)
                     
                 
+                        Timber.e("getSwapDataCallback")
+                        viewModel.getGasPrice()
+                        viewModel.getGasLimit(
+                            state.send,
+                            wallet
+                        )
             
                     is GetSendState.ShowError -> {
                         showAlert(
@@ -124,7 +127,7 @@ class SendFragment : BaseFragment() {
                 when (state) {
                     is GetGasPriceState.Success -> {
                         val send = binding.send?.copy(
-                            gasPrice = getSelectedGasPrice(state.gas),
+                            gasPrice = getSelectedGasPrice(state.gas, selectedGasFeeView?.id),
                             gas = state.gas
                         )
                         binding.send = send
@@ -143,6 +146,7 @@ class SendFragment : BaseFragment() {
             binding.expandableLayout.expand()
 
 
+
         binding.imgClose.setOnClickListener {
             binding.expandableLayout.collapse()
 
@@ -153,6 +157,29 @@ class SendFragment : BaseFragment() {
                     (activity as MainActivity).getCurrentFragment(),
                     wallet
                 )
+    
+
+
+        listOf(rbSuperFast, rbFast, rbRegular, rbSlow).forEach {
+            it.setOnCheckedChangeListener { rb, isChecked ->
+                if (isChecked) {
+                    if (rb != selectedGasFeeView) {
+                        selectedGasFeeView?.isChecked = false
+                        rb.isSelected = true
+                        selectedGasFeeView = rb
+                        binding.send?.let { send ->
+                            viewModel.saveSend(
+                                send.copy(
+                                    gasPrice = getSelectedGasPrice(
+                                        send.gas,
+                                        rb.id
+                                    )
+                                )
+                            )
+                
+            
+        
+
     
 
 
@@ -364,18 +391,48 @@ class SendFragment : BaseFragment() {
                     )
                 )
                 hasPendingTransaction -> showError(message = getString(R.string.pending_transaction))
-                else -> viewModel.saveSend(
-                    binding.send?.copy(
-                        sourceAmount = edtSource.text.toString(),
-                        gasPrice = getSelectedGasPrice(binding.send!!.gas)
-                    ),
-                    onlyAddress(edtAddress.text.toString())
-                )
+                else -> {
+                    binding.send?.let { send ->
+                        viewModel.saveSend(
+                            send.copy(
+                                sourceAmount = edtSource.text.toString(),
+                                gasPrice = getSelectedGasPrice(send.gas, selectedGasFeeView?.id)
+                            ),
+
+                            onlyAddress(edtAddress.text.toString())
+                        )
+            
+        
+
+//                    viewModel.saveSend(
+//                    binding.send?.copy(
+//                        sourceAmount = edtSource.text.toString(),
+//                        gasPrice = getSelectedGasPrice(binding.send!!.gas, selectedGasFeeView?.id)
+//                    ),
+//                    onlyAddress(edtAddress.text.toString())
+//                )
     
 
 
         binding.grBalance.setAllOnClickListener {
-            binding.edtSource.setText(binding.send?.tokenSource?.currentBalance?.toPlainString())
+            binding.send?.let {
+                if (it.tokenSource.isETH) {
+                    showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
+                    binding.edtSource.setAmount(
+                        it.availableAmountForTransfer(
+                            it.tokenSource.currentBalance,
+                            getSelectedGasPrice(
+                                it.gas,
+                                selectedGasFeeView?.id
+                            ).toBigDecimalOrDefaultZero()
+                        ).toDisplayNumber()
+                    )
+         else {
+                    binding.edtSource.setText(it.tokenSource.currentBalance.toDisplayNumber())
+        
+
+    
+
 
 
         viewModel.saveSendCallback.observe(viewLifecycleOwner, Observer {
@@ -407,8 +464,9 @@ class SendFragment : BaseFragment() {
     private val hasPendingTransaction: Boolean
         get() = (activity as MainActivity).pendingTransactions.size > 0
 
-    private fun getSelectedGasPrice(gas: Gas): String {
-        return when (binding.rgGas.checkedRadioButtonId) {
+    private fun getSelectedGasPrice(gas: Gas, id: Int?): String {
+        return when (id) {
+            R.id.rbSuperFast -> gas.superFast
             R.id.rbRegular -> gas.standard
             R.id.rbSlow -> gas.low
             else -> gas.fast

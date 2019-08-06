@@ -1,5 +1,8 @@
 package com.kyberswap.android.presentation.helper
 
+import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -26,6 +29,7 @@ import com.kyberswap.android.util.ext.colorize
 import com.kyberswap.android.util.ext.underline
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
+
 
 class DialogHelper @Inject constructor(private val activity: AppCompatActivity) {
 
@@ -170,6 +174,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
 
     fun showBottomSheetBackupPhraseDialog(
+        mnemonicAvailable: Boolean,
         backupKeyStore: () -> Unit,
         backupPrivateKey: () -> Unit,
         backupMnemonic: () -> Unit,
@@ -192,6 +197,9 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
             backupPrivateKey.invoke()
             dialog.dismiss()
 
+
+
+        binding.tvBackupMnemonic.visibility = if (mnemonicAvailable) View.VISIBLE else View.GONE
 
         binding.tvBackupMnemonic.setOnClickListener {
             backupMnemonic.invoke()
@@ -440,6 +448,48 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.tvSend.setOnClickListener {
             positiveListener.invoke(binding.edtEmail.text.toString())
             dialog.dismiss()
+
+
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+    }
+
+    fun show2FaDialog(positiveListener: (token: String) -> Unit) {
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<Dialog2faBinding>(
+                LayoutInflater.from(activity), R.layout.dialog_2fa, null, false
+            )
+
+        binding.tvContinue.setOnClickListener {
+            positiveListener.invoke(binding.edtToken.text.toString())
+            dialog.dismiss()
+
+
+        binding.tvCancel.setOnClickListener {
+            dialog.dismiss()
+
+
+        binding.tvPaste.setOnClickListener {
+            var textToPaste: String? = null
+
+            val clipboard = activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+
+            if (clipboard.hasPrimaryClip()) {
+                val clip = clipboard.primaryClip
+
+                // if you need text data only, use:
+                if (clip?.description?.hasMimeType(MIMETYPE_TEXT_PLAIN) == true)
+                    textToPaste = clip.getItemAt(0).text.toString()
+
+                // or you may coerce the data to the text representation:
+                textToPaste = clip?.getItemAt(0)?.coerceToText(activity).toString()
+    
+            binding.edtToken.setText(textToPaste)
 
 
         dialog.setView(binding.root)

@@ -24,6 +24,7 @@ data class Wallet(
     val name: String = "",
     val cipher: String = "",
     var isSelected: Boolean = false,
+    val mnemonicAvailable: Boolean = false,
     var unit: String = "USD",
     var balance: String = "0",
     @Embedded
@@ -42,7 +43,8 @@ data class Wallet(
     fun isSameWallet(other: com.kyberswap.android.domain.model.Wallet?): Boolean {
         return this.address == other?.address &&
             this.isSelected == other.isSelected &&
-            this.unit == other.unit
+            this.unit == other.unit &&
+            this.isPromo == other.isPromo
     }
 
     fun display(): String {
