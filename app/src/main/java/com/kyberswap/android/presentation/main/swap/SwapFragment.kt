@@ -11,6 +11,7 @@ import android.view.animation.AccelerateInterpolator
 import android.widget.CompoundButton
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
@@ -36,6 +37,8 @@ import kotlinx.android.synthetic.main.layout_expanable.*
 import net.cachapa.expandablelayout.ExpandableLayout
 import timber.log.Timber
 import java.math.BigDecimal
+import java.math.RoundingMode
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 
@@ -72,6 +75,17 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     private var selectedGasFeeView: CompoundButton? = null
+
+    private val destLock = AtomicBoolean()
+
+    private val availableAmount: BigDecimal
+        get() = binding.swap?.let {
+            it.availableAmountForSwap(
+                it.tokenSource.currentBalance,
+                it.allETHBalanceGasLimit.toBigDecimal(),
+                getSelectedGasPrice(it.gas, selectedGasFeeView?.id).toBigDecimalOrDefaultZero()
+            )
+        } ?: BigDecimal.ZERO
 
 
     @Inject
@@ -202,6 +216,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
             edtSource.textChanges()
                 .observeOn(schedulerProvider.ui())
                 .subscribe { text ->
+                    if (destLock.get()) {
+                        return@subscribe
+                    }
                     if (text.isNullOrEmpty()) {
                         binding.edtDest.setText("")
                     }
@@ -259,17 +276,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
             binding.swap?.let {
                 if (it.tokenSource.isETH) {
                     showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
-                    binding.edtSource.setAmount(
-                        it.availableAmountForSwap(
-                            binding.tvTokenBalanceValue.text.toBigDecimalOrDefaultZero(),
-                            getSelectedGasPrice(
-                                it.gas,
-                                selectedGasFeeView?.id
-                            ).toBigDecimalOrDefaultZero()
-                        ).toDisplayNumber()
-                    )
+                    binding.edtSource.setText(availableAmount.toDisplayNumber())
                 } else {
-                    binding.edtSource.setText(binding.tvTokenBalanceValue.text)
+                    binding.edtSource.setText(it.tokenSource.currentBalance.toDisplayNumber())
                 }
 
             }
@@ -291,11 +300,21 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                                 )
                             }
 
-
                         if (swap != null) {
-                            edtDest.setAmount(
-                                binding.swap?.getExpectedDestAmount(edtSource.toBigDecimalOrDefaultZero())?.toDisplayNumber()
-                            )
+                            if (destLock.get()) {
+                                edtSource.setAmount(
+                                    edtDest.toBigDecimalOrDefaultZero().divide(
+                                        swap.expectedRate.toBigDecimalOrDefaultZero(),
+                                        18,
+                                        RoundingMode.UP
+                                    ).toDisplayNumber()
+                                )
+                            } else {
+                                edtDest.setAmount(
+                                    binding.swap?.getExpectedDestAmount(edtSource.toBigDecimalOrDefaultZero())?.toDisplayNumber()
+                                )
+                            }
+
                             binding.tvValueInUSD.text =
                                 getString(
                                     R.string.dest_balance_usd_format,
@@ -314,6 +333,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                             }
 
                         }
+
                     }
                     is GetExpectedRateState.ShowError -> {
                         showAlert(
@@ -381,7 +401,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                 .subscribe {
                     edtCustom.isEnabled = it
                     if (it) {
+                        edtCustom.setText("3")
                         edtCustom.requestFocus()
+                        edtCustom.setSelection(edtCustom.text.length)
                     } else {
                         edtCustom.setText("")
                     }
@@ -389,41 +411,58 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                 })
 
         viewModel.compositeDisposable.add(
+            edtCustom.textChanges().skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
+                    edtCustom.isSelected = it.isNullOrEmpty() && rbCustom.isChecked
+                }
+        )
+
+        viewModel.compositeDisposable.add(binding.edtDest.focusChanges()
+            .skipInitialValue()
+            .observeOn(schedulerProvider.ui())
+            .subscribe {
+                destLock.set(it)
+            })
+
+        viewModel.compositeDisposable.add(binding.edtDest.textChanges()
+            .skipInitialValue()
+            .observeOn(schedulerProvider.ui())
+            .subscribe { dstAmount ->
+                if (destLock.get()) {
+                    binding.swap?.let { swap ->
+
+                        if ((dstAmount.toBigDecimalOrDefaultZero() * swap.tokenDest.rateEthNow) > 100.toBigDecimal()) {
+                            viewModel.estimateAmount(
+                                swap.sourceSymbol, swap.destSymbol, dstAmount.toString()
+                            )
+                        } else {
+                            if (swap.rate.toDoubleOrDefaultZero() != 0.0) {
+
+                                val estSource = dstAmount.toBigDecimalOrDefaultZero()
+                                    .divide(
+                                        swap.rate.toBigDecimalOrDefaultZero(),
+                                        18,
+                                        RoundingMode.UP
+                                    ).toDisplayNumber()
+                                edtSource.setAmount(estSource)
+                                viewModel.getExpectedRate(
+                                    swap,
+                                    estSource
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        )
+
+        viewModel.compositeDisposable.add(
             rgRate.checkedChanges()
                 .observeOn(schedulerProvider.ui())
                 .subscribe { id ->
                     tvRevertNotification.text = getRevertNotification(id)
                 })
-
-
-//        viewModel.compositeDisposable.add(
-//            rgGas.checkedChanges()
-//                .observeOn(schedulerProvider.ui())
-//                .subscribe {
-//                    binding.swap?.let { swap ->
-//                        viewModel.saveSwap(swap.copy(gasPrice = getSelectedGasPrice(swap.gas)))
-//                    }
-//                })
-
-//        viewModel.compositeDisposable.add(
-//            rbSuperFast.checkedChanges()
-//                .observeOn(schedulerProvider.ui())
-//                .subscribe {
-//                    binding.swap?.let { swap ->
-//                        viewModel.saveSwap(swap.copy(gasPrice = swap.gas.superFast))
-//                    }
-//                }
-//        )
-//
-//        viewModel.compositeDisposable.add(
-//            rbFast.checkedChanges()
-//                .observeOn(schedulerProvider.ui())
-//                .subscribe {
-//                    binding.swap?.let { swap ->
-//                        viewModel.saveSwap(swap.copy(gasPrice = swap.gas.fast))
-//                    }
-//                }
-//        )
 
         listOf(rbSuperFast, rbFast, rbRegular, rbSlow).forEach {
             it.setOnCheckedChangeListener { rb, isChecked ->
@@ -496,6 +535,20 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
             }
         })
 
+        viewModel.estimateAmountState.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is EstimateAmountState.Success -> {
+                        edtSource.setAmount(state.amount)
+
+                    }
+                    is EstimateAmountState.ShowError -> {
+
+                    }
+                }
+            }
+        })
+
         viewModel.compositeDisposable.add(
             edtCustom.textChanges()
                 .observeOn(schedulerProvider.ui())
@@ -555,6 +608,19 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                         getString(R.string.insufficient_eth),
                         getString(R.string.not_enough_eth_blance)
                     )
+
+                    swap.tokenSource.isETH &&
+                        availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
+                        showAlertWithoutIcon(
+                            getString(R.string.insufficient_eth),
+                            getString(R.string.not_enough_eth_blance)
+                        )
+                    }
+
+                    rbCustom.isChecked && edtCustom.text.isNullOrEmpty() -> {
+                        showAlertWithoutIcon(message = getString(R.string.custom_rate_empty))
+
+                    }
                     else -> wallet?.let {
                         viewModel.saveSwap(
                             swap.copy(

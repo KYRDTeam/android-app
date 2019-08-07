@@ -43,6 +43,13 @@ class SwapDataRepository @Inject constructor(
     private val tokenClient: TokenClient,
     private val transactionDao: TransactionDao
 ) : SwapRepository {
+    override fun estimateAmount(param: EstimateAmountUseCase.Param): Single<EstimateAmount> {
+        return api.sourceAmount(
+            param.source,
+            param.dest,
+            param.destAmount
+        )
+    }
 
     override fun saveSend(param: SaveSendUseCase.Param): Completable {
         return Completable.fromCallable {

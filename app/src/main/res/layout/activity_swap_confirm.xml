@@ -134,8 +134,8 @@
             android:background="@drawable/default_button"
             android:gravity="center"
             android:minHeight="45dp"
-            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
             android:text="@string/swap_continue"
+            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
             android:textColor="#ffffff"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -149,7 +149,7 @@
             android:layout_marginStart="32dp"
             android:layout_marginTop="42dp"
             android:layout_marginEnd="8dp"
-            android:text="@string/swap_gas_fee_eth"
+            android:text="@string/promo_transaction_fee"
             android:textColor="#9ea1aa"
             android:textSize="14sp"
             app:layout_constraintEnd_toStartOf="@+id/textView19"
@@ -159,13 +159,28 @@
             app:layout_constraintTop_toBottomOf="@+id/textView17" />
 
         <TextView
+            android:id="@+id/textView19"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="32dp"
+            android:gravity="end"
+            android:text="@{swap.displayGasFee}"
+            android:textColor="#141927"
+            android:textSize="16sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/textView20"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/textView20" />
+
+        <TextView
             android:id="@+id/textView23"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="32dp"
             android:gravity="end"
-            android:text="@{swap.displayGasFee}"
+            android:text="@{swap.displayGasFeeUsd}"
             android:textColor="#9ea1aa"
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -233,21 +248,6 @@
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView18" />
-
-        <TextView
-            android:id="@+id/textView19"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="32dp"
-            android:gravity="end"
-            android:text="@{swap.gasPrice}"
-            android:textColor="#141927"
-            android:textSize="16sp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/textView20"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/textView20" />
 
         <View
             android:id="@+id/view5"

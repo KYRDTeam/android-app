@@ -505,8 +505,8 @@
     <string name="invalid_amount">Invalid amount</string>
     <string name="eth_balance_not_enough">You ETH balance is not enough to make the transaction</string>
     <string name="eth_balance_not_enough_for_fee">You don\'t have enough ETH to pay for transaction fee of %s</string>
-    <string name="login_invalid_email_address">Please enter a valid email address to continue</string>
-    <string name="login_email_address_required">Please enter a email address to continue</string>
+    <string name="login_invalid_email_address">Please enter an valid email address to continue</string>
+    <string name="login_email_address_required">Please enter an email address to continue</string>
     <string name="login_password_required">Please enter the password</string>
     <string name="register_invalid_password">Password must be at least eight characters including one digit, one uppercase letter, one lower case letter and alphanumeric characters</string>
     <string name="register_display_name_required">Please enter a display name to continue</string>
@@ -567,6 +567,9 @@
     <string name="two_fa_hint_token">Token</string>
     <string name="two_fa_continue">Continue</string>
     <string name="two_fa_paste">Paste</string>
+    <string name="custom_rate_empty">Please enter a value between 0 and 100 for custom field in advanced settings view</string>
+    <string name="two_fa_empty_code">Please enter a valid token (6 digits) to continue</string>
+    <string name="submit_order_promo_code">You cannot submit order with promo code. Please use other wallets.</string>
 
 
 </resources>

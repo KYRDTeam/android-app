@@ -220,10 +220,11 @@ data class LocalLimitOrder(
         calAvailableAmount: BigDecimal,
         gasPrice: BigDecimal
     ): BigDecimal {
-        return calAvailableAmount - Convert.fromWei(
+        return (calAvailableAmount - Convert.fromWei(
             Convert.toWei(gasPrice, Convert.Unit.GWEI)
                 .multiply(KEEP_ETH_BALANCE_FOR_GAS), Convert.Unit.ETHER
         )
+            ).max(BigDecimal.ZERO)
     }
 
     val tokenPair: String

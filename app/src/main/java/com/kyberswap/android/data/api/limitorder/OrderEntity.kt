@@ -27,6 +27,8 @@ data class OrderEntity(
     val receive: BigDecimal = BigDecimal.ZERO,
     @SerializedName("status")
     val status: String = "",
+    @SerializedName("msg")
+    val msg: String = "",
     @SerializedName("tx_hash")
     val txHash: String = "",
     @SerializedName("created_at")
@@ -98,6 +100,11 @@ fun JsonArray.toOrderEntity(jsonArray: JsonArray): OrderEntity {
     val status =
         if (get(keys.indexOf("status")).isJsonNull) "" else get(keys.indexOf("status"))?.asString
             ?: ""
+
+    val msg =
+        if (get(keys.indexOf("msg")).isJsonNull) "" else get(keys.indexOf("msg"))?.asString
+            ?: ""
+
     val txHash = if (get(keys.indexOf("tx_hash")).isJsonNull) {
         ""
     } else {
@@ -121,6 +128,7 @@ fun JsonArray.toOrderEntity(jsonArray: JsonArray): OrderEntity {
         fee,
         receive,
         status,
+        msg,
         txHash,
         createdAt,
         updatedAt

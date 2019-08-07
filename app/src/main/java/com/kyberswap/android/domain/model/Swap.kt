@@ -7,8 +7,8 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
-import com.kyberswap.android.presentation.common.KEEP_ETH_BALANCE_FOR_GAS
 import com.kyberswap.android.presentation.common.MIN_SUPPORT_SWAP_SOURCE_AMOUNT
+import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
 import com.kyberswap.android.util.ext.*
 import kotlinx.android.parcel.Parcelize
 import org.web3j.utils.Convert
@@ -44,6 +44,11 @@ data class Swap(
     var ethToken: Token = Token()
 ) : Parcelable {
 
+    val allETHBalanceGasLimit: BigInteger
+        get() {
+            return calculateDefaultGasLimit(tokenSource, tokenDest) + 10_000.toBigInteger()
+        }
+
 
     constructor(limitOrder: LocalLimitOrder, minConvertedAmount: BigDecimal) : this(
         limitOrder.userAddr,
@@ -78,12 +83,13 @@ data class Swap(
 
     fun availableAmountForSwap(
         calAvailableAmount: BigDecimal,
+        gasLimit: BigDecimal,
         gasPrice: BigDecimal
     ): BigDecimal {
-        return calAvailableAmount - Convert.fromWei(
+        return (calAvailableAmount - Convert.fromWei(
             Convert.toWei(gasPrice, Convert.Unit.GWEI)
-                .multiply(KEEP_ETH_BALANCE_FOR_GAS), Convert.Unit.ETHER
-        )
+                .multiply(gasLimit), Convert.Unit.ETHER
+        )).max(BigDecimal.ZERO)
     }
 
     val defaultGasLimit: String
@@ -92,11 +98,11 @@ data class Swap(
         ) DEFAULT_GAS_LIMIT.toString()
         else tokenSource.gasLimit
 
-    private val _rate: String?
+    val rate: String?
         get() = if (expectedRate.isEmpty()) marketRate else expectedRate
 
     val combineRate: String?
-        get() = _rate.toBigDecimalOrDefaultZero().toDisplayNumber()
+        get() = rate.toBigDecimalOrDefaultZero().toDisplayNumber()
 
     val hasSamePair: Boolean
         get() = tokenSource.tokenSymbol == tokenDest.tokenSymbol
@@ -195,13 +201,17 @@ data class Swap(
         )
 
     private val gasFeeUsd: BigDecimal
-        get() = gasFeeEth.div(tokenSource.rateEthNow).multiply(tokenSource.rateUsdNow)
+        get() = gasFeeEth.divide(
+            tokenSource.rateEthNow,
+            18,
+            RoundingMode.UP
+        ).multiply(tokenSource.rateUsdNow)
 
     val displayGasFee: String
         get() = StringBuilder()
             .append("≈ ")
             .append(
-                gasFeeEth.toPlainString()
+                gasFeeEth.toDisplayNumber()
             )
             .append(" ETH")
             .toString()
@@ -210,7 +220,7 @@ data class Swap(
         get() = StringBuilder()
             .append("≈ ")
             .append(
-                gasFeeUsd.toPlainString()
+                gasFeeUsd.toDisplayNumber()
             )
             .append(" USD")
             .toString()
@@ -220,7 +230,7 @@ data class Swap(
             .toBigDecimalOrDefaultZero()
             .divide(
                 100.toBigDecimal(),
-                18, RoundingMode.HALF_EVEN
+                18, RoundingMode.UP
             )).multiply(
             expectedRate.toBigDecimalOrDefaultZero()
         ))
@@ -230,7 +240,7 @@ data class Swap(
         get() = Convert.toWei(
             (BigDecimal.ONE - minAcceptedRatePercent
                 .toBigDecimalOrDefaultZero()
-                .div(100.toBigDecimal()))
+                .divide(100.toBigDecimal(), 18, RoundingMode.UP))
                 .multiply(expectedRate.toBigDecimalOrDefaultZero()),
             Convert.Unit.ETHER
         )
@@ -271,7 +281,11 @@ data class Swap(
 
     fun getDefaultSourceAmount(ethAmount: String): BigDecimal {
         return if (tokenSource.rateEthNow == BigDecimal.ZERO) BigDecimal.ZERO
-        else ethAmount.toBigDecimalOrDefaultZero().div(tokenSource.rateEthNow)
+        else ethAmount.toBigDecimalOrDefaultZero().divide(
+            tokenSource.rateEthNow,
+            18,
+            RoundingMode.UP
+        )
     }
 
     fun reset() {
@@ -290,7 +304,7 @@ data class Swap(
     }
 
     fun getExpectedDestAmount(amount: BigDecimal): BigDecimal {
-        return amount.multiply(_rate.toBigDecimalOrDefaultZero())
+        return amount.multiply(rate.toBigDecimalOrDefaultZero())
     }
 
     fun getExpectedDestUsdAmount(amount: BigDecimal, rateUsdNow: BigDecimal): BigDecimal {
@@ -302,7 +316,7 @@ data class Swap(
     fun rateThreshold(customRate: String): String {
         return (1.toDouble() - customRate.toDoubleOrDefaultZero() / 100.toDouble())
             .toBigDecimal()
-            .multiply(_rate.toBigDecimalOrDefaultZero())
+            .multiply(rate.toBigDecimalOrDefaultZero())
             .toDisplayNumber()
     }
 }

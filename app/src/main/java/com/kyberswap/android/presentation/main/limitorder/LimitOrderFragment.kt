@@ -232,7 +232,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         binding.tvBalance.setOnClickListener {
             binding.order?.let {
                 if (it.tokenSource.isETHWETH) {
-                    binding.edtSource.setAmount(
+                    binding.edtSource.setText(
                         it.availableAmountForTransfer(
                             tvBalance.toBigDecimalOrDefaultZero(),
                             it.gasPrice.toBigDecimalOrDefaultZero()
@@ -265,7 +265,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
             binding.order?.let {
                 if (it.tokenSource.isETHWETH) {
-                    binding.edtSource.setAmount(
+                    binding.edtSource.setText(
                         it.availableAmountForTransfer(
                             tvBalance.toBigDecimalOrDefaultZero(),
                             it.gasPrice.toBigDecimalOrDefaultZero()
@@ -805,12 +805,21 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                     )
                 }
 
+                (wallet?.isPromo == true) -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_error), message = getString(
+                            R.string.submit_order_promo_code
+                        )
+                    )
+                }
+
                 eleigibleAddress?.success == true && eleigibleAddress?.eligibleAddress != true -> {
                     showAlertWithoutIcon(
                         title = getString(R.string.title_error),
                         message = getString(R.string.address_not_eligible)
                     )
                 }
+
 
                 warningOrderList.isNotEmpty() -> {
                     orderAdapter?.submitList(

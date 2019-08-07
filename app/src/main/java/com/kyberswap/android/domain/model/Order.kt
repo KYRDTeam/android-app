@@ -26,6 +26,7 @@ data class Order(
     val fee: BigDecimal = BigDecimal.ZERO,
     val receive: BigDecimal = BigDecimal.ZERO,
     val status: String = "",
+    val msg: String = "",
     val txHash: String = "",
     val createdAt: Long = 0,
     val updatedAt: Long = 0
@@ -42,6 +43,7 @@ data class Order(
         entity.fee,
         entity.receive,
         entity.status,
+        entity.msg,
         entity.txHash,
         entity.createdAt,
         entity.updatedAt
@@ -64,6 +66,7 @@ data class Order(
         notification.fee,
         notification.receive,
         Status.FILLED.value,
+        "",
         notification.txHash,
         notification.createdAt,
         notification.updatedAt
@@ -128,6 +131,10 @@ data class Order(
 
     val hasExtra: Boolean
         get() = isMined && extraDisplay.isNotEmpty()
+
+    val isInvalidated: Boolean
+        get() = status.toLowerCase() == Status.INVALIDATED.value.toLowerCase() &&
+            msg.isNotEmpty()
 
 
     val isPending: Boolean

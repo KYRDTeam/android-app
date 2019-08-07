@@ -9,11 +9,11 @@ import com.kyberswap.android.domain.usecase.alert.GetAlertUseCase
 import com.kyberswap.android.domain.usecase.swap.*
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
-import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
+import com.kyberswap.android.presentation.common.specialGasLimitDefault
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.alert.GetAlertState
-import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toLongSafe
 import io.reactivex.disposables.CompositeDisposable
@@ -33,6 +33,7 @@ class SwapViewModel @Inject constructor(
     private val getCapUseCase: GetCapUseCase,
     private val estimateGasUseCase: EstimateGasUseCase,
     private val getAlertUseCase: GetAlertUseCase,
+    private val estimateAmountUseCase: EstimateAmountUseCase,
     getWalletUseCase: GetSelectedWalletUseCase
 ) : SelectedWalletViewModel(getWalletUseCase) {
 
@@ -57,6 +58,10 @@ class SwapViewModel @Inject constructor(
     private val _getAlertState = MutableLiveData<Event<GetAlertState>>()
     val getAlertState: LiveData<Event<GetAlertState>>
         get() = _getAlertState
+
+    private val _estimateAmountState = MutableLiveData<Event<EstimateAmountState>>()
+    val estimateAmountState: LiveData<Event<EstimateAmountState>>
+        get() = _estimateAmountState
 
     val compositeDisposable by lazy {
         CompositeDisposable()
@@ -128,18 +133,7 @@ class SwapViewModel @Inject constructor(
     }
 
     private fun calculateGasLimit(swap: Swap): BigInteger {
-        val gasLimitSourceToEth =
-            if (swap.tokenSource.gasLimit.toBigIntegerOrDefaultZero()
-                == BigInteger.ZERO
-            )
-                DEFAULT_GAS_LIMIT
-            else swap.tokenSource.gasLimit.toBigIntegerOrDefaultZero()
-        val gasLimitEthToSource =
-            if (swap.tokenDest.gasLimit.toBigIntegerOrDefaultZero() == BigInteger.ZERO)
-                DEFAULT_GAS_LIMIT
-            else swap.tokenDest.gasLimit.toBigIntegerOrDefaultZero()
-
-        return gasLimitSourceToEth + gasLimitEthToSource
+        return calculateDefaultGasLimit(swap.tokenSource, swap.tokenDest)
     }
 
     fun getGasPrice() {
@@ -188,27 +182,59 @@ class SwapViewModel @Inject constructor(
         )
     }
 
+    fun estimateAmount(source: String, dest: String, destAmount: String) {
+        estimateAmountUseCase.execute(
+            Consumer {
+                _estimateAmountState.value = Event(EstimateAmountState.Success(it.value))
+            },
+            Consumer {
+                it.printStackTrace()
+                _estimateAmountState.value =
+                    Event(EstimateAmountState.ShowError(it.localizedMessage))
+            },
+            EstimateAmountUseCase.Param(
+                source,
+                dest,
+                destAmount
+            )
+        )
+    }
+
     fun getGasLimit(wallet: Wallet?, swap: Swap?) {
         if (wallet == null || swap == null) return
         estimateGasUseCase.dispose()
         estimateGasUseCase.execute(
             Consumer {
                 if (it.error == null) {
-                    val gasLimit =
-                        if (swap.tokenSource.isDAI ||
-                            swap.tokenSource.isTUSD ||
-                            swap.tokenDest.isDAI ||
-                            swap.tokenDest.isTUSD
-                        ) {
-                            swap.gasLimit.toBigIntegerOrDefaultZero().max(
-                                (it.amountUsed.toBigDecimal().multiply(1.2.toBigDecimal()))
-                                    .toBigInteger()
-                            ).plus(100000.toBigInteger())
-                        } else {
-                            (it.amountUsed.toBigDecimal().multiply(1.2.toBigDecimal())).toBigInteger()
-                                .plus(100000.toBigInteger())
-                        }
-                    _getGetGasLimitCallback.value = Event(GetGasLimitState.Success(gasLimit))
+//                    val gasLimit =
+//                        if (swap.tokenSource.isDAI ||
+//                            swap.tokenSource.isTUSD ||
+//                            swap.tokenDest.isDAI ||
+//                            swap.tokenDest.isTUSD
+//                        ) {
+//                            swap.gasLimit.toBigIntegerOrDefaultZero().max(
+//                                (it.amountUsed.toBigDecimal().multiply(1.2.toBigDecimal()))
+//                                    .toBigInteger()
+//                            ).plus(100000.toBigInteger())
+//                        } else {
+//                            (it.amountUsed.toBigDecimal().multiply(1.2.toBigDecimal())).toBigInteger()
+//                                .plus(100000.toBigInteger())
+//                        }
+
+                    val gasLimit = swap.gasLimit.toBigInteger()
+                        .min(it.amountUsed.multiply(120.toBigInteger()).divide(100.toBigInteger()))
+
+                    val specialGasLimit = specialGasLimitDefault(swap.tokenSource, swap.tokenDest)
+
+                    _getGetGasLimitCallback.value = Event(
+                        GetGasLimitState.Success(
+                            if (specialGasLimit != null) {
+                                specialGasLimit.max(gasLimit)
+                            } else {
+                                gasLimit
+                            }
+                        )
+                    )
                 }
 
             },
