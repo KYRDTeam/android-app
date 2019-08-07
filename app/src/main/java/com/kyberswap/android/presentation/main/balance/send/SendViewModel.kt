@@ -13,13 +13,13 @@ import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
-import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT_SEND_ETH
-import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT_SEND_TOKEN
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfer
 import com.kyberswap.android.presentation.main.swap.*
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
+import java.math.BigInteger
 import javax.inject.Inject
 
 class SendViewModel @Inject constructor(
@@ -74,7 +74,7 @@ class SendViewModel @Inject constructor(
         getSendTokenUseCase.execute(
             Consumer {
                 it.gasLimit =
-                    if (it.tokenSource.isETH) DEFAULT_GAS_LIMIT_SEND_ETH.toString() else DEFAULT_GAS_LIMIT_SEND_TOKEN.toString()
+                    calculateGasLimit(it).toString()
                 _getSendCallback.value = Event(GetSendState.Success(it))
     ,
             Consumer {
@@ -84,6 +84,11 @@ class SendViewModel @Inject constructor(
             GetSendTokenUseCase.Param(address)
         )
     }
+
+    private fun calculateGasLimit(send: Send): BigInteger {
+        return calculateDefaultGasLimitTransfer(send.tokenSource)
+    }
+
 
     fun deleteContact(contact: Contact) {
         deleteContactUseCase.execute(
@@ -166,10 +171,14 @@ class SendViewModel @Inject constructor(
         estimateTransferGasUseCase.dispose()
         estimateTransferGasUseCase.execute(
             Consumer {
+
+                val gasLimit = send.gasLimit.toBigInteger()
+                    .min(it.amountUsed.multiply(120.toBigInteger()).divide(100.toBigInteger()))
+
+
                 _getGetGasLimitCallback.value = Event(
                     GetGasLimitState.Success(
-                        it.amountUsed.toBigDecimal()
-                            .multiply(1.2.toBigDecimal()).toBigInteger()
+                        gasLimit
                     )
                 )
     ,

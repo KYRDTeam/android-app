@@ -20,7 +20,8 @@ class OrderAdapter(
     appExecutors: AppExecutors,
     private val onCancelClick: ((Order) -> Unit)?,
     private val onExtraClick: ((Order) -> Unit)? = {},
-    private val onMinedOrderClick: ((Order) -> Unit)? = {}
+    private val onMinedOrderClick: ((Order) -> Unit)? = {},
+    private val onInvalidatedClick: ((Order) -> Unit)? = {}
 
 ) : DataBoundListSwipeAdapter<OrderItem, ViewDataBinding>(
     appExecutors,
@@ -117,10 +118,18 @@ class OrderAdapter(
 
         binding.order = item
         binding.executePendingBindings()
-        if (item.isMined) {
-            binding.clHolder.setOnClickListener {
+        binding.clHolder.setOnClickListener {
+            if (item.isMined) {
                 onMinedOrderClick?.invoke(item)
     
+
+
+        binding.imgInvalidated.setOnClickListener {
+            if (item.isInvalidated && item.msg.isNotEmpty()) {
+                onInvalidatedClick?.invoke(item)
+    
+
+
 
     }
 

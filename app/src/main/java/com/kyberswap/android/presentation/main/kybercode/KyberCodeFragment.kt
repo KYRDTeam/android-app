@@ -15,6 +15,7 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.listener.addTextChangeListener
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.hideKeyboard
 import javax.inject.Inject
 
 
@@ -68,6 +69,7 @@ class KyberCodeFragment : BaseFragment() {
 
 
         binding.tvApply.setOnClickListener {
+            hideKeyboard()
             viewModel.createWalletByKyberCode(
                 binding.edtKyberCode.text?.trim().toString(),
                 if (binding.edtWalletName.text.isNotEmpty()) binding.edtWalletName.text.toString()

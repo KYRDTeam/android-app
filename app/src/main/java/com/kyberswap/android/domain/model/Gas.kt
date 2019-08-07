@@ -20,5 +20,7 @@ data class Gas(
     )
 
     val superFast: String
-        get() = BigDecimal("20").max(fast.toBigDecimalOrDefaultZero()).toDisplayNumber()
+        get() = BigDecimal("20").max(fast.toBigDecimalOrDefaultZero() * 2.toBigDecimal())
+            .min(100.toBigDecimal())
+            .toDisplayNumber()
 }

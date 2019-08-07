@@ -255,9 +255,20 @@ data class Token(
     val isWETH: Boolean
         get() = tokenSymbol.toLowerCase() == WETH_SYMBOL.toLowerCase()
 
+    val isDGX: Boolean
+        get() = tokenSymbol.toLowerCase() == DGX.toLowerCase()
+
     val isDAI: Boolean
         get() = tokenSymbol.toLowerCase() == DAI.toLowerCase()
 
+    val isMKR: Boolean
+        get() = tokenSymbol.toLowerCase() == MKR.toLowerCase()
+
+    val isPRO: Boolean
+        get() = tokenSymbol.toLowerCase() == PRO.toLowerCase()
+
+    val isPT: Boolean
+        get() = tokenSymbol.toLowerCase() == PT.toLowerCase()
 
     val isTUSD: Boolean
         get() = tokenSymbol.toLowerCase() == TUSD.toLowerCase()
@@ -312,5 +323,24 @@ data class Token(
         const val KNC = "KNC"
         const val DAI = "DAI"
         const val TUSD = "TUSD"
+        const val DGX = "DGX"
+        const val MKR = "MKR"
+        const val PRO = "PRO"
+        const val PT = "PT"
+
+        const val DIGIX_GAS_LIMIT_DEFAULT = 750_000
+        const val EXCHANGE_TOKEN_GAS_LIMIT_DEFAULT = 760_000
+        const val EXCHANGE_ETH_TOKEN_GAS_LIMIT_DEFAULT = 380_000
+        const val APPROVE_TOKEN_GAS_LIMIT_DEFAULT = 120_000
+        const val TRANSFER_TOKEN_GAS_LIMIT_DEFAULT = 125_000
+        const val TRANSFER_ETH_GAS_LIMIT_DEFAULT = 30_000
+        const val TRANSFER_GAS_LIMIT_DEFAULT = 100_000
+        const val BUY_TOKEN_SALE_BY_ETH_GAS_LIMIT_DEFAULT = 550_000
+        const val BUY_TOKEN_SALE_BY_TOKEN_GAS_LIMIT_DEFAULT = 700_000
+        const val DAI_GAS_LIMIT_DEFAULT = 500_000
+        const val MAKER_GAS_LIMIT_DEFAULT = 400_000
+        const val PROPY_GAS_LIMIT_DEFAULT = 500_000
+        const val PROMOTION_TOKEN_GAS_LIMIT_DEFAULT = 380_000
+        const val TRUE_USD_GAS_LIMIT_DEFAULT = 550_000
     }
 }

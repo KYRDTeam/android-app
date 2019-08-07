@@ -112,7 +112,7 @@ class UserDataRepository @Inject constructor(
     }
 
     override fun resetPassword(param: ResetPasswordUseCase.Param): Single<ResponseStatus> {
-        return userApi.resetPassword(param.email).map {
+        return userApi.resetPassword(param.email.toLowerCase()).map {
             userMapper.transform(it)
 
     }
@@ -138,7 +138,7 @@ class UserDataRepository @Inject constructor(
     }
 
     override fun login(param: LoginUseCase.Param): Single<LoginUser> {
-        return userApi.login(param.email, param.password, param.twoFa)
+        return userApi.login(param.email.toLowerCase(), param.password, param.twoFa)
             .map { userMapper.transform(it) }
             .doAfterSuccess {
                 userDao.updateUser(it.userInfo)
@@ -148,7 +148,7 @@ class UserDataRepository @Inject constructor(
 
     override fun signUp(param: SignUpUseCase.Param): Single<ResponseStatus> {
         return userApi.register(
-            param.email,
+            param.email.toLowerCase(),
             param.password,
             param.password,
             param.displayName,

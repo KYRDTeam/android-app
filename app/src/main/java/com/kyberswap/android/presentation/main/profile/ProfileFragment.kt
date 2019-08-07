@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.facebook.*
@@ -85,6 +86,8 @@ class ProfileFragment : BaseFragment() {
         TwitterAuthClient()
     }
 
+    private var twoFADialog: AlertDialog? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -141,26 +144,38 @@ class ProfileFragment : BaseFragment() {
                                     state.socialInfo
                                 )
                      else if (state.login.twoFaRequired) {
-                                dialogHelper.show2FaDialog {
+                                dialogHelper.show2FaDialog { token, dialog ->
+                                    this.twoFADialog = dialog
+                                    if (token.isEmpty()) {
+                                        showAlertWithoutIcon(
+                                            title = getString(R.string.title_error),
+                                            message = getString(R.string.two_fa_empty_code)
+                                        )
+                                        return@show2FaDialog
+                            
+
                                     if (!state.socialInfo.isNormalLogin) {
-                                        viewModel.login(state.socialInfo.copy(twoFa = it))
+                                        viewModel.login(state.socialInfo.copy(twoFa = token))
+                                        dialog.dismiss()
                              else {
                                         viewModel.login(
                                             edtEmail.text.toString(),
                                             edtPassword.text.toString(),
-                                            it
+                                            token
                                         )
+                                        dialog.dismiss()
                             
 
                         
                      else {
-
+                                twoFADialog = null
                                 showAlertWithoutIcon(
                                     message = String.format(
                                         getString(R.string.wellcome_back),
                                         state.login.userInfo.name
                                     )
                                 )
+
                                 if (fromLimitOrder) {
                                     fromLimitOrder = false
                                     moveToLimitOrder()
@@ -168,6 +183,7 @@ class ProfileFragment : BaseFragment() {
                                 navigateToProfileDetail()
                     
                  else {
+                            twoFADialog?.show()
                             showAlert(state.login.message)
                 
             

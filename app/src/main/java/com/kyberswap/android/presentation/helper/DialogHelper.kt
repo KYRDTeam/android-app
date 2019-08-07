@@ -160,6 +160,18 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         dialog.show()
     }
 
+    fun showInvalidatedDialog(order: Order) {
+
+        val binding = DataBindingUtil.inflate<DialogInvalidatedBottomSheetBinding>(
+            LayoutInflater.from(activity), R.layout.dialog_invalidated_bottom_sheet, null, false
+        )
+
+        val dialog = BottomSheetDialog(activity)
+        dialog.setContentView(binding.root)
+        binding.tvWarning.text = order.msg
+        dialog.show()
+    }
+
     private fun openUrl(url: String?) {
         if (url.isNullOrEmpty()) return
         val intent = Intent(Intent.ACTION_VIEW)
@@ -456,7 +468,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
     }
 
-    fun show2FaDialog(positiveListener: (token: String) -> Unit) {
+    fun show2FaDialog(positiveListener: (token: String, dialog: AlertDialog) -> Unit) {
         val dialog = AlertDialog.Builder(activity).create()
         dialog.setCanceledOnTouchOutside(true)
         dialog.setCancelable(true)
@@ -466,8 +478,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
             )
 
         binding.tvContinue.setOnClickListener {
-            positiveListener.invoke(binding.edtToken.text.toString())
-            dialog.dismiss()
+            positiveListener.invoke(binding.edtToken.text.toString(), dialog)
 
 
         binding.tvCancel.setOnClickListener {

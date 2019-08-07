@@ -99,6 +99,8 @@ class ManageOrderFragment : BaseFragment(), LoginState {
 
             , {
                         openUrl(getString(R.string.transaction_etherscan_endpoint_url) + it.txHash)
+            , {
+                        dialogHelper.showInvalidatedDialog(it)
             )
 
         orderAdapter?.mode = Attributes.Mode.Single

@@ -291,9 +291,9 @@ data class Transaction(
 
 
     val rate: String
-        get() = if (sourceAmount.toBigDecimalOrDefaultZero() == BigDecimal.ZERO) "0" else
+        get() = if (sourceAmount.toDouble() == 0.0) "0" else
             (destAmount.toBigDecimalOrDefaultZero()
-                .div(sourceAmount.toBigDecimalOrDefaultZero()))
+                .divide(sourceAmount.toBigDecimalOrDefaultZero(), 18, RoundingMode.CEILING))
                 .toDisplayNumber()
 
     val fee: String

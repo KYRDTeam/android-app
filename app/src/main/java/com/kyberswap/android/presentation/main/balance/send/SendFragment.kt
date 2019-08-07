@@ -22,6 +22,7 @@ import com.kyberswap.android.databinding.FragmentSendBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.model.Gas
+import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -421,6 +422,7 @@ class SendFragment : BaseFragment() {
                     binding.edtSource.setAmount(
                         it.availableAmountForTransfer(
                             it.tokenSource.currentBalance,
+                            Token.TRANSFER_ETH_GAS_LIMIT_DEFAULT.toBigDecimal(),
                             getSelectedGasPrice(
                                 it.gas,
                                 selectedGasFeeView?.id

@@ -45,32 +45,32 @@ class BalanceDataRepository @Inject constructor(
     override fun getBalance(param: PrepareBalanceUseCase.Param): Single<List<Token>> {
         return if (tokenDao.all.blockingFirst().isEmpty() || param.forceUpdate) {
             fetchChange24h()
-                .flatMap { tokenList ->
+                .flatMap { remoteTokenList ->
                     currencyApi.internalCurrencies()
                         .map { currencies -> currencies.data }
                         .toFlowable()
                         .flatMapIterable { tokenCurrency -> tokenCurrency }
                         .map { internalCurrency ->
-                            val tokenBySymbol = tokenList.find {
+                            val tokenBySymbol = remoteTokenList.find {
                                 it.tokenSymbol == internalCurrency.symbol
                     
                             tokenBySymbol?.with(internalCurrency) ?: Token(internalCurrency)
                 
                         .toList()
-                        .map {
-                            val currentList = tokenDao.all.first(listOf()).blockingGet()
-                            it.map { token ->
-                                val currentToken = currentList.find {
-                                    it.tokenSymbol == token.tokenSymbol
+                        .map { remoteTokens ->
+                            val localTokenList = tokenDao.all.first(listOf()).blockingGet()
+                            remoteTokens.map { remoteToken ->
+                                val localToken = localTokenList.find {
+                                    it.tokenSymbol == remoteToken.tokenSymbol
                         
 
-                                if (currentToken != null) {
-                                    token.copy(
-                                        wallets = currentToken.wallets,
-                                        fav = currentToken.fav
+                                if (localToken != null) {
+                                    remoteToken.copy(
+                                        wallets = localToken.wallets,
+                                        fav = localToken.fav
                                     )
                          else {
-                                    token
+                                    remoteToken
                         
 
                     
