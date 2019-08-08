@@ -255,7 +255,6 @@ class TransactionDataRepository @Inject constructor(
         .filter {
                     it.tokenName.isNotEmpty()
         
-
                 tokenDao.insertTokens(otherTokenList)
     
     }
@@ -430,8 +429,8 @@ class TransactionDataRepository @Inject constructor(
             val channelId = context.getString(R.string.default_notification_channel_id)
             val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
             val notificationBuilder = NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.ic_stat_onesignal_default)
-                .setColor(ContextCompat.getColor(context, R.color.colorAccent))
+                .setSmallIcon(R.drawable.ic_notification_white)
+                .setColor(ContextCompat.getColor(context, R.color.notification_background))
                 .setContentTitle(
                     title
                 )

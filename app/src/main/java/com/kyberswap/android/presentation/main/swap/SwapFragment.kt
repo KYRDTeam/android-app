@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.widget.CompoundButton
+import android.widget.EditText
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.jakewharton.rxbinding3.view.focusChanges
@@ -35,7 +36,6 @@ import com.kyberswap.android.util.ext.*
 import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.android.synthetic.main.layout_expanable.*
 import net.cachapa.expandablelayout.ExpandableLayout
-import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.concurrent.atomic.AtomicBoolean
@@ -62,6 +62,11 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
+    private var sourceAmount: String? = null
+
+    private val displaySourceAmount: String
+        get() = sourceAmount.toBigDecimalOrDefaultZero().toDisplayNumber()
+
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(SwapViewModel::class.java)
     }
@@ -75,6 +80,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     private var selectedGasFeeView: CompoundButton? = null
+
+    private var currentFocus: EditText? = null
 
     private val destLock = AtomicBoolean()
 
@@ -152,14 +159,12 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                                 )
                     
 
-                            edtSource.setAmount(state.swap.sourceAmount)
-                            getRate(state.swap)
-
-                            binding.swap = state.swap
+                            // Token pair change need to reset rate and get the new one
+                            binding.swap = state.swap.copy(marketRate = "", expectedRate = "")
                             binding.executePendingBindings()
-
+                            sourceAmount = state.swap.sourceAmount
+                            getRate(state.swap)
                 
-                        Timber.e("getSwapDataCallback")
                         viewModel.getGasPrice()
                         viewModel.getGasLimit(wallet, binding.swap)
             
@@ -210,15 +215,15 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
 
 
 
-
-
         viewModel.compositeDisposable.add(
             edtSource.textChanges()
+                .skipInitialValue()
                 .observeOn(schedulerProvider.ui())
                 .subscribe { text ->
-                    if (destLock.get()) {
+                    if (destLock.get() || currentFocus == binding.edtDest) {
                         return@subscribe
             
+                    sourceAmount = text.toString()
                     if (text.isNullOrEmpty()) {
                         binding.edtDest.setText("")
             
@@ -237,22 +242,64 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                             wallet?.let {
 
                                 val updatedSwap = swap.copy(
-                                    sourceAmount = edtSource.text.toString(),
+                                    sourceAmount = sourceAmount ?: "",
                                     minAcceptedRatePercent =
                                     getMinAcceptedRatePercent(rgRate.checkedRadioButtonId)
                                 )
                                 binding.swap = updatedSwap
-                                viewModel.getGasLimit(
-                                    it, updatedSwap
-                                )
+                                viewModel.saveSwap(updatedSwap)
                     
                 
             
         )
 
+        viewModel.compositeDisposable.add(
+            binding.edtDest.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe { dstAmount ->
+                    if (destLock.get()) {
+                        binding.swap?.let { swap ->
+
+                            if ((dstAmount.toBigDecimalOrDefaultZero() * swap.tokenDest.rateEthNow) > 100.toBigDecimal()) {
+                                viewModel.estimateAmount(
+                                    swap.sourceSymbol, swap.destSymbol, dstAmount.toString()
+                                )
+                     else {
+                                if (swap.rate.toDoubleOrDefaultZero() != 0.0) {
+
+                                    val estSource = dstAmount.toBigDecimalOrDefaultZero()
+                                        .divide(
+                                            swap.rate.toBigDecimalOrDefaultZero(),
+                                            18,
+                                            RoundingMode.UP
+                                        )
+                                    sourceAmount = estSource.toPlainString()
+                                    edtSource.setAmount(displaySourceAmount)
+                                    viewModel.getExpectedRate(
+                                        swap,
+                                        estSource.toPlainString()
+                                    )
+                        
+                    
+                
+            
+        
+        )
+
 
         tokenSources.forEach {
             it.setOnClickListener {
+                binding.swap?.let { swap ->
+                    viewModel.saveSwap(
+                        swap.copy(
+                            sourceAmount = sourceAmount ?: "",
+                            destAmount = edtDest.text.toString(),
+                            minAcceptedRatePercent = getMinAcceptedRatePercent(rgRate.checkedRadioButtonId),
+                            gasPrice = getSelectedGasPrice(swap.gas, selectedGasFeeView?.id)
+                        )
+                    )
+        
                 navigator.navigateToTokenSearchFromSwapTokenScreen(
                     currentFragment,
                     wallet,
@@ -264,6 +311,16 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
 
         tokenDests.forEach {
             it.setOnClickListener {
+                binding.swap?.let { swap ->
+                    viewModel.saveSwap(
+                        swap.copy(
+                            sourceAmount = sourceAmount ?: "",
+                            destAmount = edtDest.text.toString(),
+                            minAcceptedRatePercent = getMinAcceptedRatePercent(rgRate.checkedRadioButtonId),
+                            gasPrice = getSelectedGasPrice(swap.gas, selectedGasFeeView?.id)
+                        )
+                    )
+        
                 navigator.navigateToTokenSearchFromSwapTokenScreen(
                     currentFragment,
                     wallet,
@@ -276,9 +333,11 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
             binding.swap?.let {
                 if (it.tokenSource.isETH) {
                     showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
-                    binding.edtSource.setText(availableAmount.toDisplayNumber())
+                    sourceAmount = availableAmount.toDisplayNumber()
+                    binding.edtSource.setText(sourceAmount)
          else {
-                    binding.edtSource.setText(it.tokenSource.currentBalance.toDisplayNumber())
+                    sourceAmount = it.tokenSource.currentBalance.toDisplayNumber()
+                    binding.edtSource.setText(sourceAmount)
         
 
     
@@ -288,7 +347,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetExpectedRateState.Success -> {
-
                         val swap =
                             if (state.list.first().toBigDecimalOrDefaultZero() > BigDecimal.ZERO) {
                                 binding.swap?.copy(
@@ -301,13 +359,14 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                     
 
                         if (swap != null) {
-                            if (destLock.get()) {
+                            if (destLock.get() || currentFocus == binding.edtDest) {
+                                sourceAmount = edtDest.toBigDecimalOrDefaultZero().divide(
+                                    swap.expectedRate.toBigDecimalOrDefaultZero(),
+                                    18,
+                                    RoundingMode.UP
+                                ).stripTrailingZeros().toPlainString()
                                 edtSource.setAmount(
-                                    edtDest.toBigDecimalOrDefaultZero().divide(
-                                        swap.expectedRate.toBigDecimalOrDefaultZero(),
-                                        18,
-                                        RoundingMode.UP
-                                    ).toDisplayNumber()
+                                    displaySourceAmount
                                 )
                      else {
                                 edtDest.setAmount(
@@ -423,39 +482,26 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
             .observeOn(schedulerProvider.ui())
             .subscribe {
                 destLock.set(it)
+                if (it) {
+                    currentFocus?.isSelected = false
+                    currentFocus = edtDest
+                    currentFocus?.isSelected = true
+        
     )
 
-        viewModel.compositeDisposable.add(binding.edtDest.textChanges()
+
+        viewModel.compositeDisposable.add(binding.edtSource.focusChanges()
             .skipInitialValue()
             .observeOn(schedulerProvider.ui())
-            .subscribe { dstAmount ->
-                if (destLock.get()) {
-                    binding.swap?.let { swap ->
-
-                        if ((dstAmount.toBigDecimalOrDefaultZero() * swap.tokenDest.rateEthNow) > 100.toBigDecimal()) {
-                            viewModel.estimateAmount(
-                                swap.sourceSymbol, swap.destSymbol, dstAmount.toString()
-                            )
-                 else {
-                            if (swap.rate.toDoubleOrDefaultZero() != 0.0) {
-
-                                val estSource = dstAmount.toBigDecimalOrDefaultZero()
-                                    .divide(
-                                        swap.rate.toBigDecimalOrDefaultZero(),
-                                        18,
-                                        RoundingMode.UP
-                                    ).toDisplayNumber()
-                                edtSource.setAmount(estSource)
-                                viewModel.getExpectedRate(
-                                    swap,
-                                    estSource
-                                )
-                    
-                
-            
+            .subscribe {
+                if (it) {
+                    currentFocus?.isSelected = false
+                    currentFocus = edtSource
+                    currentFocus?.isSelected = true
         
-    
-        )
+    )
+
+
 
         viewModel.compositeDisposable.add(
             rgRate.checkedChanges()
@@ -539,7 +585,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is EstimateAmountState.Success -> {
-                        edtSource.setAmount(state.amount)
+                        sourceAmount = state.amount
+                        edtSource.setAmount(displaySourceAmount)
 
             
                     is EstimateAmountState.ShowError -> {
@@ -624,7 +671,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                     else -> wallet?.let {
                         viewModel.saveSwap(
                             swap.copy(
-                                sourceAmount = edtSource.text.toString(),
+                                sourceAmount = sourceAmount ?: "",
                                 destAmount = edtDest.text.toString(),
                                 minAcceptedRatePercent =
                                 getMinAcceptedRatePercent(rgRate.checkedRadioButtonId),
@@ -653,8 +700,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
 
     }
 
+
     private fun resetAmount() {
         edtSource.setText("")
+        sourceAmount = ""
         edtDest.setText("")
     }
 
@@ -709,14 +758,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
             else -> DEFAULT_ACCEPT_RATE_PERCENTAGE.toString()
 
     }
-
-//    private fun getSelectedGasPrice(gas: Gas): String {
-//        return when (rgGas.checkedRadioButtonId) {
-//            R.id.rbRegular -> gas.standard
-//            R.id.rbSlow -> gas.low
-//            else -> gas.fast
-//
-//    }
 
     private fun getSelectedGasPrice(gas: Gas, id: Int?): String {
         return when (id) {

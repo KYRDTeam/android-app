@@ -43,11 +43,6 @@ class BalanceViewModel @Inject constructor(
         get() = _saveTokenCallback
 
 
-    val searchedKeywordsCallback: LiveData<Event<String>>
-        get() = _searchedKeywords
-
-    private val _searchedKeywords = MutableLiveData<Event<String>>()
-
     val visibilityCallback: LiveData<Event<Boolean>>
         get() = _visibility
 
@@ -70,10 +65,6 @@ class BalanceViewModel @Inject constructor(
 
     val compositeDisposable by lazy {
         CompositeDisposable()
-    }
-
-    fun updateSearchKeyword(keyword: String) {
-        _searchedKeywords.value = Event(keyword)
     }
 
     fun updateVisibility(isVisible: Boolean) {
@@ -178,11 +169,14 @@ class BalanceViewModel @Inject constructor(
     }
 
     fun saveFav(token: Token) {
+        getBalanceUseCase.dispose()
         saveTokenUseCase.execute(
             Action {
+                getTokenBalance()
                 _saveTokenCallback.value = Event(SaveTokenState.Success(token.fav))
     ,
             Consumer {
+                getTokenBalance()
                 it.printStackTrace()
                 _saveTokenCallback.value = Event(SaveTokenState.ShowError(it.localizedMessage))
     ,

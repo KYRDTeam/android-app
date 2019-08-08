@@ -44,7 +44,7 @@ data class Token(
     val spLimitOrder: Boolean = false,
     @TypeConverters(WalletBalanceTypeConverter::class)
     val wallets: List<WalletBalance> = listOf(),
-    val fav: Boolean = false,
+    var fav: Boolean = false,
     val isOther: Boolean = false,
     val limitOrderBalance: BigDecimal = BigDecimal.ZERO,
     val isQuote: Boolean = false

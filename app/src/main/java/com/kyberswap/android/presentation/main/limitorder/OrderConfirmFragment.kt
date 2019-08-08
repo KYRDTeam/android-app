@@ -127,6 +127,7 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
 
         if (currentFragment is LimitOrderFragment) {
             (currentFragment as LimitOrderFragment).getRelatedOrders()
+            (currentFragment as LimitOrderFragment).getPendingBalance()
 
     }
 

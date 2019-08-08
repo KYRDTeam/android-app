@@ -16,7 +16,7 @@ class GetTokenUseCase @Inject constructor(
     override fun buildUseCaseSingle(param: String?): Single<List<Token>> {
         return balanceRepository.getChange24h().first(listOf()).map {
             it.filter { token ->
-                token.isListed
+                token.isListed && !token.isOther
     
 
     }

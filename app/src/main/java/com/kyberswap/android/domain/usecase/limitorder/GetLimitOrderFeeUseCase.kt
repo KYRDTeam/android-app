@@ -5,16 +5,16 @@ import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Fee
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.repository.LimitOrderRepository
-import com.kyberswap.android.domain.usecase.SequentialUseCase
-import io.reactivex.Single
+import com.kyberswap.android.domain.usecase.FlowableUseCase
+import io.reactivex.Flowable
 import javax.inject.Inject
 
 class GetLimitOrderFeeUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val limitOrderRepository: LimitOrderRepository
-) : SequentialUseCase<GetLimitOrderFeeUseCase.Param, Fee>(schedulerProvider) {
+) : FlowableUseCase<GetLimitOrderFeeUseCase.Param, Fee>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    override fun buildUseCaseSingle(param: Param): Single<Fee> {
+    override fun buildUseCaseFlowable(param: Param): Flowable<Fee> {
         return limitOrderRepository.getLimitOrderFee(param)
     }
 

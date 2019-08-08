@@ -140,7 +140,7 @@ class LimitOrderDataRepository @Inject constructor(
 
     }
 
-    override fun getLimitOrderFee(param: GetLimitOrderFeeUseCase.Param): Single<Fee> {
+    override fun getLimitOrderFee(param: GetLimitOrderFeeUseCase.Param): Flowable<Fee> {
         return limitOrderApi.getFee(
             param.sourceToken.tokenAddress,
             param.destToken.tokenAddress,
@@ -150,6 +150,12 @@ class LimitOrderDataRepository @Inject constructor(
         ).map {
             feeMapper.transform(it)
 
+            .repeatWhen {
+                it.delay(15, TimeUnit.SECONDS)
+    
+            .retryWhen { throwable ->
+                throwable.compose(zipWithFlatMap())
+    
     }
 
     override fun getCurrentLimitOrders(param: GetLocalLimitOrderDataUseCase.Param): Flowable<LocalLimitOrder> {

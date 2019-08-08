@@ -20,7 +20,7 @@ interface LimitOrderRepository {
 
     fun saveLimitOrder(param: SaveLimitOrderUseCase.Param): Completable
 
-    fun getLimitOrderFee(param: GetLimitOrderFeeUseCase.Param): Single<Fee>
+    fun getLimitOrderFee(param: GetLimitOrderFeeUseCase.Param): Flowable<Fee>
 
     fun submitOrder(param: SubmitOrderUseCase.Param): Single<LimitOrderResponse>
 
