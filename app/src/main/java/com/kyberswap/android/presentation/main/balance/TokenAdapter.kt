@@ -199,11 +199,9 @@ class TokenAdapter(
         }
 
         binding.imgFav.setOnClickListener {
-            val prevSelected = it.isSelected
-            it.isSelected = !prevSelected
-            handler.post {
-                onFavClick?.invoke(item.copy(fav = !prevSelected))
-            }
+            it.isSelected = !item.fav
+            item.fav = !item.fav
+            onFavClick?.invoke(item)
         }
 
         binding.swipe.addSwipeListener(object : SimpleSwipeListener() {
@@ -262,12 +260,12 @@ class TokenAdapter(
         )
 
 
-    fun setOrderBy(type: OrderType) {
+    fun setOrderBy(type: OrderType, tokenList: List<Token>) {
         this.orderType = type
-        submitFilterList(getData(), true)
+        submitFilterList(tokenList, true)
     }
 
-    fun setTokenType(tokenType: TokenType) {
+    fun setTokenType(tokenType: TokenType, tokenList: List<Token>) {
         this.tokenType = tokenType
         submitFilterList(tokenList, true)
     }

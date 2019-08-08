@@ -80,7 +80,7 @@ class TransactionStatusViewModel @Inject constructor(
         transactionFilter: TransactionFilter
     ): List<TransactionItem> {
         return transactions
-
+            .sortedByDescending { it.timeStamp }
             .filter {
                 (transactionFilter.from.isEmpty() || it.timeStamp * 1000 >= transactionFilter.from.toDate().time) &&
                     (transactionFilter.to.isEmpty() || it.timeStamp * 1000 <= transactionFilter.to.toDate().time) &&

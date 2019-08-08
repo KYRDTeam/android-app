@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.EditText
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -90,6 +91,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
     private val rateText: String
         get() = binding.edtRate.text.toString()
+
+    private var currentFocus: EditText? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -206,6 +209,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         listOf(binding.imgTokenSource, binding.tvSource).forEach {
             it.setOnClickListener {
                 hideKeyboard()
+                saveOrder()
                 navigator.navigateToTokenSearchFromLimitOrder(
                     (activity as MainActivity).getCurrentFragment(),
                     wallet,
@@ -217,6 +221,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         listOf(binding.imgTokenDest, binding.tvDest).forEach {
             it.setOnClickListener {
                 hideKeyboard()
+                saveOrder()
                 navigator.navigateToTokenSearchFromLimitOrder(
                     (activity as MainActivity).getCurrentFragment(),
                     wallet,
@@ -230,6 +235,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         }
 
         binding.tvBalance.setOnClickListener {
+            sourceLock.set(true)
             binding.order?.let {
                 if (it.tokenSource.isETHWETH) {
                     binding.edtSource.setText(
@@ -246,6 +252,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         }
 
         binding.tv25Percent.setOnClickListener {
+            sourceLock.set(true)
             binding.edtSource.setAmount(
                 tvBalance.text.toString().toBigDecimalOrDefaultZero().multiply(
                     0.25.toBigDecimal()
@@ -254,6 +261,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         }
 
         binding.tv50Percent.setOnClickListener {
+            sourceLock.set(true)
             binding.edtSource.setAmount(
                 tvBalance.text.toString().toBigDecimalOrDefaultZero().multiply(
                     0.5.toBigDecimal()
@@ -262,7 +270,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         }
 
         binding.tv100Percent.setOnClickListener {
-
+            sourceLock.set(true)
             binding.order?.let {
                 if (it.tokenSource.isETHWETH) {
                     binding.edtSource.setText(
@@ -486,6 +494,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
             .observeOn(schedulerProvider.ui())
             .subscribe {
                 sourceLock.set(it)
+                destLock.set(!it)
+                currentFocus?.isSelected = false
+                currentFocus = edtSource
+                currentFocus?.isSelected = true
             })
 
         viewModel.compositeDisposable.add(binding.edtDest.focusChanges()
@@ -493,6 +505,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
             .observeOn(schedulerProvider.ui())
             .subscribe {
                 destLock.set(it)
+                sourceLock.set(!it)
+                currentFocus?.isSelected = false
+                currentFocus = edtDest
+                currentFocus?.isSelected = true
             })
 
         viewModel.compositeDisposable.add(binding.edtDest.textChanges()
@@ -522,7 +538,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
             .observeOn(schedulerProvider.ui())
             .subscribe { text ->
 
-                if (!sourceLock.get()) return@subscribe
+                if (!sourceLock.get() || currentFocus == binding.edtDest) return@subscribe
 
                 if (text.isNullOrEmpty()) {
                     binding.edtDest.setText("")
@@ -1005,6 +1021,18 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
     fun getPendingBalance() {
         viewModel.getPendingBalances(wallet)
+    }
+
+
+    private fun saveOrder() {
+        binding.order?.let {
+
+            val order = it.copy(
+                srcAmount = srcAmount,
+                minRate = edtRate.toBigDecimalOrDefaultZero()
+            )
+            viewModel.saveLimitOrder(order)
+        }
     }
 
     private fun saveLimitOrder() {

@@ -92,6 +92,7 @@ data class Swap(
         )).max(BigDecimal.ZERO)
     }
 
+
     val defaultGasLimit: String
         get() = if (tokenSource.gasLimit.toBigIntegerOrDefaultZero()
             == BigInteger.ZERO
@@ -111,14 +112,16 @@ data class Swap(
         get() = tokenSource.tokenSymbol.isNotBlank() && tokenDest.tokenSymbol.isNotBlank()
 
     val displaySourceAmount: String
-        get() = StringBuilder().append(sourceAmount).append(" ").append(tokenSource.tokenSymbol).toString()
+        get() = StringBuilder().append(sourceAmount.toBigDecimalOrDefaultZero().toDisplayNumber()).append(
+            " "
+        ).append(tokenSource.tokenSymbol).toString()
 
     val displayDestAmount: String
         get() = StringBuilder().append(
             getExpectedAmount(
                 expectedRate,
                 sourceAmount
-            ).toDisplayNumber()
+            ).stripTrailingZeros().toDisplayNumber()
         )
             .append(" ")
             .append(tokenDest.tokenSymbol)

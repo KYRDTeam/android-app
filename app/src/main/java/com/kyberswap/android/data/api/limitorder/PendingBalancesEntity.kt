@@ -8,7 +8,5 @@ data class PendingBalancesEntity(
     @SerializedName("success")
     val success: Boolean = false,
     @SerializedName("data")
-    val `data`: Map<String, BigDecimal> = HashMap(),
-    @SerializedName("pending_txs")
-    val pendingTxs: List<String> = listOf()
+    val `data`: Map<String, BigDecimal> = HashMap()
 )

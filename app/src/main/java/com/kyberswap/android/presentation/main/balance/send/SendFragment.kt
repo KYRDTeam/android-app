@@ -33,7 +33,6 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.*
 import kotlinx.android.synthetic.main.fragment_send.*
 import net.cachapa.expandablelayout.ExpandableLayout
-import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -106,7 +105,6 @@ class SendFragment : BaseFragment() {
                                 sendToContact(state.send.contact)
                             }
                         }
-                        Timber.e("getSwapDataCallback")
                         viewModel.getGasPrice()
                         viewModel.getGasLimit(
                             state.send,

@@ -39,7 +39,7 @@ class BalanceDataRepository @Inject constructor(
     }
 
     override fun getChange24h(): Flowable<List<Token>> {
-        return tokenDao.all
+        return tokenDao.all.distinctUntilChanged()
     }
 
     override fun getBalance(param: PrepareBalanceUseCase.Param): Single<List<Token>> {
@@ -146,8 +146,15 @@ class BalanceDataRepository @Inject constructor(
         val selectedWallet = wallets.find { it.isSelected }
 
         return if (selectedWallet?.address == localSelected?.address) {
-            tokenDao.updateTokens(listedTokens)
-            tokenDao.updateTokens(otherTokens)
+            val currentFavs = tokenDao.allTokens.map {
+                it.tokenSymbol to it.fav
+            }.toMap()
+            tokenDao.updateTokens(listedTokens.map {
+                it.copy(fav = currentFavs[it.tokenSymbol] ?: false)
+            })
+            tokenDao.updateTokens(otherTokens.map {
+                it.copy(fav = currentFavs[it.tokenSymbol] ?: false)
+            })
             listedTokens
         } else {
             updateBalance(remoteTokens, currentWallets)
@@ -162,7 +169,7 @@ class BalanceDataRepository @Inject constructor(
                 updateBalance(remoteTokens, param.wallets)
             }
             .repeatWhen {
-                it.delay(12, TimeUnit.SECONDS)
+                it.delay(15, TimeUnit.SECONDS)
             }
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())

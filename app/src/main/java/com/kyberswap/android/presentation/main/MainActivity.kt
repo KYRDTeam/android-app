@@ -415,6 +415,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
             if (currentFragment is LimitOrderFragment) {
                 (currentFragment as LimitOrderFragment).getRelatedOrders()
+                (currentFragment as LimitOrderFragment).getPendingBalance()
             } else if (currentFragment is SwapFragment) {
                 (currentFragment as SwapFragment).getSwap()
             }
