@@ -448,7 +448,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
     }
 
-    fun showResetPassword(positiveListener: (email: String) -> Unit) {
+    fun showResetPassword(positiveListener: (email: String, dialog: AlertDialog) -> Unit) {
         val dialog = AlertDialog.Builder(activity).create()
         dialog.setCanceledOnTouchOutside(true)
         dialog.setCancelable(true)
@@ -458,8 +458,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
             )
 
         binding.tvSend.setOnClickListener {
-            positiveListener.invoke(binding.edtEmail.text.toString())
-            dialog.dismiss()
+            positiveListener.invoke(binding.edtEmail.text.toString(), dialog)
         }
 
         dialog.setView(binding.root)

@@ -22,7 +22,11 @@ interface UserRepository {
 
     fun getUserInfo(): Flowable<UserInfo>
 
+    fun refreshKycStatus(): Single<UserInfo>
+
     fun fetchUserInfo(): Flowable<UserInfo>
+
+    fun pollingUserInfo(): Flowable<UserInfo>
 
     fun getAlerts(): Flowable<List<Alert>>
 

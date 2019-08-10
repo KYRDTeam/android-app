@@ -86,6 +86,32 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
     private val srcAmount: String
         get() = binding.edtSource.text.toString()
 
+    private val expectedDestAmount: String
+        get() =
+            if (rateText.isEmpty()) {
+                binding.order?.getExpectedDestAmount(srcAmount.toBigDecimalOrDefaultZero())
+                    ?.toDisplayNumber()
+            } else {
+                binding.order?.getExpectedDestAmount(
+                    rateText.toBigDecimalOrDefaultZero(),
+                    srcAmount.toBigDecimalOrDefaultZero()
+                )?.toDisplayNumber()
+            } ?: BigDecimal.ZERO.toString()
+
+
+    private val expectedSourceAmount: String
+        get() =
+            if (rateText.toBigDecimalOrDefaultZero() == BigDecimal.ZERO) {
+                BigDecimal.ZERO.toString()
+            } else {
+                dstAmount.toBigDecimalOrDefaultZero()
+                    .divide(
+                        rateText.toBigDecimalOrDefaultZero(),
+                        18,
+                        RoundingMode.UP
+                    ).toDisplayNumber()
+            }
+
     private val dstAmount: String
         get() = binding.edtDest.text.toString()
 
@@ -125,6 +151,12 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
     private val destLock = AtomicBoolean()
 
     private var orderAdapter: OrderAdapter? = null
+
+    private val isDestFocus: Boolean
+        get() = currentFocus == binding.edtDest
+
+    private val isSourceFocus: Boolean
+        get() = currentFocus == binding.edtSource
 
     private var eleigibleAddress: EligibleAddress? = null
 
@@ -171,7 +203,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 when (state) {
                     is GetLocalLimitOrderState.Success -> {
                         if (!state.order.isSameTokenPairForAddress(binding.order)) {
-                            hasUserFocus = false
+
                             if (state.order.tokenSource.tokenSymbol == state.order.tokenDest.tokenSymbol) {
                                 showError(getString(R.string.same_token_alert))
                             }
@@ -190,7 +222,9 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                                 wallet
                             )
 
-                            edtSource.setAmount(state.order.srcAmount)
+                            if (!isDestFocus) {
+                                edtSource.setAmount(state.order.srcAmount)
+                            }
                             getRate(state.order)
                             viewModel.getGasPrice()
                             viewModel.getGasLimit(wallet, binding.order)
@@ -208,8 +242,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
         listOf(binding.imgTokenSource, binding.tvSource).forEach {
             it.setOnClickListener {
-                hideKeyboard()
-                saveOrder()
+                saveState()
                 navigator.navigateToTokenSearchFromLimitOrder(
                     (activity as MainActivity).getCurrentFragment(),
                     wallet,
@@ -220,8 +253,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
         listOf(binding.imgTokenDest, binding.tvDest).forEach {
             it.setOnClickListener {
-                hideKeyboard()
-                saveOrder()
+                saveState()
                 navigator.navigateToTokenSearchFromLimitOrder(
                     (activity as MainActivity).getCurrentFragment(),
                     wallet,
@@ -235,7 +267,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         }
 
         binding.tvBalance.setOnClickListener {
-            sourceLock.set(true)
+            hideKeyboard()
+            updateCurrentFocus(edtSource)
             binding.order?.let {
                 if (it.tokenSource.isETHWETH) {
                     binding.edtSource.setText(
@@ -252,7 +285,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         }
 
         binding.tv25Percent.setOnClickListener {
-            sourceLock.set(true)
+            hideKeyboard()
+            updateCurrentFocus(edtSource)
             binding.edtSource.setAmount(
                 tvBalance.text.toString().toBigDecimalOrDefaultZero().multiply(
                     0.25.toBigDecimal()
@@ -261,7 +295,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         }
 
         binding.tv50Percent.setOnClickListener {
-            sourceLock.set(true)
+            hideKeyboard()
+            updateCurrentFocus(edtSource)
             binding.edtSource.setAmount(
                 tvBalance.text.toString().toBigDecimalOrDefaultZero().multiply(
                     0.5.toBigDecimal()
@@ -270,7 +305,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         }
 
         binding.tv100Percent.setOnClickListener {
-            sourceLock.set(true)
+            hideKeyboard()
+            updateCurrentFocus(edtSource)
             binding.order?.let {
                 if (it.tokenSource.isETHWETH) {
                     binding.edtSource.setText(
@@ -299,6 +335,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         binding.imgSwap.setOnClickListener {
             hasUserFocus = false
             resetAmount()
+            setWarning(false)
             val limitOrder = binding.order?.swapToken()
             limitOrder?.let {
                 getRate(it)
@@ -493,11 +530,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
             .skipInitialValue()
             .observeOn(schedulerProvider.ui())
             .subscribe {
-                sourceLock.set(it)
-                destLock.set(!it)
-                currentFocus?.isSelected = false
-                currentFocus = edtSource
-                currentFocus?.isSelected = true
+                sourceLock.set(it || isSourceFocus)
+                if (it) {
+                    updateCurrentFocus(edtSource)
+                }
             })
 
         viewModel.compositeDisposable.add(binding.edtDest.focusChanges()
@@ -505,10 +541,9 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
             .observeOn(schedulerProvider.ui())
             .subscribe {
                 destLock.set(it)
-                sourceLock.set(!it)
-                currentFocus?.isSelected = false
-                currentFocus = edtDest
-                currentFocus?.isSelected = true
+                if (it) {
+                    updateCurrentFocus(edtDest)
+                }
             })
 
         viewModel.compositeDisposable.add(binding.edtDest.textChanges()
@@ -537,8 +572,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
             .skipInitialValue()
             .observeOn(schedulerProvider.ui())
             .subscribe { text ->
-
-                if (!sourceLock.get() || currentFocus == binding.edtDest) return@subscribe
+                if (!sourceLock.get() || isDestFocus) return@subscribe
 
                 if (text.isNullOrEmpty()) {
                     binding.edtDest.setText("")
@@ -598,25 +632,27 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 .skipInitialValue()
                 .observeOn(schedulerProvider.ui())
                 .subscribe { text ->
+
                     binding.tvRateWarning.colorRate(text.toString().percentage(rate))
                     if (text.isNullOrEmpty()) {
                         binding.edtDest.setText("")
                     }
 
                     binding.order?.let { order ->
-                        edtDest.setAmount(
-                            order.getExpectedDestAmount(
-                                text.toString().toBigDecimalOrDefaultZero(),
-                                srcAmount.toBigDecimalOrDefaultZero()
-                            ).toDisplayNumber()
-                        )
+                        if (isDestFocus) {
+                            binding.edtSource.setAmount(expectedSourceAmount)
+                        } else {
+                            binding.edtDest.setAmount(
+                                expectedDestAmount
+                            )
+                        }
 
                         val bindingOrder = binding.order?.copy(
                             srcAmount = srcAmount,
                             minRate = edtRate.toBigDecimalOrDefaultZero()
                         )
 
-                        bindingOrder?.let {
+                        order.let {
                             if (binding.order != bindingOrder) {
                                 binding.order = bindingOrder
                                 binding.executePendingBindings()
@@ -649,21 +685,16 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                             "$revertedMarketRate $tokenSourceSymbol"
                         )
 
-                        if (rateText.isEmpty()) {
+                        if (hasUserFocus != true) {
                             binding.edtRate.setAmount(rate)
 
                         }
 
-                        if (rateText.isEmpty()) {
-                            binding.edtDest.setAmount(
-                                binding.order?.getExpectedDestAmount(srcAmount.toBigDecimalOrDefaultZero())?.toDisplayNumber()
-                            )
+                        if (isDestFocus) {
+                            binding.edtSource.setAmount(expectedSourceAmount)
                         } else {
                             binding.edtDest.setAmount(
-                                binding.order?.getExpectedDestAmount(
-                                    rateText.toBigDecimalOrDefaultZero(),
-                                    srcAmount.toBigDecimalOrDefaultZero()
-                                )?.toDisplayNumber()
+                                expectedDestAmount
                             )
                         }
                     }
@@ -1003,8 +1034,25 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
     }
 
+    private fun updateCurrentFocus(view: EditText?) {
+        currentFocus?.isSelected = false
+        currentFocus = view
+        currentFocus?.isSelected = true
+        sourceLock.set(view == binding.edtSource)
+        destLock.set(view == binding.edtDest)
+    }
+
     fun getSelectedWallet() {
         viewModel.getSelectedWallet()
+    }
+
+    fun saveState() {
+        hideKeyboard()
+        saveOrder()
+        if (binding.isWarning == true) {
+            hasUserFocus = false
+        }
+        setWarning(false)
     }
 
     fun getLimitOrder() {
@@ -1021,6 +1069,12 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
     fun getPendingBalance() {
         viewModel.getPendingBalances(wallet)
+    }
+
+    fun onRefresh() {
+        getRelatedOrders()
+        getPendingBalance()
+        getNonce()
     }
 
 

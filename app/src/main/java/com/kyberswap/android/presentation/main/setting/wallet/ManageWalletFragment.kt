@@ -19,6 +19,7 @@ import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.landing.CreateWalletState
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
+import com.kyberswap.android.presentation.wallet.UpdateWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
 
@@ -175,6 +176,20 @@ class ManageWalletFragment : BaseFragment() {
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
+                    }
+                }
+            }
+        })
+
+        viewModel.updateWalletStateCallback.observe(this, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == UpdateWalletState.Loading)
+                when (state) {
+                    is UpdateWalletState.Success -> {
+
+                    }
+                    is UpdateWalletState.ShowError -> {
+
                     }
                 }
             }

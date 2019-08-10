@@ -14,11 +14,10 @@ import com.kyberswap.android.domain.repository.LimitOrderRepository
 import com.kyberswap.android.domain.usecase.limitorder.*
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.hexWithPrefix
+import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.FlowableTransformer
 import io.reactivex.Single
-import io.reactivex.functions.BiFunction
 import org.consenlabs.tokencore.wallet.WalletManager
 import org.web3j.crypto.WalletUtils
 import java.math.BigDecimal
@@ -225,14 +224,6 @@ class LimitOrderDataRepository @Inject constructor(
             .defaultIfEmpty(orderWithToken)
     }
 
-    private fun <T> zipWithFlatMap(): FlowableTransformer<T, Long> {
-        return FlowableTransformer { flowable ->
-            flowable.zipWith(
-                Flowable.range(COUNTER_START, ATTEMPTS),
-                BiFunction<T, Int, Int> { _: T, u: Int -> u })
-                .flatMap { t -> Flowable.timer(t * 5L, TimeUnit.SECONDS) }
-        }
-    }
 
     private fun updateBalance(token: Token, wallet: Wallet): Token {
         return when {
@@ -378,8 +369,4 @@ class LimitOrderDataRepository @Inject constructor(
         )
     }
 
-    companion object {
-        private const val COUNTER_START = 1
-        private const val ATTEMPTS = 5
-    }
 }

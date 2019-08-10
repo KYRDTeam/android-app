@@ -18,11 +18,10 @@ import com.kyberswap.android.domain.usecase.token.SaveTokenUseCase
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.updatePrecision
+import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.FlowableTransformer
 import io.reactivex.Single
-import io.reactivex.functions.BiFunction
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.pow
@@ -88,16 +87,6 @@ class TokenDataRepository @Inject constructor(
             }
     }
 
-
-    private fun <T> zipWithFlatMap(): FlowableTransformer<T, Long> {
-        return FlowableTransformer { flowable ->
-            flowable.zipWith(
-                Flowable.range(COUNTER_START, ATTEMPTS),
-                BiFunction<T, Int, Int> { _: T, u: Int -> u })
-                .flatMap { t -> Flowable.timer(t * 5L, TimeUnit.SECONDS) }
-        }
-    }
-
     override fun getChartData(param: GetChartDataForTokenUseCase.Param): Single<Chart> {
         val to = System.currentTimeMillis() / 1000
         val from = param.charType.fromTime(to)
@@ -121,10 +110,5 @@ class TokenDataRepository @Inject constructor(
             }
 
         }
-    }
-
-    companion object {
-        private const val COUNTER_START = 1
-        private const val ATTEMPTS = 5
     }
 }

@@ -1,11 +1,13 @@
 package com.kyberswap.android.presentation.wallet
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.google.zxing.integration.android.IntentIntegrator
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentImportSeedBinding
@@ -73,6 +75,12 @@ class ImportSeedFragment : BaseFragment() {
             )
         }
 
+        binding.imgQRCode.setOnClickListener {
+            IntentIntegrator.forSupportFragment(this)
+                .setBeepEnabled(false)
+                .initiateScan()
+        }
+
         viewModel.importWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.let { state ->
                 showProgress(state == ImportWalletState.Loading)
@@ -95,6 +103,19 @@ class ImportSeedFragment : BaseFragment() {
                 }
             }
         })
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        if (result != null) {
+            if (result.contents == null) {
+                showAlertWithoutIcon(message = getString(R.string.message_cancelled))
+            } else {
+                binding.edtSeed.setText(result.contents.toString())
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
     }
 
     companion object {

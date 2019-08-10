@@ -11,12 +11,12 @@ import com.kyberswap.android.domain.repository.BalanceRepository
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.PrepareBalanceUseCase
 import com.kyberswap.android.util.TokenClient
+import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.FlowableTransformer
 import io.reactivex.Single
-import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.Singles
+import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -39,7 +39,7 @@ class BalanceDataRepository @Inject constructor(
     }
 
     override fun getChange24h(): Flowable<List<Token>> {
-        return tokenDao.all.distinctUntilChanged()
+        return tokenDao.all
     }
 
     override fun getBalance(param: PrepareBalanceUseCase.Param): Single<List<Token>> {
@@ -115,6 +115,7 @@ class BalanceDataRepository @Inject constructor(
         wallets: List<Wallet>
     ): List<Token> {
 
+        Timber.e("updateBalance: size" + remoteTokens.size)
         val localTokens = tokenDao.allTokens.map {
             it.updateSelectedWallet(wallets).copy(isOther = true)
         }
@@ -165,24 +166,15 @@ class BalanceDataRepository @Inject constructor(
 
     override fun getChange24hPolling(param: GetBalancePollingUseCase.Param): Flowable<List<Token>> {
         return fetchChange24h()
-            .map { remoteTokens ->
-                updateBalance(remoteTokens, param.wallets)
-            }
+//            .map { remoteTokens ->
+//                updateBalance(remoteTokens, param.wallets)
+//            }
             .repeatWhen {
                 it.delay(15, TimeUnit.SECONDS)
             }
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
             }
-    }
-
-    private fun <T> zipWithFlatMap(): FlowableTransformer<T, Long> {
-        return FlowableTransformer { flowable ->
-            flowable.zipWith(
-                Flowable.range(COUNTER_START, ATTEMPTS),
-                BiFunction<T, Int, Int> { _: T, u: Int -> u })
-                .flatMap { t -> Flowable.timer(t * 5L, TimeUnit.SECONDS) }
-        }
     }
 
 
@@ -204,7 +196,5 @@ class BalanceDataRepository @Inject constructor(
     companion object {
         const val ETH = "ETH"
         const val USD = "USD"
-        private const val COUNTER_START = 1
-        private const val ATTEMPTS = 5
     }
 }

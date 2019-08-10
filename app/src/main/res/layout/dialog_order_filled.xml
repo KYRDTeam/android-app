@@ -8,6 +8,8 @@
         <variable
             name="order"
             type="com.kyberswap.android.domain.model.Order" />
+
+        <import type="android.view.View" />
     </data>
 
     <FrameLayout
@@ -46,7 +48,6 @@
                     android:id="@+id/view17"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
-                    android:background="@drawable/rounded_corner_rate_background"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -157,6 +158,24 @@
                     app:layout_constraintStart_toStartOf="@+id/textView68"
                     app:layout_constraintTop_toBottomOf="@+id/textView68"
                     tools:ignore="SmallSp" />
+
+                <TextView
+                    android:id="@+id/tvExtra"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:background="?selectableItemBackground"
+                    android:gravity="start"
+                    android:padding="2dp"
+                    android:text="@{order.extraDisplay}"
+                    android:textColor="@color/color_order_extra"
+                    android:textSize="10sp"
+                    android:visibility="@{order.hasExtra ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintEnd_toEndOf="@+id/textView69"
+                    app:layout_constraintStart_toStartOf="@+id/textView69"
+                    app:layout_constraintTop_toBottomOf="@+id/textView69"
+                    tools:ignore="SmallSp"
+                    tools:text="+ 12.987 KNC" />
 
                 <TextView
                     android:id="@+id/textView70"

@@ -172,7 +172,9 @@ class SendFragment : BaseFragment() {
                                     gasPrice = getSelectedGasPrice(
                                         send.gas,
                                         rb.id
-                                    )
+                                    ),
+                                    contact = send.contact.copy(address = onlyAddress(edtAddress.text.toString())),
+                                    sourceAmount = edtSource.text.toString()
                                 )
                             )
                         }
@@ -379,17 +381,25 @@ class SendFragment : BaseFragment() {
 
         binding.tvContinue.setOnClickListener {
             when {
-                edtSource.text.isNullOrEmpty() -> showError(message = getString(R.string.specify_amount))
-                edtAddress.text.isNullOrEmpty() -> showError(message = getString(R.string.specify_contact_address))
-                binding.edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.send?.tokenSource?.currentBalance -> {
-                    showError(message = getString(R.string.exceed_balance))
-                }
-                !onlyAddress(edtAddress.text.toString()).isContact() -> showError(
-                    message = getString(
-                        R.string.invalid_contact_address
-                    )
+                edtSource.text.isNullOrEmpty() -> showAlertWithoutIcon(
+                    title = getString(R.string.invalid_amount),
+                    message = getString(R.string.specify_amount)
                 )
-                hasPendingTransaction -> showError(message = getString(R.string.pending_transaction))
+                edtAddress.text.isNullOrEmpty() -> showAlertWithoutIcon(
+                    title = getString(R.string.invalid_contact_address_title),
+                    message = getString(R.string.specify_contact_address)
+                )
+                binding.edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.send?.tokenSource?.currentBalance -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_amount_too_big),
+                        message = getString(R.string.exceed_balance)
+                    )
+                }
+                !onlyAddress(edtAddress.text.toString()).isContact() -> showAlertWithoutIcon(
+                    title = getString(R.string.invalid_contact_address_title),
+                    message = getString(R.string.specify_contact_address)
+                )
+                hasPendingTransaction -> showAlertWithoutIcon(message = getString(R.string.pending_transaction))
                 else -> {
                     binding.send?.let { send ->
                         viewModel.saveSend(

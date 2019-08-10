@@ -103,7 +103,7 @@ class ImportPrivateKeyFragment : BaseFragment() {
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null) {
             if (result.contents == null) {
-                showAlert(getString(R.string.message_cancelled))
+                showAlertWithoutIcon(message = getString(R.string.message_cancelled))
             } else {
                 binding.edtPrivateKey.setText(result.contents.toString())
             }

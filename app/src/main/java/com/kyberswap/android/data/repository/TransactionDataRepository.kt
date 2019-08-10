@@ -9,6 +9,7 @@ import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import com.google.gson.Gson
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.TransactionApi
 import com.kyberswap.android.data.db.*
@@ -24,13 +25,13 @@ import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toLongSafe
+import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.FlowableTransformer
 import io.reactivex.Single
-import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.Singles
 import org.web3j.utils.Numeric
+import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
@@ -78,9 +79,11 @@ class TransactionDataRepository @Inject constructor(
     }
 
     private fun updateBalance(transaction: Transaction, wallet: Wallet) {
+        Timber.e(Gson().toJson(transaction))
         if (transaction.tokenSource.isNotBlank()) {
             val tokenSource = tokenDao.getTokenBySymbol(transaction.tokenSource)
             tokenSource?.let { src ->
+                Timber.e("src: " + src)
                 updateTokenBalance(src, wallet)
 
             }
@@ -89,6 +92,7 @@ class TransactionDataRepository @Inject constructor(
         if (transaction.tokenDest.isNotBlank()) {
             val tokenDest = tokenDao.getTokenBySymbol(transaction.tokenDest)
             tokenDest?.let { dest ->
+                Timber.e("tokenDest: " + tokenDest)
                 updateTokenBalance(dest, wallet)
             }
         }
@@ -96,9 +100,9 @@ class TransactionDataRepository @Inject constructor(
         if (transaction.tokenSymbol.isNotBlank() && ((transaction.tokenSymbol != transaction.tokenSource) ||
                 (transaction.tokenSymbol != transaction.tokenDest))
         ) {
-
             val tokenSymbol = tokenDao.getTokenBySymbol(transaction.tokenSymbol)
             tokenSymbol?.let { symbol ->
+                Timber.e("tokenSymbol: " + symbol)
                 updateTokenBalance(symbol, wallet)
             }
 
@@ -110,6 +114,7 @@ class TransactionDataRepository @Inject constructor(
         ) {
             val tokenSymbol = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)
             tokenSymbol?.let { symbol ->
+                Timber.e("ETH: " + symbol)
                 updateTokenBalance(symbol, wallet)
             }
 
@@ -307,16 +312,6 @@ class TransactionDataRepository @Inject constructor(
             }
     }
 
-
-    private fun <T> zipWithFlatMap(): FlowableTransformer<T, Long> {
-        return FlowableTransformer { flowable ->
-            flowable.zipWith(
-                Flowable.range(COUNTER_START, ATTEMPTS),
-                BiFunction<T, Int, Int> { _: T, u: Int -> u })
-                .flatMap { t -> Flowable.timer(t * 5L, TimeUnit.SECONDS) }
-        }
-    }
-
     override fun fetchAllTransactions(param: GetTransactionsUseCase.Param): Flowable<List<Transaction>> {
         return getTransactions(param.wallet)
     }
@@ -326,22 +321,30 @@ class TransactionDataRepository @Inject constructor(
             transactionDao.getLatestTransaction()?.blockNumber?.toLongSafe() ?: 1
         }
             .flatMap { latestBlockNumber ->
+                Timber.e("latestBlockNumber: " + latestBlockNumber)
                 getTransactionRemote(param.wallet, latestBlockNumber)
             }.doOnNext {
+                val latestTransaction = transactionDao.getLatestTransaction()
                 val latestBlock =
-                    transactionDao.getLatestTransaction()?.blockNumber?.toLongSafe() ?: 1
-                it.forEach {
-                    val blockNumber = it.blockNumber.toLongSafe()
-                    if (blockNumber > latestBlock) {
-                        sendNotification(it)
-                        updateBalance(it, param.wallet)
+                    latestTransaction?.blockNumber?.toLongSafe() ?: 1
+                it.forEach { tx ->
+                    val blockNumber = tx.blockNumber.toLongSafe()
+                    Timber.e("blockNumber: " + blockNumber)
+                    latestTransaction?.let {
+                        if (blockNumber > latestBlock) {
+                            Timber.e(
+                                "updated"
+                            )
+                            sendNotification(tx)
+                            updateBalance(tx, param.wallet)
+                        }
                     }
                 }
                 transactionDao.insertTransactionBatch(it)
 
             }
             .repeatWhen {
-                it.delay(30, TimeUnit.SECONDS)
+                it.delay(15, TimeUnit.SECONDS)
             }
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
@@ -625,8 +628,6 @@ class TransactionDataRepository @Inject constructor(
     }
 
     companion object {
-        private const val COUNTER_START = 1
-        private const val ATTEMPTS = 5
         const val DEFAULT_MODULE = "account"
         const val NORMAL_TRANSACTION = "txlist"
         const val INTERNAL_TRANSACTION = "txlistinternal"

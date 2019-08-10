@@ -70,7 +70,7 @@ class ImportJsonFragment : BaseFragment() {
                     if (granted) {
                         performFileSearch()
                     } else {
-                        showAlert(getString(R.string.permission_required))
+                        showAlertWithoutIcon(message = getString(R.string.permission_required))
                     }
                 }
         }

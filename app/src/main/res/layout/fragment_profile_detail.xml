@@ -168,6 +168,7 @@
                     tools:ignore="SmallSp" />
 
                 <LinearLayout
+                    android:paddingBottom="40dp"
                     android:id="@+id/lnVerify"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -203,7 +204,6 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginTop="24dp"
-                        android:layout_marginBottom="40dp"
                         android:background="@drawable/border_button"
                         android:gravity="center"
                         android:minWidth="126dp"

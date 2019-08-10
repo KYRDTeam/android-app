@@ -18,6 +18,7 @@ import com.kyberswap.android.domain.usecase.swap.*
 import com.kyberswap.android.presentation.common.DEFAULT_NAME
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -26,6 +27,7 @@ import org.web3j.crypto.WalletUtils
 import org.web3j.protocol.core.methods.response.EthEstimateGas
 import org.web3j.utils.Convert
 import java.math.BigDecimal
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.pow
 
@@ -242,9 +244,15 @@ class SwapDataRepository @Inject constructor(
             }
     }
 
-    override fun getGasPrice(): Single<Gas> {
+    override fun getGasPrice(): Flowable<Gas> {
         return api.getGasPrice().map { it.data }
             .map { mapper.transform(it) }
+            .repeatWhen {
+                it.delay(30, TimeUnit.SECONDS)
+            }
+            .retryWhen { throwable ->
+                throwable.compose(zipWithFlatMap())
+            }
     }
 
     override fun saveSwap(param: SaveSwapUseCase.Param): Completable {

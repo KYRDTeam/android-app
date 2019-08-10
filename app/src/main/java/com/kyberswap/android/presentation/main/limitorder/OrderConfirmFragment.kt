@@ -126,8 +126,7 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
             fm.popBackStack()
         }
         if (currentFragment is LimitOrderFragment) {
-            (currentFragment as LimitOrderFragment).getRelatedOrders()
-            (currentFragment as LimitOrderFragment).getPendingBalance()
+            (currentFragment as LimitOrderFragment).onRefresh()
         }
     }
 

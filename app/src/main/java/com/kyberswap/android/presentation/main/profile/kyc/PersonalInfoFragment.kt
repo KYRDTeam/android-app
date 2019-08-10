@@ -328,45 +328,88 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 
         }
 
-        viewModel.compositeDisposable.add(binding.edtFirstName.textChanges().subscribe {
+        viewModel.compositeDisposable.add(
+            binding.edtFirstName.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
             binding.ilFirstName.error = null
         })
 
-        viewModel.compositeDisposable.add(binding.edtLastName.textChanges().subscribe {
+        viewModel.compositeDisposable.add(
+            binding.edtLastName.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
             binding.ilLastName.error = null
         })
 
-        viewModel.compositeDisposable.add(binding.edtNationality.textChanges().subscribe {
+        viewModel.compositeDisposable.add(
+            binding.edtNationality.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
             binding.ilNationality.error = null
         })
 
 
-        viewModel.compositeDisposable.add(binding.edtCountryResident.textChanges().subscribe {
+        viewModel.compositeDisposable.add(
+            binding.edtCountryResident.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
             binding.ilCountry.error = null
         })
 
 
-        viewModel.compositeDisposable.add(binding.edtBod.textChanges().subscribe {
+        viewModel.compositeDisposable.add(
+            binding.edtBod.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
             binding.ilDob.error = null
         })
 
 
-        viewModel.compositeDisposable.add(binding.edtResidentAddress.textChanges().subscribe {
+        viewModel.compositeDisposable.add(
+            binding.edtResidentAddress.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
             binding.ilResidentialAddress.error = null
         })
 
 
-        viewModel.compositeDisposable.add(binding.edtCityResident.textChanges().subscribe {
+        viewModel.compositeDisposable.add(
+            binding.edtCityResident.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
             binding.ilCity.error = null
         })
 
-        viewModel.compositeDisposable.add(binding.edtPostalCode.textChanges().subscribe {
+        viewModel.compositeDisposable.add(
+            binding.edtPostalCode.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
             binding.ilZipCode.error = null
         })
 
-        viewModel.compositeDisposable.add(binding.edtProofAddress.textChanges().subscribe {
+        viewModel.compositeDisposable.add(
+            binding.edtProofAddress.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
             binding.ilDocumentProofAddress.error = null
         })
+
+        viewModel.compositeDisposable.add(binding.edtSourceFund.textChanges()
+            .skipInitialValue()
+            .observeOn(schedulerProvider.ui())
+            .subscribe {
+                binding.ilSourceFund.error = null
+            })
 
 
 
@@ -376,72 +419,89 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
             when {
                 edtFirstName.text.toString().isBlank() -> {
                     val error = getString(R.string.kyc_first_name_required)
-                    showError(error)
+                    showAlertWithoutIcon(title = getString(R.string.invalid_name), message = error)
                     binding.ilFirstName.error = error
 
                 }
 
                 edtLastName.text.toString().isBlank() -> {
                     val error = getString(R.string.kyc_last_name_required)
-                    showError(error)
+                    showAlertWithoutIcon(title = getString(R.string.invalid_name), message = error)
                     binding.ilLastName.error = error
                 }
 
                 edtBod.text.toString().isBlank() -> {
                     val error = getString(R.string.kyc_dob_required)
-                    showError(error)
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_date_of_birth),
+                        message = error
+                    )
                     binding.ilDob.error = error
                 }
 
                 viewModel.inValidDob(edtBod.text.toString().toDate()) -> {
                     val error = getString(R.string.kyc_dob_18_year_old)
-                    showError(getString(R.string.kyc_dob_18_year_old))
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_date_of_birth),
+                        message = getString(R.string.kyc_dob_18_year_old)
+                    )
                     binding.ilDob.error = error
                 }
 
                 edtNationality.text.toString().isBlank() -> {
                     val error = getString(R.string.kyc_nationality_required)
-                    showError(error)
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_nationality),
+                        message = error
+                    )
                     binding.ilNationality.error = error
                 }
 
+                edtCityResident.text.toString().isBlank() -> {
+                    val error = getString(R.string.kyc_city_required)
+                    showAlertWithoutIcon(title = getString(R.string.invalid_input), message = error)
+                    binding.ilCity.error = error
+                }
+
+                edtPostalCode.text.toString().isBlank() -> {
+                    val error = getString(R.string.kyc_zip_code_required)
+                    showAlertWithoutIcon(title = getString(R.string.invalid_input), message = error)
+                    binding.ilZipCode.error = error
+                }
+
+                edtProofAddress.text.toString().isBlank() -> {
+                    val error = getString(R.string.kyc_document_proof_address_required)
+                    showAlertWithoutIcon(title = getString(R.string.invalid_input), message = error)
+                    binding.ilDocumentProofAddress.error = error
+                }
+
+                stringImage.isNullOrEmpty() -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_input), message = getString(
+                            R.string.invalid_photo_address
+                        )
+                    )
+                }
+
+                edtSourceFund.text.toString().isBlank() -> {
+                    val error = getString(R.string.kyc_source_of_fun_required)
+                    showAlertWithoutIcon(title = getString(R.string.invalid_input), message = error)
+                    binding.ilSourceFund.error = error
+                }
 
                 edtCountryResident.text.toString().isBlank() -> {
                     val error = getString(R.string.kyc_country_resident_required)
-                    showError(error)
+                    showAlertWithoutIcon(title = getString(R.string.invalid_input), message = error)
                     binding.ilCountry.error = error
                 }
 
 
                 edtResidentAddress.text.toString().isBlank() -> {
                     val error = getString(R.string.kyc_residental_address_required)
-                    showError(error)
+                    showAlertWithoutIcon(title = getString(R.string.invalid_input), message = error)
                     binding.ilResidentialAddress.error = error
                 }
 
-                edtCityResident.text.toString().isBlank() -> {
-                    val error = getString(R.string.kyc_city_required)
-                    showError(error)
-                    binding.ilCity.error = error
-                }
-
-                edtPostalCode.text.toString().isBlank() -> {
-                    val error = getString(R.string.kyc_zip_code_required)
-                    showError(error)
-                    binding.ilZipCode.error = error
-                }
-
-                edtProofAddress.text.toString().isBlank() -> {
-                    val error = getString(R.string.kyc_document_proof_address_required)
-                    showError(error)
-                    binding.ilDocumentProofAddress.error = error
-                }
-
-                edtSourceFund.text.toString().isBlank() -> {
-                    val error = getString(R.string.kyc_source_of_fun_required)
-                    showError(error)
-                    binding.ilSourceFund.error = error
-                }
 
                 else -> {
                     viewModel.save(

@@ -20,6 +20,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.jakewharton.rxbinding3.widget.checkedChanges
+import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentPassportBinding
@@ -99,8 +100,8 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                             info?.let {
                                 binding.rbId.isChecked = info.isIdentityCard
                                 binding.rbPassport.isChecked = info.isPassport
-                                binding.cbIssueDate.isChecked = info.documentIssueDate.isEmpty()
-                                binding.cbExpiryDate.isChecked = info.documentExpiryDate.isEmpty()
+                                binding.cbIssueDate.isChecked = info.issueDateNonApplicable
+                                binding.cbExpiryDate.isChecked = info.expiryDateNonApplicable
 
                                 info.photoIdentityFrontSide.removePrefix(BASE64_PREFIX)
 
@@ -178,6 +179,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                 now.get(Calendar.MONTH),
                 now.get(Calendar.DAY_OF_MONTH)
             )
+            dpd.maxDate = now
             dpd.show(fragmentManager, "Datepickerdialog")
         }
 
@@ -190,6 +192,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                 now.get(Calendar.MONTH),
                 now.get(Calendar.DAY_OF_MONTH)
             )
+            dpd.minDate = now
             dpd.show(fragmentManager, "Datepickerdialog")
         }
 
@@ -238,6 +241,27 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                     }
 
                 })
+
+        viewModel.compositeDisposable.add(binding.edtDocumentNumber.textChanges()
+            .skipInitialValue()
+            .observeOn(schedulerProvider.ui())
+            .subscribe {
+                binding.ilDocumentId.error = null
+            })
+
+        viewModel.compositeDisposable.add(binding.edtIssueDate.textChanges()
+            .skipInitialValue()
+            .observeOn(schedulerProvider.ui())
+            .subscribe {
+                binding.ilIssueDate.error = null
+            })
+
+        viewModel.compositeDisposable.add(binding.edtExpiryDate.textChanges()
+            .skipInitialValue()
+            .observeOn(schedulerProvider.ui())
+            .subscribe {
+                binding.ilExpiryDate.error = null
+            })
 
         viewModel.compositeDisposable.add(
             binding.cbExpiryDate.checkedChanges()
@@ -288,26 +312,63 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                 when {
 
                     !binding.rbId.isChecked && !binding.rbPassport.isChecked -> {
-                        showError(getString(R.string.kyc_document_type_required))
+                        showAlertWithoutIcon(
+                            title = getString(R.string.invalid_document_type),
+                            message = getString(R.string.kyc_document_type_required)
+                        )
                     }
 
                     edtDocumentNumber.text.toString().isBlank() -> {
                         val error = getString(R.string.kyc_document_number_required)
-                        showError(error)
+                        showAlertWithoutIcon(
+                            title = getString(R.string.invalid_document_number),
+                            message = error
+                        )
                         binding.ilDocumentId.error = error
 
                     }
 
+                    edtIssueDate.text.toString().isBlank() -> {
+                        val error = getString(
+                            R.string.invalid_issue_date
+                        )
+                        showAlertWithoutIcon(
+                            title = getString(R.string.invalid_input),
+                            message = error
+                        )
+                        binding.ilIssueDate.error = error
+                    }
+
+                    edtExpiryDate.text.toString().isBlank() -> {
+                        val error = getString(
+                            R.string.invalid_expired_date
+                        )
+                        showAlertWithoutIcon(
+                            title = getString(R.string.invalid_input),
+                            message = error
+                        )
+                        binding.ilExpiryDate.error = error
+                    }
+
                     photoIdentityFrontSide.isEmpty() -> {
-                        showError(getString(R.string.kyc_photo_id_front_required))
+                        showAlertWithoutIcon(
+                            title = getString(R.string.photo_not_found),
+                            message = getString(R.string.kyc_photo_id_front_required)
+                        )
                     }
 
-                    photoIdentityBackSide.isEmpty() -> {
-                        showError(getString(R.string.kyc_photo_id_back_required))
+                    photoIdentityBackSide.isEmpty() && binding.rbId.isChecked -> {
+                        showAlertWithoutIcon(
+                            title = getString(R.string.photo_not_found),
+                            message = getString(R.string.kyc_photo_id_front_required)
+                        )
                     }
 
-                    photoIdentityBackSide.isEmpty() -> {
-                        showError(getString(R.string.kyc_photo_id_sielf_required))
+                    photoSelfie.isEmpty() -> {
+                        showAlertWithoutIcon(
+                            title = getString(R.string.photo_not_found),
+                            message = getString(R.string.kyc_photo_id_front_required)
+                        )
                     }
 
                     else -> {
