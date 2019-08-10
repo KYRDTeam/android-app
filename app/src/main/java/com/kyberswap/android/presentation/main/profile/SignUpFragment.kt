@@ -181,7 +181,11 @@ class SignUpFragment : BaseFragment() {
                 showProgress(state == SignUpState.Loading)
                 when (state) {
                     is SignUpState.Success -> {
-                        showAlert(state.registerStatus.message)
+                        showAlertWithoutIcon(
+                            title = getString(R.string.title_success),
+                            message = getString(R.string.active_your_account),
+                            timeInSecond = 10
+                        )
                         navigator.navigateToSignInScreen(
                             currentFragment
                         )

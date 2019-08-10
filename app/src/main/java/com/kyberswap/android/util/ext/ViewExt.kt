@@ -38,6 +38,11 @@ fun EditText.textToDouble(): Double {
 fun EditText.setAmount(amount: String?) {
     if (amount.toDoubleOrDefaultZero() != 0.0) {
         setText(amount)
+        if (isFocused) {
+            amount?.let {
+                setSelection(it.length)
+    
+
     } else {
         setText("")
     }

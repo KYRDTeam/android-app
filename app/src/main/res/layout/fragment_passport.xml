@@ -220,6 +220,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="16dp"
+                    android:id="@+id/ilIssueDate"
                     android:backgroundTint="@color/edt_background_tint"
                     android:hint="@string/issue_date"
                     android:textColorHint="#9ea1aa">
@@ -257,6 +258,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="22dp"
+                    android:id="@+id/ilExpiryDate"
                     android:layout_marginEnd="16dp"
                     android:backgroundTint="@color/edt_background_tint"
                     android:hint="@string/expiry_date"

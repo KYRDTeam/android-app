@@ -173,7 +173,7 @@ class PersonalInfoViewModel @Inject constructor(
         savePersonalInfoUseCase.dispose()
         resizeImageUseCase.dispose()
         decodeBase64DecodeUseCase.dispose()
-        compositeDisposable.dispose()
+        compositeDisposable.clear()
         super.onCleared()
     }
 

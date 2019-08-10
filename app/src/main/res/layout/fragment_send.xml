@@ -65,7 +65,7 @@
             android:layout_height="32dp"
             android:layout_marginStart="30dp"
             android:layout_marginTop="85dp"
-            android:scaleType="centerInside"
+            android:scaleType="fitCenter"
             app:identifier="@{send.tokenSource.tokenSymbol}"
             app:layout_constraintEnd_toStartOf="@+id/tvSource"
             app:layout_constraintHorizontal_chainStyle="spread_inside"

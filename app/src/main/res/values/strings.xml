@@ -164,12 +164,15 @@
     <string name="contact_save">Save</string>
     <string name="provide_receive_address">Please provide received address</string>
     <string name="amount_to_send">Amount to Send</string>
-    <string name="specify_amount">Please specify amount</string>
+    <string name="specify_amount">Please enter an amount to continue</string>
     <string name="payment_send_success">Payment sent to %s</string>
     <string name="same_token_alert">Can not create order with same token pair</string>
     <string name="swap_amount_small">The swap value is too small. Minimum supported value is 0.001 ETH</string>
-    <string name="exceed_balance">Source amount exceeds token balance</string>
-    <string name="specify_contact_address">Please specify contact address</string>
+    <string name="title_amount_too_big">Amount too big</string>
+    <string name="exceed_balance">Balance is not be enough to make the transaction.</string>
+
+    <string name="specify_contact_address">Please enter a valid address to send</string>
+    <string name="invalid_contact_address_title">Invalid Address</string>
     <string name="invalid_contact_address">Invalid contact address</string>
     <string name="chart_no_token_data">There is no data for this token</string>
     <string name="chart_updating_data">Updating data…</string>
@@ -266,7 +269,7 @@
     <string name="token_weth">WETH</string>
     <string name="convert">Convert</string>
     <string name="transaction_mined">Your transaction %s is mined</string>
-    <string name="pending_transaction">You had pending transaction</string>
+    <string name="pending_transaction">Please wait for other transactions to be mined before making a transfer</string>
     <string name="sign_in_with">Or sign in with</string>
     <string name="agree_to">"Agree to "</string>
     <string name="term_and_condition">https://files.kyberswap.com/tac.pdf</string>
@@ -472,7 +475,8 @@
     <string name="setting_facebook_url">https://www.facebook.com/kybernetwork</string>
     <string name="setting_medium_url">https://medium.com/@kyberswap</string>
     <string name="setting_linkedin_url">https://www.linkedin.com/company/kybernetwork</string>
-    <string name="setting_share_info">I just found an awesome wallet app. Check out here https://apple.co/2USHOtx</string>
+    <string name="setting_share_info">I just found an awesome wallet app. Check out here https://play.google.com/store/apps/details?id=com.kyberswap.android</string>
+    <string name="setting_rate_my_app">https://play.google.com/store/apps/details?id=com.kyberswap.android</string>
     <string name="order_why_order_not_filled">https://kyberswap.com/faq#I-submitted-the-limit-order-but-it-was-not-triggered-even-though-my-desired-price-was-hit</string>
     <string name="extra_url">https://kyberswap.com/faq#Why-received-amount-is-higher-than-estimated-amount</string>
     <string name="order_fee_url">https://kyberswap.com/faq#Why-received-amount-is-higher-than-estimated-amount</string>
@@ -483,20 +487,20 @@
     <string name="remove_fav_success">Removed from your favourite</string>
     <string name="delete_wallet_confirmation">Do you want to remove this wallet?</string>
     <string name="wallet_empty_name">Wallet Name must not be null</string>
-    <string name="kyc_first_name_required">First name can\'t be blank</string>
-    <string name="kyc_last_name_required">Last name can\'t be blank</string>
-    <string name="kyc_nationality_required">Nationality can\'t be blank</string>
-    <string name="kyc_country_resident_required">Country Resident name can\'t be blank</string>
-    <string name="kyc_dob_required">Date of birth can\'t be blank</string>
-    <string name="kyc_residental_address_required">Residential address can\'t be blank</string>
-    <string name="kyc_city_required">City can\'t be blank</string>
-    <string name="kyc_zip_code_required">Zip code can\'t be blank</string>
-    <string name="kyc_document_proof_address_required">Document type for proofing address can\'t be blank</string>
+    <string name="kyc_first_name_required">Please enter a valid first name</string>
+    <string name="kyc_last_name_required">Please enter a valid last name</string>
+    <string name="kyc_nationality_required">Please enter/select a valid nationality to continue</string>
+    <string name="kyc_country_resident_required">Please enter/select a valid Country Resident to continue</string>
+    <string name="kyc_dob_required">Please select your date of birth to continue</string>
+    <string name="kyc_residental_address_required">Please enter/select a valid Residential address to continue</string>
+    <string name="kyc_city_required">Please enter your city</string>
+    <string name="kyc_zip_code_required">Please enter your Postal/Zip Code</string>
+    <string name="kyc_document_proof_address_required">Please select a valid document type for proof of address</string>
     <string name="kyc_dob_18_year_old">You must be at least 18 years old</string>
-    <string name="kyc_source_of_fun_required">Source of Funds can\'t be blank</string>
-    <string name="kyc_document_number_required">Document Number can\'t be blank</string>
-    <string name="kyc_document_type_required">Document Type can\'t be blank</string>
-    <string name="kyc_photo_id_front_required">Photo identity front side can\'t be blank</string>
+    <string name="kyc_source_of_fun_required">Please provide a valid Source of Funds</string>
+    <string name="kyc_document_number_required">Please enter your document number</string>
+    <string name="kyc_document_type_required">Please select a document type</string>
+    <string name="kyc_photo_id_front_required">Please provide your document photo for verification</string>
     <string name="kyc_photo_id_back_required">Photo identity back side can\'t be blank</string>
     <string name="kyc_photo_id_sielf_required">Photo selfie can\'t be blank</string>
     <string name="eth_balance">%s ETH</string>
@@ -505,7 +509,7 @@
     <string name="invalid_amount">Invalid amount</string>
     <string name="eth_balance_not_enough">You ETH balance is not enough to make the transaction</string>
     <string name="eth_balance_not_enough_for_fee">You don\'t have enough ETH to pay for transaction fee of %s</string>
-    <string name="login_invalid_email_address">Please enter an valid email address to continue</string>
+    <string name="login_invalid_email_address">Please enter a valid email address to continue</string>
     <string name="login_email_address_required">Please enter an email address to continue</string>
     <string name="login_password_required">Please enter the password</string>
     <string name="register_invalid_password">Password must be at least eight characters including one digit, one uppercase letter, one lower case letter and alphanumeric characters</string>
@@ -570,6 +574,20 @@
     <string name="custom_rate_empty">Please enter a value between 0 and 100 for custom field in advanced settings view</string>
     <string name="two_fa_empty_code">Please enter a valid token (6 digits) to continue</string>
     <string name="submit_order_promo_code">You cannot submit order with promo code. Please use other wallets.</string>
+    <string name="trigger_rate_too_high_than_current_rate">Trigger Rate is too high, only allow 900% greater than the current rat</string>
+    <string name="active_your_account">A message with a confirmation link has been sent to your email address. Please follow the link to activate your account.</string>
+    <string name="invalid_document_type">Invalid document type</string>
+    <string name="invalid_document_number">Invalid document number</string>
+    <string name="invalid_input">Invalid Input</string>
+    <string name="invalid_issue_date">Please provide a valid issue date</string>
+    <string name="invalid_expired_date">Please provide a valid expiry date</string>
+    <string name="photo_not_found">Photo not found</string>
+    <string name="invalid_name">Invalid name</string>
+    <string name="invalid_date_of_birth">Invalid date of birth</string>
+    <string name="invalid_nationality">Invalid nationality</string>
+    <string name="invalid_city">Invalid city</string>
+    <string name="invalid_photo_address">Please provide your proof of address photo</string>
+    <string name="profile_blocked">You Profile is blocked</string>
 
 
 </resources>

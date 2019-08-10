@@ -1,6 +1,8 @@
 package com.kyberswap.android.presentation.main.setting
 
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -103,7 +105,14 @@ class SettingFragment : BaseFragment() {
 
 
         binding.lnSupport.setOnClickListener {
-            showAlertWithoutIcon(message = getString(R.string.setting_support_message))
+            if (hasUserInfo) {
+                val emailIntent =
+                    Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:support@kyber.network"))
+
+                startActivity(Intent.createChooser(emailIntent, "Chooser Title"))
+     else {
+                showAlertWithoutIcon(message = getString(R.string.setting_support_message))
+    
 
 
         binding.lnChangePin.setOnClickListener {
@@ -158,6 +167,10 @@ class SettingFragment : BaseFragment() {
 
         binding.tvShare.setOnClickListener {
             shareUrl(getString(R.string.setting_share_info))
+
+
+        binding.lnRateMyApp.setOnClickListener {
+            openUrl(getString(R.string.setting_rate_my_app))
 
     }
 

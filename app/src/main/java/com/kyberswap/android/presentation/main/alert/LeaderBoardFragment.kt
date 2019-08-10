@@ -103,6 +103,8 @@ class LeaderBoardFragment : BaseFragment() {
                         adapter.submitAlerts(state.alerts)
                         binding.campaign = state.campaignInfo
                         binding.isNoData = state.alerts.isEmpty()
+                        binding.lnCampaignInfo.visibility =
+                            if (state.campaignInfo.id <= 0 && isCampaignResult != true) View.GONE else View.VISIBLE
                         binding.lastCampaignTitle = state.lastCampaignTitle
                         binding.executePendingBindings()
             

@@ -46,7 +46,7 @@ class ContactDataRepository @Inject constructor(
     }
 
     override fun getContacts(param: GetContactUseCase.Param): Flowable<List<Contact>> {
-        return contactDao.loadContactByWalletAddress(param.walletAddress).map { contacts ->
+        return contactDao.all.map { contacts ->
             contacts.sortedByDescending { it.updatedAt }
 
     }

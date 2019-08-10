@@ -311,6 +311,7 @@ object TextViewBindingAdapter {
         val background = when (kycStatus) {
             UserInfo.REJECT -> R.drawable.rounded_corner_status_rejected
             UserInfo.BLOCK -> R.drawable.rounded_corner_status_blocked
+            UserInfo.BLOCKED -> R.drawable.rounded_corner_status_blocked
             UserInfo.PENDING -> R.drawable.rounded_corner_status_pending
             UserInfo.APPROVED -> R.drawable.rounded_corner_status_approved
             else -> R.drawable.rounded_corner_status_unverified
@@ -319,6 +320,7 @@ object TextViewBindingAdapter {
         val stringResource = when (kycStatus) {
             UserInfo.REJECT -> R.string.kyc_status_rejected
             UserInfo.BLOCK -> R.string.kyc_status_blocked
+            UserInfo.BLOCKED -> R.string.kyc_status_blocked
             UserInfo.PENDING -> R.string.kyc_status_pending
             UserInfo.APPROVED -> R.string.kyc_status_approved
             else -> R.string.kyc_status_unverified

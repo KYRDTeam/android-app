@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "fe1e58f9983087cfaa9f151f0a427bc3",
+    "identityHash": "b63b79b850a71f4b32fc080f52cd1ba9",
     "entities": [
       {
         "tableName": "tokens",
@@ -1395,7 +1395,7 @@
       },
       {
         "tableName": "users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`avatarUrl` TEXT NOT NULL, `contactId` TEXT NOT NULL, `contactType` TEXT NOT NULL, `kycStatus` TEXT NOT NULL, `kycStep` INTEGER NOT NULL, `name` TEXT NOT NULL, `uid` INTEGER NOT NULL, `id` INTEGER NOT NULL, `firstName` TEXT NOT NULL, `lastName` TEXT NOT NULL, `nationality` TEXT NOT NULL, `country` TEXT NOT NULL, `rejectReason` TEXT, `gender` INTEGER NOT NULL, `dob` TEXT NOT NULL, `profileCompleted` INTEGER NOT NULL, `documentId` TEXT NOT NULL, `documentType` TEXT NOT NULL, `artemisResponse` TEXT NOT NULL, `duplicateId` TEXT NOT NULL, `residentialAddress` TEXT NOT NULL, `city` TEXT NOT NULL, `zipCode` TEXT NOT NULL, `documentProofAddress` TEXT NOT NULL, `sourceFund` TEXT NOT NULL, `occupationCode` TEXT NOT NULL, `industryCode` TEXT NOT NULL, `taxResidencyCountry` TEXT NOT NULL, `haveTaxIdentification` INTEGER, `taxIdentificationNumber` TEXT NOT NULL, `documentIssueDate` TEXT NOT NULL, `documentExpiryDate` TEXT NOT NULL, `duplicateType` TEXT NOT NULL, `internalApproval` TEXT NOT NULL, `middleName` TEXT NOT NULL, `customReason` TEXT NOT NULL, `adminNote` TEXT NOT NULL, `nativeFullName` TEXT NOT NULL, `blockReason` TEXT NOT NULL, `issueDateNonApplicable` INTEGER NOT NULL, `expiryDateNonApplicable` INTEGER NOT NULL, PRIMARY KEY(`uid`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`avatarUrl` TEXT NOT NULL, `contactId` TEXT NOT NULL, `contactType` TEXT NOT NULL, `kycStatus` TEXT NOT NULL, `kycStep` INTEGER NOT NULL, `name` TEXT NOT NULL, `uid` INTEGER NOT NULL, `blockReason` TEXT, `kyc_id` INTEGER NOT NULL, `kyc_firstName` TEXT NOT NULL, `kyc_lastName` TEXT NOT NULL, `kyc_nationality` TEXT NOT NULL, `kyc_country` TEXT NOT NULL, `kyc_rejectReason` TEXT, `kyc_gender` INTEGER NOT NULL, `kyc_dob` TEXT NOT NULL, `kyc_profileCompleted` INTEGER NOT NULL, `kyc_documentId` TEXT NOT NULL, `kyc_documentType` TEXT NOT NULL, `kyc_artemisResponse` TEXT NOT NULL, `kyc_duplicateId` TEXT NOT NULL, `kyc_residentialAddress` TEXT NOT NULL, `kyc_city` TEXT NOT NULL, `kyc_zipCode` TEXT NOT NULL, `kyc_documentProofAddress` TEXT NOT NULL, `kyc_sourceFund` TEXT NOT NULL, `kyc_occupationCode` TEXT NOT NULL, `kyc_industryCode` TEXT NOT NULL, `kyc_taxResidencyCountry` TEXT NOT NULL, `kyc_haveTaxIdentification` INTEGER, `kyc_taxIdentificationNumber` TEXT NOT NULL, `kyc_documentIssueDate` TEXT NOT NULL, `kyc_documentExpiryDate` TEXT NOT NULL, `kyc_duplicateType` TEXT NOT NULL, `kyc_internalApproval` TEXT NOT NULL, `kyc_middleName` TEXT NOT NULL, `kyc_customReason` TEXT NOT NULL, `kyc_adminNote` TEXT NOT NULL, `kyc_nativeFullName` TEXT NOT NULL, `kyc_blockReason` TEXT NOT NULL, `kyc_issueDateNonApplicable` INTEGER NOT NULL, `kyc_expiryDateNonApplicable` INTEGER NOT NULL, PRIMARY KEY(`uid`))",
         "fields": [
           {
             "fieldPath": "avatarUrl",
@@ -1440,206 +1440,212 @@
             "notNull": true
   ,
           {
+            "fieldPath": "blockReason",
+            "columnName": "blockReason",
+            "affinity": "TEXT",
+            "notNull": false
+  ,
+          {
             "fieldPath": "kycInfo.id",
-            "columnName": "id",
+            "columnName": "kyc_id",
             "affinity": "INTEGER",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.firstName",
-            "columnName": "firstName",
+            "columnName": "kyc_firstName",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.lastName",
-            "columnName": "lastName",
+            "columnName": "kyc_lastName",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.nationality",
-            "columnName": "nationality",
+            "columnName": "kyc_nationality",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.country",
-            "columnName": "country",
+            "columnName": "kyc_country",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.rejectReason",
-            "columnName": "rejectReason",
+            "columnName": "kyc_rejectReason",
             "affinity": "TEXT",
             "notNull": false
   ,
           {
             "fieldPath": "kycInfo.gender",
-            "columnName": "gender",
+            "columnName": "kyc_gender",
             "affinity": "INTEGER",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.dob",
-            "columnName": "dob",
+            "columnName": "kyc_dob",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.profileCompleted",
-            "columnName": "profileCompleted",
+            "columnName": "kyc_profileCompleted",
             "affinity": "INTEGER",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.documentId",
-            "columnName": "documentId",
+            "columnName": "kyc_documentId",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.documentType",
-            "columnName": "documentType",
+            "columnName": "kyc_documentType",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.artemisResponse",
-            "columnName": "artemisResponse",
+            "columnName": "kyc_artemisResponse",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.duplicateId",
-            "columnName": "duplicateId",
+            "columnName": "kyc_duplicateId",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.residentialAddress",
-            "columnName": "residentialAddress",
+            "columnName": "kyc_residentialAddress",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.city",
-            "columnName": "city",
+            "columnName": "kyc_city",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.zipCode",
-            "columnName": "zipCode",
+            "columnName": "kyc_zipCode",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.documentProofAddress",
-            "columnName": "documentProofAddress",
+            "columnName": "kyc_documentProofAddress",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.sourceFund",
-            "columnName": "sourceFund",
+            "columnName": "kyc_sourceFund",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.occupationCode",
-            "columnName": "occupationCode",
+            "columnName": "kyc_occupationCode",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.industryCode",
-            "columnName": "industryCode",
+            "columnName": "kyc_industryCode",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.taxResidencyCountry",
-            "columnName": "taxResidencyCountry",
+            "columnName": "kyc_taxResidencyCountry",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.haveTaxIdentification",
-            "columnName": "haveTaxIdentification",
+            "columnName": "kyc_haveTaxIdentification",
             "affinity": "INTEGER",
             "notNull": false
   ,
           {
             "fieldPath": "kycInfo.taxIdentificationNumber",
-            "columnName": "taxIdentificationNumber",
+            "columnName": "kyc_taxIdentificationNumber",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.documentIssueDate",
-            "columnName": "documentIssueDate",
+            "columnName": "kyc_documentIssueDate",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.documentExpiryDate",
-            "columnName": "documentExpiryDate",
+            "columnName": "kyc_documentExpiryDate",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.duplicateType",
-            "columnName": "duplicateType",
+            "columnName": "kyc_duplicateType",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.internalApproval",
-            "columnName": "internalApproval",
+            "columnName": "kyc_internalApproval",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.middleName",
-            "columnName": "middleName",
+            "columnName": "kyc_middleName",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.customReason",
-            "columnName": "customReason",
+            "columnName": "kyc_customReason",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.adminNote",
-            "columnName": "adminNote",
+            "columnName": "kyc_adminNote",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.nativeFullName",
-            "columnName": "nativeFullName",
+            "columnName": "kyc_nativeFullName",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.blockReason",
-            "columnName": "blockReason",
+            "columnName": "kyc_blockReason",
             "affinity": "TEXT",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.issueDateNonApplicable",
-            "columnName": "issueDateNonApplicable",
+            "columnName": "kyc_issueDateNonApplicable",
             "affinity": "INTEGER",
             "notNull": true
   ,
           {
             "fieldPath": "kycInfo.expiryDateNonApplicable",
-            "columnName": "expiryDateNonApplicable",
+            "columnName": "kyc_expiryDateNonApplicable",
             "affinity": "INTEGER",
             "notNull": true
   
@@ -2695,7 +2701,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fe1e58f9983087cfaa9f151f0a427bc3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b63b79b850a71f4b32fc080f52cd1ba9')"
     ]
   }
 }

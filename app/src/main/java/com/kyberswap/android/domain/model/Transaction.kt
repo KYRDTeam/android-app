@@ -5,12 +5,14 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.google.gson.Gson
 import com.kyberswap.android.data.api.transaction.TransactionEntity
 import com.kyberswap.android.data.db.TransactionTypeConverter
 import com.kyberswap.android.util.ext.*
 import kotlinx.android.parcel.Parcelize
 import org.web3j.protocol.core.methods.response.TransactionReceipt
 import org.web3j.utils.Convert
+import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
@@ -132,6 +134,7 @@ data class Transaction(
     )
 
     fun with(tx: org.web3j.protocol.core.methods.response.Transaction): Transaction {
+        Timber.e(Gson().toJson(tx))
         return this.copy(
             blockHash = tx.blockHash ?: "",
             blockNumber = if (tx.blockNumberRaw.isNullOrEmpty()) "" else tx.blockNumber.safeToString(),
@@ -142,7 +145,6 @@ data class Transaction(
             input = tx.input ?: "",
             isError = "0",
             nonce = tx.nonce.safeToString(),
-            to = tx.to ?: "",
             transactionIndex = tx.transactionIndex.toString(),
             value = tx.value.toString()
 
@@ -170,6 +172,7 @@ data class Transaction(
     )
 
     fun with(tx: TransactionReceipt): Transaction {
+        Timber.e(Gson().toJson(tx))
         return this.copy(
             blockHash = tx.blockHash ?: "",
             blockNumber = tx.blockNumber.toString(),
@@ -179,7 +182,6 @@ data class Transaction(
             gasUsed = tx.gasUsed.toString(),
             hash = tx.transactionHash ?: "",
             isError = if (tx.isStatusOK) "0" else "1",
-            to = tx.to ?: "",
             transactionIndex = tx.transactionIndex.toString(),
             txreceiptStatus = tx.status ?: ""
         )

@@ -15,6 +15,7 @@ import com.kyberswap.android.domain.repository.UserRepository
 import com.kyberswap.android.domain.usecase.alert.UpdateAlertMethodsUseCase
 import com.kyberswap.android.domain.usecase.profile.*
 import com.kyberswap.android.presentation.main.profile.kyc.KycInfoType
+import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -23,6 +24,7 @@ import okhttp3.MediaType
 import okhttp3.RequestBody
 import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.ceil
 
@@ -79,6 +81,29 @@ class UserDataRepository @Inject constructor(
             userDao.getUser() ?: UserInfo()
 
     }
+
+    override fun pollingUserInfo(): Flowable<UserInfo> {
+        return userApi.getUserInfo().map {
+            userMapper.transform(it)
+
+            .repeatWhen {
+                it.delay(60, TimeUnit.SECONDS)
+    
+            .retryWhen { throwable ->
+                throwable.compose(zipWithFlatMap())
+    
+    }
+
+    override fun refreshKycStatus(): Single<UserInfo> {
+        return userApi.getUserInfo().map {
+            userMapper.transform(it)
+.doAfterSuccess {
+            if (it.kycInfo == KycInfo()) {
+                userDao.updateUser(it)
+    
+
+    }
+
 
     override fun fetchUserInfo(): Flowable<UserInfo> {
         return Flowable.mergeDelayError(
@@ -356,6 +381,7 @@ class UserDataRepository @Inject constructor(
 
 
     }
+
 
     companion object {
         private const val MAX_IMAGE_SIZE = 1000 * 1024

@@ -42,12 +42,14 @@ import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
 import com.kyberswap.android.presentation.main.profile.kyc.SubmitFragment
 import com.kyberswap.android.presentation.main.setting.SettingFragment
 import com.kyberswap.android.presentation.main.swap.SwapFragment
+import com.kyberswap.android.presentation.wallet.UpdateWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_drawer.*
 import kotlinx.android.synthetic.main.layout_drawer.view.*
 import org.consenlabs.tokencore.wallet.KeystoreStorage
 import org.consenlabs.tokencore.wallet.WalletManager
+import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -228,6 +230,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                     is GetAllWalletState.Success -> {
                         val selectedWallet = state.wallets.find { it.isSelected }
                         if (wallet?.address != selectedWallet?.address) {
+                            Timber.e("pollingTokenBalance")
                             mainViewModel.pollingTokenBalance(state.wallets)
                             wallet = selectedWallet
                             wallet?.let {
@@ -241,6 +244,20 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             
                     is GetAllWalletState.ShowError -> {
                         navigator.navigateToLandingPage()
+            
+        
+    
+)
+
+        mainViewModel.updateWalletStateCallback.observe(this, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == UpdateWalletState.Loading)
+                when (state) {
+                    is UpdateWalletState.Success -> {
+
+            
+                    is UpdateWalletState.ShowError -> {
+
             
         
     
@@ -414,8 +431,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     
 
             if (currentFragment is LimitOrderFragment) {
-                (currentFragment as LimitOrderFragment).getRelatedOrders()
-                (currentFragment as LimitOrderFragment).getPendingBalance()
+                (currentFragment as LimitOrderFragment).onRefresh()
+
      else if (currentFragment is SwapFragment) {
                 (currentFragment as SwapFragment).getSwap()
     

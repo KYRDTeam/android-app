@@ -110,7 +110,7 @@ class PassportViewModel @Inject constructor(
     }
 
     public override fun onCleared() {
-        compositeDisposable.dispose()
+        compositeDisposable.clear()
         decodeBase64DecodeUseCase.dispose()
         getUserInfoUseCase.dispose()
         resizeImageUseCase.dispose()

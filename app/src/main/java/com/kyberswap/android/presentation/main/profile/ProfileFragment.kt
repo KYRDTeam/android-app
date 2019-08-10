@@ -67,6 +67,8 @@ class ProfileFragment : BaseFragment() {
 
     private val handler by lazy { Handler() }
 
+    private var resetPasswordDialog: AlertDialog? = null
+
     private val gso by lazy {
         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
@@ -203,7 +205,17 @@ class ProfileFragment : BaseFragment() {
                 showProgress(state == ResetPasswordState.Loading)
                 when (state) {
                     is ResetPasswordState.Success -> {
-                        showAlert(state.status.message)
+                        if (state.status.success) {
+                            resetPasswordDialog?.dismiss()
+                            resetPasswordDialog = null
+                            showAlertWithoutIcon(message = state.status.message)
+                 else {
+                            showAlertWithoutIcon(
+                                title = getString(R.string.title_error),
+                                message = state.status.message
+                            )
+                
+
             
                     is ResetPasswordState.ShowError -> {
                         showAlert(
@@ -281,8 +293,16 @@ class ProfileFragment : BaseFragment() {
 
 
         binding.tvForgotPassword.setOnClickListener {
-            dialogHelper.showResetPassword {
-                viewModel.resetPassword(it)
+            dialogHelper.showResetPassword { email, dialog ->
+                resetPasswordDialog = dialog
+                if (email.isEmpty()) {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_error),
+                        message = getString(R.string.login_email_address_required)
+                    )
+         else {
+                    viewModel.resetPassword(email)
+        
     
 
 

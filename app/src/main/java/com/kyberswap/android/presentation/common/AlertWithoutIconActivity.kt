@@ -13,6 +13,8 @@ import com.kyberswap.android.presentation.base.BaseActivity
 
 class AlertWithoutIconActivity : BaseActivity() {
 
+    var displayTime: Int = DEFAULT_DISPLAY_TIME
+
     private val handler by lazy {
         Handler()
     }
@@ -27,6 +29,7 @@ class AlertWithoutIconActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding.content = intent.getStringExtra(ALERT_CONTENT)
         val title = intent.getStringExtra(ALERT_TITLE)
+        displayTime = intent.getIntExtra(DISPLAY_TIME_SECONDS, DEFAULT_DISPLAY_TIME)
         binding.title = title
         binding.isVisibleTitle = !title.isNullOrEmpty()
         binding.flContainer.setOnClickListener {
@@ -34,7 +37,7 @@ class AlertWithoutIconActivity : BaseActivity() {
 
         handler.postDelayed({
             onBackPressed()
-, 2000)
+, displayTime * 1000L)
     }
 
     override fun onDestroy() {
@@ -55,14 +58,18 @@ class AlertWithoutIconActivity : BaseActivity() {
     companion object {
         private const val ALERT_CONTENT = "alert_content"
         private const val ALERT_TITLE = "alert_title"
+        private const val DISPLAY_TIME_SECONDS = "display_time_seconds"
+        private const val DEFAULT_DISPLAY_TIME = 3
 
         fun newIntent(
             context: Context,
             title: String?,
-            content: String
+            content: String,
+            time: Int = DEFAULT_DISPLAY_TIME
         ) = Intent(context, AlertWithoutIconActivity::class.java).apply {
             putExtra(ALERT_CONTENT, content)
             putExtra(ALERT_TITLE, title)
+            putExtra(DISPLAY_TIME_SECONDS, time)
 
     }
 }

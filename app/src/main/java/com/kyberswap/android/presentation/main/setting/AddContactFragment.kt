@@ -142,7 +142,7 @@ class AddContactFragment : BaseFragment() {
         binding.imgDone.setOnClickListener {
             when {
                 binding.edtAddress.text.isNullOrEmpty() -> showAlert(getString(R.string.provide_receive_address))
-                !binding.edtAddress.text.toString().isContact() -> showAlert(getString(R.string.invalid_contact_address))
+                !binding.edtAddress.text.toString().isContact() -> showError(getString(R.string.invalid_contact_address))
                 else -> wallet?.address?.let { address ->
                     viewModel.save(
                         address,

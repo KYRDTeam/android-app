@@ -10,6 +10,14 @@ apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 
 
 android {
+    signingConfigs {
+        releseconfig {
+            storeFile file('/Users/steve/KyberNetwork/Docs/Android KeyStore/Untitled')
+***REMOVED***
+***REMOVED***
+***REMOVED***
+
+    }
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
     flavorDimensions "default"
@@ -65,7 +73,7 @@ android {
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.debug//todo release signing
+            signingConfig signingConfigs.releseconfig//todo release signing
 
     }
 

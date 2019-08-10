@@ -25,7 +25,7 @@ interface SwapRepository {
 
     fun saveSend(param: SaveSendUseCase.Param): Completable
 
-    fun getGasPrice(): Single<Gas>
+    fun getGasPrice(): Flowable<Gas>
 
     fun getCap(param: GetCapUseCase.Param): Single<Cap>
 

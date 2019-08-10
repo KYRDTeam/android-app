@@ -164,8 +164,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                             binding.executePendingBindings()
                             sourceAmount = state.swap.sourceAmount
                             getRate(state.swap)
+                            viewModel.getGasPrice()
                 
-                        viewModel.getGasPrice()
                         viewModel.getGasLimit(wallet, binding.swap)
             
                     is GetSwapState.ShowError -> {
@@ -470,10 +470,21 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
         )
 
         viewModel.compositeDisposable.add(
-            edtCustom.textChanges().skipInitialValue()
+            edtCustom.textChanges()
+                .skipInitialValue()
                 .observeOn(schedulerProvider.ui())
                 .subscribe {
                     edtCustom.isSelected = it.isNullOrEmpty() && rbCustom.isChecked
+
+                    if (it.isNotEmpty() && it.toString().toInt() > 0 && it.toString().toInt() <= 100) {
+                        tvRevertNotification.text =
+                            getRevertNotification(R.id.rbCustom)
+             else if (it.isNotEmpty() && it.toString().toInt() > 100) {
+                        val remaining = it.dropLast(1)
+                        edtCustom.setText(remaining)
+                        edtCustom.setSelection(remaining.length)
+            
+
         
         )
 
@@ -596,15 +607,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
     
 )
 
-        viewModel.compositeDisposable.add(
-            edtCustom.textChanges()
-                .observeOn(schedulerProvider.ui())
-                .subscribe {
-                    tvRevertNotification.text =
-                        getRevertNotification(R.id.rbCustom)
-        
-        )
-
         binding.imgInfo.setOnClickListener {
             showAlert(
                 String.format(
@@ -671,7 +673,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                     else -> wallet?.let {
                         viewModel.saveSwap(
                             swap.copy(
-                                sourceAmount = sourceAmount ?: "",
+                                sourceAmount = (if (sourceAmount.toBigDecimalOrDefaultZero() > BigDecimal.ZERO) sourceAmount else edtSource.text.toString())
+                                    ?: "",
                                 destAmount = edtDest.text.toString(),
                                 minAcceptedRatePercent =
                                 getMinAcceptedRatePercent(rgRate.checkedRadioButtonId),

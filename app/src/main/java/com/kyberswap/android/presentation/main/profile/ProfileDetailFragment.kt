@@ -76,7 +76,7 @@ class ProfileDetailFragment : BaseFragment() {
             )
 
 
-        viewModel.fetchUserInfo()
+        viewModel.pollingKycProfile()
         viewModel.getUserInfoCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -97,14 +97,36 @@ class ProfileDetailFragment : BaseFragment() {
                                 if (UserInfo.REJECT == state.userInfo?.kycStatus) getString(R.string.kyc_edit) else getString(
                                     R.string.profile_verify
                                 )
-                            if (UserInfo.REJECT == state.userInfo?.kycStatus) {
-
+                            binding.tvAction.visibility =
+                                if (UserInfo.BLOCKED == state.userInfo?.kycStatus) View.GONE else View.VISIBLE
+                            if (UserInfo.BLOCKED == state.userInfo?.kycStatus) {
+                                binding.tvKycTitle.text = getString(R.string.profile_blocked)
+                                binding.tvKycVerification.text = state.userInfo.blockReason
                     
 
                             binding.tvKycTitle.visibility =
-                                if (UserInfo.PENDING == state.userInfo?.kycStatus) View.VISIBLE else View.GONE
+                                if (UserInfo.PENDING == state.userInfo?.kycStatus ||
+                                    UserInfo.BLOCKED == state.userInfo?.kycStatus
+                                ) View.VISIBLE else View.GONE
 
                 
+            
+                    is UserInfoState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+            
+        
+    
+)
+
+        viewModel.refreshKycStatus.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == UserInfoState.Loading)
+                when (state) {
+                    is UserInfoState.Success -> {
+                        navigateToKyc()
             
                     is UserInfoState.ShowError -> {
                         showAlert(
@@ -247,15 +269,7 @@ class ProfileDetailFragment : BaseFragment() {
 
 
         binding.tvAction.setOnClickListener {
-            binding.user?.let {
-                if (it.isKycReject) {
-                    viewModel.reSubmit(it)
-         else {
-                    navigator.navigateToKYC(
-                        currentFragment, it.kycStep
-                    )
-        
-    
+            viewModel.refreshKycStatus()
 
 
 
@@ -277,6 +291,18 @@ class ProfileDetailFragment : BaseFragment() {
         
     
 )
+
+    }
+
+    private fun navigateToKyc() {
+        binding.user?.let {
+            if (it.isKycReject) {
+                viewModel.reSubmit(it)
+     else {
+                navigator.navigateToKYC(
+                    currentFragment, it.kycStep
+                )
+    
 
     }
 
