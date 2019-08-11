@@ -6,10 +6,10 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import com.google.gson.Gson
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.TransactionApi
 import com.kyberswap.android.data.db.*
@@ -20,8 +20,8 @@ import com.kyberswap.android.domain.model.TransactionFilter
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.TransactionRepository
 import com.kyberswap.android.domain.usecase.transaction.*
-import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.util.TokenClient
+import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toLongSafe
@@ -31,7 +31,6 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import org.web3j.utils.Numeric
-import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
@@ -63,7 +62,7 @@ class TransactionDataRepository @Inject constructor(
                         transactionDao.delete(it)
                         val updatedStatus = tx.copy(transactionStatus = "")
                         transactionDao.insertTransaction(updatedStatus)
-                        sendNotification(updatedStatus)
+//                        sendNotification(updatedStatus)
                         updateBalance(it, param.wallet)
             
         
@@ -79,11 +78,9 @@ class TransactionDataRepository @Inject constructor(
     }
 
     private fun updateBalance(transaction: Transaction, wallet: Wallet) {
-        Timber.e(Gson().toJson(transaction))
         if (transaction.tokenSource.isNotBlank()) {
             val tokenSource = tokenDao.getTokenBySymbol(transaction.tokenSource)
             tokenSource?.let { src ->
-                Timber.e("src: " + src)
                 updateTokenBalance(src, wallet)
 
     
@@ -92,7 +89,6 @@ class TransactionDataRepository @Inject constructor(
         if (transaction.tokenDest.isNotBlank()) {
             val tokenDest = tokenDao.getTokenBySymbol(transaction.tokenDest)
             tokenDest?.let { dest ->
-                Timber.e("tokenDest: " + tokenDest)
                 updateTokenBalance(dest, wallet)
     
 
@@ -102,7 +98,6 @@ class TransactionDataRepository @Inject constructor(
         ) {
             val tokenSymbol = tokenDao.getTokenBySymbol(transaction.tokenSymbol)
             tokenSymbol?.let { symbol ->
-                Timber.e("tokenSymbol: " + symbol)
                 updateTokenBalance(symbol, wallet)
     
 
@@ -114,7 +109,6 @@ class TransactionDataRepository @Inject constructor(
         ) {
             val tokenSymbol = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)
             tokenSymbol?.let { symbol ->
-                Timber.e("ETH: " + symbol)
                 updateTokenBalance(symbol, wallet)
     
 
@@ -321,7 +315,6 @@ class TransactionDataRepository @Inject constructor(
             transactionDao.getLatestTransaction()?.blockNumber?.toLongSafe() ?: 1
 
             .flatMap { latestBlockNumber ->
-                Timber.e("latestBlockNumber: " + latestBlockNumber)
                 getTransactionRemote(param.wallet, latestBlockNumber)
     .doOnNext {
                 val latestTransaction = transactionDao.getLatestTransaction()
@@ -329,13 +322,11 @@ class TransactionDataRepository @Inject constructor(
                     latestTransaction?.blockNumber?.toLongSafe() ?: 1
                 it.forEach { tx ->
                     val blockNumber = tx.blockNumber.toLongSafe()
-                    Timber.e("blockNumber: " + blockNumber)
                     latestTransaction?.let {
                         if (blockNumber > latestBlock) {
-                            Timber.e(
-                                "updated"
-                            )
-                            sendNotification(tx)
+                            if (tx.type == Transaction.TransactionType.RECEIVED) {
+                                sendNotification(tx)
+                    
                             updateBalance(tx, param.wallet)
                 
             
@@ -353,114 +344,132 @@ class TransactionDataRepository @Inject constructor(
 
     private fun sendNotification(transaction: Transaction) {
         if (Date().time / 1000 - transaction.timeStamp <= 5 * 60) {
-            val intent = Intent(context, MainActivity::class.java)
+//            val intent = Intent(context, MainActivity::class.java)
+
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data =
+                Uri.parse(context.getString(R.string.transaction_etherscan_endpoint_url) + transaction.hash)
+
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             val pendingIntent = PendingIntent.getActivity(
                 context, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT
             )
-            val title: String
-            val message: String
+//            val title: String
+//            val message: String
 
-            when (transaction.type) {
-                Transaction.TransactionType.SEND -> {
-                    if (transaction.isTransactionFail) {
-                        title = String.format(
-                            context.getString(R.string.notification_sent_token),
-                            transaction.tokenSymbol
-                        )
-                        message = String.format(
-                            context.getString(R.string.notification_fail_sent),
-                            transaction.displayValue,
-                            transaction.to
-                        )
-             else {
-                        title = String.format(
-                            context.getString(R.string.notification_sent_token),
-                            transaction.tokenSymbol
-                        )
-                        message = String.format(
-                            context.getString(R.string.notification_success_sent),
-                            transaction.displayValue,
-                            transaction.to
-                        )
-            
-        
-                Transaction.TransactionType.RECEIVED -> {
-                    if (transaction.isTransactionFail) {
-                        title = String.format(
-                            context.getString(R.string.notification_received_token),
-                            transaction.tokenSymbol
-                        )
-                        message = String.format(
-                            context.getString(R.string.notification_fail_received),
-                            transaction.displayValue,
-                            transaction.from
-                        )
-             else {
-                        title = String.format(
-                            context.getString(R.string.notification_received_token),
-                            transaction.tokenSymbol
-                        )
-                        message = String.format(
-                            context.getString(R.string.notification_success_received),
-                            transaction.displayValue,
-                            transaction.from
-                        )
+            if (!transaction.isTransactionFail) {
+                val title: String = String.format(
+                    context.getString(R.string.notification_received_token),
+                    transaction.tokenSymbol
+                )
+                val message: String = String.format(
+                    context.getString(R.string.notification_success_received),
+                    transaction.displayValue,
+                    transaction.from.displayWalletAddress()
+                )
 
-            
-        
-                Transaction.TransactionType.SWAP -> {
-                    if (transaction.isTransactionFail) {
-                        title = context.getString(R.string.notification_swap_token)
-                        message = String.format(
-                            context.getString(R.string.notification_fail_swap),
-                            transaction.displayTransaction
-                        )
-             else {
-                        title = context.getString(R.string.notification_swap_token)
-                        message = String.format(
-                            context.getString(R.string.notification_success_swap),
-                            transaction.displayTransaction
-                        )
-            
 
+                val channelId = context.getString(R.string.default_notification_channel_id)
+                val defaultSoundUri =
+                    RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                val notificationBuilder = NotificationCompat.Builder(context, channelId)
+                    .setSmallIcon(R.drawable.ic_notification_white)
+                    .setColor(ContextCompat.getColor(context, R.color.colorAccent))
+                    .setContentTitle(title)
+                    .setContentText(
+                        message
+                    )
+                    .setAutoCancel(true)
+                    .setSound(defaultSoundUri)
+                    .setContentIntent(pendingIntent)
+
+
+                val notificationManager =
+                    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+                // Since android Oreo notification channel is needed.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val channel = NotificationChannel(
+                        channelId,
+                        "Channel human readable title",
+                        NotificationManager.IMPORTANCE_DEFAULT
+                    )
+                    notificationManager.createNotificationChannel(channel)
         
+
+                notificationManager.notify(
+                    Numeric.toBigInt(transaction.hash).toInt(),
+                    notificationBuilder.build()
+                )
+
     
 
-
-            val channelId = context.getString(R.string.default_notification_channel_id)
-            val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-            val notificationBuilder = NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.ic_notification_white)
-                .setColor(ContextCompat.getColor(context, R.color.notification_background))
-                .setContentTitle(
-                    title
-                )
-                .setContentText(
-                    message
-                )
-                .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent)
-
-            val notificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-            // Since android Oreo notification channel is needed.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val channel = NotificationChannel(
-                    channelId,
-                    "Channel human readable title",
-                    NotificationManager.IMPORTANCE_DEFAULT
-                )
-                notificationManager.createNotificationChannel(channel)
-    
-
-            notificationManager.notify(
-                Numeric.toBigInt(transaction.hash).toInt(),
-                notificationBuilder.build()
-            )
+//            when (transaction.type) {
+//                Transaction.TransactionType.SEND -> {
+//                    if (transaction.isTransactionFail) {
+//                        title = String.format(
+//                            context.getString(R.string.notification_sent_token),
+//                            transaction.tokenSymbol
+//                        )
+//                        message = String.format(
+//                            context.getString(R.string.notification_fail_sent),
+//                            transaction.displayValue,
+//                            transaction.to
+//                        )
+//             else {
+//                        title = String.format(
+//                            context.getString(R.string.notification_sent_token),
+//                            transaction.tokenSymbol
+//                        )
+//                        message = String.format(
+//                            context.getString(R.string.notification_success_sent),
+//                            transaction.displayValue,
+//                            transaction.to
+//                        )
+//            
+//        
+//                Transaction.TransactionType.RECEIVED -> {
+//                    if (transaction.isTransactionFail) {
+//                        title = String.format(
+//                            context.getString(R.string.notification_received_token),
+//                            transaction.tokenSymbol
+//                        )
+//                        message = String.format(
+//                            context.getString(R.string.notification_fail_received),
+//                            transaction.displayValue,
+//                            transaction.from
+//                        )
+//             else {
+//                        title = String.format(
+//                            context.getString(R.string.notification_received_token),
+//                            transaction.tokenSymbol
+//                        )
+//                        message = String.format(
+//                            context.getString(R.string.notification_success_received),
+//                            transaction.displayValue,
+//                            transaction.from
+//                        )
+//
+//            
+//        
+//                Transaction.TransactionType.SWAP -> {
+//                    if (transaction.isTransactionFail) {
+//                        title = context.getString(R.string.notification_swap_token)
+//                        message = String.format(
+//                            context.getString(R.string.notification_fail_swap),
+//                            transaction.displayTransaction
+//                        )
+//             else {
+//                        title = context.getString(R.string.notification_swap_token)
+//                        message = String.format(
+//                            context.getString(R.string.notification_success_swap),
+//                            transaction.displayTransaction
+//                        )
+//            
+//
+//        
+//    
 
 
     }

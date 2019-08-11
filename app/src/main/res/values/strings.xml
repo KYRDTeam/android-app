@@ -167,13 +167,14 @@
     <string name="specify_amount">Please enter an amount to continue</string>
     <string name="payment_send_success">Payment sent to %s</string>
     <string name="same_token_alert">Can not create order with same token pair</string>
-    <string name="swap_amount_small">The swap value is too small. Minimum supported value is 0.001 ETH</string>
+    <string name="swap_amount_small">Amount too small to perform swap, minimum equivalent to 0.001 ETH</string>
     <string name="title_amount_too_big">Amount too big</string>
     <string name="exceed_balance">Balance is not be enough to make the transaction.</string>
 
     <string name="specify_contact_address">Please enter a valid address to send</string>
     <string name="invalid_contact_address_title">Invalid Address</string>
-    <string name="invalid_contact_address">Invalid contact address</string>
+    <string name="invalid_contact_address">Please enter a valid address to send</string>
+    <string name="not_in_contact">Not in contact</string>
     <string name="chart_no_token_data">There is no data for this token</string>
     <string name="chart_updating_data">Updating data…</string>
     <string name="tab_pending">Pending</string>
@@ -421,7 +422,7 @@
     <string name="name_your_wallet_optional">Name of your wallet (optional)</string>
     <string name="edit_wallet">Edit Wallet</string>
     <string name="ba_skip">Skip?</string>
-    <string name="you_can_backup_your_wallet_later">You can backup your wallet later</string>
+    <string name="you_can_backup_your_wallet_later">You can backup your wallet later in Setting > Manage Wallet > Edit Wallet > Show Backup Phrase</string>
     <string name="show_backup_phrase">Show Backup Phrase</string>
     <string name="delete_wallet">Delete Wallet</string>
     <string name="backup_keystore">Backup Keystore</string>
@@ -450,6 +451,7 @@
     <string name="order_filled_close">Close</string>
     <string name="order_filled_details">Details</string>
     <string name="title_error">Error</string>
+    <string name="title_fail">Fail</string>
     <string name="sign_in_required">You must sign in to use Price Alert feature</string>
     <string name="wellcome_back">Welcome back, %s</string>
     <string name="lout_out_confirmation">Do you want to logout</string>
@@ -525,14 +527,14 @@
     <string name="campaign_start_time">Start: %s</string>
     <string name="campaign_end_time">End: %s</string>
     <string name="notification_received_token">Received %s</string>
-    <string name="notification_success_received">Successfully received %s from %s</string>
+    <string name="notification_success_received">You have received %s from %s</string>
     <string name="notification_fail_received">Fail to receive %s from %s</string>
     <string name="notification_sent_token">Sent %s</string>
-    <string name="notification_success_sent">Successfully sent %s to %s</string>
-    <string name="notification_fail_sent">Fail to send %s to %s</string>
+    <string name="notification_success_sent"> %s successfully sent to %s</string>
+    <string name="notification_fail_sent">Can not send %s to %s</string>
     <string name="notification_swap_token">Swap</string>
-    <string name="notification_success_swap">Successfully swap %s </string>
-    <string name="notification_fail_swap">Fail to swap %s </string>
+    <string name="notification_success_swap">%s successfully converted to %s </string>
+    <string name="notification_fail_swap">Can not convert from %s to %s</string>
     <string name="transaction_broadcasted">Broadcasted</string>
     <string name="transaction_broadcasted_message">Your transaction has been broadcasted!</string>
     <string name="learn_more">Learn more</string>
@@ -588,6 +590,14 @@
     <string name="invalid_city">Invalid city</string>
     <string name="invalid_photo_address">Please provide your proof of address photo</string>
     <string name="profile_blocked">You Profile is blocked</string>
+    <string name="limit_order_source_different_dest">Source token must be different from dest token</string>
+    <string name="limit_order_insufficient_balance">Your balance is insufficent for the order. Please check your balance and your pending order</string>
+    <string name="limit_order_invalid_rate">Your target rate should be greater than 0</string>
+    <string name="limit_order_rate_too_big">Your target rate is too high, should be at most 10 times of current rate</string>
+    <string name="limit_order_amount_too_small">Amount is too small. Limit order only support min 0.1 ETH equivalent order</string>
+    <string name="limit_order_amount_too_big">Amount is too big. Limit order only support max 10 ETH equivalent order</string>
+    <string name="empty_pending_transaction">You do not have any pending transactions.</string>
+    <string name="empty_complete_transaction">You do not have any completed transactions.</string>
 
 
 </resources>

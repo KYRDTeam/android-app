@@ -207,7 +207,7 @@ class SwapViewModel @Inject constructor(
             Consumer {
                 if (it.error == null) {
 
-                    val gasLimit = swap.gasLimit.toBigInteger()
+                    val gasLimit = calculateDefaultGasLimit(swap.tokenSource, swap.tokenDest)
                         .min(it.amountUsed.multiply(120.toBigInteger()).divide(100.toBigInteger()))
 
                     val specialGasLimit = specialGasLimitDefault(swap.tokenSource, swap.tokenDest)

@@ -16,7 +16,6 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
-import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -115,7 +114,6 @@ class BalanceDataRepository @Inject constructor(
         wallets: List<Wallet>
     ): List<Token> {
 
-        Timber.e("updateBalance: size" + remoteTokens.size)
         val localTokens = tokenDao.allTokens.map {
             it.updateSelectedWallet(wallets).copy(isOther = true)
 

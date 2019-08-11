@@ -23,6 +23,7 @@ import org.consenlabs.tokencore.wallet.model.BIP44Util
 import org.consenlabs.tokencore.wallet.model.ChainType
 import org.consenlabs.tokencore.wallet.model.Metadata
 import org.consenlabs.tokencore.wallet.model.Network
+import timber.log.Timber
 import java.io.File
 import java.security.SecureRandom
 import javax.inject.Inject
@@ -148,6 +149,7 @@ class WalletDataRepository @Inject constructor(
 
         
 
+            Timber.e(param.walletName)
             val wallet = Wallet(
                 importWalletFromPrivateKey.address.toWalletAddress(),
                 importWalletFromPrivateKey.id,
@@ -231,7 +233,7 @@ class WalletDataRepository @Inject constructor(
 
         val selectedWallets = wallets.map {
             if (it.address == wallet.address) {
-                it.copy(isSelected = true)
+                it.copy(isSelected = true, name = wallet.name)
      else {
                 it.copy(isSelected = false)
     

@@ -328,7 +328,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
 
             
 
-                    edtIssueDate.text.toString().isBlank() -> {
+                    !cbIssueDate.isChecked && edtIssueDate.text.toString().isBlank() -> {
                         val error = getString(
                             R.string.invalid_issue_date
                         )
@@ -339,7 +339,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                         binding.ilIssueDate.error = error
             
 
-                    edtExpiryDate.text.toString().isBlank() -> {
+                    !cbExpiryDate.isChecked && edtExpiryDate.text.toString().isBlank() -> {
                         val error = getString(
                             R.string.invalid_expired_date
                         )
@@ -379,7 +379,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                                 documentIssueDate = binding.edtIssueDate.text.toString(),
                                 documentExpiryDate = binding.edtExpiryDate.text.toString(),
                                 photoIdentityFrontSide = photoIdentityFrontSide,
-                                photoIdentityBackSide = photoIdentityBackSide,
+                                photoIdentityBackSide = if (rbPassport.isChecked) "" else photoIdentityBackSide,
                                 photoSelfie = photoSelfie
 
                             )

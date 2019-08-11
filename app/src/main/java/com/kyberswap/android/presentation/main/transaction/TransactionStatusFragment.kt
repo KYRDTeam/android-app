@@ -36,6 +36,11 @@ class TransactionStatusFragment : BaseFragment() {
 
     private var transactionStatusAdapter: TransactionStatusAdapter? = null
 
+    private val emptyTransaction: String
+        get() = if (transactionType == Transaction.PENDING) getString(R.string.empty_pending_transaction) else getString(
+            R.string.empty_complete_transaction
+        )
+
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory)
@@ -63,7 +68,7 @@ class TransactionStatusFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
+        binding.wallet = wallet
         binding.rvTransaction.layoutManager = LinearLayoutManager(
             activity,
             RecyclerView.VERTICAL,
@@ -103,6 +108,11 @@ class TransactionStatusFragment : BaseFragment() {
                 when (state) {
                     is GetTransactionState.Success -> {
                         updateTransactionList(state.transactions, state.isFilterChanged)
+                        if (state.transactions.isEmpty()) {
+                            binding.emptyTransaction = emptyTransaction
+                 else {
+                            binding.emptyTransaction = ""
+                
             
                     is GetTransactionState.ShowError -> {
                         showAlert(

@@ -64,7 +64,6 @@ class PriceAlertFragment : BaseFragment() {
         Handler()
     }
 
-
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(PriceAlertViewModel::class.java)
     }
@@ -218,7 +217,7 @@ class PriceAlertFragment : BaseFragment() {
                     )
         
 
-                binding.edtRate.toBigDecimalOrDefaultZero() > alert?.alertPrice ?: BigDecimal.ZERO * 9.toBigDecimal() -> {
+                alert != null && alert.id > 0 && binding.edtRate.toBigDecimalOrDefaultZero() > alert.alertPrice * 9.toBigDecimal() -> {
                     showAlertWithoutIcon(
                         getString(R.string.title_error),
                         getString(R.string.trigger_rate_too_high_than_current_rate)

@@ -15,6 +15,7 @@ import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfer
+import com.kyberswap.android.presentation.common.specialGasLimitDefault
 import com.kyberswap.android.presentation.main.swap.*
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
@@ -172,13 +173,19 @@ class SendViewModel @Inject constructor(
         estimateTransferGasUseCase.execute(
             Consumer {
 
-                val gasLimit = send.gasLimit.toBigInteger()
+                val gasLimit = calculateDefaultGasLimitTransfer(send.tokenSource)
                     .min(it.amountUsed.multiply(120.toBigInteger()).divide(100.toBigInteger()))
 
 
+                val specialGasLimit = specialGasLimitDefault(send.tokenSource, send.tokenSource)
+
                 _getGetGasLimitCallback.value = Event(
                     GetGasLimitState.Success(
-                        gasLimit
+                        if (specialGasLimit != null) {
+                            specialGasLimit.max(gasLimit)
+                 else {
+                            gasLimit
+                
                     )
                 )
     ,

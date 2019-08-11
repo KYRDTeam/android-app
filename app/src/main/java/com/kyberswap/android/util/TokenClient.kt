@@ -4,10 +4,7 @@ import com.kyberswap.android.domain.model.LocalLimitOrder
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
 import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
-import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
-import com.kyberswap.android.presentation.common.DEFAULT_MAX_AMOUNT
-import com.kyberswap.android.presentation.common.DEFAULT_WALLET_ID
-import com.kyberswap.android.presentation.common.PERM
+import com.kyberswap.android.presentation.common.*
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import org.web3j.abi.FunctionEncoder
@@ -215,15 +212,17 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         walletAddress: String,
         contractAddress: String,
         value: String,
-        isEth: Boolean
+        isEth: Boolean,
+        gasLimit: BigInteger,
+        gasPrice: BigInteger
     ): EthEstimateGas? {
 
         return web3j.ethEstimateGas(
             Transaction(
                 walletAddress,
                 null,
-                null,
-                null,
+                gasPrice,
+                gasLimit,
                 contractAddress,
                 if (isEth) value.toBigIntegerOrDefaultZero() else BigInteger.ZERO,
                 FunctionEncoder.encode(transfer(contractAddress, value))
@@ -274,7 +273,10 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             Convert.Unit.GWEI
         ).toBigInteger()
         val gasLimit =
-            if (param.swap.gasLimit.toBigInteger() == BigInteger.ZERO) DEFAULT_GAS_LIMIT
+            if (param.swap.gasLimit.toBigInteger() == BigInteger.ZERO) calculateDefaultGasLimit(
+                param.swap.tokenSource,
+                param.swap.tokenDest
+            )
             else param.swap.gasLimit.toBigInteger()
 
 
@@ -339,7 +341,15 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             param.send.gasPrice.toBigDecimalOrDefaultZero(),
             Convert.Unit.GWEI
         ).toBigInteger()
-        val gasLimit = param.send.gasLimit.toBigIntegerOrDefaultZero()
+
+
+        val gasLimit =
+
+            if (param.send.gasLimit.toBigIntegerOrDefaultZero() > BigInteger.ZERO) {
+                param.send.gasLimit.toBigIntegerOrDefaultZero()
+     else {
+                calculateDefaultGasLimitTransfer(param.send.tokenSource)
+    
 
         val isEth = param.send.tokenSource.isETH
 
