@@ -49,7 +49,6 @@ import kotlinx.android.synthetic.main.layout_drawer.*
 import kotlinx.android.synthetic.main.layout_drawer.view.*
 import org.consenlabs.tokencore.wallet.KeystoreStorage
 import org.consenlabs.tokencore.wallet.WalletManager
-import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -78,7 +77,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     private var listener: ViewPager.OnPageChangeListener? = null
 
-    private var fromLimitOrder: Boolean = false
+    var fromLimitOrder: Boolean = false
 
 
     private val mainViewModel: MainViewModel by lazy {
@@ -179,9 +178,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                             }
                         }
                     }
-                    is ProfileFragment -> if (fromLimitOrder) {
-                        (currentFragment as ProfileFragment).fromLimitOrder(fromLimitOrder)
-                    }
                 }
             }
         }
@@ -230,7 +226,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                     is GetAllWalletState.Success -> {
                         val selectedWallet = state.wallets.find { it.isSelected }
                         if (wallet?.address != selectedWallet?.address) {
-                            Timber.e("pollingTokenBalance")
                             mainViewModel.pollingTokenBalance(state.wallets)
                             wallet = selectedWallet
                             wallet?.let {
@@ -271,13 +266,54 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                             it.blockNumber.isNotEmpty()
                         }
 
-                        txList.forEach {
-                            showAlert(
-                                String.format(
-                                    getString(R.string.transaction_mined),
-                                    it.hash
+                        txList.forEach { transaction ->
+                            val title: String
+                            val message: String
+                            when (transaction.type) {
+                                Transaction.TransactionType.SEND -> {
+                                    if (transaction.isTransactionFail) {
+                                        title = getString(R.string.title_fail)
+                                        message = String.format(
+                                            getString(R.string.notification_fail_sent),
+                                            transaction.displayValue,
+                                            transaction.to
+                                        )
+                                    } else {
+                                        title = getString(R.string.title_success)
+                                        message = String.format(
+                                            getString(R.string.notification_success_sent),
+                                            transaction.displayValue,
+                                            transaction.to
+                                        )
+                                    }
+                                }
+                                Transaction.TransactionType.SWAP -> {
+                                    if (transaction.isTransactionFail) {
+                                        title = getString(R.string.title_fail)
+                                        message = String.format(
+                                            getString(R.string.notification_fail_swap),
+                                            transaction.displaySource, transaction.displayDest
+                                        )
+                                    } else {
+                                        title = getString(R.string.title_success)
+                                        message = String.format(
+                                            getString(R.string.notification_success_swap),
+                                            transaction.displaySource, transaction.displayDest
+                                        )
+                                    }
+
+                                }
+                                Transaction.TransactionType.RECEIVED -> {
+                                    title = ""
+                                    message = ""
+                                }
+                            }
+
+                            if (title.isNotEmpty() && message.isNotEmpty()) {
+                                showAlertWithoutIcon(
+                                    title = title, message = message
                                 )
-                            )
+                            }
                         }
 
                         val pending = state.transactions.filter { it.blockNumber.isEmpty() }

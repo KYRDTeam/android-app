@@ -32,6 +32,8 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
 
     private var wallet: Wallet? = null
 
+    private var isContactExist: Boolean = false
+
     private val viewModel: SendConfirmViewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(SendConfirmViewModel::class.java)
     }
@@ -48,6 +50,8 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
         WalletManager.storage = this
         WalletManager.scanWallets()
         wallet = intent.getParcelableExtra(WALLET_PARAM)
+        isContactExist = intent.getBooleanExtra(CONTACT_EXIST_PARAM, false)
+        binding.isContactExist = isContactExist
         wallet?.apply {
             viewModel.getSendData(this.address)
         }
@@ -111,9 +115,11 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"
-        fun newIntent(context: Context, wallet: Wallet?) =
+        private const val CONTACT_EXIST_PARAM = "contact_exist_param"
+        fun newIntent(context: Context, wallet: Wallet?, isContactExist: Boolean) =
             Intent(context, SendConfirmActivity::class.java).apply {
                 putExtra(WALLET_PARAM, wallet)
+                putExtra(CONTACT_EXIST_PARAM, isContactExist)
             }
     }
 }

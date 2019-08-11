@@ -5,10 +5,10 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.data.db.BigIntegerDataTypeConverter
 import com.kyberswap.android.data.db.DataTypeConverter
 import com.kyberswap.android.presentation.common.KEEP_ETH_BALANCE_FOR_GAS
-import com.kyberswap.android.presentation.common.MIN_SUPPORT_SWAP_SOURCE_AMOUNT
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.parcel.Parcelize
@@ -52,6 +52,9 @@ data class LocalLimitOrder(
 
     private val _rate: String?
         get() = if (expectedRate.isEmpty()) marketRate else expectedRate
+
+    val isRateTooBig: Boolean
+        get() = minRate > _rate.toBigDecimalOrDefaultZero() * 10.toBigDecimal()
 
     val combineRate: String?
         get() = _rate.toBigDecimalOrDefaultZero().toDisplayNumber()
@@ -212,13 +215,26 @@ data class LocalLimitOrder(
             .append(minRate.toDisplayNumber())
             .toString()
 
+    val minSupportSourceAmount: BigDecimal
+        get() = if (BuildConfig.FLAVOR == "dev" || BuildConfig.FLAVOR == "stg") 0.001.toBigDecimal() else 0.1.toBigDecimal()
+
     fun amountTooSmall(sourceAmount: String?): Boolean {
         val amount =
             sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateEthNow)
         return if (tokenSource.isETH) {
-            amount <= MIN_SUPPORT_SWAP_SOURCE_AMOUNT.toBigDecimal()
+            amount <= minSupportSourceAmount
         } else {
-            amount < MIN_SUPPORT_SWAP_SOURCE_AMOUNT.toBigDecimal()
+            amount < minSupportSourceAmount
+        }
+    }
+
+    fun amountTooBig(sourceAmount: String?): Boolean {
+        val amount =
+            sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateEthNow)
+        return if (tokenSource.isETH) {
+            amount > BigDecimal.TEN
+        } else {
+            amount >= BigDecimal.TEN
         }
     }
 

@@ -205,7 +205,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         if (!state.order.isSameTokenPairForAddress(binding.order)) {
 
                             if (state.order.tokenSource.tokenSymbol == state.order.tokenDest.tokenSymbol) {
-                                showError(getString(R.string.same_token_alert))
+                                showAlertWithoutIcon(
+                                    title = getString(R.string.title_unsupported),
+                                    message = getString(R.string.limit_order_source_different_dest)
+                                )
                             }
                             if (state.order.hasSamePair) {
                                 edtRate.setText("1")
@@ -829,24 +832,58 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
             when {
                 srcAmount.isEmpty() -> {
-                    showError(getString(R.string.specify_amount))
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_amount),
+                        message = getString(R.string.specify_amount)
+                    )
                 }
                 srcAmount.toBigDecimalOrDefaultZero() >
                     viewModel.calAvailableAmount(
                         binding.order?.tokenSource,
                         pendingBalances
                     ).toBigDecimalOrDefaultZero() -> {
-                    showError(getString(R.string.exceed_balance))
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_amount_too_big),
+                        message = getString(R.string.limit_order_insufficient_balance)
+                    )
                 }
-                binding.order?.hasSamePair == true -> showAlert(getString(R.string.same_token_alert))
+                binding.order?.hasSamePair == true -> showAlertWithoutIcon(
+                    title = getString(R.string.title_unsupported),
+                    message = getString(R.string.limit_order_source_different_dest)
+                )
                 binding.order?.amountTooSmall(srcAmount) == true -> {
-                    showError(getString(R.string.swap_amount_small))
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_amount),
+                        message = getString(R.string.limit_order_amount_too_small)
+                    )
+                }
+
+                binding.order?.amountTooBig(srcAmount) == true -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_amount),
+                        message = getString(R.string.limit_order_amount_too_big)
+                    )
+                }
+
+                binding.edtRate.textToDouble() == 0.0 -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_amount),
+                        message = getString(R.string.limit_order_invalid_rate)
+                    )
+                }
+
+                binding.order?.isRateTooBig == true -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_amount),
+                        message = getString(R.string.limit_order_rate_too_big)
+                    )
                 }
 
                 userInfo == null || userInfo!!.uid <= 0 -> {
                     moveToLoginTab()
                     showAlertWithoutIcon(
-                        title = getString(R.string.sign_in_required_title), message = getString(
+                        title = getString(R.string.sign_in_required_title),
+                        message = getString(
                             R.string.sign_in_to_use_limit_order_feature
                         )
                     )
@@ -1129,6 +1166,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         binding.isWarning = isWarning
         binding.edtRate.isEnabled = !isWarning
         orderAdapter?.setWarning(isWarning)
+        cbUnderstand.isChecked = false
     }
 
     private fun updateAvailableAmount(pendingBalances: PendingBalances?) {

@@ -63,11 +63,12 @@ class ProfileFragment : BaseFragment() {
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
-    private var fromLimitOrder: Boolean = false
-
     private val handler by lazy { Handler() }
 
     private var resetPasswordDialog: AlertDialog? = null
+
+    private val fromLimitOrder: Boolean
+        get() = if (activity is MainActivity) (activity as MainActivity).fromLimitOrder else false
 
     private val gso by lazy {
         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -179,7 +180,6 @@ class ProfileFragment : BaseFragment() {
                                 )
 
                                 if (fromLimitOrder) {
-                                    fromLimitOrder = false
                                     moveToLimitOrder()
                                 }
                                 navigateToProfileDetail()
@@ -478,10 +478,6 @@ class ProfileFragment : BaseFragment() {
             e.printStackTrace()
             Timber.e(e.localizedMessage)
         }
-    }
-
-    fun fromLimitOrder(fromLimitOrder: Boolean) {
-        this.fromLimitOrder = fromLimitOrder
     }
 
     override fun onDestroyView() {

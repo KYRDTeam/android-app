@@ -156,8 +156,8 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
     }
 
 
-    fun navigateToSendConfirmationScreen(wallet: Wallet?) {
-        activity.startActivity(SendConfirmActivity.newIntent(activity, wallet))
+    fun navigateToSendConfirmationScreen(wallet: Wallet?, isContactExist: Boolean) {
+        activity.startActivity(SendConfirmActivity.newIntent(activity, wallet, isContactExist))
     }
 
     fun navigateToSendScreen(

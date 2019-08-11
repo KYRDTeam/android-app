@@ -5,31 +5,82 @@
 
     <data>
 
+        <variable
+            name="wallet"
+            type="com.kyberswap.android.domain.model.Wallet" />
+
+        <variable
+            name="emptyTransaction"
+            type="String" />
+
+        <import type="android.text.TextUtils" />
+
+        <import type="android.view.View" />
     </data>
 
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvTransaction"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/white" />
-
-        <ProgressBar
-
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyle"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"
+            android:ellipsize="middle"
+            android:lineSpacingExtra="8sp"
+            android:singleLine="true"
+            android:text="@{wallet.address}"
+            android:textColor="#5a5e67"
+            android:textSize="12sp"
+            android:visibility="@{TextUtils.isEmpty(emptyTransaction) ? View.VISIBLE : View.GONE}" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="@{TextUtils.isEmpty(emptyTransaction) ? View.VISIBLE : View.GONE}">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvTransaction"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/white" />
+
+            <ProgressBar
+
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@color/colorAccent"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:backgroundTint="@color/colorAccent"
-            android:visibility="gone" />
-    </FrameLayout>
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:gravity="center"
+            android:lineSpacingExtra="8sp"
+            android:text="@{emptyTransaction}"
+            android:textColor="#5a5e67"
+            android:textSize="14sp"
+            android:visibility="@{TextUtils.isEmpty(emptyTransaction) ? View.GONE : View.VISIBLE}" />
+
+    </LinearLayout>
+
+
 </layout>

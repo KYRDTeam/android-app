@@ -68,6 +68,14 @@ class SendFragment : BaseFragment() {
 
     private val contacts = mutableListOf<Contact>()
 
+    private val isContactExist: Boolean
+        get() = contacts.find { ct ->
+            ct.address.toLowerCase() == currentSelection?.address?.toLowerCase() || ct.address.toLowerCase() == onlyAddress(
+                edtAddress.text.toString()
+            ).toLowerCase()
+        } != null
+
+
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
@@ -194,6 +202,18 @@ class SendFragment : BaseFragment() {
         }
 
         binding.tvMore.setOnClickListener {
+            binding.send?.let { send ->
+                viewModel.saveSend(
+                    send.copy(
+                        gasPrice = getSelectedGasPrice(
+                            send.gas,
+                            selectedGasFeeView?.id
+                        ),
+                        contact = send.contact.copy(address = onlyAddress(edtAddress.text.toString())),
+                        sourceAmount = edtSource.text.toString()
+                    )
+                )
+            }
             navigator.navigateToContactScreen(currentFragment)
         }
 
@@ -210,8 +230,6 @@ class SendFragment : BaseFragment() {
                 animator.start()
             }
         }
-
-        binding.rbFast.isChecked = true
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
@@ -233,7 +251,9 @@ class SendFragment : BaseFragment() {
                     }
                 } else {
                     currentSelection?.let {
-                        binding.edtAddress.setText(it.nameAddressDisplay)
+                        if (isContactExist) {
+                            binding.edtAddress.setText(it.nameAddressDisplay)
+                        }
                     }
 
                 }
@@ -245,7 +265,7 @@ class SendFragment : BaseFragment() {
                 .observeOn(schedulerProvider.ui())
                 .subscribe {
                     ilAddress.error = null
-                    if (currentSelection != null) {
+                    if (isContactExist) {
                         tvAddContact.text = getString(R.string.edit_contact)
                     } else {
                         tvAddContact.text = getString(R.string.add_contact)
@@ -322,15 +342,23 @@ class SendFragment : BaseFragment() {
                     is GetContactState.Success -> {
                         contacts.clear()
                         contacts.addAll(state.contacts)
+
+                        if (currentSelection == null) {
+                            currentSelection = contacts.find { ct ->
+                                ct.address.toLowerCase() == onlyAddress(edtAddress.text.toString()).toLowerCase()
+                            }
+                        }
+
                         currentSelection?.let {
                             currentSelection = contacts.find { ct ->
-                                ct.address == it.address
+                                ct.address.toLowerCase() == it.address.toLowerCase()
                             }
 
                             currentSelection?.let { it1 -> sendToContact(it1) }
 
 
                         }
+
                         contactAdapter.submitList(state.contacts.take(2))
                     }
                     is GetContactState.ShowError -> {
@@ -373,6 +401,10 @@ class SendFragment : BaseFragment() {
             .observeOn(schedulerProvider.ui())
             .subscribe { amount ->
                 val copy = binding.send?.copy(sourceAmount = amount.toString())
+                if (copy != binding.send) {
+                    binding.send = copy
+                    binding.executePendingBindings()
+                }
                 viewModel.getGasLimit(
                     copy,
                     wallet
@@ -412,14 +444,6 @@ class SendFragment : BaseFragment() {
                         )
                     }
                 }
-
-//                    viewModel.saveSend(
-//                    binding.send?.copy(
-//                        sourceAmount = edtSource.text.toString(),
-//                        gasPrice = getSelectedGasPrice(binding.send!!.gas, selectedGasFeeView?.id)
-//                    ),
-//                    onlyAddress(edtAddress.text.toString())
-//                )
             }
         }
 
@@ -450,7 +474,7 @@ class SendFragment : BaseFragment() {
                 showProgress(state == SaveSendState.Loading)
                 when (state) {
                     is SaveSendState.Success -> {
-                        navigator.navigateToSendConfirmationScreen(wallet)
+                        navigator.navigateToSendConfirmationScreen(wallet, isContactExist)
                     }
                     is SaveSendState.ShowError -> {
                         showAlert(
@@ -462,13 +486,19 @@ class SendFragment : BaseFragment() {
             }
         })
 
+        binding.rbFast.isChecked = true
+
     }
 
     private fun sendToContact(contact: Contact) {
         val send = binding.send?.copy(contact = contact)
         binding.send = send
         currentSelection = contact
-        binding.edtAddress.setText(contact.nameAddressDisplay)
+        if (isContactExist) {
+            binding.edtAddress.setText(contact.nameAddressDisplay)
+        } else {
+            binding.edtAddress.setText(contact.address)
+        }
     }
 
     private val hasPendingTransaction: Boolean
@@ -492,23 +522,22 @@ class SendFragment : BaseFragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null) {
-            if (result.contents == null) {
-                showAlertWithoutIcon(message = getString(R.string.message_cancelled))
-            } else {
-
+            if (result.contents != null) {
+                val resultContent = result.contents.toString()
                 val contact = contacts.find {
-                    it.address.toLowerCase() == result.contents.toString().toLowerCase()
+                    it.address.toLowerCase() == resultContent.toLowerCase()
                 }
                 if (contact != null) {
                     currentSelection = contact
                     binding.edtAddress.setText(contact.nameAddressDisplay)
                 } else {
-                    binding.edtAddress.setText(result.contents.toString())
+                    currentSelection = null
+                    binding.edtAddress.setText(resultContent)
                 }
 
-                if (!result.contents.toString().isContact()) {
+                if (!resultContent.isContact()) {
                     val error = getString(R.string.invalid_contact_address)
-                    showError(message = error)
+                    showAlertWithoutIcon(title = "Invalid Address", message = error)
                     binding.ilAddress.error = error
                 }
             }

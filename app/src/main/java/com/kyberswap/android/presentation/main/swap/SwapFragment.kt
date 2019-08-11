@@ -636,16 +636,28 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                 when {
                     edtSource.text.isNullOrEmpty() -> {
                         val errorAmount = getString(R.string.specify_amount)
-                        showError(errorAmount)
+                        showAlertWithoutIcon(
+                            title = getString(R.string.invalid_input),
+                            message = errorAmount
+                        )
                     }
                     edtSource.text.toString().toBigDecimalOrDefaultZero() > swap.tokenSource.currentBalance -> {
                         val errorExceedBalance = getString(R.string.exceed_balance)
-                        showError(errorExceedBalance)
+                        showAlertWithoutIcon(
+                            title = getString(R.string.title_amount_too_big),
+                            message = errorExceedBalance
+                        )
                     }
-                    swap.hasSamePair -> showError(getString(R.string.same_token_alert))
+                    swap.hasSamePair -> showAlertWithoutIcon(
+                        title = getString(R.string.title_unsupported),
+                        message = getString(R.string.can_not_swap_same_token)
+                    )
                     swap.amountTooSmall(edtSource.text.toString()) -> {
                         val amountError = getString(R.string.swap_amount_small)
-                        showError(amountError)
+                        showAlertWithoutIcon(
+                            title = getString(R.string.invalid_amount),
+                            message = amountError
+                        )
                     }
 
                     swap.copy(

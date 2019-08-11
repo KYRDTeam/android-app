@@ -7,6 +7,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
 import kotlinx.android.parcel.Parcelize
 import org.web3j.utils.Convert
 import java.math.BigDecimal
@@ -32,6 +33,9 @@ data class Send(
 
 ) : Parcelable {
 
+    val estimateSource: String
+        get() = if (sourceAmount.isEmpty()) "0.001" else sourceAmount
+
     fun isSameTokenPair(other: Send?): Boolean {
         return this.walletAddress == other?.walletAddress &&
             this.tokenSource.tokenSymbol == other.tokenSource.tokenSymbol &&
@@ -50,13 +54,14 @@ data class Send(
         get() = sourceAmount == tokenSource.currentBalance.toDisplayNumber()
 
     val displaySourceAmountUsd: String
-        get() = StringBuilder()
-            .append("≈ ")
-            .append(
-                sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateUsdNow).toDisplayNumber()
-            )
-            .append(" USD")
-            .toString()
+        get() = if (sourceAmount.toDoubleOrDefaultZero() == 0.0) "" else
+            StringBuilder()
+                .append("≈ ")
+                .append(
+                    sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateUsdNow).toDisplayNumber()
+                )
+                .append(" USD")
+                .toString()
 
     val transactionFeeEth: String
         get() = StringBuilder()
@@ -102,6 +107,6 @@ data class Send(
             Convert.toWei(gasPrice, Convert.Unit.GWEI)
                 .multiply(gasLimit), Convert.Unit.ETHER
         ).max(BigDecimal.ZERO)
-        )
+            )
     }
 }

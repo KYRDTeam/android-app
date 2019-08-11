@@ -9,6 +9,10 @@
         <variable
             name="send"
             type="com.kyberswap.android.domain.model.Send" />
+
+        <variable
+            name="isContactExist"
+            type="Boolean" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -69,7 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:gravity="center_horizontal"
-            android:text="@{send.contact.name}"
+            android:text="@{isContactExist ? send.contact.name : @string/not_in_contact}"
             android:textColor="#141927"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"

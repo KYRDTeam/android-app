@@ -5,14 +5,12 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.google.gson.Gson
 import com.kyberswap.android.data.api.transaction.TransactionEntity
 import com.kyberswap.android.data.db.TransactionTypeConverter
 import com.kyberswap.android.util.ext.*
 import kotlinx.android.parcel.Parcelize
 import org.web3j.protocol.core.methods.response.TransactionReceipt
 import org.web3j.utils.Convert
-import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
@@ -134,7 +132,6 @@ data class Transaction(
     )
 
     fun with(tx: org.web3j.protocol.core.methods.response.Transaction): Transaction {
-        Timber.e(Gson().toJson(tx))
         return this.copy(
             blockHash = tx.blockHash ?: "",
             blockNumber = if (tx.blockNumberRaw.isNullOrEmpty()) "" else tx.blockNumber.safeToString(),
@@ -172,7 +169,6 @@ data class Transaction(
     )
 
     fun with(tx: TransactionReceipt): Transaction {
-        Timber.e(Gson().toJson(tx))
         return this.copy(
             blockHash = tx.blockHash ?: "",
             blockNumber = tx.blockNumber.toString(),
@@ -211,13 +207,26 @@ data class Transaction(
                                 .pow(
                                     tokenDecimal
                                         .toBigDecimalOrDefaultZero().toInt()
-                                ), 18, RoundingMode.HALF_EVEN
+                                ), 18, RoundingMode.UP
                         ).toDisplayNumber()
                 )
                 .append(" ")
                 .append(tokenSymbol)
                 .toString()
 
+    val displaySource: String
+        get() = StringBuilder()
+            .append(sourceAmount)
+            .append(" ")
+            .append(tokenSource)
+            .toString()
+
+    val displayDest: String
+        get() = StringBuilder()
+            .append(destAmount)
+            .append(" ")
+            .append(tokenDest)
+            .toString()
 
     val displayTransaction: String
         get() =
@@ -231,16 +240,12 @@ data class Transaction(
 
                 StringBuilder()
                     .append(
-                        sourceAmount
+                        displaySource
                     )
-                    .append(" ")
-                    .append(tokenSource)
                     .append(" ➞ ")
                     .append(
-                        destAmount
+                        displayDest
                     )
-                    .append(" ")
-                    .append(tokenDest)
                     .toString()
 
     companion object {
@@ -248,7 +253,7 @@ data class Transaction(
         const val MINED = 1
         const val PENDING_TRANSACTION_STATUS = "pending"
         val formatterShort = SimpleDateFormat("dd MMM yyyy", Locale.US)
-        val formatterFull = SimpleDateFormat("EEEE, dd MMM yyyy'T'HH:mm:ssZZZZZ", Locale.US)
+        val formatterFull = SimpleDateFormat("EEEE, dd MMM yyyy HH:mm:ss", Locale.US)
     }
 
     fun sameDisplay(other: Transaction): Boolean {
@@ -267,7 +272,15 @@ data class Transaction(
         get() = formatterShort.format(Date(timeStamp * 1000L))
 
     val longDateTimeFormat: String
-        get() = formatterFull.format(Date(timeStamp * 1000L))
+        get() {
+            val timeZone = TimeZone.getDefault()
+            formatterFull.timeZone = timeZone
+            return formatterFull.format(Date(timeStamp * 1000L)) + " " + timeZone.getDisplayName(
+                false,
+                TimeZone.SHORT
+            )
+
+        }
 
     val displayTransactionType: String
         get() = type.value
