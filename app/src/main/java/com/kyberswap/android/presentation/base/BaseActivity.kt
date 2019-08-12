@@ -57,6 +57,13 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         startActivityForResult(intent, SHOW_ALERT)
     }
 
+    fun showNetworkUnAvailable() {
+        showAlertWithoutIcon(
+            title = getString(R.string.title_error),
+            message = getString(R.string.no_internet_connect)
+        )
+    }
+
     fun showInsufficientAlert(title: String, message: String, listener: () -> Unit) {
         this.alertListener = listener
         val intent = AlertWithoutIconActivity.newIntent(this, title, message)

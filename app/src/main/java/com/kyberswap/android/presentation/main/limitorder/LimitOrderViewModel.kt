@@ -19,6 +19,7 @@ import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 class LimitOrderViewModel @Inject constructor(
@@ -221,7 +222,7 @@ class LimitOrderViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getGetNonceStateCallback.value =
-                    Event(GetNonceState.ShowError(it.localizedMessage))
+                    Event(GetNonceState.ShowError(it.localizedMessage, it is UnknownHostException))
     ,
             GetNonceUseCase.Param(order, wallet)
         )
@@ -237,7 +238,12 @@ class LimitOrderViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getEligibleAddressCallback.value =
-                    Event(CheckEligibleAddressState.ShowError(it.localizedMessage))
+                    Event(
+                        CheckEligibleAddressState.ShowError(
+                            it.localizedMessage,
+                            it is UnknownHostException
+                        )
+                    )
     ,
             CheckEligibleAddressUseCase.Param(wallet)
         )
@@ -272,7 +278,12 @@ class LimitOrderViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getRelatedOrderCallback.value =
-                    Event(GetRelatedOrdersState.ShowError(it.localizedMessage))
+                    Event(
+                        GetRelatedOrdersState.ShowError(
+                            it.localizedMessage,
+                            it is UnknownHostException
+                        )
+                    )
 
     ,
             GetRelatedLimitOrdersUseCase.Param(
@@ -317,7 +328,12 @@ class LimitOrderViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getGetMarketRateCallback.value =
-                    Event(GetMarketRateState.ShowError(it.localizedMessage))
+                    Event(
+                        GetMarketRateState.ShowError(
+                            it.localizedMessage,
+                            it is UnknownHostException
+                        )
+                    )
     ,
             GetMarketRateUseCase.Param(
                 order.tokenSource.symbol,
@@ -346,7 +362,12 @@ class LimitOrderViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getExpectedRateCallback.value =
-                    Event(GetExpectedRateState.ShowError(it.localizedMessage))
+                    Event(
+                        GetExpectedRateState.ShowError(
+                            it.localizedMessage,
+                            it is UnknownHostException
+                        )
+                    )
     ,
             GetExpectedRateUseCase.Param(
                 order.userAddr,
@@ -370,7 +391,7 @@ class LimitOrderViewModel @Inject constructor(
         
                 if (fromConvert) {
                     _swapTokenTransactionCallback.value =
-                        Event(SwapTokenTransactionState.Success(""))
+                        Event(SwapTokenTransactionState.Success())
         
     ,
             Consumer {
@@ -396,7 +417,12 @@ class LimitOrderViewModel @Inject constructor(
     ,
             Consumer {
                 it.printStackTrace()
-                _getFeeCallback.value = Event(GetFeeState.ShowError(it.localizedMessage))
+                _getFeeCallback.value = Event(
+                    GetFeeState.ShowError(
+                        it.localizedMessage,
+                        isNetworkUnAvailable = it is UnknownHostException
+                    )
+                )
 
     ,
             GetLimitOrderFeeUseCase.Param(

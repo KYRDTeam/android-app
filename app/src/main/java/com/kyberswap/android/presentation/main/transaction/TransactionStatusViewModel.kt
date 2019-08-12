@@ -82,12 +82,13 @@ class TransactionStatusViewModel @Inject constructor(
         return transactions
             .sortedByDescending { it.timeStamp }
             .filter {
+                val tokenList = transactionFilter.tokens.map { it.toLowerCase() }
                 (transactionFilter.from.isEmpty() || it.timeStamp * 1000 >= transactionFilter.from.toDate().time) &&
                     (transactionFilter.to.isEmpty() || it.timeStamp * 1000 <= transactionFilter.to.toDate().time) &&
                     transactionFilter.types.contains(it.type) &&
-                    (transactionFilter.tokens.contains(it.tokenSymbol) ||
-                        transactionFilter.tokens.contains(it.tokenSource)
-                        || transactionFilter.tokens.contains(it.tokenDest))
+                    (tokenList.contains(it.tokenSymbol.toLowerCase()) ||
+                        tokenList.contains(it.tokenSource.toLowerCase())
+                        || tokenList.contains(it.tokenDest.toLowerCase()))
     
             .groupBy { it.shortedDateTimeFormat }
             .flatMap { item ->

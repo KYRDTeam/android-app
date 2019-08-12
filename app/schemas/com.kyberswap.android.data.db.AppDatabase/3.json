@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "b63b79b850a71f4b32fc080f52cd1ba9",
+    "identityHash": "f2343f141b169c4dd748f80eb3b61d8d",
     "entities": [
       {
         "tableName": "tokens",
@@ -146,7 +146,7 @@
       },
       {
         "tableName": "wallets",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`address` TEXT NOT NULL, `walletId` TEXT NOT NULL, `name` TEXT NOT NULL, `cipher` TEXT NOT NULL, `isSelected` INTEGER NOT NULL, `mnemonicAvailable` INTEGER NOT NULL, `unit` TEXT NOT NULL, `balance` TEXT NOT NULL, `createAt` INTEGER NOT NULL, `cap` TEXT NOT NULL, `kyced` INTEGER NOT NULL, `rich` INTEGER NOT NULL, `privateKey` TEXT, `expiredDate` TEXT, `destinationToken` TEXT, `description` TEXT, `type` TEXT, `receiveAddress` TEXT, `error` TEXT, PRIMARY KEY(`address`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`address` TEXT NOT NULL, `walletId` TEXT NOT NULL, `name` TEXT NOT NULL, `cipher` TEXT NOT NULL, `isSelected` INTEGER NOT NULL, `mnemonicAvailable` INTEGER NOT NULL, `unit` TEXT NOT NULL, `balance` TEXT NOT NULL, `createAt` INTEGER NOT NULL, `privateKey` TEXT, `expiredDate` TEXT, `destinationToken` TEXT, `description` TEXT, `type` TEXT, `receiveAddress` TEXT, `error` TEXT, PRIMARY KEY(`address`))",
         "fields": [
           {
             "fieldPath": "address",
@@ -199,24 +199,6 @@
           {
             "fieldPath": "createAt",
             "columnName": "createAt",
-            "affinity": "INTEGER",
-            "notNull": true
-  ,
-          {
-            "fieldPath": "cap.cap",
-            "columnName": "cap",
-            "affinity": "TEXT",
-            "notNull": true
-  ,
-          {
-            "fieldPath": "cap.kyced",
-            "columnName": "kyced",
-            "affinity": "INTEGER",
-            "notNull": true
-  ,
-          {
-            "fieldPath": "cap.rich",
-            "columnName": "rich",
             "affinity": "INTEGER",
             "notNull": true
   ,
@@ -1395,7 +1377,7 @@
       },
       {
         "tableName": "users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`avatarUrl` TEXT NOT NULL, `contactId` TEXT NOT NULL, `contactType` TEXT NOT NULL, `kycStatus` TEXT NOT NULL, `kycStep` INTEGER NOT NULL, `name` TEXT NOT NULL, `uid` INTEGER NOT NULL, `blockReason` TEXT, `kyc_id` INTEGER NOT NULL, `kyc_firstName` TEXT NOT NULL, `kyc_lastName` TEXT NOT NULL, `kyc_nationality` TEXT NOT NULL, `kyc_country` TEXT NOT NULL, `kyc_rejectReason` TEXT, `kyc_gender` INTEGER NOT NULL, `kyc_dob` TEXT NOT NULL, `kyc_profileCompleted` INTEGER NOT NULL, `kyc_documentId` TEXT NOT NULL, `kyc_documentType` TEXT NOT NULL, `kyc_artemisResponse` TEXT NOT NULL, `kyc_duplicateId` TEXT NOT NULL, `kyc_residentialAddress` TEXT NOT NULL, `kyc_city` TEXT NOT NULL, `kyc_zipCode` TEXT NOT NULL, `kyc_documentProofAddress` TEXT NOT NULL, `kyc_sourceFund` TEXT NOT NULL, `kyc_occupationCode` TEXT NOT NULL, `kyc_industryCode` TEXT NOT NULL, `kyc_taxResidencyCountry` TEXT NOT NULL, `kyc_haveTaxIdentification` INTEGER, `kyc_taxIdentificationNumber` TEXT NOT NULL, `kyc_documentIssueDate` TEXT NOT NULL, `kyc_documentExpiryDate` TEXT NOT NULL, `kyc_duplicateType` TEXT NOT NULL, `kyc_internalApproval` TEXT NOT NULL, `kyc_middleName` TEXT NOT NULL, `kyc_customReason` TEXT NOT NULL, `kyc_adminNote` TEXT NOT NULL, `kyc_nativeFullName` TEXT NOT NULL, `kyc_blockReason` TEXT NOT NULL, `kyc_issueDateNonApplicable` INTEGER NOT NULL, `kyc_expiryDateNonApplicable` INTEGER NOT NULL, PRIMARY KEY(`uid`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`avatarUrl` TEXT NOT NULL, `contactId` TEXT NOT NULL, `contactType` TEXT NOT NULL, `kycStatus` TEXT NOT NULL, `kycStep` INTEGER NOT NULL, `name` TEXT NOT NULL, `uid` INTEGER NOT NULL, `blockReason` TEXT, `kyc_id` INTEGER NOT NULL, `kyc_firstName` TEXT NOT NULL, `kyc_lastName` TEXT NOT NULL, `kyc_nationality` TEXT NOT NULL, `kyc_country` TEXT NOT NULL, `kyc_rejectReason` TEXT, `kyc_gender` INTEGER NOT NULL, `kyc_dob` TEXT NOT NULL, `kyc_profileCompleted` INTEGER NOT NULL, `kyc_documentId` TEXT NOT NULL, `kyc_documentType` TEXT NOT NULL, `kyc_duplicateId` TEXT NOT NULL, `kyc_residentialAddress` TEXT NOT NULL, `kyc_city` TEXT NOT NULL, `kyc_zipCode` TEXT NOT NULL, `kyc_documentProofAddress` TEXT NOT NULL, `kyc_sourceFund` TEXT NOT NULL, `kyc_occupationCode` TEXT NOT NULL, `kyc_industryCode` TEXT NOT NULL, `kyc_taxResidencyCountry` TEXT NOT NULL, `kyc_haveTaxIdentification` INTEGER, `kyc_taxIdentificationNumber` TEXT NOT NULL, `kyc_documentIssueDate` TEXT NOT NULL, `kyc_documentExpiryDate` TEXT NOT NULL, `kyc_duplicateType` TEXT NOT NULL, `kyc_internalApproval` TEXT NOT NULL, `kyc_middleName` TEXT NOT NULL, `kyc_customReason` TEXT NOT NULL, `kyc_adminNote` TEXT NOT NULL, `kyc_nativeFullName` TEXT NOT NULL, `kyc_blockReason` TEXT NOT NULL, `kyc_issueDateNonApplicable` INTEGER NOT NULL, `kyc_expiryDateNonApplicable` INTEGER NOT NULL, PRIMARY KEY(`uid`))",
         "fields": [
           {
             "fieldPath": "avatarUrl",
@@ -1508,12 +1490,6 @@
           {
             "fieldPath": "kycInfo.documentType",
             "columnName": "kyc_documentType",
-            "affinity": "TEXT",
-            "notNull": true
-  ,
-          {
-            "fieldPath": "kycInfo.artemisResponse",
-            "columnName": "kyc_artemisResponse",
             "affinity": "TEXT",
             "notNull": true
   ,
@@ -2701,7 +2677,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b63b79b850a71f4b32fc080f52cd1ba9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f2343f141b169c4dd748f80eb3b61d8d')"
     ]
   }
 }

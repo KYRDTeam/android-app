@@ -169,7 +169,7 @@
     <string name="same_token_alert">Can not create order with same token pair</string>
     <string name="swap_amount_small">Amount too small to perform swap, minimum equivalent to 0.001 ETH</string>
     <string name="title_amount_too_big">Amount too big</string>
-    <string name="exceed_balance">Balance is not be enough to make the transaction.</string>
+    <string name="exceed_balance">Balance is not enough to make the transaction.</string>
 
     <string name="specify_contact_address">Please enter a valid address to send</string>
     <string name="invalid_contact_address_title">Invalid Address</string>
@@ -598,6 +598,9 @@
     <string name="limit_order_amount_too_big">Amount is too big. Limit order only support max 10 ETH equivalent order</string>
     <string name="empty_pending_transaction">You do not have any pending transactions.</string>
     <string name="empty_complete_transaction">You do not have any completed transactions.</string>
+    <string name="cap_rich">Sorry, you have already reached your daily limit. Please wait for few hours or complete your profile verification to swap more.</string>
+    <string name="cap_reduce_amount">Sorry, we are unable to handle such a big amount. Please reduce the amount to less than %s ETH and try again.</string>
+    <string name="no_internet_connect">Please check your internet connection</string>
 
 
 </resources>

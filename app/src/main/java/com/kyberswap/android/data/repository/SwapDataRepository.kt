@@ -5,9 +5,11 @@ import android.util.Base64
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.SwapApi
+import com.kyberswap.android.data.api.home.UserApi
 import com.kyberswap.android.data.db.*
 import com.kyberswap.android.data.mapper.CapMapper
 import com.kyberswap.android.data.mapper.GasMapper
+import com.kyberswap.android.data.mapper.UserMapper
 import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.domain.repository.SwapRepository
 import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
@@ -44,8 +46,25 @@ class SwapDataRepository @Inject constructor(
     private val mapper: GasMapper,
     private val capMapper: CapMapper,
     private val tokenClient: TokenClient,
-    private val transactionDao: TransactionDao
+    private val transactionDao: TransactionDao,
+    private val userDao: UserDao,
+    private val userApi: UserApi,
+    private val userMapper: UserMapper
 ) : SwapRepository {
+    override fun getCap(param: GetCombinedCapUseCase.Param): Single<Cap> {
+        return Single.fromCallable {
+            userDao.getUser() ?: UserInfo()
+.flatMap {
+            if (it.uid > 0) {
+                userApi.getUserStats()
+     else {
+                api.getCap(param.wallet.address)
+    
+.map { capMapper.transform(it) }
+
+
+    }
+
     override fun estimateAmount(param: EstimateAmountUseCase.Param): Single<EstimateAmount> {
         return api.sourceAmount(
             param.source,
@@ -92,7 +111,7 @@ class SwapDataRepository @Inject constructor(
         )
     }
 
-    override fun swapToken(param: SwapTokenUseCase.Param): Single<String> {
+    override fun swapToken(param: SwapTokenUseCase.Param): Single<ResponseStatus> {
         return Single.fromCallable {
             var password = ""
             if (context is KyberSwapApplication) {
@@ -142,11 +161,15 @@ class SwapDataRepository @Inject constructor(
                 )
     
 
-            hash
+            hash ?: ""
+.flatMap {
+            userApi.submitTx(it)
+.map {
+            userMapper.transform(it)
 
     }
 
-    override fun transferToken(param: TransferTokenUseCase.Param): Single<String> {
+    override fun transferToken(param: TransferTokenUseCase.Param): Single<ResponseStatus> {
         return Single.fromCallable {
             var password = ""
             if (context is KyberSwapApplication) {
@@ -198,9 +221,14 @@ class SwapDataRepository @Inject constructor(
                 )
     
 
-            hash
+            hash ?: ""
 
 
+            .flatMap {
+                userApi.submitTx(it)
+    .map {
+                userMapper.transform(it)
+    
     }
 
     override fun estimateGas(param: EstimateGasUseCase.Param): Single<EthEstimateGas> {
@@ -240,14 +268,6 @@ class SwapDataRepository @Inject constructor(
 
     override fun getCap(param: GetCapUseCase.Param): Single<Cap> {
         return api.getCap(param.walletAddress).map { capMapper.transform(it) }
-            .doAfterSuccess { cap ->
-                param.walletAddress?.let {
-                    val wallet = walletDao.findWalletByAddress(it)
-                    if (wallet.cap != cap) {
-                        walletDao.updateWallet(wallet.copy(cap = cap))
-            
-        
-    
     }
 
     override fun getGasPrice(): Flowable<Gas> {

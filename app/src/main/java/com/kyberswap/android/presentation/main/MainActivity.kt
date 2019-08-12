@@ -44,6 +44,7 @@ import com.kyberswap.android.presentation.main.setting.SettingFragment
 import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.wallet.UpdateWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.isNetworkAvailable
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_drawer.*
 import kotlinx.android.synthetic.main.layout_drawer.view.*
@@ -98,6 +99,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         WalletManager.storage = this
         WalletManager.scanWallets()
 
@@ -118,8 +120,10 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         bottomNavigation.inactiveColor =
             ContextCompat.getColor(this, R.color.bottom_item_color_normal)
         bottomNavigation.setOnTabSelectedListener { position, _ ->
-            binding.vpNavigation.setCurrentItem(position, true)
-            return@setOnTabSelectedListener true
+            handler.post {
+                binding.vpNavigation.setCurrentItem(position, true)
+    
+
 
 
         adapter = MainPagerAdapter(
@@ -144,6 +148,9 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     
 
             override fun onPageSelected(position: Int) {
+                if (!isNetworkAvailable()) {
+                    showNetworkUnAvailable()
+        
                 currentFragment = adapter?.getRegisteredFragment(position)
                 showPendingTransaction()
                 when (currentFragment) {
@@ -226,7 +233,18 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                     is GetAllWalletState.Success -> {
                         val selectedWallet = state.wallets.find { it.isSelected }
                         if (wallet?.address != selectedWallet?.address) {
-                            mainViewModel.pollingTokenBalance(state.wallets)
+                            selectedWallet?.let {
+                                handler.postDelayed(
+                                    {
+                                        mainViewModel.pollingTokenBalance(
+                                            state.wallets,
+                                            it
+                                        )
+                            , 2000
+
+                                )
+
+                    
                             wallet = selectedWallet
                             wallet?.let {
                                 mainViewModel.getPendingTransaction(it)

@@ -51,9 +51,6 @@ class TransactionStatusFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
         wallet = arguments?.getParcelable(WALLET_PARAM)
         transactionType = arguments?.getInt(TRANSACTION_TYPE) ?: Transaction.PENDING
-        wallet?.let {
-            viewModel.getTransactionFilter(transactionType, it)
-
 
     }
 
@@ -68,6 +65,9 @@ class TransactionStatusFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        wallet?.let {
+            viewModel.getTransactionFilter(transactionType, it)
+
         binding.wallet = wallet
         binding.rvTransaction.layoutManager = LinearLayoutManager(
             activity,

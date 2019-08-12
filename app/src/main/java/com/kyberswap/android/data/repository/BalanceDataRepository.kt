@@ -16,6 +16,7 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
+import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -131,20 +132,23 @@ class BalanceDataRepository @Inject constructor(
                 isOther = false
             ) ?: remoteToken
 
-            tokenClient.updateBalance(updatedRateToken)
+            updatedRateToken
+//            tokenClient.updateBalance(updatedRateToken)
 
 
         val listTokenSymbols = listedTokens.map { it.tokenSymbol }
 
-        val otherTokens = localTokens.filterNot { listTokenSymbols.contains(it.tokenSymbol) }.map {
-            tokenClient.updateBalance(it)
-
+        val otherTokens = localTokens.filterNot { listTokenSymbols.contains(it.tokenSymbol) }
+//            .map {
+//            tokenClient.updateBalance(it)
+//
 
         val currentWallets = walletDao.all
         val localSelected = currentWallets.find { it.isSelected }
         val selectedWallet = wallets.find { it.isSelected }
 
         return if (selectedWallet?.address == localSelected?.address) {
+            Timber.e("selectedWallet?.address == localSelected?.address")
             val currentFavs = tokenDao.allTokens.map {
                 it.tokenSymbol to it.fav
     .toMap()
@@ -156,6 +160,7 @@ class BalanceDataRepository @Inject constructor(
     )
             listedTokens
  else {
+            Timber.e("updateBalance")
             updateBalance(remoteTokens, currentWallets)
 
 
@@ -164,9 +169,9 @@ class BalanceDataRepository @Inject constructor(
 
     override fun getChange24hPolling(param: GetBalancePollingUseCase.Param): Flowable<List<Token>> {
         return fetchChange24h()
-//            .map { remoteTokens ->
-//                updateBalance(remoteTokens, param.wallets)
-//    
+            .map { remoteTokens ->
+                updateBalance(remoteTokens, param.wallets)
+    
             .repeatWhen {
                 it.delay(15, TimeUnit.SECONDS)
     

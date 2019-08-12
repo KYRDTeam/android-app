@@ -737,6 +737,9 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
             positiveListener.invoke(notification.txHash)
             dialog.dismiss()
 
+        binding.tvCancel.setOnClickListener {
+            dialog.dismiss()
+
 
         dialog.setView(binding.root)
 

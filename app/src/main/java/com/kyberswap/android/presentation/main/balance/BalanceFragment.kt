@@ -242,7 +242,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                 
             ,
                     {
-                        if (wallet?.isPromo == true && it.tokenSymbol == getString(R.string.promo_source_token)) {
+                        if (it.tokenSymbol == getString(R.string.promo_source_token)) {
                             showAlertWithoutIcon(message = getString(R.string.can_not_tranfer_token))
                  else {
                             wallet?.address?.let { it1 -> viewModel.saveSendToken(it1, it) }

@@ -49,6 +49,9 @@ data class Swap(
             return calculateDefaultGasLimit(tokenSource, tokenDest) + 10_000.toBigInteger()
 
 
+    val currentExpectedDestAmount: BigDecimal
+        get() = getExpectedDestAmount(sourceAmount.toBigDecimalOrDefaultZero())
+
 
     constructor(limitOrder: LocalLimitOrder, minConvertedAmount: BigDecimal) : this(
         limitOrder.userAddr,
@@ -278,6 +281,16 @@ data class Swap(
             sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateEthNow)
         return amount < MIN_SUPPORT_SWAP_SOURCE_AMOUNT.toBigDecimal()
     }
+
+    val equivalentETHWithPrecision: BigDecimal
+        get() {
+            return tokenSource.withTokenDecimal(
+                sourceAmount.toBigDecimalOrDefaultZero()
+            ).toBigDecimal().multiply(
+                tokenSource.rateEthNow
+            )
+
+
 
     val insufficientEthBalance: Boolean
         get() = ethToken.currentBalance < gasFeeEth

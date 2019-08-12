@@ -22,7 +22,6 @@ data class KycInfo(
     var photoSelfie: String = "",
     @Ignore
     var photoIdentityFrontSide: String = "",
-    var artemisResponse: String = "",
     var duplicateId: String = "",
     var residentialAddress: String = "",
     var city: String = "",
@@ -65,7 +64,6 @@ data class KycInfo(
         entity.documentType ?: "",
         entity.photoSelfie ?: "",
         entity.photoIdentityFrontSide ?: "",
-        entity.artemisResponse ?: "",
         entity.duplicateId ?: "",
         entity.residentialAddress ?: "",
         entity.city ?: "",

@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import com.google.gson.Gson
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.TransactionApi
 import com.kyberswap.android.data.db.*
@@ -31,6 +32,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import org.web3j.utils.Numeric
+import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
@@ -59,8 +61,11 @@ class TransactionDataRepository @Inject constructor(
                     transactionDao.findTransaction(tx.hash, Transaction.PENDING_TRANSACTION_STATUS)
                 transaction?.let {
                     if (tx.blockNumber.toLongSafe() > 0) {
+
                         transactionDao.delete(it)
                         val updatedStatus = tx.copy(transactionStatus = "")
+                        Timber.e(updatedStatus.blockNumber)
+                        Timber.e(Gson().toJson(updatedStatus))
                         transactionDao.insertTransaction(updatedStatus)
 //                        sendNotification(updatedStatus)
                         updateBalance(it, param.wallet)
@@ -308,6 +313,7 @@ class TransactionDataRepository @Inject constructor(
 
     override fun fetchAllTransactions(param: GetTransactionsUseCase.Param): Flowable<List<Transaction>> {
         return getTransactions(param.wallet)
+
     }
 
     override fun fetchTransactionPeriodically(param: GetTransactionsPeriodicallyUseCase.Param): Flowable<List<Transaction>> {
@@ -335,7 +341,7 @@ class TransactionDataRepository @Inject constructor(
 
     
             .repeatWhen {
-                it.delay(15, TimeUnit.SECONDS)
+                it.delay(15, TimeUnit.HOURS)
     
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
@@ -374,8 +380,8 @@ class TransactionDataRepository @Inject constructor(
                 val defaultSoundUri =
                     RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
                 val notificationBuilder = NotificationCompat.Builder(context, channelId)
-                    .setSmallIcon(R.drawable.ic_notification_white)
-                    .setColor(ContextCompat.getColor(context, R.color.colorAccent))
+                    .setSmallIcon(R.drawable.ic_stat_onesignal_default)
+                    .setColor(ContextCompat.getColor(context, R.color.notification_background))
                     .setContentTitle(title)
                     .setContentText(
                         message
@@ -589,12 +595,29 @@ class TransactionDataRepository @Inject constructor(
     .toFlowable()
     }
 
-    private fun getTransactions(wallet: Wallet): Flowable<List<Transaction>> {
+    private fun getTransactions(
+        wallet: Wallet
+    ): Flowable<List<Transaction>> {
         return Flowable.mergeDelayError(
             transactionDao.getCompletedTransactions(wallet.address),
-            getTransactionRemote(wallet).doOnNext {
-                transactionDao.insertTransactionBatch(it)
-    
+            getTransactionRemote(wallet)
+                .doOnNext {
+                    val latestTransaction = transactionDao.getLatestTransaction()
+                    val latestBlock =
+                        latestTransaction?.blockNumber?.toLongSafe() ?: 1
+                    it.forEach { tx ->
+                        val blockNumber = tx.blockNumber.toLongSafe()
+                        latestTransaction?.let {
+                            if (blockNumber > latestBlock) {
+                                if (tx.type == Transaction.TransactionType.RECEIVED) {
+                                    sendNotification(tx)
+                        
+                                updateBalance(tx, wallet)
+                    
+                
+            
+                    transactionDao.insertTransactionBatch(it)
+        
         )
     }
 

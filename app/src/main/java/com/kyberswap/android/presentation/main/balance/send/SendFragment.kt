@@ -29,6 +29,7 @@ import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.swap.*
+import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.*
 import kotlinx.android.synthetic.main.fragment_send.*
@@ -79,11 +80,6 @@ class SendFragment : BaseFragment() {
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        wallet = arguments!!.getParcelable(WALLET_PARAM)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -95,10 +91,29 @@ class SendFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        binding.edtSource.setText("")
-        binding.walletName = wallet?.name
-        wallet?.let {
-            viewModel.getSendInfo(it.address)
+
+        viewModel.getSelectedWallet()
+
+        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetWalletState.Success -> {
+                        if (!state.wallet.isSameWallet(wallet)) {
+                            wallet = state.wallet
+                            binding.edtSource.setText("")
+                            binding.walletName = wallet?.name
+                            wallet?.let {
+                                viewModel.getSendInfo(it.address)
+                    
+                
+
+            
+                    is GetWalletState.ShowError -> {
+
+            
+        
+    
+)
 
 
         viewModel.getSendCallback.observe(this, Observer {

@@ -80,12 +80,13 @@ class TokenSearchFragment : BaseFragment() {
 
         val tokenAdapter =
             TokenSearchAdapter(appExecutors) { token ->
-                if (wallet?.isPromo == true && token.tokenSymbol == getString(R.string.promo_source_token)) {
-                    showAlertWithoutIcon(message = getString(R.string.can_not_tranfer_token))
-        
 
                 if (isSend == true) {
-                    viewModel.saveSendTokenSelection(wallet!!.address, token)
+                    if (token.tokenSymbol == getString(R.string.promo_source_token)) {
+                        showAlertWithoutIcon(message = getString(R.string.can_not_tranfer_token))
+             else {
+                        viewModel.saveSendTokenSelection(wallet!!.address, token)
+            
          else {
                     viewModel.saveTokenSelection(wallet!!.address, token, isSourceToken ?: false)
         

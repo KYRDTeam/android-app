@@ -11,7 +11,6 @@ import com.kyberswap.android.util.views.DateTimeHelper
 import kotlinx.android.parcel.Parcelize
 import org.consenlabs.tokencore.wallet.Wallet
 import org.jetbrains.annotations.NotNull
-import org.web3j.utils.Convert
 import java.math.BigDecimal
 
 @Parcelize
@@ -27,8 +26,6 @@ data class Wallet(
     val mnemonicAvailable: Boolean = false,
     var unit: String = "USD",
     var balance: String = "0",
-    @Embedded
-    var cap: Cap = Cap(),
     @Embedded
     var promo: Promo? = Promo(),
     val createAt: Long = 0
@@ -76,11 +73,4 @@ data class Wallet(
     val expiredDatePromoCode: String
         get() = DateTimeHelper.displayDate(promo?.expiredDate)
 
-
-    fun verifyCap(amount: BigDecimal): Boolean {
-        return Convert.toWei(amount, Convert.Unit.ETHER) <= Convert.toWei(
-            cap.cap,
-            Convert.Unit.GWEI
-        ) && !cap.rich
-    }
 }

@@ -1,23 +1,22 @@
-package com.kyberswap.android.domain.usecase.send
+package com.kyberswap.android.domain.usecase.swap
 
 import androidx.annotation.VisibleForTesting
 import com.kyberswap.android.domain.SchedulerProvider
-import com.kyberswap.android.domain.model.ResponseStatus
-import com.kyberswap.android.domain.model.Send
+import com.kyberswap.android.domain.model.Cap
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.SwapRepository
 import com.kyberswap.android.domain.usecase.SequentialUseCase
 import io.reactivex.Single
 import javax.inject.Inject
 
-class TransferTokenUseCase @Inject constructor(
+class GetCombinedCapUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val swapRepository: SwapRepository
-) : SequentialUseCase<TransferTokenUseCase.Param, ResponseStatus>(schedulerProvider) {
+) : SequentialUseCase<GetCombinedCapUseCase.Param, Cap>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    override fun buildUseCaseSingle(param: Param): Single<ResponseStatus> {
-        return swapRepository.transferToken(param)
+    override fun buildUseCaseSingle(param: Param): Single<Cap> {
+        return swapRepository.getCap(param)
     }
 
-    class Param(val wallet: Wallet, val send: Send)
+    class Param(val wallet: Wallet)
 }
