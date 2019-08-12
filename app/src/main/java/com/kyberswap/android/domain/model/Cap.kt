@@ -9,8 +9,14 @@ import java.math.BigDecimal
 data class Cap(
     val cap: BigDecimal = BigDecimal.ZERO,
     val kyced: Boolean = false,
-    val rich: Boolean = false
+    val rich: Boolean = false,
+    val volume: BigDecimal = BigDecimal.ZERO
 ) : Parcelable {
-    constructor(entity: CapEntity) : this(entity.cap, entity.kyced, entity.rich)
+    constructor(entity: CapEntity) : this(
+        entity.cap,
+        entity.kyced,
+        entity.rich,
+        entity.volume ?: BigDecimal.ZERO
+    )
 
 }

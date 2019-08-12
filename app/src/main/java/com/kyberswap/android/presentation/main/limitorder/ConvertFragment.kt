@@ -76,29 +76,6 @@ class ConvertFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.order = limitOrder
-
-//        limitOrder?.let { order ->
-//            val availableEth = order.ethToken.currentBalance.toDisplayNumber().exactAmount()
-//
-//            if (binding.tvEthBalance.text.toString() != availableEth) {
-//                binding.tvEthBalance.text =
-//                    String.format(getString(R.string.eth_balance), availableEth)
-//            }
-//
-//            val availableWeth = order.wethToken.currentBalance.toDisplayNumber().exactAmount()
-//
-//            if (binding.tvWethBalance.text.toString() != availableWeth) {
-//                binding.tvWethBalance.text =
-//                    String.format(getString(R.string.weth_balance), availableWeth)
-//            }
-//
-//            val minCovertAmount =
-//                binding.order?.minConvertedAmount.toBigDecimalOrDefaultZero()
-//            if (binding.edtConvertedAmount.text.toString() != minCovertAmount.toDisplayNumber()) {
-//                binding.edtConvertedAmount.setAmount(minCovertAmount.toDisplayNumber())
-//            }
-//        }
-
         wallet?.let {
             viewModel.getPendingBalances(it)
         }
@@ -244,6 +221,7 @@ class ConvertFragment : BaseFragment() {
                     }
 
                     else -> {
+
                         viewModel.convert(
                             wallet,
                             it,

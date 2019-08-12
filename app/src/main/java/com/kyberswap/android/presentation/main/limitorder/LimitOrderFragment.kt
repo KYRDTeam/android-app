@@ -210,6 +210,11 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                                     message = getString(R.string.limit_order_source_different_dest)
                                 )
                             }
+
+                            if (!state.order.isSameSourceDestToken(binding.order)) {
+                                hasUserFocus = false
+                            }
+
                             if (state.order.hasSamePair) {
                                 edtRate.setText("1")
                             }
@@ -398,10 +403,12 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         }
                     }
                     is GetRelatedOrdersState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
+                        if (!state.isNetworkUnAvailable) {
+                            showAlert(
+                                state.message ?: getString(R.string.something_wrong),
+                                R.drawable.ic_info_error
+                            )
+                        }
                     }
                 }
             }
@@ -422,10 +429,13 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
                     }
                     is CheckEligibleAddressState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
+                        if (!state.isNetworkUnavailable) {
+                            showAlert(
+                                state.message ?: getString(R.string.something_wrong),
+                                R.drawable.ic_info_error
+                            )
+                        }
+
                     }
                 }
             }
@@ -448,10 +458,12 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
                     }
                     is GetNonceState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
+                        if (!state.isNetworkUnAvailable) {
+                            showAlert(
+                                state.message ?: getString(R.string.something_wrong),
+                                R.drawable.ic_info_error
+                            )
+                        }
                     }
                 }
             }
@@ -520,10 +532,12 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
                     }
                     is GetMarketRateState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
+                        if (!state.isNetworkUnAvailable) {
+                            showAlert(
+                                state.message ?: getString(R.string.something_wrong),
+                                R.drawable.ic_info_error
+                            )
+                        }
                     }
                 }
             }
@@ -702,10 +716,12 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         }
                     }
                     is GetExpectedRateState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
+                        if (!state.isNetworkUnAvailable) {
+                            showAlert(
+                                state.message ?: getString(R.string.something_wrong),
+                                R.drawable.ic_info_error
+                            )
+                        }
                     }
                 }
             }
@@ -813,10 +829,12 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         }
                     }
                     is GetFeeState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
+                        if (!state.isNetworkUnAvailable) {
+                            showAlert(
+                                state.message ?: getString(R.string.something_wrong),
+                                R.drawable.ic_info_error
+                            )
+                        }
                     }
                 }
             }

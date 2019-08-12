@@ -100,6 +100,7 @@ class ManageWalletViewModel @Inject constructor(
     }
 
     private fun loadBalances(pair: Pair<Wallet, List<Token>>) {
+        numberOfToken = 0
         pair.second.forEach { token ->
             getTokenBalanceUseCase.execute(
                 Action {

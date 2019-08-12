@@ -4,6 +4,7 @@ import com.kyberswap.android.data.api.alert.AlertEntity
 import com.kyberswap.android.data.api.alert.AlertMethodsResponseEntity
 import com.kyberswap.android.data.api.alert.AlertResponseEntity
 import com.kyberswap.android.data.api.alert.LeaderBoardEntity
+import com.kyberswap.android.data.api.cap.CapEntity
 import com.kyberswap.android.data.api.user.KycResponseStatusEntity
 import com.kyberswap.android.data.api.user.LoginUserEntity
 import com.kyberswap.android.data.api.user.ResponseStatusEntity
@@ -143,11 +144,20 @@ interface UserApi {
         @Field("player_id") playerId: String
     ): Single<ResponseStatusEntity>
 
+    @GET("api/user_stats")
+    fun getUserStats(): Single<CapEntity>
+
     @GET("api/get_alert_methods")
     fun getAlertMethod(): Single<AlertMethodsResponseEntity>
 
     @Headers("Content-Type: application/json")
     @POST("api/update_alert_methods")
     fun updateAlertMethods(@Body rawJsonString: RequestBody): Single<ResponseStatusEntity>
+
+    @POST("api/transactions")
+    @FormUrlEncoded
+    fun submitTx(
+        @Field("tx_hash") tx: String
+    ): Single<ResponseStatusEntity>
 
 }

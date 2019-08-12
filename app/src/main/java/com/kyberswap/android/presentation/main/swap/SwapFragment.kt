@@ -36,6 +36,7 @@ import com.kyberswap.android.util.ext.*
 import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.android.synthetic.main.layout_expanable.*
 import net.cachapa.expandablelayout.ExpandableLayout
+import org.web3j.utils.Convert
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.concurrent.atomic.AtomicBoolean
@@ -136,7 +137,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                             }
 
                             viewModel.getSwapData(state.wallet, alertNotification)
-                            viewModel.getCap(state.wallet.address)
                         }
 
                     }
@@ -566,7 +566,31 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
 
         viewModel.getCapCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == GetCapState.Loading)
                 when (state) {
+                    is GetCapState.Success -> {
+
+                        if (state.cap.rich) {
+                            showAlertWithoutIcon(
+                                message =
+                                getString(R.string.cap_rich)
+                            )
+                        } else if (state.swap.equivalentETHWithPrecision > state.cap.cap) {
+                            val amount = Convert.fromWei(state.cap.cap, Convert.Unit.ETHER)
+                            showAlertWithoutIcon(
+                                message = String.format(
+                                    getString(R.string.cap_reduce_amount),
+                                    amount.toDisplayNumber()
+                                )
+                            )
+                        } else {
+                            viewModel.saveSwap(
+                                state.swap, true
+                            )
+                        }
+
+
+                    }
                     is GetCapState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
@@ -683,16 +707,23 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
 
                     }
                     else -> wallet?.let {
-                        viewModel.saveSwap(
-                            swap.copy(
-                                sourceAmount = (if (sourceAmount.toBigDecimalOrDefaultZero() > BigDecimal.ZERO) sourceAmount else edtSource.text.toString())
-                                    ?: "",
-                                destAmount = edtDest.text.toString(),
-                                minAcceptedRatePercent =
-                                getMinAcceptedRatePercent(rgRate.checkedRadioButtonId),
-                                gasPrice = getSelectedGasPrice(swap.gas, selectedGasFeeView?.id)
-                            ), true
+
+                        val data = swap.copy(
+                            sourceAmount = (if (sourceAmount.toBigDecimalOrDefaultZero() > BigDecimal.ZERO) sourceAmount else edtSource.text.toString())
+                                ?: "",
+                            destAmount = edtDest.text.toString(),
+                            minAcceptedRatePercent =
+                            getMinAcceptedRatePercent(rgRate.checkedRadioButtonId),
+                            gasPrice = getSelectedGasPrice(swap.gas, selectedGasFeeView?.id)
                         )
+
+                        if (!((data.tokenSource.isETH && data.tokenDest.isWETH) || (data.tokenSource.isWETH && data.tokenDest.isETH))) {
+                            viewModel.getCap(it, data)
+                        } else {
+                            viewModel.saveSwap(
+                                data, true
+                            )
+                        }
                     }
                 }
             }

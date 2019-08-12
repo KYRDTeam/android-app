@@ -107,7 +107,10 @@ object DataModule {
         mapper: GasMapper,
         capMapper: CapMapper,
         tokenClient: TokenClient,
-        transactionDao: TransactionDao
+        transactionDao: TransactionDao,
+        userDao: UserDao,
+        userApi: UserApi,
+        userMapper: UserMapper
     ): SwapRepository =
         SwapDataRepository(
             context,
@@ -120,7 +123,10 @@ object DataModule {
             mapper,
             capMapper,
             tokenClient,
-            transactionDao
+            transactionDao,
+            userDao,
+            userApi,
+            userMapper
         )
 
     @Singleton

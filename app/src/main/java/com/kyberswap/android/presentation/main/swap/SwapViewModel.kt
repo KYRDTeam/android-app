@@ -30,10 +30,10 @@ class SwapViewModel @Inject constructor(
     private val getMarketRate: GetMarketRateUseCase,
     private val saveSwapUseCase: SaveSwapUseCase,
     private val getGasPriceUseCase: GetGasPriceUseCase,
-    private val getCapUseCase: GetCapUseCase,
     private val estimateGasUseCase: EstimateGasUseCase,
     private val getAlertUseCase: GetAlertUseCase,
     private val estimateAmountUseCase: EstimateAmountUseCase,
+    private val getCombinedCapUseCase: GetCombinedCapUseCase,
     getWalletUseCase: GetSelectedWalletUseCase
 ) : SelectedWalletViewModel(getWalletUseCase) {
 
@@ -101,20 +101,6 @@ class SwapViewModel @Inject constructor(
                 GetMarketRateUseCase.Param(swap.tokenSource.tokenSymbol, swap.tokenDest.tokenSymbol)
             )
         }
-    }
-
-    fun getCap(address: String?) {
-        getCapUseCase.dispose()
-        getCapUseCase.execute(
-            Consumer {
-                _getCapCallback.value = Event(GetCapState.Success(it))
-            },
-            Consumer {
-                it.printStackTrace()
-                _getCapCallback.value = Event(GetCapState.ShowError(it.localizedMessage))
-            },
-            GetCapUseCase.Param(address)
-        )
     }
 
     fun getSwapData(wallet: Wallet, alert: NotificationAlert? = null) {
@@ -277,9 +263,22 @@ class SwapViewModel @Inject constructor(
         saveSwapUseCase.dispose()
         getGasPriceUseCase.dispose()
         estimateGasUseCase.dispose()
-        getCapUseCase.dispose()
         getAlertUseCase.dispose()
         compositeDisposable.dispose()
         super.onCleared()
+    }
+
+    fun getCap(wallet: Wallet, swap: Swap) {
+        _getCapCallback.postValue(Event(GetCapState.Loading))
+        getCombinedCapUseCase.execute(
+            Consumer {
+                _getCapCallback.value = Event(GetCapState.Success(it, swap))
+            },
+            Consumer {
+                it.printStackTrace()
+                _getCapCallback.value = Event(GetCapState.ShowError(it.localizedMessage))
+            },
+            GetCombinedCapUseCase.Param(wallet)
+        )
     }
 }

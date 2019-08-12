@@ -17,6 +17,7 @@ open class ImportWalletViewModel @Inject constructor(
     private var numberOfToken = 0
 
     fun loadBalances(pair: Pair<Wallet, List<Token>>) {
+        numberOfToken = 0
         pair.second.forEach { token ->
             getTokenBalanceUseCase.execute(
                 Action {
