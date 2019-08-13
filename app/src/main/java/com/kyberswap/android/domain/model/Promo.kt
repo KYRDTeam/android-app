@@ -16,12 +16,12 @@ data class Promo(
     val error: String? = ""
 ) : Parcelable {
     constructor(entity: PromoEntity) : this(
-        entity.privateKey,
-        entity.expiredDate,
-        entity.destinationToken,
-        entity.description,
-        entity.type,
-        entity.receiveAddress,
+        entity.privateKey ?: "",
+        entity.expiredDate ?: "",
+        entity.destinationToken ?: "",
+        entity.description ?: "",
+        entity.type ?: "",
+        entity.receiveAddress ?: "",
         entity.error
     )
 

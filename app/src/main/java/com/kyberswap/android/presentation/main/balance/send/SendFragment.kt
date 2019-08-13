@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.google.zxing.integration.android.IntentIntegrator
 import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.textChanges
@@ -34,6 +35,7 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.*
 import kotlinx.android.synthetic.main.fragment_send.*
 import net.cachapa.expandablelayout.ExpandableLayout
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -98,14 +100,12 @@ class SendFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
-                        if (!state.wallet.isSameWallet(wallet)) {
-                            wallet = state.wallet
-                            binding.edtSource.setText("")
-                            binding.walletName = wallet?.name
-                            wallet?.let {
-                                viewModel.getSendInfo(it.address)
-                    
+                        wallet = state.wallet
+                        wallet?.let {
+                            viewModel.getSendInfo(it)
                 
+                        binding.edtSource.setText("")
+                        binding.walletName = wallet?.name
 
             
                     is GetWalletState.ShowError -> {
@@ -120,8 +120,10 @@ class SendFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSendState.Success -> {
+                        Timber.e(Gson().toJson(state.send))
                         if (!state.send.isSameTokenPair(binding.send)) {
                             binding.send = state.send
+                            binding.executePendingBindings()
                             edtSource.setAmount(state.send.sourceAmount)
 
                             if (state.send.contact.address.isNotBlank()) {

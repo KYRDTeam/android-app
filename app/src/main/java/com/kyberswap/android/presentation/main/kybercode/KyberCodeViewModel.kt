@@ -8,6 +8,7 @@ import com.kyberswap.android.domain.usecase.wallet.ApplyKyberCodeUseCase
 import com.kyberswap.android.presentation.common.Event
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
+import org.consenlabs.tokencore.wallet.model.TokenException
 import javax.inject.Inject
 
 class KyberCodeViewModel @Inject constructor(
@@ -57,7 +58,12 @@ class KyberCodeViewModel @Inject constructor(
     ,
             Consumer {
                 it.printStackTrace()
-                _getKyberCodeCallback.value = Event(KyberCodeState.ShowError(it.localizedMessage))
+                if (it is TokenException) {
+                    _getKyberCodeCallback.value = Event(KyberCodeState.ShowError(it.message))
+         else {
+                    _getKyberCodeCallback.value = Event(KyberCodeState.ShowError(it.localizedMessage))
+        
+
     ,
             ApplyKyberCodeUseCase.Param(kyberCode, walletName)
         )

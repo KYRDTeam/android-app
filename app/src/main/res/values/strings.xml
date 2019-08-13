@@ -481,7 +481,7 @@
     <string name="setting_rate_my_app">https://play.google.com/store/apps/details?id=com.kyberswap.android</string>
     <string name="order_why_order_not_filled">https://kyberswap.com/faq#I-submitted-the-limit-order-but-it-was-not-triggered-even-though-my-desired-price-was-hit</string>
     <string name="extra_url">https://kyberswap.com/faq#Why-received-amount-is-higher-than-estimated-amount</string>
-    <string name="order_fee_url">https://kyberswap.com/faq#Why-received-amount-is-higher-than-estimated-amount</string>
+    <string name="order_fee_url">https://kyberswap.com/faq#I-have-KNC-in-my-wallet-Do-I-get-any-discount-on-trading-fees</string>
     <string name="same_token_pair_url">https://kyberswap.com/faq#can-I-submit-multiple-limit-orders-for-same-token-pair</string>
     <string name="item_token_header_bal">Bal</string>
     <string name="token_new">New</string>
@@ -601,6 +601,10 @@
     <string name="cap_rich">Sorry, you have already reached your daily limit. Please wait for few hours or complete your profile verification to swap more.</string>
     <string name="cap_reduce_amount">Sorry, we are unable to handle such a big amount. Please reduce the amount to less than %s ETH and try again.</string>
     <string name="no_internet_connect">Please check your internet connection</string>
+    <string name="wallet_exist">You already added this address to wallets</string>
+    <string name="fail_import_private_key">Failed to import private key</string>
+    <string name="fail_import_mnemonic">Please check your seeds/mnemonic again.</string>
+    <string name="fail_import_json">Fail to import json file</string>
 
 
 </resources>

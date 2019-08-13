@@ -23,7 +23,6 @@ import org.consenlabs.tokencore.wallet.model.BIP44Util
 import org.consenlabs.tokencore.wallet.model.ChainType
 import org.consenlabs.tokencore.wallet.model.Metadata
 import org.consenlabs.tokencore.wallet.model.Network
-import timber.log.Timber
 import java.io.File
 import java.security.SecureRandom
 import javax.inject.Inject
@@ -99,7 +98,7 @@ class WalletDataRepository @Inject constructor(
                 param.seed,
                 BIP44Util.ETHEREUM_PATH,
                 generatedPassword,
-                true
+                false
             )
 
             val wallet = Wallet(
@@ -135,7 +134,7 @@ class WalletDataRepository @Inject constructor(
                         metadata,
                         param.promo.privateKey,
                         generatedPassword,
-                        true
+                        false
                     )
 
 
@@ -144,12 +143,11 @@ class WalletDataRepository @Inject constructor(
                         metadata,
                         param.privateKey,
                         generatedPassword,
-                        true
+                        false
                     )
 
         
 
-            Timber.e(param.walletName)
             val wallet = Wallet(
                 importWalletFromPrivateKey.address.toWalletAddress(),
                 importWalletFromPrivateKey.id,
@@ -184,7 +182,7 @@ class WalletDataRepository @Inject constructor(
                 metadata,
                 keystoreContent,
                 param.password,
-                true
+                false
             )
 
 

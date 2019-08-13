@@ -17,6 +17,7 @@ import com.kyberswap.android.presentation.landing.ImportWalletState
 import com.kyberswap.android.presentation.listener.addTextChangeListener
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_import_seed.*
+import org.consenlabs.tokencore.wallet.model.Messages
 import javax.inject.Inject
 
 class ImportSeedFragment : BaseFragment() {
@@ -95,9 +96,29 @@ class ImportSeedFragment : BaseFragment() {
                 
             
                     is ImportWalletState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        val message = when (state.message) {
+                            Messages.WALLET_EXISTS -> {
+                                getString(R.string.wallet_exist)
+                    
+
+                            Messages.PRIVATE_KEY_INVALID -> {
+                                getString(R.string.fail_import_private_key)
+                    
+
+                            Messages.MNEMONIC_BAD_WORD -> {
+                                getString(R.string.fail_import_mnemonic)
+                    
+
+                            Messages.MAC_UNMATCH -> {
+                                getString(R.string.fail_import_json)
+                    
+                            else -> {
+                                state.message ?: getString(R.string.something_wrong)
+                    
+
+                
+                        showAlertWithoutIcon(
+                            message = message
                         )
             
         

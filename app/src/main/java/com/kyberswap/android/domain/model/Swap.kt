@@ -314,7 +314,7 @@ data class Swap(
         this.minAcceptedRatePercent = ""
     }
 
-    private fun getExpectedAmount(expectedRate: String?, amount: String?): BigDecimal {
+    fun getExpectedAmount(expectedRate: String?, amount: String?): BigDecimal {
         return amount.toBigDecimalOrDefaultZero()
             .multiply(expectedRate.toBigDecimalOrDefaultZero())
     }

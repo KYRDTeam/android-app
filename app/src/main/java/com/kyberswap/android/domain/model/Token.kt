@@ -132,7 +132,8 @@ data class Token(
 
     fun updateSelectedWallet(wallet: Wallet?): Token {
         if (wallet == null) return this
-        val walletBalances = wallets.map {
+        val walletBalances =
+            wallets.map {
             it.copy(isSelected = false)
 .toMutableList()
 

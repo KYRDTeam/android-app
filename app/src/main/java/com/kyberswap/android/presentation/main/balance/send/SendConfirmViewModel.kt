@@ -29,7 +29,7 @@ class SendConfirmViewModel @Inject constructor(
         get() = _transferTokenTransactionCallback
 
 
-    fun getSendData(address: String) {
+    fun getSendData(wallet: Wallet) {
         getSendTokenUseCase.execute(
             Consumer {
                 _getSendCallback.value = Event(GetSendState.Success(it))
@@ -38,7 +38,7 @@ class SendConfirmViewModel @Inject constructor(
                 it.printStackTrace()
                 _getSendCallback.value = Event(GetSendState.ShowError(it.localizedMessage))
     ,
-            GetSendTokenUseCase.Param(address)
+            GetSendTokenUseCase.Param(wallet)
         )
     }
 

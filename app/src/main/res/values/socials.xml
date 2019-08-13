@@ -2,7 +2,7 @@
 <resources>
     <string name="facebook_app_id"></string>
     <string name="fb_login_protocol_scheme">fb</string>
-    <string name="server_client_id" translatable="false">1038789996561-rti8e5cggbiajf45ijhjngd0ubuhub9r.apps.googleusercontent.com</string>
+    <string name="server_client_id" translatable="false"></string>
     <string name="twitter_consumer_key" translatable="false"></string>
     <string name="twitter_consumer_secret" translatable="false"></string>
 </resources>

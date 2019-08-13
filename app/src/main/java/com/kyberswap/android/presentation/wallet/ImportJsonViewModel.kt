@@ -5,6 +5,7 @@ import com.kyberswap.android.domain.usecase.token.GetTokenBalanceUseCase
 import com.kyberswap.android.domain.usecase.wallet.ImportWalletFromJsonUseCase
 import com.kyberswap.android.presentation.landing.ImportWalletState
 import io.reactivex.functions.Consumer
+import org.consenlabs.tokencore.wallet.model.TokenException
 import javax.inject.Inject
 
 class ImportJsonViewModel @Inject constructor(
@@ -19,8 +20,11 @@ class ImportJsonViewModel @Inject constructor(
                 loadBalances(it)
     ,
             Consumer {
-                it.printStackTrace()
-                importWalletCallback.value = ImportWalletState.ShowError(it.localizedMessage)
+                if (it is TokenException) {
+                    importWalletCallback.value = ImportWalletState.ShowError(it.message)
+         else {
+                    importWalletCallback.value = ImportWalletState.ShowError(it.localizedMessage)
+        
     ,
             ImportWalletFromJsonUseCase.Param(uri, password, walletName)
         )

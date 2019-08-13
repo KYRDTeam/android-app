@@ -21,7 +21,6 @@ import com.kyberswap.android.presentation.main.swap.*
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
-import timber.log.Timber
 import java.math.BigInteger
 import javax.inject.Inject
 
@@ -74,7 +73,7 @@ class SendViewModel @Inject constructor(
         _currentSelection.value = Event(contact)
     }
 
-    fun getSendInfo(address: String) {
+    fun getSendInfo(wallet: Wallet) {
         getSendTokenUseCase.dispose()
         getSendTokenUseCase.execute(
             Consumer {
@@ -86,7 +85,7 @@ class SendViewModel @Inject constructor(
                 it.printStackTrace()
                 _getSendCallback.value = Event(GetSendState.ShowError(it.localizedMessage))
     ,
-            GetSendTokenUseCase.Param(address)
+            GetSendTokenUseCase.Param(wallet)
         )
     }
 
@@ -176,7 +175,6 @@ class SendViewModel @Inject constructor(
         estimateTransferGasUseCase.dispose()
         estimateTransferGasUseCase.execute(
             Consumer {
-                Timber.e(it.amountUsed.toString())
                 val gasLimit = calculateDefaultGasLimitTransfer(send.tokenSource)
                     .min(it.amountUsed.multiply(120.toBigInteger()).divide(100.toBigInteger()))
 

@@ -105,14 +105,10 @@ class SettingFragment : BaseFragment() {
 
 
         binding.lnSupport.setOnClickListener {
-            if (hasUserInfo) {
-                val emailIntent =
-                    Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:support@kyber.network"))
+            val emailIntent =
+                Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:support@kyber.network"))
 
-                startActivity(Intent.createChooser(emailIntent, "Chooser Title"))
-     else {
-                showAlertWithoutIcon(message = getString(R.string.setting_support_message))
-    
+            startActivity(Intent.createChooser(emailIntent, "Chooser Title"))
 
 
         binding.lnChangePin.setOnClickListener {

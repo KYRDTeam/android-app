@@ -64,8 +64,6 @@ class TransactionDataRepository @Inject constructor(
 
                         transactionDao.delete(it)
                         val updatedStatus = tx.copy(transactionStatus = "")
-                        Timber.e(updatedStatus.blockNumber)
-                        Timber.e(Gson().toJson(updatedStatus))
                         transactionDao.insertTransaction(updatedStatus)
 //                        sendNotification(updatedStatus)
                         updateBalance(it, param.wallet)

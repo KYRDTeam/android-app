@@ -52,8 +52,8 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
         wallet = intent.getParcelableExtra(WALLET_PARAM)
         isContactExist = intent.getBooleanExtra(CONTACT_EXIST_PARAM, false)
         binding.isContactExist = isContactExist
-        wallet?.apply {
-            viewModel.getSendData(this.address)
+        wallet?.let {
+            viewModel.getSendData(it)
 
 
 

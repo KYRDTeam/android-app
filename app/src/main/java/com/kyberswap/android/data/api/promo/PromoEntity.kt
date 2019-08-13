@@ -5,17 +5,17 @@ import com.google.gson.annotations.SerializedName
 
 data class PromoEntity(
     @SerializedName("private_key")
-    val privateKey: String = "",
+    val privateKey: String? = "",
     @SerializedName("expired_date")
-    val expiredDate: String = "",
+    val expiredDate: String? = "",
     @SerializedName("destination_token")
-    val destinationToken: String = "",
+    val destinationToken: String? = "",
     @SerializedName("description")
-    val description: String = "",
+    val description: String? = "",
     @SerializedName("type")
-    val type: String = "",
+    val type: String? = "",
     @SerializedName("receive_address")
-    val receiveAddress: String = "",
+    val receiveAddress: String? = "",
     @SerializedName("error")
     var error: String? = ""
 )

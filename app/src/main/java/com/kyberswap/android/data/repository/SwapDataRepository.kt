@@ -94,20 +94,39 @@ class SwapDataRepository @Inject constructor(
     override fun getSendData(param: GetSendTokenUseCase.Param): Flowable<Send> {
 
 
-        val send = sendTokenDao.findSendByAddress(param.walletAddress)
+        val send = sendTokenDao.findSendByAddress(param.wallet.address)
         val defaultSend = if (send == null) {
             val defaultSourceToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
             Send(
-                param.walletAddress,
+                param.wallet.address,
                 defaultSourceToken
             )
  else {
             send
 
-        sendTokenDao.insertSend(defaultSend)
 
-        return sendTokenDao.findSendByAddressFlowable(param.walletAddress).defaultIfEmpty(
+
+        val wallet = param.wallet
+
+        val sendByWallet = if (defaultSend.tokenSource.selectedWalletAddress != wallet.address) {
+            defaultSend.copy(tokenSource = defaultSend.tokenSource.updateSelectedWallet(wallet))
+ else {
             defaultSend
+
+
+        val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
+        val eth = if (ethToken.selectedWalletAddress != wallet.address) {
+            ethToken.updateSelectedWallet(wallet)
+ else {
+            ethToken
+
+
+        val updatedSend = sendByWallet.copy(ethToken = eth)
+
+        sendTokenDao.insertSend(updatedSend)
+
+        return sendTokenDao.findSendByAddressFlowable(param.wallet.address).defaultIfEmpty(
+            updatedSend
         )
     }
 

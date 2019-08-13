@@ -168,11 +168,11 @@
                     tools:ignore="SmallSp" />
 
                 <LinearLayout
-                    android:paddingBottom="40dp"
                     android:id="@+id/lnVerify"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
+                    android:paddingBottom="40dp"
                     app:layout_constraintEnd_toEndOf="@+id/tvName"
                     app:layout_constraintStart_toStartOf="@+id/imgProfile"
                     app:layout_constraintTop_toBottomOf="@+id/view13">
