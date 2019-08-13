@@ -6,7 +6,7 @@ import java.math.BigDecimal
 
 @Parcelize
 data class WalletBalance(
-    val walletAddress: String,
+    val walletAddress: String = "",
     val currentBalance: BigDecimal = BigDecimal.ZERO,
     val isSelected: Boolean = false
 ) : Parcelable {

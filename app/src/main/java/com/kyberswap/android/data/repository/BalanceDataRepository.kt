@@ -148,7 +148,6 @@ class BalanceDataRepository @Inject constructor(
         val selectedWallet = wallets.find { it.isSelected }
 
         return if (selectedWallet?.address == localSelected?.address) {
-            Timber.e("selectedWallet?.address == localSelected?.address")
             val currentFavs = tokenDao.allTokens.map {
                 it.tokenSymbol to it.fav
             }.toMap()
@@ -160,7 +159,6 @@ class BalanceDataRepository @Inject constructor(
             })
             listedTokens
         } else {
-            Timber.e("updateBalance")
             updateBalance(remoteTokens, currentWallets)
         }
 

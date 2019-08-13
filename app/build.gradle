@@ -12,7 +12,7 @@ apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 android {
     signingConfigs {
         releseconfig {
-            storeFile file('/Users/steve/KyberNetwork/Docs/Android KeyStore/Untitled')
+            storeFile file('/Users/steve/KyberNetwork/Docs/Android KeyStore/android_keystore')
             storePassword 'android@kyberswap'
             keyPassword 'android@kyber.network'
             keyAlias = 'kyberswapandroid'
@@ -26,9 +26,9 @@ android {
         applicationId "com.kyberswap.android"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        def versionMajor = 0
+        def versionMajor = 1
         def versionMinor = 0
-        def versionPatch = 1
+        def versionPatch = 0
         versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch * 1
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         vectorDrawables.useSupportLibrary = true
@@ -65,15 +65,15 @@ android {
             shrinkResources false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.releseconfig
         }
         release {
             debuggable false
             multiDexEnabled true
-            shrinkResources true
-            minifyEnabled true
+            shrinkResources false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.releseconfig//todo release signing
+            signingConfig signingConfigs.releseconfig
         }
     }
 
@@ -95,7 +95,7 @@ android {
         }
         prod {
             manifestPlaceholders = [
-                    onesignal_app_id               : '72a48223-d8a5-4cb5-8bbf-759b7cf4ce6b',
+                    onesignal_app_id               : 'd0b1db9e-1a77-4386-b32a-b27cac1d8bdb',
                     onesignal_google_project_number: 'REMOTE'
             ]
 
@@ -269,6 +269,8 @@ dependencies {
     implementation project(path: ':pinlockview')
 
     implementation 'com.onesignal:OneSignal:3.11.0'
+
+
 }
 
 

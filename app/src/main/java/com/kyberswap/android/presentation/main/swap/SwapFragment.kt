@@ -37,6 +37,7 @@ import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.android.synthetic.main.layout_expanable.*
 import net.cachapa.expandablelayout.ExpandableLayout
 import org.web3j.utils.Convert
+import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.concurrent.atomic.AtomicBoolean
@@ -231,14 +232,13 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                         if (swap.hasSamePair) {
                             edtDest.setText(text)
                         } else {
-                            edtDest.setAmount(swap.getExpectedDestAmount(text.toString().toBigDecimalOrDefaultZero()).toDisplayNumber())
-                            viewModel.getExpectedRate(
-                                swap,
-                                if (text.isNullOrEmpty())
-                                    swap.getDefaultSourceAmount(getString(R.string.default_source_amount))
-                                        .toDisplayNumber() else
+                            edtDest.setAmount(
+                                swap.getExpectedAmount(
+                                    binding.tvRate.text.toString(),
                                     text.toString()
+                                ).toDisplayNumber()
                             )
+                            getRate(swap)
                             wallet?.let {
 
                                 val updatedSwap = swap.copy(
@@ -359,6 +359,11 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                             }
 
                         if (swap != null) {
+                            if (swap != binding.swap) {
+                                binding.swap = swap
+                                binding.executePendingBindings()
+                            }
+
                             if (destLock.get() || currentFocus == binding.edtDest) {
                                 sourceAmount = edtDest.toBigDecimalOrDefaultZero().divide(
                                     swap.expectedRate.toBigDecimalOrDefaultZero(),
@@ -370,7 +375,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                                 )
                             } else {
                                 edtDest.setAmount(
-                                    binding.swap?.getExpectedDestAmount(edtSource.toBigDecimalOrDefaultZero())?.toDisplayNumber()
+                                    binding.swap?.getExpectedAmount(
+                                        tvRate.text.toString(),
+                                        edtSource.text.toString()
+                                    )?.toDisplayNumber()
                                 )
                             }
 
@@ -386,10 +394,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                             tvRevertNotification.text =
                                 getRevertNotification(rgRate.checkedRadioButtonId)
 
-                            if (swap != binding.swap) {
-                                binding.swap = swap
-                                binding.executePendingBindings()
-                            }
 
                         }
 
@@ -622,6 +626,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
                     is EstimateAmountState.Success -> {
                         sourceAmount = state.amount
                         edtSource.setAmount(displaySourceAmount)
+                        if (binding.swap != null) {
+                            getRate(binding.swap!!)
+                        }
 
                     }
                     is EstimateAmountState.ShowError -> {

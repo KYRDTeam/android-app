@@ -104,12 +104,16 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
             if (rateText.toBigDecimalOrDefaultZero() == BigDecimal.ZERO) {
                 BigDecimal.ZERO.toString()
             } else {
-                dstAmount.toBigDecimalOrDefaultZero()
-                    .divide(
-                        rateText.toBigDecimalOrDefaultZero(),
-                        18,
-                        RoundingMode.UP
-                    ).toDisplayNumber()
+                if (rateText.toDoubleOrDefaultZero() != 0.0) {
+                    dstAmount.toBigDecimalOrDefaultZero()
+                        .divide(
+                            rateText.toBigDecimalOrDefaultZero(),
+                            18,
+                            RoundingMode.UP
+                        ).toDisplayNumber()
+                } else {
+                    ""
+                }
             }
 
     private val dstAmount: String
