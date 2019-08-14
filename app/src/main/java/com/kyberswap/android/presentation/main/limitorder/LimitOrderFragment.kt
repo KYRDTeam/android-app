@@ -30,10 +30,7 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainPagerAdapter
 import com.kyberswap.android.presentation.main.profile.UserInfoState
-import com.kyberswap.android.presentation.main.swap.GetExpectedRateState
-import com.kyberswap.android.presentation.main.swap.GetGasLimitState
-import com.kyberswap.android.presentation.main.swap.GetGasPriceState
-import com.kyberswap.android.presentation.main.swap.GetMarketRateState
+import com.kyberswap.android.presentation.main.swap.*
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.*
@@ -372,6 +369,22 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
             hasUserFocus = false
 
         }
+
+        viewModel.swapTokenTransactionCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is SwapTokenTransactionState.Success -> {
+                        getLimitOrder()
+                    }
+                    is SwapTokenTransactionState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+                    }
+                }
+            }
+        })
 
         binding.rvRelatedOrder.layoutManager = LinearLayoutManager(
             activity,

@@ -381,7 +381,8 @@ class LimitOrderViewModel @Inject constructor(
     fun saveLimitOrder(
         order: LocalLimitOrder,
         fromContinue: Boolean = false,
-        fromConvert: Boolean = false
+        fromConvert: Boolean = false,
+        fromSwitchToken: Boolean = false
     ) {
 
         saveLimitOrderUseCase.execute(
@@ -389,7 +390,7 @@ class LimitOrderViewModel @Inject constructor(
                 if (fromContinue) {
                     _saveOrderCallback.value = Event(SaveLimitOrderState.Success(""))
                 }
-                if (fromConvert) {
+                if (fromSwitchToken) {
                     _swapTokenTransactionCallback.value =
                         Event(SwapTokenTransactionState.Success())
                 }
