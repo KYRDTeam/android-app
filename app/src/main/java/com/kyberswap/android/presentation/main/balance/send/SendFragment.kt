@@ -13,7 +13,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
 import com.google.zxing.integration.android.IntentIntegrator
 import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.textChanges
@@ -35,7 +34,6 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.*
 import kotlinx.android.synthetic.main.fragment_send.*
 import net.cachapa.expandablelayout.ExpandableLayout
-import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -95,6 +93,7 @@ class SendFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
 
         viewModel.getSelectedWallet()
+        viewModel.getContact()
 
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -106,6 +105,7 @@ class SendFragment : BaseFragment() {
                 
                         binding.edtSource.setText("")
                         binding.walletName = wallet?.name
+
 
             
                     is GetWalletState.ShowError -> {
@@ -120,7 +120,6 @@ class SendFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSendState.Success -> {
-                        Timber.e(Gson().toJson(state.send))
                         if (!state.send.isSameTokenPair(binding.send)) {
                             binding.send = state.send
                             binding.executePendingBindings()
@@ -352,7 +351,7 @@ class SendFragment : BaseFragment() {
 
         binding.rvContact.adapter = contactAdapter
 
-        wallet?.address?.let { viewModel.getContact(it) }
+
         viewModel.getContactCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -429,28 +428,40 @@ class SendFragment : BaseFragment() {
     )
 
         binding.tvContinue.setOnClickListener {
-            when {
-                edtSource.text.isNullOrEmpty() -> showAlertWithoutIcon(
-                    title = getString(R.string.invalid_amount),
-                    message = getString(R.string.specify_amount)
-                )
-                edtAddress.text.isNullOrEmpty() -> showAlertWithoutIcon(
-                    title = getString(R.string.invalid_contact_address_title),
-                    message = getString(R.string.specify_contact_address)
-                )
-                binding.edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.send?.tokenSource?.currentBalance -> {
-                    showAlertWithoutIcon(
-                        title = getString(R.string.title_amount_too_big),
-                        message = getString(R.string.exceed_balance)
+
+            binding.send?.let { send ->
+                when {
+                    edtSource.text.isNullOrEmpty() -> showAlertWithoutIcon(
+                        title = getString(R.string.invalid_amount),
+                        message = getString(R.string.specify_amount)
                     )
-        
-                !onlyAddress(edtAddress.text.toString()).isContact() -> showAlertWithoutIcon(
-                    title = getString(R.string.invalid_contact_address_title),
-                    message = getString(R.string.specify_contact_address)
-                )
-                hasPendingTransaction -> showAlertWithoutIcon(message = getString(R.string.pending_transaction))
-                else -> {
-                    binding.send?.let { send ->
+                    edtAddress.text.isNullOrEmpty() -> showAlertWithoutIcon(
+                        title = getString(R.string.invalid_contact_address_title),
+                        message = getString(R.string.specify_contact_address)
+                    )
+                    binding.edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.send?.tokenSource?.currentBalance -> {
+                        showAlertWithoutIcon(
+                            title = getString(R.string.title_amount_too_big),
+                            message = getString(R.string.exceed_balance)
+                        )
+            
+                    !onlyAddress(edtAddress.text.toString()).isContact() -> showAlertWithoutIcon(
+                        title = getString(R.string.invalid_contact_address_title),
+                        message = getString(R.string.specify_contact_address)
+                    )
+
+                    send.copy(
+                        gasPrice = getSelectedGasPrice(
+                            send.gas,
+                            selectedGasFeeView?.id
+                        )
+                    ).insufficientEthBalance -> showAlertWithoutIcon(
+                        getString(R.string.insufficient_eth),
+                        getString(R.string.not_enough_eth_blance)
+                    )
+
+                    hasPendingTransaction -> showAlertWithoutIcon(message = getString(R.string.pending_transaction))
+                    else -> {
                         viewModel.saveSend(
                             send.copy(
                                 sourceAmount = edtSource.text.toString(),
@@ -462,6 +473,7 @@ class SendFragment : BaseFragment() {
             
         
     
+
 
 
         binding.grBalance.setAllOnClickListener {

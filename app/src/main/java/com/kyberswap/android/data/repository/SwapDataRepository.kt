@@ -20,7 +20,6 @@ import com.kyberswap.android.domain.usecase.swap.*
 import com.kyberswap.android.presentation.common.DEFAULT_NAME
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
-import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -92,8 +91,6 @@ class SwapDataRepository @Inject constructor(
     }
 
     override fun getSendData(param: GetSendTokenUseCase.Param): Flowable<Send> {
-
-
         val send = sendTokenDao.findSendByAddress(param.wallet.address)
         val defaultSend = if (send == null) {
             val defaultSourceToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
@@ -275,12 +272,7 @@ class SwapDataRepository @Inject constructor(
                 param.send.estimateSource.toBigDecimalOrDefaultZero().times(
                     BigDecimal.TEN.pow(param.send.tokenSource.tokenDecimal)
                 ).toBigInteger().toString(),
-                param.send.tokenSource.isETH,
-                Convert.toWei(
-                    param.send.gasPrice.toBigDecimalOrDefaultZero(),
-                    Convert.Unit.GWEI
-                ).toBigInteger(),
-                param.send.gasLimit.toBigIntegerOrDefaultZero()
+                param.send.tokenSource.isETH
             )
 
     }

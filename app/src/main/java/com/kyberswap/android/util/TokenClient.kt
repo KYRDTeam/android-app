@@ -212,17 +212,15 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         walletAddress: String,
         contractAddress: String,
         value: String,
-        isEth: Boolean,
-        gasLimit: BigInteger,
-        gasPrice: BigInteger
+        isEth: Boolean
     ): EthEstimateGas? {
 
         return web3j.ethEstimateGas(
             Transaction(
                 walletAddress,
                 null,
-                gasPrice,
-                gasLimit,
+                null,
+                null,
                 contractAddress,
                 if (isEth) value.toBigIntegerOrDefaultZero() else BigInteger.ZERO,
                 FunctionEncoder.encode(transfer(contractAddress, value))

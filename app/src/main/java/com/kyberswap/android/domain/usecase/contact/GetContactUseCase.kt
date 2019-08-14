@@ -17,5 +17,5 @@ class GetContactUseCase @Inject constructor(
         return contactRepository.getContacts(param)
     }
 
-    class Param(val walletAddress: String)
+    class Param
 }

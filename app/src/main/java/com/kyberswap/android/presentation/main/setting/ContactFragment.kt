@@ -78,7 +78,7 @@ class ContactFragment : BaseFragment() {
                 when (state) {
                     is GetWalletState.Success -> {
                         this.wallet = state.wallet
-                        viewModel.getContact(state.wallet.address)
+                        viewModel.getContact()
             
                     is GetWalletState.ShowError -> {
 

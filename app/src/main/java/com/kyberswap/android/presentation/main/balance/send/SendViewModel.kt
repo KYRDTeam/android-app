@@ -157,7 +157,7 @@ class SendViewModel @Inject constructor(
 
     }
 
-    fun getContact(walletAddress: String) {
+    fun getContact() {
         getContactUseCase.execute(
             Consumer {
                 _getContactCallback.value = Event(GetContactState.Success(it))
@@ -166,7 +166,7 @@ class SendViewModel @Inject constructor(
                 it.printStackTrace()
                 _getContactCallback.value = Event(GetContactState.ShowError(it.localizedMessage))
     ,
-            GetContactUseCase.Param(walletAddress)
+            GetContactUseCase.Param()
         )
     }
 
