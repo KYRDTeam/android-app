@@ -20,13 +20,11 @@ import com.kyberswap.android.BR
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentSwapBinding
 import com.kyberswap.android.domain.SchedulerProvider
-import com.kyberswap.android.domain.model.Gas
-import com.kyberswap.android.domain.model.NotificationAlert
-import com.kyberswap.android.domain.model.Swap
-import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.DEFAULT_ACCEPT_RATE_PERCENTAGE
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
+import com.kyberswap.android.presentation.common.WalletObserver
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.alert.GetAlertState
@@ -36,6 +34,9 @@ import com.kyberswap.android.util.ext.*
 import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.android.synthetic.main.layout_expanable.*
 import net.cachapa.expandablelayout.ExpandableLayout
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.web3j.utils.Convert
 import timber.log.Timber
 import java.math.BigDecimal
@@ -44,7 +45,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 
-class SwapFragment : BaseFragment(), PendingTransactionNotification {
+class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObserver {
 
     private lateinit var binding: FragmentSwapBinding
 
@@ -162,6 +163,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
 
                             // Token pair change need to reset rate and get the new one
                             binding.swap = state.swap.copy(marketRate = "", expectedRate = "")
+
                             binding.executePendingBindings()
                             sourceAmount = state.swap.sourceAmount
                             getRate(state.swap)
@@ -742,6 +744,23 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
 
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: WalletChangeEvent) {
+        Timber.e("WalletChangeEvent")
+        getSwap()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
     fun getSelectedWallet() {
         viewModel.getSelectedWallet()
     }
@@ -751,6 +770,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification {
             viewModel.getSwapData(it)
         }
 
+    }
+
+    override fun refresh() {
+        getSwap()
     }
 
 

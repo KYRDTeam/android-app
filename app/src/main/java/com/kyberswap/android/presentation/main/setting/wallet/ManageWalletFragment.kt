@@ -14,6 +14,7 @@ import com.daimajia.swipe.util.Attributes
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentManageWalletBinding
+import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
@@ -21,6 +22,7 @@ import com.kyberswap.android.presentation.landing.CreateWalletState
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.wallet.UpdateWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 
@@ -86,7 +88,7 @@ class ManageWalletFragment : BaseFragment() {
                 },
                 {
 
-                    viewModel.updateSelectedWallet(it)
+                    viewModel.updateSelectedWallet(it.copy(isSelected = true))
                 },
                 {
                     navigator.navigateToEditWallet(currentFragment, it)
@@ -186,7 +188,7 @@ class ManageWalletFragment : BaseFragment() {
                 showProgress(state == UpdateWalletState.Loading)
                 when (state) {
                     is UpdateWalletState.Success -> {
-
+                        EventBus.getDefault().post(WalletChangeEvent())
                     }
                     is UpdateWalletState.ShowError -> {
 
