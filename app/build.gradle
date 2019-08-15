@@ -12,7 +12,7 @@ apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 android {
     signingConfigs {
         releseconfig {
-            storeFile file('/Users/steve/KyberNetwork/Docs/Android KeyStore/android_keystore')
+            storeFile file('/home/steve/KyberNetwork/Docs/Keystore/android_keystore')
             storePassword 'android@kyberswap'
             keyPassword 'android@kyber.network'
             keyAlias = 'kyberswapandroid'

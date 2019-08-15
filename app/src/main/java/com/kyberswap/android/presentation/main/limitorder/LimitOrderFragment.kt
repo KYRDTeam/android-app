@@ -21,7 +21,13 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentLimitOrderBinding
 import com.kyberswap.android.domain.SchedulerProvider
-import com.kyberswap.android.domain.model.*
+import com.kyberswap.android.domain.model.EligibleAddress
+import com.kyberswap.android.domain.model.LocalLimitOrder
+import com.kyberswap.android.domain.model.NotificationLimitOrder
+import com.kyberswap.android.domain.model.PendingBalances
+import com.kyberswap.android.domain.model.UserInfo
+import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
@@ -30,10 +36,26 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainPagerAdapter
 import com.kyberswap.android.presentation.main.profile.UserInfoState
-import com.kyberswap.android.presentation.main.swap.*
+import com.kyberswap.android.presentation.main.swap.GetExpectedRateState
+import com.kyberswap.android.presentation.main.swap.GetGasLimitState
+import com.kyberswap.android.presentation.main.swap.GetGasPriceState
+import com.kyberswap.android.presentation.main.swap.GetMarketRateState
+import com.kyberswap.android.presentation.main.swap.SwapTokenTransactionState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
-import com.kyberswap.android.util.ext.*
+import com.kyberswap.android.util.ext.colorRate
+import com.kyberswap.android.util.ext.exactAmount
+import com.kyberswap.android.util.ext.getAmountOrDefaultValue
+import com.kyberswap.android.util.ext.hideKeyboard
+import com.kyberswap.android.util.ext.openUrl
+import com.kyberswap.android.util.ext.percentage
+import com.kyberswap.android.util.ext.setAmount
+import com.kyberswap.android.util.ext.showDrawer
+import com.kyberswap.android.util.ext.textToDouble
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
+import com.kyberswap.android.util.ext.underline
 import kotlinx.android.synthetic.main.fragment_limit_order.*
 import kotlinx.android.synthetic.main.fragment_swap.edtDest
 import kotlinx.android.synthetic.main.fragment_swap.edtSource
@@ -66,7 +88,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
     private var pendingBalances: PendingBalances? = null
 
-
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(LimitOrderViewModel::class.java)
     }
@@ -77,7 +98,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
     lateinit var schedulerProvider: SchedulerProvider
 
     var hasUserFocus: Boolean? = false
-
 
     private var userInfo: UserInfo? = null
 
@@ -97,7 +117,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                     srcAmount.toBigDecimalOrDefaultZero()
                 )?.toDisplayNumber()
             } ?: BigDecimal.ZERO.toString()
-
 
     private val expectedSourceAmount: String
         get() =
@@ -236,8 +255,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                             viewModel.getGasLimit(wallet, binding.order)
                             getRelatedOrders()
                         }
-
-
                     }
                     is GetLocalLimitOrderState.ShowError -> {
 
@@ -440,7 +457,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                                 message = getString(R.string.address_not_eligible)
                             )
                         }
-
                     }
                     is CheckEligibleAddressState.ShowError -> {
                         if (!state.isNetworkUnavailable) {
@@ -449,7 +465,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                                 R.drawable.ic_info_error
                             )
                         }
-
                     }
                 }
             }
@@ -469,7 +484,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                     is GetNonceState.Success -> {
                         val order = binding.order?.copy(nonce = state.nonce)
                         binding.order = order
-
                     }
                     is GetNonceState.ShowError -> {
                         if (!state.isNetworkUnAvailable) {
@@ -502,7 +516,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                     )
                 }
             }
-
 
         }
 
@@ -543,7 +556,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         if (hasUserFocus != true) {
                             binding.edtRate.setAmount(order?.displayMarketRate)
                         }
-
                     }
                     is GetMarketRateState.ShowError -> {
                         if (!state.isNetworkUnAvailable) {
@@ -624,14 +636,12 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                             order,
                             if (text.isNullOrEmpty()) getString(R.string.default_source_amount) else text.toString()
                         )
-
                     } else {
                         edtDest.setAmount(
                             text.toBigDecimalOrDefaultZero().multiply(
                                 rateText.toBigDecimalOrDefaultZero()
                             ).toDisplayNumber()
                         )
-
                     }
 
 
@@ -718,7 +728,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
                         if (hasUserFocus != true) {
                             binding.edtRate.setAmount(rate)
-
                         }
 
                         if (isDestFocus) {
@@ -936,7 +945,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                     )
                 }
 
-
                 warningOrderList.isNotEmpty() -> {
                     orderAdapter?.submitList(
                         viewModel.toOrderItems(
@@ -945,7 +953,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                     )
 
                     playAnimation(true)
-
                 }
 
                 else -> binding.order?.let {
@@ -1000,8 +1007,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         getRelatedOrders()
                         getNonce()
                         viewModel.getPendingBalances(wallet)
-
-
                     }
                     is CancelOrdersState.ShowError -> {
                         showAlert(
@@ -1089,7 +1094,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                     is CancelOrdersState.Success -> {
                         setWarning(false)
                         saveLimitOrder()
-
                     }
                     is CancelOrdersState.ShowError -> {
                         showAlert(
@@ -1100,7 +1104,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 }
             }
         })
-
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -1108,6 +1111,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         viewModel.getLimitOrders(wallet)
         viewModel.getPendingBalances(wallet)
         viewModel.getLoginStatus()
+        wallet?.let { viewModel.checkEligibleAddress(it) }
     }
 
     override fun onStart() {
