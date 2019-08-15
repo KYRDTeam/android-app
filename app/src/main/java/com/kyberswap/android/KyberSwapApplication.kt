@@ -102,8 +102,6 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
             .build()
         Twitter.initialize(config)
 
-        OneSignal.setLogLevel(OneSignal.LOG_LEVEL.DEBUG, OneSignal.LOG_LEVEL.WARN)
-
         OneSignal.startInit(this)
             .setNotificationOpenedHandler(NotificationOpenedHandler())
             .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)

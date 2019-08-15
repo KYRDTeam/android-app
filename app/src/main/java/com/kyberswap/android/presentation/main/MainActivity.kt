@@ -20,10 +20,7 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityMainBinding
-import com.kyberswap.android.domain.model.NotificationAlert
-import com.kyberswap.android.domain.model.NotificationLimitOrder
-import com.kyberswap.android.domain.model.Transaction
-import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
@@ -50,6 +47,7 @@ import kotlinx.android.synthetic.main.layout_drawer.*
 import kotlinx.android.synthetic.main.layout_drawer.view.*
 import org.consenlabs.tokencore.wallet.KeystoreStorage
 import org.consenlabs.tokencore.wallet.WalletManager
+import org.greenrobot.eventbus.EventBus
 import java.io.File
 import javax.inject.Inject
 
@@ -220,7 +218,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                 handler.postDelayed(
                     {
 
-                        mainViewModel.updateSelectedWallet(it)
+                        mainViewModel.updateSelectedWallet(it.copy(isSelected = true))
             , 250
                 )
     
@@ -267,6 +265,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                 showProgress(state == UpdateWalletState.Loading)
                 when (state) {
                     is UpdateWalletState.Success -> {
+                        EventBus.getDefault().post(WalletChangeEvent())
 
             
                     is UpdateWalletState.ShowError -> {

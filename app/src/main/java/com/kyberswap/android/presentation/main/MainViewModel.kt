@@ -209,6 +209,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun updateSelectedWallet(wallet: Wallet) {
+        updateSelectedWalletUseCase.dispose()
         _updateWalletStateCallback.postValue(Event(UpdateWalletState.Loading))
         updateSelectedWalletUseCase.execute(
             Consumer { wl ->
