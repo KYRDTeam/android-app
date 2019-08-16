@@ -10,10 +10,28 @@ import com.kyberswap.android.data.db.AlertDao
 import com.kyberswap.android.data.db.UserDao
 import com.kyberswap.android.data.mapper.UserMapper
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
-import com.kyberswap.android.domain.model.*
+import com.kyberswap.android.domain.model.Alert
+import com.kyberswap.android.domain.model.AlertMethodsResponse
+import com.kyberswap.android.domain.model.KycInfo
+import com.kyberswap.android.domain.model.KycResponseStatus
+import com.kyberswap.android.domain.model.LoginUser
+import com.kyberswap.android.domain.model.ResponseStatus
+import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.repository.UserRepository
 import com.kyberswap.android.domain.usecase.alert.UpdateAlertMethodsUseCase
-import com.kyberswap.android.domain.usecase.profile.*
+import com.kyberswap.android.domain.usecase.profile.Base64DecodeUseCase
+import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
+import com.kyberswap.android.domain.usecase.profile.LoginUseCase
+import com.kyberswap.android.domain.usecase.profile.ReSubmitUserInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.ResetPasswordUseCase
+import com.kyberswap.android.domain.usecase.profile.ResizeImageUseCase
+import com.kyberswap.android.domain.usecase.profile.SaveIdPassportUseCase
+import com.kyberswap.android.domain.usecase.profile.SaveKycInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.SaveLocalPersonalInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.SavePersonalInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.SignUpUseCase
+import com.kyberswap.android.domain.usecase.profile.SubmitUserInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.UpdatePushTokenUseCase
 import com.kyberswap.android.presentation.main.profile.kyc.KycInfoType
 import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
@@ -277,7 +295,9 @@ class UserDataRepository @Inject constructor(
             info.documentId,
             info.documentType,
             info.documentIssueDate,
+            info.issueDateNonApplicable,
             info.documentExpiryDate,
+            info.expiryDateNonApplicable,
             info.photoSelfie,
             info.photoIdentityFrontSide,
             info.photoIdentityBackSide
