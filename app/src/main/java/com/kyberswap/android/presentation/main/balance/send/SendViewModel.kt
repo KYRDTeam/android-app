@@ -2,7 +2,6 @@ package com.kyberswap.android.presentation.main.balance.send
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.model.Send
 import com.kyberswap.android.domain.model.Wallet
@@ -13,13 +12,16 @@ import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
-import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT_SEND_ETH
-import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT_SEND_TOKEN
+import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfer
+import com.kyberswap.android.presentation.common.specialGasLimitDefault
+import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.swap.*
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
+import java.math.BigInteger
 import javax.inject.Inject
 
 class SendViewModel @Inject constructor(
@@ -29,8 +31,9 @@ class SendViewModel @Inject constructor(
     private val saveSendUseCase: SaveSendUseCase,
     private val getContactUseCase: GetContactUseCase,
     private val deleteContactUseCase: DeleteContactUseCase,
-    private val estimateTransferGasUseCase: EstimateTransferGasUseCase
-) : ViewModel() {
+    private val estimateTransferGasUseCase: EstimateTransferGasUseCase,
+    getSelectedWalletUseCase: GetSelectedWalletUseCase
+) : SelectedWalletViewModel(getSelectedWalletUseCase) {
     val compositeDisposable = CompositeDisposable()
     private val _getGetGasPriceCallback = MutableLiveData<Event<GetGasPriceState>>()
     val getGetGasPriceCallback: LiveData<Event<GetGasPriceState>>
@@ -70,20 +73,26 @@ class SendViewModel @Inject constructor(
         _currentSelection.value = Event(contact)
     }
 
-    fun getSendInfo(address: String) {
+    fun getSendInfo(wallet: Wallet) {
+        getSendTokenUseCase.dispose()
         getSendTokenUseCase.execute(
             Consumer {
                 it.gasLimit =
-                    if (it.tokenSource.isETH) DEFAULT_GAS_LIMIT_SEND_ETH.toString() else DEFAULT_GAS_LIMIT_SEND_TOKEN.toString()
+                    calculateGasLimit(it).toString()
                 _getSendCallback.value = Event(GetSendState.Success(it))
     ,
             Consumer {
                 it.printStackTrace()
                 _getSendCallback.value = Event(GetSendState.ShowError(it.localizedMessage))
     ,
-            GetSendTokenUseCase.Param(address)
+            GetSendTokenUseCase.Param(wallet)
         )
     }
+
+    private fun calculateGasLimit(send: Send): BigInteger {
+        return calculateDefaultGasLimitTransfer(send.tokenSource)
+    }
+
 
     fun deleteContact(contact: Contact) {
         deleteContactUseCase.execute(
@@ -116,6 +125,7 @@ class SendViewModel @Inject constructor(
 
 
     fun getGasPrice() {
+        getGasPriceUseCase.dispose()
         getGasPriceUseCase.execute(
             Consumer {
                 _getGetGasPriceCallback.value = Event(GetGasPriceState.Success(it))
@@ -147,7 +157,7 @@ class SendViewModel @Inject constructor(
 
     }
 
-    fun getContact(walletAddress: String) {
+    fun getContact() {
         getContactUseCase.execute(
             Consumer {
                 _getContactCallback.value = Event(GetContactState.Success(it))
@@ -156,18 +166,27 @@ class SendViewModel @Inject constructor(
                 it.printStackTrace()
                 _getContactCallback.value = Event(GetContactState.ShowError(it.localizedMessage))
     ,
-            GetContactUseCase.Param(walletAddress)
+            GetContactUseCase.Param()
         )
     }
 
     fun getGasLimit(send: Send?, wallet: Wallet?) {
         if (send == null || wallet == null) return
+        estimateTransferGasUseCase.dispose()
         estimateTransferGasUseCase.execute(
             Consumer {
+                val gasLimit = calculateDefaultGasLimitTransfer(send.tokenSource)
+                    .min(it.amountUsed.multiply(120.toBigInteger()).divide(100.toBigInteger()))
+
+                val specialGasLimit = specialGasLimitDefault(send.tokenSource, send.tokenSource)
+
                 _getGetGasLimitCallback.value = Event(
                     GetGasLimitState.Success(
-                        it.amountUsed.toBigDecimal()
-                            .multiply(1.2.toBigDecimal()).toBigInteger()
+                        if (specialGasLimit != null) {
+                            specialGasLimit.max(gasLimit)
+                 else {
+                            gasLimit
+                
                     )
                 )
     ,
@@ -184,4 +203,5 @@ class SendViewModel @Inject constructor(
         estimateTransferGasUseCase.dispose()
         super.onCleared()
     }
+
 }

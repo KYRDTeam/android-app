@@ -22,6 +22,8 @@ data class NotificationLimitOrder(
     val srcAmount: BigDecimal = BigDecimal.ZERO,
     @SerializedName("fee")
     val fee: BigDecimal = BigDecimal.ZERO,
+    @SerializedName("receive")
+    val receive: BigDecimal = BigDecimal.ZERO,
     @SerializedName("sender")
     val sender: String = "",
     @SerializedName("created_at")

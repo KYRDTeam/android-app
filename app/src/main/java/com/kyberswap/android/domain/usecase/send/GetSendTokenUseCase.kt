@@ -3,6 +3,7 @@ package com.kyberswap.android.domain.usecase.send
 import androidx.annotation.VisibleForTesting
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Send
+import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.SwapRepository
 import com.kyberswap.android.domain.usecase.FlowableUseCase
 import io.reactivex.Flowable
@@ -17,5 +18,5 @@ class GetSendTokenUseCase @Inject constructor(
         return swapRepository.getSendData(param)
     }
 
-    class Param(val walletAddress: String)
+    class Param(val wallet: Wallet)
 }

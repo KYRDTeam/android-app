@@ -26,12 +26,14 @@ class ManageAlertAdapter(
     appExecutors,
     diffCallback = object : DiffUtil.ItemCallback<Alert>() {
         override fun areItemsTheSame(oldItem: Alert, newItem: Alert): Boolean {
-            return oldItem == newItem
+            return oldItem.id == newItem.id
 
 
 
         override fun areContentsTheSame(oldItem: Alert, newItem: Alert): Boolean {
-            return oldItem == newItem
+            return oldItem.symbol == newItem.symbol && oldItem.pair == newItem.pair &&
+                oldItem.alertPrice == newItem.alertPrice && oldItem.isAbove == newItem.isAbove &&
+                oldItem.percentChange == newItem.percentChange
 
     }
 ) {

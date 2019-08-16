@@ -51,7 +51,7 @@
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="72dp"
                 android:layout_height="match_parent"
-                android:background="#edab2f"
+                android:background="#fa6566"
                 android:gravity="center"
                 android:text="@string/wallet_delete"
                 android:textAllCaps="false"

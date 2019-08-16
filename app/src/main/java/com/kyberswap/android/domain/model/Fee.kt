@@ -4,8 +4,15 @@ import com.kyberswap.android.data.api.limitorder.FeeEntity
 
 
 data class Fee(
+    val success: Boolean = false,
     val fee: Double = 0.0,
-    val success: Boolean = false
+    val discountPercent: Double = 0.0,
+    val nonDiscountedFee: Double = 0.0
 ) {
-    constructor(entity: FeeEntity) : this(entity.fee, entity.success)
+    constructor(entity: FeeEntity) : this(
+        entity.success,
+        entity.fee,
+        entity.discountPercent,
+        entity.nonDiscountedFee
+    )
 }

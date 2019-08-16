@@ -17,7 +17,7 @@ interface SwapDao {
     fun updateSwap(swap: Swap)
 
     @Query("SELECT * from swaps where walletAddress = :address")
-    fun findSwapDataByAddress(address: String): Flowable<Swap>
+    fun findSwapByAddressFlowable(address: String): Flowable<Swap>
 
     @Query("SELECT * from swaps where walletAddress = :address LIMIT 1")
     fun findSwapByAddress(address: String): Swap?

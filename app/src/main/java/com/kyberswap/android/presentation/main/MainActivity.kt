@@ -24,28 +24,34 @@ import com.kyberswap.android.domain.model.NotificationAlert
 import com.kyberswap.android.domain.model.NotificationLimitOrder
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseActivity
+import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.landing.CreateWalletState
-import com.kyberswap.android.presentation.main.alert.AlertMethodFragment
-import com.kyberswap.android.presentation.main.alert.ManageAlertFragment
+import com.kyberswap.android.presentation.main.balance.BalanceFragment
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
 import com.kyberswap.android.presentation.main.balance.WalletAdapter
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
+import com.kyberswap.android.presentation.main.limitorder.OrderConfirmFragment
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.profile.kyc.PassportFragment
 import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
 import com.kyberswap.android.presentation.main.profile.kyc.SubmitFragment
 import com.kyberswap.android.presentation.main.setting.SettingFragment
+import com.kyberswap.android.presentation.main.swap.SwapFragment
+import com.kyberswap.android.presentation.wallet.UpdateWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.isNetworkAvailable
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_drawer.*
 import kotlinx.android.synthetic.main.layout_drawer.view.*
 import org.consenlabs.tokencore.wallet.KeystoreStorage
 import org.consenlabs.tokencore.wallet.WalletManager
+import org.greenrobot.eventbus.EventBus
 import java.io.File
 import javax.inject.Inject
 
@@ -72,6 +78,10 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     private var hasPendingTransaction: Boolean? = false
 
+    private var listener: ViewPager.OnPageChangeListener? = null
+
+    var fromLimitOrder: Boolean = false
+
 
     private val mainViewModel: MainViewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
@@ -91,6 +101,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         WalletManager.storage = this
         WalletManager.scanWallets()
 
@@ -111,8 +122,10 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         bottomNavigation.inactiveColor =
             ContextCompat.getColor(this, R.color.bottom_item_color_normal)
         bottomNavigation.setOnTabSelectedListener { position, _ ->
-            binding.vpNavigation.setCurrentItem(position, true)
-            return@setOnTabSelectedListener true
+            handler.post {
+                binding.vpNavigation.setCurrentItem(position, true)
+    
+
 
 
         adapter = MainPagerAdapter(
@@ -123,7 +136,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
         binding.vpNavigation.adapter = adapter
         binding.vpNavigation.offscreenPageLimit = 4
-        val listener = object : ViewPager.OnPageChangeListener {
+        listener = object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
 
     
@@ -137,25 +150,51 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     
 
             override fun onPageSelected(position: Int) {
+                if (!isNetworkAvailable()) {
+                    showNetworkUnAvailable()
+        
                 currentFragment = adapter?.getRegisteredFragment(position)
                 showPendingTransaction()
-                if (currentFragment is LimitOrderFragment) {
-                    (currentFragment as LimitOrderFragment).getLoginStatus()
-         else if (currentFragment is SettingFragment) {
-                    (currentFragment as SettingFragment).getLoginStatus()
-                    currentFragment?.childFragmentManager?.fragments?.forEach {
-                        if (it is ManageAlertFragment) {
-                            it.getLoginStatus()
-                            return
-                 else if (it is AlertMethodFragment) {
-                            it.getLoginStatus()
+                when (currentFragment) {
+                    is BalanceFragment -> {
+//                        (currentFragment as BalanceFragment).getSelectedWallet()
+            
+                    is LimitOrderFragment -> {
+                        with((currentFragment as LimitOrderFragment)) {
+                            getLimitOrder()
+                            getLoginStatus()
+                            checkEligibleAddress()
+                
+
+                        currentFragment?.childFragmentManager?.fragments?.forEach {
+                            when (it) {
+                                is LoginState -> it.getLoginStatus()
+                    
+                
+            
+
+                    is SwapFragment -> {
+                        with((currentFragment as SwapFragment)) {
+                            getSwap()
+                
+
+            
+                    is SettingFragment -> {
+                        (currentFragment as SettingFragment).getLoginStatus()
+                        currentFragment?.childFragmentManager?.fragments?.forEach {
+                            when (it) {
+                                is LoginState -> it.getLoginStatus()
+                    
                 
             
         
     
 
 
-        binding.vpNavigation.addOnPageChangeListener(listener)
+        listener?.let {
+            binding.vpNavigation.addOnPageChangeListener(it)
+
+
 
         val initial = if (limitOrder != null) {
             MainPagerAdapter.LIMIT_ORDER
@@ -164,7 +203,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
 
         binding.vpNavigation.post {
-            listener.onPageSelected(initial)
+            listener?.onPageSelected(initial)
 
         bottomNavigation.currentItem = initial
         binding.vpNavigation.currentItem = initial
@@ -182,7 +221,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                 showDrawer(false)
                 handler.postDelayed(
                     {
-                        mainViewModel.updateSelectedWallet(it)
+
+                        mainViewModel.updateSelectedWallet(it.copy(isSelected = true))
             , 250
                 )
     
@@ -195,10 +235,22 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                     is GetAllWalletState.Success -> {
                         val selectedWallet = state.wallets.find { it.isSelected }
                         if (wallet?.address != selectedWallet?.address) {
+                            selectedWallet?.let {
+                                handler.postDelayed(
+                                    {
+                                        mainViewModel.pollingTokenBalance(
+                                            state.wallets,
+                                            it
+                                        )
+                            , 2000
+
+                                )
+
+                    
                             wallet = selectedWallet
                             wallet?.let {
                                 mainViewModel.getPendingTransaction(it)
-                                mainViewModel.pollingTokenBalance(it)
+                                mainViewModel.getTransactionPeriodically(it)
 
                     
                 
@@ -212,6 +264,21 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     
 )
 
+        mainViewModel.updateWalletStateCallback.observe(this, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == UpdateWalletState.Loading)
+                when (state) {
+                    is UpdateWalletState.Success -> {
+                        EventBus.getDefault().post(WalletChangeEvent())
+
+            
+                    is UpdateWalletState.ShowError -> {
+
+            
+        
+    
+)
+
         mainViewModel.getPendingTransactionStateCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -220,13 +287,54 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                             it.blockNumber.isNotEmpty()
                 
 
-                        txList.forEach {
-                            showAlert(
-                                String.format(
-                                    getString(R.string.transaction_mined),
-                                    it.hash
+                        txList.forEach { transaction ->
+                            val title: String
+                            val message: String
+                            when (transaction.type) {
+                                Transaction.TransactionType.SEND -> {
+                                    if (transaction.isTransactionFail) {
+                                        title = getString(R.string.title_fail)
+                                        message = String.format(
+                                            getString(R.string.notification_fail_sent),
+                                            transaction.displayValue,
+                                            transaction.to
+                                        )
+                             else {
+                                        title = getString(R.string.title_success)
+                                        message = String.format(
+                                            getString(R.string.notification_success_sent),
+                                            transaction.displayValue,
+                                            transaction.to
+                                        )
+                            
+                        
+                                Transaction.TransactionType.SWAP -> {
+                                    if (transaction.isTransactionFail) {
+                                        title = getString(R.string.title_fail)
+                                        message = String.format(
+                                            getString(R.string.notification_fail_swap),
+                                            transaction.displaySource, transaction.displayDest
+                                        )
+                             else {
+                                        title = getString(R.string.title_success)
+                                        message = String.format(
+                                            getString(R.string.notification_success_swap),
+                                            transaction.displaySource, transaction.displayDest
+                                        )
+                            
+
+                        
+                                Transaction.TransactionType.RECEIVED -> {
+                                    title = ""
+                                    message = ""
+                        
+                    
+
+                            if (title.isNotEmpty() && message.isNotEmpty()) {
+                                showAlertWithoutIcon(
+                                    title = title, message = message
                                 )
-                            )
+                    
                 
 
                         val pending = state.transactions.filter { it.blockNumber.isEmpty() }
@@ -331,6 +439,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     }
 
+
     private fun setPendingTransaction(numOfPendingTransaction: Int) {
         hasPendingTransaction = numOfPendingTransaction > 0
         tvPendingTransaction.visibility =
@@ -373,13 +482,31 @@ class MainActivity : BaseActivity(), KeystoreStorage {
          else if (it is SubmitFragment) {
                     it.onBackPress()
                     return
+         else if (it is OrderConfirmFragment) {
+                    it.onBackPress()
         
+    
+
+            if (currentFragment is LimitOrderFragment) {
+                (currentFragment as LimitOrderFragment).onRefresh()
+
+     else if (currentFragment is SwapFragment) {
+                (currentFragment as SwapFragment).getSwap()
     
 
             currentFragment!!.childFragmentManager.popBackStack()
  else {
             super.onBackPressed()
 
+
+
+    }
+
+    fun moveToTab(tab: Int, fromLimitOrder: Boolean = false) {
+        this.fromLimitOrder = fromLimitOrder
+        handler.post {
+            bottomNavigation.currentItem = tab
+            listener?.onPageSelected(tab)
 
 
     }

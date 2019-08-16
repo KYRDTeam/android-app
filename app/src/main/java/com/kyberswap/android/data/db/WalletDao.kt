@@ -39,8 +39,11 @@ interface WalletDao {
     @Query("SELECT * from wallets where address = :address")
     fun findWalletByAddress(address: String): Wallet
 
+    @Query("SELECT * from wallets where isSelected = :isSelected")
+    fun findSelectedWalletFlowable(isSelected: Boolean = true): Flowable<Wallet>
+
     @Query("SELECT * from wallets where isSelected = :isSelected LIMIT 1")
-    fun findSelectedWallet(isSelected: Boolean = true): Flowable<Wallet>
+    fun findSelectedWallet(isSelected: Boolean = true): Wallet?
 
     @Query("DELETE FROM wallets")
     fun deleteAllWallets()

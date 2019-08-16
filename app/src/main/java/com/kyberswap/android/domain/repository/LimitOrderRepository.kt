@@ -8,7 +8,7 @@ import io.reactivex.Single
 
 interface LimitOrderRepository {
 
-    fun getLimitOrders(param: GetLimitOrdersUseCase.Param): Flowable<List<Order>>
+    fun getLimitOrders(): Flowable<List<Order>>
 
     fun getPendingBalances(param: GetPendingBalancesUseCase.Param): Flowable<PendingBalances>
 
@@ -20,13 +20,15 @@ interface LimitOrderRepository {
 
     fun saveLimitOrder(param: SaveLimitOrderUseCase.Param): Completable
 
-    fun getLimitOrderFee(param: GetLimitOrderFeeUseCase.Param): Single<Fee>
+    fun getLimitOrderFee(param: GetLimitOrderFeeUseCase.Param): Flowable<Fee>
 
     fun submitOrder(param: SubmitOrderUseCase.Param): Single<LimitOrderResponse>
 
     fun getNonce(param: GetNonceUseCase.Param): Single<String>
 
-    fun getOrderFilter(param: GetLimitOrderFilterUseCase.Param): Flowable<OrderFilter>
+    fun eligibleAddress(param: CheckEligibleAddressUseCase.Param): Single<EligibleAddress>
+
+    fun getOrderFilter(): Flowable<OrderFilter>
 
     fun saveOrderFilter(param: SaveLimitOrderFilterUseCase.Param): Completable
 

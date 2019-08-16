@@ -170,6 +170,12 @@ object TextViewBindingAdapter {
         view.visibility = View.VISIBLE
     }
 
+    @BindingAdapter("app:date")
+    @JvmStatic
+    fun transactionDate(view: TextView, time: Long) {
+        view.text = DateTimeHelper.transactionDate(time)
+    }
+
 
     @BindingAdapter("app:documentType")
     @JvmStatic
@@ -193,7 +199,6 @@ object TextViewBindingAdapter {
         view.text = StringBuilder().append(if (true == isAbove) "≥ " else "≤ ")
             .append(alertPrice?.toDisplayNumber())
     }
-
 
     @BindingAdapter("app:isAbove", "app:percentChange")
     @JvmStatic
@@ -267,14 +272,35 @@ object TextViewBindingAdapter {
     @BindingAdapter("app:orderStatus")
     @JvmStatic
     fun orderStatus(view: TextView, orderStatus: String) {
-        val background = when (orderStatus) {
-            Order.Status.OPEN.value -> R.drawable.rounded_corner_order_open_background
-            Order.Status.FILLED.value -> R.drawable.rounded_corner_order_filled_background
-            Order.Status.IN_PROGRESS.value -> R.drawable.rounded_corner_order_in_progress_background
-            Order.Status.CANCELLED.value -> R.drawable.rounded_corner_order_cancelled_background
-            else -> R.drawable.rounded_corner_order_invalidated_background
+
+
+        val background: Int
+        val textColor: Int
+        when (orderStatus) {
+            Order.Status.OPEN.value -> {
+                background = R.drawable.rounded_corner_order_open_background
+                textColor = R.color.text_order_status_open
+    
+            Order.Status.FILLED.value -> {
+                background = R.drawable.rounded_corner_order_filled_background
+                textColor = R.color.text_order_status_filled
+
+    
+            Order.Status.IN_PROGRESS.value -> {
+                background = R.drawable.rounded_corner_order_in_progress_background
+                textColor = R.color.text_order_status_in_progress
+    
+            Order.Status.CANCELLED.value -> {
+                background = R.drawable.rounded_corner_order_cancelled_background
+                textColor = R.color.text_order_status_cancelled
+    
+            else -> {
+                background = R.drawable.rounded_corner_order_invalidated_background
+                textColor = R.color.text_order_status_invalidated
+    
 
         view.text = orderStatus
+        view.setTextColor(ContextCompat.getColor(view.context, textColor))
         view.setBackgroundResource(background)
 
     }
@@ -285,6 +311,7 @@ object TextViewBindingAdapter {
         val background = when (kycStatus) {
             UserInfo.REJECT -> R.drawable.rounded_corner_status_rejected
             UserInfo.BLOCK -> R.drawable.rounded_corner_status_blocked
+            UserInfo.BLOCKED -> R.drawable.rounded_corner_status_blocked
             UserInfo.PENDING -> R.drawable.rounded_corner_status_pending
             UserInfo.APPROVED -> R.drawable.rounded_corner_status_approved
             else -> R.drawable.rounded_corner_status_unverified
@@ -293,6 +320,7 @@ object TextViewBindingAdapter {
         val stringResource = when (kycStatus) {
             UserInfo.REJECT -> R.string.kyc_status_rejected
             UserInfo.BLOCK -> R.string.kyc_status_blocked
+            UserInfo.BLOCKED -> R.string.kyc_status_blocked
             UserInfo.PENDING -> R.string.kyc_status_pending
             UserInfo.APPROVED -> R.string.kyc_status_approved
             else -> R.string.kyc_status_unverified

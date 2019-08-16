@@ -19,6 +19,7 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.balance.GetBalanceState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.hideKeyboard
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -79,12 +80,13 @@ class TokenSearchFragment : BaseFragment() {
 
         val tokenAdapter =
             TokenSearchAdapter(appExecutors) { token ->
-                if (token.tokenSymbol == getString(R.string.promo_source_token)) {
-                    showAlertWithoutIcon(message = getString(R.string.can_not_tranfer_token))
-        
 
                 if (isSend == true) {
-                    viewModel.saveSendTokenSelection(wallet!!.address, token)
+                    if (token.tokenSymbol == getString(R.string.promo_source_token)) {
+                        showAlertWithoutIcon(message = getString(R.string.can_not_tranfer_token))
+             else {
+                        viewModel.saveSendTokenSelection(wallet!!.address, token)
+            
          else {
                     viewModel.saveTokenSelection(wallet!!.address, token, isSourceToken ?: false)
         
@@ -163,6 +165,7 @@ class TokenSearchFragment : BaseFragment() {
         )
 
         binding.imgBack.setOnClickListener {
+            hideKeyboard()
             activity!!.onBackPressed()
 
 
@@ -170,6 +173,7 @@ class TokenSearchFragment : BaseFragment() {
     }
 
     private fun onSelectionComplete() {
+        hideKeyboard()
         activity?.onBackPressed()
     }
 

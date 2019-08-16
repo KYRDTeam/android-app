@@ -14,12 +14,15 @@ import com.daimajia.swipe.util.Attributes
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentManageWalletBinding
+import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.landing.CreateWalletState
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
+import com.kyberswap.android.presentation.wallet.UpdateWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 
@@ -66,9 +69,9 @@ class ManageWalletFragment : BaseFragment() {
             ManageWalletAdapter(appExecutors, handler,
                 {
                     dialogHelper.showBottomSheetManageWalletDialog(
-                        walletAdapter.getData().size == 1,
+                        walletAdapter.getData().size == 1 || it.isSelected,
                         {
-                            viewModel.updateSelectedWallet(it)
+                            viewModel.updateSelectedWallet(it.copy(isSelected = true))
                 , {
                             navigator.navigateToEditWallet(currentFragment, it)
                 , {
@@ -85,7 +88,7 @@ class ManageWalletFragment : BaseFragment() {
         ,
                 {
 
-                    viewModel.updateSelectedWallet(it)
+                    viewModel.updateSelectedWallet(it.copy(isSelected = true))
         ,
                 {
                     navigator.navigateToEditWallet(currentFragment, it)
@@ -175,6 +178,20 @@ class ManageWalletFragment : BaseFragment() {
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
+            
+        
+    
+)
+
+        viewModel.updateWalletStateCallback.observe(this, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == UpdateWalletState.Loading)
+                when (state) {
+                    is UpdateWalletState.Success -> {
+                        EventBus.getDefault().post(WalletChangeEvent())
+            
+                    is UpdateWalletState.ShowError -> {
+
             
         
     

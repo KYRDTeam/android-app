@@ -14,6 +14,7 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentProfileDetailBinding
 import com.kyberswap.android.domain.SchedulerProvider
+import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -43,6 +44,8 @@ class ProfileDetailFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
+    private val alerts = mutableListOf<Alert>()
+
     private val handler by lazy {
         Handler()
     }
@@ -67,10 +70,13 @@ class ProfileDetailFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
 
         OneSignal.idsAvailable { _, _ ->
-            viewModel.updatePushToken(OneSignal.getPermissionSubscriptionState().subscriptionStatus.pushToken)
+            viewModel.updatePushToken(
+                OneSignal.getPermissionSubscriptionState().subscriptionStatus.userId,
+                OneSignal.getPermissionSubscriptionState().subscriptionStatus.pushToken
+            )
 
 
-        viewModel.fetchUserInfo()
+        viewModel.pollingKycProfile()
         viewModel.getUserInfoCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -91,14 +97,36 @@ class ProfileDetailFragment : BaseFragment() {
                                 if (UserInfo.REJECT == state.userInfo?.kycStatus) getString(R.string.kyc_edit) else getString(
                                     R.string.profile_verify
                                 )
-                            if (UserInfo.REJECT == state.userInfo?.kycStatus) {
-
+                            binding.tvAction.visibility =
+                                if (UserInfo.BLOCKED == state.userInfo?.kycStatus) View.GONE else View.VISIBLE
+                            if (UserInfo.BLOCKED == state.userInfo?.kycStatus) {
+                                binding.tvKycTitle.text = getString(R.string.profile_blocked)
+                                binding.tvKycVerification.text = state.userInfo.blockReason
                     
 
                             binding.tvKycTitle.visibility =
-                                if (UserInfo.PENDING == state.userInfo?.kycStatus) View.VISIBLE else View.GONE
+                                if (UserInfo.PENDING == state.userInfo?.kycStatus ||
+                                    UserInfo.BLOCKED == state.userInfo?.kycStatus
+                                ) View.VISIBLE else View.GONE
 
                 
+            
+                    is UserInfoState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+            
+        
+    
+)
+
+        viewModel.refreshKycStatus.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == UserInfoState.Loading)
+                when (state) {
+                    is UserInfoState.Success -> {
+                        navigateToKyc()
             
                     is UserInfoState.ShowError -> {
                         showAlert(
@@ -139,6 +167,9 @@ class ProfileDetailFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetAlertsState.Success -> {
+                        binding.isEmpty = state.alerts.isEmpty()
+                        this.alerts.clear()
+                        this.alerts.addAll(state.alerts)
                         alertAdapter.submitAlerts(state.alerts.take(2))
             
                     is GetAlertsState.ShowError -> {
@@ -165,21 +196,21 @@ class ProfileDetailFragment : BaseFragment() {
     
 )
 
-        viewModel.getAlertsCallback.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is GetAlertsState.Success -> {
-                        alertAdapter.submitAlerts(state.alerts.take(2))
-            
-                    is GetAlertsState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
-            
-        
-    
-)
+//        viewModel.getAlertsCallback.observe(viewLifecycleOwner, Observer {
+//            it?.getContentIfNotHandled()?.let { state ->
+//                when (state) {
+//                    is GetAlertsState.Success -> {
+//                        alertAdapter.submitAlerts(state.alerts.take(2))
+//            
+//                    is GetAlertsState.ShowError -> {
+//                        showAlert(
+//                            state.message ?: getString(R.string.something_wrong),
+//                            R.drawable.ic_info_error
+//                        )
+//            
+//        
+//    
+//)
 
         viewModel.logoutCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -209,15 +240,25 @@ class ProfileDetailFragment : BaseFragment() {
 
 
         binding.imgCreateAlert.setOnClickListener {
-            navigator.navigateToPriceAlertScreen(
-                currentFragment
-            )
+            if (alerts.size >= 10) {
+                dialogHelper.showDialogInfo(
+                    title = getString(R.string.alert_limit_exceed), content = getString(
+                        R.string.alert_limit_exceeds_instruction
+                    )
+                )
+     else {
+                navigator.navigateToPriceAlertScreen(
+                    currentFragment
+                )
+    
+
 
 
 
         binding.imgLeaderBoard.setOnClickListener {
             navigator.navigateToLeaderBoard(
-                currentFragment
+                currentFragment,
+                binding.user
             )
 
 
@@ -228,15 +269,7 @@ class ProfileDetailFragment : BaseFragment() {
 
 
         binding.tvAction.setOnClickListener {
-            binding.user?.let {
-                if (it.isKycReject) {
-                    viewModel.reSubmit(it)
-         else {
-                    navigator.navigateToKYC(
-                        currentFragment, it.kycStep
-                    )
-        
-    
+            viewModel.refreshKycStatus()
 
 
 
@@ -258,6 +291,18 @@ class ProfileDetailFragment : BaseFragment() {
         
     
 )
+
+    }
+
+    private fun navigateToKyc() {
+        binding.user?.let {
+            if (it.isKycReject) {
+                viewModel.reSubmit(it)
+     else {
+                navigator.navigateToKYC(
+                    currentFragment, it.kycStep
+                )
+    
 
     }
 

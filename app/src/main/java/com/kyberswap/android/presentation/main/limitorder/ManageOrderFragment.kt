@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,17 +14,18 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentManageOrderBinding
 import com.kyberswap.android.domain.SchedulerProvider
-import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.openUrl
 import javax.inject.Inject
 
 
-class ManageOrderFragment : BaseFragment() {
+class ManageOrderFragment : BaseFragment(), LoginState {
 
     private lateinit var binding: FragmentManageOrderBinding
 
@@ -38,6 +40,10 @@ class ManageOrderFragment : BaseFragment() {
 
     private var wallet: Wallet? = null
 
+    private var isHideFaq: Boolean = false
+
+    private var isHideInstruction: Boolean = false
+
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -45,10 +51,15 @@ class ManageOrderFragment : BaseFragment() {
         ViewModelProviders.of(this, viewModelFactory).get(ManageOrderViewModel::class.java)
     }
 
-    private var currentSelectedView: View? = null
+    private var currentSelectedView: TextView? = null
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
+
+
+    var orders: List<OrderItem> = mutableListOf()
+
+    var orderAdapter: OrderAdapter? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,62 +84,84 @@ class ManageOrderFragment : BaseFragment() {
             RecyclerView.VERTICAL,
             false
         )
-        val orderAdapter =
-            OrderAdapter(
-                appExecutors
-            ) {
 
-                dialogHelper.showCancelOrder(it) {
-                    viewModel.cancelOrder(it)
-        
-    
-        orderAdapter.mode = Attributes.Mode.Single
+        if (orderAdapter == null) {
+            orderAdapter =
+                OrderAdapter(
+                    appExecutors
+                    , {
+
+                        dialogHelper.showCancelOrder(it) {
+                            viewModel.cancelOrder(it)
+                
+            , {
+                        dialogHelper.showBottomSheetExtraDialog(it)
+
+            , {
+                        openUrl(getString(R.string.transaction_etherscan_endpoint_url) + it.txHash)
+            , {
+                        dialogHelper.showInvalidatedDialog(it)
+            )
+
+        orderAdapter?.mode = Attributes.Mode.Single
         binding.rvOrder.adapter = orderAdapter
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
 
 
-        binding.tvFilter.setOnClickListener {
+        binding.imgFilter.setOnClickListener {
             navigator.navigateToLimitOrderFilterScreen(
-                (activity as MainActivity).getCurrentFragment(),
+                currentFragment,
                 wallet
             )
 
 
-        binding.tv1Day.isSelected = true
-        currentSelectedView = binding.tv1Day
+        if (currentSelectedView != null) {
+            if (currentSelectedView?.text == binding.tvOpenOrder.text) {
+                binding.tvOpenOrder.isSelected = true
+                currentSelectedView = binding.tvOpenOrder
+     else {
+                binding.tvOrderHistory.isSelected = true
+                currentSelectedView = binding.tvOrderHistory
+    
+ else {
 
-        listOf(binding.tv1Day, binding.tv1Week, binding.tv1Month, binding.tv3Month)
+            binding.tvOpenOrder.isSelected = true
+            currentSelectedView = binding.tvOpenOrder
+
+
+        listOf(binding.tvOpenOrder, binding.tvOrderHistory)
             .forEach { tv ->
                 tv.setOnClickListener {
                     if (currentSelectedView != it) {
                         currentSelectedView?.isSelected = false
-                        currentSelectedView = it
+                        currentSelectedView = tv
             
                     it.isSelected = true
+                    orderAdapter?.submitList(null)
+                    filterByTab(tv == binding.tvOpenOrder)
+                    showFaq(!isHideFaq)
+                    showInstruction(!isHideInstruction)
 
-                    filterByDate(orderAdapter)
         
     
 
         wallet?.let {
-            viewModel.getRelatedOrders(it)
+            viewModel.getAllOrders()
 
 
-        viewModel.getFilterCallback.observe(viewLifecycleOwner, Observer {
+
+        viewModel.getOrdersCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == GetRelatedOrdersState.Loading)
                 when (state) {
-                    is GetFilterState.Success -> {
-                        orderAdapter.submitList(listOf())
-                        orderAdapter.submitList(
-                            viewModel.filterOrders(
-                                state.orderFilter
-                            )
-                        )
-                        filterByDate(orderAdapter)
+                    is GetRelatedOrdersState.Success -> {
+                        orders = state.orders
+
+                        filterByTab(currentSelectedView == binding.tvOpenOrder)
             
-                    is GetFilterState.ShowError -> {
+                    is GetRelatedOrdersState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
@@ -144,6 +177,7 @@ class ManageOrderFragment : BaseFragment() {
                 showProgress(state == CancelOrdersState.Loading)
                 when (state) {
                     is CancelOrdersState.Success -> {
+                        viewModel.getAllOrders()
 
             
                     is CancelOrdersState.ShowError -> {
@@ -155,41 +189,78 @@ class ManageOrderFragment : BaseFragment() {
         
     
 )
+
+        binding.imgFaq.setOnClickListener {
+            isHideFaq = true
+            showFaq(false)
+
+
+        binding.imgInstruction.setOnClickListener {
+            isHideInstruction = true
+            showInstruction(false)
+
+
+        binding.tvFaq.setOnClickListener {
+            openUrl(getString(R.string.order_why_order_not_filled))
+
+
     }
 
-    private fun filterByDate(orderAdapter: OrderAdapter) {
-        currentSelectedView?.let {
-            orderAdapter.submitList(listOf())
-            orderAdapter.submitList(getFilterList(it.id))
-
+    override fun showProgress(showProgress: Boolean) {
+        binding.progressBar.visibility = if (showProgress) View.VISIBLE else View.GONE
     }
 
-    private fun getFilterList(id: Int): List<Order> {
-        val value = when (id) {
-            R.id.tv1Day -> {
-                DAY_IN_SEC
-    
-            R.id.tv1Week -> {
-                7 * DAY_IN_SEC
-    
-            R.id.tv1Month -> {
-                30 * DAY_IN_SEC
-    
-            else -> {
-                Int.MAX_VALUE
-    
+    private fun showFaq(isShow: Boolean) {
+        binding.tvFaq.visibility = if (isShow) View.VISIBLE else View.GONE
+        binding.imgFaq.visibility = if (isShow) View.VISIBLE else View.GONE
+    }
+
+    private fun showInstruction(isShow: Boolean) {
+        binding.tvInstruction.visibility = if (isShow) View.VISIBLE else View.GONE
+        binding.imgInstruction.visibility = if (isShow) View.VISIBLE else View.GONE
+    }
 
 
-        val now = System.currentTimeMillis() / 1000
-        return viewModel.getCurrentFilterList().filter {
-            it.createdAt >= now - value
+    override fun getLoginStatus() {
+        viewModel.getLoginStatus()
+        viewModel.getLoginStatusCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is UserInfoState.Success -> {
+                        if (!(state.userInfo != null && state.userInfo.uid > 0)) {
+                            activity?.onBackPressed()
+                
+            
+                    is UserInfoState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+            
+        
+    
+)
+    }
 
+    private fun filterByTab(isOpenTab: Boolean) {
 
+        val orders = viewModel.ordersWrapper?.orders?.filter {
+            it.isOpen == isOpenTab
+ ?: listOf()
+
+        val items = viewModel.toOrderItems(
+            orders,
+            viewModel.ordersWrapper?.asc == true
+        )
+
+        orderAdapter?.submitOrdersList(items)
+
+        binding.isEmpty = items.isEmpty()
+        binding.executePendingBindings()
     }
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"
-        const val DAY_IN_SEC = 24 * 60 * 60
         fun newInstance(wallet: Wallet?) =
             ManageOrderFragment().apply {
                 arguments = Bundle().apply {

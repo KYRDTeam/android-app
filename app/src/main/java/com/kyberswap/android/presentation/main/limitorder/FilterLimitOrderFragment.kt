@@ -11,16 +11,17 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentLimitOrderFilterBinding
 import com.kyberswap.android.domain.SchedulerProvider
-import com.kyberswap.android.domain.model.OrderFilter
-import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_limit_order_filter.*
 import javax.inject.Inject
 
 
-class FilterLimitOrderFragment : BaseFragment() {
+class FilterLimitOrderFragment : BaseFragment(), LoginState {
 
     private lateinit var binding: FragmentLimitOrderFilterBinding
 
@@ -32,7 +33,7 @@ class FilterLimitOrderFragment : BaseFragment() {
 
     private var wallet: Wallet? = null
 
-    private var orderFilter: OrderFilter? = null
+    private var filterSetting: FilterSetting? = null
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -47,6 +48,7 @@ class FilterLimitOrderFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         wallet = arguments!!.getParcelable(WALLET_PARAM)
+        wallet?.let { viewModel.getFilterSettings() }
     }
 
     override fun onCreateView(
@@ -63,8 +65,6 @@ class FilterLimitOrderFragment : BaseFragment() {
         val tokenPairAdapter = FilterItemAdapter(appExecutors) {
 
 
-
-        wallet?.let { viewModel.getFilter(it) }
 
         binding.rvTokenPair.layoutManager = GridLayoutManager(
             activity,
@@ -99,18 +99,18 @@ class FilterLimitOrderFragment : BaseFragment() {
             activity?.onBackPressed()
 
 
-        viewModel.getFilterStateCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getFilterSettingCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
-                    is GetFilterState.Success -> {
-                        this.orderFilter = state.orderFilter
-                        rgOrder.check(if (state.orderFilter.oldest) R.id.rbOldest else R.id.rbLatest)
-                        tokenPairAdapter.submitList(state.orderFilter.listOrders)
-                        addressAdapter.submitList(state.orderFilter.listAddress)
-                        statusAdapter.submitList(state.orderFilter.listStatus)
+                    is GetFilterSettingState.Success -> {
+                        this.filterSetting = state.filterSetting
+                        rgOrder.check(if (state.filterSetting.asc) R.id.rbOldest else R.id.rbLatest)
+                        tokenPairAdapter.submitList(state.filterSetting.pairs)
+                        addressAdapter.submitList(state.filterSetting.address)
+                        statusAdapter.submitList(toDisplayStatus(state.filterSetting.status))
 
             
-                    is GetFilterState.ShowError -> {
+                    is GetFilterSettingState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
@@ -121,15 +121,37 @@ class FilterLimitOrderFragment : BaseFragment() {
 )
 
         binding.tvApply.setOnClickListener {
-            orderFilter?.apply {
-                listAddress = addressAdapter.getData()
-                listOrders = tokenPairAdapter.getData()
-                listStatus = statusAdapter.getData()
+            filterSetting?.orderFilter?.apply {
+                unSelectedAddresses = addressAdapter.getData().filter {
+                    !it.isSelected
+        .map {
+                    it.name
+        
+                unSelectedPairs = tokenPairAdapter.getData().filter {
+                    !it.isSelected
+        .map {
+                    val pair = it.name.split(OrderFilter.TOKEN_PAIR_SEPARATOR)
+                    pair.first() to pair.last()
+        
+
+                unSelectedStatus = statusAdapter.getData().filter {
+                    !it.isSelected
+        .map {
+                    it.name
+        
+
+                oldest = binding.rbOldest.isChecked
     
 
-            orderFilter?.let {
+            filterSetting?.orderFilter?.let {
                 viewModel.saveOrderFilter(it)
     
+
+
+        binding.tvReset.setOnClickListener {
+            addressAdapter.resetFilter()
+            statusAdapter.resetFilter()
+            tokenPairAdapter.resetFilter()
 
 
         viewModel.saveFilterStateCallback.observe(viewLifecycleOwner, Observer {
@@ -149,16 +171,42 @@ class FilterLimitOrderFragment : BaseFragment() {
     
 )
 
-        binding.tvReset.setOnClickListener {
-            orderFilter?.apply {
-                listAddress = listOf()
-                listOrders = listOf()
-                listStatus = listOf()
-    
+    }
 
-            orderFilter?.let {
-                viewModel.saveOrderFilter(it)
+    override fun getLoginStatus() {
+        viewModel.getLoginStatus()
+        viewModel.getLoginStatusCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is UserInfoState.Success -> {
+                        if (!(state.userInfo != null && state.userInfo.uid > 0)) {
+                            activity?.onBackPressed()
+                
+            
+                    is UserInfoState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+            
+        
     
+)
+    }
+
+    private fun toDisplayStatus(status: List<FilterItem>): List<FilterItem> {
+        return status.map {
+            it.copy(
+                displayName = when (it.name) {
+                    Order.Status.OPEN.value -> getString(R.string.order_status_open)
+                    Order.Status.INVALIDATED.value -> getString(R.string.order_status_invalidated)
+                    Order.Status.CANCELLED.value -> getString(R.string.order_status_cancelled)
+                    Order.Status.FILLED.value -> getString(R.string.order_status_filled)
+                    Order.Status.IN_PROGRESS.value -> getString(R.string.order_status_in_progress)
+                    else -> getString(R.string.order_status_unknown)
+        
+            )
+
 
     }
 

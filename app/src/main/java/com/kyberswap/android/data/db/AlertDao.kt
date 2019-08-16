@@ -22,7 +22,7 @@ interface AlertDao {
         insertBatchAlerts(alerts)
     }
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateAlert(alert: Alert)
 
     @Query("SELECT * from alerts where walletAddress = :address")

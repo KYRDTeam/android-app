@@ -7,8 +7,11 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
 import kotlinx.android.parcel.Parcelize
 import org.web3j.utils.Convert
+import java.math.BigDecimal
+import java.math.BigInteger
 
 @Entity(tableName = "sends")
 @Parcelize
@@ -30,17 +33,35 @@ data class Send(
 
 ) : Parcelable {
 
+    val estimateSource: String
+        get() = if (sourceAmount.isEmpty()) "0.001" else sourceAmount
+
+    fun isSameTokenPair(other: Send?): Boolean {
+        return this.walletAddress == other?.walletAddress &&
+            this.tokenSource.tokenSymbol == other.tokenSource.tokenSymbol &&
+            this.tokenSource.currentBalance == other.tokenSource.currentBalance &&
+            this.ethToken.currentBalance == other.ethToken.currentBalance
+    }
+
+    val amountUnit: BigInteger
+        get() = sourceAmount.toBigDecimalOrDefaultZero().multiply(BigDecimal.TEN.pow(tokenSource.tokenDecimal)).toBigInteger()
+
+
     val displaySourceAmount: String
         get() = StringBuilder().append(sourceAmount).append(" ").append(tokenSource.tokenSymbol).toString()
 
+    val isSendAll: Boolean
+        get() = sourceAmount == tokenSource.currentBalance.toDisplayNumber()
+
     val displaySourceAmountUsd: String
-        get() = StringBuilder()
-            .append("≈ ")
-            .append(
-                sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateUsdNow).toDisplayNumber()
-            )
-            .append(" USD")
-            .toString()
+        get() = if (sourceAmount.toDoubleOrDefaultZero() == 0.0) "" else
+            StringBuilder()
+                .append("≈ ")
+                .append(
+                    sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateUsdNow).toDisplayNumber()
+                )
+                .append(" USD")
+                .toString()
 
     val transactionFeeEth: String
         get() = StringBuilder()
@@ -75,5 +96,26 @@ data class Send(
 
     fun reset() {
         this.sourceAmount = ""
+    }
+
+    val insufficientEthBalance: Boolean
+        get() = ethToken.currentBalance < gasFeeEth
+
+    private val gasFeeEth: BigDecimal
+        get() = Convert.fromWei(
+            Convert.toWei(gasPrice.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
+                .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
+        )
+
+    fun availableAmountForTransfer(
+        calAvailableAmount: BigDecimal,
+        gasLimit: BigDecimal,
+        gasPrice: BigDecimal
+    ): BigDecimal {
+        return (calAvailableAmount - Convert.fromWei(
+            Convert.toWei(gasPrice, Convert.Unit.GWEI)
+                .multiply(gasLimit), Convert.Unit.ETHER
+        ).max(BigDecimal.ZERO)
+            )
     }
 }

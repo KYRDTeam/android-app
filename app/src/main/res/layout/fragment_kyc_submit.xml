@@ -507,14 +507,30 @@
                     android:textColor="#141927"
                     android:textSize="14sp" />
 
-                <ImageView
-                    android:id="@+id/imgPhotoProofAddress"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="186dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="17dp"
-                    android:layout_marginEnd="16dp"
-                    android:background="#e6e6e6" />
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/imgPhotoProofAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="17dp"
+                        android:layout_marginEnd="16dp"
+                        android:adjustViewBounds="true"
+                        android:background="#e6e6e6"
+                        android:minHeight="186dp" />
+
+                    <ProgressBar
+                        android:id="@+id/progressBarProofAddress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:indeterminateTint="@color/colorAccent"
+                        android:visibility="gone" />
+
+                </FrameLayout>
 
 
                 <LinearLayout
@@ -667,7 +683,7 @@
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="@{info.taxIdentificationNumber}"
+                        android:text="@{info.displayTaxIdentificationNumber}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -791,7 +807,7 @@
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="@{info.documentExpiryDate}"
+                        android:text="@{info.displayExpiredDate}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -812,21 +828,83 @@
                         android:layout_marginTop="27dp"
                         android:layout_marginEnd="16dp"
                         android:drawablePadding="12dp"
-                        android:text="@string/photo_of_your_passport_front_side"
+                        android:text="@string/photo_of_your_document_front_side"
                         android:textColor="#141927"
                         android:textSize="14sp" />
 
-                    <ImageView
-                        android:id="@+id/imgPassportFrontSide"
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="196dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="25dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="#ffffff" />
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/imgPassportFrontSide"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="25dp"
+                            android:layout_marginEnd="16dp"
+                            android:adjustViewBounds="true"
+                            android:background="#ffffff"
+                            android:minHeight="196dp" />
+
+                        <ProgressBar
+                            android:id="@+id/progressBarPassportFrontSide"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:indeterminateTint="@color/colorAccent"
+                            android:visibility="gone" />
+
+                    </FrameLayout>
 
 
                 </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lnBackSide"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#f2f3f6"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="38dp"
+                        android:layout_marginEnd="16dp"
+                        android:drawablePadding="12dp"
+                        android:text="@string/photo_of_your_document_back_side"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/imgPassportBackSide"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="25dp"
+                            android:layout_marginEnd="16dp"
+                            android:adjustViewBounds="true"
+                            android:background="#ffffff"
+                            android:minHeight="196dp" />
+
+                        <ProgressBar
+                            android:id="@+id/progressBarPassportBackSide"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:indeterminateTint="@color/colorAccent"
+                            android:visibility="gone" />
+                    </FrameLayout>
+
+
+                </LinearLayout>
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -841,49 +919,37 @@
                         android:layout_marginTop="38dp"
                         android:layout_marginEnd="16dp"
                         android:drawablePadding="12dp"
-                        android:text="@string/photo_of_your_passport_back_side"
+                        android:text="@string/photo_of_you_holding_your_document"
                         android:textColor="#141927"
                         android:textSize="14sp" />
 
-                    <ImageView
-                        android:id="@+id/imgPassportBackSide"
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="196dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="25dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="#ffffff" />
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/imgPassportHolding"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="25dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginBottom="38dp"
+                            android:adjustViewBounds="true"
+                            android:background="#ffffff"
+                            android:minHeight="196dp" />
+
+                        <ProgressBar
+                            android:id="@+id/progressBarPassportHolding"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:indeterminateTint="@color/colorAccent"
+                            android:visibility="gone" />
+
+                    </FrameLayout>
 
 
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#f2f3f6"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="38dp"
-                        android:layout_marginEnd="16dp"
-                        android:drawablePadding="12dp"
-                        android:text="@string/photo_of_you_holding_your_passport"
-                        android:textColor="#141927"
-                        android:textSize="14sp" />
-
-                    <ImageView
-                        android:id="@+id/imgPassportHolding"
-                        android:layout_width="match_parent"
-                        android:layout_height="196dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="25dp"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="38dp"
-                        android:background="#ffffff" />
                 </LinearLayout>
 
                 <TextView

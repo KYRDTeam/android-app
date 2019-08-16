@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.usecase.profile.Base64DecodeUseCase
-import com.kyberswap.android.domain.usecase.profile.GetUserInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.FetchUserInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.SubmitUserInfoUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.profile.UserInfoState
@@ -15,7 +15,7 @@ import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class SubmitViewModel @Inject constructor(
-    private val getUserInfoUseCase: GetUserInfoUseCase,
+    private val getUserInfoUseCase: FetchUserInfoUseCase,
     private val decodeBase64DecodeUseCase: Base64DecodeUseCase,
     private val submitUserInfoUseCase: SubmitUserInfoUseCase
 ) : ViewModel() {

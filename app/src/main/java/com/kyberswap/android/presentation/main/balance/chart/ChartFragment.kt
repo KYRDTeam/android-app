@@ -144,9 +144,8 @@ class ChartFragment : BaseFragment() {
         binding.tvSend.setOnClickListener {
             wallet?.let { wallet ->
                 token?.let {
-
-                    if (wallet.isPromo) {
-                        moveToSendScreen()
+                    if (it.tokenSymbol == getString(R.string.promo_source_token)) {
+                        showAlertWithoutIcon(message = getString(R.string.can_not_tranfer_token))
              else {
                         viewModel.saveSendToken(wallet.address, it)
             

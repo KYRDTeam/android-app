@@ -7,6 +7,7 @@ import com.kyberswap.android.domain.model.SocialInfo
 import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
 import com.kyberswap.android.domain.usecase.profile.SignUpUseCase
 import com.kyberswap.android.presentation.common.Event
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
@@ -23,6 +24,8 @@ class SignUpViewModel @Inject constructor(
     private val _loginCallback = MutableLiveData<Event<LoginState>>()
     val loginCallback: LiveData<Event<LoginState>>
         get() = _loginCallback
+
+    val compositeDisposable = CompositeDisposable()
 
     fun signUp(email: String, displayName: String, password: String, isSubscription: Boolean) {
         _signUpCallback.postValue(Event(SignUpState.Loading))
@@ -55,6 +58,13 @@ class SignUpViewModel @Inject constructor(
                 socialInfo, true
             )
         )
+    }
+
+    override fun onCleared() {
+        compositeDisposable.dispose()
+        loginSocialUseCase.dispose()
+        signUpUseCase.dispose()
+        super.onCleared()
     }
 
 

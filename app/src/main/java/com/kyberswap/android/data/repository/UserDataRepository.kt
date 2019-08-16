@@ -15,13 +15,16 @@ import com.kyberswap.android.domain.repository.UserRepository
 import com.kyberswap.android.domain.usecase.alert.UpdateAlertMethodsUseCase
 import com.kyberswap.android.domain.usecase.profile.*
 import com.kyberswap.android.presentation.main.profile.kyc.KycInfoType
+import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
+import io.reactivex.rxkotlin.Flowables
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.ceil
 
@@ -60,21 +63,68 @@ class UserDataRepository @Inject constructor(
 
     }
 
+    override fun getNumberAlerts(): Flowable<Int> {
+        return Flowable.mergeDelayError(
+            alertDao.all.map { alerts ->
+                alerts.filter { it.isNotLocal }.size
+    ,
+            userApi.getAlert().map {
+                userMapper.transform(it.alerts)
+    .toFlowable().map {
+                it.size
+    
+        )
+    }
+
     override fun userInfo(): Single<UserInfo?> {
         return Single.fromCallable {
             userDao.getUser() ?: UserInfo()
 
     }
 
+    override fun pollingUserInfo(): Flowable<UserInfo> {
+        return userApi.getUserInfo().map {
+            userMapper.transform(it)
+
+            .repeatWhen {
+                it.delay(60, TimeUnit.SECONDS)
+    
+            .retryWhen { throwable ->
+                throwable.compose(zipWithFlatMap())
+    
+    }
+
+    override fun refreshKycStatus(): Single<UserInfo> {
+        return userApi.getUserInfo().map {
+            userMapper.transform(it)
+.doAfterSuccess {
+            if (it.kycInfo == KycInfo()) {
+                userDao.updateUser(it)
+    
+
+    }
+
+
     override fun fetchUserInfo(): Flowable<UserInfo> {
         return Flowable.mergeDelayError(
             userDao.all,
-            userApi.getUserInfo().map {
-                userMapper.transform(it)
-    
-                .doAfterSuccess {
-                    userDao.updateUser(it)
+            Flowables.zip(
+                userDao.all,
+                userApi.getUserInfo().map {
+                    userMapper.transform(it)
         .toFlowable()
+            ) { local, remote ->
+                val kyc = remote.kycInfo
+                val kycInfo = local.kycInfo.copy(
+                    photoSelfie = kyc.photoSelfie,
+                    photoIdentityBackSide = kyc.photoIdentityBackSide,
+                    photoIdentityFrontSide = kyc.photoIdentityFrontSide,
+                    photoProofAddress = kyc.photoProofAddress
+                )
+
+                local.copy(kycInfo = kycInfo)
+
+    
         )
     }
 
@@ -87,7 +137,7 @@ class UserDataRepository @Inject constructor(
     }
 
     override fun resetPassword(param: ResetPasswordUseCase.Param): Single<ResponseStatus> {
-        return userApi.resetPassword(param.email).map {
+        return userApi.resetPassword(param.email.toLowerCase()).map {
             userMapper.transform(it)
 
     }
@@ -102,7 +152,8 @@ class UserDataRepository @Inject constructor(
             param.socialInfo.displayName,
             param.socialInfo.oAuthToken,
             param.socialInfo.oAuthTokenSecret,
-            param.confirmSignUp
+            param.confirmSignUp,
+            param.socialInfo.twoFa
         )
             .map { userMapper.transform(it) }
             .doAfterSuccess {
@@ -112,7 +163,7 @@ class UserDataRepository @Inject constructor(
     }
 
     override fun login(param: LoginUseCase.Param): Single<LoginUser> {
-        return userApi.login(param.email, param.password)
+        return userApi.login(param.email.toLowerCase(), param.password, param.twoFa)
             .map { userMapper.transform(it) }
             .doAfterSuccess {
                 userDao.updateUser(it.userInfo)
@@ -122,7 +173,7 @@ class UserDataRepository @Inject constructor(
 
     override fun signUp(param: SignUpUseCase.Param): Single<ResponseStatus> {
         return userApi.register(
-            param.email,
+            param.email.toLowerCase(),
             param.password,
             param.password,
             param.displayName,
@@ -156,6 +207,7 @@ class UserDataRepository @Inject constructor(
         return userApi.savePersonalInfo(
             info.firstName,
             info.lastName,
+            info.nativeFullName,
             info.nationality,
             info.country,
             info.dob,
@@ -225,6 +277,7 @@ class UserDataRepository @Inject constructor(
             info.documentId,
             info.documentType,
             info.documentIssueDate,
+            info.documentExpiryDate,
             info.photoSelfie,
             info.photoIdentityFrontSide,
             info.photoIdentityBackSide
@@ -301,7 +354,7 @@ class UserDataRepository @Inject constructor(
     }
 
     override fun updatePushNotification(param: UpdatePushTokenUseCase.Param): Single<ResponseStatus> {
-        return userApi.updatePushToken(param.token).map {
+        return userApi.updatePushToken(param.userId).map {
             userMapper.transform(it)
 
     }
@@ -328,6 +381,7 @@ class UserDataRepository @Inject constructor(
 
 
     }
+
 
     companion object {
         private const val MAX_IMAGE_SIZE = 1000 * 1024

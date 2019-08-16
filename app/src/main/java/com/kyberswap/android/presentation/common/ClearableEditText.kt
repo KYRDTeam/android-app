@@ -70,7 +70,7 @@ class ClearableEditText : ClearFocusEditText, OnTouchListener, OnFocusChangeList
         init()
     }
 
-    fun setListener(listener: Listener) {
+    fun setListener(listener: Listener?) {
         this.listener = listener
     }
 
@@ -82,11 +82,11 @@ class ClearableEditText : ClearFocusEditText, OnTouchListener, OnFocusChangeList
         initIcon()
     }
 
-    override fun setOnTouchListener(l: OnTouchListener) {
+    override fun setOnTouchListener(l: OnTouchListener?) {
         this.onTouchListener = l
     }
 
-    override fun setOnFocusChangeListener(f: OnFocusChangeListener) {
+    override fun setOnFocusChangeListener(f: OnFocusChangeListener?) {
         this.focusChangeListener = f
     }
 

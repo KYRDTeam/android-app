@@ -77,12 +77,8 @@ class ContactFragment : BaseFragment() {
             it?.peekContent()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
-                        if (this.wallet?.address != state.wallet.address) {
-                            this.wallet = state.wallet
-                            wallet?.let {
-                                viewModel.getContact(it.address)
-                    
-                
+                        this.wallet = state.wallet
+                        viewModel.getContact()
             
                     is GetWalletState.ShowError -> {
 

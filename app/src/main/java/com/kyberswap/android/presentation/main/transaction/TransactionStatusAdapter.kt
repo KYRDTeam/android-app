@@ -9,7 +9,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
-import com.kyberswap.android.databinding.HeaderTransactionBinding
+import com.kyberswap.android.databinding.ItemHeaderBinding
 import com.kyberswap.android.databinding.ItemTransactionBinding
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.presentation.base.DataBoundListAdapter
@@ -26,7 +26,8 @@ class TransactionStatusAdapter(
             return when {
                 oldItem is TransactionItem.Header && newItem is TransactionItem.Header && oldItem.date == newItem.date -> true
                 oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemOdd && oldItem.transaction.hash == newItem.transaction.hash -> true
-                else -> oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemEven && oldItem.transaction.hash == newItem.transaction.hash
+                oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemEven && oldItem.transaction.hash == newItem.transaction.hash -> true
+                else -> false
     
 
 
@@ -35,8 +36,13 @@ class TransactionStatusAdapter(
         ): Boolean {
             return when {
                 oldItem is TransactionItem.Header && newItem is TransactionItem.Header && oldItem.date == newItem.date -> true
-                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemOdd && oldItem.transaction == newItem.transaction -> true
-                else -> oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemEven && oldItem.transaction == newItem.transaction
+                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemOdd && oldItem.transaction.sameDisplay(
+                    newItem.transaction
+                ) -> true
+                oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemEven && oldItem.transaction.sameDisplay(
+                    newItem.transaction
+                ) -> true
+                else -> false
     
 
     }
@@ -46,7 +52,7 @@ class TransactionStatusAdapter(
     override fun bind(binding: ViewDataBinding, item: TransactionItem) {
         when (item) {
             is TransactionItem.Header -> {
-                binding as HeaderTransactionBinding
+                binding as ItemHeaderBinding
                 binding.tvDate.text = item.date
 
     
@@ -106,7 +112,7 @@ class TransactionStatusAdapter(
 
     override fun createBinding(parent: ViewGroup, viewType: Int): ViewDataBinding {
         val layout =
-            if (viewType == TYPE_HEADER) R.layout.header_transaction else R.layout.item_transaction
+            if (viewType == TYPE_HEADER) R.layout.item_header else R.layout.item_transaction
         return DataBindingUtil.inflate(
             LayoutInflater.from(parent.context),
             layout,

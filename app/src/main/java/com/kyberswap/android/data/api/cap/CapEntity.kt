@@ -9,5 +9,8 @@ data class CapEntity(
     @SerializedName("kyced")
     val kyced: Boolean = false,
     @SerializedName("rich")
-    val rich: Boolean = false
+    val rich: Boolean = false,
+    @SerializedName("volume")
+    val volume: BigDecimal? = BigDecimal.ZERO
+
 )

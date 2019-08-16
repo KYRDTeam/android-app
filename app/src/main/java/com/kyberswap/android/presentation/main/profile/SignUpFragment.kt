@@ -3,6 +3,7 @@ package com.kyberswap.android.presentation.main.profile
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentSignupBinding
@@ -26,6 +28,7 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.validPassword
 import com.twitter.sdk.android.core.Callback
 import com.twitter.sdk.android.core.TwitterCore
 import com.twitter.sdk.android.core.TwitterException
@@ -84,24 +87,105 @@ class SignUpFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.btnRegister.setOnClickListener {
-            if (!binding.cbTermCondition.isChecked) {
-                showAlert(getString(R.string.term_condition_notification))
-                return@setOnClickListener
-    
-            viewModel.signUp(
-                edtEmail.text.toString(),
-                edtDisplayName.text.toString(),
-                edtPassword.text.toString(),
-                cbSubscription.isChecked
-            )
 
+            when {
+                binding.edtEmail.text.toString().isBlank() -> {
+                    val errorMessage = getString(
+                        R.string.login_email_address_required
+                    )
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_error), message = errorMessage
+                    )
+
+                    binding.ilEmail.error = errorMessage
+
+        
+
+                !Patterns.EMAIL_ADDRESS.matcher(binding.edtEmail.text).matches() -> {
+
+                    val errorMessage = getString(
+                        R.string.login_invalid_email_address
+                    )
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_error), message = errorMessage
+                    )
+
+                    binding.ilEmail.error = errorMessage
+        
+
+                binding.edtDisplayName.text.toString().isBlank() -> {
+                    val errorMessage = getString(R.string.register_display_name_required)
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_error), message = errorMessage
+                    )
+        
+
+                binding.edtPassword.text.toString().isBlank() -> {
+                    val errorMessage = getString(
+                        R.string.login_password_required
+                    )
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_error), message = errorMessage
+                    )
+                    binding.ilPassword.error = errorMessage
+
+        
+
+                !binding.edtPassword.text.toString().validPassword() -> {
+                    val error = getString(R.string.register_invalid_password)
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_error),
+                        message = error
+                    )
+                    binding.ilPassword.error = error
+        
+
+                !binding.cbTermCondition.isChecked -> {
+                    showAlert(getString(R.string.term_condition_notification))
+        
+
+                else -> {
+                    viewModel.signUp(
+                        edtEmail.text.toString(),
+                        edtDisplayName.text.toString(),
+                        edtPassword.text.toString(),
+                        cbSubscription.isChecked
+                    )
+        
+    
+
+
+        viewModel.compositeDisposable.add(
+            binding.edtEmail.textChanges()
+                .skipInitialValue()
+                .subscribe {
+                    binding.ilEmail.error = null
+        )
+
+        viewModel.compositeDisposable.add(
+            binding.edtDisplayName.textChanges()
+                .skipInitialValue()
+                .subscribe {
+                    binding.ilDisplayName.error = null
+        )
+
+        viewModel.compositeDisposable.add(
+            binding.edtPassword.textChanges()
+                .skipInitialValue()
+                .subscribe {
+                    binding.ilPassword.error = null
+        )
 
         viewModel.signUpCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == SignUpState.Loading)
                 when (state) {
                     is SignUpState.Success -> {
-                        showAlert(state.registerStatus.message)
+                        showAlertWithoutIcon(
+                            title = getString(R.string.title_success),
+                            message = getString(R.string.active_your_account),
+                            timeInSecond = 10
+                        )
                         navigator.navigateToSignInScreen(
                             currentFragment
                         )
@@ -329,6 +413,11 @@ class SignUpFragment : BaseFragment() {
             Timber.e(e.localizedMessage)
 
 
+    }
+
+    override fun onDestroyView() {
+        viewModel.compositeDisposable.clear()
+        super.onDestroyView()
     }
 
 

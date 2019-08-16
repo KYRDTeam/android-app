@@ -21,7 +21,11 @@ object ImageViewBindingAdapter {
     @JvmStatic
     fun loadImage(view: ImageView, url: String?) {
         if (url.isNullOrEmpty()) return
-        Glide.with(view).load(url).into(view)
+        val finalUrl = if (url.startsWith("http://"))
+            url.replace("http://", "https://")
+        else
+            url
+        Glide.with(view).load(finalUrl).into(view)
     }
 
     @BindingAdapter("app:imageUrl", "app:error")

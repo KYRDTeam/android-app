@@ -6,6 +6,7 @@ import java.math.BigInteger
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.regex.Pattern
 import kotlin.math.pow
 
 fun String.toWalletAddress(): String {
@@ -24,12 +25,31 @@ fun String.hexWithPrefix(): String {
     }
 }
 
+fun String.validPassword(): Boolean {
+    return Pattern.compile(PATTERN_REGEX_PASSWORD).matcher(this).matches()
+}
+
+
+const val PATTERN_REGEX_PASSWORD =
+    "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+\$).{8,}\$"
+
 fun String.toLongSafe(): Long {
+    if (isNullOrEmpty()) return 0
     return try {
         toLong()
     } catch (ex: NumberFormatException) {
         ex.printStackTrace()
         0L
+    }
+}
+
+fun String.toDoubleSafe(): Double {
+    if (isNullOrEmpty()) return 0.0
+    return try {
+        toDouble()
+    } catch (ex: NumberFormatException) {
+        ex.printStackTrace()
+        0.0
     }
 }
 
@@ -63,6 +83,16 @@ fun String?.toBigDecimalOrDefaultZero(): BigDecimal {
     }
 }
 
+fun CharSequence?.toBigDecimalOrDefaultZero(): BigDecimal {
+    if (this.isNullOrEmpty()) return BigDecimal.ZERO
+    return try {
+        BigDecimal(this.toString())
+    } catch (ex: Exception) {
+        ex.printStackTrace()
+        BigDecimal.ZERO
+    }
+}
+
 fun String.displayWalletAddress(): String {
     return StringBuilder()
         .append(substring(0, if (length > 5) 5 else length))
@@ -87,7 +117,7 @@ fun String?.toBigIntegerOrDefaultZero(): BigInteger {
     }
 }
 
-fun String.exactAmount(): String? {
+fun String.exactAmount(): String {
     return if (this.toDoubleOrDefaultZero() != 0.0) {
         this
     } else {

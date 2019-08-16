@@ -39,6 +39,12 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
 
     }
 
+    fun showAlertWithoutIcon(title: String? = null, message: String, listener: () -> Unit = {}) {
+        this.alertListener = listener
+        val intent = AlertWithoutIconActivity.newIntent(this, title, message)
+        startActivityForResult(intent, SHOW_ALERT)
+    }
+
     fun showAlert(message: String, listener: () -> Unit = {}) {
         this.alertListener = listener
         val intent = AlertActivity.newIntent(this, message)
@@ -49,6 +55,13 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         this.alertListener = listener
         val intent = AlertActivity.newIntent(this, message, resourceIcon)
         startActivityForResult(intent, SHOW_ALERT)
+    }
+
+    fun showNetworkUnAvailable() {
+        showAlertWithoutIcon(
+            title = getString(R.string.title_error),
+            message = getString(R.string.no_internet_connect)
+        )
     }
 
     fun showInsufficientAlert(title: String, message: String, listener: () -> Unit) {

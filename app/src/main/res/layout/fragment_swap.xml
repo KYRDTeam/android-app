@@ -14,6 +14,8 @@
             name="swap"
             type="com.kyberswap.android.domain.model.Swap" />
 
+        <import type="android.text.TextUtils" />
+
     </data>
 
     <FrameLayout
@@ -143,8 +145,8 @@
                         android:id="@+id/imgTokenSource"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:scaleType="centerInside"
-                        app:identifier="@{swap.tokenSource.tokenSymbol}"
+                        android:scaleType="fitCenter"
+                        app:identifier="@{swap.sourceSymbol}"
                         app:layout_constraintBottom_toBottomOf="@+id/tvSource"
                         app:layout_constraintEnd_toStartOf="@+id/tvSource"
                         app:layout_constraintHorizontal_bias="0.5"
@@ -158,7 +160,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"
-                        android:text="@{swap.tokenSource.tokenSymbol}"
+                        android:text="@{swap.sourceSymbol}"
                         android:textAllCaps="true"
                         android:textColor="#141927"
                         android:textSize="16sp"
@@ -180,7 +182,7 @@
                         android:hint="@string/default_swap_amount"
                         android:inputType="numberDecimal"
                         android:singleLine="true"
-                        android:textColor="#fea34c"
+                        android:textColor="@color/amount_text_view_color"
                         android:textSize="24sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
@@ -192,8 +194,8 @@
                         android:id="@+id/imgTokenDest"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:scaleType="centerInside"
-                        app:identifier="@{swap.tokenDest.tokenSymbol}"
+                        android:scaleType="fitCenter"
+                        app:identifier="@{swap.destSymbol}"
                         app:layout_constraintBottom_toBottomOf="@+id/tvDest"
                         app:layout_constraintEnd_toStartOf="@+id/tvDest"
                         app:layout_constraintHorizontal_bias="0.5"
@@ -207,7 +209,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"
-                        android:text="@{swap.tokenDest.tokenSymbol}"
+                        android:text="@{swap.destSymbol}"
                         android:textAllCaps="true"
                         android:textColor="#141927"
                         android:textSize="16sp"
@@ -229,7 +231,7 @@
                         android:hint="@string/default_swap_amount"
                         android:inputType="numberDecimal"
                         android:singleLine="true"
-                        android:textColor="#141927"
+                        android:textColor="@color/amount_text_view_color"
                         android:textSize="24sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -316,7 +318,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="15dp"
-                        android:text="@{swap.tokenSource.tokenSymbol +` `+ @string/balance}"
+                        android:text="@{TextUtils.isEmpty(swap.sourceSymbol) ? `` : String.format(@string/token_balance, swap.sourceSymbol)}"
                         android:textAllCaps="true"
                         android:textColor="#9ea1aa"
                         android:textSize="12sp"

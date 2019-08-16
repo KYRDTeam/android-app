@@ -70,10 +70,6 @@ interface MainActivityModule {
 
     @FragmentScoped
     @ContributesAndroidInjector
-    fun contributeLimitOrderSuggestionFragment(): LimitOrderSuggestionFragment
-
-    @FragmentScoped
-    @ContributesAndroidInjector
     fun contributeManageOrderFragment(): ManageOrderFragment
 
     @FragmentScoped

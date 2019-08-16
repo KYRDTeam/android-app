@@ -55,7 +55,6 @@
     "COLOMBIAN",
     "COMORAN",
     "CONGOLESE",
-    "CONGOLESE",
     "COOK ISLANDER",
     "COSTA RICAN",
     "CROATIAN",
@@ -66,8 +65,6 @@
     "DANISH",
     "DJIBOUTIAN",
     "DOMINICAN",
-    "DOMINICAN",
-    "DUTCH",
     "DUTCH",
     "ECUADOREAN",
     "EGYPTIAN",
@@ -99,7 +96,6 @@
     "GUAMANIAN",
     "GUATEMALAN",
     "GUERNSEY",
-    "GUINEAN",
     "GUINEAN",
     "GUYANESE",
     "HAITIAN",
@@ -543,7 +539,9 @@
     "Correspondences from Bank",
     "Polling vote",
     "Tax return",
-    "Correspondence from a government agency"
+    "Correspondence from a government agency",
+    "Utility",
+    "Telephone Bill"
   ],
   "source_funds": [
     "Salary",

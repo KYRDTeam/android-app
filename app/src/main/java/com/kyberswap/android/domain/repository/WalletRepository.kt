@@ -1,5 +1,6 @@
 package com.kyberswap.android.domain.repository
 
+import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.VerifyStatus
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.Word
@@ -9,17 +10,17 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 
 interface WalletRepository {
-    fun createWallet(param: CreateWalletUseCase.Param): Single<Pair<Wallet, List<Word>>>
+    fun createWallet(param: CreateWalletUseCase.Param): Single<Triple<Wallet, List<Word>, List<Token>>>
 
-    fun createWallet(param: ApplyKyberCodeUseCase.Param): Single<Wallet>
+    fun createWallet(param: ApplyKyberCodeUseCase.Param): Single<Pair<Wallet, List<Token>>>
 
     fun getMnemonic(param: GetMnemonicUseCase.Param): Single<List<Word>>
 
-    fun importWallet(param: ImportWalletFromJsonUseCase.Param): Single<Wallet>
+    fun importWallet(param: ImportWalletFromJsonUseCase.Param): Single<Pair<Wallet, List<Token>>>
 
-    fun importWallet(param: ImportWalletFromPrivateKeyUseCase.Param): Single<Wallet>
+    fun importWallet(param: ImportWalletFromPrivateKeyUseCase.Param): Single<Pair<Wallet, List<Token>>>
 
-    fun importWallet(param: ImportWalletFromSeedUseCase.Param): Single<Wallet>
+    fun importWallet(param: ImportWalletFromSeedUseCase.Param): Single<Pair<Wallet, List<Token>>>
 
     fun getSelectedWallet(): Flowable<Wallet>
 
@@ -32,8 +33,6 @@ interface WalletRepository {
     fun setSelectedUnit(unit: String): Completable
 
     fun updateWallet(param: Wallet): Completable
-
-    fun addWalletToBalanceMonitor(param: AddWalletToBalanceMonitorUseCase.Param): Completable
 
     fun updatedSelectedWallet(param: UpdateSelectedWalletUseCase.Param): Single<Wallet>
 

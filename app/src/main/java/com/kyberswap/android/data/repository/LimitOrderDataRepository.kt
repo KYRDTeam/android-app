@@ -5,6 +5,7 @@ import android.util.Base64
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.LimitOrderApi
+import com.kyberswap.android.data.api.limitorder.OrderEntity
 import com.kyberswap.android.data.db.*
 import com.kyberswap.android.data.mapper.FeeMapper
 import com.kyberswap.android.data.mapper.OrderMapper
@@ -12,13 +13,11 @@ import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.domain.repository.LimitOrderRepository
 import com.kyberswap.android.domain.usecase.limitorder.*
 import com.kyberswap.android.util.TokenClient
-import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.hexWithPrefix
+import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.FlowableTransformer
 import io.reactivex.Single
-import io.reactivex.functions.BiFunction
 import org.consenlabs.tokencore.wallet.WalletManager
 import org.web3j.crypto.WalletUtils
 import java.math.BigDecimal
@@ -38,6 +37,11 @@ class LimitOrderDataRepository @Inject constructor(
     private val orderMapper: OrderMapper,
     private val feeMapper: FeeMapper
 ) : LimitOrderRepository {
+    override fun eligibleAddress(param: CheckEligibleAddressUseCase.Param): Single<EligibleAddress> {
+        return limitOrderApi.eligibleAddress(param.wallet.address).map {
+            orderMapper.transform(it)
+
+    }
 
     override fun cancelOrder(param: CancelOrderUseCase.Param): Single<Cancelled> {
         return limitOrderApi.cancelOrder(
@@ -56,108 +60,27 @@ class LimitOrderDataRepository @Inject constructor(
 
     override fun saveOrderFilter(param: SaveLimitOrderFilterUseCase.Param): Completable {
         return Completable.fromCallable {
-            val addresses = param.orderFilter.listAddress.filter {
-                it.isSelected
-    .map {
-                it.name
-    
-
-            val pairs = param.orderFilter.listOrders.filter {
-                it.isSelected
-    .map {
-                val pair = it.name.split(TOKEN_PAIR_SEPARATOR)
-                pair.first() to pair.last()
-    
-
-            val status = param.orderFilter.listStatus.filter {
-                it.isSelected
-    .map {
-                when (it.name) {
-                    context.getString(R.string.order_status_open) -> Order.Status.OPEN
-                    context.getString(R.string.order_status_invalidated) -> Order.Status.INVALIDATED
-                    context.getString(R.string.order_status_in_progress) -> Order.Status.IN_PROGRESS
-                    context.getString(R.string.order_status_cancelled) -> Order.Status.CANCELLED
-                    context.getString(R.string.order_status_filled) -> Order.Status.FILLED
-                    else -> Order.Status.UNKNOWN
-        .value
-    
-
-            val filter = param.orderFilter.apply {
-                this.addresses = addresses
-                this.status = status
-                this.pairs = pairs
-    
-            orderFilterDao.updateOrderFilter(filter)
+            orderFilterDao.updateOrderFilter(param.orderFilter)
 
     }
 
-    override fun getOrderFilter(param: GetLimitOrderFilterUseCase.Param): Flowable<OrderFilter> {
-        val filter = orderFilterDao.findOrderFilterByAddress(param.walletAddress)
-        val orderFilter = filter ?: OrderFilter(
-            status = listOf(Order.Status.OPEN.value, Order.Status.IN_PROGRESS.value)
-        )
+    override fun getOrderFilter(): Flowable<OrderFilter> {
+        return Flowable.fromCallable {
+            val orderFilter = orderFilterDao.filter
+            if (orderFilterDao.filter == null) {
 
-        val orders = limitOrderDao.findAllOrdersByAddress(param.walletAddress)
-        val pairs = mutableSetOf<Pair<String, String>>()
-        val address = mutableSetOf<String>()
-
-        orders.forEach {
-            pairs.add(Pair(it.src, it.dst))
-            address.add(it.userAddr)
-
-
-        val listOrders = pairs.map {
-            FilterItem(
-                orderFilter.pairs.indexOf(it) >= 0,
-                StringBuilder().append(it.first).append(TOKEN_PAIR_SEPARATOR).append(it.second)
-                    .toString()
-            )
-
-
-        val listAddress = address.map {
-            FilterItem(
-                orderFilter.addresses.indexOf(it.displayWalletAddress()) >= 0,
-                it.displayWalletAddress()
-            )
-
-
-        val listStatus = listOf(
-            Order.Status.OPEN,
-            Order.Status.IN_PROGRESS,
-            Order.Status.FILLED,
-            Order.Status.CANCELLED,
-            Order.Status.INVALIDATED
-        ).map {
-            val display = when (it) {
-                Order.Status.OPEN -> context.getString(R.string.order_status_open)
-                Order.Status.INVALIDATED -> context.getString(R.string.order_status_invalidated)
-                Order.Status.IN_PROGRESS -> context.getString(R.string.order_status_in_progress)
-                Order.Status.CANCELLED -> context.getString(R.string.order_status_cancelled)
-                Order.Status.FILLED -> context.getString(R.string.order_status_filled)
-                Order.Status.UNKNOWN -> it.value
+                val default = OrderFilter(
+                    unSelectedStatus = listOf(),
+                    unSelectedPairs = listOf(),
+                    unSelectedAddresses = listOf()
+                )
+                orderFilterDao.insertOrderFilter(default)
+                default
+     else {
+                orderFilter
     
-
-            FilterItem(orderFilter.status.indexOf(it.value) >= 0, display)
-
-
-        val update = orderFilter.copy(
-            walletAddress = param.walletAddress,
-            listOrders = listOrders,
-            listAddress = listAddress,
-            listStatus = listStatus
-        )
-        if (orderFilter != update) {
-            orderFilterDao.insertOrderFilter(update)
-
-        return orderFilterDao.findOrderFilterByAddressFlowable(param.walletAddress).defaultIfEmpty(
-            update
-        ).map {
-            it.copy(
-                walletAddress = param.walletAddress,
-                listOrders = listOrders,
-                listAddress = listAddress,
-                listStatus = listStatus
-            )
+.flatMap {
+            orderFilterDao.filterFlowable.defaultIfEmpty(it)
 
     }
 
@@ -216,7 +139,7 @@ class LimitOrderDataRepository @Inject constructor(
 
     }
 
-    override fun getLimitOrderFee(param: GetLimitOrderFeeUseCase.Param): Single<Fee> {
+    override fun getLimitOrderFee(param: GetLimitOrderFeeUseCase.Param): Flowable<Fee> {
         return limitOrderApi.getFee(
             param.sourceToken.tokenAddress,
             param.destToken.tokenAddress,
@@ -226,6 +149,12 @@ class LimitOrderDataRepository @Inject constructor(
         ).map {
             feeMapper.transform(it)
 
+            .repeatWhen {
+                it.delay(15, TimeUnit.SECONDS)
+    
+            .retryWhen { throwable ->
+                throwable.compose(zipWithFlatMap())
+    
     }
 
     override fun getCurrentLimitOrders(param: GetLocalLimitOrderDataUseCase.Param): Flowable<LocalLimitOrder> {
@@ -295,14 +224,6 @@ class LimitOrderDataRepository @Inject constructor(
             .defaultIfEmpty(orderWithToken)
     }
 
-    private fun <T> zipWithFlatMap(): FlowableTransformer<T, Long> {
-        return FlowableTransformer { flowable ->
-            flowable.zipWith(
-                Flowable.range(COUNTER_START, ATTEMPTS),
-                BiFunction<T, Int, Int> { _: T, u: Int -> u })
-                .flatMap { t -> Flowable.timer(t * 5L, TimeUnit.SECONDS) }
-
-    }
 
     private fun updateBalance(token: Token, wallet: Wallet): Token {
         return when {
@@ -348,69 +269,95 @@ class LimitOrderDataRepository @Inject constructor(
         return Completable.fromCallable {
             val currentLimitOrderForWalletAddress =
                 localLimitOrderDao.findLocalLimitOrderByAddress(param.walletAddress)
-            val order = if (param.isSourceToken) {
-                currentLimitOrderForWalletAddress?.copy(tokenSource = param.token)
+
+            val tokenPairUnChanged = if (param.isSourceToken) {
+                currentLimitOrderForWalletAddress?.tokenSource?.tokenSymbol == param.token.tokenSymbol
      else {
-                currentLimitOrderForWalletAddress?.copy(tokenDest = param.token)
+                currentLimitOrderForWalletAddress?.tokenDest?.tokenSymbol == param.token.tokenSymbol
+    
+
+            val resetRate = if (!tokenPairUnChanged) {
+                ""
+     else {
+                currentLimitOrderForWalletAddress?.expectedRate ?: ""
+    
+
+
+            val order = if (param.isSourceToken) {
+                currentLimitOrderForWalletAddress?.copy(
+                    tokenSource = param.token,
+                    expectedRate = resetRate
+                )
+     else {
+                currentLimitOrderForWalletAddress?.copy(
+                    tokenDest = param.token,
+                    expectedRate = resetRate
+                )
     
             order?.let { localLimitOrderDao.updateOrder(it) }
 
     }
 
-    override fun getLimitOrders(param: GetLimitOrdersUseCase.Param): Flowable<List<Order>> {
-        return Flowable.mergeDelayError(limitOrderDao.findOrdersByAddressFlowable(param.walletAddress),
-            limitOrderApi.getOrders(param.walletAddress)
-                .map {
-                    it.orders
-        
-                .map {
-                    orderMapper.transform(it)
-        
-                .doAfterSuccess {
-                    limitOrderDao.insertOrders(it)
-        .toFlowable()
+    override fun getLimitOrders(): Flowable<List<Order>> {
+        return Flowable.range(1, Integer.MAX_VALUE)
+            .concatMap {
+                limitOrderApi.getOrders(it).toFlowable()
+    
+            .takeUntil {
+                it.pagingInfo.pageIndex > it.pagingInfo.pageCount
+    .reduce(
+                mutableListOf<OrderEntity>(),
+                { builder, response ->
+                    if (response.pagingInfo.pageIndex == 1) {
+                        builder.clear()
+            
+                    builder.addAll(response.orders)
+                    builder
         )
+            .map {
+                orderMapper.transform(it)
+    .toFlowable()
+
     }
 
     override fun getRelatedLimitOrders(param: GetRelatedLimitOrdersUseCase.Param): Flowable<List<Order>> {
-        return Flowable.mergeDelayError(
-            limitOrderDao.findOrdersByAddressFlowable(param.walletAddress).map {
-                it.filter { order ->
-                    order.src ==
-                        param.tokenSource.submitOrderTokenSymbol && order.dst == param.tokenDest.submitOrderTokenSymbol &&
-                        order.isPending
-        
-    ,
-            limitOrderApi.getRelatedOrders(
-                param.walletAddress,
-                param.tokenSource.tokenAddress,
-                param.tokenDest.tokenAddress,
-                param.status
-            )
-                .map {
-                    it.orders
-        
-                .map {
-                    orderMapper.transform(it)
-        
-                .map {
-                    it.filter { it.isPending }
-        
-                .doAfterSuccess {
-                    limitOrderDao.updateOrders(it)
-        .toFlowable()
+        return limitOrderApi.getRelatedOrders(
+            param.walletAddress,
+            param.tokenSource.tokenAddress,
+            param.tokenDest.tokenAddress,
+            "0"
         )
+            .map {
+                it.orders
+    
+            .map {
+                orderMapper.transform(it)
+    
+            .toFlowable()
+            .repeatWhen {
+                it.delay(10, TimeUnit.SECONDS)
+    
+            .retryWhen { throwable ->
+                throwable.compose(zipWithFlatMap())
+    
 
     }
 
     override fun getPendingBalances(param: GetPendingBalancesUseCase.Param): Flowable<PendingBalances> {
         return Flowable.mergeDelayError(
-            pendingBalancesDao.all,
+            if (pendingBalancesDao.pendingBalancesByWalletAddress(param.wallet.address) != null) {
+                pendingBalancesDao.pendingBalancesByWalletAddressFlowable(param.wallet.address)
+     else {
+                Flowable.fromCallable {
+                    PendingBalances()
+        
+    
+            ,
             limitOrderApi.getPendingBalances(param.wallet.address)
                 .map {
                     orderMapper.transform(it)
         .doAfterSuccess {
-                    pendingBalancesDao.createNewPendingBalances(it)
+                    pendingBalancesDao.createNewPendingBalances(it.copy(walletAddress = param.wallet.address))
         .toFlowable()
                 .repeatWhen {
                     it.delay(5, TimeUnit.SECONDS)
@@ -422,10 +369,4 @@ class LimitOrderDataRepository @Inject constructor(
         )
     }
 
-    companion object {
-        const val TOKEN_PAIR_SEPARATOR = "  ➞  "
-        const val ADDRESS_SEPARATOR = "..."
-        private const val COUNTER_START = 1
-        private const val ATTEMPTS = 5
-    }
 }

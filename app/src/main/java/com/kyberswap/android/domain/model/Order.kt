@@ -24,7 +24,9 @@ data class Order(
     val minRate: BigDecimal = BigDecimal.ZERO,
     val nonce: String = "",
     val fee: BigDecimal = BigDecimal.ZERO,
+    val receive: BigDecimal = BigDecimal.ZERO,
     val status: String = "",
+    val msg: String = "",
     val txHash: String = "",
     val createdAt: Long = 0,
     val updatedAt: Long = 0
@@ -39,11 +41,19 @@ data class Order(
         entity.minRate,
         entity.nonce,
         entity.fee,
+        entity.receive,
         entity.status,
+        entity.msg,
         entity.txHash,
         entity.createdAt,
         entity.updatedAt
     )
+
+    val time: Long
+        get() = if (updatedAt > 0) updatedAt else createdAt
+
+    val shortedDateTimeFormat: String
+        get() = Transaction.formatterShort.format(Date(time * 1000L))
 
     constructor(notification: NotificationLimitOrder) : this(
         if (notification.orderId > 0) notification.orderId else notification.testOrderId.toLongSafe(),
@@ -54,7 +64,9 @@ data class Order(
         notification.minRate,
         "",
         notification.fee,
+        notification.receive,
         Status.FILLED.value,
+        "",
         notification.txHash,
         notification.createdAt,
         notification.updatedAt
@@ -86,6 +98,13 @@ data class Order(
             .append(dst)
             .toString()
 
+    val receviedDisplay: String
+        get() = StringBuilder()
+            .append(receive.toDisplayNumber())
+            .append(" ")
+            .append(dst)
+            .toString()
+
 
     val destDisplayFee: String
         get() = StringBuilder()
@@ -94,20 +113,58 @@ data class Order(
             .append(src)
             .toString()
 
+    private val extra: BigDecimal
+        get() = receive.minus(receivedSource.multiply(minRate))
+
+    private val extraValue: String
+        get() = if (extra > BigDecimal.ZERO) extra.toDisplayNumber() else ""
+
+    val extraDisplay: String
+        get() = if (extraValue.isNotEmpty())
+            StringBuilder().append(
+                "+ "
+            ).append(extraValue)
+                .append(" ")
+                .append(dst)
+                .toString()
+        else ""
+
+    val hasExtra: Boolean
+        get() = isMined && extraDisplay.isNotEmpty()
+
+    val isInvalidated: Boolean
+        get() = status.toLowerCase() == Status.INVALIDATED.value.toLowerCase() &&
+            msg.isNotEmpty()
+
+
     val isPending: Boolean
         get() = status.toLowerCase() == Status.OPEN.value || status.toLowerCase() == Status.IN_PROGRESS.value
 
     val isOpen: Boolean
-        get() = status.toLowerCase() == Status.OPEN.value
+        get() = status.toLowerCase() == Status.OPEN.value || status.toLowerCase() == Status.IN_PROGRESS.value
+
+    val isMined: Boolean
+        get() = status.toLowerCase() == Status.FILLED.value
 
     val displayedDate: String
-        get() = formatterShort.format(Date(createdAt * 1000L))
+        get() = formatterShort.format(Date(time * 1000L))
 
     val displayAddress: String
         get() = userAddr.displayWalletAddress()
 
     companion object {
         val formatterShort = SimpleDateFormat("dd MMM yyyy", Locale.US)
+    }
+
+    fun sameDisplay(other: Order): Boolean {
+        return this.id == other.id &&
+            this.displayTokenPair == other.displayTokenPair &&
+            this.displayAddress == other.displayAddress &&
+            this.status == other.status &&
+            this.sourceDisplay == other.sourceDisplay &&
+            this.destDisplay == other.destDisplay &&
+            this.destDisplayFee == other.destDisplayFee &&
+            this.extraDisplay == other.extraDisplay
     }
 
     enum class Status {

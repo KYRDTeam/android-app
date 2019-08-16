@@ -19,6 +19,7 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
+import java.io.OutputStream
 import javax.inject.Inject
 
 
@@ -37,6 +38,8 @@ class EditWalletFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelFactory
 
     private var wallet: Wallet? = null
+
+    private var jsonContent: String? = null
 
 
     private val viewModel by lazy {
@@ -62,6 +65,7 @@ class EditWalletFragment : BaseFragment() {
         binding.wallet = wallet
         binding.tvShowBackupPhrase.setOnClickListener {
             dialogHelper.showBottomSheetBackupPhraseDialog(
+                wallet?.mnemonicAvailable == true,
                 {
                     dialogHelper.showInputPassword(viewModel.compositeDisposable) {
                         wallet?.let { it1 -> viewModel.backupKeyStore(it, it1) }
@@ -95,12 +99,13 @@ class EditWalletFragment : BaseFragment() {
 
 
         binding.imgDone.setOnClickListener {
-            if (binding.edtWalletName.text.isNullOrBlank()) {
-                showAlertWithoutIcon(message = getString(R.string.wallet_empty_name))
+            val name = if (binding.edtWalletName.text.isNullOrBlank()) {
+                getString(R.string.default_wallet_name)
      else {
-                wallet?.copy(name = binding.edtWalletName.text.toString())?.let { wl ->
-                    viewModel.save(wl)
-        
+                binding.edtWalletName.text.toString()
+    
+            wallet?.copy(name = name)?.let { wl ->
+                viewModel.save(wl)
     
 
 
@@ -204,12 +209,57 @@ class EditWalletFragment : BaseFragment() {
     }
 
     private fun onExportWalletComplete(content: String) {
-        val sendIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, content)
-            type = "text/plain"
+        val fileName = getString(R.string.wallet_file_prefix) + wallet?.address + ".json"
+        this.jsonContent = content
+        createFile("text/json", fileName)
 
-        this.startActivity(sendIntent)
+    }
+
+    private fun createFile(mimeType: String, fileName: String) {
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = mimeType
+            putExtra(Intent.EXTRA_TITLE, fileName)
+
+
+        startActivityForResult(intent, WRITE_REQUEST_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val cr = context?.contentResolver
+        val uri = data?.data
+        uri?.let {
+            if (requestCode == WRITE_REQUEST_CODE) {
+                try {
+                    cr?.takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+         catch (e: SecurityException) {
+                    e.printStackTrace()
+        
+
+                var os: OutputStream? = null
+                try {
+                    os = cr?.openOutputStream(uri)
+                    os?.write(jsonContent?.toByteArray())
+         catch (e: Exception) {
+         finally {
+                    closeQuietly(os)
+        
+    
+
+
+    }
+
+    private fun closeQuietly(closeable: AutoCloseable?) {
+        if (closeable != null) {
+            try {
+                closeable.close()
+     catch (rethrown: RuntimeException) {
+                throw rethrown
+     catch (ignored: Exception) {
+    
+
+
     }
 
     private fun onDeleteWalletSuccess(verifyStatus: VerifyStatus) {
@@ -225,6 +275,7 @@ class EditWalletFragment : BaseFragment() {
 
     companion object {
         private const val WALLET_PARAM = "param_wallet"
+        private const val WRITE_REQUEST_CODE = 1000
         fun newInstance(wallet: Wallet) =
             EditWalletFragment().apply {
                 arguments = Bundle().apply {
