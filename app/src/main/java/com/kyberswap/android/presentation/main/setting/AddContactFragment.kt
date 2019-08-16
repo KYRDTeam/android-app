@@ -21,6 +21,7 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.swap.DeleteContactState
 import com.kyberswap.android.presentation.main.swap.SaveContactState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isContact
 import javax.inject.Inject
 
@@ -101,7 +102,7 @@ class AddContactFragment : BaseFragment() {
         binding.lnDelete.visibility = if (contact == null) View.GONE else View.VISIBLE
 
         binding.lnSend.setOnClickListener {
-
+            hideKeyboard()
             when {
                 binding.edtAddress.text.isNullOrEmpty() -> showError(getString(R.string.provide_receive_address))
                 !binding.edtAddress.text.toString().isContact() -> showError(getString(R.string.invalid_contact_address))
@@ -142,13 +143,16 @@ class AddContactFragment : BaseFragment() {
         binding.imgDone.setOnClickListener {
             when {
                 binding.edtAddress.text.isNullOrEmpty() -> showAlert(getString(R.string.provide_receive_address))
-                !binding.edtAddress.text.toString().isContact() -> showAlert(getString(R.string.invalid_contact_address))
-                else -> wallet?.address?.let { address ->
-                    viewModel.save(
-                        address,
-                        binding.edtName.text.toString(),
-                        binding.edtAddress.text.toString()
-                    )
+                !binding.edtAddress.text.toString().isContact() -> showError(getString(R.string.invalid_contact_address))
+                else -> {
+                    hideKeyboard()
+                    wallet?.address?.let { address ->
+                        viewModel.save(
+                            address,
+                            binding.edtName.text.toString(),
+                            binding.edtAddress.text.toString()
+                        )
+                    }
                 }
             }
         }

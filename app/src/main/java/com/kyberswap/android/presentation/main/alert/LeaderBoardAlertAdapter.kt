@@ -10,7 +10,6 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ItemLeaderBoardBinding
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.presentation.base.DataBoundListAdapter
-import com.kyberswap.android.presentation.base.DataBoundViewHolder
 
 class LeaderBoardAlertAdapter(
     appExecutors: AppExecutors
@@ -19,32 +18,25 @@ class LeaderBoardAlertAdapter(
     appExecutors,
     diffCallback = object : DiffUtil.ItemCallback<Alert>() {
         override fun areItemsTheSame(oldItem: Alert, newItem: Alert): Boolean {
-            return oldItem == newItem
+            return oldItem.id == newItem.id
         }
 
-
         override fun areContentsTheSame(oldItem: Alert, newItem: Alert): Boolean {
-            return oldItem == newItem
+            return oldItem.areContentsTheSame(newItem)
         }
     }
 ) {
 
 
-    fun submitAlerts(tokens: List<Alert>) {
+    fun submitAlerts(alerts: List<Alert>) {
         submitList(listOf())
-        submitList(tokens)
-    }
-
-    override fun onBindViewHolder(
-        holder: DataBoundViewHolder<ItemLeaderBoardBinding>,
-        position: Int
-    ) {
-        holder.binding.isActive = position == 0
-        super.onBindViewHolder(holder, position)
+        submitList(alerts)
     }
 
     override fun bind(binding: ItemLeaderBoardBinding, item: Alert) {
+        binding.isActive = item.userName.isNotBlank()
         binding.setVariable(BR.alert, item)
+        binding.setVariable(BR.isReward, item.rewardId > 0 || item.reward.isNotEmpty())
         binding.executePendingBindings()
     }
 

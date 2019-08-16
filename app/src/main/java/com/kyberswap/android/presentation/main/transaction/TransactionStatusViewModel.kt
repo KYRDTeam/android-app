@@ -3,12 +3,21 @@ package com.kyberswap.android.presentation.main.transaction
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.kyberswap.android.domain.model.Transaction
+import com.kyberswap.android.domain.model.TransactionFilter
+import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.usecase.transaction.GetPendingTransactionsUseCase
+import com.kyberswap.android.domain.usecase.transaction.GetTransactionFilterUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.util.ext.toDate
 import io.reactivex.functions.Consumer
+import timber.log.Timber
 import javax.inject.Inject
 
 class TransactionStatusViewModel @Inject constructor(
+    private val getTransactionFilterUseCase: GetTransactionFilterUseCase,
+    private val getPendingTransactionsUseCase: GetPendingTransactionsUseCase,
     private val getTransactionsUseCase: GetTransactionsUseCase
 ) : ViewModel() {
 
@@ -16,33 +25,101 @@ class TransactionStatusViewModel @Inject constructor(
     val getTransactionCallback: LiveData<Event<GetTransactionState>>
         get() = _getTransactionCallback
 
+    private var currentFilter: TransactionFilter? = null
 
-    fun getTransaction(type: Int, address: String) {
-        _getTransactionCallback.postValue(Event(GetTransactionState.Loading))
-        getTransactionsUseCase.execute(
-            Consumer { transactions ->
-                val itemList = transactions.groupBy { it.shortedDateTimeFormat }
-                    .flatMap { item ->
-                        val items = mutableListOf<TransactionItem>()
-                        items.add(TransactionItem.Header(item.key))
-                        val list = item.value.sortedByDescending { it.timeStamp.toLong() }
-                        list.forEachIndexed { index, transaction ->
-                            if (index % 2 == 0) {
-                                items.add(TransactionItem.ItemEven(transaction))
-                            } else {
-                                items.add(TransactionItem.ItemOdd(transaction))
-                            }
-                        }
-                        items
+
+    private fun getTransaction(type: Int, wallet: Wallet, transactionFilter: TransactionFilter) {
+        if (type == Transaction.PENDING) {
+            getPendingTransactionsUseCase.dispose()
+            getPendingTransactionsUseCase.execute(
+                Consumer {
+                    _getTransactionCallback.value = Event(
+                        GetTransactionState.Success(
+                            filterTransaction(
+                                it,
+                                transactionFilter
+                            ),
+                            currentFilter != transactionFilter
+                        )
+                    )
+                },
+                Consumer {
+                    Timber.e(it.localizedMessage)
+                    _getTransactionCallback.value =
+                        Event(GetTransactionState.ShowError(it.localizedMessage))
+                },
+                wallet.address
+            )
+        } else {
+            getTransactionsUseCase.dispose()
+            getTransactionsUseCase.execute(
+                Consumer { transactions ->
+                    _getTransactionCallback.value = Event(
+                        GetTransactionState.Success(
+                            filterTransaction(
+                                transactions,
+                                transactionFilter
+                            ),
+                            currentFilter != transactionFilter
+                        )
+                    )
+                },
+                Consumer {
+                    Timber.e(it.localizedMessage)
+                    _getTransactionCallback.value =
+                        Event(GetTransactionState.ShowError(it.localizedMessage))
+                },
+                GetTransactionsUseCase.Param(wallet)
+            )
+        }
+
+    }
+
+    private fun filterTransaction(
+        transactions: List<Transaction>,
+        transactionFilter: TransactionFilter
+    ): List<TransactionItem> {
+        return transactions
+            .sortedByDescending { it.timeStamp }
+            .filter {
+                val tokenList = transactionFilter.tokens.map { it.toLowerCase() }
+                (transactionFilter.from.isEmpty() || it.timeStamp * 1000 >= transactionFilter.from.toDate().time) &&
+                    (transactionFilter.to.isEmpty() || it.timeStamp * 1000 <= transactionFilter.to.toDate().time) &&
+                    transactionFilter.types.contains(it.type) &&
+                    (tokenList.contains(it.tokenSymbol.toLowerCase()) ||
+                        tokenList.contains(it.tokenSource.toLowerCase())
+                        || tokenList.contains(it.tokenDest.toLowerCase()))
+            }
+            .groupBy { it.shortedDateTimeFormat }
+            .flatMap { item ->
+                val items = mutableListOf<TransactionItem>()
+                items.add(TransactionItem.Header(item.key))
+                val list = item.value.sortedByDescending { it.timeStamp }
+                list.forEachIndexed { index, transaction ->
+                    if (index % 2 == 0) {
+                        items.add(TransactionItem.ItemEven(transaction))
+                    } else {
+                        items.add(TransactionItem.ItemOdd(transaction))
                     }
-                _getTransactionCallback.value = Event(GetTransactionState.Success(itemList))
+                }
+                items
+            }
+    }
+
+    fun getTransactionFilter(type: Int, wallet: Wallet) {
+        getTransactionFilterUseCase.dispose()
+        getTransactionFilterUseCase.execute(
+            Consumer {
+                if (currentFilter != it) {
+                    currentFilter = it
+                    getTransaction(type, wallet, it)
+                }
             },
             Consumer {
                 it.printStackTrace()
-                _getTransactionCallback.value =
-                    Event(GetTransactionState.ShowError(it.localizedMessage))
+                Timber.e(it.localizedMessage)
             },
-            GetTransactionsUseCase.Param(type, address)
+            GetTransactionFilterUseCase.Param(wallet.address)
         )
     }
 

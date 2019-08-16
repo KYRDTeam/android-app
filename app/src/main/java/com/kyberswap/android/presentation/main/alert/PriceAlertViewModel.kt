@@ -4,13 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.usecase.alert.CreateOrUpdateAlertUseCase
-import com.kyberswap.android.domain.usecase.alert.GetAlertsUseCase
 import com.kyberswap.android.domain.usecase.alert.GetCurrentAlertUseCase
+import com.kyberswap.android.domain.usecase.alert.GetNumberAlertsUseCase
+import com.kyberswap.android.domain.usecase.alert.UpdateCurrentAlertUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
-import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
+import com.kyberswap.android.presentation.main.profile.alert.GetNumberAlertsState
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
@@ -18,7 +20,8 @@ class PriceAlertViewModel @Inject constructor(
     getSelectedWalletUseCase: GetSelectedWalletUseCase,
     private val getCurrentAlertUseCase: GetCurrentAlertUseCase,
     private val createOrUpdateAlertUseCase: CreateOrUpdateAlertUseCase,
-    private val getAlertsUseCase: GetAlertsUseCase
+    private val getNumberAlertsUseCase: GetNumberAlertsUseCase,
+    private val updateCurrentAlertUseCase: UpdateCurrentAlertUseCase
 ) : SelectedWalletViewModel(getSelectedWalletUseCase) {
 
     val compositeDisposable = CompositeDisposable()
@@ -31,11 +34,12 @@ class PriceAlertViewModel @Inject constructor(
     val createOrUpdateAlertCallback: LiveData<Event<CreateOrUpdateAlertState>>
         get() = _createOrUpdateAlertCallback
 
-    private val _getAllAlertsCallback = MutableLiveData<Event<GetAlertsState>>()
-    val getAllAlertsCallback: LiveData<Event<GetAlertsState>>
+    private val _getAllAlertsCallback = MutableLiveData<Event<GetNumberAlertsState>>()
+    val getAllAlertsCallback: LiveData<Event<GetNumberAlertsState>>
         get() = _getAllAlertsCallback
 
     fun getCurrentAlert(walletAddress: String, alert: Alert?) {
+        getCurrentAlertUseCase.dispose()
         getCurrentAlertUseCase.execute(
             Consumer {
                 _getCurrentAlertCallback.value = Event(GetCurrentAlertState.Success(it))
@@ -50,14 +54,15 @@ class PriceAlertViewModel @Inject constructor(
         )
     }
 
-    fun getAllAlert() {
-        getAlertsUseCase.execute(
+    fun getNumberOfAlerts() {
+        getNumberAlertsUseCase.execute(
             Consumer {
-                _getAllAlertsCallback.value = Event(GetAlertsState.Success(it))
+                _getAllAlertsCallback.value = Event(GetNumberAlertsState.Success(it))
             },
             Consumer {
                 it.printStackTrace()
-                _getAllAlertsCallback.value = Event(GetAlertsState.ShowError(it.localizedMessage))
+                _getAllAlertsCallback.value =
+                    Event(GetNumberAlertsState.ShowError(it.localizedMessage))
             },
             null
         )
@@ -88,6 +93,19 @@ class PriceAlertViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         compositeDisposable.dispose()
+        updateCurrentAlertUseCase.dispose()
+        getCurrentAlertUseCase.dispose()
+        createOrUpdateAlertUseCase.dispose()
+        getNumberAlertsUseCase.dispose()
+    }
+
+    fun updateAlertInfo(alert: Alert?) {
+        if (alert == null || alert.id <= 0) return
+        updateCurrentAlertUseCase.execute(
+            Action { },
+            Consumer { },
+            UpdateCurrentAlertUseCase.Param(alert)
+        )
     }
 
 

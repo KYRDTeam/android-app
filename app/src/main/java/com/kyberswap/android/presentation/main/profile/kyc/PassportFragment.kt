@@ -3,16 +3,24 @@ package com.kyberswap.android.presentation.main.profile.kyc
 
 import android.Manifest
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.jakewharton.rxbinding3.widget.checkedChanges
+import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentPassportBinding
@@ -91,25 +99,41 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                             val info = binding.info
                             info?.let {
                                 binding.rbId.isChecked = info.isIdentityCard
-                                binding.rbPassport.isChecked = info.isNationalId
-                                binding.cbIssueDate.isChecked = info.documentIssueDate.isEmpty()
-                                binding.cbExpiryDate.isChecked = info.documentExpiryDate.isEmpty()
+                                binding.rbPassport.isChecked = info.isPassport
+                                binding.cbIssueDate.isChecked = info.issueDateNonApplicable
+                                binding.cbExpiryDate.isChecked = info.expiryDateNonApplicable
 
-                                val photoIdentityFrontSide =
-                                    info.photoIdentityFrontSide.removePrefix(BASE64_PREFIX)
-                                displayImage(photoIdentityFrontSide, binding.imgPassportFrontSide)
+                                info.photoIdentityFrontSide.removePrefix(BASE64_PREFIX)
 
-                                val photoIdentityBackSide =
-                                    info.photoIdentityBackSide.removePrefix(BASE64_PREFIX)
-                                displayImage(photoIdentityBackSide, binding.imgPassportBackSide)
 
-                                val photoSelfie = info.photoSelfie.removePrefix(BASE64_PREFIX)
-                                displayImage(photoSelfie, binding.imgPassportHolding)
+                                if (info.photoIdentityFrontSide.isNotEmpty()) {
+                                    this.frontImageString =
+                                        info.photoIdentityFrontSide.removePrefix(BASE64_PREFIX)
+                                }
+                                displayImage(this.frontImageString, binding.imgPassportFrontSide)
+
+                                info.photoIdentityBackSide.removePrefix(BASE64_PREFIX)
+
+                                if (info.photoIdentityBackSide.isNotEmpty()) {
+                                    this.backImageString =
+                                        info.photoIdentityBackSide.removePrefix(BASE64_PREFIX)
+                                }
+
+                                displayImage(this.backImageString, binding.imgPassportBackSide)
+
+                                info.photoSelfie.removePrefix(BASE64_PREFIX)
+
+                                if (info.photoSelfie.isNotEmpty()) {
+                                    this.selfieImageString =
+                                        info.photoSelfie.removePrefix(BASE64_PREFIX)
+                                }
+
+                                displayImage(this.selfieImageString, binding.imgPassportHolding)
                             }
                         }
                     }
                     is UserInfoState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showError(state.message ?: getString(R.string.something_wrong))
                     }
                 }
             }
@@ -155,6 +179,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                 now.get(Calendar.MONTH),
                 now.get(Calendar.DAY_OF_MONTH)
             )
+            dpd.maxDate = now
             dpd.show(fragmentManager, "Datepickerdialog")
         }
 
@@ -167,6 +192,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                 now.get(Calendar.MONTH),
                 now.get(Calendar.DAY_OF_MONTH)
             )
+            dpd.minDate = now
             dpd.show(fragmentManager, "Datepickerdialog")
         }
 
@@ -185,7 +211,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                                     if (granted) {
                                         easyImage.openCameraForImage(this)
                                     } else {
-                                        showAlert(getString(R.string.permission_required))
+                                        showError(getString(R.string.permission_required))
                                     }
                                 }
                         },
@@ -195,7 +221,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                                     if (granted) {
                                         easyImage.openGallery(this)
                                     } else {
-                                        showAlert(getString(R.string.permission_required))
+                                        showError(getString(R.string.permission_required))
                                     }
                                 }
                         }
@@ -205,30 +231,70 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
 
         viewModel.compositeDisposable.add(
             binding.cbIssueDate.checkedChanges()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
+                    binding.edtIssueDate.isEnabled = !it
+                    if (!it) {
+                        binding.edtIssueDate.requestFocus()
+                    } else {
+                        binding.edtIssueDate.setText("")
+                    }
+
+                })
+
+        viewModel.compositeDisposable.add(binding.edtDocumentNumber.textChanges()
+            .skipInitialValue()
             .observeOn(schedulerProvider.ui())
             .subscribe {
-                binding.edtIssueDate.isEnabled = !it
-                if (!it) {
-                    binding.edtIssueDate.requestFocus()
-                } else {
-                    binding.edtIssueDate.setText("")
-                }
+                binding.ilDocumentId.error = null
+            })
 
+        viewModel.compositeDisposable.add(binding.edtIssueDate.textChanges()
+            .skipInitialValue()
+            .observeOn(schedulerProvider.ui())
+            .subscribe {
+                binding.ilIssueDate.error = null
+            })
+
+        viewModel.compositeDisposable.add(binding.edtExpiryDate.textChanges()
+            .skipInitialValue()
+            .observeOn(schedulerProvider.ui())
+            .subscribe {
+                binding.ilExpiryDate.error = null
             })
 
         viewModel.compositeDisposable.add(
             binding.cbExpiryDate.checkedChanges()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
+                    binding.edtExpiryDate.isEnabled = !it
+                    if (!it) {
+                        binding.edtExpiryDate.requestFocus()
+                    } else {
+                        binding.edtExpiryDate.setText("")
+                    }
+
+                })
+
+        viewModel.compositeDisposable.add(binding.rgIdentity.checkedChanges()
+            .skipInitialValue()
             .observeOn(schedulerProvider.ui())
             .subscribe {
-                binding.edtExpiryDate.isEnabled = !it
-                if (!it) {
-                    binding.edtExpiryDate.requestFocus()
-                } else {
-                    binding.edtExpiryDate.setText("")
+                binding.lnBackSide.visibility =
+                    if (it == R.id.rbPassport) View.GONE else View.VISIBLE
+                if (it == R.id.rbId) {
+                    context?.let {
+                        binding.lnHoldingDocument.setBackgroundColor(
+                            ContextCompat.getColor(it, R.color.identity_info_gray)
+                        )
+                    }
+
+                } else if (it == R.id.rbPassport) {
+                    binding.lnHoldingDocument.setBackgroundColor(
+                        Color.TRANSPARENT
+                    )
                 }
-
             })
-
         binding.tvNext.setOnClickListener {
             val info = binding.info
             info?.let {
@@ -246,26 +312,63 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                 when {
 
                     !binding.rbId.isChecked && !binding.rbPassport.isChecked -> {
-                        showError(getString(R.string.kyc_document_type_required))
+                        showAlertWithoutIcon(
+                            title = getString(R.string.invalid_document_type),
+                            message = getString(R.string.kyc_document_type_required)
+                        )
                     }
 
                     edtDocumentNumber.text.toString().isBlank() -> {
                         val error = getString(R.string.kyc_document_number_required)
-                        showError(error)
+                        showAlertWithoutIcon(
+                            title = getString(R.string.invalid_document_number),
+                            message = error
+                        )
                         binding.ilDocumentId.error = error
 
                     }
 
+                    !cbIssueDate.isChecked && edtIssueDate.text.toString().isBlank() -> {
+                        val error = getString(
+                            R.string.invalid_issue_date
+                        )
+                        showAlertWithoutIcon(
+                            title = getString(R.string.invalid_input),
+                            message = error
+                        )
+                        binding.ilIssueDate.error = error
+                    }
+
+                    !cbExpiryDate.isChecked && edtExpiryDate.text.toString().isBlank() -> {
+                        val error = getString(
+                            R.string.invalid_expired_date
+                        )
+                        showAlertWithoutIcon(
+                            title = getString(R.string.invalid_input),
+                            message = error
+                        )
+                        binding.ilExpiryDate.error = error
+                    }
+
                     photoIdentityFrontSide.isEmpty() -> {
-                        showError(getString(R.string.kyc_photo_id_front_required))
+                        showAlertWithoutIcon(
+                            title = getString(R.string.photo_not_found),
+                            message = getString(R.string.kyc_photo_id_front_required)
+                        )
                     }
 
-                    photoIdentityBackSide.isEmpty() -> {
-                        showError(getString(R.string.kyc_photo_id_back_required))
+                    photoIdentityBackSide.isEmpty() && binding.rbId.isChecked -> {
+                        showAlertWithoutIcon(
+                            title = getString(R.string.photo_not_found),
+                            message = getString(R.string.kyc_photo_id_front_required)
+                        )
                     }
 
-                    photoIdentityBackSide.isEmpty() -> {
-                        showError(getString(R.string.kyc_photo_id_sielf_required))
+                    photoSelfie.isEmpty() -> {
+                        showAlertWithoutIcon(
+                            title = getString(R.string.photo_not_found),
+                            message = getString(R.string.kyc_photo_id_front_required)
+                        )
                     }
 
                     else -> {
@@ -276,7 +379,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                                 documentIssueDate = binding.edtIssueDate.text.toString(),
                                 documentExpiryDate = binding.edtExpiryDate.text.toString(),
                                 photoIdentityFrontSide = photoIdentityFrontSide,
-                                photoIdentityBackSide = photoIdentityBackSide,
+                                photoIdentityBackSide = if (rbPassport.isChecked) "" else photoIdentityBackSide,
                                 photoSelfie = photoSelfie
 
                             )
@@ -294,7 +397,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                         navigator.navigateToSubmitKYC(currentFragment)
                     }
                     is SavePersonalInfoState.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showError(state.message ?: getString(R.string.something_wrong))
                     }
                 }
             }
@@ -349,7 +452,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                             displayImage(state.stringImage)
                         }
                         is ResizeImageState.ShowError -> {
-                            showAlert(state.message ?: getString(R.string.something_wrong))
+                            showError(state.message ?: getString(R.string.something_wrong))
                         }
                     }
                 }
@@ -358,7 +461,9 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
 
     }
 
-    private fun displayImage(stringImage: String, imageView: ImageView? = null) {
+    private fun displayImage(stringImage: String?, imageView: ImageView? = null) {
+        if (stringImage.isNullOrEmpty()) return
+        showLoadingImage(true, imageView)
         setStringImage(stringImage, imageView)
         viewModel.decode(stringImage, imageView)
         viewModel.decodeImageCallback.observe(viewLifecycleOwner, Observer {
@@ -369,11 +474,24 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                         glideDisplayImage(state.byteArray, state.imageView)
                     }
                     is DecodeBase64State.ShowError -> {
-                        showAlert(state.message ?: getString(R.string.something_wrong))
+                        showLoadingImage(false, imageView)
                     }
                 }
             }
         })
+    }
+
+    private fun showLoadingImage(isShown: Boolean, imageView: ImageView?) {
+        imageView?.let {
+            when (it) {
+                binding.imgPassportFrontSide -> binding.progressBarPassportFrontSide.visibility =
+                    if (isShown) View.VISIBLE else View.GONE
+                binding.imgPassportBackSide -> binding.progressBarPassportBackSide.visibility =
+                    if (isShown) View.VISIBLE else View.GONE
+                binding.imgPassportHolding -> binding.progressBarPassportHolding.visibility =
+                    if (isShown) View.VISIBLE else View.GONE
+            }
+        }
     }
 
     private fun setStringImage(stringImage: String, imageView: ImageView?) {
@@ -402,6 +520,29 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
         image?.let {
             Glide.with(it)
                 .load(byteArray)
+                .addListener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        showLoadingImage(false, imageView)
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        showLoadingImage(false, imageView)
+                        return false
+                    }
+
+                })
                 .into(image)
         }
     }
@@ -418,6 +559,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
     }
 
     override fun onDestroyView() {
+        viewModel.onCleared()
         viewModel.compositeDisposable.clear()
         super.onDestroyView()
     }

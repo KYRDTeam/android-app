@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#2980b9</color>
     <color name="colorPrimaryDark">#2980b9</color>
-    <color name="colorAccent">#ffb046</color>
+    <color name="colorAccent">#FFFFB046</color>
     <color name="color_mine_shaft">#333333</color>
     <color name="color_divider">#d9d9d9</color>
     <color name="grey">#555555</color>
@@ -48,14 +48,27 @@
     <color name="transaction_tab_color_active">#fb795d</color>
     <color name="transaction_tab_color_normal">#ffffff</color>
     <color name="manage_order_color_active">#ff9008</color>
-    <color name="manage_order_color_normal">#5a5e67</color>
-    <color name="order_status_open">#31cb9e</color>
-    <color name="order_status_filled">#1679ad</color>
-    <color name="order_status_in_progress">#f89f50</color>
-    <color name="order_status_cancelled">#f89f50</color>
-    <color name="order_status_invalidated">#464950</color>
+    <color name="manage_order_color_normal">#2e3957</color>
+    <color name="order_status_open">#eae6ff</color>
+    <color name="order_status_filled">#d7f2e2</color>
+    <color name="order_status_in_progress">#deebff</color>
+    <color name="order_status_cancelled">#ffebe5</color>
+    <color name="order_status_invalidated">#f7e8ad</color>
     <color name="color_trigger_alert_price">#9ea1aa</color>
+    <color name="text_order_status_open">#403294</color>
+    <color name="text_order_status_filled">#006644</color>
+    <color name="text_order_status_in_progress">#0049b0</color>
+    <color name="text_order_status_cancelled">#bf2600</color>
+    <color name="text_order_status_invalidated">#172b4d</color>
+    <color name="text_color_trigger_alert_price">#9ea1aa</color>
     <color name="step_completed">#fb795d</color>
+    <color name="color_order_extra">#31cb9e</color>
+    <color name="document_background_gray">#f2f3f6</color>
+    <color name="text_alert_active_color">#5a5e67</color>
+    <color name="text_alert_reward_color">#31cb9e</color>
+    <color name="text_alert_normal_color">#ffffff</color>
+    <color name="identity_info_gray">#f2f3f6</color>
+    <color name="notification_background">#FA7061</color>
 
     <array name="tab_colors">
         <item name="tab_1">#fea34c</item>

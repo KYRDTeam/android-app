@@ -4,6 +4,8 @@ package com.kyberswap.android.presentation.main.profile.kyc
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +13,10 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.gson.Gson
+import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
@@ -60,6 +65,11 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
+    private var currentSelectedView: View? = null
+
+    private var hasLocalImage: Boolean = false
+
+
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(PersonalInfoViewModel::class.java)
     }
@@ -74,6 +84,8 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
     }
 
     private var stringImage: String? = null
+
+    private var currentDisplayString: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -133,7 +145,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
             industrialCodes.putAll(kycOccupationCode.data)
         }
 
-        viewModel.getUserInfo()
+        viewModel.fetchUserInfo()
 
         viewModel.getUserInfoCallback.observe(viewLifecycleOwner, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
@@ -167,16 +179,26 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                             tin?.let {
                                 if (it) {
                                     binding.rgTin.check(R.id.rbYes)
+                                    binding.edtTin.isEnabled = true
                                 } else {
                                     binding.rgTin.check(R.id.rbNo)
+                                    binding.edtTin.isEnabled = false
                                 }
                             }
 
-                            val stringImage =
-                                binding.info?.photoProofAddress?.removePrefix(BASE64_PREFIX)
+                            if (!binding.info?.photoProofAddress.isNullOrEmpty() && !hasLocalImage) {
+                                if (stringImage != binding.info?.photoProofAddress?.removePrefix(
+                                        BASE64_PREFIX
+                                    )
+                                ) {
+                                    this.stringImage =
+                                        binding.info?.photoProofAddress?.removePrefix(BASE64_PREFIX)
+                                }
+                            }
 
-                            stringImage?.let { it1 -> displayImage(it1) }
+                            this.stringImage?.let { it1 -> displayImage(it1) }
                         }
+
                     }
                     is UserInfoState.ShowError -> {
                         showAlert(
@@ -206,27 +228,48 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
         })
 
 
+        viewModel.saveKycInfoCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is SaveKycInfoState.Success -> {
+                        navigateToSearch()
+                    }
+                    is SaveKycInfoState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+                    }
+                }
+            }
+        })
+
+
+        viewModel.compositeDisposable.add(
+            binding.rgTin.checkedChanges()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
+                    val enable = R.id.rbYes == it
+                    binding.edtTin.isEnabled = enable
+                    if (enable) {
+                        binding.edtTin.requestFocus()
+                    } else {
+                        binding.edtTin.setText("")
+                    }
+
+                })
+
+
 
         binding.edtNationality.setOnClickListener {
+            currentSelectedView = it
             saveCurrentKycInfo()
-            kycData?.let {
-                navigator.navigateToSearch(
-                    currentFragment,
-                    it.nationalities,
-                    KycInfoType.NATIONALITY
-                )
-            }
         }
 
         binding.edtCountryResident.setOnClickListener {
+            currentSelectedView = it
             saveCurrentKycInfo()
-            kycData?.let {
-                navigator.navigateToSearch(
-                    currentFragment,
-                    it.countries,
-                    KycInfoType.COUNTRY_OF_RESIDENCE
-                )
-            }
+
         }
 
         binding.flToggle.setOnClickListener {
@@ -253,58 +296,31 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
         }
 
         binding.edtOccupationCode.setOnClickListener {
+            currentSelectedView = it
             saveCurrentKycInfo()
-            kycData?.let {
-                navigator.navigateToSearch(
-                    currentFragment,
-                    listOf(),
-                    KycInfoType.OCCUPATION_CODE
-                )
-            }
+
         }
 
         binding.edtProofAddress.setOnClickListener {
+            currentSelectedView = it
             saveCurrentKycInfo()
-            kycData?.let {
-                navigator.navigateToSearch(
-                    currentFragment,
-                    it.proofAddress,
-                    KycInfoType.PROOF_ADDRESS
-                )
-            }
         }
 
-        binding.edtSourceFund.setOnClickListener {
+        binding.imgSrcFund.setOnClickListener {
+            currentSelectedView = it
             saveCurrentKycInfo()
-            kycData?.let {
-                navigator.navigateToSearch(
-                    currentFragment,
-                    it.sourceFunds,
-                    KycInfoType.SOURCE_FUND
-                )
-            }
+
         }
 
         binding.edtIndus.setOnClickListener {
+            currentSelectedView = it
             saveCurrentKycInfo()
-            kycData?.let {
-                navigator.navigateToSearch(
-                    currentFragment,
-                    listOf(),
-                    KycInfoType.INDUSTRY_CODE
-                )
-            }
         }
 
         binding.edtTaxCountry.setOnClickListener {
+            currentSelectedView = it
             saveCurrentKycInfo()
-            kycData?.let {
-                navigator.navigateToSearch(
-                    currentFragment,
-                    it.countries,
-                    KycInfoType.TAX_RESIDENCY_COUNTRY
-                )
-            }
+
         }
 
         binding.imgBack.setOnClickListener {
@@ -312,45 +328,88 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 
         }
 
-        viewModel.compositeDisposable.add(binding.edtFirstName.textChanges().subscribe {
+        viewModel.compositeDisposable.add(
+            binding.edtFirstName.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
             binding.ilFirstName.error = null
         })
 
-        viewModel.compositeDisposable.add(binding.edtLastName.textChanges().subscribe {
+        viewModel.compositeDisposable.add(
+            binding.edtLastName.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
             binding.ilLastName.error = null
         })
 
-        viewModel.compositeDisposable.add(binding.edtNationality.textChanges().subscribe {
+        viewModel.compositeDisposable.add(
+            binding.edtNationality.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
             binding.ilNationality.error = null
         })
 
 
-        viewModel.compositeDisposable.add(binding.edtCountryResident.textChanges().subscribe {
+        viewModel.compositeDisposable.add(
+            binding.edtCountryResident.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
             binding.ilCountry.error = null
         })
 
 
-        viewModel.compositeDisposable.add(binding.edtBod.textChanges().subscribe {
+        viewModel.compositeDisposable.add(
+            binding.edtBod.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
             binding.ilDob.error = null
         })
 
 
-        viewModel.compositeDisposable.add(binding.edtResidentAddress.textChanges().subscribe {
+        viewModel.compositeDisposable.add(
+            binding.edtResidentAddress.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
             binding.ilResidentialAddress.error = null
         })
 
 
-        viewModel.compositeDisposable.add(binding.edtCityResident.textChanges().subscribe {
+        viewModel.compositeDisposable.add(
+            binding.edtCityResident.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
             binding.ilCity.error = null
         })
 
-        viewModel.compositeDisposable.add(binding.edtPostalCode.textChanges().subscribe {
+        viewModel.compositeDisposable.add(
+            binding.edtPostalCode.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
             binding.ilZipCode.error = null
         })
 
-        viewModel.compositeDisposable.add(binding.edtProofAddress.textChanges().subscribe {
+        viewModel.compositeDisposable.add(
+            binding.edtProofAddress.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe {
             binding.ilDocumentProofAddress.error = null
         })
+
+        viewModel.compositeDisposable.add(binding.edtSourceFund.textChanges()
+            .skipInitialValue()
+            .observeOn(schedulerProvider.ui())
+            .subscribe {
+                binding.ilSourceFund.error = null
+            })
 
 
 
@@ -360,72 +419,89 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
             when {
                 edtFirstName.text.toString().isBlank() -> {
                     val error = getString(R.string.kyc_first_name_required)
-                    showError(error)
+                    showAlertWithoutIcon(title = getString(R.string.invalid_name), message = error)
                     binding.ilFirstName.error = error
 
                 }
 
                 edtLastName.text.toString().isBlank() -> {
                     val error = getString(R.string.kyc_last_name_required)
-                    showError(error)
+                    showAlertWithoutIcon(title = getString(R.string.invalid_name), message = error)
                     binding.ilLastName.error = error
                 }
 
                 edtBod.text.toString().isBlank() -> {
                     val error = getString(R.string.kyc_dob_required)
-                    showError(error)
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_date_of_birth),
+                        message = error
+                    )
                     binding.ilDob.error = error
                 }
 
                 viewModel.inValidDob(edtBod.text.toString().toDate()) -> {
                     val error = getString(R.string.kyc_dob_18_year_old)
-                    showError(getString(R.string.kyc_dob_18_year_old))
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_date_of_birth),
+                        message = getString(R.string.kyc_dob_18_year_old)
+                    )
                     binding.ilDob.error = error
                 }
 
                 edtNationality.text.toString().isBlank() -> {
                     val error = getString(R.string.kyc_nationality_required)
-                    showError(error)
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_nationality),
+                        message = error
+                    )
                     binding.ilNationality.error = error
                 }
 
+                edtCityResident.text.toString().isBlank() -> {
+                    val error = getString(R.string.kyc_city_required)
+                    showAlertWithoutIcon(title = getString(R.string.invalid_input), message = error)
+                    binding.ilCity.error = error
+                }
+
+                edtPostalCode.text.toString().isBlank() -> {
+                    val error = getString(R.string.kyc_zip_code_required)
+                    showAlertWithoutIcon(title = getString(R.string.invalid_input), message = error)
+                    binding.ilZipCode.error = error
+                }
+
+                edtProofAddress.text.toString().isBlank() -> {
+                    val error = getString(R.string.kyc_document_proof_address_required)
+                    showAlertWithoutIcon(title = getString(R.string.invalid_input), message = error)
+                    binding.ilDocumentProofAddress.error = error
+                }
+
+                stringImage.isNullOrEmpty() -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_input), message = getString(
+                            R.string.invalid_photo_address
+                        )
+                    )
+                }
+
+                edtSourceFund.text.toString().isBlank() -> {
+                    val error = getString(R.string.kyc_source_of_fun_required)
+                    showAlertWithoutIcon(title = getString(R.string.invalid_input), message = error)
+                    binding.ilSourceFund.error = error
+                }
 
                 edtCountryResident.text.toString().isBlank() -> {
                     val error = getString(R.string.kyc_country_resident_required)
-                    showError(error)
+                    showAlertWithoutIcon(title = getString(R.string.invalid_input), message = error)
                     binding.ilCountry.error = error
                 }
 
 
                 edtResidentAddress.text.toString().isBlank() -> {
                     val error = getString(R.string.kyc_residental_address_required)
-                    showError(error)
+                    showAlertWithoutIcon(title = getString(R.string.invalid_input), message = error)
                     binding.ilResidentialAddress.error = error
                 }
 
-                edtCityResident.text.toString().isBlank() -> {
-                    val error = getString(R.string.kyc_city_required)
-                    showError(error)
-                    binding.ilCity.error = error
-                }
-
-                edtPostalCode.text.toString().isBlank() -> {
-                    val error = getString(R.string.kyc_zip_code_required)
-                    showError(error)
-                    binding.ilZipCode.error = error
-                }
-
-                edtProofAddress.text.toString().isBlank() -> {
-                    val error = getString(R.string.kyc_document_proof_address_required)
-                    showError(error)
-                    binding.ilDocumentProofAddress.error = error
-                }
-
-                edtSourceFund.text.toString().isBlank() -> {
-                    val error = getString(R.string.kyc_source_of_fun_required)
-                    showError(error)
-                    binding.ilSourceFund.error = error
-                }
 
                 else -> {
                     viewModel.save(
@@ -433,6 +509,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                             firstName = edtFirstName.text.toString(),
                             middleName = edtMiddleName.text.toString(),
                             lastName = edtLastName.text.toString(),
+                            nativeFullName = binding.edtFullName.text.toString(),
                             nationality = edtNationality.text.toString(),
                             country = edtCountryResident.text.toString(),
                             dob = binding.edtBod.text.toString(),
@@ -464,6 +541,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
             firstName = edtFirstName.text.toString(),
             middleName = edtMiddleName.text.toString(),
             lastName = edtLastName.text.toString(),
+            nativeFullName = binding.edtFullName.text.toString(),
             nationality = edtNationality.text.toString(),
             country = edtCountryResident.text.toString(),
             dob = binding.edtBod.text.toString(),
@@ -481,11 +559,12 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
             haveTaxIdentification = binding.rbYes.isChecked,
             taxIdentificationNumber = binding.edtTaxCountry.text.toString(),
             sourceFund = binding.edtSourceFund.text.toString()
-        )?.let {
-            viewModel.saveLocal(
-                it
-            )
-        }
+        )
+            ?.let {
+                viewModel.saveLocal(
+                    it
+                )
+            }
     }
 
 
@@ -523,12 +602,12 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 
     override fun onDestroyView() {
         viewModel.compositeDisposable.clear()
+        viewModel.onCleared()
         super.onDestroyView()
     }
 
     @SuppressLint("SetTextI18n")
     override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
-        String.format(getString(R.string.date_format_yyyy_mm_dd), year, monthOfYear + 1, dayOfMonth)
         binding.edtBod.setText(
             String.format(
                 getString(R.string.date_format_yyyy_mm_dd),
@@ -539,6 +618,82 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
         )
     }
 
+    private fun navigateToSearch() {
+        when (currentSelectedView) {
+            binding.edtNationality -> {
+                kycData?.let {
+                    navigator.navigateToSearch(
+                        currentFragment,
+                        it.nationalities,
+                        KycInfoType.NATIONALITY
+                    )
+                }
+            }
+
+            binding.edtCountryResident -> {
+                kycData?.let {
+                    navigator.navigateToSearch(
+                        currentFragment,
+                        it.countries,
+                        KycInfoType.COUNTRY_OF_RESIDENCE
+                    )
+                }
+            }
+
+            binding.edtOccupationCode -> {
+                kycData?.let {
+                    navigator.navigateToSearch(
+                        currentFragment,
+                        listOf(),
+                        KycInfoType.OCCUPATION_CODE
+                    )
+                }
+            }
+
+            binding.edtProofAddress -> {
+                kycData?.let {
+                    navigator.navigateToSearch(
+                        currentFragment,
+                        it.proofAddress,
+                        KycInfoType.PROOF_ADDRESS
+                    )
+                }
+            }
+
+            binding.imgSrcFund -> {
+                kycData?.let {
+                    navigator.navigateToSearch(
+                        currentFragment,
+                        it.sourceFunds,
+                        KycInfoType.SOURCE_FUND
+                    )
+                }
+            }
+
+            binding.edtIndus -> {
+                kycData?.let {
+                    navigator.navigateToSearch(
+                        currentFragment,
+                        listOf(),
+                        KycInfoType.INDUSTRY_CODE
+                    )
+                }
+            }
+
+
+            binding.edtTaxCountry -> {
+                kycData?.let {
+                    navigator.navigateToSearch(
+                        currentFragment,
+                        it.countries,
+                        KycInfoType.TAX_RESIDENCY_COUNTRY
+                    )
+                }
+            }
+
+        }
+    }
+
     private fun onPhotosReturned(returnedPhotos: Array<MediaFile>) {
         returnedPhotos.first().file.absolutePath?.let {
             viewModel.resizeImage(it)
@@ -547,6 +702,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                     showProgress(state == ResizeImageState.Loading)
                     when (state) {
                         is ResizeImageState.Success -> {
+                            hasLocalImage = state.stringImage.isNotEmpty()
                             displayImage(state.stringImage)
                         }
                         is ResizeImageState.ShowError -> {
@@ -562,6 +718,8 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
     }
 
     private fun displayImage(stringImage: String) {
+        if (stringImage.isEmpty()) return
+        binding.progressBar.visibility = View.VISIBLE
         this.stringImage = stringImage
         viewModel.decode(stringImage)
         viewModel.decodeImageCallback.observe(viewLifecycleOwner, Observer {
@@ -572,6 +730,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                         glideDisplayImage(state.byteArray)
                     }
                     is DecodeBase64State.ShowError -> {
+                        binding.progressBar.visibility = View.GONE
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
@@ -580,14 +739,30 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                 }
             }
         })
+
     }
 
     private fun glideDisplayImage(byteArray: ByteArray) {
         Glide.with(binding.imgAddress)
+            .asBitmap()
             .load(
                 byteArray
             )
-            .into(binding.imgAddress)
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    binding.progressBar.visibility = View.GONE
+                    binding.imgAddress.setImageBitmap(resource)
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    binding.progressBar.visibility = View.GONE
+                    // this is called when imageView is cleared on lifecycle call or for
+                    // some other reason.
+                    // if you are referencing the bitmap somewhere else too other than this imageView
+                    // clear it here as you can no longer have the bitmap
+                }
+            })
+
     }
 
     companion object {

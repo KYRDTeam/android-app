@@ -68,7 +68,11 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
                 showProgress(state == SwapTokenTransactionState.Loading)
                 when (state) {
                     is SwapTokenTransactionState.Success -> {
-                        showAlert(getString(R.string.swap_done))
+                        showAlertWithoutIcon(
+                            getString(R.string.transaction_broadcasted), getString(
+                                R.string.transaction_broadcasted_message
+                            )
+                        )
                         onBackPressed()
                     }
                     is SwapTokenTransactionState.ShowError -> {

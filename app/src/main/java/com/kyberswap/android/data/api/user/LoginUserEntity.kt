@@ -13,6 +13,9 @@ data class LoginUserEntity(
     @SerializedName("message")
     val message: String = "",
     @SerializedName("confirm_signup_required")
-    val confirmSignUpRequired: Boolean = false
+    val confirmSignUpRequired: Boolean = false,
+    @SerializedName("2fa_required")
+    val twoFaRequired: Boolean = false
+
 
 )

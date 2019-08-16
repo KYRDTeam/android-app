@@ -18,6 +18,7 @@ class UpdatePushTokenUseCase @Inject constructor(
     }
 
     class Param(
+        val userId: String,
         val token: String
     )
 }

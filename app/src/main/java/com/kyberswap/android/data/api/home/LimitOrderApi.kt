@@ -7,7 +7,7 @@ import retrofit2.http.*
 interface LimitOrderApi {
     @GET("api/orders")
     fun getOrders(
-        @Query("user_address") userAddress: String
+        @Query("page_index") pageIndex: Int
     ): Single<ListLimitOrderResponseEntity>
 
     @GET("api/orders/fee")
@@ -19,12 +19,12 @@ interface LimitOrderApi {
         @Query("user_addr") userAddr: String
     ): Single<FeeEntity>
 
-    @GET("api/orders")
+    @GET("api/orders/related_orders")
     fun getRelatedOrders(
-        @Query("user_address") address: String,
-        @Query("src_token") src: String,
-        @Query("dest_token") dest: String,
-        @Query("status") status: String?
+        @Query("user_addr") address: String,
+        @Query("src") src: String,
+        @Query("dst") dest: String,
+        @Query("min_rate") minRate: String?
     ): Single<ListLimitOrderResponseEntity>
 
     @GET("api/orders/nonce")
@@ -59,4 +59,9 @@ interface LimitOrderApi {
     fun getPendingBalances(
         @Query("user_addr") address: String
     ): Single<PendingBalancesEntity>
+
+    @GET("api/orders/eligible_address")
+    fun eligibleAddress(
+        @Query("user_addr") address: String
+    ): Single<EligibleAddressEntity>
 }

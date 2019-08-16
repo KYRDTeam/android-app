@@ -14,7 +14,9 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentManageAlertBinding
 import com.kyberswap.android.domain.SchedulerProvider
+import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.profile.UserInfoState
@@ -24,7 +26,7 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
 
 
-class ManageAlertFragment : BaseFragment() {
+class ManageAlertFragment : BaseFragment(), LoginState {
 
     private lateinit var binding: FragmentManageAlertBinding
 
@@ -42,6 +44,8 @@ class ManageAlertFragment : BaseFragment() {
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
+
+    private var userInfo: UserInfo? = null
 
     private val handler by lazy {
         Handler()
@@ -61,7 +65,7 @@ class ManageAlertFragment : BaseFragment() {
     }
 
 
-    fun getLoginStatus() {
+    override fun getLoginStatus() {
         viewModel.getLoginStatus()
     }
 
@@ -72,6 +76,7 @@ class ManageAlertFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is UserInfoState.Success -> {
+                        this.userInfo = state.userInfo
                         if (!(state.userInfo != null && state.userInfo.uid > 0)) {
                             activity?.onBackPressed()
                         }
@@ -150,12 +155,18 @@ class ManageAlertFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetAlertsState.Success -> {
+                        binding.isEmpty = state.alerts.isEmpty()
                         alertAdapter.submitAlerts(state.alerts.filter {
                             !it.isFilled
                         })
-                        triggerAlertAdapter.submitAlerts(state.alerts.filter {
+
+                        val triggerList = state.alerts.filter {
                             it.isFilled
-                        })
+                        }
+
+                        binding.isEmptyTrigger = triggerList.isEmpty()
+
+                        triggerAlertAdapter.submitAlerts(triggerList)
                     }
                     is GetAlertsState.ShowError -> {
                         showAlert(
@@ -167,20 +178,44 @@ class ManageAlertFragment : BaseFragment() {
             }
         })
 
+        binding.tvAdd.setOnClickListener {
+            if (alertAdapter.getData().size >= 10) {
+                dialogHelper.showDialogInfo(
+                    title = getString(R.string.alert_limit_exceed), content = getString(
+                        R.string.alert_limit_exceeds_instruction
+                    )
+                )
+            } else {
+                navigator.navigateToPriceAlertScreen(
+                    currentFragment
+                )
+            }
+        }
+
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
         }
 
         binding.imgAdd.setOnClickListener {
-            navigator.navigateToPriceAlertScreen(
-                currentFragment
-            )
+            if (alertAdapter.getData().size >= 10) {
+                dialogHelper.showDialogInfo(
+                    title = getString(R.string.alert_limit_exceed), content = getString(
+                        R.string.alert_limit_exceeds_instruction
+                    )
+                )
+            } else {
+                navigator.navigateToPriceAlertScreen(
+                    currentFragment
+                )
+            }
+
         }
 
         binding.imgLeaderBoard.setOnClickListener {
             navigator.navigateToLeaderBoard(
-                currentFragment
+                currentFragment,
+                userInfo
             )
         }
 

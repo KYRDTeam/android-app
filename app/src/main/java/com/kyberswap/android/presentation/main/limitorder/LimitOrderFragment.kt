@@ -1,48 +1,52 @@
 package com.kyberswap.android.presentation.main.limitorder
 
+import android.animation.ObjectAnimator
+import android.graphics.Paint
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.EditText
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
 import com.jakewharton.rxbinding3.view.focusChanges
+import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
-import com.kyberswap.android.BR
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentLimitOrderBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainPagerAdapter
-import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.profile.UserInfoState
-import com.kyberswap.android.presentation.main.swap.GetExpectedRateState
-import com.kyberswap.android.presentation.main.swap.GetGasLimitState
-import com.kyberswap.android.presentation.main.swap.GetGasPriceState
-import com.kyberswap.android.presentation.main.swap.GetMarketRateState
+import com.kyberswap.android.presentation.main.swap.*
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.*
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_limit_order.*
 import kotlinx.android.synthetic.main.fragment_swap.edtDest
 import kotlinx.android.synthetic.main.fragment_swap.edtSource
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.math.BigDecimal
+import java.math.RoundingMode
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
-import kotlin.math.absoluteValue
 
 
-class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
+class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, LoginState {
 
     private lateinit var binding: FragmentLimitOrderBinding
 
@@ -62,6 +66,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
 
     private var pendingBalances: PendingBalances? = null
 
+
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(LimitOrderViewModel::class.java)
     }
@@ -71,16 +76,93 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
-    var hasUserFocus: Boolean = false
+    var hasUserFocus: Boolean? = false
+
 
     private var userInfo: UserInfo? = null
 
     private var notification: NotificationLimitOrder? = null
 
+    private val srcAmount: String
+        get() = binding.edtSource.text.toString()
+
+    private val expectedDestAmount: String
+        get() =
+            if (rateText.isEmpty()) {
+                binding.order?.getExpectedDestAmount(srcAmount.toBigDecimalOrDefaultZero())
+                    ?.toDisplayNumber()
+            } else {
+                binding.order?.getExpectedDestAmount(
+                    rateText.toBigDecimalOrDefaultZero(),
+                    srcAmount.toBigDecimalOrDefaultZero()
+                )?.toDisplayNumber()
+            } ?: BigDecimal.ZERO.toString()
+
+
+    private val expectedSourceAmount: String
+        get() =
+            if (rateText.toBigDecimalOrDefaultZero() == BigDecimal.ZERO) {
+                BigDecimal.ZERO.toString()
+            } else {
+                if (rateText.toDoubleOrDefaultZero() != 0.0) {
+                    dstAmount.toBigDecimalOrDefaultZero()
+                        .divide(
+                            rateText.toBigDecimalOrDefaultZero(),
+                            18,
+                            RoundingMode.UP
+                        ).toDisplayNumber()
+                } else {
+                    ""
+                }
+            }
+
+    private val dstAmount: String
+        get() = binding.edtDest.text.toString()
+
+    private val rateText: String
+        get() = binding.edtRate.text.toString()
+
+    private var currentFocus: EditText? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         notification = arguments?.getParcelable(NOTIFICATION_PARAM)
     }
+
+    private val marketRate: String?
+        get() = binding.order?.getExpectedDestAmount(BigDecimal.ONE)?.toDisplayNumber()
+
+    private val revertedMarketRate: String?
+        get() = if (marketRate.toDoubleOrDefaultZero() == 0.0) "0" else 1.0.div(
+            marketRate.toDoubleOrDefaultZero()
+        ).toBigDecimal().toDisplayNumber()
+
+    private val tokenSourceSymbol: String?
+        get() = binding.order?.tokenSource?.tokenSymbol
+
+    private val tokenDestSymbol: String?
+        get() = binding.order?.tokenDest?.tokenSymbol
+
+    private val rate: String?
+        get() = binding.order?.combineRate
+
+    private val hasRelatedOrder: Boolean
+        get() = viewModel.relatedOrders.any {
+            it.src == binding.order?.tokenSource?.symbol && it.dst == binding.order?.tokenDest?.symbol && it.userAddr == wallet?.address
+        }
+    private val sourceLock = AtomicBoolean()
+    private val destLock = AtomicBoolean()
+
+    private var orderAdapter: OrderAdapter? = null
+
+    private val isDestFocus: Boolean
+        get() = currentFocus == binding.edtDest
+
+    private val isSourceFocus: Boolean
+        get() = currentFocus == binding.edtSource
+
+    private var eleigibleAddress: EligibleAddress? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -93,23 +175,18 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
+        viewModel.getSelectedWallet()
         notification?.let {
             dialogHelper.showOrderFillDialog(it) { url ->
                 openUrl(getString(R.string.transaction_etherscan_endpoint_url) + url)
             }
         }
-        viewModel.getSelectedWallet()
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
                         binding.walletName = state.wallet.name
-                        if (state.wallet.address != wallet?.address) {
-                            this.wallet = state.wallet
-                            viewModel.getLimitOrders(wallet)
-                            viewModel.getPendingBalances(state.wallet)
-                        }
+                        wallet = state.wallet
                     }
                     is GetWalletState.ShowError -> {
 
@@ -118,26 +195,49 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
             }
         })
 
-        viewModel.getLoginStatus()
+
         viewModel.getLocalLimitOrderCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetLocalLimitOrderState.Success -> {
-                        updateAvailableAmount(pendingBalances)
-                        if (binding.order != state.order) {
+                        if (!state.order.isSameTokenPairForAddress(binding.order)) {
+
                             if (state.order.tokenSource.tokenSymbol == state.order.tokenDest.tokenSymbol) {
-                                showAlert(getString(R.string.same_token_alert))
+                                showAlertWithoutIcon(
+                                    title = getString(R.string.title_unsupported),
+                                    message = getString(R.string.limit_order_source_different_dest)
+                                )
                             }
 
-                            edtSource.setAmount(state.order.srcAmount)
-                            getRate(state.order)
+                            if (!state.order.isSameSourceDestToken(binding.order)) {
+                                hasUserFocus = false
+                            }
+
+                            if (state.order.hasSamePair) {
+                                edtRate.setText("1")
+                            }
 
                             binding.order = state.order
+                            binding.isQuote = state.order.tokenSource.isQuote
                             binding.executePendingBindings()
+                            getPendingBalance()
+                            viewModel.getFee(
+                                binding.order,
+                                srcAmount,
+                                dstAmount,
+                                wallet
+                            )
+
+                            if (!isDestFocus) {
+                                edtSource.setAmount(state.order.srcAmount)
+                            }
+                            getRate(state.order)
+                            viewModel.getGasPrice()
+                            viewModel.getGasLimit(wallet, binding.order)
+                            getRelatedOrders()
                         }
 
-                        viewModel.getGasPrice()
-                        viewModel.getGasLimit(wallet, binding.order)
+
                     }
                     is GetLocalLimitOrderState.ShowError -> {
 
@@ -148,6 +248,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
 
         listOf(binding.imgTokenSource, binding.tvSource).forEach {
             it.setOnClickListener {
+                saveState()
                 navigator.navigateToTokenSearchFromLimitOrder(
                     (activity as MainActivity).getCurrentFragment(),
                     wallet,
@@ -158,6 +259,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
 
         listOf(binding.imgTokenDest, binding.tvDest).forEach {
             it.setOnClickListener {
+                saveState()
                 navigator.navigateToTokenSearchFromLimitOrder(
                     (activity as MainActivity).getCurrentFragment(),
                     wallet,
@@ -171,10 +273,26 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
         }
 
         binding.tvBalance.setOnClickListener {
-            binding.edtSource.setAmount(tvBalance.text.toString())
+            hideKeyboard()
+            updateCurrentFocus(edtSource)
+            binding.order?.let {
+                if (it.tokenSource.isETHWETH) {
+                    binding.edtSource.setText(
+                        it.availableAmountForTransfer(
+                            tvBalance.toBigDecimalOrDefaultZero(),
+                            it.gasPrice.toBigDecimalOrDefaultZero()
+                        ).toDisplayNumber()
+                    )
+                } else {
+                    binding.edtSource.setAmount(tvBalance.text.toString())
+                }
+
+            }
         }
 
         binding.tv25Percent.setOnClickListener {
+            hideKeyboard()
+            updateCurrentFocus(edtSource)
             binding.edtSource.setAmount(
                 tvBalance.text.toString().toBigDecimalOrDefaultZero().multiply(
                     0.25.toBigDecimal()
@@ -183,6 +301,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
         }
 
         binding.tv50Percent.setOnClickListener {
+            hideKeyboard()
+            updateCurrentFocus(edtSource)
             binding.edtSource.setAmount(
                 tvBalance.text.toString().toBigDecimalOrDefaultZero().multiply(
                     0.5.toBigDecimal()
@@ -191,10 +311,11 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
         }
 
         binding.tv100Percent.setOnClickListener {
-
+            hideKeyboard()
+            updateCurrentFocus(edtSource)
             binding.order?.let {
                 if (it.tokenSource.isETHWETH) {
-                    binding.edtSource.setAmount(
+                    binding.edtSource.setText(
                         it.availableAmountForTransfer(
                             tvBalance.toBigDecimalOrDefaultZero(),
                             it.gasPrice.toBigDecimalOrDefaultZero()
@@ -208,52 +329,51 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
         }
 
         binding.tvRate.setOnClickListener {
-            binding.edtRate.setText(binding.tvRate.text)
+            binding.edtRate.setText(marketRate)
+            binding.tvRateWarning.text = ""
+        }
+
+        binding.tvCurrentRate.setOnClickListener {
+            binding.edtRate.setText(marketRate)
+            binding.tvRateWarning.text = ""
         }
 
         binding.imgSwap.setOnClickListener {
+            hasUserFocus = false
             resetAmount()
+            setWarning(false)
             val limitOrder = binding.order?.swapToken()
             limitOrder?.let {
                 getRate(it)
                 viewModel.getFee(
                     it,
-                    binding.edtSource.text.toString(),
-                    binding.edtDest.text.toString(),
+                    srcAmount,
+                    dstAmount,
                     wallet
                 )
                 viewModel.saveLimitOrder(it)
+                binding.order = limitOrder
+                binding.isQuote = limitOrder.tokenSource.isQuote
+                binding.executePendingBindings()
+                viewModel.getGasPrice()
+                viewModel.getGasLimit(wallet, it)
+                updateAvailableAmount(pendingBalances)
+                getRelatedOrders()
+                getPendingBalance()
+                getNonce()
             }
-            binding.setVariable(BR.order, limitOrder)
-            binding.executePendingBindings()
+
+            hasUserFocus = false
 
         }
 
-        binding.rvRelatedOrder.layoutManager = LinearLayoutManager(
-            activity,
-            RecyclerView.VERTICAL,
-            false
-        )
-        val orderAdapter =
-            OrderAdapter(
-                appExecutors
-            ) {
-
-                dialogHelper.showCancelOrder(it) {
-                    viewModel.cancelOrder(it)
-                }
-            }
-        orderAdapter.mode = Attributes.Mode.Single
-        binding.rvRelatedOrder.adapter = orderAdapter
-
-        viewModel.getRelatedOrderCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.swapTokenTransactionCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
-                    is GetRelatedOrdersState.Success -> {
-                        orderAdapter.submitList(listOf())
-                        orderAdapter.submitList(state.orders)
+                    is SwapTokenTransactionState.Success -> {
+                        getLimitOrder()
                     }
-                    is GetRelatedOrdersState.ShowError -> {
+                    is SwapTokenTransactionState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
@@ -263,9 +383,82 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
             }
         })
 
+        binding.rvRelatedOrder.layoutManager = LinearLayoutManager(
+            activity,
+            RecyclerView.VERTICAL,
+            false
+        )
+        if (orderAdapter == null) {
+            orderAdapter =
+                OrderAdapter(
+                    appExecutors
+                    , {
+
+                        dialogHelper.showCancelOrder(it) {
+                            viewModel.cancelOrder(it)
+                        }
+                    }, {
+
+                    })
+        }
+        orderAdapter?.mode = Attributes.Mode.Single
+        binding.rvRelatedOrder.adapter = orderAdapter
+
+        viewModel.getRelatedOrderCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetRelatedOrdersState.Success -> {
+                        if (binding.isWarning != true) {
+                            orderAdapter?.submitList(listOf())
+                            orderAdapter?.submitList(state.orders)
+
+                            binding.tvRelatedOrder.visibility =
+                                if (hasRelatedOrder) View.VISIBLE else View.GONE
+                        }
+                    }
+                    is GetRelatedOrdersState.ShowError -> {
+                        if (!state.isNetworkUnAvailable) {
+                            showAlert(
+                                state.message ?: getString(R.string.something_wrong),
+                                R.drawable.ic_info_error
+                            )
+                        }
+                    }
+                }
+            }
+        })
+
+
+        viewModel.getEligibleAddressCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is CheckEligibleAddressState.Success -> {
+                        this.eleigibleAddress = state.eligibleAddress
+                        if (state.eligibleAddress.success && !state.eligibleAddress.eligibleAddress) {
+                            showAlertWithoutIcon(
+                                title = getString(R.string.title_error),
+                                message = getString(R.string.address_not_eligible)
+                            )
+                        }
+
+                    }
+                    is CheckEligibleAddressState.ShowError -> {
+                        if (!state.isNetworkUnavailable) {
+                            showAlert(
+                                state.message ?: getString(R.string.something_wrong),
+                                R.drawable.ic_info_error
+                            )
+                        }
+
+                    }
+                }
+            }
+        })
+
+
         binding.imgInfo.setOnClickListener {
             showAlert(
-                getString(R.string.eth_star_notification),
+                getString(R.string.token_eth_star_name),
                 R.drawable.ic_confirm_info
             )
         }
@@ -279,23 +472,42 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
 
                     }
                     is GetNonceState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
+                        if (!state.isNetworkUnAvailable) {
+                            showAlert(
+                                state.message ?: getString(R.string.something_wrong),
+                                R.drawable.ic_info_error
+                            )
+                        }
                     }
                 }
             }
         })
 
         binding.tvManageOrder.setOnClickListener {
-            navigator.navigateToManageOrder(
-                (activity as MainActivity).getCurrentFragment(),
-                wallet
-            )
+            when {
+                userInfo == null || userInfo!!.uid <= 0 -> {
+                    moveToLoginTab()
+                    showAlertWithoutIcon(
+                        title = getString(R.string.sign_in_required_title), message = getString(
+                            R.string.sign_in_to_use_limit_order_feature
+                        )
+                    )
+                }
+
+                else -> {
+                    hideKeyboard()
+                    navigator.navigateToManageOrder(
+                        currentFragment,
+                        wallet
+                    )
+                }
+            }
+
+
         }
 
         viewModel.compositeDisposable.add(binding.edtRate.focusChanges()
+            .skipInitialValue()
             .observeOn(schedulerProvider.ui())
             .subscribe {
                 if (it) {
@@ -311,48 +523,174 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                         val order = binding.order?.copy(
                             marketRate = state.rate
                         )
+                        if (order?.isSameTokenPair(binding.order) != true) {
 
-                        if (binding.order != order) {
-                            binding.tvRate.text = String.format(
-                                getString(R.string.limit_order_current_rate),
-                                binding.order?.tokenSource?.tokenSymbol,
-                                order?.getExpectedDestAmount(BigDecimal.ONE)?.toDisplayNumber() + binding.order?.tokenDest?.tokenSymbol
-                            )
                             binding.order = order
                             binding.executePendingBindings()
-                            if (!hasUserFocus) {
-                                binding.edtRate.setAmount(order?.displayMarketRate)
-                            }
                         }
+
+                        binding.tvRate.text = String.format(
+                            getString(R.string.limit_order_current_rate),
+                            tokenSourceSymbol,
+                            "$marketRate $tokenDestSymbol"
+                        )
+                        binding.tvRateRevert.text = String.format(
+                            getString(R.string.limit_order_current_rate),
+                            tokenDestSymbol,
+                            "$revertedMarketRate $tokenSourceSymbol"
+                        )
+
+                        if (hasUserFocus != true) {
+                            binding.edtRate.setAmount(order?.displayMarketRate)
+                        }
+
                     }
                     is GetMarketRateState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
+                        if (!state.isNetworkUnAvailable) {
+                            showAlert(
+                                state.message ?: getString(R.string.something_wrong),
+                                R.drawable.ic_info_error
+                            )
+                        }
                     }
                 }
             }
         })
 
-
-        viewModel.compositeDisposable.add(binding.edtRate.textChanges().skipInitialValue()
+        viewModel.compositeDisposable.add(binding.edtSource.focusChanges()
+            .skipInitialValue()
             .observeOn(schedulerProvider.ui())
             .subscribe {
-                val percentage = it.toString().percentage(binding.order?.combineRate).toDouble()
-                val rate = when {
-                    percentage > 0.0 -> String.format(
-                        getString(R.string.limit_order_rate_higher_market),
-                        percentage.toString()
-                    )
-                    percentage == 0.0 -> getString(R.string.limit_order_rate_equal_market)
-                    else -> String.format(
-                        getString(R.string.limit_order_rate_lower_market),
-                        percentage.absoluteValue.toString()
-                    )
+                sourceLock.set(it || isSourceFocus)
+                if (it) {
+                    updateCurrentFocus(edtSource)
                 }
-                binding.tvRateWarning.text = rate
             })
+
+        viewModel.compositeDisposable.add(binding.edtDest.focusChanges()
+            .skipInitialValue()
+            .observeOn(schedulerProvider.ui())
+            .subscribe {
+                destLock.set(it)
+                if (it) {
+                    updateCurrentFocus(edtDest)
+                }
+            })
+
+        viewModel.compositeDisposable.add(binding.edtDest.textChanges()
+            .skipInitialValue()
+            .observeOn(schedulerProvider.ui())
+            .subscribe { text ->
+                if (destLock.get()) {
+                    if (rateText.toBigDecimalOrDefaultZero() == BigDecimal.ZERO) {
+                        binding.edtSource.setText("")
+                    } else {
+
+                        binding.edtSource.setAmount(
+                            text.toBigDecimalOrDefaultZero()
+                                .divide(
+                                    rateText.toBigDecimalOrDefaultZero(),
+                                    18,
+                                    RoundingMode.CEILING
+                                ).toDisplayNumber()
+                        )
+                    }
+                }
+
+            })
+
+        viewModel.compositeDisposable.add(binding.edtSource.textChanges()
+            .skipInitialValue()
+            .observeOn(schedulerProvider.ui())
+            .subscribe { text ->
+                if (!sourceLock.get() || isDestFocus) return@subscribe
+
+                if (text.isNullOrEmpty()) {
+                    binding.edtDest.setText("")
+                }
+
+                binding.order?.let { order ->
+                    if (rateText.isEmpty()) {
+                        edtDest.setAmount(
+                            order.getExpectedDestAmount(
+                                text.toString()
+                                    .toBigDecimalOrDefaultZero()
+                            )
+                                .toDisplayNumber()
+                        )
+
+
+                        viewModel.getExpectedRate(
+                            order,
+                            if (text.isNullOrEmpty()) getString(R.string.default_source_amount) else text.toString()
+                        )
+
+                    } else {
+                        edtDest.setAmount(
+                            text.toBigDecimalOrDefaultZero().multiply(
+                                rateText.toBigDecimalOrDefaultZero()
+                            ).toDisplayNumber()
+                        )
+
+                    }
+
+
+                    viewModel.getFee(
+                        binding.order,
+                        srcAmount,
+                        dstAmount,
+                        wallet
+                    )
+
+                    wallet?.let { wallet ->
+
+                        val currentOrder = binding.order?.copy(
+                            srcAmount = text.toString()
+                        )
+
+                        currentOrder?.let {
+                            viewModel.getGasLimit(
+                                wallet, it
+                            )
+                        }
+
+                    }
+                }
+            })
+
+        viewModel.compositeDisposable.add(
+            binding.edtRate.textChanges()
+                .skipInitialValue()
+                .observeOn(schedulerProvider.ui())
+                .subscribe { text ->
+
+                    binding.tvRateWarning.colorRate(text.toString().percentage(rate))
+                    if (text.isNullOrEmpty()) {
+                        binding.edtDest.setText("")
+                    }
+
+                    binding.order?.let { order ->
+                        if (isDestFocus) {
+                            binding.edtSource.setAmount(expectedSourceAmount)
+                        } else {
+                            binding.edtDest.setAmount(
+                                expectedDestAmount
+                            )
+                        }
+
+                        val bindingOrder = binding.order?.copy(
+                            srcAmount = srcAmount,
+                            minRate = edtRate.toBigDecimalOrDefaultZero()
+                        )
+
+                        order.let {
+                            if (binding.order != bindingOrder) {
+                                binding.order = bindingOrder
+                                binding.executePendingBindings()
+                            }
+                        }
+                    }
+                })
 
         viewModel.getExpectedRateCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -361,28 +699,43 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                         val order = binding.order?.copy(
                             expectedRate = state.list[0]
                         )
-
-                        binding.tvRate.text = String.format(
-                            getString(R.string.limit_order_current_rate),
-                            binding.order?.tokenSource?.tokenSymbol,
-                            order?.getExpectedDestAmount(BigDecimal.ONE)?.toDisplayNumber() + " " + binding.order?.tokenDest?.tokenSymbol
-                        )
-                        if (!hasUserFocus) {
-                            binding.edtRate.setAmount(binding.order?.combineRate)
-                        }
-                        binding.edtDest.setAmount(
-                            binding.order?.getExpectedDestAmount(edtSource.toBigDecimalOrDefaultZero())?.toDisplayNumber()
-                        )
-                        if (order != binding.order) {
+                        if (order?.isSameTokenPair(binding.order) != true) {
                             binding.order = order
                             binding.executePendingBindings()
                         }
+
+                        binding.tvRate.text = String.format(
+                            getString(R.string.limit_order_current_rate),
+                            tokenSourceSymbol,
+                            "$marketRate $tokenDestSymbol"
+                        )
+
+                        binding.tvRateRevert.text = String.format(
+                            getString(R.string.limit_order_current_rate),
+                            tokenDestSymbol,
+                            "$revertedMarketRate $tokenSourceSymbol"
+                        )
+
+                        if (hasUserFocus != true) {
+                            binding.edtRate.setAmount(rate)
+
+                        }
+
+                        if (isDestFocus) {
+                            binding.edtSource.setAmount(expectedSourceAmount)
+                        } else {
+                            binding.edtDest.setAmount(
+                                expectedDestAmount
+                            )
+                        }
                     }
                     is GetExpectedRateState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
+                        if (!state.isNetworkUnAvailable) {
+                            showAlert(
+                                state.message ?: getString(R.string.something_wrong),
+                                R.drawable.ic_info_error
+                            )
+                        }
                     }
                 }
             }
@@ -431,164 +784,173 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
         })
 
         viewModel.compositeDisposable.add(
-            binding.edtRate.textChanges()
+            binding.cbUnderstand.checkedChanges().skipInitialValue()
                 .observeOn(schedulerProvider.ui())
-                .subscribe { text ->
-                    if (text.isNullOrEmpty()) {
-                        binding.edtDest.setText("")
-                    }
-
-                    binding.order?.let { order ->
-                        if (order.hasSamePair) {
-                            edtDest.setText(binding.edtSource.text)
-                        } else {
-                            edtDest.setAmount(
-                                order.getExpectedDestAmount(
-                                    text.toString().toBigDecimalOrDefaultZero(),
-                                    binding.edtSource.toBigDecimalOrDefaultZero()
-                                ).toDisplayNumber()
-                            )
-
-                            val bindingOrder = binding.order?.copy(
-                                srcAmount = edtSource.text.toString(),
-                                minRate = edtRate.toBigDecimalOrDefaultZero()
-                            )
-
-                            bindingOrder?.let {
-                                if (binding.order != bindingOrder) {
-                                    binding.order = bindingOrder
-                                    viewModel.saveLimitOrder(
-                                        it
-                                    )
-                                }
-                            }
-                        }
-                    }
+                .subscribe {
+                    binding.tvSubmitOrderWarning.isEnabled = it
+                    binding.tvSubmitOrderWarning.alpha = if (it) 1.0f else 0.2f
                 })
 
+        binding.tvChangeRate.setOnClickListener {
+            orderAdapter?.submitList(viewModel.toOrderItems(viewModel.relatedOrders))
+            playAnimation(false)
+            binding.edtRate.requestFocus()
+            binding.edtRate.setSelection(binding.edtRate.text.length)
+        }
 
-        viewModel.compositeDisposable.add(binding.edtSource.textChanges()
-            .observeOn(schedulerProvider.ui())
-            .subscribe { text ->
-                if (text.isNullOrEmpty()) {
-                    binding.edtDest.setText("")
-                }
-
-                binding.order?.let { order ->
-                    if (order.hasSamePair) {
-                        edtDest.setText(text)
-                    } else {
-                        edtDest.setAmount(
-                            order.getExpectedDestAmount(
-                                text.toString()
-                                    .toBigDecimalOrDefaultZero()
-                            )
-                                .toDisplayNumber()
-                        )
-                        viewModel.getExpectedRate(
-                            order,
-                            if (text.isNullOrEmpty()) getString(R.string.default_source_amount) else text.toString()
-                        )
-
-                        viewModel.getFee(
-                            binding.order,
-                            binding.edtSource.text.toString(),
-                            binding.edtDest.text.toString(),
-                            wallet
-                        )
-
-                        wallet?.let { wallet ->
-
-                            val currentOrder = binding.order?.copy(
-                                srcAmount = text.toString()
-                            )
-
-                            currentOrder?.let {
-                                viewModel.getGasLimit(
-                                    wallet, it
-                                )
-                            }
-
-                        }
-                    }
-                }
-            })
-
-        viewModel.getFee(
-            binding.order,
-            binding.edtSource.text.toString(),
-            binding.edtDest.text.toString(),
-            wallet
-        )
+        binding.tvSubmitOrderWarning.setOnClickListener {
+            setWarning(false)
+            saveLimitOrder()
+        }
 
         viewModel.getFeeCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
+                showLoading(state == GetFeeState.Loading)
                 when (state) {
                     is GetFeeState.Success -> {
 
-                        val order = binding.order?.copy(fee = state.fee.fee.toBigDecimal())
+                        binding.hasDiscount =
+                            state.fee.discountPercent > 0 && srcAmount.toBigDecimalOrDefaultZero().times(
+                                state.fee.fee.toBigDecimal()
+                            ) > BigDecimal.ZERO
+
+
                         binding.tvFee.text = String.format(
                             getString(R.string.limit_order_fee),
-                            edtSource.toBigDecimalOrDefaultZero().times(state.fee.fee.toBigDecimal()).toDisplayNumber(),
-                            binding.order?.tokenSource?.tokenSymbol,
-                            state.fee.fee.times(100),
-                            edtSource.text,
-                            binding.order?.tokenSource?.tokenSymbol
+                            srcAmount.toBigDecimalOrDefaultZero().times(state.fee.fee.toBigDecimal()).toDisplayNumber().exactAmount(),
+                            tokenSourceSymbol
                         )
+
+                        binding.tvFeeNoDiscount.text = String.format(
+                            getString(R.string.limit_order_fee_no_discount),
+                            srcAmount.toBigDecimalOrDefaultZero().times(state.fee.fee.toBigDecimal()).toDisplayNumber().exactAmount(),
+                            tokenSourceSymbol
+                        )
+
+                        binding.tvOriginalFee.text = String.format(
+                            getString(R.string.limit_order_fee),
+                            srcAmount.toBigDecimalOrDefaultZero().times(state.fee.nonDiscountedFee.toBigDecimal()).toDisplayNumber().exactAmount(),
+                            tokenSourceSymbol
+                        )
+
+                        binding.tvOff.text = String.format(
+                            getString(R.string.discount_fee), state.fee.discountPercent
+                        )
+                        val order = binding.order?.copy(fee = state.fee.fee.toBigDecimal())
                         if (order != binding.order) {
                             binding.order = order
                             binding.executePendingBindings()
                         }
                     }
                     is GetFeeState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
+                        if (!state.isNetworkUnAvailable) {
+                            showAlert(
+                                state.message ?: getString(R.string.something_wrong),
+                                R.drawable.ic_info_error
+                            )
+                        }
                     }
                 }
             }
         })
 
-        binding.tvDiscount.setOnClickListener {
-            moveToSwapTab()
-        }
+
 
         binding.tvSubmitOrder.setOnClickListener {
+            val warningOrderList = viewModel.warningOrderList(
+                binding.edtRate.toBigDecimalOrDefaultZero(),
+                orderAdapter?.orderList ?: listOf()
+            )
+
             when {
-                binding.edtSource.text.isNullOrEmpty() -> {
-                    showAlert(getString(R.string.specify_amount))
+                srcAmount.isEmpty() -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_amount),
+                        message = getString(R.string.specify_amount)
+                    )
                 }
-                binding.edtSource.toBigDecimalOrDefaultZero() >
+                srcAmount.toBigDecimalOrDefaultZero() >
                     viewModel.calAvailableAmount(
                         binding.order?.tokenSource,
                         pendingBalances
                     ).toBigDecimalOrDefaultZero() -> {
-                    showAlert(getString(R.string.exceed_balance))
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_amount_too_big),
+                        message = getString(R.string.limit_order_insufficient_balance)
+                    )
                 }
-                binding.order?.hasSamePair == true -> showAlert(getString(R.string.same_token_alert))
-                binding.order?.amountTooSmall(edtSource.text.toString()) == true -> {
-                    showAlert(getString(R.string.swap_amount_small))
+                binding.order?.hasSamePair == true -> showAlertWithoutIcon(
+                    title = getString(R.string.title_unsupported),
+                    message = getString(R.string.limit_order_source_different_dest)
+                )
+                binding.order?.amountTooSmall(srcAmount) == true -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_amount),
+                        message = getString(R.string.limit_order_amount_too_small)
+                    )
+                }
+
+                binding.order?.amountTooBig(srcAmount) == true -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_amount),
+                        message = getString(R.string.limit_order_amount_too_big)
+                    )
+                }
+
+                binding.edtRate.textToDouble() == 0.0 -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_amount),
+                        message = getString(R.string.limit_order_invalid_rate)
+                    )
+                }
+
+                binding.order?.isRateTooBig == true -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_amount),
+                        message = getString(R.string.limit_order_rate_too_big)
+                    )
                 }
 
                 userInfo == null || userInfo!!.uid <= 0 -> {
                     moveToLoginTab()
+                    showAlertWithoutIcon(
+                        title = getString(R.string.sign_in_required_title),
+                        message = getString(
+                            R.string.sign_in_to_use_limit_order_feature
+                        )
+                    )
+                }
+
+                (wallet?.isPromo == true) -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_error), message = getString(
+                            R.string.submit_order_promo_code
+                        )
+                    )
+                }
+
+                eleigibleAddress?.success == true && eleigibleAddress?.eligibleAddress != true -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_error),
+                        message = getString(R.string.address_not_eligible)
+                    )
                 }
 
 
+                warningOrderList.isNotEmpty() -> {
+                    orderAdapter?.submitList(
+                        viewModel.toOrderItems(
+                            warningOrderList
+                        )
+                    )
+
+                    playAnimation(true)
+
+                }
+
                 else -> binding.order?.let {
 
-                    val order = it.copy(
-                        srcAmount = edtSource.text.toString(),
-                        minRate = edtRate.toBigDecimalOrDefaultZero()
-                    )
-
-                    if (binding.order != order) {
-                        binding.order = order
-                    }
-                    viewModel.saveLimitOrder(
-                        order, true
-                    )
+                    saveLimitOrder()
                 }
             }
         }
@@ -601,22 +963,20 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                             viewModel.needConvertWETH(
                                 binding.order,
                                 pendingBalances
-                            ) -> navigator.navigateToConvertFragment(
-                                currentFragment,
-                                wallet,
-                                binding.order
-                            )
-                            else -> when {
-                                viewModel.validate(
-                                    binding.order,
-                                    orderAdapter.getData()
-                                ) -> navigator.navigateToOrderConfirmScreen(
+                            ) -> {
+                                hideKeyboard()
+                                navigator.navigateToConvertFragment(
                                     currentFragment,
-                                    wallet
+                                    wallet,
+                                    binding.order
                                 )
-                                else -> navigator.navigateToLimitOrderSuggestionScreen(
+                            }
+                            else -> {
+                                hideKeyboard()
+                                navigator.navigateToOrderConfirmScreen(
                                     currentFragment,
-                                    wallet
+                                    wallet,
+                                    binding.order
                                 )
                             }
                         }
@@ -637,7 +997,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                 showProgress(state == CancelOrdersState.Loading)
                 when (state) {
                     is CancelOrdersState.Success -> {
+                        getRelatedOrders()
+                        getNonce()
                         viewModel.getPendingBalances(wallet)
+
 
                     }
                     is CancelOrdersState.ShowError -> {
@@ -655,6 +1018,19 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
                 when (state) {
                     is UserInfoState.Success -> {
                         userInfo = state.userInfo
+                        when {
+                            !(state.userInfo != null && state.userInfo.uid > 0) -> {
+                                orderAdapter?.submitList(listOf())
+                                pendingBalances = null
+                                updateAvailableAmount(pendingBalances)
+                                binding.tvRelatedOrder.visibility = View.GONE
+                            }
+                            else -> {
+                                getRelatedOrders()
+                                getPendingBalance()
+                                getNonce()
+                            }
+                        }
                     }
                     is UserInfoState.ShowError -> {
                         showAlert(
@@ -670,7 +1046,9 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetPendingBalancesState.Success -> {
+
                         this.pendingBalances = state.pendingBalances
+
                         updateAvailableAmount(state.pendingBalances)
                     }
                     is GetPendingBalancesState.ShowError -> {
@@ -683,6 +1061,162 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
             }
         })
 
+        binding.tvOriginalFee.paintFlags =
+            binding.tvOriginalFee.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+
+        binding.tvLearnMore.paintFlags =
+            binding.tvLearnMore.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+
+        binding.tvMore.underline(getString(R.string.learn_more))
+
+        binding.tvMore.setOnClickListener {
+            openUrl(getString(R.string.order_fee_url))
+        }
+
+        binding.tvCancelWhy.setOnClickListener {
+            openUrl(getString(R.string.same_token_pair_url))
+        }
+
+
+        binding.tvLearnMore.setOnClickListener {
+            openUrl(getString(R.string.order_fee_url))
+        }
+
+
+        viewModel.cancelRelatedOrderCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is CancelOrdersState.Success -> {
+                        setWarning(false)
+                        saveLimitOrder()
+
+                    }
+                    is CancelOrdersState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+                    }
+                }
+            }
+        })
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: WalletChangeEvent) {
+        viewModel.getLimitOrders(wallet)
+        viewModel.getPendingBalances(wallet)
+        viewModel.getLoginStatus()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
+    private fun updateCurrentFocus(view: EditText?) {
+        currentFocus?.isSelected = false
+        currentFocus = view
+        currentFocus?.isSelected = true
+        sourceLock.set(view == binding.edtSource)
+        destLock.set(view == binding.edtDest)
+    }
+
+    fun getSelectedWallet() {
+        viewModel.getSelectedWallet()
+    }
+
+    fun saveState() {
+        hideKeyboard()
+        saveOrder()
+        if (binding.isWarning == true) {
+            hasUserFocus = false
+        }
+        setWarning(false)
+    }
+
+    fun getLimitOrder() {
+        wallet?.let {
+            viewModel.getLimitOrders(it)
+        }
+    }
+
+    fun checkEligibleAddress() {
+        wallet?.let {
+            viewModel.checkEligibleAddress(it)
+        }
+    }
+
+    fun getPendingBalance() {
+        viewModel.getPendingBalances(wallet)
+    }
+
+    fun onRefresh() {
+        getRelatedOrders()
+        getPendingBalance()
+        getNonce()
+    }
+
+
+    private fun saveOrder() {
+        binding.order?.let {
+
+            val order = it.copy(
+                srcAmount = srcAmount,
+                minRate = edtRate.toBigDecimalOrDefaultZero()
+            )
+            viewModel.saveLimitOrder(order)
+        }
+    }
+
+    private fun saveLimitOrder() {
+        binding.order?.let {
+
+            val order = it.copy(
+                srcAmount = srcAmount,
+                minRate = edtRate.toBigDecimalOrDefaultZero()
+            )
+
+            if (binding.order != order) {
+                binding.order = order
+            }
+            viewModel.saveLimitOrder(
+                order, true
+            )
+        }
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+    }
+
+    private fun playAnimation(isWarning: Boolean) {
+        val animator = ObjectAnimator.ofInt(
+            binding.scView,
+            "scrollY",
+            0
+        )
+
+        animator.duration = 300
+        animator.interpolator = AccelerateDecelerateInterpolator()
+        animator.start()
+
+        setWarning(isWarning)
+    }
+
+    private fun setWarning(isWarning: Boolean) {
+        binding.vRate.isSelected = isWarning
+        binding.isWarning = isWarning
+        binding.edtRate.isEnabled = !isWarning
+        orderAdapter?.setWarning(isWarning)
+        cbUnderstand.isChecked = false
     }
 
     private fun updateAvailableAmount(pendingBalances: PendingBalances?) {
@@ -698,24 +1232,11 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
         }
     }
 
-    private fun moveToSwapTab() {
-        if (activity is MainActivity) {
-            handler.post {
-                activity!!.bottomNavigation.currentItem = MainPagerAdapter.SWAP
-            }
-        }
-    }
-
     private fun moveToLoginTab() {
-        if (activity is MainActivity) {
-            handler.post {
-                activity!!.bottomNavigation.currentItem = MainPagerAdapter.PROFILE
-                (currentFragment as? ProfileFragment)?.fromLimitOrder(true)
-            }
-        }
+        (activity as? MainActivity)?.moveToTab(MainPagerAdapter.PROFILE, true)
     }
 
-    fun getLoginStatus() {
+    override fun getLoginStatus() {
         viewModel.getLoginStatus()
     }
 
@@ -724,7 +1245,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
         edtDest.setText("")
     }
 
-
     override fun onDestroyView() {
         handler.removeCallbacksAndMessages(null)
         viewModel.compositeDisposable.clear()
@@ -732,12 +1252,19 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     private fun getRate(order: LocalLimitOrder) {
-        if (order.hasSamePair) return
         viewModel.getMarketRate(order)
         viewModel.getExpectedRate(
             order,
             edtSource.getAmountOrDefaultValue()
         )
+    }
+
+    fun getNonce() {
+        binding.order?.let { wallet?.let { it1 -> viewModel.getNonce(it, it1) } }
+    }
+
+    fun getRelatedOrders() {
+        binding.order?.let { wallet?.let { it1 -> viewModel.getRelatedOrders(it, it1) } }
     }
 
     override fun showNotification(showNotification: Boolean) {

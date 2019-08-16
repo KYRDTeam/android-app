@@ -1,10 +1,11 @@
 package com.kyberswap.android.domain.model
 
 
+import com.kyberswap.android.data.api.alert.CampaignInfoEntity
 import com.kyberswap.android.data.api.alert.LeaderBoardEntity
 
 data class LeaderBoard(
-    val currentUserEntity: CurrentUser = CurrentUser(),
+    val currentUser: CurrentUser = CurrentUser(),
     val `data`: List<Alert> = listOf(),
     val campaignInfo: CampaignInfo = CampaignInfo(),
     val lastCampaignTitle: String = ""
@@ -14,7 +15,7 @@ data class LeaderBoard(
         entity.data.map {
             Alert(it)
         },
-        CampaignInfo(entity.campaignInfo),
+        CampaignInfo(entity.campaignInfo ?: CampaignInfoEntity()),
         entity.lastCampaignTitle ?: ""
     )
 }

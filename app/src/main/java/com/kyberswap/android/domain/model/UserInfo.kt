@@ -22,8 +22,9 @@ data class UserInfo(
     var name: String = "",
     @PrimaryKey
     var uid: Long = 0,
-    @Embedded
-    var kycInfo: KycInfo = KycInfo()
+    @Embedded(prefix = "kyc_")
+    var kycInfo: KycInfo = KycInfo(),
+    var blockReason: String? = ""
 ) : Parcelable {
     constructor(entity: UserInfoEntity) : this(
         entity.activeWallets,
@@ -34,7 +35,8 @@ data class UserInfo(
         entity.kycStep,
         entity.name ?: "",
         entity.uid,
-        KycInfo(entity.kycInfo)
+        KycInfo(entity.kycInfo),
+        entity.blockReason ?: ""
     )
 
     val isKycReject: Boolean
@@ -44,7 +46,8 @@ data class UserInfo(
         const val DRAFT = "draft"
         const val PENDING = "pending"
         const val REJECT = "rejected"
-        const val BLOCK = "block"
+        const val BLOCK = "blocke"
+        const val BLOCKED = "blocked"
         const val APPROVED = "approved"
         const val KYC_STEP_PERSONAL_INFO = 1
         const val KYC_STEP_ID_PASSPORT = 2

@@ -3,6 +3,7 @@ package com.kyberswap.android.presentation.main.alert
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.alert.SaveAlertTokenUseCase
@@ -61,7 +62,7 @@ class PriceAlertTokenSearchViewModel @Inject constructor(
         super.onCleared()
     }
 
-    fun saveToken(wallet: Wallet?, token: Token) {
+    fun saveToken(wallet: Wallet?, token: Token, alert: Alert?) {
         if (wallet == null) return
         saveAlertTokenUseCase.execute(
             Action {
@@ -72,7 +73,7 @@ class PriceAlertTokenSearchViewModel @Inject constructor(
                 _saveAlertTokenState.value =
                     Event(SaveAlertTokenBalanceState.ShowError(it.localizedMessage))
             },
-            SaveAlertTokenUseCase.Param(wallet.address, token)
+            SaveAlertTokenUseCase.Param(wallet.address, token, alert)
         )
     }
 

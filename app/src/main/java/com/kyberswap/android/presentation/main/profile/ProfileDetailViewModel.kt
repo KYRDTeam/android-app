@@ -23,7 +23,8 @@ class ProfileDetailViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
     private val deleteAlertsUseCase: DeleteAlertsUseCase,
     private val getLoginStatusUseCase: GetLoginStatusUseCase,
-    private val fetchUserInfoUseCase: FetchUserInfoUseCase,
+    private val pollingUserInfoUseCase: PollingUserInfoUseCase,
+    private val refreshKycStatusUseCase: RefreshKycStatusUseCase,
     private val reSubmitUserInfoUseCase: ReSubmitUserInfoUseCase,
     private val updatePushTokenUseCase: UpdatePushTokenUseCase
 ) : ViewModel() {
@@ -44,19 +45,39 @@ class ProfileDetailViewModel @Inject constructor(
     val getUserInfoCallback: LiveData<Event<UserInfoState>>
         get() = _getUserInfoCallback
 
+    private val _refreshKycStatus = MutableLiveData<Event<UserInfoState>>()
+    val refreshKycStatus: LiveData<Event<UserInfoState>>
+        get() = _refreshKycStatus
+
 
     private val _reSubmitKycCallback = MutableLiveData<Event<ReSubmitState>>()
     val reSubmitKycCallback: LiveData<Event<ReSubmitState>>
         get() = _reSubmitKycCallback
 
-    fun fetchUserInfo() {
-        fetchUserInfoUseCase.execute(
+
+    fun pollingKycProfile() {
+        pollingUserInfoUseCase.execute(
             Consumer {
                 _getUserInfoCallback.value = Event(UserInfoState.Success(it))
             },
             Consumer {
                 it.printStackTrace()
                 _getUserInfoCallback.value =
+                    Event(UserInfoState.ShowError(it.localizedMessage))
+            },
+            null
+        )
+    }
+
+    fun refreshKycStatus() {
+        _refreshKycStatus.postValue(Event(UserInfoState.Loading))
+        refreshKycStatusUseCase.execute(
+            Consumer {
+                _refreshKycStatus.value = Event(UserInfoState.Success(it))
+            },
+            Consumer {
+                it.printStackTrace()
+                _refreshKycStatus.value =
                     Event(UserInfoState.ShowError(it.localizedMessage))
             },
             null
@@ -133,11 +154,11 @@ class ProfileDetailViewModel @Inject constructor(
         logoutUseCase.dispose()
         deleteAlertsUseCase.dispose()
         getLoginStatusUseCase.dispose()
-        fetchUserInfoUseCase.dispose()
+        pollingUserInfoUseCase.dispose()
         super.onCleared()
     }
 
-    fun updatePushToken(token: String) {
+    fun updatePushToken(userId: String, token: String) {
         updatePushTokenUseCase.execute(
             Consumer {
 
@@ -146,7 +167,11 @@ class ProfileDetailViewModel @Inject constructor(
                 it.printStackTrace()
                 Timber.e(it.localizedMessage)
             },
-            UpdatePushTokenUseCase.Param(token)
+            UpdatePushTokenUseCase.Param(
+                userId,
+                token
+            )
         )
     }
+
 }

@@ -156,8 +156,8 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
     }
 
 
-    fun navigateToSendConfirmationScreen(wallet: Wallet?) {
-        activity.startActivity(SendConfirmActivity.newIntent(activity, wallet))
+    fun navigateToSendConfirmationScreen(wallet: Wallet?, isContactExist: Boolean) {
+        activity.startActivity(SendConfirmActivity.newIntent(activity, wallet, isContactExist))
     }
 
     fun navigateToSendScreen(
@@ -294,12 +294,6 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         activity.startActivity(TermConditionActivity.newIntent(activity))
     }
 
-    fun navigateToLimitOrderSuggestionScreen(currentFragment: Fragment?, wallet: Wallet?) {
-        navigateByChildFragmentManager(
-            currentFragment,
-            LimitOrderSuggestionFragment.newInstance(wallet)
-        )
-    }
 
     fun navigateToSignUpConfirmScreen(
         currentFragment: Fragment?,
@@ -357,12 +351,13 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     fun navigateToOrderConfirmScreen(
         currentFragment: Fragment?,
-        wallet: Wallet?
+        wallet: Wallet?,
+        limitOrder: LocalLimitOrder?
     ) {
 
         navigateByChildFragmentManager(
             currentFragment,
-            OrderConfirmFragment.newInstance(wallet)
+            OrderConfirmFragment.newInstance(wallet, limitOrder)
         )
     }
 
@@ -377,10 +372,10 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         )
     }
 
-    fun navigateToTokenSelection(currentFragment: Fragment?, wallet: Wallet?) {
+    fun navigateToTokenSelection(currentFragment: Fragment?, wallet: Wallet?, alert: Alert?) {
         navigateByChildFragmentManager(
             currentFragment,
-            PriceAlertTokenSearchFragment.newInstance(wallet)
+            PriceAlertTokenSearchFragment.newInstance(wallet, alert)
         )
     }
 
@@ -391,10 +386,14 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         )
     }
 
-    fun navigateToLeaderBoard(currentFragment: Fragment?) {
+    fun navigateToLeaderBoard(
+        currentFragment: Fragment?,
+        userInfo: UserInfo?,
+        isCampaignResult: Boolean = false
+    ) {
         navigateByChildFragmentManager(
             currentFragment,
-            LeaderBoardFragment.newInstance()
+            LeaderBoardFragment.newInstance(userInfo, isCampaignResult)
         )
     }
 

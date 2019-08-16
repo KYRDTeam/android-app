@@ -4,6 +4,11 @@
 
     <data>
 
+        <variable
+            name="isEmpty"
+            type="Boolean" />
+
+        <import type="android.view.View" />
     </data>
 
     <FrameLayout
@@ -27,113 +32,149 @@
 
 
             <TextView
-                android:id="@+id/tvFilter"
-                android:layout_width="0dp"
+                android:id="@+id/tvOpenOrder"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="24dp"
-                android:drawableStart="@drawable/ic_filter_order"
-                android:drawablePadding="4dp"
-                android:text="@string/manage_order_filter"
-                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-                android:textColor="#5a5e67"
+                android:layout_marginStart="12dp"
+                android:background="?selectableItemBackground"
+                android:checked="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:minHeight="45dp"
+                android:padding="8dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:text="@string/open_order"
+                android:textColor="@color/manage_order_text_color"
                 android:textSize="14sp"
-                app:layout_constraintEnd_toStartOf="@+id/tv1Day"
-                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintEnd_toStartOf="@+id/tvOrderHistory"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tv1Day"
+                android:id="@+id/tvOrderHistory"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="true"
+                android:layout_marginEnd="12dp"
+                android:background="?selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
-                android:gravity="center_horizontal"
+                android:gravity="center"
+                android:minHeight="45dp"
                 android:padding="8dp"
-                android:text="@string/day_1"
-                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:text="@string/order_history"
                 android:textColor="@color/manage_order_text_color"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="@+id/tvFilter"
-                app:layout_constraintEnd_toStartOf="@+id/tv1Week"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/tvFilter"
-                app:layout_constraintTop_toTopOf="@+id/tvFilter" />
-
-            <TextView
-                android:id="@+id/tv1Week"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_horizontal"
-                android:padding="8dp"
-                android:text="@string/week_1"
-                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-                android:textColor="@color/manage_order_text_color"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="@+id/tv1Day"
-                app:layout_constraintEnd_toStartOf="@+id/tv1Month"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/tv1Day"
-                app:layout_constraintTop_toTopOf="@+id/tv1Day" />
-
-            <TextView
-                android:id="@+id/tv1Month"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_horizontal"
-                android:padding="8dp"
-                android:text="@string/month_1"
-                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-                android:textColor="@color/manage_order_text_color"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="@+id/tv1Week"
-                app:layout_constraintEnd_toStartOf="@+id/tv3Month"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/tv1Week"
-                app:layout_constraintTop_toTopOf="@+id/tv1Week" />
-
-            <TextView
-                android:id="@+id/tv3Month"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="24dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_horizontal"
-                android:padding="8dp"
-                android:text="@string/month_3"
-                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-                android:textColor="@color/manage_order_text_color"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="@+id/tv1Month"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvOpenOrder"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/tv1Month"
-                app:layout_constraintTop_toTopOf="@+id/tv1Month" />
+                app:layout_constraintStart_toEndOf="@+id/tvOpenOrder"
+                app:layout_constraintTop_toTopOf="@+id/tvOpenOrder" />
+
+
+            <TextView
+                android:id="@+id/tvFaq"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/background_white_selectable"
+                android:drawablePadding="8dp"
+                android:gravity="center"
+                android:minHeight="36dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/wonder_why_your_orders_are_not_filled"
+                android:textColor="#141927"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvOpenOrder" />
+
+            <ImageView
+                android:id="@+id/imgFaq"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="16dp"
+                android:padding="8dp"
+                android:src="@drawable/ic_close"
+                app:layout_constraintBottom_toBottomOf="@+id/tvFaq"
+                app:layout_constraintEnd_toEndOf="@+id/tvFaq"
+                app:layout_constraintTop_toTopOf="@+id/tvFaq" />
+
+            <TextView
+                android:id="@+id/tvInstruction"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@color/white"
+                android:drawablePadding="8dp"
+                android:gravity="center"
+                android:minHeight="36dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/swipe_left_to_cancel_order"
+                android:textColor="#141927"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvFaq" />
+
+            <ImageView
+                android:id="@+id/imgInstruction"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="16dp"
+                android:padding="8dp"
+                android:src="@drawable/ic_close"
+                app:layout_constraintBottom_toBottomOf="@+id/tvInstruction"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvInstruction" />
 
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvOrder"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="18dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginTop="12dp"
                 android:background="@android:color/white"
                 android:clipToPadding="false"
                 android:paddingBottom="40dp"
+                android:visibility="@{isEmpty ? View.GONE : View.VISIBLE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvFilter" />
+                app:layout_constraintTop_toBottomOf="@+id/tvInstruction" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvInstruction" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                android:text="@string/you_do_not_have_any_orders"
+                android:textColor="#2e3957"
+                android:textSize="14sp"
+                android:visibility="@{isEmpty ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvInstruction" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -158,6 +199,17 @@
                 android:text="@string/manage_orders"
                 android:textColor="#ffffff"
                 android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/imgFilter"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center|end"
+                android:layout_marginEnd="12dp"
+                android:background="?selectableItemBackground"
+                android:gravity="center|end"
+                android:padding="7dp"
+                android:src="@drawable/ic_order_filter" />
         </FrameLayout>
 
     </FrameLayout>

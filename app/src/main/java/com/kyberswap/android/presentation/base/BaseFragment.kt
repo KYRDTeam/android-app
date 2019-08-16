@@ -49,10 +49,15 @@ abstract class BaseFragment : DaggerFragment() {
         showAlert(message, R.drawable.ic_info_error, listener)
     }
 
-    fun showAlertWithoutIcon(title: String? = null, message: String, listener: () -> Unit = {}) {
+    fun showAlertWithoutIcon(
+        title: String? = null,
+        message: String,
+        timeInSecond: Int = 3,
+        listener: () -> Unit = {}
+    ) {
         if (context != null) {
             this.alertListener = listener
-            val intent = AlertWithoutIconActivity.newIntent(context!!, title, message)
+            val intent = AlertWithoutIconActivity.newIntent(context!!, title, message, timeInSecond)
             startActivityForResult(intent, SHOW_ALERT)
         }
     }
@@ -73,6 +78,14 @@ abstract class BaseFragment : DaggerFragment() {
             }
         }
     }
+
+    fun showNetworkUnAvailable() {
+        showAlertWithoutIcon(
+            title = getString(R.string.title_error),
+            message = getString(R.string.no_internet_connect)
+        )
+    }
+
 
     fun showMessageLong(message: String) {
         if (view != null) {

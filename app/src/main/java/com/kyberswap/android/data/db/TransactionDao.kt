@@ -19,14 +19,17 @@ interface TransactionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertTransactionBatch(transactions: List<Transaction>)
 
-    @Update
-    fun updateTransaction(transaction: Transaction)
-
     @androidx.room.Transaction
-    fun updateTransactionList(transactions: List<Transaction>) {
+    fun forceUpdateTransactions(transactions: List<Transaction>) {
         deleteAllTransactions()
         insertTransactionBatch(transactions)
     }
+
+    @Update
+    fun updateTransaction(transaction: Transaction)
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    fun updateTransactionList(transactions: List<Transaction>)
 
     @Update
     fun updateTransactionBatch(transactions: List<Transaction>)
@@ -34,20 +37,31 @@ interface TransactionDao {
     @Query("DELETE FROM transactions")
     fun deleteAllTransactions()
 
+    @Query("SELECT * FROM transactions WHERE transactionStatus != :pending ORDER BY timeStamp DESC LIMIT 1")
+    fun getLatestTransaction(
+        pending: String = Transaction.PENDING_TRANSACTION_STATUS
+    ): Transaction?
+
     @Delete
     fun delete(model: Transaction)
+
+    @Delete
+    fun deleteTransactions(transactions: List<Transaction>)
 
     @get:Query("SELECT * FROM transactions")
     val all: Flowable<List<Transaction>>
 
-    @Query("SELECT * FROM transactions WHERE transactionStatus != :pending")
-    fun getCompletedTransactions(pending: String = Transaction.PENDING_TRANSACTION_STATUS): Flowable<List<Transaction>>
+    @Query("SELECT * FROM transactions WHERE walletAddress = :walletAddress AND transactionStatus != :pending")
+    fun getCompletedTransactions(
+        walletAddress: String,
+        pending: String = Transaction.PENDING_TRANSACTION_STATUS
+    ): Flowable<List<Transaction>>
 
     @Query("SELECT * FROM transactions WHERE hash = :hash AND transactionStatus = :status")
     fun findTransaction(hash: String, status: String): Transaction?
 
-    @Query("SELECT * FROM transactions WHERE transactionStatus = :status")
-    fun getTransactionByStatus(status: String): Flowable<List<Transaction>>
+    @Query("SELECT * FROM transactions WHERE walletAddress = :walletAddress AND transactionStatus = :status")
+    fun getTransactionByStatus(walletAddress: String, status: String): Flowable<List<Transaction>>
 
 }
 

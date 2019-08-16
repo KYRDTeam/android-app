@@ -118,19 +118,13 @@
                     app:layout_constraintStart_toEndOf="@+id/imgFacebook"
                     app:layout_constraintTop_toTopOf="@+id/imgFacebook" />
 
-
-                <EditText
-                    android:id="@+id/edtEmail"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ilEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="32dp"
                     android:layout_marginEnd="24dp"
-                    android:backgroundTint="@color/edt_background_tint"
-                    android:hint="@string/login_email_address"
-                    android:inputType="textEmailAddress"
-                    android:letterSpacing="0.07"
-                    android:minHeight="60dp"
                     android:singleLine="true"
                     android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                     android:textColor="#9ea1aa"
@@ -139,28 +133,55 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="Email Address" />
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <EditText
-                    android:id="@+id/edtDisplayName"
+                    <EditText
+                        android:id="@+id/edtEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/edt_background_tint"
+                        android:hint="@string/login_email_address"
+                        android:inputType="textEmailAddress"
+                        android:letterSpacing="0.07"
+                        android:minHeight="60dp"
+                        android:singleLine="true"
+                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textColor="#9ea1aa"
+                        android:textColorHint="#9ea1aa"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ilDisplayName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:backgroundTint="@color/edt_background_tint"
-                    android:hint="@string/signup_display_name"
                     android:inputType="textEmailAddress"
-                    android:letterSpacing="0.07"
-                    android:minHeight="60dp"
                     android:singleLine="true"
                     android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                    android:textColor="#9ea1aa"
                     android:textColorHint="#9ea1aa"
                     android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="@+id/edtEmail"
-                    app:layout_constraintStart_toStartOf="@+id/edtEmail"
-                    app:layout_constraintTop_toBottomOf="@+id/edtEmail"
-                    tools:text="Display Name" />
+                    app:layout_constraintEnd_toEndOf="@+id/ilEmail"
+                    app:layout_constraintStart_toStartOf="@+id/ilEmail"
+                    app:layout_constraintTop_toBottomOf="@+id/ilEmail">
+
+                    <EditText
+                        android:id="@+id/edtDisplayName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/edt_background_tint"
+                        android:hint="@string/signup_display_name"
+                        android:inputType="textEmailAddress"
+                        android:letterSpacing="0.07"
+                        android:minHeight="60dp"
+                        android:singleLine="true"
+                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textColor="#9ea1aa"
+                        android:textColorHint="#9ea1aa"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
 
 
                 <Button
@@ -176,8 +197,8 @@
                     android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#ffffff"
                     android:textSize="16sp"
-                    app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
-                    app:layout_constraintStart_toStartOf="@+id/textInputLayout"
+                    app:layout_constraintEnd_toEndOf="@+id/ilPassword"
+                    app:layout_constraintStart_toStartOf="@+id/ilPassword"
                     app:layout_constraintTop_toBottomOf="@+id/cbTermCondition" />
 
 
@@ -210,15 +231,15 @@
                     app:layout_constraintStart_toEndOf="@+id/textView45" />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputLayout"
+                    android:id="@+id/ilPassword"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:backgroundTint="@color/edt_background_tint"
                     app:hintEnabled="false"
-                    app:layout_constraintEnd_toEndOf="@+id/edtDisplayName"
-                    app:layout_constraintStart_toStartOf="@+id/edtDisplayName"
-                    app:layout_constraintTop_toBottomOf="@+id/edtDisplayName"
+                    app:layout_constraintEnd_toEndOf="@+id/ilDisplayName"
+                    app:layout_constraintStart_toStartOf="@+id/ilDisplayName"
+                    app:layout_constraintTop_toBottomOf="@+id/ilDisplayName"
                     app:passwordToggleEnabled="true"
                     app:passwordToggleTint="#9ea1aa">
 
@@ -244,13 +265,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="44dp"
-                    android:checked="true"
                     android:text="@string/subscribe_newsletters"
                     android:theme="@style/CustomRadioTheme"
-                    app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
+                    app:layout_constraintEnd_toEndOf="@+id/ilPassword"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/textInputLayout"
-                    app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+                    app:layout_constraintStart_toStartOf="@+id/ilPassword"
+                    app:layout_constraintTop_toBottomOf="@+id/ilPassword" />
 
                 <CheckBox
                     android:id="@+id/cbTermCondition"
@@ -277,7 +297,7 @@
                     android:text="@string/terms_conditions"
                     android:textColor="#fea34c"
                     android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
+                    app:layout_constraintEnd_toEndOf="@+id/ilPassword"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/cbTermCondition"
                     app:layout_constraintTop_toBottomOf="@+id/cbSubscription" />

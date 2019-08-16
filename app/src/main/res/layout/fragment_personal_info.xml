@@ -544,15 +544,30 @@
                     android:textColor="#141927"
                     android:textSize="14sp" />
 
-                <ImageView
-                    android:id="@+id/imgAddress"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="25dp"
-                    android:layout_marginEnd="16dp"
-                    android:background="#ffffff"
-                    android:maxHeight="196dp" />
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/imgAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="25dp"
+                        android:layout_marginEnd="16dp"
+                        android:adjustViewBounds="true"
+                        android:background="#ffffff" />
+
+                    <ProgressBar
+                        android:id="@+id/progressBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:indeterminateTint="@color/colorAccent"
+                        android:visibility="gone" />
+
+                </FrameLayout>
+
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -599,35 +614,49 @@
 
                 </LinearLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/ilSourceFund"
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="16dp"
-                    android:backgroundTint="@color/edt_background_tint"
-                    android:hint="@string/source_of_funds"
-                    android:textColorHint="#9ea1aa">
+                    android:layout_marginBottom="8dp">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edtSourceFund"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/ilSourceFund"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
                         android:backgroundTint="@color/edt_background_tint"
-                        android:drawableEnd="@drawable/ic_expand_more"
-                        android:drawablePadding="8dp"
-                        android:enabled="true"
-                        android:focusable="false"
-                        android:letterSpacing="0.07"
-                        android:minHeight="60dp"
-                        android:singleLine="true"
-                        android:text="@{info.sourceFund}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
-                        android:textSize="14sp" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:hint="@string/source_of_funds"
+                        android:textColorHint="#9ea1aa">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edtSourceFund"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/edt_background_tint"
+                            android:letterSpacing="0.07"
+                            android:minHeight="60dp"
+                            android:paddingStart="0dp"
+                            android:paddingEnd="16dp"
+                            android:singleLine="true"
+                            android:text="@{info.sourceFund}"
+                            android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                            android:textColor="#5a5e67"
+                            android:textSize="14sp" />
+
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <ImageView
+                        android:id="@+id/imgSrcFund"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|end"
+                        android:background="?selectableItemBackground"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_expand_more" />
+                </FrameLayout>
 
                 <FrameLayout
                     android:id="@+id/flToggle"
@@ -843,7 +872,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:backgroundTint="@color/edt_background_tint"
-                                android:drawableEnd="@drawable/ic_expand_more"
                                 android:drawablePadding="8dp"
                                 android:letterSpacing="0.07"
                                 android:minHeight="60dp"

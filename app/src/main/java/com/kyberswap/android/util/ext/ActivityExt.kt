@@ -1,6 +1,8 @@
 package com.kyberswap.android.util.ext
 
 import android.app.Activity
+import android.content.Context
+import android.net.ConnectivityManager
 import android.view.View
 
 fun Activity.setImmersiveFullScreen() {
@@ -23,6 +25,12 @@ fun Activity.exitFullScreen(color: Int = 0) {
     if (color != 0) {
         window.statusBarColor = color
     }
+}
+
+fun Activity.isNetworkAvailable(): Boolean {
+    val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+    val activeNetworkInfo = connectivityManager?.activeNetworkInfo
+    return activeNetworkInfo != null && activeNetworkInfo.isConnected
 }
 
 fun Activity.getStatusBar(): Int {

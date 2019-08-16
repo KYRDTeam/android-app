@@ -43,20 +43,15 @@ class BalanceViewModel @Inject constructor(
         get() = _saveTokenCallback
 
 
-    val searchedKeywordsCallback: LiveData<Event<String>>
-        get() = _searchedKeywords
-
-    private val _searchedKeywords = MutableLiveData<Event<String>>()
-
     val visibilityCallback: LiveData<Event<Boolean>>
         get() = _visibility
 
 
     private val _visibility = MutableLiveData<Event<Boolean>>()
 
-    private val _saveSwapDataStateStateCallback = MutableLiveData<Event<SaveSwapDataState>>()
-    val saveTokenSelectionCallback: LiveData<Event<SaveSwapDataState>>
-        get() = _saveSwapDataStateStateCallback
+    private val _saveWalletCallback = MutableLiveData<Event<SaveWalletState>>()
+    val saveWalletCallback: LiveData<Event<SaveWalletState>>
+        get() = _saveWalletCallback
 
 
     private val _callback = MutableLiveData<Event<SaveSwapDataState>>()
@@ -72,17 +67,12 @@ class BalanceViewModel @Inject constructor(
         CompositeDisposable()
     }
 
-    fun updateSearchKeyword(keyword: String) {
-        _searchedKeywords.value = Event(keyword)
-    }
-
     fun updateVisibility(isVisible: Boolean) {
         _visibility.value = Event(isVisible)
     }
 
     fun getTokenBalance() {
         getBalanceUseCase.dispose()
-        _getBalanceStateCallback.postValue(Event(GetBalanceState.Loading))
         getBalanceUseCase.execute(
             Consumer {
                 _getBalanceStateCallback.value = Event(GetBalanceState.Success(it))
@@ -104,12 +94,12 @@ class BalanceViewModel @Inject constructor(
         if (wallet == null) return
         updateWalletUseCase.execute(
             Action {
-                _saveSwapDataStateStateCallback.value = Event(SaveSwapDataState.Success())
+                _saveWalletCallback.value = Event(SaveWalletState.Success(""))
             },
             Consumer {
                 it.printStackTrace()
-                _saveSwapDataStateStateCallback.value =
-                    Event(SaveSwapDataState.ShowError(it.localizedMessage))
+                _saveWalletCallback.value =
+                    Event(SaveWalletState.ShowError(it.localizedMessage))
             },
             wallet
         )
@@ -179,11 +169,14 @@ class BalanceViewModel @Inject constructor(
     }
 
     fun saveFav(token: Token) {
+        getBalanceUseCase.dispose()
         saveTokenUseCase.execute(
             Action {
+                getTokenBalance()
                 _saveTokenCallback.value = Event(SaveTokenState.Success(token.fav))
             },
             Consumer {
+                getTokenBalance()
                 it.printStackTrace()
                 _saveTokenCallback.value = Event(SaveTokenState.ShowError(it.localizedMessage))
             },

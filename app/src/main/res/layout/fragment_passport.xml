@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="@string/passport"
+                android:text="@string/identity_info"
                 android:textColor="#ffffff"
                 android:textSize="18sp" />
 
@@ -189,11 +189,11 @@
                 </RadioGroup>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ilDocumentId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="23dp"
-                    android:id="@+id/ilDocumentId"
                     android:layout_marginEnd="16dp"
                     android:backgroundTint="@color/edt_background_tint"
                     android:hint="@string/document_number"
@@ -206,8 +206,8 @@
                         android:backgroundTint="@color/edt_background_tint"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
-                        android:text="@{info.documentId}"
                         android:singleLine="true"
+                        android:text="@{info.documentId}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
@@ -220,6 +220,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="16dp"
+                    android:id="@+id/ilIssueDate"
                     android:backgroundTint="@color/edt_background_tint"
                     android:hint="@string/issue_date"
                     android:textColorHint="#9ea1aa">
@@ -229,10 +230,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
-                        android:letterSpacing="0.07"
-                        android:minHeight="60dp"
                         android:enabled="true"
                         android:focusable="false"
+                        android:letterSpacing="0.07"
+                        android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.documentIssueDate}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
@@ -257,6 +258,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="22dp"
+                    android:id="@+id/ilExpiryDate"
                     android:layout_marginEnd="16dp"
                     android:backgroundTint="@color/edt_background_tint"
                     android:hint="@string/expiry_date"
@@ -267,10 +269,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
-                        android:letterSpacing="0.07"
-                        android:minHeight="60dp"
                         android:enabled="true"
                         android:focusable="false"
+                        android:letterSpacing="0.07"
+                        android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.documentExpiryDate}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
@@ -296,7 +298,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="27dp"
-                    android:background="#f2f3f6"
+                    android:background="@color/identity_info_gray"
                     android:orientation="vertical">
 
                     <TextView
@@ -308,7 +310,7 @@
                         android:layout_marginEnd="16dp"
                         android:drawableEnd="@drawable/ic_info_kyc"
                         android:drawablePadding="12dp"
-                        android:text="@string/photo_of_your_passport_front_side"
+                        android:text="@string/photo_of_your_document_front_side"
                         android:textColor="#141927"
                         android:textSize="14sp" />
 
@@ -320,22 +322,36 @@
                         android:layout_marginTop="32dp"
                         android:layout_marginEnd="16dp"
                         android:background="@drawable/border_button"
-                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:gravity="center"
                         android:minHeight="45dp"
                         android:text="@string/browse"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#141927"
                         android:textSize="14sp" />
 
-                    <ImageView
-                        android:id="@+id/imgPassportFrontSide"
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="25dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="#ffffff"
-                        android:maxHeight="196dp" />
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/imgPassportFrontSide"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="25dp"
+                            android:layout_marginEnd="16dp"
+                            android:background="#ffffff"
+                            android:maxHeight="196dp" />
+
+                        <ProgressBar
+                            android:id="@+id/progressBarPassportFrontSide"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:indeterminateTint="@color/colorAccent"
+                            android:visibility="gone" />
+                    </FrameLayout>
+
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -352,6 +368,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/lnBackSide"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
@@ -365,7 +382,7 @@
                         android:layout_marginEnd="16dp"
                         android:drawableEnd="@drawable/ic_info_kyc"
                         android:drawablePadding="12dp"
-                        android:text="@string/photo_of_your_passport_back_side"
+                        android:text="@string/photo_of_your_document_back_side"
                         android:textColor="#141927"
                         android:textSize="14sp" />
 
@@ -377,22 +394,35 @@
                         android:layout_marginTop="32dp"
                         android:layout_marginEnd="16dp"
                         android:background="@drawable/border_button"
-                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:gravity="center"
                         android:minHeight="45dp"
                         android:text="@string/browse"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#141927"
                         android:textSize="14sp" />
 
-                    <ImageView
-                        android:id="@+id/imgPassportBackSide"
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="25dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="#ffffff"
-                        android:maxHeight="196dp" />
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/imgPassportBackSide"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="25dp"
+                            android:layout_marginEnd="16dp"
+                            android:background="#ffffff"
+                            android:maxHeight="196dp" />
+
+                        <ProgressBar
+                            android:id="@+id/progressBarPassportBackSide"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:indeterminateTint="@color/colorAccent"
+                            android:visibility="gone" />
+                    </FrameLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -410,9 +440,10 @@
 
 
                 <LinearLayout
+                    android:id="@+id/lnHoldingDocument"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#f2f3f6"
+                    android:background="@color/document_background_gray"
                     android:orientation="vertical">
 
                     <TextView
@@ -424,7 +455,7 @@
                         android:layout_marginEnd="16dp"
                         android:drawableEnd="@drawable/ic_info_kyc"
                         android:drawablePadding="12dp"
-                        android:text="@string/photo_of_you_holding_your_passport"
+                        android:text="@string/photo_of_you_holding_your_document"
                         android:textColor="#141927"
                         android:textSize="14sp" />
 
@@ -436,22 +467,36 @@
                         android:layout_marginTop="32dp"
                         android:layout_marginEnd="16dp"
                         android:background="@drawable/border_button"
-                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:gravity="center"
                         android:minHeight="45dp"
                         android:text="@string/browse"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                         android:textColor="#141927"
                         android:textSize="14sp" />
 
-                    <ImageView
-                        android:id="@+id/imgPassportHolding"
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="25dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="#ffffff"
-                        android:maxHeight="196dp" />
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/imgPassportHolding"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="25dp"
+                            android:layout_marginEnd="16dp"
+                            android:background="#ffffff"
+                            android:maxHeight="196dp" />
+
+                        <ProgressBar
+                            android:id="@+id/progressBarPassportHolding"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:indeterminateTint="@color/colorAccent"
+                            android:visibility="gone" />
+
+                    </FrameLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -476,10 +521,10 @@
                     android:layout_marginEnd="20dp"
                     android:layout_marginBottom="42dp"
                     android:background="@drawable/default_button"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:gravity="center"
                     android:minHeight="45dp"
                     android:text="@string/next"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#ffffff"
                     android:textSize="16sp" />
 

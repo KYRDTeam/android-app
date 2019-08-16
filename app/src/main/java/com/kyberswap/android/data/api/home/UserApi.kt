@@ -4,6 +4,7 @@ import com.kyberswap.android.data.api.alert.AlertEntity
 import com.kyberswap.android.data.api.alert.AlertMethodsResponseEntity
 import com.kyberswap.android.data.api.alert.AlertResponseEntity
 import com.kyberswap.android.data.api.alert.LeaderBoardEntity
+import com.kyberswap.android.data.api.cap.CapEntity
 import com.kyberswap.android.data.api.user.KycResponseStatusEntity
 import com.kyberswap.android.data.api.user.LoginUserEntity
 import com.kyberswap.android.data.api.user.ResponseStatusEntity
@@ -37,7 +38,9 @@ interface UserApi {
     @POST("api/users/login")
     fun login(
         @Field("email") email: String,
-        @Field("password") password: String
+        @Field("password") password: String,
+        @Field("two_factor_code") twoFactorCode: String?
+
     ): Single<LoginUserEntity>
 
 
@@ -52,7 +55,8 @@ interface UserApi {
         @Field("display_name") displayName: String?,
         @Field("oauth_token") oauthToken: String?,
         @Field("oauth_token_secret") oauthTokenSecret: String?,
-        @Field("confirm_signup") confirmSignUp: Boolean
+        @Field("confirm_signup") confirmSignUp: Boolean,
+        @Field("two_factor_code") twoFactorCode: String?
     ): Single<LoginUserEntity>
 
     @GET("api/alerts")
@@ -85,11 +89,15 @@ interface UserApi {
     @GET("api/alerts/ranks")
     fun getLeaderBoard(): Single<LeaderBoardEntity>
 
+    @GET("api/alerts/campaign_prizes")
+    fun getCampaignResult(): Single<LeaderBoardEntity>
+
     @POST("api/kyc_profile/personal_info")
     @FormUrlEncoded
     fun savePersonalInfo(
         @Field("kyc_profile[first_name]") firstName: String,
         @Field("kyc_profile[last_name]") lastName: String,
+        @Field("kyc_profile[native_full_name]") fullName: String?,
         @Field("kyc_profile[nationality]") nationality: String,
         @Field("kyc_profile[country]") country: String,
         @Field("kyc_profile[dob]") dob: String,
@@ -113,7 +121,8 @@ interface UserApi {
     fun saveIdentityInfo(
         @Field("kyc_profile[document_id]") documentId: String,
         @Field("kyc_profile[document_type]") documentType: String,
-        @Field("kyc_profile[document_issue_date]") documentIssueDate: String,
+        @Field("kyc_profile[document_issue_date]") documentIssueDate: String?,
+        @Field("kyc_profile[document_expiry_date]") documentExpiriedDate: String?,
         @Field("kyc_profile[photo_selfie]") photoSelfie: String,
         @Field("kyc_profile[photo_identity_front_side]") photoFrontSide: String,
         @Field("kyc_profile[photo_identity_back_side]") photoBackSide: String
@@ -131,7 +140,12 @@ interface UserApi {
 
     @PATCH("api/update_push_token")
     @FormUrlEncoded
-    fun updatePushToken(@Field("push_token_mobile") token: String): Single<ResponseStatusEntity>
+    fun updatePushToken(
+        @Field("player_id") playerId: String
+    ): Single<ResponseStatusEntity>
+
+    @GET("api/user_stats")
+    fun getUserStats(): Single<CapEntity>
 
     @GET("api/get_alert_methods")
     fun getAlertMethod(): Single<AlertMethodsResponseEntity>
@@ -139,5 +153,11 @@ interface UserApi {
     @Headers("Content-Type: application/json")
     @POST("api/update_alert_methods")
     fun updateAlertMethods(@Body rawJsonString: RequestBody): Single<ResponseStatusEntity>
+
+    @POST("api/transactions")
+    @FormUrlEncoded
+    fun submitTx(
+        @Field("tx_hash") tx: String
+    ): Single<ResponseStatusEntity>
 
 }

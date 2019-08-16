@@ -27,10 +27,7 @@ import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
-import com.kyberswap.android.util.ext.setTextIfChange
-import com.kyberswap.android.util.ext.showDrawer
-import com.kyberswap.android.util.ext.showKeyboard
-import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_token_header.view.*
 import java.math.BigDecimal
@@ -124,28 +121,22 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
         viewModel.getSelectedWallet()
+        wallet?.let {
+            refreshBalances()
+        }
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
-                        if (state.wallet.address != binding.wallet?.address) {
-                            viewModel.getTokenBalance()
-                            tokenAdapter?.let {
-                                forceUpdate = true
-                                setNameBalanceSelectedOption(balanceIndex)
-                            }
+                        if (state.wallet.address != wallet?.address) {
+                            // Wallet address change, need to reload the balance
+                            refreshBalances()
+                            binding.walletAddress = state.wallet.display()
+                            // Unit could be changed by user selection
+                            binding.tvUnit.setTextIfChange(state.wallet.unit)
+                            this.wallet = state.wallet
                         }
-
-                        binding.tvUnit.setTextIfChange(state.wallet.unit)
-                        binding.tvBalance.setTextIfChange(state.wallet.displayBalance)
-
-                        if (binding.wallet != state.wallet) {
-                            binding.wallet = state.wallet
-                        }
-
-                        this.wallet = state.wallet
 
                     }
                     is GetWalletState.ShowError -> {
@@ -155,9 +146,11 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             }
         })
 
+
+
         viewModel.visibilityCallback.observe(viewLifecycleOwner, Observer {
             it?.peekContent()?.let { visibility ->
-                hideBalance(visibility)
+                displayWalletBalance(visibility)
             }
         })
 
@@ -166,7 +159,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
         binding.tvKyberList.setOnClickListener {
             if (it.isSelected) return@setOnClickListener
-            tokenAdapter?.setTokenType(TokenType.LISTED)
+            tokenAdapter?.setTokenType(TokenType.LISTED, getFilterTokenList(currentSearchString))
             setSelectedOption(it)
         }
 
@@ -199,15 +192,20 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         }
 
         viewModel.compositeDisposable.add(
-            binding.edtSearch.textChanges().skipInitialValue().debounce(
-                250,
-                TimeUnit.MILLISECONDS
-            )
+            binding.edtSearch.textChanges()
+                .skipInitialValue().debounce(
+                    250,
+                    TimeUnit.MILLISECONDS
+                )
                 .map {
                     return@map it.trim().toString().toLowerCase()
                 }.observeOn(schedulerProvider.ui())
-                .subscribe {
-                    viewModel.updateSearchKeyword(it)
+                .subscribe { searchedText ->
+                    tokenAdapter?.let {
+                        it.submitFilterList(getFilterTokenList(searchedText, it.getFullTokenList()))
+                    }
+
+                    currentSearchString = searchedText
                 })
 
         binding.edtSearch.setOnEditorActionListener { _, actionId, _ ->
@@ -222,37 +220,40 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             RecyclerView.VERTICAL,
             false
         )
-        tokenAdapter =
-            TokenAdapter(appExecutors, handler,
-                {
-                    navigateToChartScreen(it)
-                },
-                {
-                    if (wallet?.isPromo == true) {
-                        moveToSwapTab()
-                    } else {
-                        wallet?.address?.let { it1 -> viewModel.save(it1, it, false) }
-                    }
-                },
-                {
-                    if (wallet?.isPromo == true) {
-                        moveToSwapTab()
-                    } else {
-                        wallet?.address?.let { it1 -> viewModel.save(it1, it, true) }
-                    }
-                },
-                {
-                    if (wallet?.isPromo == true && it.tokenSymbol == getString(R.string.promo_source_token)) {
-                        showAlertWithoutIcon(message = getString(R.string.can_not_tranfer_token))
-                    } else {
-                        wallet?.address?.let { it1 -> viewModel.saveSendToken(it1, it) }
-                    }
 
-                },
-                {
-                    viewModel.saveFav(it)
-                }
-            )
+        if (tokenAdapter == null)
+            tokenAdapter =
+                TokenAdapter(appExecutors, handler,
+                    {
+                        navigateToChartScreen(it)
+                    },
+                    {
+                        if (wallet?.isPromo == true) {
+                            moveToSwapTab()
+                        } else {
+                            wallet?.address?.let { it1 -> viewModel.save(it1, it, false) }
+                        }
+                    },
+                    {
+                        if (wallet?.isPromo == true) {
+                            moveToSwapTab()
+                        } else {
+                            wallet?.address?.let { it1 -> viewModel.save(it1, it, true) }
+                        }
+                    },
+                    {
+                        if (it.tokenSymbol == getString(R.string.promo_source_token)) {
+                            showAlertWithoutIcon(message = getString(R.string.can_not_tranfer_token))
+                        } else {
+                            wallet?.address?.let { it1 -> viewModel.saveSendToken(it1, it) }
+                        }
+
+                    },
+                    {
+
+                        viewModel.saveFav(it)
+                    }
+                )
         tokenAdapter?.mode = Attributes.Mode.Single
         binding.rvToken.adapter = tokenAdapter
 
@@ -264,28 +265,9 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                             binding.swipeLayout.isRefreshing = false
                         }
 
-                        tokenAdapter?.let {
-                            it.setFullTokenList(state.tokens)
-                            if (forceUpdate) {
-                                forceUpdate = false
-                                it.submitList(null)
-                            }
-                            it.submitFilterList(
-                                getFilterTokenList(
-                                    currentSearchString,
-                                    state.tokens
-                                )
-                            )
-                        }
-
-                        val isETH = wallet?.unit == eth
-                        setCurrencyDisplay(isETH)
-
-                        val balance = calcBalance(state.tokens, isETH)
-                        if (balance.toDisplayNumber() != wallet?.balance) {
-                            wallet?.balance = balance.toDisplayNumber()
-                            viewModel.updateWallet(wallet)
-                        }
+                        updateTokenBalance(state.tokens.map {
+                            it.updateSelectedWallet(wallet)
+                        })
                     }
                     is GetBalanceState.ShowError -> {
 
@@ -347,27 +329,6 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             }
         }
 
-        viewModel.searchedKeywordsCallback.observe(viewLifecycleOwner, Observer { event ->
-            event?.getContentIfNotHandled()?.let { searchedString ->
-                currentSearchString = searchedString
-                if (searchedString.isEmpty()) {
-                    tokenAdapter?.let {
-                        it.submitFilterList(it.getFullTokenList())
-                    }
-
-                } else {
-                    tokenAdapter?.let {
-                        tokenAdapter?.submitFilterList(
-                            getFilterTokenList(
-                                searchedString,
-                                it.getFullTokenList()
-                            )
-                        )
-                    }
-                }
-            }
-        })
-
         viewModel.visibilityCallback.observe(viewLifecycleOwner, Observer {
             it?.peekContent()?.let { visibility ->
                 tokenAdapter?.hideBalance(visibility)
@@ -378,13 +339,13 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             viewModel.refresh()
         }
 
-        viewModel.saveTokenSelectionCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.saveWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
-                showProgress(state == SaveSwapDataState.Loading)
+                showProgress(state == SaveWalletState.Loading)
                 when (state) {
-                    is SaveSwapDataState.Success -> {
+                    is SaveWalletState.Success -> {
                     }
-                    is SaveSwapDataState.ShowError -> {
+                    is SaveWalletState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
@@ -430,6 +391,31 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         })
     }
 
+    fun getSelectedWallet() {
+        viewModel.getSelectedWallet()
+    }
+
+    private fun updateTokenBalance(tokens: List<Token>) {
+        tokenAdapter?.let {
+            it.setFullTokenList(tokens)
+            if (forceUpdate) {
+                forceUpdate = false
+                it.submitList(null)
+            }
+            it.submitFilterList(
+                getFilterTokenList(
+                    currentSearchString,
+                    tokens
+                )
+            )
+
+            setCurrencyDisplay(wallet?.unit == eth)
+            displayWalletBalance(it.hideBlance)
+        }
+
+
+    }
+
     private fun getNameBalNextSelectedIndex(index: Int): Int {
         return if (index == nameBalSelectedIndex && tokenAdapter?.isNameBalOrder == true) {
             (nameBalSelectedIndex + 1) % 2
@@ -439,8 +425,9 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     }
 
-    private fun hideBalance(isHide: Boolean) {
-        binding.tvBalance.text = if (isHide) "******" else binding.wallet?.displayBalance
+    private fun displayWalletBalance(isHide: Boolean) {
+        binding.tvBalance.text =
+            if (isHide) "******" else walletBalance.toDisplayNumber().exactAmount()
     }
 
     override fun showNotification(showNotification: Boolean) {
@@ -455,23 +442,42 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     private fun orderByCurrency(isEth: Boolean, type: OrderType, view: TextView) {
         tokenAdapter?.let {
-            it.setOrderBy(type)
-            val balance = calcBalance(it.getData(), isEth)
+            it.setOrderBy(type, getFilterTokenList(currentSearchString))
             it.showEth(isEth)
             val unit = if (isEth) eth else usd
-            val updatedWallet = wallet?.copy(unit = unit, balance = balance.toDisplayNumber())
+            val updatedWallet = wallet?.copy(unit = unit)
             if (updatedWallet != wallet) {
+                wallet = updatedWallet
                 viewModel.updateWallet(updatedWallet)
             }
             updateOrderDrawable(it.isAsc, view)
+            displayWalletBalance(it.hideBlance)
         }
         setCurrencyDisplay(isEth)
         updateOrderOption(orderByOptions.indexOf(view), view)
+
+        wallet?.let {
+            binding.tvUnit.setTextIfChange(it.unit)
+        }
+
+    }
+
+    private val walletBalance: BigDecimal
+        get() {
+            return calcBalance(tokenAdapter?.getFullTokenList() ?: listOf(), wallet?.unit == eth)
+        }
+
+    private fun refreshBalances() {
+        viewModel.getTokenBalance()
+        tokenAdapter?.let {
+            forceUpdate = true
+            setNameBalanceSelectedOption(balanceIndex)
+        }
     }
 
     private fun orderByChange24h(type: OrderType, view: TextView) {
         tokenAdapter?.let {
-            it.setOrderBy(type)
+            it.setOrderBy(type, getFilterTokenList(currentSearchString))
             updateOrderDrawable(it.isAsc, view)
         }
         updateOrderOption(orderByOptions.indexOf(view), view)
@@ -513,6 +519,14 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         }
     }
 
+    private fun getFilterTokenList(searchedString: String): List<Token> {
+        val tokenList = tokenAdapter?.getFullTokenList() ?: listOf()
+        return tokenList.filter { token ->
+            token.tokenSymbol.toLowerCase().contains(searchedString) or
+                token.tokenName.toLowerCase().contains(searchedString)
+        }
+    }
+
     private fun calcBalance(tokens: List<Token>, isETH: Boolean): BigDecimal {
         var balance = BigDecimal.ZERO
         tokens.forEach { token ->
@@ -533,10 +547,11 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     }
 
-    override fun onDestroy() {
+
+    override fun onDestroyView() {
         viewModel.compositeDisposable.clear()
         handler.removeCallbacksAndMessages(null)
-        super.onDestroy()
+        super.onDestroyView()
     }
 
     private fun moveToSwapTab() {
@@ -567,9 +582,9 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         }
 
         if (view.text == other) {
-            tokenAdapter?.setTokenType(TokenType.OTHER)
+            tokenAdapter?.setTokenType(TokenType.OTHER, getFilterTokenList(currentSearchString))
         } else {
-            tokenAdapter?.setTokenType(TokenType.FAVOURITE)
+            tokenAdapter?.setTokenType(TokenType.FAVOURITE, getFilterTokenList(currentSearchString))
         }
 
         setSelectedOption(view)
@@ -582,9 +597,9 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             val selectedView = nameAndBal[index]
             toggleDisplay(true, selectedView)
             if (selectedView == binding.header.tvName) {
-                it.setOrderBy(OrderType.NAME)
+                it.setOrderBy(OrderType.NAME, getFilterTokenList(currentSearchString))
             } else if (selectedView == binding.header.tvBalance) {
-                it.setOrderBy(OrderType.BALANCE)
+                it.setOrderBy(OrderType.BALANCE, getFilterTokenList(currentSearchString))
             }
             nameBalSelectedIndex = index
             updateOrderOption(orderByOptions.indexOf(selectedView), selectedView)

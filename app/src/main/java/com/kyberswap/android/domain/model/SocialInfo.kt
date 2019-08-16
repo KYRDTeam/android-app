@@ -16,4 +16,8 @@ data class SocialInfo(
     val oAuthToken: String? = null,
     val oAuthTokenSecret: String? = null,
     val twoFa: String? = null
-) : Parcelable
+) : Parcelable {
+
+    val isNormalLogin: Boolean
+        get() = type == LoginType.NORMAL
+}

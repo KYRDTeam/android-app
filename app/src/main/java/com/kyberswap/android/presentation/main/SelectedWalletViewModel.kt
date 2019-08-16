@@ -18,6 +18,7 @@ open class SelectedWalletViewModel @Inject constructor(
         get() = _getSelectedWalletCallback
 
     fun getSelectedWallet() {
+        getWalletUseCase.dispose()
         getWalletUseCase.execute(
             Consumer { wallet ->
                 _getSelectedWalletCallback.value = Event(GetWalletState.Success(wallet))

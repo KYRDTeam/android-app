@@ -5,10 +5,10 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.data.db.BigIntegerDataTypeConverter
 import com.kyberswap.android.data.db.DataTypeConverter
 import com.kyberswap.android.presentation.common.KEEP_ETH_BALANCE_FOR_GAS
-import com.kyberswap.android.presentation.common.MIN_SUPPORT_SWAP_SOURCE_AMOUNT
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.parcel.Parcelize
@@ -53,6 +53,9 @@ data class LocalLimitOrder(
     private val _rate: String?
         get() = if (expectedRate.isEmpty()) marketRate else expectedRate
 
+    val isRateTooBig: Boolean
+        get() = minRate > _rate.toBigDecimalOrDefaultZero() * 10.toBigDecimal()
+
     val combineRate: String?
         get() = _rate.toBigDecimalOrDefaultZero().toDisplayNumber()
 
@@ -65,6 +68,38 @@ data class LocalLimitOrder(
             wethToken = this.wethToken
         )
     }
+
+    fun isSameTokenPair(other: LocalLimitOrder?): Boolean {
+        return this.tokenSource.tokenSymbol == other?.tokenSource?.tokenSymbol &&
+            this.tokenDest.tokenSymbol == other.tokenDest.tokenSymbol &&
+            this.srcAmount == other.srcAmount &&
+            this.marketRate == other.marketRate &&
+            this.expectedRate == other.expectedRate &&
+            this.nonce == other.nonce &&
+            this.gasLimit == other.gasLimit &&
+            this.gasPrice == other.gasPrice &&
+            this.minRate == other.minRate &&
+            this.fee == other.fee &&
+            this.tokenSource.currentBalance == other.tokenSource.currentBalance &&
+            this.tokenDest.currentBalance == other.tokenDest.currentBalance
+    }
+
+    fun isSameTokenPairForAddress(other: LocalLimitOrder?): Boolean {
+        return this.tokenSource.tokenSymbol == other?.tokenSource?.tokenSymbol &&
+            this.tokenDest.tokenSymbol == other.tokenDest.tokenSymbol &&
+            this.tokenSource.currentBalance == other.tokenSource.currentBalance &&
+            this.tokenDest.currentBalance == other.tokenDest.currentBalance &&
+            this.ethToken.currentBalance == other.ethToken.currentBalance &&
+            this.wethToken.currentBalance == other.wethToken.currentBalance &&
+            this.userAddr == other.userAddr
+    }
+
+    fun isSameSourceDestToken(other: LocalLimitOrder?): Boolean {
+        return this.tokenSource.tokenSymbol == other?.tokenSource?.tokenSymbol &&
+            this.tokenDest.tokenSymbol == other.tokenDest.tokenSymbol &&
+            this.userAddr == other.userAddr
+    }
+
 
     val displayGasFee: String
         get() = StringBuilder()
@@ -91,7 +126,7 @@ data class LocalLimitOrder(
         get() = ethToken.limitOrderBalance
 
     val minConvertedAmount: String
-        get() = (srcAmount.toBigDecimalOrDefaultZero() - wethToken.currentBalance).toDisplayNumber()
+        get() = (srcAmount.toBigDecimalOrDefaultZero() - wethToken.currentBalance).toPlainString()
 
     val displayEthBalance: String
         get() = StringBuilder()
@@ -112,7 +147,7 @@ data class LocalLimitOrder(
         get() = StringBuilder()
             .append(srcAmount)
             .append(" ")
-            .append(tokenSource.tokenSymbol)
+            .append(tokenSource.symbol)
             .toString()
     val displayedDestAmount: String
         get() = StringBuilder()
@@ -128,7 +163,7 @@ data class LocalLimitOrder(
                     minRate
                 ).toDisplayNumber()
             ).append(" ")
-            .append(tokenDest.tokenSymbol)
+            .append(tokenDest.symbol)
             .toString()
     val displayedCalculatedRate: String
         get() = StringBuilder()
@@ -137,7 +172,7 @@ data class LocalLimitOrder(
             .append(" - ")
             .append(fee.multiply(srcAmount.toBigDecimalOrDefaultZero()).toDisplayNumber())
             .append(")")
-            .append(tokenSource.tokenSymbol)
+            .append(tokenSource.symbol)
             .append(" * ")
             .append(minRate.toDisplayNumber())
             .append(" = ")
@@ -148,7 +183,7 @@ data class LocalLimitOrder(
         get() = StringBuilder()
             .append(feeAmount.toDisplayNumber())
             .append(" ")
-            .append(tokenSource.tokenSymbol)
+            .append(tokenSource.symbol)
             .toString()
 
     val feeAmount: BigDecimal
@@ -173,20 +208,33 @@ data class LocalLimitOrder(
 
     val displayTokenPair: String
         get() = StringBuilder()
-            .append(tokenSource.tokenSymbol)
+            .append(tokenSource.symbol)
             .append("/")
-            .append(tokenDest.tokenSymbol)
+            .append(tokenDest.symbol)
             .append(" >= ")
             .append(minRate.toDisplayNumber())
             .toString()
+
+    val minSupportSourceAmount: BigDecimal
+        get() = if (BuildConfig.FLAVOR == "dev" || BuildConfig.FLAVOR == "stg") 0.001.toBigDecimal() else 0.1.toBigDecimal()
 
     fun amountTooSmall(sourceAmount: String?): Boolean {
         val amount =
             sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateEthNow)
         return if (tokenSource.isETH) {
-            amount <= MIN_SUPPORT_SWAP_SOURCE_AMOUNT.toBigDecimal()
+            amount <= minSupportSourceAmount
         } else {
-            amount < MIN_SUPPORT_SWAP_SOURCE_AMOUNT.toBigDecimal()
+            amount < minSupportSourceAmount
+        }
+    }
+
+    fun amountTooBig(sourceAmount: String?): Boolean {
+        val amount =
+            sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateEthNow)
+        return if (tokenSource.isETH) {
+            amount > BigDecimal.TEN
+        } else {
+            amount >= BigDecimal.TEN
         }
     }
 
@@ -195,10 +243,11 @@ data class LocalLimitOrder(
         calAvailableAmount: BigDecimal,
         gasPrice: BigDecimal
     ): BigDecimal {
-        return calAvailableAmount - Convert.fromWei(
+        return (calAvailableAmount - Convert.fromWei(
             Convert.toWei(gasPrice, Convert.Unit.GWEI)
                 .multiply(KEEP_ETH_BALANCE_FOR_GAS), Convert.Unit.ETHER
         )
+            ).max(BigDecimal.ZERO)
     }
 
     val tokenPair: String

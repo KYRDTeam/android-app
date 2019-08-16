@@ -2,129 +2,92 @@ package com.kyberswap.android.presentation.main.limitorder
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.kyberswap.android.data.repository.LimitOrderDataRepository
 import com.kyberswap.android.domain.model.Order
-import com.kyberswap.android.domain.model.OrderFilter
-import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.limitorder.CancelOrderUseCase
-import com.kyberswap.android.domain.usecase.limitorder.GetLimitOrderFilterUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetLimitOrdersUseCase
+import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.presentation.common.Event
-import com.kyberswap.android.util.ext.displayWalletAddress
+import com.kyberswap.android.presentation.main.GetLoginStatusViewModel
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class ManageOrderViewModel @Inject constructor(
-    private val getLimitOrderFilterUseCase: GetLimitOrderFilterUseCase,
     private val getLimitOrdersUseCase: GetLimitOrdersUseCase,
-    private val cancelOrderUseCase: CancelOrderUseCase
+    private val cancelOrderUseCase: CancelOrderUseCase,
+    val getLoginStatusUseCase: GetLoginStatusUseCase
 
-) : ViewModel() {
+) : GetLoginStatusViewModel(getLoginStatusUseCase) {
 
-    private val _getRelatedOrderCallback = MutableLiveData<Event<GetRelatedOrdersState>>()
-    val getRelatedOrderCallback: LiveData<Event<GetRelatedOrdersState>>
-        get() = _getRelatedOrderCallback
+    private val _getOrdersCallback = MutableLiveData<Event<GetRelatedOrdersState>>()
+    val getOrdersCallback: LiveData<Event<GetRelatedOrdersState>>
+        get() = _getOrdersCallback
 
     private val _cancelOrderCallback = MutableLiveData<Event<CancelOrdersState>>()
     val cancelOrderCallback: LiveData<Event<CancelOrdersState>>
         get() = _cancelOrderCallback
 
-    private val _getFilterCallback = MutableLiveData<Event<GetFilterState>>()
-    val getFilterCallback: LiveData<Event<GetFilterState>>
-        get() = _getFilterCallback
+    var ordersWrapper: OrdersWrapper? = null
 
-    private var orderList: List<Order> = listOf()
+    override fun onCleared() {
+        getLimitOrdersUseCase.dispose()
+        cancelOrderUseCase.dispose()
+        super.onCleared()
+    }
 
-    private var orderFilter: OrderFilter? = null
 
-
-    fun getRelatedOrders(wallet: Wallet) {
+    fun getAllOrders() {
+        getLimitOrdersUseCase.dispose()
+        _getOrdersCallback.postValue(Event(GetRelatedOrdersState.Loading))
         getLimitOrdersUseCase.execute(
             Consumer {
-                orderList = it
-                getFilter(wallet)
-                _getRelatedOrderCallback.value =
-                    Event(GetRelatedOrdersState.Success(it))
+                ordersWrapper = it
+                _getOrdersCallback.value =
+                    Event(
+                        GetRelatedOrdersState.Success(
+                            toOrderItems(
+                                it.orders,
+                                it.asc
+                            )
+                        )
+                    )
             },
             Consumer {
                 it.printStackTrace()
-                _getRelatedOrderCallback.value =
+                _getOrdersCallback.value =
                     Event(GetRelatedOrdersState.ShowError(it.localizedMessage))
 
             },
-            GetLimitOrdersUseCase.Param(wallet.address)
+            null
         )
     }
 
-    fun getCurrentFilterList(): List<Order> {
-        return orderFilter?.let {
-            filterOrders(it)
-        } ?: listOf()
-
-    }
-
-    fun filterOrders(filter: OrderFilter): List<Order> {
-        orderFilter = filter
-        val orderByOldest = filter.oldest
-        val addresses = filter.listAddress.filter {
-            it.isSelected
-        }.map {
-            it.name
-        }
-
-        val pairs = filter.listOrders.filter {
-            it.isSelected
-        }.map {
-            it.name
-        }
-
-        return if (orderByOldest) {
-            orderList.sortedBy { it.createdAt }
+    fun toOrderItems(orders: List<Order>, asc: Boolean): List<OrderItem> {
+        return if (asc) {
+            orders.sortedBy { it.time }
         } else {
-            orderList.sortedByDescending {
-                it.createdAt
-            }
-        }.filter {
-            if (addresses.isNotEmpty()) {
-                addresses.contains(it.userAddr.displayWalletAddress())
-            } else {
-                true
-            }
-        }.filter {
-            if (filter.status.isNotEmpty()) {
-                filter.status.contains(it.status)
-            } else {
-                true
-            }
-        }.filter {
-            if (pairs.isNotEmpty()) {
-                pairs.contains(
-                    StringBuilder().append(it.src).append(LimitOrderDataRepository.TOKEN_PAIR_SEPARATOR).append(
-                        it.dst
-                    )
-                        .toString()
-                )
-            } else {
-                true
-            }
-        }
+            orders.sortedByDescending { it.time }
+        }.groupBy { it.shortedDateTimeFormat }
+            .flatMap { item ->
+                val items = mutableListOf<OrderItem>()
+                items.add(OrderItem.Header(item.key))
+                val list =
+                    if (asc) {
+                        item.value.sortedBy { it.time }
+                    } else {
+                        item.value.sortedByDescending { it.time }
+                    }
 
+                list.forEachIndexed { index, transaction ->
+                    if (index % 2 == 0) {
+                        items.add(OrderItem.ItemEven(transaction))
+                    } else {
+                        items.add(OrderItem.ItemOdd(transaction))
+                    }
+                }
+                items
+            }
     }
 
-    private fun getFilter(wallet: Wallet) {
-        getLimitOrderFilterUseCase.execute(
-            Consumer {
-                _getFilterCallback.value = Event(GetFilterState.Success(it))
-            },
-            Consumer {
-                it.printStackTrace()
-                _getFilterCallback.value =
-                    Event(GetFilterState.ShowError(it.localizedMessage))
-            },
-            GetLimitOrderFilterUseCase.Param(wallet.address)
-        )
-    }
 
     fun cancelOrder(order: Order) {
         _cancelOrderCallback.postValue(Event(CancelOrdersState.Loading))

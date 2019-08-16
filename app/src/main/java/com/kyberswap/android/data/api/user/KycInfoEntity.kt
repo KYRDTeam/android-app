@@ -30,8 +30,6 @@ data class KycInfoEntity(
     val photoSelfie: String? = "",
     @SerializedName("photo_identity_front_side")
     val photoIdentityFrontSide: String? = "",
-    @SerializedName("artemis_response")
-    val artemisResponse: String? = "",
     @SerializedName("duplicate_id")
     val duplicateId: String? = "",
     @SerializedName("residential_address")

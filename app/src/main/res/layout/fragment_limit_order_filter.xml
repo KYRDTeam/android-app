@@ -128,7 +128,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
-                            android:text="@string/condition"
+                            android:text="@string/limit_order_filter"
                             android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                             android:textColor="#5a5e67"
                             android:textSize="14sp"
@@ -152,7 +152,7 @@
 
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cvWallet"
+                    android:id="@+id/cvOrderStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -165,52 +165,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/cardView2">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="25dp">
-
-                        <TextView
-                            android:id="@+id/textView79"
-                            android:layout_width="wrap_content"
-                            android:layout_height="23dp"
-                            android:text="@string/filter_address"
-                            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-                            android:textColor="#5a5e67"
-                            android:textSize="14sp"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.0"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/rvAddress"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/textView79" />
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                </androidx.cardview.widget.CardView>
-
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cvStatus"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginEnd="8dp"
-                    app:cardCornerRadius="4dp"
-                    app:cardElevation="2dp"
-                    app:cardUseCompatPadding="true"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/cvWallet">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -242,6 +196,53 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.cardview.widget.CardView>
 
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cvWallet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="8dp"
+                    app:cardCornerRadius="4dp"
+                    app:cardElevation="2dp"
+                    app:cardUseCompatPadding="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/cvOrderStatus">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="25dp">
+
+                        <TextView
+                            android:id="@+id/textView79"
+                            android:layout_width="wrap_content"
+                            android:layout_height="23dp"
+                            android:text="@string/filter_address"
+                            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                            android:textColor="#5a5e67"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.0"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvAddress"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/textView79" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                </androidx.cardview.widget.CardView>
+
                 <TextView
                     android:id="@+id/tvReset"
                     android:layout_width="0dp"
@@ -249,10 +250,10 @@
                     android:layout_marginStart="56dp"
                     android:layout_weight="1"
                     android:background="@drawable/border_button"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:gravity="center"
                     android:minHeight="45dp"
                     android:text="@string/filter_reset"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#141927"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="@+id/tvApply"
@@ -280,7 +281,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/tvReset"
-                    app:layout_constraintTop_toBottomOf="@+id/cvStatus" />
+                    app:layout_constraintTop_toBottomOf="@+id/cvWallet" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

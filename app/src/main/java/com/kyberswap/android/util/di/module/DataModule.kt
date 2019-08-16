@@ -24,9 +24,24 @@ object DataModule {
         unitDao: UnitDao,
         tokenDao: TokenDao,
         promoApi: PromoApi,
-        promoMapper: PromoMapper
+        promoMapper: PromoMapper,
+        client: TokenClient,
+        swapDao: SwapDao,
+        sendDao: SendDao,
+        limitOrderDao: LocalLimitOrderDao
     ): WalletRepository =
-        WalletDataRepository(context, walletDao, unitDao, tokenDao, promoApi, promoMapper)
+        WalletDataRepository(
+            context,
+            walletDao,
+            unitDao,
+            tokenDao,
+            promoApi,
+            promoMapper,
+            swapDao,
+            sendDao,
+            limitOrderDao,
+            client
+        )
 
     @Singleton
     @Provides
@@ -36,9 +51,17 @@ object DataModule {
         currencyApi: CurrencyApi,
         tokenMapper: TokenMapper,
         client: TokenClient,
-        tokenDao: TokenDao
+        tokenDao: TokenDao,
+        walletDao: WalletDao
     ): BalanceRepository =
-        BalanceDataRepository(api, currencyApi, tokenMapper, client, tokenDao)
+        BalanceDataRepository(
+            api,
+            currencyApi,
+            tokenMapper,
+            client,
+            tokenDao,
+            walletDao
+        )
 
     @Singleton
     @Provides
@@ -84,7 +107,10 @@ object DataModule {
         mapper: GasMapper,
         capMapper: CapMapper,
         tokenClient: TokenClient,
-        transactionDao: TransactionDao
+        transactionDao: TransactionDao,
+        userDao: UserDao,
+        userApi: UserApi,
+        userMapper: UserMapper
     ): SwapRepository =
         SwapDataRepository(
             context,
@@ -97,7 +123,10 @@ object DataModule {
             mapper,
             capMapper,
             tokenClient,
-            transactionDao
+            transactionDao,
+            userDao,
+            userApi,
+            userMapper
         )
 
     @Singleton
@@ -121,7 +150,9 @@ object DataModule {
         tokenDao: TokenDao,
         swapDao: SwapDao,
         sendDao: SendDao,
-        limitOrderDao: LocalLimitOrderDao
+        limitOrderDao: LocalLimitOrderDao,
+        transactionFilterDao: TransactionFilterDao,
+        context: Context
     ): TransactionRepository =
         TransactionDataRepository(
             api,
@@ -131,7 +162,9 @@ object DataModule {
             tokenDao,
             swapDao,
             sendDao,
-            limitOrderDao
+            limitOrderDao,
+            transactionFilterDao,
+            context
         )
 
 

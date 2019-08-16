@@ -1,50 +1,55 @@
 package com.kyberswap.android.domain.model
 
 import android.os.Parcelable
+import androidx.room.Ignore
 import com.kyberswap.android.data.api.user.KycInfoEntity
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class KycInfo(
-    val id: Int = 0,
-    val firstName: String = "",
-    val lastName: String = "",
-    val nationality: String = "",
-    val country: String = "",
-    val rejectReason: String? = "",
-    val gender: Boolean = false,
-    val dob: String = "",
-    val profileCompleted: Boolean = false,
-    val documentId: String = "",
-    val documentType: String = "",
-    val photoSelfie: String = "",
-    val photoIdentityFrontSide: String = "",
-    val artemisResponse: String = "",
-    val duplicateId: String = "",
-    val residentialAddress: String = "",
-    val city: String = "",
-    val zipCode: String = "",
+    var id: Int = 0,
+    var firstName: String = "",
+    var lastName: String = "",
+    var nationality: String = "",
+    var country: String = "",
+    var rejectReason: String? = "",
+    var gender: Boolean = false,
+    var dob: String = "",
+    var profileCompleted: Boolean = false,
+    var documentId: String = "",
+    var documentType: String = "",
+    @Ignore
+    var photoSelfie: String = "",
+    @Ignore
+    var photoIdentityFrontSide: String = "",
+    var duplicateId: String = "",
+    var residentialAddress: String = "",
+    var city: String = "",
+    var zipCode: String = "",
     var documentProofAddress: String = "",
-    val photoProofAddress: String = "",
-    val sourceFund: String = "",
-    val occupationCode: String = "",
-    val industryCode: String = "",
-    val taxResidencyCountry: String = "",
-    val haveTaxIdentification: Boolean? = false,
-    val taxIdentificationNumber: String = "",
-    val documentIssueDate: String = "",
-    val documentExpiryDate: String = "",
-    val photoIdentityBackSide: String = "",
-    val duplicateType: String = "",
-    val internalApproval: String = "",
-    val middleName: String = "",
-    val customReason: String = "",
-    val adminNote: String = "",
-    val nativeFullName: String = "",
-    val blockReason: String = "",
-    val issueDateNonApplicable: Boolean = false,
-    val expiryDateNonApplicable: Boolean = false
+    @Ignore
+    var photoProofAddress: String = "",
+    var sourceFund: String = "",
+    var occupationCode: String = "",
+    var industryCode: String = "",
+    var taxResidencyCountry: String = "",
+    var haveTaxIdentification: Boolean? = false,
+    var taxIdentificationNumber: String = "",
+    var documentIssueDate: String = "",
+    var documentExpiryDate: String = "",
+    @Ignore
+    var photoIdentityBackSide: String = "",
+    var duplicateType: String = "",
+    var internalApproval: String = "",
+    var middleName: String = "",
+    var customReason: String = "",
+    var adminNote: String = "",
+    var nativeFullName: String = "",
+    var blockReason: String = "",
+    var issueDateNonApplicable: Boolean = false,
+    var expiryDateNonApplicable: Boolean = false
 ) : Parcelable {
+
     constructor(entity: KycInfoEntity) : this(
         entity.id ?: 0,
         entity.firstName ?: "",
@@ -59,7 +64,6 @@ data class KycInfo(
         entity.documentType ?: "",
         entity.photoSelfie ?: "",
         entity.photoIdentityFrontSide ?: "",
-        entity.artemisResponse ?: "",
         entity.duplicateId ?: "",
         entity.residentialAddress ?: "",
         entity.city ?: "",
@@ -87,16 +91,22 @@ data class KycInfo(
     )
 
     val isIdentityCard: Boolean
-        get() = TYPE_PASSPORT == documentType
-
-    val isNationalId: Boolean
         get() = TYPE_NATIONAL_ID == documentType
+
+    val isPassport: Boolean
+        get() = TYPE_PASSPORT == documentType
 
     val displayDob: String
         get() = dob.replace("-", "/")
 
     val displayIssueDate: String
         get() = if (documentIssueDate.isEmpty()) "N/A" else documentIssueDate
+
+    val displayExpiredDate: String
+        get() = if (documentExpiryDate.isEmpty()) "N/A" else documentExpiryDate
+
+    val displayTaxIdentificationNumber: String
+        get() = if (taxIdentificationNumber.isEmpty()) "N/A" else taxIdentificationNumber
 
     companion object {
         const val TYPE_PASSPORT = "passport"

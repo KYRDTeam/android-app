@@ -12,6 +12,7 @@ interface TransactionApi {
         @Query("action") action: String,
         @Query("address") address: String,
         @Query("sort") sort: String,
-        @Query("apikey") apikey: String
+        @Query("apikey") apikey: String,
+        @Query("startblock") startBlock: Long
     ): Single<TransactionsEntity>
 }

@@ -1,6 +1,8 @@
 package com.kyberswap.android.util.ext
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.net.Uri
 import androidx.fragment.app.Fragment
 import com.kyberswap.android.presentation.main.MainActivity
@@ -22,6 +24,13 @@ fun Fragment.openUrl(url: String?) {
         startActivity(intent)
     }
 
+}
+
+fun Fragment.isNetworkAvailable(): Boolean {
+    val connectivityManager =
+        context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+    val activeNetworkInfo = connectivityManager?.activeNetworkInfo
+    return activeNetworkInfo != null && activeNetworkInfo.isConnected
 }
 
 fun Fragment.shareUrl(text: String?) {

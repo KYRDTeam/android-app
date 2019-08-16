@@ -30,9 +30,18 @@ class FilterItemAdapter(
         binding.cb.setOnCheckedChangeListener { _, isChecked ->
             item.isSelected = isChecked
         }
-        binding.name = item.name
+        binding.name = item.itemName
         binding.isSelected = item.isSelected
         binding.executePendingBindings()
+    }
+
+
+    fun resetFilter() {
+        submitList(getData().map {
+            it.isSelected = true
+            it
+        })
+        notifyDataSetChanged()
     }
 
 

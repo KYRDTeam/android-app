@@ -9,6 +9,8 @@ import com.kyberswap.android.data.api.currencies.TokenCurrencyEntity
 import com.kyberswap.android.data.api.token.TokenEntity
 import com.kyberswap.android.data.db.DataTypeConverter
 import com.kyberswap.android.data.db.WalletBalanceTypeConverter
+import com.kyberswap.android.util.ext.exactAmount
+import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
@@ -42,19 +44,23 @@ data class Token(
     val spLimitOrder: Boolean = false,
     @TypeConverters(WalletBalanceTypeConverter::class)
     val wallets: List<WalletBalance> = listOf(),
-    val fav: Boolean = false,
+    var fav: Boolean = false,
     val isOther: Boolean = false,
-    val limitOrderBalance: BigDecimal = BigDecimal.ZERO
+    val limitOrderBalance: BigDecimal = BigDecimal.ZERO,
+    val isQuote: Boolean = false
 ) : Parcelable {
 
     @IgnoredOnParcel
     var isHide: Boolean = false
 
     val currentBalance: BigDecimal
-        get() = wallets.find {
-            it.isSelected
-        }?.currentBalance
-            ?: BigDecimal.ZERO
+        get() {
+            return wallets.find {
+                it.isSelected
+            }?.currentBalance
+                ?: BigDecimal.ZERO
+        }
+
 
     constructor(entity: TokenEntity) : this(
         entity.timestamp,
@@ -68,6 +74,13 @@ data class Token(
         entity.changeUsd24h
     )
 
+    constructor(tx: Transaction) : this(
+        tokenName = tx.tokenName,
+        tokenAddress = tx.contractAddress,
+        tokenSymbol = tx.tokenSymbol,
+        tokenDecimal = tx.tokenDecimal.toBigIntegerOrDefaultZero().toInt()
+    )
+
     constructor(entity: TokenCurrencyEntity) : this(
         tokenSymbol = entity.symbol,
         tokenName = entity.name,
@@ -78,21 +91,22 @@ data class Token(
         gasLimit = entity.gasLimit,
         listingTime = entity.listingTime,
         priority = entity.priority,
-        spLimitOrder = entity.spLimitOrder ?: false
+        spLimitOrder = entity.spLimitOrder ?: false,
+        isQuote = entity.isQuote ?: false
 
     )
 
     val symbol: String
         get() = if (tokenSymbol == ETH_SYMBOL_STAR) WETH_SYMBOL else tokenSymbol
 
-    val currentWalletBalance: WalletBalance?
+    private val currentWalletBalance: WalletBalance?
         get() = wallets.find { it.isSelected }
 
     val selectedWalletAddress: String
         get() = currentWalletBalance?.walletAddress ?: ""
 
     val isListed: Boolean
-        get() = System.currentTimeMillis() - listingTime >= 0
+        get() = System.currentTimeMillis() / 1000 - listingTime >= 0
 
     val shouldShowAsNew: Boolean
         get() = 7.0 * 24.0 * 60.0 * 60.0 >= System.currentTimeMillis() / 1000 - listingTime && System.currentTimeMillis() / 1000 - listingTime >= 0
@@ -111,12 +125,15 @@ data class Token(
             gasLimit = entity.gasLimit,
             listingTime = entity.listingTime,
             priority = entity.priority,
-            spLimitOrder = entity.spLimitOrder ?: false
+            spLimitOrder = entity.spLimitOrder ?: false,
+            isQuote = entity.isQuote ?: false
         )
     }
 
-    fun updateSelectedWallet(wallet: Wallet): Token {
-        val walletBalances = wallets.map {
+    fun updateSelectedWallet(wallet: Wallet?): Token {
+        if (wallet == null) return this
+        val walletBalances =
+            wallets.map {
             it.copy(isSelected = false)
         }.toMutableList()
 
@@ -138,6 +155,30 @@ data class Token(
 
         return copy(wallets = walletBalances)
     }
+
+    fun updateSelectedWallet(listWallets: List<Wallet>): Token {
+        val walletBalances = listWallets.map { wallet ->
+            val walletBalance = wallets.find { it.walletAddress == wallet.address }
+            WalletBalance(
+                wallet.address,
+                walletBalance?.currentBalance ?: BigDecimal.ZERO,
+                wallet.isSelected
+            )
+        }
+
+        return this.copy(wallets = walletBalances)
+    }
+
+    fun deleteWallet(wallet: Wallet): Token {
+        val walletBalance = wallets.find { it.walletAddress == wallet.address }
+        walletBalance?.let {
+            val updateBalances = wallets.toMutableList()
+            updateBalances.remove(walletBalance)
+            return copy(wallets = updateBalances)
+        }
+        return this
+    }
+
 
     private fun updateBalance(walletBalance: WalletBalance?): Token {
         if (walletBalance == null) return this
@@ -177,10 +218,10 @@ data class Token(
         get() = changeUsd24h.toDisplayNumber()
 
     val displayCurrentBalance: String
-        get() = if (isHide) "******" else currentBalance.toDisplayNumber()
+        get() = if (isHide) "******" else currentBalance.toDisplayNumber().exactAmount()
 
     val displayLimitOrderBalance: String
-        get() = limitOrderBalance.toDisplayNumber()
+        get() = limitOrderBalance.toDisplayNumber().exactAmount()
 
     val displayCurrentBalanceInEth: String
         get() = StringBuilder()
@@ -215,9 +256,20 @@ data class Token(
     val isWETH: Boolean
         get() = tokenSymbol.toLowerCase() == WETH_SYMBOL.toLowerCase()
 
+    val isDGX: Boolean
+        get() = tokenSymbol.toLowerCase() == DGX.toLowerCase()
+
     val isDAI: Boolean
         get() = tokenSymbol.toLowerCase() == DAI.toLowerCase()
 
+    val isMKR: Boolean
+        get() = tokenSymbol.toLowerCase() == MKR.toLowerCase()
+
+    val isPRO: Boolean
+        get() = tokenSymbol.toLowerCase() == PRO.toLowerCase()
+
+    val isPT: Boolean
+        get() = tokenSymbol.toLowerCase() == PT.toLowerCase()
 
     val isTUSD: Boolean
         get() = tokenSymbol.toLowerCase() == TUSD.toLowerCase()
@@ -272,5 +324,24 @@ data class Token(
         const val KNC = "KNC"
         const val DAI = "DAI"
         const val TUSD = "TUSD"
+        const val DGX = "DGX"
+        const val MKR = "MKR"
+        const val PRO = "PRO"
+        const val PT = "PT"
+
+        const val DIGIX_GAS_LIMIT_DEFAULT = 750_000
+        const val EXCHANGE_TOKEN_GAS_LIMIT_DEFAULT = 760_000
+        const val EXCHANGE_ETH_TOKEN_GAS_LIMIT_DEFAULT = 380_000
+        const val APPROVE_TOKEN_GAS_LIMIT_DEFAULT = 120_000
+        const val TRANSFER_TOKEN_GAS_LIMIT_DEFAULT = 125_000
+        const val TRANSFER_ETH_GAS_LIMIT_DEFAULT = 30_000
+        const val TRANSFER_GAS_LIMIT_DEFAULT = 100_000
+        const val BUY_TOKEN_SALE_BY_ETH_GAS_LIMIT_DEFAULT = 550_000
+        const val BUY_TOKEN_SALE_BY_TOKEN_GAS_LIMIT_DEFAULT = 700_000
+        const val DAI_GAS_LIMIT_DEFAULT = 500_000
+        const val MAKER_GAS_LIMIT_DEFAULT = 400_000
+        const val PROPY_GAS_LIMIT_DEFAULT = 500_000
+        const val PROMOTION_TOKEN_GAS_LIMIT_DEFAULT = 380_000
+        const val TRUE_USD_GAS_LIMIT_DEFAULT = 550_000
     }
 }

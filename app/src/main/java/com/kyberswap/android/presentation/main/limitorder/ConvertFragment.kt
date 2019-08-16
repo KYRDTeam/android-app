@@ -19,12 +19,11 @@ import com.kyberswap.android.presentation.common.KEEP_ETH_BALANCE_FOR_GAS
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
-import com.kyberswap.android.presentation.main.swap.SwapTokenTransactionState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.exactAmount
+import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.setAmount
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
-import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.synthetic.main.fragment_convert.*
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -42,14 +41,14 @@ class ConvertFragment : BaseFragment() {
 
     private var wallet: Wallet? = null
 
-    private var order: LocalLimitOrder? = null
+    private var limitOrder: LocalLimitOrder? = null
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
     private var pendingBalances: PendingBalances? = null
 
-    var hasUserFocus: Boolean = false
+    private var hasUserFocus: Boolean? = false
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(LimitOrderViewModel::class.java)
@@ -62,7 +61,7 @@ class ConvertFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         wallet = arguments?.getParcelable(WALLET_PARAM)
-        order = arguments?.getParcelable(LIMIT_ORDER_PARAM)
+        limitOrder = arguments?.getParcelable(LIMIT_ORDER_PARAM)
     }
 
     override fun onCreateView(
@@ -76,10 +75,30 @@ class ConvertFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        binding.order = order
+        binding.order = limitOrder
+        wallet?.let {
+            viewModel.getPendingBalances(it)
+        }
+
+        viewModel.getPendingBalancesCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetPendingBalancesState.Success -> {
+                        this.pendingBalances = state.pendingBalances
+                        setupBalance(state.pendingBalances)
+                    }
+                    is GetPendingBalancesState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+                    }
+                }
+            }
+        })
 
         viewModel.getGasPrice()
-        viewModel.getGasLimit(wallet!!, binding.order!!)
+        viewModel.getGasLimit(wallet, binding.order)
 
         viewModel.getGetGasPriceCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -123,15 +142,23 @@ class ConvertFragment : BaseFragment() {
             }
         })
 
-        viewModel.swapTokenTransactionCallback.observe(this, Observer {
+        viewModel.convertCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
-                showProgress(state == SwapTokenTransactionState.Loading)
+                showProgress(state == ConvertState.Loading)
                 when (state) {
-                    is SwapTokenTransactionState.Success -> {
-                        showAlert(getString(R.string.swap_done))
-                        onBackPressed()
+                    is ConvertState.Success -> {
+                        showAlertWithoutIcon(
+                            title = getString(R.string.transaction_broadcasted),
+                            message = getString(R.string.transaction_broadcasted_message)
+                        )
+                        hideKeyboard()
+                        navigator.navigateToOrderConfirmScreen(
+                            currentFragment,
+                            wallet,
+                            limitOrder
+                        )
                     }
-                    is SwapTokenTransactionState.ShowError -> {
+                    is ConvertState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
@@ -148,6 +175,8 @@ class ConvertFragment : BaseFragment() {
         tvCancel.setOnClickListener {
             onBackPressed()
         }
+
+
 
         tvConvert.setOnClickListener {
 
@@ -170,10 +199,7 @@ class ConvertFragment : BaseFragment() {
                     }
 
                     binding.edtConvertedAmount.toBigDecimalOrDefaultZero() >
-                        viewModel.calAvailableAmount(
-                            it.ethToken,
-                            pendingBalances
-                        ).toBigDecimalOrDefaultZero() -> {
+                        it.ethToken.currentBalance -> {
                         showAlertWithoutIcon(
                             message = getString(R.string.eth_balance_not_enough),
                             title = getString(R.string.insufficient_eth)
@@ -181,10 +207,9 @@ class ConvertFragment : BaseFragment() {
                     }
 
                     binding.edtConvertedAmount.toBigDecimalOrDefaultZero() >
-                        viewModel.calAvailableAmount(
-                            order?.ethToken,
-                            pendingBalances
-                        ).toBigDecimalOrDefaultZero() -> {
+                        it.availableAmountForTransfer(
+                            it.ethToken.currentBalance, it.gasPrice.toBigDecimalOrDefaultZero()
+                        ) -> {
                         showAlertWithoutIcon(
                             message = String.format(
                                 getString(R.string.eth_balance_not_enough_for_fee),
@@ -196,34 +221,20 @@ class ConvertFragment : BaseFragment() {
                     }
 
                     else -> {
-                        viewModel.convert(wallet, it)
-                    }
-                }
 
-            }
-        }
-        wallet?.let {
-            viewModel.getPendingBalances(it)
-        }
-
-        viewModel.getPendingBalancesCallback.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is GetPendingBalancesState.Success -> {
-                        this.pendingBalances = state.pendingBalances
-                        setupBalance(state.pendingBalances)
-                    }
-                    is GetPendingBalancesState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        viewModel.convert(
+                            wallet,
+                            it,
+                            binding.edtConvertedAmount.toBigDecimalOrDefaultZero()
                         )
                     }
                 }
+
             }
-        })
+        }
 
         viewModel.compositeDisposable.add(binding.edtConvertedAmount.focusChanges()
+            .skipInitialValue()
             .observeOn(schedulerProvider.ui())
             .subscribe {
                 if (it) {
@@ -255,13 +266,16 @@ class ConvertFragment : BaseFragment() {
                     String.format(getString(R.string.weth_balance), availableWeth)
             }
 
-            if (!hasUserFocus) {
+
+            if (hasUserFocus != true) {
                 val pendingAmount =
                     pendingBalances.data[binding.order?.tokenSource?.symbol] ?: BigDecimal.ZERO
-                val minCovertAmount =
+                var minCovertAmount =
                     binding.order?.minConvertedAmount.toBigDecimalOrDefaultZero() + pendingAmount
-                if (binding.edtConvertedAmount.text.toString() != minCovertAmount.toDisplayNumber()) {
-                    binding.edtConvertedAmount.setAmount(minCovertAmount.toDisplayNumber())
+
+                if (minCovertAmount < BigDecimal.ZERO) minCovertAmount = BigDecimal.ZERO
+                if (binding.edtConvertedAmount.text.toString() != minCovertAmount.toPlainString()) {
+                    binding.edtConvertedAmount.setAmount(minCovertAmount.stripTrailingZeros().toPlainString())
                 }
             }
         }

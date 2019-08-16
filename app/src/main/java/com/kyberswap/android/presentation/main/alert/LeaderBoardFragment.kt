@@ -14,6 +14,7 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentLeaderBoardBinding
 import com.kyberswap.android.domain.SchedulerProvider
+import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
@@ -45,8 +46,18 @@ class LeaderBoardFragment : BaseFragment() {
         Handler()
     }
 
+    private var userInfo: UserInfo? = null
+
+    private var isCampaignResult: Boolean? = null
+
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(LeaderBoardViewModel::class.java)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        userInfo = arguments?.getParcelable(USER_INFO_PARAM)
+        isCampaignResult = arguments?.getBoolean(LATEST_CAMPAIGN_RESULT, false)
     }
 
     override fun onCreateView(
@@ -61,8 +72,18 @@ class LeaderBoardFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel.getLeaderBoard()
+        userInfo?.let {
+            if (isCampaignResult == true) {
+                binding.title = getString(R.string.campaign_result)
+                viewModel.getCampaignResult(it)
 
+            } else {
+                binding.title = getString(R.string.alerts_leader_board)
+                viewModel.getLeaderBoard(it)
+            }
+        }
+
+        binding.isCampaignResult = isCampaignResult
         binding.rvLeaderBoard.layoutManager = LinearLayoutManager(
             activity,
             RecyclerView.VERTICAL,
@@ -81,6 +102,11 @@ class LeaderBoardFragment : BaseFragment() {
                     is GetLeaderBoardState.Success -> {
                         adapter.submitAlerts(state.alerts)
                         binding.campaign = state.campaignInfo
+                        binding.isNoData = state.alerts.isEmpty()
+                        binding.lastCampaignTitle = state.lastCampaignTitle
+                        binding.lnCampaignInfo.visibility =
+                            if (state.campaignInfo.id <= 0 && isCampaignResult != true && state.lastCampaignTitle.isEmpty()) View.GONE else View.VISIBLE
+                        binding.executePendingBindings()
                     }
                     is GetLeaderBoardState.ShowError -> {
                         showAlert(
@@ -91,6 +117,14 @@ class LeaderBoardFragment : BaseFragment() {
                 }
             }
         })
+
+        binding.tvWinner.setOnClickListener {
+            navigator.navigateToLeaderBoard(
+                currentFragment,
+                userInfo,
+                true
+            )
+        }
 
         binding.flToggle.setOnClickListener {
             binding.expandableLayout.toggle()
@@ -116,8 +150,16 @@ class LeaderBoardFragment : BaseFragment() {
     }
 
     companion object {
-        fun newInstance() =
-            LeaderBoardFragment()
+        private const val USER_INFO_PARAM = "user_info"
+        private const val LATEST_CAMPAIGN_RESULT = "latest_campaign_result"
+        fun newInstance(userInfo: UserInfo?, isCampaignResult: Boolean = false) =
+            LeaderBoardFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable(USER_INFO_PARAM, userInfo)
+                    putBoolean(LATEST_CAMPAIGN_RESULT, isCampaignResult)
+
+                }
+            }
     }
 
 

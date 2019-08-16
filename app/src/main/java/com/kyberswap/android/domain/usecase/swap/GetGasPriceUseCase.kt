@@ -4,16 +4,16 @@ import androidx.annotation.VisibleForTesting
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.repository.SwapRepository
-import com.kyberswap.android.domain.usecase.SequentialUseCase
-import io.reactivex.Single
+import com.kyberswap.android.domain.usecase.FlowableUseCase
+import io.reactivex.Flowable
 import javax.inject.Inject
 
 class GetGasPriceUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val swapRepository: SwapRepository
-) : SequentialUseCase<String?, Gas>(schedulerProvider) {
+) : FlowableUseCase<String?, Gas>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    override fun buildUseCaseSingle(param: String?): Single<Gas> {
+    override fun buildUseCaseFlowable(param: String?): Flowable<Gas> {
         return swapRepository.getGasPrice()
     }
 

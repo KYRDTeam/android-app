@@ -14,6 +14,7 @@ import java.math.RoundingMode
 @Entity(tableName = "alerts")
 @Parcelize
 data class Alert(
+    val rewardId: Long = 0,
     @PrimaryKey
     val id: Long = 0,
     val base: String = "",
@@ -28,6 +29,7 @@ data class Alert(
     val updatedAt: String = "",
     val triggeredAt: String = "",
     val filledAt: String = "",
+    val userId: Long = 0,
     val rank: Int = 0,
     val userEmail: String = "",
     val telegramAccount: String = "",
@@ -36,23 +38,26 @@ data class Alert(
     val state: String = "",
     @Embedded
     val token: Token = Token(),
-    val walletAddress: String = ""
+    val walletAddress: String = "",
+    val userName: String = ""
 
 ) : Parcelable {
     constructor(entity: AlertEntity) : this(
+        entity.rewardId ?: 0,
         entity.id,
         entity.base,
         entity.symbol,
         entity.alertType,
-        entity.alertPrice,
-        entity.createdAtPrice,
-        entity.percentChange,
+        entity.alertPrice ?: BigDecimal.ZERO,
+        entity.createdAtPrice ?: BigDecimal.ZERO,
+        entity.percentChange ?: BigDecimal.ZERO,
         entity.isAbove,
         entity.status,
         entity.createdAt,
         entity.updatedAt,
         entity.triggeredAt ?: "",
         entity.filledAt ?: "",
+        entity.userId ?: 0,
         entity.rank ?: 0,
         entity.userEmail ?: "",
         entity.telegramAccount ?: "",
@@ -60,11 +65,14 @@ data class Alert(
         entity.message ?: ""
     )
 
+    val displayUserInfo: String
+        get() = if (telegramAccount.isNotBlank()) telegramAccount else userEmail
+
     val displayRank: String
         get() = rank.toString()
 
     val baseInt: Int
-        get() = if (base.toLowerCase() === BASE_ETH) 0 else 1
+        get() = if (base.toLowerCase() == BASE_ETH.toLowerCase()) 0 else 1
 
     val isNotLocal: Boolean
         get() = state.toLowerCase() != STATE_LOCAL
@@ -78,7 +86,7 @@ data class Alert(
     val isEthBase: Boolean
         get() = base.toLowerCase() == BASE_ETH.toLowerCase()
     val tokenSymbol: String
-        get() = if (symbol.isNotEmpty()) symbol else token.tokenSymbol
+        get() = if (token.tokenSymbol.isNotEmpty()) token.tokenSymbol else symbol
 
     val pair: String
         get() = StringBuilder()
@@ -103,6 +111,19 @@ data class Alert(
 
     val displayTriggerAt: String
         get() = DateTimeHelper.displayDate(triggeredAt)
+
+    fun areContentsTheSame(other: Alert): Boolean {
+        return this.userName == other.userName &&
+            this.reward == other.reward &&
+            this.rewardId == other.rewardId &&
+            this.displayRank == other.displayRank &&
+            this.userName == other.userName &&
+            this.displayUserInfo == other.displayUserInfo &&
+            this.pair == other.pair &&
+            this.displayCreatedAtPrice == other.displayCreatedAtPrice &&
+            this.displayAlertPrice == other.displayAlertPrice &&
+            this.displayPercentChange == other.displayPercentChange
+    }
 
 
     companion object {

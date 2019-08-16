@@ -32,6 +32,8 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
 
     private var wallet: Wallet? = null
 
+    private var isContactExist: Boolean = false
+
     private val viewModel: SendConfirmViewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(SendConfirmViewModel::class.java)
     }
@@ -48,8 +50,10 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
         WalletManager.storage = this
         WalletManager.scanWallets()
         wallet = intent.getParcelableExtra(WALLET_PARAM)
-        wallet?.apply {
-            viewModel.getSendData(this.address)
+        isContactExist = intent.getBooleanExtra(CONTACT_EXIST_PARAM, false)
+        binding.isContactExist = isContactExist
+        wallet?.let {
+            viewModel.getSendData(it)
         }
 
 
@@ -57,7 +61,9 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSendState.Success -> {
-                        binding.send = state.send
+                        if (binding.send != state.send) {
+                            binding.send = state.send
+                        }
                     }
                     is GetSendState.ShowError -> {
 
@@ -71,11 +77,9 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
                 showProgress(state == TransferTokenTransactionState.Loading)
                 when (state) {
                     is TransferTokenTransactionState.Success -> {
-
-                        showAlert(
-                            String.format(
-                                getString(R.string.payment_send_success),
-                                binding.send?.contact?.name
+                        showAlertWithoutIcon(
+                            getString(R.string.transaction_broadcasted), getString(
+                                R.string.transaction_broadcasted_message
                             )
                         )
                         onBackPressed()
@@ -111,9 +115,11 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"
-        fun newIntent(context: Context, wallet: Wallet?) =
+        private const val CONTACT_EXIST_PARAM = "contact_exist_param"
+        fun newIntent(context: Context, wallet: Wallet?, isContactExist: Boolean) =
             Intent(context, SendConfirmActivity::class.java).apply {
                 putExtra(WALLET_PARAM, wallet)
+                putExtra(CONTACT_EXIST_PARAM, isContactExist)
             }
     }
 }

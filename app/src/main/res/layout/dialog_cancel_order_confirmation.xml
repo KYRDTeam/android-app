@@ -27,15 +27,6 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <View
-                android:id="@+id/view17"
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:background="@drawable/rounded_corner_rate_background"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <TextView
                 android:id="@+id/textView73"
                 android:layout_width="wrap_content"
@@ -46,36 +37,41 @@
                 android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                 android:textColor="#2c2c2c"
                 android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="@+id/view17"
-                app:layout_constraintTop_toTopOf="@+id/view17" />
+                app:layout_constraintEnd_toStartOf="@+id/textView91"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="KNC/ETH" />
 
             <TextView
-                android:id="@+id/textView72"
+                android:id="@+id/textView91"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
                 android:text="@{order.displayedDate}"
                 android:textColor="#9ea1aa"
                 android:textSize="12sp"
-                app:layout_constraintEnd_toStartOf="@+id/textView58"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintHorizontal_chainStyle="packed"
-                app:layout_constraintStart_toStartOf="@+id/textView73"
-                app:layout_constraintTop_toBottomOf="@+id/textView73" />
+                app:layout_constraintBottom_toBottomOf="@+id/textView73"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/textView73"
+                app:layout_constraintTop_toTopOf="@+id/textView73"
+                tools:text="12 Mar 2019" />
+
 
             <TextView
                 android:id="@+id/textView58"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
                 android:text="@{order.displayAddress}"
                 android:textColor="#141927"
                 android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="@+id/textView72"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/textView72"
-                app:layout_constraintTop_toTopOf="@+id/textView72" />
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/textView73"
+                app:layout_constraintTop_toBottomOf="@+id/textView73"
+                tools:text="0xa4d...4a3025" />
 
             <TextView
                 android:id="@+id/textView74"
@@ -93,8 +89,8 @@
                 android:textColor="#ffffff"
                 android:textSize="10sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView58"
-                app:layout_constraintEnd_toEndOf="@+id/view17"
-                app:layout_constraintTop_toTopOf="@+id/textView73"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textView58"
                 app:orderStatus="@{order.status}"
                 tools:ignore="SmallSp" />
 
@@ -112,7 +108,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/textView68"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/view17"
+                app:layout_constraintTop_toBottomOf="@+id/textView58"
                 tools:ignore="SmallSp" />
 
             <TextView
@@ -198,16 +194,16 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="36dp"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/default_button"
-                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                 android:gravity="center"
                 android:minHeight="45dp"
                 android:text="@string/confirm"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                 android:textColor="#ffffff"
                 android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="@+id/view17"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/tvCancel"
                 app:layout_constraintTop_toBottomOf="@+id/textView69" />
 
@@ -217,17 +213,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/border_button"
-                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                 android:gravity="center"
                 android:minHeight="45dp"
                 android:text="@string/cancel"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                 android:textColor="#141927"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/tvConfirm"
                 app:layout_constraintEnd_toStartOf="@+id/tvConfirm"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintHorizontal_chainStyle="spread_inside"
-                app:layout_constraintStart_toStartOf="@+id/view17"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/tvConfirm" />
 
 

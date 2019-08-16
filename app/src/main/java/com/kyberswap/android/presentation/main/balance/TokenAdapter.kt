@@ -46,6 +46,9 @@ class TokenAdapter(
 
     private var isHide = false
 
+    val hideBlance: Boolean
+        get() = isHide
+
     private var tokenType: TokenType = TokenType.LISTED
 
     private var tokenList = mutableListOf<Token>()
@@ -96,7 +99,7 @@ class TokenAdapter(
         }
 
         val filterList = when (tokenType) {
-            TokenType.LISTED -> orderList.filter { it.isListed }
+            TokenType.LISTED -> orderList.filter { it.isListed && !it.isOther }
             TokenType.FAVOURITE -> orderList.filter {
                 it.fav
             }
@@ -196,11 +199,9 @@ class TokenAdapter(
         }
 
         binding.imgFav.setOnClickListener {
-            val prevSelected = it.isSelected
-            it.isSelected = !prevSelected
-            handler.post {
-                onFavClick?.invoke(item.copy(fav = !prevSelected))
-            }
+            it.isSelected = !item.fav
+            item.fav = !item.fav
+            onFavClick?.invoke(item)
         }
 
         binding.swipe.addSwipeListener(object : SimpleSwipeListener() {
@@ -259,12 +260,12 @@ class TokenAdapter(
         )
 
 
-    fun setOrderBy(type: OrderType) {
+    fun setOrderBy(type: OrderType, tokenList: List<Token>) {
         this.orderType = type
-        submitFilterList(getData(), true)
+        submitFilterList(tokenList, true)
     }
 
-    fun setTokenType(tokenType: TokenType) {
+    fun setTokenType(tokenType: TokenType, tokenList: List<Token>) {
         this.tokenType = tokenType
         submitFilterList(tokenList, true)
     }

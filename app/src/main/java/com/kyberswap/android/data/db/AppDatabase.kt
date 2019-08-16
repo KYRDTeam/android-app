@@ -28,18 +28,20 @@ import com.kyberswap.android.domain.model.Unit
         OrderFilter::class,
         Alert::class,
         PassCode::class,
-        PendingBalances::class
+        PendingBalances::class,
+        TransactionFilter::class
     ],
-    version = 2
+    version = 3
 )
 @TypeConverters(
     DataTypeConverter::class,
     BigIntegerDataTypeConverter::class,
     TransactionTypeConverter::class,
     TokenPairTypeConverter::class,
-    ListTypeConverter::class,
+    ListStringConverter::class,
     WalletBalanceTypeConverter::class,
-    PendingBalancesConverter::class
+    PendingBalancesConverter::class,
+    TransactionTypesConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -59,6 +61,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun alertDao(): AlertDao
     abstract fun passCodeDao(): PassCodeDao
     abstract fun pendingBalancesDao(): PendingBalancesDao
+    abstract fun transactionFilterDao(): TransactionFilterDao
 
     companion object {
         @Volatile

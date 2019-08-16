@@ -4,10 +4,12 @@ package com.kyberswap.android.presentation.main.profile
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.facebook.*
@@ -18,6 +20,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentProfileBinding
@@ -35,7 +38,6 @@ import com.twitter.sdk.android.core.TwitterException
 import com.twitter.sdk.android.core.TwitterSession
 import com.twitter.sdk.android.core.identity.TwitterAuthClient
 import com.twitter.sdk.android.core.models.User
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_profile.*
 import timber.log.Timber
 import java.util.*
@@ -61,9 +63,12 @@ class ProfileFragment : BaseFragment() {
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
-    private var fromLimitOrder: Boolean = false
-
     private val handler by lazy { Handler() }
+
+    private var resetPasswordDialog: AlertDialog? = null
+
+    private val fromLimitOrder: Boolean
+        get() = if (activity is MainActivity) (activity as MainActivity).fromLimitOrder else false
 
     private val gso by lazy {
         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -83,6 +88,8 @@ class ProfileFragment : BaseFragment() {
     private val twitterAuthClient by lazy {
         TwitterAuthClient()
     }
+
+    private var twoFADialog: AlertDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -110,16 +117,21 @@ class ProfileFragment : BaseFragment() {
                 override fun onError(error: FacebookException?) {
                     Timber.e(error?.localizedMessage)
                     error?.printStackTrace()
+                    if (error is FacebookAuthorizationException) {
+                        if (AccessToken.getCurrentAccessToken() != null) {
+                            LoginManager.getInstance().logOut()
+                            loginWithReadPermission()
+                        }
+                    }
                 }
+
+
             })
 
         binding.tvSignUp.setOnClickListener {
             navigator.navigateToSignUpScreen(
                 (activity as MainActivity).getCurrentFragment()
             )
-        }
-        binding.btnLogin.setOnClickListener {
-            viewModel.login(edtEmail.text.toString(), edtPassword.text.toString())
         }
 
         viewModel.loginCallback.observe(viewLifecycleOwner, Observer {
@@ -128,24 +140,52 @@ class ProfileFragment : BaseFragment() {
                 when (state) {
                     is LoginState.Success -> {
                         if (state.login.success) {
+
                             if (state.login.confirmSignUpRequired) {
                                 navigator.navigateToSignUpConfirmScreen(
                                     currentFragment,
                                     state.socialInfo
                                 )
+                            } else if (state.login.twoFaRequired) {
+                                dialogHelper.show2FaDialog { token, dialog ->
+                                    this.twoFADialog = dialog
+                                    if (token.isEmpty()) {
+                                        showAlertWithoutIcon(
+                                            title = getString(R.string.title_error),
+                                            message = getString(R.string.two_fa_empty_code)
+                                        )
+                                        return@show2FaDialog
+                                    }
+
+                                    if (!state.socialInfo.isNormalLogin) {
+                                        viewModel.login(state.socialInfo.copy(twoFa = token))
+                                        dialog.dismiss()
+                                    } else {
+                                        viewModel.login(
+                                            edtEmail.text.toString(),
+                                            edtPassword.text.toString(),
+                                            token
+                                        )
+                                        dialog.dismiss()
+                                    }
+
+                                }
                             } else {
+                                twoFADialog = null
                                 showAlertWithoutIcon(
                                     message = String.format(
                                         getString(R.string.wellcome_back),
                                         state.login.userInfo.name
                                     )
                                 )
-                                navigateToProfileDetail()
+
                                 if (fromLimitOrder) {
                                     moveToLimitOrder()
                                 }
+                                navigateToProfileDetail()
                             }
                         } else {
+                            twoFADialog?.show()
                             showAlert(state.login.message)
                         }
                     }
@@ -165,7 +205,17 @@ class ProfileFragment : BaseFragment() {
                 showProgress(state == ResetPasswordState.Loading)
                 when (state) {
                     is ResetPasswordState.Success -> {
-                        showAlert(state.status.message)
+                        if (state.status.success) {
+                            resetPasswordDialog?.dismiss()
+                            resetPasswordDialog = null
+                            showAlertWithoutIcon(message = state.status.message)
+                        } else {
+                            showAlertWithoutIcon(
+                                title = getString(R.string.title_error),
+                                message = state.status.message
+                            )
+                        }
+
                     }
                     is ResetPasswordState.ShowError -> {
                         showAlert(
@@ -243,19 +293,91 @@ class ProfileFragment : BaseFragment() {
         }
 
         binding.tvForgotPassword.setOnClickListener {
-            dialogHelper.showResetPassword {
-                viewModel.resetPassword(it)
+            dialogHelper.showResetPassword { email, dialog ->
+                resetPasswordDialog = dialog
+                if (email.isEmpty()) {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_error),
+                        message = getString(R.string.login_email_address_required)
+                    )
+                } else {
+                    viewModel.resetPassword(email)
+                }
             }
         }
 
+        binding.btnLogin.setOnClickListener {
+
+
+            when {
+                binding.edtEmail.text.toString().isBlank() -> {
+                    val errorMessage = getString(
+                        R.string.login_email_address_required
+                    )
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_error), message = errorMessage
+                    )
+
+                    binding.ilEmail.error = errorMessage
+
+                }
+
+                !Patterns.EMAIL_ADDRESS.matcher(binding.edtEmail.text).matches() -> {
+
+                    val errorMessage = getString(
+                        R.string.login_invalid_email_address
+                    )
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_error), message = errorMessage
+                    )
+
+                    binding.ilEmail.error = errorMessage
+                }
+
+                binding.edtPassword.text.toString().isBlank() -> {
+                    val errorMessage = getString(
+                        R.string.login_password_required
+                    )
+                    showAlertWithoutIcon(
+                        title = getString(R.string.title_error), message = errorMessage
+                    )
+                    binding.ilPassword.error = errorMessage
+
+                }
+
+                else -> {
+                    viewModel.login(edtEmail.text.toString(), edtPassword.text.toString())
+                }
+
+            }
+
+        }
+
+        viewModel.compositeDisposable.add(
+            binding.edtEmail.textChanges()
+                .skipInitialValue()
+                .subscribe {
+                    binding.ilEmail.error = null
+                })
+
+        viewModel.compositeDisposable.add(
+            binding.edtPassword.textChanges()
+                .skipInitialValue()
+                .subscribe {
+                    binding.ilPassword.error = null
+                })
+    }
+
+    private fun loginWithReadPermission() {
+        LoginManager.getInstance()
+            .logInWithReadPermissions(
+                this,
+                Arrays.asList("email", "public_profile")
+            )
     }
 
     private fun moveToLimitOrder() {
-        if (activity is MainActivity) {
-            handler.post {
-                activity!!.bottomNavigation.currentItem = MainPagerAdapter.LIMIT_ORDER
-            }
-        }
+        (activity as? MainActivity)?.moveToTab(MainPagerAdapter.LIMIT_ORDER)
     }
 
     private fun navigateToProfileDetail() {
@@ -358,11 +480,8 @@ class ProfileFragment : BaseFragment() {
         }
     }
 
-    fun fromLimitOrder(fromLimitOrder: Boolean) {
-        this.fromLimitOrder = fromLimitOrder
-    }
-
     override fun onDestroyView() {
+        viewModel.compositeDisposable.clear()
         handler.removeCallbacksAndMessages(null)
         super.onDestroyView()
     }

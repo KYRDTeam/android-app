@@ -33,5 +33,11 @@ interface PendingBalancesDao {
 
     @get:Query("SELECT * FROM pending_balances")
     val all: Flowable<PendingBalances>
+
+    @Query("SELECT * FROM pending_balances WHERE walletAddress = :address")
+    fun pendingBalancesByWalletAddress(address: String): PendingBalances?
+
+    @Query("SELECT * FROM pending_balances WHERE walletAddress = :address")
+    fun pendingBalancesByWalletAddressFlowable(address: String): Flowable<PendingBalances>
 }
 

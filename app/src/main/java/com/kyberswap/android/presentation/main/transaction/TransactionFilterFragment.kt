@@ -16,7 +16,6 @@ import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.presentation.main.balance.GetBalanceState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import java.util.*
@@ -34,8 +33,6 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
 
     private var wallet: Wallet? = null
 
-    private var transaction: Transaction? = null
-
     private val seeMoreToken by lazy {
         getString(R.string.filter_see_more)
     }
@@ -48,6 +45,10 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
 
     private val handler by lazy {
         Handler()
+    }
+
+    private val viewTypes by lazy {
+        listOf(binding.tvSend, binding.tvReceived, binding.tvSwap)
     }
 
     @Inject
@@ -75,7 +76,6 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        binding.transaction = transaction
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
@@ -92,20 +92,30 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
             4
         )
 
-        val adapter = TokenFilterAdapter(appExecutors) {
-
-        }
+        val adapter = TokenFilterAdapter(appExecutors)
         binding.rvToken.adapter = adapter
 
-        viewModel.getTokenList(wallet!!.address)
-        viewModel.getTokenListCallback.observe(viewLifecycleOwner, Observer {
+        wallet?.let {
+            viewModel.getTransactionFilter(it.address)
+        }
+
+        viewModel.getTransactionFilterCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
-                showProgress(state == GetBalanceState.Loading)
+                showProgress(state == GetTransactionFilterState.Loading)
                 when (state) {
-                    is GetBalanceState.Success -> {
-                        adapter.submitList(state.tokens)
+                    is GetTransactionFilterState.Success -> {
+                        binding.filter = state.transactionFilter
+                        setupFilterType(state.transactionFilter.types)
+                        val list = state.tokens
+                        adapter.submitFilterList(list)
+                        if (list.filter { it.isSelected }.size > list.size / 2) {
+                            binding.tvSelectAll.text =
+                                getString(R.string.filter_deselect_all)
+                        } else {
+                            binding.tvSelectAll.text = getString(R.string.filter_select_all)
+                        }
                     }
-                    is GetBalanceState.ShowError -> {
+                    is GetTransactionFilterState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
@@ -126,7 +136,101 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
             }
         }
 
+        binding.tvReset.setOnClickListener {
+            val filter = binding.filter?.copy(
+                from = "",
+                to = "",
+                tokens = adapter.getData().map {
+                    it.name
+                },
+                types = viewTypes.map {
+                    when (it) {
+                        binding.tvSend -> Transaction.TransactionType.SEND
+                        binding.tvReceived -> Transaction.TransactionType.RECEIVED
+                        else -> Transaction.TransactionType.SWAP
+                    }
+                }
+
+            )
+            filter?.let {
+                binding.filter = filter
+                binding.executePendingBindings()
+                adapter.resetFilter(true)
+                binding.tvSelectAll.text = getString(R.string.filter_select_all)
+                setupFilterType(filter.types)
+            }
+
+
+        }
+
+        binding.tvApply.setOnClickListener {
+
+            val filter = binding.filter?.copy(
+                from = binding.edtFrom.text.toString(),
+                to = binding.edtTo.text.toString(),
+                tokens = adapter.getData().filter { it.isSelected }.map {
+                    it.name
+                },
+                types = viewTypes.filter {
+                    it.isSelected
+                }.map {
+                    when (it) {
+                        binding.tvSend -> Transaction.TransactionType.SEND
+                        binding.tvReceived -> Transaction.TransactionType.RECEIVED
+                        else -> Transaction.TransactionType.SWAP
+                    }
+                }
+            )
+
+            filter?.let { it1 -> viewModel.saveTransactionFilter(it1) }
+
+        }
+
+        viewModel.saveTransactionFilterCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is SaveTransactionFilterState.Success -> {
+                        onSuccess()
+                    }
+                    is SaveTransactionFilterState.ShowError -> {
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+                    }
+                }
+            }
+        })
+
+        binding.tvSelectAll.setOnClickListener {
+            adapter.resetFilter(isSelectAll)
+            toggleSelectAll()
+        }
+
     }
+
+    private fun toggleSelectAll() {
+        if (isSelectAll) {
+            binding.tvSelectAll.text = getString(R.string.filter_deselect_all)
+        } else {
+            binding.tvSelectAll.text = getString(R.string.filter_select_all)
+        }
+    }
+
+    private val isSelectAll: Boolean
+        get() = binding.tvSelectAll.text == getString(R.string.filter_select_all)
+
+
+    private fun onSuccess() {
+        activity?.onBackPressed()
+    }
+
+    private fun setupFilterType(types: List<Transaction.TransactionType>) {
+        binding.tvSend.isSelected = types.contains(Transaction.TransactionType.SEND)
+        binding.tvSwap.isSelected = types.contains(Transaction.TransactionType.SWAP)
+        binding.tvReceived.isSelected = types.contains(Transaction.TransactionType.RECEIVED)
+    }
+
 
     private fun openMaterialDialog() {
         val now = Calendar.getInstance()
@@ -141,7 +245,14 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
 
     override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
         selectedView?.let {
-            (selectedView as? EditText)?.setText("$dayOfMonth/${monthOfYear + 1}/$year")
+            (selectedView as? EditText)?.setText(
+                String.format(
+                    getString(R.string.date_format_yyyy_mm_dd),
+                    year,
+                    monthOfYear + 1,
+                    dayOfMonth
+                )
+            )
         }
     }
 
