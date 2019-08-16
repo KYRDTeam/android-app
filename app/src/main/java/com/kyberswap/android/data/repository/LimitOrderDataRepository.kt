@@ -206,14 +206,18 @@ class LimitOrderDataRepository @Inject constructor(
                     localLimitOrderDao.insertOrder(order)
                     order
                 }
-                else -> when {
-                    limitOrder.tokenSource.selectedWalletAddress != wallet.address -> {
-                        val source = limitOrder.tokenSource.updateSelectedWallet(wallet)
-                        val dest = limitOrder.tokenDest.updateSelectedWallet(wallet)
-                        limitOrder.copy(tokenSource = source, tokenDest = dest)
+                else -> limitOrder.copy(
+                    tokenSource = if (limitOrder.tokenSource.selectedWalletAddress != wallet.address) {
+                        limitOrder.tokenSource.updateSelectedWallet(wallet)
+                    } else {
+                        limitOrder.tokenSource
+                    },
+                    tokenDest = if (limitOrder.tokenDest.selectedWalletAddress != wallet.address) {
+                        limitOrder.tokenDest.updateSelectedWallet(wallet)
+                    } else {
+                        limitOrder.tokenDest
                     }
-                    else -> limitOrder
-                }
+                )
             }
 
             val source = updateBalance(defaultLimitOrder.tokenSource, wallet)
@@ -271,11 +275,12 @@ class LimitOrderDataRepository @Inject constructor(
                 )
             }
             else -> {
+                val updatedBalanceToken = tokenDao.getTokenBySymbol(token.tokenSymbol) ?: token
                 when {
-                    token.selectedWalletAddress != wallet.address -> token.updateSelectedWallet(
+                    updatedBalanceToken.selectedWalletAddress != wallet.address -> updatedBalanceToken.updateSelectedWallet(
                         wallet
                     )
-                    else -> token
+                    else -> updatedBalanceToken
                 }
             }
         }

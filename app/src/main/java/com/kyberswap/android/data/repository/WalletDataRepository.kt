@@ -31,7 +31,6 @@ import com.kyberswap.android.domain.usecase.wallet.ImportWalletFromSeedUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.UpdateSelectedWalletUseCase
 import com.kyberswap.android.util.HMAC
-import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toWalletAddress
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -56,8 +55,7 @@ class WalletDataRepository @Inject constructor(
     private val promoMapper: PromoMapper,
     private val swapDao: SwapDao,
     private val sendDao: SendDao,
-    private val limitOrderDao: LocalLimitOrderDao,
-    private val tokenClient: TokenClient
+    private val limitOrderDao: LocalLimitOrderDao
 ) : WalletRepository {
 
     override fun updatedSelectedWallet(param: UpdateSelectedWalletUseCase.Param): Single<Wallet> {
@@ -215,14 +213,6 @@ class WalletDataRepository @Inject constructor(
             val tokens = updateWalletToMonitorBalance(updateSelectedWallet(wallet))
             Pair(wallet, tokens)
         }
-    }
-
-    private fun updateWalletToMonitorBalance(wallet: Wallet): List<Token> {
-        val tokens = tokenDao.allTokens.map {
-            it.updateSelectedWallet(wallet)
-        }
-        tokenDao.updateTokens(tokens)
-        return tokens
     }
 
     private fun updateWalletToMonitorBalance(wallets: List<Wallet>): List<Token> {

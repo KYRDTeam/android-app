@@ -46,7 +46,6 @@ data class Send(
     val amountUnit: BigInteger
         get() = sourceAmount.toBigDecimalOrDefaultZero().multiply(BigDecimal.TEN.pow(tokenSource.tokenDecimal)).toBigInteger()
 
-
     val displaySourceAmount: String
         get() = StringBuilder().append(sourceAmount).append(" ").append(tokenSource.tokenSymbol).toString()
 
@@ -115,7 +114,6 @@ data class Send(
         return (calAvailableAmount - Convert.fromWei(
             Convert.toWei(gasPrice, Convert.Unit.GWEI)
                 .multiply(gasLimit), Convert.Unit.ETHER
-        ).max(BigDecimal.ZERO)
-            )
+        )).max(BigDecimal.ZERO)
     }
 }

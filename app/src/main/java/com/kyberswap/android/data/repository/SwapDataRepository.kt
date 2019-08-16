@@ -12,7 +12,6 @@ import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.data.db.TransactionDao
 import com.kyberswap.android.data.db.UserDao
-import com.kyberswap.android.data.db.WalletDao
 import com.kyberswap.android.data.mapper.CapMapper
 import com.kyberswap.android.data.mapper.GasMapper
 import com.kyberswap.android.data.mapper.UserMapper
@@ -60,7 +59,6 @@ import kotlin.math.pow
 
 class SwapDataRepository @Inject constructor(
     private val context: Context,
-    private val walletDao: WalletDao,
     private val swapDao: SwapDao,
     private val tokenDao: TokenDao,
     private val sendTokenDao: SendDao,
@@ -108,38 +106,6 @@ class SwapDataRepository @Inject constructor(
             }
             val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL) ?: Token()
             sendTokenDao.updateSend(send.copy(ethToken = ethToken))
-        }
-    }
-
-    override fun getSendData(param: GetSendTokenUseCase.Param): Flowable<Send> {
-
-        val wallet = param.wallet
-        val send = sendTokenDao.findSendByAddress(wallet.address)
-        val defaultSend = if (send == null) {
-            val defaultSourceToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
-            Send(
-                wallet.address,
-                defaultSourceToken
-            )
-        } else {
-            val tokenSource =
-                tokenDao.getTokenBySymbol(send.tokenSource.tokenSymbol)
-                    ?: Token()
-            send.copy(tokenSource = tokenSource)
-        }
-
-        val sendByWallet =
-            defaultSend.copy(tokenSource = defaultSend.tokenSource.updateSelectedWallet(wallet))
-
-        val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
-        val eth = ethToken.updateSelectedWallet(wallet)
-
-        val updatedSend = sendByWallet.copy(ethToken = eth)
-        sendTokenDao.insertSend(updatedSend)
-        return sendTokenDao.findSendByAddressFlowable(param.wallet.address).defaultIfEmpty(
-            updatedSend
-        ).map {
-            it.copy(ethToken = eth)
         }
     }
 
@@ -431,6 +397,50 @@ class SwapDataRepository @Inject constructor(
             ).map {
                 it.ethToken = swap.ethToken
                 it
+            }
+        }
+    }
+
+    override fun getSendData(param: GetSendTokenUseCase.Param): Flowable<Send> {
+        return Flowable.fromCallable {
+            val wallet = param.wallet
+            val send = sendTokenDao.findSendByAddress(wallet.address)
+            val defaultSend = if (send == null) {
+                val defaultSourceToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
+                Send(
+                    wallet.address,
+                    defaultSourceToken
+                )
+            } else {
+                val tokenSource =
+                    tokenDao.getTokenBySymbol(send.tokenSource.tokenSymbol)
+                        ?: Token()
+
+                val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
+                send.copy(tokenSource = tokenSource, ethToken = ethToken)
+            }
+
+            val updatedSend =
+                defaultSend.copy(
+                    tokenSource = if (defaultSend.tokenSource.selectedWalletAddress != wallet.address) {
+                        defaultSend.tokenSource.updateSelectedWallet(wallet)
+                    } else {
+                        defaultSend.tokenSource
+                    },
+                    ethToken = if (defaultSend.ethToken.selectedWalletAddress != wallet.address) {
+                        defaultSend.ethToken.updateSelectedWallet(wallet)
+                    } else {
+                        defaultSend.ethToken
+                    }
+                )
+
+            sendTokenDao.insertSend(updatedSend)
+            updatedSend
+        }.flatMap { updatedSend ->
+            sendTokenDao.findSendByAddressFlowable(param.wallet.address).defaultIfEmpty(
+                updatedSend
+            ).map {
+                it.copy(ethToken = updatedSend.ethToken)
             }
         }
     }

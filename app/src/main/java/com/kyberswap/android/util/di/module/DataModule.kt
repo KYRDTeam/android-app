@@ -1,12 +1,63 @@
 package com.kyberswap.android.util.di.module
 
 import android.content.Context
-import com.kyberswap.android.data.api.home.*
-import com.kyberswap.android.data.db.*
-import com.kyberswap.android.data.mapper.*
-import com.kyberswap.android.data.repository.*
+import com.kyberswap.android.data.api.home.CurrencyApi
+import com.kyberswap.android.data.api.home.LimitOrderApi
+import com.kyberswap.android.data.api.home.PromoApi
+import com.kyberswap.android.data.api.home.SwapApi
+import com.kyberswap.android.data.api.home.TokenApi
+import com.kyberswap.android.data.api.home.TransactionApi
+import com.kyberswap.android.data.api.home.UserApi
+import com.kyberswap.android.data.db.AlertDao
+import com.kyberswap.android.data.db.ContactDao
+import com.kyberswap.android.data.db.LimitOrderDao
+import com.kyberswap.android.data.db.LocalLimitOrderDao
+import com.kyberswap.android.data.db.OrderFilterDao
+import com.kyberswap.android.data.db.PassCodeDao
+import com.kyberswap.android.data.db.PendingBalancesDao
+import com.kyberswap.android.data.db.RateDao
+import com.kyberswap.android.data.db.SendDao
+import com.kyberswap.android.data.db.SwapDao
+import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.db.TransactionDao
+import com.kyberswap.android.data.db.TransactionFilterDao
+import com.kyberswap.android.data.db.UnitDao
+import com.kyberswap.android.data.db.UserDao
+import com.kyberswap.android.data.db.WalletDao
+import com.kyberswap.android.data.mapper.AlertMapper
+import com.kyberswap.android.data.mapper.CapMapper
+import com.kyberswap.android.data.mapper.ChartMapper
+import com.kyberswap.android.data.mapper.FeeMapper
+import com.kyberswap.android.data.mapper.GasMapper
+import com.kyberswap.android.data.mapper.OrderMapper
+import com.kyberswap.android.data.mapper.PromoMapper
+import com.kyberswap.android.data.mapper.RateMapper
+import com.kyberswap.android.data.mapper.TokenMapper
+import com.kyberswap.android.data.mapper.TransactionMapper
+import com.kyberswap.android.data.mapper.UserMapper
+import com.kyberswap.android.data.repository.AlertDataRepository
+import com.kyberswap.android.data.repository.BalanceDataRepository
+import com.kyberswap.android.data.repository.ContactDataRepository
+import com.kyberswap.android.data.repository.LimitOrderDataRepository
+import com.kyberswap.android.data.repository.MnemonicDataRepository
+import com.kyberswap.android.data.repository.SettingDataRepository
+import com.kyberswap.android.data.repository.SwapDataRepository
+import com.kyberswap.android.data.repository.TokenDataRepository
+import com.kyberswap.android.data.repository.TransactionDataRepository
+import com.kyberswap.android.data.repository.UserDataRepository
+import com.kyberswap.android.data.repository.WalletDataRepository
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
-import com.kyberswap.android.domain.repository.*
+import com.kyberswap.android.domain.repository.AlertRepository
+import com.kyberswap.android.domain.repository.BalanceRepository
+import com.kyberswap.android.domain.repository.ContactRepository
+import com.kyberswap.android.domain.repository.LimitOrderRepository
+import com.kyberswap.android.domain.repository.MnemonicRepository
+import com.kyberswap.android.domain.repository.SettingRepository
+import com.kyberswap.android.domain.repository.SwapRepository
+import com.kyberswap.android.domain.repository.TokenRepository
+import com.kyberswap.android.domain.repository.TransactionRepository
+import com.kyberswap.android.domain.repository.UserRepository
+import com.kyberswap.android.domain.repository.WalletRepository
 import com.kyberswap.android.util.TokenClient
 import dagger.Module
 import dagger.Provides
@@ -25,7 +76,6 @@ object DataModule {
         tokenDao: TokenDao,
         promoApi: PromoApi,
         promoMapper: PromoMapper,
-        client: TokenClient,
         swapDao: SwapDao,
         sendDao: SendDao,
         limitOrderDao: LocalLimitOrderDao
@@ -39,8 +89,7 @@ object DataModule {
             promoMapper,
             swapDao,
             sendDao,
-            limitOrderDao,
-            client
+            limitOrderDao
         )
 
     @Singleton
@@ -98,7 +147,6 @@ object DataModule {
     @JvmStatic
     fun provideSwapRepository(
         context: Context,
-        walletDao: WalletDao,
         swapDao: SwapDao,
         tokenDao: TokenDao,
         sendDao: SendDao,
@@ -114,7 +162,6 @@ object DataModule {
     ): SwapRepository =
         SwapDataRepository(
             context,
-            walletDao,
             swapDao,
             tokenDao,
             sendDao,
