@@ -38,7 +38,6 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.web3j.utils.Convert
-import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.concurrent.atomic.AtomicBoolean
@@ -746,7 +745,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: WalletChangeEvent) {
-        Timber.e("WalletChangeEvent")
         getSwap()
     }
 

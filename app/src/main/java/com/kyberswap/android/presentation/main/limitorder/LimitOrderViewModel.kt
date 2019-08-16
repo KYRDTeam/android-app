@@ -228,11 +228,12 @@ class LimitOrderViewModel @Inject constructor(
         )
     }
 
-    fun checkEligibleAddress(wallet: Wallet) {
+    fun checkEligibleAddress(wallet: Wallet, isWalletChangeEvent: Boolean = true) {
         elegibleAddressUseCase.dispose()
         elegibleAddressUseCase.execute(
             Consumer {
-                _getEligibleAddressCallback.value = Event(CheckEligibleAddressState.Success(it))
+                _getEligibleAddressCallback.value =
+                    Event(CheckEligibleAddressState.Success(it, isWalletChangeEvent))
 
             },
             Consumer {
