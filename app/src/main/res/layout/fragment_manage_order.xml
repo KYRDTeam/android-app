@@ -201,7 +201,7 @@
                 android:textSize="18sp" />
 
             <ImageView
-                android:id="@+id/imgFilter"
+                android:id="@+id/c"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_gravity="center|end"
