@@ -151,6 +151,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is UserInfoState.Success -> {
+                        binding.isLoaded = state.userInfo?.isLoaded
                         if (binding.info != state.userInfo?.kycInfo) {
                             binding.info = state.userInfo?.kycInfo
                             val gender = binding.info?.gender

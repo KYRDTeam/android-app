@@ -87,6 +87,7 @@ class SubmitFragment : BaseFragment() {
                 when (state) {
                     is UserInfoState.Success -> {
                         user = state.userInfo
+                        binding.isLoaded = state.userInfo?.isLoaded
                         if (binding.info != state.userInfo?.kycInfo) {
                             binding.info = state.userInfo?.kycInfo
                             val info = binding.info

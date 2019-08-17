@@ -10,28 +10,10 @@ import com.kyberswap.android.data.db.AlertDao
 import com.kyberswap.android.data.db.UserDao
 import com.kyberswap.android.data.mapper.UserMapper
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
-import com.kyberswap.android.domain.model.Alert
-import com.kyberswap.android.domain.model.AlertMethodsResponse
-import com.kyberswap.android.domain.model.KycInfo
-import com.kyberswap.android.domain.model.KycResponseStatus
-import com.kyberswap.android.domain.model.LoginUser
-import com.kyberswap.android.domain.model.ResponseStatus
-import com.kyberswap.android.domain.model.UserInfo
+import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.domain.repository.UserRepository
 import com.kyberswap.android.domain.usecase.alert.UpdateAlertMethodsUseCase
-import com.kyberswap.android.domain.usecase.profile.Base64DecodeUseCase
-import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
-import com.kyberswap.android.domain.usecase.profile.LoginUseCase
-import com.kyberswap.android.domain.usecase.profile.ReSubmitUserInfoUseCase
-import com.kyberswap.android.domain.usecase.profile.ResetPasswordUseCase
-import com.kyberswap.android.domain.usecase.profile.ResizeImageUseCase
-import com.kyberswap.android.domain.usecase.profile.SaveIdPassportUseCase
-import com.kyberswap.android.domain.usecase.profile.SaveKycInfoUseCase
-import com.kyberswap.android.domain.usecase.profile.SaveLocalPersonalInfoUseCase
-import com.kyberswap.android.domain.usecase.profile.SavePersonalInfoUseCase
-import com.kyberswap.android.domain.usecase.profile.SignUpUseCase
-import com.kyberswap.android.domain.usecase.profile.SubmitUserInfoUseCase
-import com.kyberswap.android.domain.usecase.profile.UpdatePushTokenUseCase
+import com.kyberswap.android.domain.usecase.profile.*
 import com.kyberswap.android.presentation.main.profile.kyc.KycInfoType
 import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
@@ -101,15 +83,35 @@ class UserDataRepository @Inject constructor(
     }
 
     override fun pollingUserInfo(): Flowable<UserInfo> {
-        return userApi.getUserInfo().map {
-            userMapper.transform(it)
-        }
-            .repeatWhen {
-                it.delay(60, TimeUnit.SECONDS)
+        return Flowable.mergeDelayError(
+            userDao.all,
+
+            userApi.getUserInfo().map {
+                userMapper.transform(it)
             }
-            .retryWhen { throwable ->
-                throwable.compose(zipWithFlatMap())
-            }
+                .doAfterSuccess {
+                    val currentUser = userDao.getUser() ?: UserInfo()
+                    userDao.updateUser(it.copy(kycInfo = currentUser.kycInfo))
+
+                }
+                .repeatWhen {
+                    it.delay(60, TimeUnit.SECONDS)
+                }
+                .retryWhen { throwable ->
+                    throwable.compose(zipWithFlatMap())
+                }
+
+        )
+
+//        return userApi.getUserInfo().map {
+//            userMapper.transform(it)
+//        }
+//            .repeatWhen {
+//                it.delay(60, TimeUnit.SECONDS)
+//            }
+//            .retryWhen { throwable ->
+//                throwable.compose(zipWithFlatMap())
+//            }
     }
 
     override fun refreshKycStatus(): Single<UserInfo> {
@@ -127,7 +129,18 @@ class UserDataRepository @Inject constructor(
         return Flowable.mergeDelayError(
             userDao.all,
             Flowables.zip(
-                userDao.all,
+                Flowable.fromCallable {
+                    userDao.getUser() != null
+                }.flatMap {
+                    if (it) {
+                        userDao.all
+                    } else {
+                        Flowable.fromCallable {
+                            UserInfo()
+                        }
+                    }
+                }
+                ,
                 userApi.getUserInfo().map {
                     userMapper.transform(it)
                 }.toFlowable()
@@ -140,7 +153,7 @@ class UserDataRepository @Inject constructor(
                     photoProofAddress = kyc.photoProofAddress
                 )
 
-                local.copy(kycInfo = kycInfo)
+                local.copy(kycInfo = kycInfo, isLoaded = true)
 
             }
         )
