@@ -25,6 +25,10 @@ class TransactionStatusViewModel @Inject constructor(
     val getTransactionCallback: LiveData<Event<GetTransactionState>>
         get() = _getTransactionCallback
 
+    private val _showProgressCallback = MutableLiveData<Event<ShowRefreshState>>()
+    val showProgressCallback: LiveData<Event<ShowRefreshState>>
+        get() = _showProgressCallback
+
     private var currentFilter: TransactionFilter? = null
 
 
@@ -42,37 +46,43 @@ class TransactionStatusViewModel @Inject constructor(
                             currentFilter != transactionFilter
                         )
                     )
+
+                    _showProgressCallback.value = Event(ShowRefreshState.Success(true))
                 },
                 Consumer {
                     Timber.e(it.localizedMessage)
                     _getTransactionCallback.value =
                         Event(GetTransactionState.ShowError(it.localizedMessage))
+                    _showProgressCallback.value = Event(ShowRefreshState.Success(true))
                 },
                 wallet.address
             )
         } else {
             getTransactionsUseCase.dispose()
             getTransactionsUseCase.execute(
-                Consumer { transactions ->
+                Consumer { response ->
                     _getTransactionCallback.value = Event(
                         GetTransactionState.Success(
                             filterTransaction(
-                                transactions,
+                                response.transactionList,
                                 transactionFilter
                             ),
                             currentFilter != transactionFilter
+
                         )
                     )
+
+                    _showProgressCallback.value = Event(ShowRefreshState.Success(response.isLoaded))
                 },
                 Consumer {
                     Timber.e(it.localizedMessage)
                     _getTransactionCallback.value =
                         Event(GetTransactionState.ShowError(it.localizedMessage))
+                    _showProgressCallback.value = Event(ShowRefreshState.Success(true))
                 },
                 GetTransactionsUseCase.Param(wallet)
             )
         }
-
     }
 
     private fun filterTransaction(
@@ -106,18 +116,24 @@ class TransactionStatusViewModel @Inject constructor(
             }
     }
 
-    fun getTransactionFilter(type: Int, wallet: Wallet) {
+    fun getTransactionFilter(type: Int, wallet: Wallet, isForceRefresh: Boolean = false) {
         getTransactionFilterUseCase.dispose()
         getTransactionFilterUseCase.execute(
             Consumer {
-                if (currentFilter != it) {
+                if (currentFilter != it || isForceRefresh) {
                     currentFilter = it
                     getTransaction(type, wallet, it)
+                } else {
+                    _showProgressCallback.value = Event(ShowRefreshState.Success(true))
                 }
+
             },
             Consumer {
                 it.printStackTrace()
                 Timber.e(it.localizedMessage)
+                _getTransactionCallback.value =
+                    Event(GetTransactionState.ShowError(it.localizedMessage))
+                _showProgressCallback.value = Event(ShowRefreshState.Success(true))
             },
             GetTransactionFilterUseCase.Param(wallet.address)
         )
@@ -127,5 +143,4 @@ class TransactionStatusViewModel @Inject constructor(
         getTransactionsUseCase.dispose()
         super.onCleared()
     }
-
 }

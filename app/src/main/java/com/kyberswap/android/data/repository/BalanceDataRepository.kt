@@ -20,7 +20,6 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
-import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -39,7 +38,6 @@ class BalanceDataRepository @Inject constructor(
     BalanceRepository {
     override fun updateBalance(param: UpdateBalanceUseCase.Param): Completable {
         return Completable.fromCallable {
-            Timber.e("UpdateBalance after polling interval")
             val wallet = param.wallet
             val localSwap = swapDao.findSwapByAddress(wallet.address)
             localSwap?.let {
@@ -153,7 +151,7 @@ class BalanceDataRepository @Inject constructor(
                             val localTokenList = tokenDao.all.first(listOf()).blockingGet()
                             remoteTokens.map { remoteToken ->
                                 val localToken = localTokenList.find {
-                                    it.tokenSymbol == remoteToken.tokenSymbol
+                                    it.tokenAddress == remoteToken.tokenAddress
                                 }
 
                                 if (localToken != null) {
@@ -220,6 +218,8 @@ class BalanceDataRepository @Inject constructor(
                 rateEthNow = remoteToken.rateEthNow,
                 changeEth24h = remoteToken.changeEth24h,
                 changeUsd24h = remoteToken.changeUsd24h,
+                tokenName = remoteToken.tokenName,
+                tokenSymbol = remoteToken.tokenSymbol,
                 isOther = false
             ) ?: remoteToken
 

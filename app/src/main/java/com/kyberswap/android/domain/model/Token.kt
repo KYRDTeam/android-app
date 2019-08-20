@@ -106,7 +106,7 @@ data class Token(
         get() = currentWalletBalance?.walletAddress ?: ""
 
     val isListed: Boolean
-        get() = System.currentTimeMillis() / 1000 - listingTime >= 0 && listingTime > 0
+        get() = System.currentTimeMillis() / 1000 - listingTime >= 0
 
     val shouldShowAsNew: Boolean
         get() = 7.0 * 24.0 * 60.0 * 60.0 >= System.currentTimeMillis() / 1000 - listingTime && System.currentTimeMillis() / 1000 - listingTime >= 0

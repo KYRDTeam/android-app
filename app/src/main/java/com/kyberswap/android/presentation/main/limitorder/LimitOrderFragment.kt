@@ -210,7 +210,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                             viewModel.getLimitOrders(wallet)
                             viewModel.getPendingBalances(wallet)
                             viewModel.getLoginStatus()
-
                         }
                     }
                     is GetWalletState.ShowError -> {
@@ -458,14 +457,13 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                     is CheckEligibleAddressState.Success -> {
                         if (this.eleigibleAddress != state.eligibleAddress || state.isWalletChangeEvent) {
                             this.eleigibleAddress = state.eligibleAddress
-                            if (state.eligibleAddress.success && !state.eligibleAddress.eligibleAddress) {
+                            if (state.eligibleAddress.success && !state.eligibleAddress.eligibleAddress && currentFragment is LimitOrderFragment) {
                                 showAlertWithoutIcon(
                                     title = getString(R.string.title_error),
                                     message = getString(R.string.address_not_eligible)
                                 )
                             }
                         }
-
                     }
                     is CheckEligibleAddressState.ShowError -> {
                         if (!state.isNetworkUnavailable) {

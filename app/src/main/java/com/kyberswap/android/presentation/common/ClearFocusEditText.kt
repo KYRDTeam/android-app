@@ -18,6 +18,20 @@ open class ClearFocusEditText : EditText {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             clearFocus()
         }
+        if (keyImeChangeListener != null) {
+            keyImeChangeListener?.onKeyIme(keyCode, event)
+        }
+
         return super.onKeyPreIme(keyCode, event)
     }
+
+    private var keyImeChangeListener: KeyImeChange? = null
+
+    fun setKeyImeChangeListener(listener: KeyImeChange) {
+        keyImeChangeListener = listener
+    }
+}
+
+interface KeyImeChange {
+    fun onKeyIme(keyCode: Int, event: KeyEvent?)
 }

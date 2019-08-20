@@ -12,6 +12,7 @@ import com.caverock.androidsvg.SVG
 import com.kyberswap.android.R
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.presentation.main.profile.LoginType
+import com.kyberswap.android.util.ext.dpToPx
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import jdenticon.Jdenticon
 
@@ -95,14 +96,13 @@ object ImageViewBindingAdapter {
             }
             Glide.with(view)
                 .load(stringUrl)
+                .apply(RequestOptions().override(32.dpToPx(view.context), 32.dpToPx(view.context)))
                 .placeholder(resourceIcon)
-                .centerInside()
+                .fitCenter()
                 .error(resourceIcon).into(view)
         } catch (exception: Exception) {
             exception.printStackTrace()
         }
-
-
     }
 
     @BindingAdapter("app:ratePercentage", "app:hasSamePair", "app:warning")
@@ -138,7 +138,6 @@ object ImageViewBindingAdapter {
         } else {
             view.visibility = View.GONE
         }
-
     }
 
 
@@ -177,6 +176,5 @@ object ImageViewBindingAdapter {
         }
 
         Glide.with(view).load(drawable).into(view)
-
     }
 }

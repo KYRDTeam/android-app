@@ -4,10 +4,12 @@ import android.animation.ObjectAnimator
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
+import android.view.inputmethod.EditorInfo
 import android.widget.CompoundButton
 import android.widget.EditText
 import androidx.lifecycle.Observer
@@ -20,9 +22,14 @@ import com.kyberswap.android.BR
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentSwapBinding
 import com.kyberswap.android.domain.SchedulerProvider
-import com.kyberswap.android.domain.model.*
+import com.kyberswap.android.domain.model.Gas
+import com.kyberswap.android.domain.model.NotificationAlert
+import com.kyberswap.android.domain.model.Swap
+import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.DEFAULT_ACCEPT_RATE_PERCENTAGE
+import com.kyberswap.android.presentation.common.KeyImeChange
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.common.WalletObserver
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -30,7 +37,12 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.alert.GetAlertState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
-import com.kyberswap.android.util.ext.*
+import com.kyberswap.android.util.ext.getAmountOrDefaultValue
+import com.kyberswap.android.util.ext.setAmount
+import com.kyberswap.android.util.ext.showDrawer
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
 import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.android.synthetic.main.layout_expanable.*
 import net.cachapa.expandablelayout.ExpandableLayout
@@ -96,7 +108,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             )
         } ?: BigDecimal.ZERO
 
-
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
@@ -139,7 +150,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
                             viewModel.getSwapData(state.wallet, alertNotification)
                         }
-
                     }
                     is GetWalletState.ShowError -> {
 
@@ -351,11 +361,13 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         val swap =
                             if (state.list.first().toBigDecimalOrDefaultZero() > BigDecimal.ZERO) {
                                 binding.swap?.copy(
-                                    expectedRate = state.list[0]
+                                    expectedRate = state.list[0],
+                                    isExpectedRateZero = false
                                 )
                             } else {
                                 binding.swap?.copy(
-                                    expectedRate = binding.swap?.marketRate ?: ""
+                                    expectedRate = binding.swap?.marketRate ?: "",
+                                    isExpectedRateZero = true
                                 )
                             }
 
@@ -394,10 +406,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
                             tvRevertNotification.text =
                                 getRevertNotification(rgRate.checkedRadioButtonId)
-
-
                         }
-
                     }
                     is GetExpectedRateState.ShowError -> {
                         showAlert(
@@ -549,6 +558,24 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         }
 
+        binding.edtSource.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                verifyAmount()
+            }
+            false
+        }
+
+
+        binding.edtSource.setKeyImeChangeListener(object : KeyImeChange {
+            override fun onKeyIme(keyCode: Int, event: KeyEvent?) {
+                if (KeyEvent.KEYCODE_BACK == event?.keyCode) {
+                    verifyAmount()
+                }
+            }
+        })
+
+
+
 
         viewModel.getGetGasPriceCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -593,8 +620,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 state.swap, true
                             )
                         }
-
-
                     }
                     is GetCapState.ShowError -> {
                         showAlert(
@@ -630,7 +655,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         if (binding.swap != null) {
                             getRate(binding.swap!!)
                         }
-
                     }
                     is EstimateAmountState.ShowError -> {
 
@@ -712,8 +736,19 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
                     rbCustom.isChecked && edtCustom.text.isNullOrEmpty() -> {
                         showAlertWithoutIcon(message = getString(R.string.custom_rate_empty))
-
                     }
+
+                    swap.isExpectedRateZero && swap.isMarketRateZero -> {
+                        showAlertWithoutIcon(message = getString(R.string.reserve_under_maintainance))
+                    }
+
+                    swap.isExpectedRateZero -> {
+                        showAlertWithoutIcon(
+                            title = getString(R.string.title_amount_too_big),
+                            message = getString(R.string.exceed_balance)
+                        )
+                    }
+
                     else -> wallet?.let {
 
                         val data = swap.copy(
@@ -740,7 +775,19 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
         rbFast.isChecked = true
         rbDefaultRate.isChecked = true
+    }
 
+    fun verifyAmount() {
+        binding.swap?.let {
+            if (it.isExpectedRateZero && it.isMarketRateZero) {
+                showAlertWithoutIcon(message = getString(R.string.reserve_under_maintainance))
+            } else if (it.isExpectedRateZero) {
+                showAlertWithoutIcon(
+                    title = getString(R.string.title_amount_too_big),
+                    message = getString(R.string.exceed_balance)
+                )
+            }
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -767,7 +814,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         wallet?.let {
             viewModel.getSwapData(it)
         }
-
     }
 
     override fun refresh() {
@@ -794,7 +840,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
         val colorMatrix = ColorMatrix()
         colorMatrix.setSaturation(0f)
-
 
         val image = if (isSourceToken) {
             binding.imgTokenSource

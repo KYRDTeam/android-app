@@ -29,6 +29,7 @@ import com.kyberswap.android.domain.usecase.transaction.GetTransactionsPeriodica
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
 import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
 import com.kyberswap.android.domain.usecase.transaction.SaveTransactionFilterUseCase
+import com.kyberswap.android.domain.usecase.transaction.TransactionsData
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
@@ -45,6 +46,7 @@ import java.math.RoundingMode
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.math.max
 
 
 class TransactionDataRepository @Inject constructor(
@@ -316,7 +318,7 @@ class TransactionDataRepository @Inject constructor(
             }
     }
 
-    override fun fetchAllTransactions(param: GetTransactionsUseCase.Param): Flowable<List<Transaction>> {
+    override fun fetchAllTransactions(param: GetTransactionsUseCase.Param): Flowable<TransactionsData> {
         return getTransactions(param.wallet)
 
     }
@@ -602,27 +604,37 @@ class TransactionDataRepository @Inject constructor(
 
     private fun getTransactions(
         wallet: Wallet
-    ): Flowable<List<Transaction>> {
+    ): Flowable<TransactionsData> {
         return Flowable.mergeDelayError(
-            transactionDao.getCompletedTransactions(wallet.address),
-            getTransactionRemote(wallet)
-                .doOnNext {
-                    val latestTransaction = transactionDao.getLatestTransaction()
-                    val latestBlock =
-                        latestTransaction?.blockNumber?.toLongSafe() ?: 1
-                    it.forEach { tx ->
-                        val blockNumber = tx.blockNumber.toLongSafe()
-                        latestTransaction?.let {
-                            if (blockNumber > latestBlock) {
-                                if (tx.type == Transaction.TransactionType.RECEIVED) {
-                                    sendNotification(tx)
+            transactionDao.getCompletedTransactions(wallet.address).map {
+                TransactionsData(it, false)
+            },
+
+            Flowable.fromCallable {
+                transactionDao.getLatestTransaction()?.blockNumber?.toLongSafe() ?: 1
+            }.flatMap {
+                getTransactionRemote(wallet, max(it - 10, 1))
+                    .doOnNext {
+                        val latestTransaction = transactionDao.getLatestTransaction()
+                        val latestBlock =
+                            latestTransaction?.blockNumber?.toLongSafe() ?: 1
+                        it.forEach { tx ->
+                            val blockNumber = tx.blockNumber.toLongSafe()
+                            latestTransaction?.let {
+                                if (blockNumber > latestBlock) {
+                                    if (tx.type == Transaction.TransactionType.RECEIVED) {
+                                        sendNotification(tx)
+                                    }
+                                    updateBalance(tx, wallet)
                                 }
-                                updateBalance(tx, wallet)
                             }
                         }
+                        transactionDao.insertTransactionBatch(it)
+                    }.map {
+                        TransactionsData(it, true)
                     }
-                    transactionDao.insertTransactionBatch(it)
-                }
+            }
+
         )
     }
 
