@@ -101,7 +101,11 @@ object DataModule {
         tokenMapper: TokenMapper,
         client: TokenClient,
         tokenDao: TokenDao,
-        walletDao: WalletDao
+        walletDao: WalletDao,
+        swapDao: SwapDao,
+        sendDao: SendDao,
+        localLimitOrderDao: LocalLimitOrderDao
+
     ): BalanceRepository =
         BalanceDataRepository(
             api,
@@ -109,7 +113,10 @@ object DataModule {
             tokenMapper,
             client,
             tokenDao,
-            walletDao
+            walletDao,
+            swapDao,
+            sendDao,
+            localLimitOrderDao
         )
 
     @Singleton

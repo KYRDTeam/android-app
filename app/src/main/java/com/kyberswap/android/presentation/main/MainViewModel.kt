@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.usecase.balance.UpdateBalanceUseCase
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.GetTokenBalanceUseCase
@@ -35,7 +36,8 @@ class MainViewModel @Inject constructor(
     private val getLoginStatusUseCase: GetLoginStatusUseCase,
     private val getBalancePollingUseCase: GetBalancePollingUseCase,
     private val getTokenBalanceUseCase: GetTokenBalanceUseCase,
-    private val getTransactionsPeriodicallyUseCase: GetTransactionsPeriodicallyUseCase
+    private val getTransactionsPeriodicallyUseCase: GetTransactionsPeriodicallyUseCase,
+    private val updateBalanceUseCase: UpdateBalanceUseCase
 ) : SelectedWalletViewModel(getWalletUseCase) {
 
     private val _getAllWalletStateCallback = MutableLiveData<Event<GetAllWalletState>>()
@@ -198,6 +200,7 @@ class MainViewModel @Inject constructor(
                     if (numberOfToken == pair.second.size) {
                         _switchWalletCompleteCallback.value =
                             Event(UpdateWalletState.Success(pair.first, isWalletChangedEvent))
+                        updateBalance(pair.first)
 
                     }
                 },
@@ -206,11 +209,24 @@ class MainViewModel @Inject constructor(
                     if (numberOfToken == pair.second.size) {
                         _switchWalletCompleteCallback.value =
                             Event(UpdateWalletState.Success(pair.first, isWalletChangedEvent))
+                        updateBalance(pair.first)
                     }
                 },
                 token
             )
         }
+    }
+
+    private fun updateBalance(wallet: Wallet) {
+        updateBalanceUseCase.execute(
+            Action {
+
+            },
+            Consumer {
+
+            },
+            UpdateBalanceUseCase.Param(wallet)
+        )
     }
 
     fun updateSelectedWallet(wallet: Wallet) {

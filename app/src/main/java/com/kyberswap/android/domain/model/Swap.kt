@@ -9,7 +9,11 @@ import androidx.room.PrimaryKey
 import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
 import com.kyberswap.android.presentation.common.MIN_SUPPORT_SWAP_SOURCE_AMOUNT
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
-import com.kyberswap.android.util.ext.*
+import com.kyberswap.android.util.ext.percentage
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
+import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
 import kotlinx.android.parcel.Parcelize
 import org.web3j.utils.Convert
 import java.math.BigDecimal
@@ -293,7 +297,9 @@ data class Swap(
         }
 
     val insufficientEthBalance: Boolean
-        get() = ethToken.currentBalance < gasFeeEth
+        get() {
+            return ethToken.currentBalance < gasFeeEth
+        }
 
     fun getDefaultSourceAmount(ethAmount: String): BigDecimal {
         return if (tokenSource.rateEthNow == BigDecimal.ZERO) BigDecimal.ZERO

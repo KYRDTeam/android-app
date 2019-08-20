@@ -93,7 +93,10 @@ object ImageViewBindingAdapter {
             if (resourceIcon == 0) {
                 resourceIcon = R.drawable.token_default
             }
-            Glide.with(view).load(stringUrl).placeholder(resourceIcon)
+            Glide.with(view)
+                .load(stringUrl)
+                .placeholder(resourceIcon)
+                .centerInside()
                 .error(resourceIcon).into(view)
         } catch (exception: Exception) {
             exception.printStackTrace()

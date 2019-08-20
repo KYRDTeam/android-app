@@ -320,12 +320,14 @@ class SwapDataRepository @Inject constructor(
                         val sourceToken =
                             if (alert.base == Alert.BASE_USD) Token.ETH else alert.token
                         val destToken = if (alert.base == Alert.BASE_USD) Token.KNC else Token.ETH
-                        val defaultSourceToken = tokenDao.getTokenBySymbol(sourceToken)
-                        val defaultDestToken = tokenDao.getTokenBySymbol(destToken)
+                        val defaultSourceToken = tokenDao.getTokenBySymbol(sourceToken) ?: Token()
+                        val defaultDestToken = tokenDao.getTokenBySymbol(destToken) ?: Token()
+                        val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
                         Swap(
                             wallet.address,
-                            defaultSourceToken ?: Token(),
-                            defaultDestToken ?: Token()
+                            defaultSourceToken,
+                            defaultDestToken,
+                            ethToken = ethToken
                         )
                     }
                     localSwap == null -> {
@@ -342,13 +344,15 @@ class SwapDataRepository @Inject constructor(
                             destToken = Token.KNC
                         }
 
-                        val defaultSourceToken = tokenDao.getTokenBySymbol(sourceToken)
-                        val defaultDestToken = tokenDao.getTokenBySymbol(destToken)
+                        val defaultSourceToken = tokenDao.getTokenBySymbol(sourceToken) ?: Token()
+                        val defaultDestToken = tokenDao.getTokenBySymbol(destToken) ?: Token()
+                        val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
 
                         Swap(
                             wallet.address,
-                            defaultSourceToken ?: Token(),
-                            defaultDestToken ?: Token()
+                            defaultSourceToken,
+                            defaultDestToken,
+                            ethToken = ethToken
                         )
                     }
                     else -> {
@@ -407,9 +411,11 @@ class SwapDataRepository @Inject constructor(
             val send = sendTokenDao.findSendByAddress(wallet.address)
             val defaultSend = if (send == null) {
                 val defaultSourceToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
+                val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
                 Send(
                     wallet.address,
-                    defaultSourceToken
+                    defaultSourceToken,
+                    ethToken = ethToken
                 )
             } else {
                 val tokenSource =

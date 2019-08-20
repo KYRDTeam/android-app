@@ -10,17 +10,25 @@ import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import com.google.gson.Gson
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.TransactionApi
-import com.kyberswap.android.data.db.*
+import com.kyberswap.android.data.db.LocalLimitOrderDao
+import com.kyberswap.android.data.db.SendDao
+import com.kyberswap.android.data.db.SwapDao
+import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.db.TransactionDao
+import com.kyberswap.android.data.db.TransactionFilterDao
 import com.kyberswap.android.data.mapper.TransactionMapper
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.TransactionFilter
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.TransactionRepository
-import com.kyberswap.android.domain.usecase.transaction.*
+import com.kyberswap.android.domain.usecase.transaction.GetTransactionFilterUseCase
+import com.kyberswap.android.domain.usecase.transaction.GetTransactionsPeriodicallyUseCase
+import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
+import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
+import com.kyberswap.android.domain.usecase.transaction.SaveTransactionFilterUseCase
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
@@ -32,10 +40,9 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import org.web3j.utils.Numeric
-import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.*
+import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -339,7 +346,7 @@ class TransactionDataRepository @Inject constructor(
 
             }
             .repeatWhen {
-                it.delay(15, TimeUnit.HOURS)
+                it.delay(15, TimeUnit.SECONDS)
             }
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
