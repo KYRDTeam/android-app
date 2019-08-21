@@ -75,7 +75,6 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_marginStart="16dp"
-                android:scaleType="fitXY"
                 android:src="@drawable/token_default"
                 app:identifier="@{token.tokenSymbol}"
                 app:layout_constraintBottom_toBottomOf="parent"

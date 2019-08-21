@@ -29,7 +29,6 @@
             android:id="@+id/imgToken"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:scaleType="fitXY"
             android:src="@drawable/token_default"
             app:identifier="@{token.tokenSymbol}"
             tools:layout_editor_absoluteX="55dp"

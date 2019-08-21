@@ -1,6 +1,7 @@
 package com.kyberswap.android.presentation.main.transaction
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
 
@@ -38,8 +40,15 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
 
     private var transactionStatusAdapter: TransactionStatusAdapter? = null
 
+    private val handler by lazy {
+        Handler()
+    }
+
+    private val isPending: Boolean
+        get() = transactionType == Transaction.PENDING
+
     private val emptyTransaction: String
-        get() = if (transactionType == Transaction.PENDING) getString(R.string.empty_pending_transaction) else getString(
+        get() = if (isPending) getString(R.string.empty_pending_transaction) else getString(
             R.string.empty_complete_transaction
         )
 
@@ -50,7 +59,6 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        wallet = arguments?.getParcelable(WALLET_PARAM)
         transactionType = arguments?.getInt(TRANSACTION_TYPE) ?: Transaction.PENDING
     }
 
@@ -65,6 +73,28 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        viewModel.getSelectedWallet()
+
+        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetWalletState.Success -> {
+                        wallet = state.wallet
+                        binding.wallet = wallet
+                        getTransactionsByFilter()
+                    }
+                    is GetWalletState.ShowError -> {
+
+                    }
+                }
+            }
+        })
+
+        setupTransactionList()
+
+
+
         context?.let {
             binding.swipeLayout.setColorSchemeColors(
                 ContextCompat.getColor(
@@ -73,10 +103,41 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                 )
             )
         }
-
         binding.swipeLayout.setOnRefreshListener(this)
-        getTransactionsByFilter()
-        binding.wallet = wallet
+
+        viewModel.getTransactionCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetTransactionState.Loading -> {
+                        showProgress(!isPending)
+                    }
+                    is GetTransactionState.Success -> {
+                        updateTransactionList(state.transactions, state.isFilterChanged)
+                        if (state.isLoaded) {
+                            showProgress(false)
+                            if (state.transactions.isEmpty() && transactionStatusAdapter?.itemCount == 0) {
+                                binding.emptyTransaction = emptyTransaction
+                            } else {
+                                binding.emptyTransaction = ""
+                            }
+                        }
+                    }
+                    is GetTransactionState.ShowError -> {
+                        showProgress(false)
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+                    }
+                    is GetTransactionState.FilterNotChange -> {
+                        showProgress(false)
+                    }
+                }
+            }
+        })
+    }
+
+    private fun setupTransactionList() {
         binding.rvTransaction.layoutManager = LinearLayoutManager(
             activity,
             RecyclerView.VERTICAL,
@@ -110,53 +171,11 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
             }
         }
         binding.rvTransaction.adapter = transactionStatusAdapter
-
-        viewModel.getTransactionCallback.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is GetTransactionState.Success -> {
-                        updateTransactionList(state.transactions, state.isFilterChanged)
-                        if (state.transactions.isEmpty()) {
-                            binding.emptyTransaction = emptyTransaction
-                        } else {
-                            binding.emptyTransaction = ""
-                        }
-                    }
-                    is GetTransactionState.ShowError -> {
-                        binding.swipeLayout.isRefreshing = false
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
-                    }
-                }
-            }
-        })
-
-        viewModel.showProgressCallback.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is ShowRefreshState.Success -> {
-                        if (state.isLoaded) {
-                            binding.swipeLayout.isRefreshing = false
-                        }
-                    }
-                    is ShowRefreshState.ShowError -> {
-                        binding.swipeLayout.isRefreshing = false
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
-                    }
-                }
-            }
-        })
     }
 
     private fun getTransactionsByFilter(isForceRefresh: Boolean = false) {
         wallet?.let {
             viewModel.getTransactionFilter(transactionType, it, isForceRefresh)
-            binding.swipeLayout.isRefreshing = true
         }
     }
 
@@ -170,20 +189,27 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
     ) {
         if (isFilterChanged) {
             transactionStatusAdapter?.submitList(null)
-        } else {
-            transactionStatusAdapter?.submitList(listOf())
         }
+        transactionStatusAdapter?.submitList(listOf())
         transactionStatusAdapter?.submitList(transactions)
+    }
+
+    override fun showProgress(showProgress: Boolean) {
+        handler.post { binding.swipeLayout.isRefreshing = showProgress }
+    }
+
+    override fun onDestroyView() {
+        viewModel.onCleared()
+        handler.removeCallbacksAndMessages(null)
+        super.onDestroyView()
     }
 
 
     companion object {
-        private const val WALLET_PARAM = "wallet_param"
         private const val TRANSACTION_TYPE = "transaction_type"
-        fun newInstance(type: Int, wallet: Wallet?) =
+        fun newInstance(type: Int) =
             TransactionStatusFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(WALLET_PARAM, wallet)
                     putInt(TRANSACTION_TYPE, type)
                 }
             }

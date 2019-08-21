@@ -3,15 +3,13 @@ package com.kyberswap.android.presentation.main.transaction
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
-import com.kyberswap.android.domain.model.Wallet
 
 class TransactionPagerAdapter constructor(
-    fm: FragmentManager,
-    private val wallet: Wallet?
+    fm: FragmentManager
 ) : FragmentStatePagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
-        return TransactionStatusFragment.newInstance(position, wallet)
+        return TransactionStatusFragment.newInstance(position)
     }
 
     override fun getCount() = 2

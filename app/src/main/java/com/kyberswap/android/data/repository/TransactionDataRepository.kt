@@ -112,7 +112,6 @@ class TransactionDataRepository @Inject constructor(
             tokenSymbol?.let { symbol ->
                 updateTokenBalance(symbol, wallet)
             }
-
         }
 
         if (!(transaction.tokenSource == Token.ETH_SYMBOL
@@ -123,7 +122,6 @@ class TransactionDataRepository @Inject constructor(
             tokenSymbol?.let { symbol ->
                 updateTokenBalance(symbol, wallet)
             }
-
         }
     }
 
@@ -180,7 +178,6 @@ class TransactionDataRepository @Inject constructor(
                             ethToken = updatedBalanceToken
                         )
                     )
-
                 }
                 order.tokenDest.tokenSymbol == Token.ETH_SYMBOL_STAR && updatedBalanceToken.tokenSymbol == Token.ETH_SYMBOL -> {
                     val wethToken = tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)
@@ -196,7 +193,6 @@ class TransactionDataRepository @Inject constructor(
                             ethToken = updatedBalanceToken
                         )
                     )
-
                 }
                 order.tokenSource.tokenSymbol == Token.ETH_SYMBOL_STAR && updatedBalanceToken.tokenSymbol == Token.WETH_SYMBOL -> {
                     val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)
@@ -320,7 +316,6 @@ class TransactionDataRepository @Inject constructor(
 
     override fun fetchAllTransactions(param: GetTransactionsUseCase.Param): Flowable<TransactionsData> {
         return getTransactions(param.wallet)
-
     }
 
     override fun fetchTransactionPeriodically(param: GetTransactionsPeriodicallyUseCase.Param): Flowable<List<Transaction>> {
@@ -382,7 +377,6 @@ class TransactionDataRepository @Inject constructor(
                     transaction.from.displayWalletAddress()
                 )
 
-
                 val channelId = context.getString(R.string.default_notification_channel_id)
                 val defaultSoundUri =
                     RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
@@ -396,7 +390,6 @@ class TransactionDataRepository @Inject constructor(
                     .setAutoCancel(true)
                     .setSound(defaultSoundUri)
                     .setContentIntent(pendingIntent)
-
 
                 val notificationManager =
                     context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -415,7 +408,6 @@ class TransactionDataRepository @Inject constructor(
                     Numeric.toBigInt(transaction.hash).toInt(),
                     notificationBuilder.build()
                 )
-
             }
 
 //            when (transaction.type) {
@@ -484,7 +476,6 @@ class TransactionDataRepository @Inject constructor(
 //                }
 //            }
         }
-
     }
 
     private fun getTransactionRemote(
@@ -586,7 +577,6 @@ class TransactionDataRepository @Inject constructor(
                                 else Transaction.TransactionType.SWAP
                             )
                         )
-
                     } else {
                         transactionList.addAll(transactions.map { tx ->
                             tx.copy(
@@ -673,7 +663,6 @@ class TransactionDataRepository @Inject constructor(
             transactionFilterDao.findTransactionFilterByAddressFlowable(param.walletAddress)
                 .defaultIfEmpty(it)
         }
-
     }
 
     companion object {
@@ -684,6 +673,4 @@ class TransactionDataRepository @Inject constructor(
         const val DEFAULT_SORT = "desc"
         const val API_KEY = "7V3E6JSF7941JCB6448FNRI3FSH9HI7HYH"
     }
-
-
 }

@@ -98,7 +98,6 @@ object ImageViewBindingAdapter {
                 .load(stringUrl)
                 .apply(RequestOptions().override(32.dpToPx(view.context), 32.dpToPx(view.context)))
                 .placeholder(resourceIcon)
-                .fitCenter()
                 .error(resourceIcon).into(view)
         } catch (exception: Exception) {
             exception.printStackTrace()

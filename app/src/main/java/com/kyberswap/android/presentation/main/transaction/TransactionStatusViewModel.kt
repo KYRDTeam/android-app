@@ -2,14 +2,15 @@ package com.kyberswap.android.presentation.main.transaction
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.TransactionFilter
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.transaction.GetPendingTransactionsUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionFilterUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
+import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.util.ext.toDate
 import io.reactivex.functions.Consumer
 import timber.log.Timber
@@ -18,16 +19,13 @@ import javax.inject.Inject
 class TransactionStatusViewModel @Inject constructor(
     private val getTransactionFilterUseCase: GetTransactionFilterUseCase,
     private val getPendingTransactionsUseCase: GetPendingTransactionsUseCase,
-    private val getTransactionsUseCase: GetTransactionsUseCase
-) : ViewModel() {
+    private val getTransactionsUseCase: GetTransactionsUseCase,
+    getSelectedWalletUseCase: GetSelectedWalletUseCase
+) : SelectedWalletViewModel(getSelectedWalletUseCase) {
 
     private val _getTransactionCallback = MutableLiveData<Event<GetTransactionState>>()
     val getTransactionCallback: LiveData<Event<GetTransactionState>>
         get() = _getTransactionCallback
-
-    private val _showProgressCallback = MutableLiveData<Event<ShowRefreshState>>()
-    val showProgressCallback: LiveData<Event<ShowRefreshState>>
-        get() = _showProgressCallback
 
     private var currentFilter: TransactionFilter? = null
 
@@ -35,6 +33,7 @@ class TransactionStatusViewModel @Inject constructor(
     private fun getTransaction(type: Int, wallet: Wallet, transactionFilter: TransactionFilter) {
         if (type == Transaction.PENDING) {
             getPendingTransactionsUseCase.dispose()
+            _getTransactionCallback.postValue(Event(GetTransactionState.Loading))
             getPendingTransactionsUseCase.execute(
                 Consumer {
                     _getTransactionCallback.value = Event(
@@ -43,22 +42,22 @@ class TransactionStatusViewModel @Inject constructor(
                                 it,
                                 transactionFilter
                             ),
-                            currentFilter != transactionFilter
+                            currentFilter != transactionFilter,
+                            true
                         )
                     )
 
-                    _showProgressCallback.value = Event(ShowRefreshState.Success(true))
                 },
                 Consumer {
                     Timber.e(it.localizedMessage)
                     _getTransactionCallback.value =
                         Event(GetTransactionState.ShowError(it.localizedMessage))
-                    _showProgressCallback.value = Event(ShowRefreshState.Success(true))
                 },
                 wallet.address
             )
         } else {
             getTransactionsUseCase.dispose()
+            _getTransactionCallback.postValue(Event(GetTransactionState.Loading))
             getTransactionsUseCase.execute(
                 Consumer { response ->
                     _getTransactionCallback.value = Event(
@@ -67,18 +66,17 @@ class TransactionStatusViewModel @Inject constructor(
                                 response.transactionList,
                                 transactionFilter
                             ),
-                            currentFilter != transactionFilter
+                            currentFilter != transactionFilter,
+                            response.isLoaded
 
                         )
                     )
 
-                    _showProgressCallback.value = Event(ShowRefreshState.Success(response.isLoaded))
                 },
                 Consumer {
                     Timber.e(it.localizedMessage)
                     _getTransactionCallback.value =
                         Event(GetTransactionState.ShowError(it.localizedMessage))
-                    _showProgressCallback.value = Event(ShowRefreshState.Success(true))
                 },
                 GetTransactionsUseCase.Param(wallet)
             )
@@ -93,8 +91,8 @@ class TransactionStatusViewModel @Inject constructor(
             .sortedByDescending { it.timeStamp }
             .filter {
                 val tokenList = transactionFilter.tokens.map { it.toLowerCase() }
-                (transactionFilter.from.isEmpty() || it.timeStamp * 1000 >= transactionFilter.from.toDate().time) &&
-                    (transactionFilter.to.isEmpty() || it.timeStamp * 1000 <= transactionFilter.to.toDate().time) &&
+                (transactionFilter.from.isEmpty() || it.filterDateTimeFormat.toDate().time >= transactionFilter.from.toDate().time) &&
+                    (transactionFilter.to.isEmpty() || it.filterDateTimeFormat.toDate().time <= transactionFilter.to.toDate().time) &&
                     transactionFilter.types.contains(it.type) &&
                     (tokenList.contains(it.tokenSymbol.toLowerCase()) ||
                         tokenList.contains(it.tokenSource.toLowerCase())
@@ -123,8 +121,6 @@ class TransactionStatusViewModel @Inject constructor(
                 if (currentFilter != it || isForceRefresh) {
                     currentFilter = it
                     getTransaction(type, wallet, it)
-                } else {
-                    _showProgressCallback.value = Event(ShowRefreshState.Success(true))
                 }
 
             },
@@ -133,7 +129,6 @@ class TransactionStatusViewModel @Inject constructor(
                 Timber.e(it.localizedMessage)
                 _getTransactionCallback.value =
                     Event(GetTransactionState.ShowError(it.localizedMessage))
-                _showProgressCallback.value = Event(ShowRefreshState.Success(true))
             },
             GetTransactionFilterUseCase.Param(wallet.address)
         )
@@ -141,6 +136,8 @@ class TransactionStatusViewModel @Inject constructor(
 
     public override fun onCleared() {
         getTransactionsUseCase.dispose()
+        getPendingTransactionsUseCase.dispose()
+        getTransactionFilterUseCase.dispose()
         super.onCleared()
     }
 }
