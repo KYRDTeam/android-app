@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.kyberswap.android.domain.model.FilterItem
 import com.kyberswap.android.domain.model.TransactionFilter
-import com.kyberswap.android.domain.usecase.token.GetTokenUseCase
+import com.kyberswap.android.domain.usecase.token.GetTokenListUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionFilterUseCase
 import com.kyberswap.android.domain.usecase.transaction.SaveTransactionFilterUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
@@ -15,7 +15,7 @@ import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class TransactionFilterViewModel @Inject constructor(
-    private val getTokenListUseCase: GetTokenUseCase,
+    private val getTokenListUseCase: GetTokenListUseCase,
     private val getTransactionFilterUseCase: GetTransactionFilterUseCase,
     private val saveTransactionFilterUseCase: SaveTransactionFilterUseCase,
     getSelectedWalletUseCase: GetSelectedWalletUseCase

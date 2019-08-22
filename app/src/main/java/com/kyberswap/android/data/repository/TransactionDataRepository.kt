@@ -12,24 +12,14 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.TransactionApi
-import com.kyberswap.android.data.db.LocalLimitOrderDao
-import com.kyberswap.android.data.db.SendDao
-import com.kyberswap.android.data.db.SwapDao
-import com.kyberswap.android.data.db.TokenDao
-import com.kyberswap.android.data.db.TransactionDao
-import com.kyberswap.android.data.db.TransactionFilterDao
+import com.kyberswap.android.data.db.*
 import com.kyberswap.android.data.mapper.TransactionMapper
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.TransactionFilter
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.TransactionRepository
-import com.kyberswap.android.domain.usecase.transaction.GetTransactionFilterUseCase
-import com.kyberswap.android.domain.usecase.transaction.GetTransactionsPeriodicallyUseCase
-import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
-import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
-import com.kyberswap.android.domain.usecase.transaction.SaveTransactionFilterUseCase
-import com.kyberswap.android.domain.usecase.transaction.TransactionsData
+import com.kyberswap.android.domain.usecase.transaction.*
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
@@ -43,7 +33,7 @@ import io.reactivex.rxkotlin.Singles
 import org.web3j.utils.Numeric
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.Date
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.max
@@ -320,12 +310,13 @@ class TransactionDataRepository @Inject constructor(
 
     override fun fetchTransactionPeriodically(param: GetTransactionsPeriodicallyUseCase.Param): Flowable<List<Transaction>> {
         return Flowable.fromCallable {
-            transactionDao.getLatestTransaction()?.blockNumber?.toLongSafe() ?: 1
+            transactionDao.getLatestTransaction(param.wallet.address)?.blockNumber?.toLongSafe()
+                ?: 1
         }
             .flatMap { latestBlockNumber ->
                 getTransactionRemote(param.wallet, latestBlockNumber)
             }.doOnNext {
-                val latestTransaction = transactionDao.getLatestTransaction()
+                val latestTransaction = transactionDao.getLatestTransaction(param.wallet.address)
                 val latestBlock =
                     latestTransaction?.blockNumber?.toLongSafe() ?: 1
                 it.forEach { tx ->
@@ -601,11 +592,11 @@ class TransactionDataRepository @Inject constructor(
             },
 
             Flowable.fromCallable {
-                transactionDao.getLatestTransaction()?.blockNumber?.toLongSafe() ?: 1
+                transactionDao.getLatestTransaction(wallet.address)?.blockNumber?.toLongSafe() ?: 1
             }.flatMap {
                 getTransactionRemote(wallet, max(it - 10, 1))
                     .doOnNext {
-                        val latestTransaction = transactionDao.getLatestTransaction()
+                        val latestTransaction = transactionDao.getLatestTransaction(wallet.address)
                         val latestBlock =
                             latestTransaction?.blockNumber?.toLongSafe() ?: 1
                         it.forEach { tx ->
