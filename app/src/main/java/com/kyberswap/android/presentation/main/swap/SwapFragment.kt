@@ -136,7 +136,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     is GetWalletState.Success -> {
                         if (!state.wallet.isSameWallet(wallet)) {
                             this.wallet = state.wallet
-                            binding.walletName = state.wallet.name
+                            binding.walletName = state.wallet.display()
                             val promo = wallet?.promo
                             if (wallet?.isPromo == true) {
                                 enableTokenSearch(isSourceToken = true, isEnable = false)

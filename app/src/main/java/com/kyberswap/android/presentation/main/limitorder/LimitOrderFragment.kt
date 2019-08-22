@@ -204,7 +204,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
-                        binding.walletName = state.wallet.name
+                        binding.walletName = state.wallet.display()
                         if (!state.wallet.isSameWallet(wallet)) {
                             wallet = state.wallet
                             viewModel.getLimitOrders(wallet)

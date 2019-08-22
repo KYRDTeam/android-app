@@ -96,15 +96,19 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is UserInfoState.Success -> {
-                        binding.isLoaded = state.userInfo?.isLoaded
-                        if (binding.info != state.userInfo?.kycInfo) {
+                        if (state.userInfo?.isLoaded == true) {
+                            binding.isLoaded = state.userInfo.isLoaded
+                        }
+                        if (binding.info?.hasSameIdentityInfo(state.userInfo?.kycInfo) != true) {
+
                             binding.info = state.userInfo?.kycInfo
                             val info = binding.info
                             info?.let {
                                 binding.rbId.isChecked = info.isIdentityCard
                                 binding.rbPassport.isChecked = info.isPassport
-                                binding.cbIssueDate.isChecked = info.issueDateNonApplicable
-                                binding.cbExpiryDate.isChecked = info.expiryDateNonApplicable
+                                binding.cbIssueDate.isChecked = info.issueDateNonApplicable == true
+                                binding.cbExpiryDate.isChecked =
+                                    info.expiryDateNonApplicable == true
 
                                 info.photoIdentityFrontSide.removePrefix(BASE64_PREFIX)
 
