@@ -89,7 +89,7 @@ class SubmitFragment : BaseFragment() {
                         if (state.userInfo?.isLoaded == true) {
                             binding.isLoaded = state.userInfo.isLoaded
                         }
-                        if (binding.info != state.userInfo?.kycInfo) {
+                        if (binding.info?.hasSameKycInfo(state.userInfo?.kycInfo) != true) {
                             binding.info = state.userInfo?.kycInfo
                             val info = binding.info
                             info?.let {

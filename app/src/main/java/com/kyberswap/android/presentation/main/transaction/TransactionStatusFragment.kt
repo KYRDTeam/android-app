@@ -20,6 +20,7 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
+import timber.log.Timber
 import javax.inject.Inject
 
 class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -77,7 +78,7 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
         viewModel.getSelectedWallet()
 
         wallet?.let {
-            getTransactionsByFilter(transactionStatusAdapter?.itemCount == 0)
+            getTransactionsByFilter()
         }
 
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer { event ->
@@ -115,22 +116,19 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetTransactionState.Loading -> {
+                        Timber.e("Loading")
                         showProgress(true)
                     }
                     is GetTransactionState.Success -> {
+                        Timber.e("state loaded: " + state.isLoaded + ": state.isPending: " + isPending + ", filterChange: " + state.isFilterChanged)
                         if (state.isLoaded) {
                             showProgress(false)
                         }
 
-                        if (isPending) {
-                            updateTransactionList(state.transactions, state.isFilterChanged)
+                        if (state.isFilterChanged) {
+                            transactionStatusAdapter?.submitList(null)
                         }
-
-                        if (!(state.isLoaded && state.transactions.isEmpty())) {
-                            updateTransactionList(state.transactions, state.isFilterChanged)
-                        }
-
-
+                        updateTransactionList(state.transactions)
                     }
                     is GetTransactionState.ShowError -> {
                         showProgress(false)
@@ -140,6 +138,7 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                         )
                     }
                     is GetTransactionState.FilterNotChange -> {
+                        Timber.e("Filter not change")
                         showProgress(false)
                         if (transactionStatusAdapter?.itemCount == 0) {
                             binding.emptyTransaction = emptyTransaction
@@ -199,12 +198,8 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
     }
 
     private fun updateTransactionList(
-        transactions: List<TransactionItem>,
-        isFilterChanged: Boolean
+        transactions: List<TransactionItem>
     ) {
-        if (isFilterChanged) {
-            transactionStatusAdapter?.submitList(null)
-        }
         transactionStatusAdapter?.submitList(listOf())
         transactionStatusAdapter?.submitList(transactions)
 
@@ -216,14 +211,15 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
     }
 
     override fun showProgress(showProgress: Boolean) {
-        binding.swipeLayout.isRefreshing = showProgress
+        handler.post {
+            binding.swipeLayout.isRefreshing = showProgress
+        }
     }
 
     override fun onDestroyView() {
         handler.removeCallbacksAndMessages(null)
         super.onDestroyView()
     }
-
 
     companion object {
         private const val TRANSACTION_TYPE = "transaction_type"

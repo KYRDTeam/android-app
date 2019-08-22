@@ -142,6 +142,10 @@ data class KycInfo(
             this.sourceFund == other.sourceFund
     }
 
+    fun hasSameKycInfo(other: KycInfo?): Boolean {
+        return hasSameIdentityInfo(other) && hasSamePersonalInfo(other)
+    }
+
     companion object {
         const val TYPE_PASSPORT = "passport"
         const val TYPE_NATIONAL_ID = "national_id"

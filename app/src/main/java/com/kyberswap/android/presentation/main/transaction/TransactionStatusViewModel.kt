@@ -30,7 +30,6 @@ class TransactionStatusViewModel @Inject constructor(
     private var currentFilter: TransactionFilter? = null
     var transactionList = listOf<Transaction>()
 
-
     private fun getTransaction(
         type: Int,
         wallet: Wallet,
@@ -54,6 +53,7 @@ class TransactionStatusViewModel @Inject constructor(
                                 true
                             )
                         )
+                        transactionList = it
                         currentFilter = transactionFilter
 
                     },
@@ -65,9 +65,9 @@ class TransactionStatusViewModel @Inject constructor(
                     wallet.address
                 )
             }
-
         } else {
             if (currentFilter != transactionFilter || isForceRefresh) {
+                Timber.e("Request: isFilterChange: "+ (currentFilter != transactionFilter) + " isForceRefresh: "+isForceRefresh)
                 getTransactionsUseCase.dispose()
                 _getTransactionCallback.postValue(Event(GetTransactionState.Loading))
                 getTransactionsUseCase.execute(
@@ -86,6 +86,9 @@ class TransactionStatusViewModel @Inject constructor(
                             )
                             transactionList = response.transactionList
                             currentFilter = transactionFilter
+                        } else if (response.isLoaded) {
+                            _getTransactionCallback.value =
+                                Event(GetTransactionState.FilterNotChange(true))
                         }
 
                     },
@@ -97,7 +100,6 @@ class TransactionStatusViewModel @Inject constructor(
                     GetTransactionsUseCase.Param(wallet)
                 )
             }
-
         }
     }
 
@@ -110,11 +112,11 @@ class TransactionStatusViewModel @Inject constructor(
             .filter {
                 val tokenList = transactionFilter.tokens.map { it.toLowerCase() }
                 (transactionFilter.from.isEmpty() || it.filterDateTimeFormat.toDate().time >= transactionFilter.from.toDate().time) &&
-                    (transactionFilter.to.isEmpty() || it.filterDateTimeFormat.toDate().time <= transactionFilter.to.toDate().time) &&
-                    transactionFilter.types.contains(it.type) &&
-                    (tokenList.contains(it.tokenSymbol.toLowerCase()) ||
-                        tokenList.contains(it.tokenSource.toLowerCase())
-                        || tokenList.contains(it.tokenDest.toLowerCase()))
+                        (transactionFilter.to.isEmpty() || it.filterDateTimeFormat.toDate().time <= transactionFilter.to.toDate().time) &&
+                        transactionFilter.types.contains(it.type) &&
+                        (tokenList.contains(it.tokenSymbol.toLowerCase()) ||
+                                tokenList.contains(it.tokenSource.toLowerCase())
+                                || tokenList.contains(it.tokenDest.toLowerCase()))
             }
             .groupBy { it.shortedDateTimeFormat }
             .flatMap { item ->
@@ -136,13 +138,14 @@ class TransactionStatusViewModel @Inject constructor(
         getTransactionFilterUseCase.dispose()
         getTransactionFilterUseCase.execute(
             Consumer {
-                if (currentFilter != it || isForceRefresh) {
-                    currentFilter = it
-                    getTransaction(type, wallet, it, isForceRefresh)
-                } else {
-                    _getTransactionCallback.value =
-                        Event(GetTransactionState.FilterNotChange(true))
-                }
+                getTransaction(type, wallet, it, isForceRefresh)
+//                if (currentFilter != it || isForceRefresh) {
+//                    currentFilter = it
+//                    getTransaction(type, wallet, it, isForceRefresh)
+//                } else {
+//                    _getTransactionCallback.value =
+//                        Event(GetTransactionState.FilterNotChange(true))
+//                }
 
             },
             Consumer {
