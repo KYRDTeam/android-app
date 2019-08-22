@@ -22,11 +22,7 @@ import com.kyberswap.android.BR
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentSwapBinding
 import com.kyberswap.android.domain.SchedulerProvider
-import com.kyberswap.android.domain.model.Gas
-import com.kyberswap.android.domain.model.NotificationAlert
-import com.kyberswap.android.domain.model.Swap
-import com.kyberswap.android.domain.model.Wallet
-import com.kyberswap.android.domain.model.WalletChangeEvent
+import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.DEFAULT_ACCEPT_RATE_PERCENTAGE
 import com.kyberswap.android.presentation.common.KeyImeChange
@@ -37,12 +33,7 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.alert.GetAlertState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
-import com.kyberswap.android.util.ext.getAmountOrDefaultValue
-import com.kyberswap.android.util.ext.setAmount
-import com.kyberswap.android.util.ext.showDrawer
-import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
-import com.kyberswap.android.util.ext.toDisplayNumber
-import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
+import com.kyberswap.android.util.ext.*
 import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.android.synthetic.main.layout_expanable.*
 import net.cachapa.expandablelayout.ExpandableLayout
@@ -554,7 +545,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         }
 
-        binding.edtSource.setOnEditorActionListener { v, actionId, event ->
+        binding.edtSource.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 verifyAmount()
             }

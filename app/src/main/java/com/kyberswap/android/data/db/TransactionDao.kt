@@ -37,9 +37,9 @@ interface TransactionDao {
     @Query("DELETE FROM transactions")
     fun deleteAllTransactions()
 
-    @Query("SELECT * FROM transactions WHERE transactionStatus != :pending ORDER BY timeStamp DESC LIMIT 1")
+    @Query("SELECT * FROM transactions WHERE walletAddress = :walletAddress AND transactionStatus != :pending ORDER BY timeStamp DESC LIMIT 1")
     fun getLatestTransaction(
-        pending: String = Transaction.PENDING_TRANSACTION_STATUS
+        walletAddress: String, pending: String = Transaction.PENDING_TRANSACTION_STATUS
     ): Transaction?
 
     @Delete

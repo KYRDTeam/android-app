@@ -28,58 +28,76 @@ class TransactionStatusViewModel @Inject constructor(
         get() = _getTransactionCallback
 
     private var currentFilter: TransactionFilter? = null
+    var transactionList = listOf<Transaction>()
 
 
-    private fun getTransaction(type: Int, wallet: Wallet, transactionFilter: TransactionFilter) {
+    private fun getTransaction(
+        type: Int,
+        wallet: Wallet,
+        transactionFilter: TransactionFilter,
+        isForceRefresh: Boolean
+    ) {
         if (type == Transaction.PENDING) {
-            getPendingTransactionsUseCase.dispose()
-            _getTransactionCallback.postValue(Event(GetTransactionState.Loading))
-            getPendingTransactionsUseCase.execute(
-                Consumer {
-                    _getTransactionCallback.value = Event(
-                        GetTransactionState.Success(
-                            filterTransaction(
-                                it,
-                                transactionFilter
-                            ),
-                            currentFilter != transactionFilter,
-                            true
-                        )
-                    )
 
-                },
-                Consumer {
-                    Timber.e(it.localizedMessage)
-                    _getTransactionCallback.value =
-                        Event(GetTransactionState.ShowError(it.localizedMessage))
-                },
-                wallet.address
-            )
+            if (currentFilter != transactionFilter || isForceRefresh) {
+                getPendingTransactionsUseCase.dispose()
+                _getTransactionCallback.postValue(Event(GetTransactionState.Loading))
+                getPendingTransactionsUseCase.execute(
+                    Consumer {
+                        _getTransactionCallback.value = Event(
+                            GetTransactionState.Success(
+                                filterTransaction(
+                                    it,
+                                    transactionFilter
+                                ),
+                                currentFilter != transactionFilter,
+                                true
+                            )
+                        )
+                        currentFilter = transactionFilter
+
+                    },
+                    Consumer {
+                        Timber.e(it.localizedMessage)
+                        _getTransactionCallback.value =
+                            Event(GetTransactionState.ShowError(it.localizedMessage))
+                    },
+                    wallet.address
+                )
+            }
+
         } else {
-            getTransactionsUseCase.dispose()
-            _getTransactionCallback.postValue(Event(GetTransactionState.Loading))
-            getTransactionsUseCase.execute(
-                Consumer { response ->
-                    _getTransactionCallback.value = Event(
-                        GetTransactionState.Success(
-                            filterTransaction(
-                                response.transactionList,
-                                transactionFilter
-                            ),
-                            currentFilter != transactionFilter,
-                            response.isLoaded
+            if (currentFilter != transactionFilter || isForceRefresh) {
+                getTransactionsUseCase.dispose()
+                _getTransactionCallback.postValue(Event(GetTransactionState.Loading))
+                getTransactionsUseCase.execute(
+                    Consumer { response ->
+                        if (transactionList != response.transactionList) {
+                            _getTransactionCallback.value = Event(
+                                GetTransactionState.Success(
+                                    filterTransaction(
+                                        response.transactionList,
+                                        transactionFilter
+                                    ),
+                                    currentFilter != transactionFilter,
+                                    response.isLoaded
 
-                        )
-                    )
+                                )
+                            )
+                            transactionList = response.transactionList
+                            currentFilter = transactionFilter
+                        }
 
-                },
-                Consumer {
-                    Timber.e(it.localizedMessage)
-                    _getTransactionCallback.value =
-                        Event(GetTransactionState.ShowError(it.localizedMessage))
-                },
-                GetTransactionsUseCase.Param(wallet)
-            )
+                    },
+                    Consumer {
+                        Timber.e(it.localizedMessage)
+                        _getTransactionCallback.value =
+                            Event(GetTransactionState.ShowError(it.localizedMessage))
+                    },
+                    GetTransactionsUseCase.Param(wallet)
+                )
+            }
+
         }
     }
 
@@ -114,13 +132,13 @@ class TransactionStatusViewModel @Inject constructor(
             }
     }
 
-    fun getTransactionFilter(type: Int, wallet: Wallet, isForceRefresh: Boolean = false) {
+    fun getTransactionFilter(type: Int, wallet: Wallet, isForceRefresh: Boolean) {
         getTransactionFilterUseCase.dispose()
         getTransactionFilterUseCase.execute(
             Consumer {
                 if (currentFilter != it || isForceRefresh) {
                     currentFilter = it
-                    getTransaction(type, wallet, it)
+                    getTransaction(type, wallet, it, isForceRefresh)
                 } else {
                     _getTransactionCallback.value =
                         Event(GetTransactionState.FilterNotChange(true))

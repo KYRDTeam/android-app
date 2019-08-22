@@ -76,13 +76,19 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
 
         viewModel.getSelectedWallet()
 
+        wallet?.let {
+            getTransactionsByFilter(transactionStatusAdapter?.itemCount == 0)
+        }
+
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
-                        wallet = state.wallet
+                        if (wallet?.address != state.wallet.address) {
+                            wallet = state.wallet
+                            getTransactionsByFilter()
+                        }
                         binding.wallet = wallet
-                        getTransactionsByFilter()
                     }
                     is GetWalletState.ShowError -> {
 
@@ -109,18 +115,22 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetTransactionState.Loading -> {
-                        showProgress(!isPending)
+                        showProgress(true)
                     }
                     is GetTransactionState.Success -> {
-                        updateTransactionList(state.transactions, state.isFilterChanged)
                         if (state.isLoaded) {
                             showProgress(false)
-                            if (state.transactions.isEmpty() && transactionStatusAdapter?.itemCount == 0) {
-                                binding.emptyTransaction = emptyTransaction
-                            } else {
-                                binding.emptyTransaction = ""
-                            }
                         }
+
+                        if (isPending) {
+                            updateTransactionList(state.transactions, state.isFilterChanged)
+                        }
+
+                        if (!(state.isLoaded && state.transactions.isEmpty())) {
+                            updateTransactionList(state.transactions, state.isFilterChanged)
+                        }
+
+
                     }
                     is GetTransactionState.ShowError -> {
                         showProgress(false)
@@ -197,14 +207,19 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
         }
         transactionStatusAdapter?.submitList(listOf())
         transactionStatusAdapter?.submitList(transactions)
+
+        if (transactions.isEmpty()) {
+            binding.emptyTransaction = emptyTransaction
+        } else {
+            binding.emptyTransaction = ""
+        }
     }
 
     override fun showProgress(showProgress: Boolean) {
-        handler.post { binding.swipeLayout.isRefreshing = showProgress }
+        binding.swipeLayout.isRefreshing = showProgress
     }
 
     override fun onDestroyView() {
-        viewModel.onCleared()
         handler.removeCallbacksAndMessages(null)
         super.onDestroyView()
     }
