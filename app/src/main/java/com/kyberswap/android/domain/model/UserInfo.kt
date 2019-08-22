@@ -49,7 +49,7 @@ data class UserInfo(
         const val DRAFT = "draft"
         const val PENDING = "pending"
         const val REJECT = "rejected"
-        const val BLOCK = "blocke"
+        const val BLOCK = "block"
         const val BLOCKED = "blocked"
         const val APPROVED = "approved"
         const val KYC_STEP_PERSONAL_INFO = 1

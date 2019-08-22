@@ -349,6 +349,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 } else {
                     sourceAmount = it.tokenSource.currentBalance.toDisplayNumber()
                     binding.edtSource.setText(sourceAmount)
+                    verifyAmount()
                 }
 
             }
@@ -395,14 +396,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 )
                             }
 
-                            binding.tvValueInUSD.text =
-                                getString(
-                                    R.string.dest_balance_usd_format,
-                                    binding.swap?.getExpectedDestUsdAmount(
-                                        edtSource.toBigDecimalOrDefaultZero(),
-                                        swap.tokenDest.rateUsdNow
-                                    )?.toDisplayNumber()
-                                )
+                            showDestValueInUsd(swap)
 
                             tvRevertNotification.text =
                                 getRevertNotification(rgRate.checkedRadioButtonId)
@@ -427,8 +421,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         )
                         tvRevertNotification.text =
                             getRevertNotification(rgRate.checkedRadioButtonId)
+
                         if (swap != binding.swap) {
                             binding.swap = swap
+                            swap?.let { it1 -> showDestValueInUsd(it1) }
                             binding.executePendingBindings()
                         }
                     }
@@ -690,6 +686,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         binding.tvContinue.setOnClickListener {
             binding.swap?.let { swap ->
                 when {
+                    swap.isExpectedRateZero && swap.isMarketRateZero -> {
+                        showAlertWithoutIcon(message = getString(R.string.reserve_under_maintainance))
+                    }
+
                     edtSource.text.isNullOrEmpty() -> {
                         val errorAmount = getString(R.string.specify_amount)
                         showAlertWithoutIcon(
@@ -697,6 +697,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             message = errorAmount
                         )
                     }
+
                     edtSource.text.toString().toBigDecimalOrDefaultZero() > swap.tokenSource.currentBalance -> {
                         val errorExceedBalance = getString(R.string.exceed_balance)
                         showAlertWithoutIcon(
@@ -738,10 +739,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         showAlertWithoutIcon(message = getString(R.string.custom_rate_empty))
                     }
 
-                    swap.isExpectedRateZero && swap.isMarketRateZero -> {
-                        showAlertWithoutIcon(message = getString(R.string.reserve_under_maintainance))
-                    }
-
                     swap.isExpectedRateZero -> {
                         showAlertWithoutIcon(
                             title = getString(R.string.title_amount_too_big),
@@ -775,6 +772,21 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
         rbFast.isChecked = true
         rbDefaultRate.isChecked = true
+    }
+
+    fun showDestValueInUsd(swap: Swap) {
+        if (swap.tokenDest.rateEthNow > BigDecimal.ZERO && edtSource.text.isNotEmpty()) {
+            binding.tvValueInUSD.text =
+                getString(
+                    R.string.dest_balance_usd_format,
+                    binding.swap?.getExpectedDestUsdAmount(
+                        edtSource.toBigDecimalOrDefaultZero(),
+                        swap.tokenDest.rateUsdNow
+                    )?.toDisplayNumber()
+                )
+        } else {
+            binding.tvValueInUSD.text = ""
+        }
     }
 
     fun verifyAmount() {

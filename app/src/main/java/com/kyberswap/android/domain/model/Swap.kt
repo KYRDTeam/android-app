@@ -144,6 +144,15 @@ data class Swap(
         get() = sourceAmount.isNotEmpty() && expectedRate.isNotEmpty()
 
     val displaySourceToDestAmount: String
+        get() {
+            return if (tokenDest.rateEthNow == BigDecimal.ZERO) {
+                displaySourceToDestAmountETH
+            } else {
+                displaySourceToDestAmountETHUSD
+            }
+        }
+
+    private val displaySourceToDestAmountETH: String
         get() = StringBuilder().append("1 ")
             .append(tokenSource.tokenSymbol)
             .append(" = ")
@@ -155,6 +164,11 @@ data class Swap(
             )
             .append(" ")
             .append(tokenDest.tokenSymbol)
+            .toString()
+
+    private val displaySourceToDestAmountETHUSD: String
+        get() = StringBuilder()
+            .append(displaySourceToDestAmountETH)
             .append(" = ")
             .append(
                 getExpectedAmount(
@@ -166,8 +180,9 @@ data class Swap(
             .toString()
 
 
+
     val displayDestAmountUsd: String
-        get() = StringBuilder()
+        get() = if (tokenDest.rateUsdNow == BigDecimal.ZERO) "" else StringBuilder()
             .append("≈ ")
             .append(
                 getExpectedAmount(

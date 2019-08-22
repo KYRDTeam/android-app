@@ -121,6 +121,9 @@ class TransactionStatusViewModel @Inject constructor(
                 if (currentFilter != it || isForceRefresh) {
                     currentFilter = it
                     getTransaction(type, wallet, it)
+                } else {
+                    _getTransactionCallback.value =
+                        Event(GetTransactionState.FilterNotChange(true))
                 }
 
             },

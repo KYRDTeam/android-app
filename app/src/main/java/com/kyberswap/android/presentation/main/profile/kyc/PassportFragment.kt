@@ -35,8 +35,12 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import com.tbruyelle.rxpermissions2.RxPermissions
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import kotlinx.android.synthetic.main.fragment_passport.*
-import pl.aprilapps.easyphotopicker.*
-import java.util.*
+import pl.aprilapps.easyphotopicker.ChooserType
+import pl.aprilapps.easyphotopicker.DefaultCallback
+import pl.aprilapps.easyphotopicker.EasyImage
+import pl.aprilapps.easyphotopicker.MediaFile
+import pl.aprilapps.easyphotopicker.MediaSource
+import java.util.Calendar
 import javax.inject.Inject
 
 
@@ -537,7 +541,6 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                     }
                 })
                 .into(image)
-
 
 //            Glide.with(img)
 //                .asBitmap()

@@ -131,6 +131,11 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                     }
                     is GetTransactionState.FilterNotChange -> {
                         showProgress(false)
+                        if (transactionStatusAdapter?.itemCount == 0) {
+                            binding.emptyTransaction = emptyTransaction
+                        } else {
+                            binding.emptyTransaction = ""
+                        }
                     }
                 }
             }
