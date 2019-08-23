@@ -20,6 +20,6 @@ class PreloadUseCase @Inject constructor(
     override fun buildUseCaseFlowable(param: String?): Flowable<Wallet> {
         return balanceRepository.getBalance().toFlowable().flatMap {
             walletRepository.getSelectedWallet()
-
+        }
     }
 }

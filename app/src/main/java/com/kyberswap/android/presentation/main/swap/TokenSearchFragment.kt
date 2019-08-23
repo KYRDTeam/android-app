@@ -84,13 +84,13 @@ class TokenSearchFragment : BaseFragment() {
                 if (isSend == true) {
                     if (token.tokenSymbol == getString(R.string.promo_source_token)) {
                         showAlertWithoutIcon(message = getString(R.string.can_not_tranfer_token))
-             else {
+                    } else {
                         viewModel.saveSendTokenSelection(wallet!!.address, token)
-            
-         else {
+                    }
+                } else {
                     viewModel.saveTokenSelection(wallet!!.address, token, isSourceToken ?: false)
-        
-    
+                }
+            }
 
         binding.rvToken.adapter = tokenAdapter
         viewModel.getTokenList(wallet!!.address)
@@ -104,16 +104,16 @@ class TokenSearchFragment : BaseFragment() {
                         tokenList.addAll(state.tokens)
                         updateFilterListToken(currentSearchString, tokenAdapter)
 
-            
+                    }
                     is GetBalanceState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         viewModel.saveSwapCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -121,16 +121,16 @@ class TokenSearchFragment : BaseFragment() {
                 when (state) {
                     is SaveSwapDataState.Success -> {
                         onSelectionComplete()
-            
+                    }
                     is SaveSwapDataState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         viewModel.saveSendCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -138,16 +138,16 @@ class TokenSearchFragment : BaseFragment() {
                 when (state) {
                     is SaveSendState.Success -> {
                         onSelectionComplete()
-            
+                    }
                     is SaveSendState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         viewModel.compositeDisposable.add(
             binding.edtSearch.textChanges()
@@ -158,16 +158,16 @@ class TokenSearchFragment : BaseFragment() {
                 )
                 .map {
                     return@map it.trim().toString().toLowerCase()
-        .observeOn(schedulerProvider.ui())
+                }.observeOn(schedulerProvider.ui())
                 .subscribe { searchedText ->
                     currentSearchString = searchedText
                     updateFilterListToken(currentSearchString, tokenAdapter)
-        )
+                })
 
         binding.imgBack.setOnClickListener {
             hideKeyboard()
             activity!!.onBackPressed()
-
+        }
 
 
     }
@@ -180,14 +180,14 @@ class TokenSearchFragment : BaseFragment() {
     private fun updateFilterListToken(searchedText: String?, tokenAdapter: TokenSearchAdapter) {
         if (searchedText.isNullOrEmpty()) {
             tokenAdapter.submitFilterList(tokenList)
- else {
+        } else {
             tokenAdapter.submitFilterList(
                 getFilterTokenList(
                     currentSearchString,
                     tokenList
                 )
             )
-
+        }
     }
 
 
@@ -195,7 +195,7 @@ class TokenSearchFragment : BaseFragment() {
         return tokens.filter { token ->
             token.tokenSymbol.toLowerCase().contains(searchedString) or
                 token.tokenName.toLowerCase().contains(searchedString)
-
+        }
     }
 
     override fun onDestroyView() {
@@ -215,7 +215,7 @@ class TokenSearchFragment : BaseFragment() {
                     putBoolean(SEND_PARAM, isSend)
                     putBoolean(TARGET_PARAM, isSourceToken)
 
-        
-    
+                }
+            }
     }
 }

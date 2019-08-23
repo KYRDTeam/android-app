@@ -33,11 +33,11 @@ class AddContactViewModel @Inject constructor(
         saveContactUseCase.execute(
             Action {
                 _saveContactCallback.value = Event(SaveContactState.Success(""))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _saveContactCallback.value = Event(SaveContactState.ShowError(it.localizedMessage))
-    ,
+            },
             SaveContactUseCase.Param(walletAddress, address, name)
         )
     }
@@ -46,12 +46,12 @@ class AddContactViewModel @Inject constructor(
         saveContactUseCase.execute(
             Action {
                 _saveContactCallback.value = Event(SaveContactState.Success(isSend = isSend))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _saveContactCallback.value =
                     Event(SaveContactState.ShowError(it.localizedMessage))
-    ,
+            },
             SaveContactUseCase.Param(walletAddress, contact.address, contact.name, isSend)
         )
     }
@@ -60,12 +60,12 @@ class AddContactViewModel @Inject constructor(
         deleteContactUseCase.execute(
             Action {
                 _deleteContactCallback.value = Event(DeleteContactState.Success(""))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _deleteContactCallback.value =
                     Event(DeleteContactState.ShowError(it.localizedMessage))
-    ,
+            },
             DeleteContactUseCase.Param(contact)
         )
     }

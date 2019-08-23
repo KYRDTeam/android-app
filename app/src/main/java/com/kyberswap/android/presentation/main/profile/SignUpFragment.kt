@@ -99,7 +99,7 @@ class SignUpFragment : BaseFragment() {
 
                     binding.ilEmail.error = errorMessage
 
-        
+                }
 
                 !Patterns.EMAIL_ADDRESS.matcher(binding.edtEmail.text).matches() -> {
 
@@ -111,14 +111,14 @@ class SignUpFragment : BaseFragment() {
                     )
 
                     binding.ilEmail.error = errorMessage
-        
+                }
 
                 binding.edtDisplayName.text.toString().isBlank() -> {
                     val errorMessage = getString(R.string.register_display_name_required)
                     showAlertWithoutIcon(
                         title = getString(R.string.title_error), message = errorMessage
                     )
-        
+                }
 
                 binding.edtPassword.text.toString().isBlank() -> {
                     val errorMessage = getString(
@@ -129,7 +129,7 @@ class SignUpFragment : BaseFragment() {
                     )
                     binding.ilPassword.error = errorMessage
 
-        
+                }
 
                 !binding.edtPassword.text.toString().validPassword() -> {
                     val error = getString(R.string.register_invalid_password)
@@ -138,11 +138,11 @@ class SignUpFragment : BaseFragment() {
                         message = error
                     )
                     binding.ilPassword.error = error
-        
+                }
 
                 !binding.cbTermCondition.isChecked -> {
                     showAlert(getString(R.string.term_condition_notification))
-        
+                }
 
                 else -> {
                     viewModel.signUp(
@@ -151,30 +151,30 @@ class SignUpFragment : BaseFragment() {
                         edtPassword.text.toString(),
                         cbSubscription.isChecked
                     )
-        
-    
-
+                }
+            }
+        }
 
         viewModel.compositeDisposable.add(
             binding.edtEmail.textChanges()
                 .skipInitialValue()
                 .subscribe {
                     binding.ilEmail.error = null
-        )
+                })
 
         viewModel.compositeDisposable.add(
             binding.edtDisplayName.textChanges()
                 .skipInitialValue()
                 .subscribe {
                     binding.ilDisplayName.error = null
-        )
+                })
 
         viewModel.compositeDisposable.add(
             binding.edtPassword.textChanges()
                 .skipInitialValue()
                 .subscribe {
                     binding.ilPassword.error = null
-        )
+                })
 
         viewModel.signUpCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -189,52 +189,52 @@ class SignUpFragment : BaseFragment() {
                         navigator.navigateToSignInScreen(
                             currentFragment
                         )
-            
+                    }
                     is SignUpState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         binding.imgBack.setOnClickListener {
             navigator.navigateToSignUpScreen(
                 currentFragment
             )
-
+        }
 
 
         LoginManager.getInstance().registerCallback(callbackManager,
             object : FacebookCallback<LoginResult> {
                 override fun onSuccess(result: LoginResult?) {
                     result?.accessToken?.let { meRequest(it) }
-        
+                }
 
                 override fun onCancel() {
-        
+                }
 
                 override fun onError(error: FacebookException?) {
                     Timber.e(error?.localizedMessage)
                     error?.printStackTrace()
-        
-    )
+                }
+            })
 
         binding.tvLogin.setOnClickListener {
             activity?.onBackPressed()
-
+        }
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-
+        }
 
         binding.imgFacebook.setOnClickListener {
             stopCounter()
             LoginManager.getInstance()
                 .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"))
-
+        }
 
         binding.imgGooglePlus.setOnClickListener {
             stopCounter()
@@ -243,14 +243,14 @@ class SignUpFragment : BaseFragment() {
             if (account == null) {
                 val signInIntent = googleSignInClient.signInIntent
                 startActivityForResult(signInIntent, RC_SIGN_IN)
-     else {
+            } else {
 
                 googleSignInClient.signOut().addOnCompleteListener {
                     val signInIntent = googleSignInClient.signInIntent
                     startActivityForResult(signInIntent, RC_SIGN_IN)
-        
-    
-
+                }
+            }
+        }
 
         binding.imgTwitter.setOnClickListener {
             stopCounter()
@@ -258,11 +258,11 @@ class SignUpFragment : BaseFragment() {
             val twitterSession = TwitterCore.getInstance().sessionManager.activeSession
             if (twitterSession != null) {
                 TwitterCore.getInstance().sessionManager.clearActiveSession()
-    
+            }
             twitterAuthClient.authorize(activity, object : Callback<TwitterSession>() {
                 override fun success(result: com.twitter.sdk.android.core.Result<TwitterSession>?) {
                     getTwitterUserProfileWthTwitterCoreApi(result?.data)
-        
+                }
 
                 override fun failure(exception: TwitterException?) {
                     exception?.printStackTrace()
@@ -271,14 +271,14 @@ class SignUpFragment : BaseFragment() {
                         exception?.localizedMessage,
                         Toast.LENGTH_SHORT
                     ).show()
-        
+                }
 
-    )
-
+            })
+        }
 
         binding.tvTermAndCondition.setOnClickListener {
             navigator.navigateToTermAndCondition()
-
+        }
 
         viewModel.loginCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -291,22 +291,22 @@ class SignUpFragment : BaseFragment() {
                                     (activity as MainActivity).getCurrentFragment(),
                                     state.socialInfo
                                 )
-                     else {
+                            } else {
                                 onLoginSuccess()
-                    
-                 else {
+                            }
+                        } else {
                             showAlert(state.login.message)
-                
-            
+                        }
+                    }
                     is LoginState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
     }
 
     private fun onLoginSuccess() {
@@ -314,7 +314,7 @@ class SignUpFragment : BaseFragment() {
         if (fm != null)
             for (i in 0 until fm.backStackEntryCount) {
                 fm.popBackStack()
-    
+            }
         navigator.navigateToProfileDetail(
             (activity as MainActivity).getCurrentFragment()
         )
@@ -343,12 +343,12 @@ class SignUpFragment : BaseFragment() {
 
 
                     viewModel.login(socialInfo)
-        
+                }
 
                 override fun failure(exception: TwitterException) {
                     Toast.makeText(context, exception.localizedMessage, Toast.LENGTH_SHORT).show()
-        
-    )
+                }
+            })
     }
 
     private fun meRequest(accessToken: AccessToken) {
@@ -357,7 +357,7 @@ class SignUpFragment : BaseFragment() {
         ) { me, response ->
             if (response?.error != null) {
                 showAlert(response.error.errorMessage)
-     else {
+            } else {
                 val email = me?.optString("email")
                 val name = me?.optString("name")
                 val id = me?.optString("id")
@@ -370,8 +370,8 @@ class SignUpFragment : BaseFragment() {
                     email
                 )
                 viewModel.login(socialInfo)
-    
-
+            }
+        }
 
         val parameters = Bundle()
         parameters.putString(
@@ -391,7 +391,7 @@ class SignUpFragment : BaseFragment() {
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             handleSignInResult(task)
-
+        }
     }
 
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
@@ -406,12 +406,12 @@ class SignUpFragment : BaseFragment() {
                     account.email
                 )
                 viewModel.login(socialInfo)
-    
+            }
 
- catch (e: ApiException) {
+        } catch (e: ApiException) {
             e.printStackTrace()
             Timber.e(e.localizedMessage)
-
+        }
 
     }
 

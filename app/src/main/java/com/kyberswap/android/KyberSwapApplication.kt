@@ -58,12 +58,12 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
-
+        }
 
         RxJavaPlugins.setErrorHandler { e ->
             e.printStackTrace()
             Timber.e(e.toString())
-
+        }
 
         Hawk.init(this).build()
 
@@ -84,11 +84,11 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
         try {
             AeadConfig.register()
             aead = AeadFactory.getPrimitive(getOrGenerateNewKeySetHandle())
- catch (e: GeneralSecurityException) {
+        } catch (e: GeneralSecurityException) {
             throw RuntimeException(e)
- catch (e: IOException) {
+        } catch (e: IOException) {
             throw RuntimeException(e)
-
+        }
 
         val config = TwitterConfig.Builder(this)
             .logger(DefaultLogger(Log.DEBUG))
@@ -117,16 +117,16 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
         disposable.clear()
         if (counter >= THRESHOLD_VALUE) {
             counter = 0
-
+        }
         disposable.add(
             Observable.interval(counter, 1, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     counter = it
-        , {
+                }, {
                     it.printStackTrace()
-        )
+                })
         )
 
     }
@@ -171,8 +171,8 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
         if (counter >= THRESHOLD_VALUE) {
             startActivity(PassCodeLockActivity.newIntent(this).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
-    )
-
+            })
+        }
     }
 
     companion object {

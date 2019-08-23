@@ -18,15 +18,15 @@ class ImportPrivateKeyViewModel @Inject constructor(
         importWalletFromPrivateKeyUseCase.execute(
             Consumer {
                 loadBalances(it)
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 if (it is TokenException) {
                     importWalletCallback.value = ImportWalletState.ShowError(it.message)
-         else {
+                } else {
                     importWalletCallback.value = ImportWalletState.ShowError(it.localizedMessage)
-        
-    ,
+                }
+            },
             ImportWalletFromPrivateKeyUseCase.Param(privateKey, walletName)
         )
     }

@@ -67,7 +67,7 @@ class ChartFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-
+        }
 
         binding.token = token
 
@@ -120,39 +120,39 @@ class ChartFragment : BaseFragment() {
                 token?.let {
                     if (wallet.isPromo) {
                         moveToSwapTab()
-             else {
+                    } else {
                         viewModel.save(wallet.address, token!!, false)
-            
-        
-    
+                    }
+                }
+            }
 
-
+        }
 
         binding.tvSell.setOnClickListener {
             wallet?.let { wallet ->
                 token?.let {
                     if (wallet.isPromo) {
                         moveToSwapTab()
-             else {
+                    } else {
                         viewModel.save(wallet.address, token!!, true)
-            
+                    }
 
-        
-    
-
+                }
+            }
+        }
 
         binding.tvSend.setOnClickListener {
             wallet?.let { wallet ->
                 token?.let {
                     if (it.tokenSymbol == getString(R.string.promo_source_token)) {
                         showAlertWithoutIcon(message = getString(R.string.can_not_tranfer_token))
-             else {
+                    } else {
                         viewModel.saveSendToken(wallet.address, it)
-            
+                    }
 
-        
-    
-
+                }
+            }
+        }
 
         viewModel.callbackSaveSend.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -160,16 +160,16 @@ class ChartFragment : BaseFragment() {
                 when (state) {
                     is SaveSendState.Success -> {
                         moveToSendScreen()
-            
+                    }
                     is SaveSendState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         viewModel.callback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -177,16 +177,16 @@ class ChartFragment : BaseFragment() {
                 when (state) {
                     is SaveSwapDataState.Success -> {
                         moveToSwapTab()
-            
+                    }
                     is SaveSwapDataState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
     }
 
@@ -194,8 +194,8 @@ class ChartFragment : BaseFragment() {
         if (activity is MainActivity) {
             handler.post {
                 activity!!.bottomNavigation.currentItem = MainPagerAdapter.SWAP
-    
-
+            }
+        }
     }
 
     private fun moveToSendScreen() {
@@ -213,7 +213,7 @@ class ChartFragment : BaseFragment() {
                 arguments = Bundle().apply {
                     putParcelable(TOKEN_PARAM, token)
                     putParcelable(WALLET_PARAM, wallet)
-        
-    
+                }
+            }
     }
 }

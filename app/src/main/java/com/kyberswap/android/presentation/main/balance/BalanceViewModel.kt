@@ -76,7 +76,7 @@ class BalanceViewModel @Inject constructor(
         getBalanceUseCase.execute(
             Consumer {
                 _getBalanceStateCallback.value = Event(GetBalanceState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getBalanceStateCallback.value =
@@ -85,7 +85,7 @@ class BalanceViewModel @Inject constructor(
                             it.localizedMessage
                         )
                     )
-    ,
+            },
             null
         )
     }
@@ -95,12 +95,12 @@ class BalanceViewModel @Inject constructor(
         updateWalletUseCase.execute(
             Action {
                 _saveWalletCallback.value = Event(SaveWalletState.Success(""))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _saveWalletCallback.value =
                     Event(SaveWalletState.ShowError(it.localizedMessage))
-    ,
+            },
             wallet
         )
     }
@@ -123,12 +123,12 @@ class BalanceViewModel @Inject constructor(
         saveSwapDataTokenUseCase.execute(
             Action {
                 _callback.value = Event(SaveSwapDataState.Success())
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _callback.value =
                     Event(SaveSwapDataState.ShowError(it.localizedMessage))
-    ,
+            },
             SaveSwapDataTokenUseCase.Param(walletAddress, token, isSell)
         )
     }
@@ -137,10 +137,10 @@ class BalanceViewModel @Inject constructor(
         saveSendTokenUseCase.execute(
             Action {
                 _callbackSaveSend.value = Event(SaveSendState.Success())
-    ,
+            },
             Consumer {
                 _callbackSaveSend.value = Event(SaveSendState.Success())
-    ,
+            },
             SaveSendTokenUseCase.Param(address, token)
         )
     }
@@ -153,7 +153,7 @@ class BalanceViewModel @Inject constructor(
                         it
                     )
                 )
-    ,
+            },
             Consumer { error ->
                 error.printStackTrace()
                 _getBalanceStateCallback.value =
@@ -163,7 +163,7 @@ class BalanceViewModel @Inject constructor(
                         )
                     )
 
-    ,
+            },
             PrepareBalanceUseCase.Param(true)
         )
     }
@@ -174,12 +174,12 @@ class BalanceViewModel @Inject constructor(
             Action {
                 getTokenBalance()
                 _saveTokenCallback.value = Event(SaveTokenState.Success(token.fav))
-    ,
+            },
             Consumer {
                 getTokenBalance()
                 it.printStackTrace()
                 _saveTokenCallback.value = Event(SaveTokenState.ShowError(it.localizedMessage))
-    ,
+            },
             SaveTokenUseCase.Param(token)
         )
     }

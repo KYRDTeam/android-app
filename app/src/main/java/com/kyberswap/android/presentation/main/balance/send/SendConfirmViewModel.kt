@@ -33,11 +33,11 @@ class SendConfirmViewModel @Inject constructor(
         getSendTokenUseCase.execute(
             Consumer {
                 _getSendCallback.value = Event(GetSendState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getSendCallback.value = Event(GetSendState.ShowError(it.localizedMessage))
-    ,
+            },
             GetSendTokenUseCase.Param(wallet)
         )
     }
@@ -49,16 +49,16 @@ class SendConfirmViewModel @Inject constructor(
                 Consumer {
                     _transferTokenTransactionCallback.value =
                         Event(TransferTokenTransactionState.Success(it))
-        ,
+                },
                 Consumer {
                     it.printStackTrace()
                     _transferTokenTransactionCallback.value =
                         Event(TransferTokenTransactionState.ShowError(it.localizedMessage))
-        ,
+                },
                 TransferTokenUseCase.Param(wallet!!, send)
 
             )
-
+        }
     }
 
 }

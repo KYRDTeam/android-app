@@ -10,6 +10,6 @@
     <string name="transaction_kyber_endpoint_url" formatted="false" translatable="false">https://kyber.enjinx.io/eth/transaction/</string>
     <string name="kyber_address" formatted="false" translatable="false">0x818E6FECD516Ecc3849DAf6845e3EC868087B755</string>
     <string name="limit_order_contract" formatted="false" translatable="false">0x52D35e8f0Ffa18337B093Aec3DfFF40445d8f4f4</string>
-    <string name="kyber_code_api_key"></string>
+    <string name="kyber_code_api_key">***REMOVED***</string>
     <string name="promo_source_token">PT</string>
 </resources>

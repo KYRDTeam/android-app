@@ -14,7 +14,7 @@ data class LeaderBoard(
         CurrentUser(entity.currentUserEntity),
         entity.data.map {
             Alert(it)
-,
+        },
         CampaignInfo(entity.campaignInfo ?: CampaignInfoEntity()),
         entity.lastCampaignTitle ?: ""
     )

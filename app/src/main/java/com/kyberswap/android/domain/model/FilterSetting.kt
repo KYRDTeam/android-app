@@ -23,7 +23,7 @@ data class FilterSetting(
                 Order.Status.INVALIDATED
             ).map {
                 it.value
-    
-
+            }
+        }
     }
 }

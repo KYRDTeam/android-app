@@ -18,11 +18,11 @@ class TokenFilterAdapter(
     diffCallback = object : DiffUtil.ItemCallback<FilterItem>() {
         override fun areItemsTheSame(oldItem: FilterItem, newItem: FilterItem): Boolean {
             return oldItem.name == newItem.name
-
+        }
 
         override fun areContentsTheSame(oldItem: FilterItem, newItem: FilterItem): Boolean {
             return oldItem.name == newItem.name && oldItem.isSelected == newItem.isSelected
-
+        }
     }
 ) {
     private var fullMode: Boolean = false
@@ -31,7 +31,7 @@ class TokenFilterAdapter(
         binding.tvToken.setOnClickListener {
             item.isSelected = !item.isSelected
             notifyDataSetChanged()
-
+        }
         binding.setVariable(BR.item, item)
         binding.executePendingBindings()
 
@@ -41,13 +41,13 @@ class TokenFilterAdapter(
         if (fullMode != isFullMode) {
             fullMode = isFullMode
             notifyDataSetChanged()
-
+        }
     }
 
     fun submitFilterList(items: List<FilterItem>) {
         val sortedList = items.sortedByDescending {
             it.isSelected
-
+        }
         submitList(sortedList)
     }
 
@@ -56,7 +56,7 @@ class TokenFilterAdapter(
         submitFilterList(getData().map {
             it.isSelected = isSelecteAll
             it
-)
+        })
         notifyDataSetChanged()
     }
 
@@ -66,11 +66,11 @@ class TokenFilterAdapter(
             else -> {
                 if (super.getItemCount() > 12) {
                     12
-         else {
+                } else {
                     super.getItemCount()
-        
-    
-
+                }
+            }
+        }
     }
 
 

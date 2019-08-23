@@ -21,12 +21,12 @@ class AlertAdapter(
     diffCallback = object : DiffUtil.ItemCallback<Alert>() {
         override fun areItemsTheSame(oldItem: Alert, newItem: Alert): Boolean {
             return oldItem == newItem
-
+        }
 
 
         override fun areContentsTheSame(oldItem: Alert, newItem: Alert): Boolean {
             return oldItem == newItem
-
+        }
     }
 ) {
 
@@ -40,7 +40,7 @@ class AlertAdapter(
         binding.setVariable(BR.alert, item)
         binding.root.setOnClickListener {
             onItemClick?.invoke(item)
-
+        }
 
 
         binding.executePendingBindings()

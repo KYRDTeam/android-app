@@ -27,12 +27,12 @@ class SplashViewModel @Inject constructor(
                 preloadUseCase.dispose()
 
 
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getWalletStateCallback.value =
                     Event(GetUserWalletState.ShowError(it.localizedMessage))
-    ,
+            },
             null
         )
     }

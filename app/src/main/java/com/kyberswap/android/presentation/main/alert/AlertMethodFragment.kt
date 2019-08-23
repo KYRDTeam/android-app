@@ -87,17 +87,17 @@ class AlertMethodFragment : BaseFragment(), LoginState {
                     is UserInfoState.Success -> {
                         if (!(state.userInfo != null && state.userInfo.uid > 0)) {
                             activity?.onBackPressed()
-                
-            
+                        }
+                    }
                     is UserInfoState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         viewModel.getAlertMethods()
         viewModel.getAlertMethodsCallback.observe(viewLifecycleOwner, Observer {
@@ -109,21 +109,21 @@ class AlertMethodFragment : BaseFragment(), LoginState {
                             alertMethods = state.alertMethods
                             setupEmails(state.alertMethods.emails)
                             setupTelegrams(state.alertMethods.telegram)
-                
-            
+                        }
+                    }
                     is GetAlertMethodsState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-
+        }
 
         binding.imgDone.setOnClickListener {
             val selectedEmailItem = binding.spnEmail.selectedItem.toString()
@@ -132,9 +132,9 @@ class AlertMethodFragment : BaseFragment(), LoginState {
             alertMethods?.let { alerts ->
                 updatedEmailList = alerts.emails.map {
                     it.copy(active = it.id == selectedEmailItem)
-        
+                }
 
-    
+            }
 
             if (binding.grTelegram.visibility == View.VISIBLE) {
                 val selectedTelegramItem = binding.spnTelegram.selectedItem.toString()
@@ -142,22 +142,22 @@ class AlertMethodFragment : BaseFragment(), LoginState {
                     updatedTelegram =
                         alerts.telegram.copy(active = alerts.telegram.name == selectedTelegramItem)
 
-        
-    
+                }
+            }
 
             updatedEmailList?.let {
                 alertMethods = alertMethods?.copy(emails = it)
-    
+            }
 
             updatedTelegram?.let {
                 alertMethods = alertMethods?.copy(telegram = it)
-    
+            }
 
             alertMethods?.let {
                 viewModel.updateAlertMethods(it)
-    
+            }
 
-
+        }
 
         viewModel.updateAlertMethodsCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -168,16 +168,16 @@ class AlertMethodFragment : BaseFragment(), LoginState {
                             getString(R.string.title_success),
                             getString(R.string.alert_methods_update_success)
                         )
-            
+                    }
                     is UpdateAlertMethodsState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
     }
 
     private fun setupEmails(emails: List<Email>) {
@@ -186,14 +186,14 @@ class AlertMethodFragment : BaseFragment(), LoginState {
         val emailList = mutableListOf(defaultValue)
         emailList.addAll(emails.map {
             it.id
-)
+        })
         activity?.let {
             emailAdapter = ArrayAdapter(
                 it,
                 android.R.layout.simple_spinner_item,
                 emailList
             )
-
+        }
 
 
 
@@ -201,7 +201,7 @@ class AlertMethodFragment : BaseFragment(), LoginState {
         binding.spnEmail.adapter = emailAdapter
         if (activeEmail != null) {
             binding.spnEmail.setSelection(emailList.indexOf(activeEmail))
-
+        }
     }
 
     private fun setupTelegrams(telegram: Telegram) {
@@ -211,7 +211,7 @@ class AlertMethodFragment : BaseFragment(), LoginState {
             val telegramList = mutableListOf(defaultValue)
             if (telegram.name.isNotEmpty()) {
                 telegramList.add(telegram.name)
-    
+            }
 
             activity?.let {
                 telegramAdapter =
@@ -220,14 +220,14 @@ class AlertMethodFragment : BaseFragment(), LoginState {
                         android.R.layout.simple_spinner_item,
                         telegramList
                     )
-    
+            }
 
             telegramAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.spnTelegram.adapter = telegramAdapter
             if (telegram.active) {
                 binding.spnTelegram.setSelection(telegramList.indexOf(telegram.name))
-    
-
+            }
+        }
     }
 
     override fun onDestroyView() {

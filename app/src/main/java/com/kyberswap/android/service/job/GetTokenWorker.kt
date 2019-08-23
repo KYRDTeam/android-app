@@ -43,9 +43,9 @@ class GetTokenWorker constructor(params: Int) : Job(
         tokenApi.getChange24h().toObservable()
             .repeatWhen {
                 it.delay(5, TimeUnit.SECONDS)
-    .retryWhen { throwable ->
+            }.retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
-    .doOnNext { Timber.e("onNext") }
+            }.doOnNext { Timber.e("onNext") }
 
     }
 
@@ -55,7 +55,7 @@ class GetTokenWorker constructor(params: Int) : Job(
                 Observable.range(COUNTER_START, ATTEMPTS),
                 BiFunction<T, Int, Int> { _: T, u: Int -> u })
                 .flatMap { t -> Observable.timer(t * 5L, TimeUnit.SECONDS) }
-
+        }
     }
 
     companion object {

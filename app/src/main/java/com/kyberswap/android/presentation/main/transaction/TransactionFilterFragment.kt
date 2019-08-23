@@ -81,24 +81,24 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
                         if (state.wallet.address != wallet?.address) {
                             wallet = state.wallet
                             viewModel.getTransactionFilter(state.wallet.address)
-                
-            
+                        }
+                    }
                     is GetWalletState.ShowError -> {
 
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-
+        }
 
         listOf<View>(binding.tvSend, binding.tvReceived, binding.tvSwap).forEach {
             it.setOnClickListener {
                 it.isSelected = !it.isSelected
-    
-
+            }
+        }
 
 
         binding.rvToken.layoutManager = GridLayoutManager(
@@ -123,30 +123,30 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
                         if (list.filter { it.isSelected }.size > list.size / 2) {
                             binding.tvSelectAll.text =
                                 getString(R.string.filter_deselect_all)
-                 else {
+                        } else {
                             binding.tvSelectAll.text = getString(R.string.filter_select_all)
-                
-            
+                        }
+                    }
                     is GetTransactionFilterState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         binding.tvSeeMore.setOnClickListener {
             submitTokenList(adapter)
-
+        }
 
         listOf<View>(binding.edtFrom, binding.edtTo).forEach {
             it.setOnClickListener { view ->
                 selectedView = view
                 openMaterialDialog()
-    
-
+            }
+        }
 
         binding.tvReset.setOnClickListener {
             val filter = binding.filter?.copy(
@@ -154,14 +154,14 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
                 to = "",
                 tokens = adapter.getData().map {
                     it.name
-        ,
+                },
                 types = viewTypes.map {
                     when (it) {
                         binding.tvSend -> Transaction.TransactionType.SEND
                         binding.tvReceived -> Transaction.TransactionType.RECEIVED
                         else -> Transaction.TransactionType.SWAP
-            
-        
+                    }
+                }
 
             )
             filter?.let {
@@ -170,9 +170,9 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
                 adapter.resetFilter(true)
                 binding.tvSelectAll.text = getString(R.string.filter_select_all)
                 setupFilterType(filter.types)
-    
+            }
 
-
+        }
 
         binding.tvApply.setOnClickListener {
 
@@ -181,50 +181,50 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
                 to = binding.edtTo.text.toString(),
                 tokens = adapter.getData().filter { it.isSelected }.map {
                     it.name
-        ,
+                },
                 types = viewTypes.filter {
                     it.isSelected
-        .map {
+                }.map {
                     when (it) {
                         binding.tvSend -> Transaction.TransactionType.SEND
                         binding.tvReceived -> Transaction.TransactionType.RECEIVED
                         else -> Transaction.TransactionType.SWAP
-            
-        
+                    }
+                }
             )
 
             filter?.let { it1 -> viewModel.saveTransactionFilter(it1) }
 
-
+        }
 
         viewModel.saveTransactionFilterCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is SaveTransactionFilterState.Success -> {
                         onSuccess()
-            
+                    }
                     is SaveTransactionFilterState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         binding.tvSelectAll.setOnClickListener {
             adapter.resetFilter(isSelectAll)
             toggleSelectAll()
-
+        }
     }
 
     private fun toggleSelectAll() {
         if (isSelectAll) {
             binding.tvSelectAll.text = getString(R.string.filter_deselect_all)
- else {
+        } else {
             binding.tvSelectAll.text = getString(R.string.filter_select_all)
-
+        }
     }
 
     private val isSelectAll: Boolean
@@ -263,7 +263,7 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
                     dayOfMonth
                 )
             )
-
+        }
     }
 
     private fun submitTokenList(adapter: TokenFilterAdapter) {
@@ -271,10 +271,10 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
         if (text == seeMoreToken) {
             adapter.setFullMode(true)
             binding.tvSeeMore.text = seeLessToken
- else {
+        } else {
             adapter.setFullMode(false)
             binding.tvSeeMore.text = seeMoreToken
-
+        }
     }
 
     companion object {
@@ -283,7 +283,7 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
             TransactionFilterFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(WALLET_PARAM, wallet)
-        
-    
+                }
+            }
     }
 }

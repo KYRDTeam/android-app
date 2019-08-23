@@ -22,8 +22,8 @@ class UpdateSelectedWalletUseCase @Inject constructor(
         return walletRepository.updatedSelectedWallet(param).flatMap { wallet ->
             balanceRepository.getChange24h().first(listOf()).map { tokens ->
                 Pair(wallet, tokens)
-    
-
+            }
+        }
     }
 
     class Param(val wallet: Wallet)

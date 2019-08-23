@@ -19,11 +19,11 @@ class PassportAdapter(
     diffCallback = object : DiffUtil.ItemCallback<Passport>() {
         override fun areItemsTheSame(oldItem: Passport, newItem: Passport): Boolean {
             return oldItem == newItem
-
+        }
 
         override fun areContentsTheSame(oldItem: Passport, newItem: Passport): Boolean {
             return oldItem == newItem
-
+        }
     }
 ) {
     override fun bind(binding: ItemPassportBinding, item: Passport) {

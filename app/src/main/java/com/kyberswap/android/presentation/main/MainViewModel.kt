@@ -69,12 +69,12 @@ class MainViewModel @Inject constructor(
         getLoginStatusUseCase.execute(
             Consumer {
                 _getLoginStatusCallback.value = Event(UserInfoState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getLoginStatusCallback.value =
                     Event(UserInfoState.ShowError(it.localizedMessage))
-    ,
+            },
             null
         )
     }
@@ -88,7 +88,7 @@ class MainViewModel @Inject constructor(
                         it
                     )
                 )
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getAllWalletStateCallback.value =
@@ -97,7 +97,7 @@ class MainViewModel @Inject constructor(
                             it.localizedMessage
                         )
                     )
-    ,
+            },
             null
         )
     }
@@ -107,10 +107,10 @@ class MainViewModel @Inject constructor(
         getBalancePollingUseCase.execute(
             Consumer {
                 loadBalances(Pair(selectedWallet, it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
-    ,
+            },
             GetBalancePollingUseCase.Param(wallets)
         )
 
@@ -122,7 +122,7 @@ class MainViewModel @Inject constructor(
             Consumer { },
             Consumer {
                 it.printStackTrace()
-    ,
+            },
             GetTransactionsPeriodicallyUseCase.Param(wallet)
         )
     }
@@ -142,23 +142,23 @@ class MainViewModel @Inject constructor(
 
                             if (tx.none { it.blockNumber.isEmpty() }) {
                                 monitorPendingTransactionsUseCase.dispose()
-                    
-                ,
+                            }
+                        },
                         Consumer { ex ->
                             ex.printStackTrace()
                             Timber.e(ex.localizedMessage)
-                ,
+                        },
                         MonitorPendingTransactionUseCase.Param(it, wallet)
                     )
-         else {
+                } else {
                     _getPendingTransactionStateCallback.value = Event(
                         GetPendingTransactionState.Success(
                             it
                         )
                     )
-        
+                }
 
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 Timber.e(it.localizedMessage)
@@ -167,7 +167,7 @@ class MainViewModel @Inject constructor(
                         it.localizedMessage
                     )
                 )
-    ,
+            },
             wallet.address
         )
     }
@@ -178,12 +178,12 @@ class MainViewModel @Inject constructor(
             Consumer {
                 _getMnemonicCallback.value =
                     Event(CreateWalletState.Success(it.first, it.second))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getMnemonicCallback.value =
                     Event(CreateWalletState.ShowError(it.localizedMessage))
-    ,
+            },
             CreateWalletUseCase.Param(walletName)
         )
     }
@@ -202,29 +202,29 @@ class MainViewModel @Inject constructor(
                             Event(UpdateWalletState.Success(pair.first, isWalletChangedEvent))
                         updateBalance(pair.first)
 
-            
-        ,
+                    }
+                },
                 Consumer {
                     numberOfToken++
                     if (numberOfToken == pair.second.size) {
                         _switchWalletCompleteCallback.value =
                             Event(UpdateWalletState.Success(pair.first, isWalletChangedEvent))
                         updateBalance(pair.first)
-            
-        ,
+                    }
+                },
                 token
             )
-
+        }
     }
 
     private fun updateBalance(wallet: Wallet) {
         updateBalanceUseCase.execute(
             Action {
 
-    ,
+            },
             Consumer {
 
-    ,
+            },
             UpdateBalanceUseCase.Param(wallet)
         )
     }
@@ -236,12 +236,12 @@ class MainViewModel @Inject constructor(
             Consumer { wl ->
                 loadBalances(wl, true)
 
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _switchWalletCompleteCallback.value =
                     Event(UpdateWalletState.ShowError(it.localizedMessage))
-    ,
+            },
             UpdateSelectedWalletUseCase.Param(wallet)
         )
     }

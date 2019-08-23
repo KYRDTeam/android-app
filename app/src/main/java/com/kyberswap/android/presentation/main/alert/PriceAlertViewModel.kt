@@ -44,12 +44,12 @@ class PriceAlertViewModel @Inject constructor(
             Consumer {
                 _getCurrentAlertCallback.value = Event(GetCurrentAlertState.Success(it))
 
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getCurrentAlertCallback.value =
                     Event(GetCurrentAlertState.ShowError(it.localizedMessage))
-    ,
+            },
             GetCurrentAlertUseCase.Param(walletAddress, alert)
         )
     }
@@ -58,12 +58,12 @@ class PriceAlertViewModel @Inject constructor(
         getNumberAlertsUseCase.execute(
             Consumer {
                 _getAllAlertsCallback.value = Event(GetNumberAlertsState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getAllAlertsCallback.value =
                     Event(GetNumberAlertsState.ShowError(it.localizedMessage))
-    ,
+            },
             null
         )
     }
@@ -75,16 +75,16 @@ class PriceAlertViewModel @Inject constructor(
             Consumer {
                 if (it.message.isNullOrEmpty()) {
                     _createOrUpdateAlertCallback.value = Event(CreateOrUpdateAlertState.Success(it))
-         else {
+                } else {
                     _createOrUpdateAlertCallback.value =
                         Event(CreateOrUpdateAlertState.ShowError(it.message))
-        
-    ,
+                }
+            },
             Consumer {
                 it.printStackTrace()
                 _createOrUpdateAlertCallback.value =
                     Event(CreateOrUpdateAlertState.ShowError(it.localizedMessage))
-    ,
+            },
             CreateOrUpdateAlertUseCase.Param(alert)
         )
 

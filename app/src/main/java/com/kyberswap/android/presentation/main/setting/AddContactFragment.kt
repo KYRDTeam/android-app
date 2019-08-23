@@ -75,28 +75,28 @@ class AddContactFragment : BaseFragment() {
             IntentIntegrator.forSupportFragment(this)
                 .setBeepEnabled(false)
                 .initiateScan()
-
+        }
         binding.edtAddress.setText(address)
         binding.imgBack.setOnClickListener {
             activity!!.onBackPressed()
-
+        }
 
         if (contact != null) {
             binding.title = getString(R.string.edit_contact)
             binding.contact = contact
             binding.edtAddress.setText(contact?.address)
             binding.executePendingBindings()
- else {
+        } else {
             binding.title = getString(R.string.add_contact)
             binding.edtAddress.setText(address)
-
+        }
 
         viewModel.compositeDisposable.add(binding.edtAddress.textChanges()
             .skipInitialValue()
             .observeOn(schedulerProvider.ui())
             .subscribe {
                 binding.ilAddress.error = null
-    )
+            })
 
 
         binding.lnDelete.visibility = if (contact == null) View.GONE else View.VISIBLE
@@ -121,13 +121,13 @@ class AddContactFragment : BaseFragment() {
                                 contact,
                                 true
                             )
-                
-            
-        
-    
+                        }
+                    }
+                }
+            }
 
 
-
+        }
 
         binding.lnDelete.setOnClickListener {
             contact?.let {
@@ -136,9 +136,9 @@ class AddContactFragment : BaseFragment() {
                     getString(R.string.contact_confirm_delete),
                     {
                         viewModel.deleteContact(it)
-            )
-    
-
+                    })
+            }
+        }
 
         binding.imgDone.setOnClickListener {
             when {
@@ -152,10 +152,10 @@ class AddContactFragment : BaseFragment() {
                             binding.edtName.text.toString(),
                             binding.edtAddress.text.toString()
                         )
-            
-        
-    
-
+                    }
+                }
+            }
+        }
 
         viewModel.saveContactCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -166,19 +166,19 @@ class AddContactFragment : BaseFragment() {
                             navigator.navigateToSendScreen(
                                 currentFragment, wallet
                             )
-                 else {
+                        } else {
                             onSuccess()
-                
-            
+                        }
+                    }
                     is SaveContactState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         viewModel.deleteContactCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -186,16 +186,16 @@ class AddContactFragment : BaseFragment() {
                 when (state) {
                     is DeleteContactState.Success -> {
                         onSuccess()
-            
+                    }
                     is DeleteContactState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
     }
 
     private fun onSuccess() {
@@ -207,15 +207,15 @@ class AddContactFragment : BaseFragment() {
         if (result != null) {
             if (result.contents == null) {
                 showAlert(getString(R.string.message_cancelled))
-     else {
+            } else {
                 binding.edtAddress.setText(result.contents.toString())
                 if (!result.contents.toString().isContact()) {
                     binding.ilAddress.error = getString(R.string.invalid_contact_address)
-        
-    
- else {
+                }
+            }
+        } else {
             super.onActivityResult(requestCode, resultCode, data)
-
+        }
     }
 
     override fun onDestroyView() {
@@ -233,8 +233,8 @@ class AddContactFragment : BaseFragment() {
                     putParcelable(WALLET_PARAM, wallet)
                     putString(ADDRESS_PARAM, address)
                     putParcelable(CONTACT_PARAM, contact)
-        
-    
+                }
+            }
     }
 
 

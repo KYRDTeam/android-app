@@ -22,12 +22,12 @@ open class GetLoginStatusViewModel @Inject constructor(
         getLoginStatusUseCase.execute(
             Consumer {
                 _getLoginStatusCallback.value = Event(UserInfoState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getLoginStatusCallback.value =
                     Event(UserInfoState.ShowError(it.localizedMessage))
-    ,
+            },
             null
         )
     }
