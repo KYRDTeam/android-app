@@ -1,0 +1,36 @@
+{
+  "_links": {
+    "self": {
+      "href": "/v1/headers"
+    }
+  },
+  "article_features": [
+    {
+      "_links": {
+        "self": {
+          "href": "/v1/articles/features/1/1"
+        }
+      },
+      "end_datetime": "2018-06-01T00:00:00Z",
+      "id": 1,
+      "label": "Feature",
+      "order": 1,
+      "start_datetime": "2018-05-01T00:00:00Z"
+    },
+    {
+      "_links": {
+        "self": {
+          "href": "/v1/articles/features/2/1"
+        }
+      },
+      "end_datetime": "2018-06-12T00:00:00Z",
+      "id": 2,
+      "label": "Trend",
+      "order": 2,
+      "start_datetime": "2018-05-12T00:00:00Z"
+    }
+  ],
+  "like_count": 17519856,
+  "review_count": 1381496,
+  "type": "hairsalon"
+}

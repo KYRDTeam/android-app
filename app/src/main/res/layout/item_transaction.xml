@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="62dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <TextView
+            android:id="@+id/tvTransactionDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="10dp"
+            android:lineSpacingExtra="6sp"
+            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textColor="#484b51"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@+id/tvTransactionType"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="KNC -> SALT" />
+
+        <TextView
+            android:id="@+id/tvRate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="middle"
+            android:lineSpacingExtra="8sp"
+            android:singleLine="true"
+            android:textColor="#9ea1aa"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@+id/tvFail"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@+id/tvTransactionDetail"
+            app:layout_constraintTop_toBottomOf="@+id/tvTransactionDetail"
+            tools:text="223.4" />
+
+        <TextView
+            android:id="@+id/tvFail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_corner_transaction_fail_background"
+            android:gravity="center"
+            android:paddingStart="8dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="2dp"
+            android:text="@string/transaction_failed"
+            android:textColor="#fa6566"
+            android:textSize="10sp"
+
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/tvRate"
+            app:layout_constraintEnd_toEndOf="@+id/tvTransactionType"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tvRate"
+            app:layout_constraintStart_toStartOf="@+id/tvTransactionType"
+            app:layout_constraintTop_toTopOf="@+id/tvRate"
+            tools:ignore="SmallSp" />
+
+        <TextView
+            android:id="@+id/tvTransactionType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:gravity="end"
+            android:lineSpacingExtra="10sp"
+            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textColor="#9ea1aa"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvTransactionDetail"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tvTransactionDetail"
+            app:layout_constraintTop_toTopOf="@+id/tvTransactionDetail"
+            tools:ignore="SmallSp"
+            tools:text="SWAP" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</layout>

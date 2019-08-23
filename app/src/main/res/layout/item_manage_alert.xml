@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="alert"
+            type="com.kyberswap.android.domain.model.Alert" />
+
+    </data>
+
+    <com.daimajia.swipe.SwipeLayout
+        android:id="@+id/swipe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:clickToClose="true"
+        app:drag_edge="right">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/btnEdit"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="#1e89c1"
+                android:gravity="center"
+                android:minWidth="72dp"
+                android:text="@string/alert_edit"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/btnDelete"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="72dp"
+                android:layout_height="match_parent"
+                android:background="#fa6566"
+                android:gravity="center"
+                android:text="@string/title_delete"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/csLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp">
+
+            <ImageView
+                android:id="@+id/imageView15"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="16dp"
+                app:identifier="@{alert.symbol}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/textView95"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView95"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@{alert.pair}"
+                android:textColor="#1d303a"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/textView97"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/imageView15"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Dai/USD" />
+
+            <TextView
+                android:id="@+id/textView97"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="end"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#31cb9e"
+                android:textSize="14sp"
+                app:alertPrice="@{alert.alertPrice}"
+                app:isAbove="@{alert.isAbove}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/textView98"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/textView95"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="≥ 36000" />
+
+            <TextView
+                android:id="@+id/textView98"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:lineSpacingExtra="4sp"
+                android:textColor="#5a5e67"
+                android:textSize="12sp"
+                app:isAbove="@{alert.isAbove}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/textView97"
+                app:layout_constraintTop_toTopOf="parent"
+                app:percentChange="@{alert.percentChange}"
+                tools:text="0.32%" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </com.daimajia.swipe.SwipeLayout>
+
+
+</layout>

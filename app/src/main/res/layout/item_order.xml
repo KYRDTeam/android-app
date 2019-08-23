@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="order"
+            type="com.kyberswap.android.domain.model.Order" />
+
+        <import type="android.view.View" />
+
+    </data>
+
+    <com.daimajia.swipe.SwipeLayout
+        android:id="@+id/swipe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:clickToClose="true"
+        app:drag_edge="right">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minWidth="132dp">
+
+            <TextView
+                android:id="@+id/tvCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:padding="8dp"
+                android:text="@string/cancel"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#fa6566"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clHolder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:minHeight="114dp"
+            android:padding="12dp">
+
+
+            <TextView
+                android:id="@+id/textView73"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="6dp"
+                android:text="@{order.displayTokenPair}"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#2c2c2c"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="KNC/ETH" />
+
+            <ImageView
+                android:id="@+id/imgInvalidated"
+                android:layout_width="22dp"
+                android:layout_height="19dp"
+                android:layout_marginStart="4dp"
+                android:padding="4dp"
+                android:src="@drawable/ic_warning_invalid"
+                android:visibility="@{order.isInvalidated ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="@+id/textView73"
+                app:layout_constraintStart_toEndOf="@+id/textView73"
+                app:layout_constraintTop_toTopOf="@+id/textView73" />
+
+
+            <TextView
+                android:id="@+id/textView58"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@{order.displayAddress}"
+                android:textColor="#141927"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/textView73"
+                app:layout_constraintTop_toBottomOf="@+id/textView73"
+                tools:text="0xa4d...4a3025" />
+
+            <TextView
+                android:id="@+id/textView74"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="center_horizontal"
+                android:paddingStart="8dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="2dp"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView58"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textView58"
+                app:orderStatus="@{order.status}"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/textView64"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="13dp"
+                android:text="@string/transaction_from"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#9ea1aa"
+                android:textSize="10sp"
+                app:layout_constraintEnd_toStartOf="@+id/textView68"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView58"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/textView67"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="start"
+                android:text="@{order.sourceDisplay}"
+                android:textColor="#141927"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toEndOf="@+id/textView64"
+                app:layout_constraintStart_toStartOf="@+id/textView64"
+                app:layout_constraintTop_toBottomOf="@+id/textView64"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/textView69"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="start"
+                android:text="@{order.destDisplay}"
+                android:textColor="#141927"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toEndOf="@+id/textView68"
+                app:layout_constraintStart_toStartOf="@+id/textView68"
+                app:layout_constraintTop_toBottomOf="@+id/textView68"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/textView70"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:text="@string/transaction_fee"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#9ea1aa"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView68"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/textView68"
+                app:layout_constraintTop_toTopOf="@+id/textView68"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/textView68"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/transaction_to"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#9ea1aa"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView64"
+                app:layout_constraintEnd_toStartOf="@+id/textView70"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/textView64"
+                app:layout_constraintTop_toTopOf="@+id/textView64"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/textView71"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="start"
+                android:text="@{order.destDisplayFee}"
+                android:textColor="#141927"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toEndOf="@+id/textView70"
+                app:layout_constraintStart_toStartOf="@+id/textView70"
+                app:layout_constraintTop_toBottomOf="@+id/textView70"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/tvExtra"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:background="?selectableItemBackground"
+                android:gravity="start"
+                android:padding="2dp"
+                android:text="@{order.extraDisplay}"
+                android:textColor="@color/color_order_extra"
+                android:textSize="10sp"
+                android:visibility="@{order.hasExtra ? View.VISIBLE : View.GONE}"
+                app:layout_constraintEnd_toEndOf="@+id/textView69"
+                app:layout_constraintStart_toStartOf="@+id/textView69"
+                app:layout_constraintTop_toBottomOf="@+id/textView69"
+                tools:ignore="SmallSp"
+                tools:text="+ 12.987 KNC" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </com.daimajia.swipe.SwipeLayout>
+
+
+</layout>
