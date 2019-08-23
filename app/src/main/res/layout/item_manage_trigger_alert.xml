@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="alert"
+            type="com.kyberswap.android.domain.model.Alert" />
+
+    </data>
+
+    <com.daimajia.swipe.SwipeLayout
+        android:id="@+id/swipe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:clickToClose="true"
+        app:drag_edge="right">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/btnDelete"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="#fa6566"
+                android:gravity="center"
+                android:minWidth="72dp"
+                android:text="@string/title_delete"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/csLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="64dp">
+
+            <ImageView
+                android:id="@+id/imgAlert"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:identifier="@{alert.symbol}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView95"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{alert.pair}"
+                android:textColor="#1d303a"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toTopOf="@+id/textView99"
+                app:layout_constraintStart_toStartOf="@+id/textView99"
+                app:layout_constraintTop_toTopOf="@+id/imgAlert"
+                tools:text="Dai/USD" />
+
+            <TextView
+                android:id="@+id/textView99"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/trigger_on"
+                android:textColor="#9ea1aa"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/textView100"
+                app:layout_constraintStart_toEndOf="@+id/imgAlert"
+                app:layout_constraintTop_toBottomOf="@+id/textView95" />
+
+            <TextView
+                android:id="@+id/textView100"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{alert.displayTriggerAt}"
+                android:textColor="#9ea1aa"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@+id/imgAlert"
+                app:layout_constraintStart_toStartOf="@+id/textView99"
+                app:layout_constraintTop_toBottomOf="@+id/textView99" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="right"
+                app:constraint_referenced_ids="textView99,textView95,textView100"
+                app:layout_constraintEnd_toStartOf="@+id/tvAlertPrice"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/imgAlert" />
+
+            <TextView
+                android:id="@+id/tvPercentChange"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:lineSpacingExtra="4sp"
+                android:textColor="#9ea1aa"
+                android:textSize="12sp"
+                app:isAbove="@{alert.isAbove}"
+                app:isFilled="@{alert.isFilled}"
+                app:layout_constraintBottom_toBottomOf="@+id/tvAlertPrice"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvAlertPrice"
+                app:layout_constraintVertical_bias="0.476"
+                app:percentChange="@{alert.percentChange}" />
+
+            <TextView
+                android:id="@+id/tvAlertPrice"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="end"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#9ea1aa"
+                android:textSize="14sp"
+                app:alertPrice="@{alert.alertPrice}"
+                app:isAbove="@{alert.isAbove}"
+                app:layout_constraintBottom_toBottomOf="@+id/imgAlert"
+                app:layout_constraintEnd_toStartOf="@+id/tvPercentChange"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/textView99"
+                app:layout_constraintTop_toTopOf="@+id/imgAlert" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </com.daimajia.swipe.SwipeLayout>
+
+
+</layout>

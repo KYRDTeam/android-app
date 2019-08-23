@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/lnHeader"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#e4e7fd"
+    android:gravity="center_vertical"
+    android:minHeight="41dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="12dp"
+        android:padding="4dp"
+        android:text="@string/name"
+        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+        android:textColor="@color/item_token_header_text_color"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/view24"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Name" />
+
+
+    <View
+        android:id="@+id/view24"
+        android:layout_width="1dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
+        android:background="#979797"
+        app:layout_constraintBottom_toBottomOf="@+id/tvName"
+        app:layout_constraintEnd_toStartOf="@+id/tvBalance"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvName"
+        app:layout_constraintTop_toTopOf="@+id/tvName" />
+
+    <TextView
+        android:id="@+id/tvBalance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:padding="4dp"
+        android:text="@string/item_token_header_bal"
+        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+        android:textColor="@color/item_token_header_text_color"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/view24"
+        app:layout_constraintEnd_toStartOf="@+id/tvEth"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/view24"
+        app:layout_constraintTop_toTopOf="@+id/view24" />
+
+    <TextView
+        android:id="@+id/tvEth"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:gravity="center|end"
+        android:text="@string/unit_eth"
+        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+        android:textColor="@color/item_token_header_text_color"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvBalance"
+        app:layout_constraintEnd_toStartOf="@+id/view25"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvBalance"
+        app:layout_constraintTop_toTopOf="@+id/tvBalance"
+        tools:text="ETH" />
+
+    <View
+        android:id="@+id/view25"
+        android:layout_width="1dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
+        android:background="#979797"
+        app:layout_constraintBottom_toBottomOf="@+id/tvEth"
+        app:layout_constraintEnd_toStartOf="@+id/tvUsd"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvEth"
+        app:layout_constraintTop_toTopOf="@+id/tvEth" />
+
+    <TextView
+        android:id="@+id/tvUsd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center|end"
+        android:text="@string/unit_usd"
+        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+        android:textColor="@color/item_token_header_text_color"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/view25"
+        app:layout_constraintEnd_toStartOf="@+id/tvChange24h"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/view25"
+        app:layout_constraintTop_toTopOf="@+id/view25"
+        tools:text="USD" />
+
+
+    <TextView
+        android:id="@+id/tvChange24h"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:gravity="center|end"
+        android:text="@string/change_24h"
+        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+        android:textColor="@color/item_token_header_text_color"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvUsd"
+        app:layout_constraintEnd_toStartOf="@+id/imgFav"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvUsd"
+        app:layout_constraintTop_toTopOf="@+id/tvUsd" />
+
+    <ImageView
+        android:id="@+id/imgFav"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_token_favorite"
+        app:layout_constraintBottom_toBottomOf="@+id/tvChange24h"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvChange24h"
+        app:layout_constraintTop_toTopOf="@+id/tvChange24h" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

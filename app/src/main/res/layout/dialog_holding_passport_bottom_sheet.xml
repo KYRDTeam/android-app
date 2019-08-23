@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:text="@string/photo_of_you_holding_your_document"
+            android:textColor="#141927"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:lineSpacingExtra="6sp"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:text="@string/please_hold_the_passport_tip"
+            android:textColor="#5a5e67"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:lineSpacingExtra="8sp"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:text="@string/your_face_and_the_passport_tip"
+            android:textColor="#5a5e67"
+            android:textSize="14sp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvPassport"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="26dp"
+            android:clipToPadding="false"
+            android:paddingBottom="48dp" />
+    </LinearLayout>
+</layout>

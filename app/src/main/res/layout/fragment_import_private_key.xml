@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presentation.wallet.ImportWalletActivity">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="8dp"
+                    android:letterSpacing="0.07"
+                    android:text="@string/your_private_key"
+                    android:textColor="#9ea1aa"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/imgQR"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imgQR"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toEndOf="@+id/textInputLayout"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/imgQR" />
+
+                <ImageView
+                    android:id="@+id/imgQR"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="46dp"
+                    android:layout_marginEnd="20dp"
+                    android:src="@drawable/ic_qr_code_import_wallet"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/textView2"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="36dp"
+                    android:layout_marginEnd="20dp"
+                    android:backgroundTint="@color/edt_background_tint"
+                    app:hintEnabled="false"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView2"
+                    app:passwordToggleEnabled="true"
+                    app:passwordToggleTint="#9ea1aa">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtPrivateKey"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/edt_background_tint"
+                        android:hint="@string/enter_private_key"
+                        android:inputType="textPassword"
+                        android:singleLine="true"
+                        android:letterSpacing="0.07"
+                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textColor="#5a5e67"
+                        android:textColorHint="#9ea1aa"
+                        android:textSize="14sp"
+                        tools:text="Enter Password to Decrypt" />
+
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <EditText
+                    android:id="@+id/edtWalletName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginEnd="20dp"
+                    android:backgroundTint="@color/edt_background_tint"
+                    android:hint="@string/name_of_your_wallet"
+                    android:inputType="text"
+                    android:letterSpacing="0.07"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                    android:textColor="#9ea1aa"
+                    android:textColorHint="#9ea1aa"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
+                    tools:text="Name of your wallet" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <Button
+                android:id="@+id/btnImportWallet"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="41dp"
+                android:background="@drawable/import_wallet_toggle_drawable"
+                android:enabled="false"
+                android:gravity="center"
+                android:text="@string/import_wallet"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+
+    </androidx.core.widget.NestedScrollView>
+
+</layout>

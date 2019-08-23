@@ -1,0 +1,38 @@
+<resources>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="item_header_height">200dp</dimen>
+    <dimen name="tab_height">30dp</dimen>
+    <dimen name="header_elevation">4dp</dimen>
+    <dimen name="tab_indicator_height">3dp</dimen>
+    <dimen name="rounded_corner_value">4dp</dimen>
+    <dimen name="ah_bottom_navigation_height">49dp</dimen>
+    <dimen name="profile_margin">16</dimen>
+    <dimen name="actionbar_size">44dp</dimen>
+    <dimen name="toolbar_height">58dp</dimen>
+
+    <dimen name="bottom_navigation_text_size_active">10sp</dimen>
+    <dimen name="bottom_navigation_text_size_inactive">10sp</dimen>
+
+    <dimen name="bottom_navigation_text_size_forced_active">10sp</dimen>
+    <dimen name="bottom_navigation_text_size_forced_inactive">10sp</dimen>
+
+    <dimen name="bottom_navigation_margin_top_active">8dp</dimen>
+    <dimen name="bottom_navigation_margin_top_inactive">8dp</dimen>
+
+    <dimen name="bottom_navigation_margin_bottom_active">8dp</dimen>
+    <dimen name="bottom_navigation_margin_bottom_inactive">8dp</dimen>
+    <dimen name="bar_code_dimen">204dp</dimen>
+    <dimen name="statusbar_view_height">0dp</dimen>
+    <dimen name="toolbar_margin_top">20dp</dimen>
+    <dimen name="notification_margin_top">16dp</dimen>
+    <dimen name="dialog_width">339dp</dimen>
+    <dimen name="dialog_height">218dp</dimen>
+    <dimen name="tab_letter_spacing">0.86sp</dimen>
+    <dimen name="line_chart_width">0.5dp</dimen>
+    <dimen name="line_limit_text_size">12sp</dimen>
+    <dimen name="marker_height">76dp</dimen>
+    <dimen name="contact_size">32dp</dimen>
+    <dimen name="order_status_dimen">3dp</dimen>
+
+</resources>

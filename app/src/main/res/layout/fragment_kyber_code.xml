@@ -1,0 +1,124 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.kyberswap.android.presentation.main.profile.ProfileFragment">
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/screen_background">
+
+        <FrameLayout
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/toolbar_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/imgBack"
+                style="@style/BackImage" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:text="@string/kyber_code"
+                android:textColor="#ffffff"
+                android:textSize="18sp" />
+        </FrameLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/toolbar_height"
+            android:background="@color/color_bg_gray"
+            android:fillViewport="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/textView101"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="20dp"
+                    android:text="@string/your_kybercode"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#141927"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <EditText
+                    android:id="@+id/edtKyberCode"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:backgroundTint="@color/edt_background_tint"
+                    android:hint="@string/enter_your_kybercode"
+                    android:inputType="text"
+                    android:letterSpacing="0.07"
+                    android:minHeight="60dp"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                    android:textColor="#9ea1aa"
+                    android:textColorHint="#9ea1aa"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="@+id/textView101"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/textView101"
+                    app:layout_constraintTop_toBottomOf="@+id/textView101" />
+
+                <EditText
+                    android:id="@+id/edtWalletName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:backgroundTint="@color/edt_background_tint"
+                    android:hint="@string/name_your_wallet"
+                    android:inputType="textCapWords"
+                    android:letterSpacing="0.07"
+                    android:minHeight="60dp"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                    android:textColor="#9ea1aa"
+                    android:textColorHint="#9ea1aa"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="@+id/edtKyberCode"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/edtKyberCode"
+                    app:layout_constraintTop_toBottomOf="@+id/edtKyberCode" />
+
+                <TextView
+                    android:id="@+id/tvApply"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="72dp"
+                    android:background="@drawable/import_wallet_toggle_drawable"
+                    android:enabled="false"
+                    android:gravity="center"
+                    android:minHeight="45dp"
+                    android:text="@string/kyber_code_apply"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#ffffff"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="@+id/edtWalletName"
+                    app:layout_constraintStart_toStartOf="@+id/edtWalletName"
+                    app:layout_constraintTop_toBottomOf="@+id/edtWalletName" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+    </FrameLayout>
+
+</layout>
+
+

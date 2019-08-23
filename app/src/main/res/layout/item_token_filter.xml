@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="item"
+            type="com.kyberswap.android.domain.model.FilterItem" />
+
+        <variable
+            name="showEth"
+            type="Boolean" />
+    </data>
+
+    <TextView
+        android:id="@+id/tvToken"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        android:background="@drawable/text_background_toggle_drawable"
+        android:clickable="true"
+        android:drawableStart="@drawable/ic_checked_filter_toggle"
+        android:drawablePadding="4dp"
+        android:focusable="true"
+        android:gravity="center"
+        android:minHeight="32dp"
+        android:padding="4dp"
+        android:singleLine="true"
+        android:text="@{item.name}"
+        android:textAllCaps="true"
+        android:textColor="#5a5e67"
+        android:textSize="14sp"
+        app:selected="@{item.isSelected}" />
+
+
+</layout>

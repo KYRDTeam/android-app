@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="content"
+            type="String" />
+
+        <variable
+            name="isInfo"
+            type="Boolean" />
+
+        <variable
+            name="resourceId"
+            type="Integer" />
+
+        <import type="android.view.View" />
+    </data>
+
+    <FrameLayout
+        android:id="@+id/flContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="18dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="18dp"
+            android:background="@drawable/rounded_corner_dialog_background"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:minHeight="77dp"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:visibility="@{isInfo ? View.GONE : View.VISIBLE}">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_check" />
+
+            <TextView
+                android:id="@+id/tvContent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:letterSpacing="0.07"
+                android:text="@{content}"
+                android:textColor="#141927"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="18dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="18dp"
+            android:background="@drawable/rounded_corner_dialog_background"
+            android:padding="18dp"
+            android:visibility="@{isInfo ? View.VISIBLE : View.GONE}">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_confirm_info"
+                app:resourceId="@{resourceId}" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:lineSpacingExtra="8sp"
+                android:text="@{content}"
+                android:textColor="#141927"
+                android:textSize="14sp"
+                tools:text="Don’t worry. You will not be charged now. You pay fees only when transaction is executed (broadcasted &amp; mined)." />
+
+        </LinearLayout>
+    </FrameLayout>
+
+</layout>

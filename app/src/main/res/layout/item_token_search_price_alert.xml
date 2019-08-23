@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="token"
+            type="com.kyberswap.android.domain.model.Token" />
+
+        <variable
+            name="showEth"
+            type="Boolean" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:elevation="5dp"
+        android:gravity="center"
+        android:minHeight="64dp"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <ImageView
+            android:id="@+id/imgToken"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/token_default"
+            app:identifier="@{token.tokenSymbol}"
+            tools:layout_editor_absoluteX="55dp"
+            tools:layout_editor_absoluteY="152dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@{token.tokenSymbol}"
+            android:textAllCaps="true"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            tools:layout_editor_absoluteX="143dp"
+            tools:layout_editor_absoluteY="139dp"
+            tools:text="ADX" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_weight="1"
+            android:text="@{token.tokenName}"
+            android:textColor="#9ea1aa"
+            android:textSize="14sp"
+            tools:text="AdEx" />
+
+
+    </LinearLayout>
+
+
+</layout>

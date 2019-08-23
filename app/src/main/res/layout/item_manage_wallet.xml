@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="wallet"
+            type="com.kyberswap.android.domain.model.Wallet" />
+
+        <import type="android.view.View" />
+    </data>
+
+
+    <com.daimajia.swipe.SwipeLayout
+        android:id="@+id/sw_manage_wallet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:clickToClose="true"
+        app:drag_edge="right">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/btnSwitch"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="72dp"
+                android:layout_height="match_parent"
+                android:background="#31cb9e"
+                android:gravity="center"
+                android:text="@string/wallet_switch"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#ffffff"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/btnEdit"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="72dp"
+                android:layout_height="match_parent"
+                android:background="#1e89c1"
+                android:gravity="center"
+                android:text="@string/wallet_edit"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#ffffff"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/btnDelete"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="72dp"
+                android:layout_height="match_parent"
+                android:background="#f96363"
+                android:gravity="center"
+                android:text="@string/wallet_delete"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#ffffff"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/lnItem"
+            android:layout_width="match_parent"
+            android:layout_height="68dp"
+            android:background="@drawable/item_drawer_menu_toggle"
+            app:selected="@{wallet.isSelected}">
+
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="35dp"
+                android:layout_marginEnd="45dp"
+                android:letterSpacing="0.07"
+                android:singleLine="true"
+                android:text="@{wallet.name}"
+                android:textColor="#141927"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toTopOf="@+id/textView12"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <TextView
+                android:id="@+id/textView12"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="45dp"
+                android:letterSpacing="0.07"
+                android:singleLine="true"
+                android:text="@{wallet.address}"
+                android:textColor="#9ea1aa"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/textView13"
+                app:layout_constraintTop_toBottomOf="@+id/textView13" />
+
+            <ImageView
+                android:id="@+id/imgCheck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="13dp"
+                android:background="@drawable/ic_check_toggle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:selected="@{wallet.isSelected}" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </com.daimajia.swipe.SwipeLayout>
+
+</layout>
