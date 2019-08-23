@@ -606,6 +606,7 @@
     <string name="fail_import_mnemonic">Please check your seeds/mnemonic again.</string>
     <string name="fail_import_json">Fail to import json file</string>
     <string name="reserve_under_maintainance">This token pair is temporarily under maintenance</string>
+    <string name="app_version">Version %s</string>
 
 
 </resources>
