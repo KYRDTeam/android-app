@@ -39,8 +39,8 @@ object AppModule {
             .injector { job ->
                 if (job is GetTokenWorker) {
                     job.inject((application as KyberSwapApplication).getComponent())
-        
-    
+                }
+            }
             .scheduler(
                 createSchedulerFor(
                     application,

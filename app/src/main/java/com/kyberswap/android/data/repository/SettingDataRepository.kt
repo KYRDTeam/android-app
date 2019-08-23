@@ -22,7 +22,7 @@ class SettingDataRepository @Inject constructor(
     override fun getPin(): Single<PassCode> {
         return Single.fromCallable {
             passCodeDao.findPassCode()
-
+        }
     }
 
     override fun verifyPin(param: VerifyPinUseCase.Param): Single<VerifyStatus> {
@@ -37,9 +37,9 @@ class SettingDataRepository @Inject constructor(
                             time = 0
                         )
                     )
-        
+                }
                 VerifyStatus(true)
-     else {
+            } else {
                 passCode?.let {
                     passCodeDao.updatePassCode(
                         passCode.copy(
@@ -47,17 +47,17 @@ class SettingDataRepository @Inject constructor(
                             time = param.time
                         )
                     )
-        
+                }
 
                 VerifyStatus(false)
-    
-
+            }
+        }
     }
 
     override fun savePin(param: SavePinUseCase.Param): Completable {
         return Completable.fromCallable {
             passCodeDao.createNewPassCode(PassCode(digest = hash(param.pin)))
-
+        }
     }
 
     private fun hash(passCode: String): String {

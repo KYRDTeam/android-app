@@ -35,12 +35,12 @@ class ChartViewModel @Inject constructor(
         saveSwapDataTokenUseCase.execute(
             Action {
                 _callback.value = Event(SaveSwapDataState.Success())
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _callback.value =
                     Event(SaveSwapDataState.ShowError(it.localizedMessage))
-    ,
+            },
             SaveSwapDataTokenUseCase.Param(walletAddress, token, isSell)
         )
     }
@@ -50,10 +50,10 @@ class ChartViewModel @Inject constructor(
         saveSendTokenUseCase.execute(
             Action {
                 _callbackSaveSend.value = Event(SaveSendState.Success())
-    ,
+            },
             Consumer {
                 _callbackSaveSend.value = Event(SaveSendState.Success())
-    ,
+            },
             SaveSendTokenUseCase.Param(address, token)
         )
     }
@@ -68,7 +68,7 @@ enum class ChartType : Parcelable {
             DAY -> "15"
             WEEK, MONTH -> "60"
             YEAR, ALL -> "D"
-
+        }
 
     fun fromTime(toTime: Long): Long {
         return when (this) {
@@ -77,7 +77,7 @@ enum class ChartType : Parcelable {
             MONTH -> toTime - 30 * 24 * 60 * 60
             YEAR -> toTime - 365 * 24 * 60 * 60
             ALL -> 1
-
+        }
     }
 
 
@@ -87,9 +87,9 @@ enum class ChartType : Parcelable {
                 DAY -> "HH:mm"
                 WEEK, MONTH -> "dd/MM HH:MM"
                 YEAR, ALL -> "dd/MM"
-    
+            }
             return SimpleDateFormat(pattern, Locale.US)
-
+        }
 
     fun label(forTime: Long): String {
         val date = Date(forTime)

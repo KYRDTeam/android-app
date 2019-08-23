@@ -49,18 +49,18 @@ class SplashActivity : BaseActivity() {
                     when (state) {
                         is GetUserWalletState.Success -> {
                             navigator.navigateToHome()
-                
+                        }
                         is GetUserWalletState.ShowError -> {
                             navigator.navigateToLandingPage()
                             return@Observer
-                
-            
-    
-)
+                        }
+                    }
+            }
+        })
         handler.postDelayed({
             viewModel.prepareData()
             frameAnimation.stop()
-, 1600)
+        }, 1600)
     }
 
     override fun onStart() {

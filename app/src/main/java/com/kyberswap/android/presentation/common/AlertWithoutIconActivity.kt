@@ -34,10 +34,10 @@ class AlertWithoutIconActivity : BaseActivity() {
         binding.isVisibleTitle = !title.isNullOrEmpty()
         binding.flContainer.setOnClickListener {
             onBackPressed()
-
+        }
         handler.postDelayed({
             onBackPressed()
-, displayTime * 1000L)
+        }, displayTime * 1000L)
     }
 
     override fun onDestroy() {
@@ -70,6 +70,6 @@ class AlertWithoutIconActivity : BaseActivity() {
             putExtra(ALERT_CONTENT, content)
             putExtra(ALERT_TITLE, title)
             putExtra(DISPLAY_TIME_SECONDS, time)
-
+        }
     }
 }

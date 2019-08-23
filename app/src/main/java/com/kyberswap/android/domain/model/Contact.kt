@@ -28,7 +28,7 @@ data class Contact(
                 address.substring(
                     if (address.length > 6) {
                         address.length - 6
-             else address.length
+                    } else address.length
                 )
             ).toString()
 

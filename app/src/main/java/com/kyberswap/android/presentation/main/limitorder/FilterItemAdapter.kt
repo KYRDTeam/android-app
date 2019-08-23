@@ -19,17 +19,17 @@ class FilterItemAdapter(
     diffCallback = object : DiffUtil.ItemCallback<FilterItem>() {
         override fun areItemsTheSame(oldItem: FilterItem, newItem: FilterItem): Boolean {
             return oldItem == newItem
-
+        }
 
         override fun areContentsTheSame(oldItem: FilterItem, newItem: FilterItem): Boolean {
             return oldItem == newItem
-
+        }
     }
 ) {
     override fun bind(binding: ItemFilterBinding, item: FilterItem) {
         binding.cb.setOnCheckedChangeListener { _, isChecked ->
             item.isSelected = isChecked
-
+        }
         binding.name = item.itemName
         binding.isSelected = item.isSelected
         binding.executePendingBindings()
@@ -40,7 +40,7 @@ class FilterItemAdapter(
         submitList(getData().map {
             it.isSelected = true
             it
-)
+        })
         notifyDataSetChanged()
     }
 

@@ -23,7 +23,7 @@ class SwapClient @Inject constructor(private val web3j: Web3j) {
             "balanceOf",
             listOf(Address(owner)),
             listOf<TypeReference<*>>(object : TypeReference<Uint256>() {
-    )
+            })
         )
     }
 
@@ -41,10 +41,10 @@ class SwapClient @Inject constructor(private val web3j: Web3j) {
             ),
             listOf<TypeReference<*>>(
                 object : TypeReference<Uint256>() {
-        ,
+                },
                 object : TypeReference<Uint256>() {
 
-        )
+                })
         )
     }
 
@@ -85,9 +85,9 @@ class SwapClient @Inject constructor(private val web3j: Web3j) {
         )
         return if (response.size == 1) {
             BigDecimal((response[0] as Uint256).value)
- else {
+        } else {
             null
-
+        }
     }
 
 
@@ -109,7 +109,7 @@ class SwapClient @Inject constructor(private val web3j: Web3j) {
         for (rates in responses) {
             val rate = rates as Uint256
             rateResult.add(rate)
-
+        }
         return rateResult
     }
 
@@ -118,12 +118,12 @@ class SwapClient @Inject constructor(private val web3j: Web3j) {
         return token.updateBalance(
             if (token.isETH) {
                 Convert.fromWei(BigDecimal(getEthBalance(owner)), Convert.Unit.ETHER)
-     else {
+            } else {
                 Convert.fromWei(
                     getBalance(owner, token.tokenAddress) ?: BigDecimal.ZERO,
                     Convert.Unit.ETHER
                 )
-    
+            }
         )
     }
 }

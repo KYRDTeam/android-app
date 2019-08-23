@@ -56,16 +56,16 @@ class TransactionStatusViewModel @Inject constructor(
                         transactionList = it
                         currentFilter = transactionFilter
 
-            ,
+                    },
                     Consumer {
                         Timber.e(it.localizedMessage)
                         _getTransactionCallback.value =
                             Event(GetTransactionState.ShowError(it.localizedMessage))
-            ,
+                    },
                     wallet.address
                 )
-    
- else {
+            }
+        } else {
             if (currentFilter != transactionFilter || isForceRefresh) {
                 Timber.e("Request: isFilterChange: "+ (currentFilter != transactionFilter) + " isForceRefresh: "+isForceRefresh)
                 getTransactionsUseCase.dispose()
@@ -86,21 +86,21 @@ class TransactionStatusViewModel @Inject constructor(
                             )
                             transactionList = response.transactionList
                             currentFilter = transactionFilter
-                 else if (response.isLoaded) {
+                        } else if (response.isLoaded) {
                             _getTransactionCallback.value =
                                 Event(GetTransactionState.FilterNotChange(true))
-                
+                        }
 
-            ,
+                    },
                     Consumer {
                         Timber.e(it.localizedMessage)
                         _getTransactionCallback.value =
                             Event(GetTransactionState.ShowError(it.localizedMessage))
-            ,
+                    },
                     GetTransactionsUseCase.Param(wallet)
                 )
-    
-
+            }
+        }
     }
 
     private fun filterTransaction(
@@ -117,7 +117,7 @@ class TransactionStatusViewModel @Inject constructor(
                         (tokenList.contains(it.tokenSymbol.toLowerCase()) ||
                                 tokenList.contains(it.tokenSource.toLowerCase())
                                 || tokenList.contains(it.tokenDest.toLowerCase()))
-    
+            }
             .groupBy { it.shortedDateTimeFormat }
             .flatMap { item ->
                 val items = mutableListOf<TransactionItem>()
@@ -126,12 +126,12 @@ class TransactionStatusViewModel @Inject constructor(
                 list.forEachIndexed { index, transaction ->
                     if (index % 2 == 0) {
                         items.add(TransactionItem.ItemEven(transaction))
-             else {
+                    } else {
                         items.add(TransactionItem.ItemOdd(transaction))
-            
-        
+                    }
+                }
                 items
-    
+            }
     }
 
     fun getTransactionFilter(type: Int, wallet: Wallet, isForceRefresh: Boolean) {
@@ -142,18 +142,18 @@ class TransactionStatusViewModel @Inject constructor(
 //                if (currentFilter != it || isForceRefresh) {
 //                    currentFilter = it
 //                    getTransaction(type, wallet, it, isForceRefresh)
-//         else {
+//                } else {
 //                    _getTransactionCallback.value =
 //                        Event(GetTransactionState.FilterNotChange(true))
-//        
+//                }
 
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 Timber.e(it.localizedMessage)
                 _getTransactionCallback.value =
                     Event(GetTransactionState.ShowError(it.localizedMessage))
-    ,
+            },
             GetTransactionFilterUseCase.Param(wallet.address)
         )
     }

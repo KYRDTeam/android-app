@@ -19,11 +19,11 @@ class FilterStatusAdapter(
     diffCallback = object : DiffUtil.ItemCallback<FilterItem>() {
         override fun areItemsTheSame(oldItem: FilterItem, newItem: FilterItem): Boolean {
             return oldItem == newItem
-
+        }
 
         override fun areContentsTheSame(oldItem: FilterItem, newItem: FilterItem): Boolean {
             return oldItem == newItem
-
+        }
     }
 ) {
     override fun bind(binding: ItemFilterBinding, item: FilterItem) {

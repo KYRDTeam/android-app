@@ -18,14 +18,14 @@ class ImportSeedViewModel @Inject constructor(
         importWalletFromSeedUseCase.execute(
             Consumer {
                 loadBalances(it)
-    ,
+            },
             Consumer {
                 if (it is TokenException) {
                     importWalletCallback.value = ImportWalletState.ShowError(it.message)
-         else {
+                } else {
                     importWalletCallback.value = ImportWalletState.ShowError(it.localizedMessage)
-        
-    ,
+                }
+            },
             ImportWalletFromSeedUseCase.Param(seed, walletName)
         )
     }

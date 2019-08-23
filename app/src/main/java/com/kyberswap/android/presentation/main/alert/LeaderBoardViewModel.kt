@@ -29,13 +29,13 @@ class LeaderBoardViewModel @Inject constructor(
             Consumer { lb ->
                 val meAlert = lb.data.find {
                     it.userId == userInfo.uid
-        
+                }
 
                 val alerts = mutableListOf<Alert>()
 
                 if (meAlert != null) {
                     alerts.add(meAlert.copy(userName = userInfo.name))
-        
+                }
                 alerts.addAll(lb.data)
 
                 _getAlertsCallback.value =
@@ -46,12 +46,12 @@ class LeaderBoardViewModel @Inject constructor(
                             lb.lastCampaignTitle
                         )
                     )
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getAlertsCallback.value =
                     Event(GetLeaderBoardState.ShowError(it.localizedMessage))
-    ,
+            },
             null
         )
     }
@@ -62,11 +62,11 @@ class LeaderBoardViewModel @Inject constructor(
             Consumer { lb ->
                 val meAlert = lb.data.find {
                     it.userId == userInfo.uid
-        
+                }
                 val alerts = lb.data.toMutableList()
                 if (meAlert != null) {
                     alerts[lb.data.indexOf(meAlert)] = meAlert.copy(userName = userInfo.name)
-        
+                }
 
                 _getAlertsCallback.value =
                     Event(
@@ -76,12 +76,12 @@ class LeaderBoardViewModel @Inject constructor(
                             lb.lastCampaignTitle
                         )
                     )
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getAlertsCallback.value =
                     Event(GetLeaderBoardState.ShowError(it.localizedMessage))
-    ,
+            },
             null
         )
     }

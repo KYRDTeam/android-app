@@ -31,11 +31,11 @@ class SwapConfirmViewModel @Inject constructor(
         getSwapData.execute(
             Consumer {
                 _getSwapCallback.value = Event(GetSwapState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getSwapCallback.value = Event(GetSwapState.ShowError(it.localizedMessage))
-    ,
+            },
             GetSwapDataUseCase.Param(wallet)
         )
     }
@@ -47,16 +47,16 @@ class SwapConfirmViewModel @Inject constructor(
                 Consumer {
                     _swapTokenTransactionCallback.value =
                         Event(SwapTokenTransactionState.Success(it))
-        ,
+                },
                 Consumer {
                     it.printStackTrace()
                     _swapTokenTransactionCallback.value =
                         Event(SwapTokenTransactionState.ShowError(it.localizedMessage))
-        ,
+                },
                 SwapTokenUseCase.Param(wallet!!, swap)
 
             )
-
+        }
     }
 
 }

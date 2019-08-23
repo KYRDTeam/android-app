@@ -27,14 +27,14 @@ class ManageAlertAdapter(
     diffCallback = object : DiffUtil.ItemCallback<Alert>() {
         override fun areItemsTheSame(oldItem: Alert, newItem: Alert): Boolean {
             return oldItem.id == newItem.id
-
+        }
 
 
         override fun areContentsTheSame(oldItem: Alert, newItem: Alert): Boolean {
             return oldItem.symbol == newItem.symbol && oldItem.pair == newItem.pair &&
                 oldItem.alertPrice == newItem.alertPrice && oldItem.isAbove == newItem.isAbove &&
                 oldItem.percentChange == newItem.percentChange
-
+        }
     }
 ) {
     override fun getSwipeLayoutResourceId(position: Int): Int {
@@ -61,30 +61,30 @@ class ManageAlertAdapter(
         binding.setVariable(BR.alert, item)
         binding.csLayout.setOnClickListener {
             onItemClick?.invoke(item)
-
+        }
 
         binding.executePendingBindings()
 
         binding.swipe.addSwipeListener(object : SimpleSwipeListener() {
             override fun onStartOpen(layout: SwipeLayout?) {
                 mItemManger.closeAllExcept(layout)
-    
-)
+            }
+        })
 
         binding.btnEdit.setOnClickListener {
 
             binding.swipe.close(true)
             handler.postDelayed({
                 onEditClick?.invoke(item)
-    , 250)
+            }, 250)
 
-
+        }
         binding.btnDelete.setOnClickListener {
             binding.swipe.close(true)
             handler.postDelayed({
                 onDeleteClick?.invoke(item)
-    , 250)
-
+            }, 250)
+        }
 
     }
 

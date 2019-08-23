@@ -29,7 +29,7 @@ class UserMapper @Inject constructor() {
     fun transform(alerts: List<AlertEntity>): List<Alert> {
         return alerts.map {
             Alert(it)
-
+        }
     }
 
     fun transform(entity: AlertMethodsResponseEntity): AlertMethodsResponse {

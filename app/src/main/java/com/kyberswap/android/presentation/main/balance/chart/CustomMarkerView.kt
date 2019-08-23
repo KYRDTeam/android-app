@@ -36,7 +36,7 @@ class CustomMarkerView(context: Context, private val xAxisValueFormatter: ValueF
                 makerPrice,
                 e.y.toString().toBigDecimalOrDefaultZero().toDisplayNumber()
             )
-
+        }
 
 
         super.refreshContent(e, highlight)

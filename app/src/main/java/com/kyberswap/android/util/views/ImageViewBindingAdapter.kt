@@ -35,7 +35,7 @@ object ImageViewBindingAdapter {
         if (url == null || url.isEmpty()) {
             view.setImageDrawable(error)
             return
-
+        }
         Glide.with(view).load(url).apply(RequestOptions().error(error)).into(view)
     }
 
@@ -45,7 +45,7 @@ object ImageViewBindingAdapter {
         if (url == null || url.isEmpty()) {
             view.setImageDrawable(placeHolder)
             return
-
+        }
         Glide.with(view).load(url).apply(RequestOptions().placeholder(placeHolder)).into(view)
     }
 
@@ -55,7 +55,7 @@ object ImageViewBindingAdapter {
         if (uri == null) {
             view.setImageDrawable(error)
             return
-
+        }
         Glide.with(view).load(uri).apply(RequestOptions().error(error)).into(view)
     }
 
@@ -72,9 +72,9 @@ object ImageViewBindingAdapter {
 
         val id = if (identifier == Token.ETH_SYMBOL_STAR) {
             Token.ETH
- else {
+        } else {
             identifier
-
+        }
 
         val stringUrl =
             "https://files.kyber.network/DesignAssets/tokens/iOS/${id.toLowerCase()}.png"
@@ -89,19 +89,19 @@ object ImageViewBindingAdapter {
 
             if (identifier.toLowerCase() == view.context.getString(R.string.token_eth_star).toLowerCase()) {
                 resourceIcon = R.drawable.eth
-    
+            }
 
             if (resourceIcon == 0) {
                 resourceIcon = R.drawable.token_default
-    
+            }
             Glide.with(view)
                 .load(stringUrl)
                 .apply(RequestOptions().override(32.dpToPx(view.context), 32.dpToPx(view.context)))
                 .placeholder(resourceIcon)
                 .error(resourceIcon).into(view)
- catch (exception: Exception) {
+        } catch (exception: Exception) {
             exception.printStackTrace()
-
+        }
     }
 
     @BindingAdapter("app:ratePercentage", "app:hasSamePair", "app:warning")
@@ -116,17 +116,17 @@ object ImageViewBindingAdapter {
         if (samePair != null && samePair) {
             view.visibility = View.GONE
             return
-
+        }
 
         if (percentageRate.toBigDecimalOrDefaultZero() > (-0.1).toBigDecimal()) {
             view.visibility = View.GONE
- else {
+        } else {
             if (warning != null && warning) {
                 view.visibility = View.VISIBLE
-     else {
+            } else {
                 View.GONE
-    
-
+            }
+        }
     }
 
     @BindingAdapter("app:tokenSymbol")
@@ -134,9 +134,9 @@ object ImageViewBindingAdapter {
     fun tokenSymbol(view: ImageView, tokenSymbol: String?) {
         if (tokenSymbol != null && tokenSymbol.toLowerCase() == view.context.getString(R.string.token_eth_star).toLowerCase()) {
             view.visibility = View.VISIBLE
- else {
+        } else {
             view.visibility = View.GONE
-
+        }
     }
 
 
@@ -153,9 +153,9 @@ object ImageViewBindingAdapter {
             )
             val drawable = PictureDrawable(svg.renderToPicture())
             Glide.with(view).load(drawable).into(view)
- catch (ex: Exception) {
+        } catch (ex: Exception) {
             ex.printStackTrace()
-
+        }
     }
 
     @BindingAdapter("app:loginType")
@@ -164,15 +164,15 @@ object ImageViewBindingAdapter {
         val drawable = when (loginType) {
             LoginType.GOOGLE -> {
                 R.drawable.ic_google_plus_register
-    
+            }
             LoginType.FACEBOOK -> {
                 R.drawable.ic_facebook_register
-    
+            }
             LoginType.TWITTER -> {
                 R.drawable.ic_twitter_register
-    
+            }
             LoginType.NORMAL -> 0
-
+        }
 
         Glide.with(view).load(drawable).into(view)
     }

@@ -23,24 +23,24 @@ fun BigDecimal.toDisplayNumberInternal(length: Int = 4): String {
                 list[0] + '.' + s.substring(0, if (s.length > length) length else s.length)
             return scaleString.toBigDecimal().setScale(scaleString.length, RoundingMode.UP)
                 .stripTrailingZeros().toPlainString()
- else {
+        } else {
             var index = 0
             s.forEach { c ->
                 if (c == '0') {
                     index++
-         else {
+                } else {
                     return list[0] + '.' + s.substring(0, index) + s.substring(
                         index,
                         if (s.length > index + length) index + length else s.length
                     )
-        
-    
+                }
+            }
             val scaleString =
                 list[0] + '.' + s.substring(0, if (s.length > length) length else s.length)
             return scaleString
                 .toBigDecimal()
                 .stripTrailingZeros()
                 .toPlainString()
-
+        }
     }
 }

@@ -79,7 +79,7 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
 
         wallet?.let {
             getTransactionsByFilter()
-
+        }
 
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
@@ -88,15 +88,15 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                         if (wallet?.address != state.wallet.address) {
                             wallet = state.wallet
                             getTransactionsByFilter()
-                
+                        }
                         binding.wallet = wallet
-            
+                    }
                     is GetWalletState.ShowError -> {
 
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         setupTransactionList()
 
@@ -109,7 +109,7 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                     R.color.colorAccent
                 )
             )
-
+        }
         binding.swipeLayout.setOnRefreshListener(this)
 
         viewModel.getTransactionCallback.observe(viewLifecycleOwner, Observer {
@@ -118,37 +118,37 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                     is GetTransactionState.Loading -> {
                         Timber.e("Loading")
                         showProgress(true)
-            
+                    }
                     is GetTransactionState.Success -> {
                         Timber.e("state loaded: " + state.isLoaded + ": state.isPending: " + isPending + ", filterChange: " + state.isFilterChanged)
                         if (state.isLoaded) {
                             showProgress(false)
-                
+                        }
 
                         if (state.isFilterChanged) {
                             transactionStatusAdapter?.submitList(null)
-                
+                        }
                         updateTransactionList(state.transactions)
-            
+                    }
                     is GetTransactionState.ShowError -> {
                         showProgress(false)
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
+                    }
                     is GetTransactionState.FilterNotChange -> {
                         Timber.e("Filter not change")
                         showProgress(false)
                         if (transactionStatusAdapter?.itemCount == 0) {
                             binding.emptyTransaction = emptyTransaction
-                 else {
+                        } else {
                             binding.emptyTransaction = ""
-                
-            
-        
-    
-)
+                        }
+                    }
+                }
+            }
+        })
     }
 
     private fun setupTransactionList() {
@@ -180,17 +180,17 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                             wallet,
                             it
                         )
-        
+                }
 
-    
-
+            }
+        }
         binding.rvTransaction.adapter = transactionStatusAdapter
     }
 
     private fun getTransactionsByFilter(isForceRefresh: Boolean = false) {
         wallet?.let {
             viewModel.getTransactionFilter(transactionType, it, isForceRefresh)
-
+        }
     }
 
     override fun onRefresh() {
@@ -205,15 +205,15 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
 
         if (transactions.isEmpty()) {
             binding.emptyTransaction = emptyTransaction
- else {
+        } else {
             binding.emptyTransaction = ""
-
+        }
     }
 
     override fun showProgress(showProgress: Boolean) {
         handler.post {
             binding.swipeLayout.isRefreshing = showProgress
-
+        }
     }
 
     override fun onDestroyView() {
@@ -227,7 +227,7 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
             TransactionStatusFragment().apply {
                 arguments = Bundle().apply {
                     putInt(TRANSACTION_TYPE, type)
-        
-    
+                }
+            }
     }
 }

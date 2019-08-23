@@ -17,7 +17,7 @@ class GetTokenUseCase @Inject constructor(
         return balanceRepository.getChange24h().map {
             it.filter { token ->
                 token.isListed && !token.isOther
-    
-
+            }
+        }
     }
 }

@@ -33,11 +33,11 @@ class TokenAdapter(
     diffCallback = object : DiffUtil.ItemCallback<Token>() {
         override fun areItemsTheSame(oldItem: Token, newItem: Token): Boolean {
             return oldItem.tokenSymbol == newItem.tokenSymbol
-
+        }
 
         override fun areContentsTheSame(oldItem: Token, newItem: Token): Boolean {
             return oldItem.areContentsTheSame(newItem)
-
+        }
     }
 ) {
     private var isEth = false
@@ -82,37 +82,37 @@ class TokenAdapter(
             OrderType.BALANCE -> tokens.sortedByDescending { it.currentBalance }
             OrderType.ETH_ASC -> tokens.sortedBy {
                 it.rateEthNow
-    
+            }
             OrderType.ETH_DESC -> tokens.sortedByDescending {
                 it.rateEthNow
-    
+            }
             OrderType.USD_ASC -> tokens.sortedBy { it.rateUsdNow }
             OrderType.USD_DESC -> tokens.sortedByDescending {
                 it.rateUsdNow
-    
+            }
             OrderType.CHANGE_24H_ASC -> tokens.sortedBy {
                 it.change24hValue(isEth)
-    
+            }
             OrderType.CHANGE24H_DESC -> tokens.sortedByDescending {
                 it.change24hValue(isEth)
-    
-
+            }
+        }
 
         val filterList = when (tokenType) {
             TokenType.LISTED -> orderList.filter { it.isListed && !it.isOther }
             TokenType.FAVOURITE -> orderList.filter {
                 it.fav
-    
+            }
             TokenType.OTHER -> orderList.filter {
                 it.isOther
-    
-
+            }
+        }
 
         if (forceUpdate) {
             submitList(null)
- else {
+        } else {
             submitList(listOf())
-
+        }
 
         submitList(filterList)
     }
@@ -122,7 +122,7 @@ class TokenAdapter(
             OrderType.ETH_ASC -> OrderType.ETH_DESC
             OrderType.ETH_DESC -> OrderType.ETH_ASC
             else -> OrderType.ETH_DESC
-
+        }
     }
 
     fun toggleUsd(): OrderType {
@@ -130,7 +130,7 @@ class TokenAdapter(
             OrderType.USD_ASC -> OrderType.USD_DESC
             OrderType.USD_DESC -> OrderType.USD_ASC
             else -> OrderType.USD_DESC
-
+        }
     }
 
     fun toggleChange24h(): OrderType {
@@ -138,7 +138,7 @@ class TokenAdapter(
             OrderType.CHANGE24H_DESC -> OrderType.CHANGE_24H_ASC
             OrderType.CHANGE_24H_ASC -> OrderType.CHANGE24H_DESC
             else -> OrderType.CHANGE24H_DESC
-
+        }
     }
 
     fun toggleNameBal(): OrderType {
@@ -146,7 +146,7 @@ class TokenAdapter(
             OrderType.NAME -> OrderType.BALANCE
             OrderType.BALANCE -> OrderType.NAME
             else -> OrderType.NAME
-
+        }
     }
 
     val isNameBalOrder: Boolean
@@ -173,54 +173,54 @@ class TokenAdapter(
         binding.setVariable(BR.token, item)
         binding.lnItem.setOnClickListener {
             onTokenClick?.invoke(item)
-
+        }
         binding.btnBuy.setOnClickListener {
 
             binding.swipe.close(true)
             handler.postDelayed({
                 onBuyClick?.invoke(item)
-    , 250)
+            }, 250)
 
-
+        }
         binding.btnSell.setOnClickListener {
             binding.swipe.close(true)
             handler.postDelayed({
                 onSellClick?.invoke(item)
-    , 250)
-
+            }, 250)
+        }
         binding.btnSend.setOnClickListener {
             binding.swipe.close(true)
             handler.postDelayed(
                 {
                     onSendClick?.invoke(item)
-        , 250
+                }, 250
             )
 
-
+        }
 
         binding.imgFav.setOnClickListener {
             it.isSelected = !item.fav
             item.fav = !item.fav
             onFavClick?.invoke(item)
-
+        }
 
         binding.swipe.addSwipeListener(object : SimpleSwipeListener() {
             override fun onStartOpen(layout: SwipeLayout?) {
                 mItemManger.closeAllExcept(layout)
-    
-)
+            }
+        })
 
         val drawable = when (item.change24hStatus(isEth)) {
             Token.UP -> R.drawable.ic_arrow_up
             Token.DOWN -> R.drawable.ic_arrow_down
             else -> null
-
+        }
 
         val color = when (item.change24hStatus(isEth)) {
             Token.UP -> R.color.token_change24h_up
             Token.DOWN -> R.color.token_change24h_down
             else -> R.color.token_change24h_same
-
+        }
 
 
         Glide.with(binding.imgState)

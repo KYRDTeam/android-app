@@ -74,7 +74,7 @@ class ProfileDetailFragment : BaseFragment() {
                 OneSignal.getPermissionSubscriptionState().subscriptionStatus.userId,
                 OneSignal.getPermissionSubscriptionState().subscriptionStatus.pushToken
             )
-
+        }
 
         viewModel.pollingKycProfile()
         viewModel.getUserInfoCallback.observe(viewLifecycleOwner, Observer {
@@ -107,18 +107,18 @@ class ProfileDetailFragment : BaseFragment() {
                             if (UserInfo.BLOCKED == state.userInfo?.kycStatus) {
                                 binding.tvKycTitle.text = getString(R.string.profile_blocked)
                                 binding.tvKycVerification.text = state.userInfo.blockReason
-                    
-                
-            
+                            }
+                        }
+                    }
                     is UserInfoState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         viewModel.refreshKycStatus.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -126,16 +126,16 @@ class ProfileDetailFragment : BaseFragment() {
                 when (state) {
                     is UserInfoState.Success -> {
                         navigateToKyc()
-            
+                    }
                     is UserInfoState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         viewModel.getAlert()
         binding.rvAlert.layoutManager = LinearLayoutManager(
@@ -149,17 +149,17 @@ class ProfileDetailFragment : BaseFragment() {
                     navigator.navigateToPriceAlertScreen(
                         currentFragment, it
                     )
-        , {
+                }, {
                     navigator.navigateToPriceAlertScreen(
                         currentFragment, it
                     )
-        , {
+                }, {
                     dialogHelper.showConfirmDeleteAlert(
                         {
                             viewModel.deleteAlert(it)
-                
+                        }
                     )
-        )
+                })
         binding.rvAlert.adapter = alertAdapter
 
         viewModel.getAlertsCallback.observe(viewLifecycleOwner, Observer {
@@ -170,16 +170,16 @@ class ProfileDetailFragment : BaseFragment() {
                         this.alerts.clear()
                         this.alerts.addAll(state.alerts)
                         alertAdapter.submitAlerts(state.alerts.take(2))
-            
+                    }
                     is GetAlertsState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         viewModel.deleteAlertsCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -187,29 +187,29 @@ class ProfileDetailFragment : BaseFragment() {
                 when (state) {
                     is DeleteAlertsState.Success -> {
                         showAlert(getString(R.string.delete_alert_success))
-            
+                    }
                     is DeleteAlertsState.ShowError -> {
                         showAlert(state.message ?: getString(R.string.something_wrong))
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
 //        viewModel.getAlertsCallback.observe(viewLifecycleOwner, Observer {
 //            it?.getContentIfNotHandled()?.let { state ->
 //                when (state) {
 //                    is GetAlertsState.Success -> {
 //                        alertAdapter.submitAlerts(state.alerts.take(2))
-//            
+//                    }
 //                    is GetAlertsState.ShowError -> {
 //                        showAlert(
 //                            state.message ?: getString(R.string.something_wrong),
 //                            R.drawable.ic_info_error
 //                        )
-//            
-//        
-//    
-//)
+//                    }
+//                }
+//            }
+//        })
 
         viewModel.logoutCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -217,26 +217,26 @@ class ProfileDetailFragment : BaseFragment() {
                 when (state) {
                     is LogoutState.Success -> {
                         navigator.navigateToSignInScreen(currentFragment)
-            
+                    }
                     is LogoutState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         binding.tvLogout.setOnClickListener {
             dialogHelper.showConfirmation(
                 getString(R.string.log_out), getString(R.string.lout_out_confirmation)
                 , {
                     viewModel.logout()
-        , {
+                }, {
 
-        )
-
+                })
+        }
 
         binding.imgCreateAlert.setOnClickListener {
             if (alerts.size >= 10) {
@@ -245,13 +245,13 @@ class ProfileDetailFragment : BaseFragment() {
                         R.string.alert_limit_exceeds_instruction
                     )
                 )
-     else {
+            } else {
                 navigator.navigateToPriceAlertScreen(
                     currentFragment
                 )
-    
+            }
 
-
+        }
 
 
         binding.imgLeaderBoard.setOnClickListener {
@@ -259,18 +259,18 @@ class ProfileDetailFragment : BaseFragment() {
                 currentFragment,
                 binding.user
             )
-
+        }
 
         binding.tvMoreAlert.setOnClickListener {
             navigator.navigateToManageAlert(
                 currentFragment
             )
-
+        }
 
         binding.tvAction.setOnClickListener {
             viewModel.refreshKycStatus()
 
-
+        }
         viewModel.reSubmitKycCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == ReSubmitState.Loading)
@@ -279,28 +279,28 @@ class ProfileDetailFragment : BaseFragment() {
                         navigator.navigateToKYC(
                             currentFragment, binding.user?.kycStep
                         )
-            
+                    }
                     is ReSubmitState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
     }
 
     private fun navigateToKyc() {
         binding.user?.let {
             if (it.isKycReject) {
                 viewModel.reSubmit(it)
-     else {
+            } else {
                 navigator.navigateToKYC(
                     currentFragment, it.kycStep
                 )
-    
-
+            }
+        }
     }
 
     companion object {

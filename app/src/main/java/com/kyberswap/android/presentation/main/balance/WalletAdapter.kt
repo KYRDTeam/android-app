@@ -19,12 +19,12 @@ class WalletAdapter(
     diffCallback = object : DiffUtil.ItemCallback<Wallet>() {
         override fun areItemsTheSame(oldItem: Wallet, newItem: Wallet): Boolean {
             return oldItem.walletId == newItem.walletId
-
+        }
 
         override fun areContentsTheSame(oldItem: Wallet, newItem: Wallet): Boolean {
             return oldItem.name == newItem.name && oldItem.address == newItem.address
                 && oldItem.isSelected == newItem.isSelected
-
+        }
     }
 ) {
 
@@ -35,7 +35,7 @@ class WalletAdapter(
         binding.root.setOnClickListener {
             onItemClick?.invoke(item.copy(isSelected = true))
 
-
+        }
     }
 
 

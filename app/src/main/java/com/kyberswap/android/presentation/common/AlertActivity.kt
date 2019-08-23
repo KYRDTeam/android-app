@@ -31,10 +31,10 @@ class AlertActivity : BaseActivity() {
         binding.isInfo = resourceId > 0
         binding.flContainer.setOnClickListener {
             onBackPressed()
-
+        }
         handler.postDelayed({
             onBackPressed()
-, 3000)
+        }, 3000)
     }
 
     override fun onDestroy() {
@@ -63,6 +63,6 @@ class AlertActivity : BaseActivity() {
             Intent(context, AlertActivity::class.java).apply {
                 putExtra(ALERT_CONTENT, content)
                 putExtra(ALERT_ICON, resourceId)
-    
+            }
     }
 }

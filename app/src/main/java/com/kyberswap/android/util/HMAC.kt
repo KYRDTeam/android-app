@@ -17,11 +17,11 @@ object HMAC {
             mac.init(key)
             digest =
                 Numeric.toHexStringNoPrefix(mac.doFinal(msg.toByteArray(StandardCharsets.UTF_8)))
- catch (e: InvalidKeyException) {
+        } catch (e: InvalidKeyException) {
             e.printStackTrace()
- catch (e: NoSuchAlgorithmException) {
+        } catch (e: NoSuchAlgorithmException) {
             e.printStackTrace()
-
+        }
 
         return digest
     }

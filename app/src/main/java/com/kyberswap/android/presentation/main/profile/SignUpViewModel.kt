@@ -32,12 +32,12 @@ class SignUpViewModel @Inject constructor(
         signUpUseCase.execute(
             Consumer {
                 _signUpCallback.value = Event(SignUpState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _signUpCallback.value =
                     Event(SignUpState.ShowError(it.localizedMessage))
-    ,
+            },
             SignUpUseCase.Param(email, displayName, password, isSubscription)
         )
     }
@@ -48,12 +48,12 @@ class SignUpViewModel @Inject constructor(
         loginSocialUseCase.execute(
             Consumer {
                 _loginCallback.value = Event(LoginState.Success(it, socialInfo))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _loginCallback.value =
                     Event(LoginState.ShowError(it.localizedMessage))
-    ,
+            },
             LoginSocialUseCase.Param(
                 socialInfo, true
             )
