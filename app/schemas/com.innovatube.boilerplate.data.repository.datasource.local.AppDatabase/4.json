@@ -13,38 +13,38 @@
             "columnName": "endDatetime",
             "affinity": "TEXT",
             "notNull": true
-  ,
+          },
           {
             "fieldPath": "id",
             "columnName": "id",
             "affinity": "INTEGER",
             "notNull": true
-  ,
+          },
           {
             "fieldPath": "label",
             "columnName": "label",
             "affinity": "TEXT",
             "notNull": true
-  ,
+          },
           {
             "fieldPath": "order",
             "columnName": "order",
             "affinity": "INTEGER",
             "notNull": true
-  ,
+          },
           {
             "fieldPath": "startDatetime",
             "columnName": "startDatetime",
             "affinity": "TEXT",
             "notNull": true
-  
+          }
         ],
         "primaryKey": {
           "columnNames": [
             "id"
           ],
           "autoGenerate": false
-,
+        },
         "indices": [],
         "foreignKeys": []
       }

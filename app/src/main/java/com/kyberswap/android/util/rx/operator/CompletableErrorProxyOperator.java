@@ -19,15 +19,15 @@ public class CompletableErrorProxyOperator implements CompletableOperator {
             public void onComplete() {
                 if (!isDisposed()) {
                     observer.onError(throwable);
-        
-    
+                }
+            }
 
             @Override
             public void onError(Throwable ex) {
                 if (!isDisposed()) {
                     observer.onError(ex);
-        
-    
-;
+                }
+            }
+        };
     }
 }

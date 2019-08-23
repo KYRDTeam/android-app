@@ -127,12 +127,12 @@ class LimitOrderViewModel @Inject constructor(
         getLoginStatusUseCase.execute(
             Consumer {
                 _getLoginStatusCallback.value = Event(UserInfoState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getLoginStatusCallback.value =
                     Event(UserInfoState.ShowError(it.localizedMessage))
-    ,
+            },
             null
         )
     }
@@ -144,7 +144,7 @@ class LimitOrderViewModel @Inject constructor(
             Consumer {
                 _getPendingBalancesCallback.value =
                     Event(GetPendingBalancesState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getPendingBalancesCallback.value =
@@ -153,7 +153,7 @@ class LimitOrderViewModel @Inject constructor(
                             it.localizedMessage
                         )
                     )
-    ,
+            },
             GetPendingBalancesUseCase.Param(wallet)
         )
     }
@@ -169,15 +169,15 @@ class LimitOrderViewModel @Inject constructor(
                         Event(GetLocalLimitOrderState.Success(order))
                     getNonce(order, wallet)
                     currentLimitOrder = it
-        ,
+                },
                 Consumer {
                     it.printStackTrace()
                     _getLocalLimitOrderCallback.value =
                         Event(GetLocalLimitOrderState.ShowError(it.localizedMessage))
-        ,
+                },
                 GetLocalLimitOrderDataUseCase.Param(wallet)
             )
-
+        }
 
     }
 
@@ -202,12 +202,12 @@ class LimitOrderViewModel @Inject constructor(
         cancelOrderUseCase.execute(
             Consumer {
                 _cancelOrderCallback.value = Event(CancelOrdersState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _cancelOrderCallback.value =
                     Event(CancelOrdersState.ShowError(it.localizedMessage))
-    ,
+            },
             CancelOrderUseCase.Param(order)
         )
     }
@@ -218,12 +218,12 @@ class LimitOrderViewModel @Inject constructor(
             Consumer {
                 _getGetNonceStateCallback.value = Event(GetNonceState.Success(it))
 
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getGetNonceStateCallback.value =
                     Event(GetNonceState.ShowError(it.localizedMessage, it is UnknownHostException))
-    ,
+            },
             GetNonceUseCase.Param(order, wallet)
         )
     }
@@ -235,7 +235,7 @@ class LimitOrderViewModel @Inject constructor(
                 _getEligibleAddressCallback.value =
                     Event(CheckEligibleAddressState.Success(it, isWalletChangeEvent))
 
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getEligibleAddressCallback.value =
@@ -245,7 +245,7 @@ class LimitOrderViewModel @Inject constructor(
                             it is UnknownHostException
                         )
                     )
-    ,
+            },
             CheckEligibleAddressUseCase.Param(wallet)
         )
     }
@@ -255,12 +255,12 @@ class LimitOrderViewModel @Inject constructor(
         getGasPriceUseCase.execute(
             Consumer {
                 _getGetGasPriceCallback.value = Event(GetGasPriceState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getGetGasPriceCallback.value =
                     Event(GetGasPriceState.ShowError(it.localizedMessage))
-    ,
+            },
             null
         )
     }
@@ -275,7 +275,7 @@ class LimitOrderViewModel @Inject constructor(
                 relatedOrders.addAll(orderList)
                 _getRelatedOrderCallback.value =
                     Event(GetRelatedOrdersState.Success(toOrderItems(orderList)))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getRelatedOrderCallback.value =
@@ -286,7 +286,7 @@ class LimitOrderViewModel @Inject constructor(
                         )
                     )
 
-    ,
+            },
             GetRelatedLimitOrdersUseCase.Param(
                 wallet.address,
                 order.tokenSource, order.tokenDest
@@ -298,7 +298,7 @@ class LimitOrderViewModel @Inject constructor(
     fun toOrderItems(orders: List<Order>): List<OrderItem> {
         return orders.sortedByDescending {
             it.time
-.groupBy { it.shortedDateTimeFormat }
+        }.groupBy { it.shortedDateTimeFormat }
             .flatMap { item ->
                 val items = mutableListOf<OrderItem>()
                 items.add(OrderItem.Header(item.key))
@@ -306,12 +306,12 @@ class LimitOrderViewModel @Inject constructor(
                 list.forEachIndexed { index, transaction ->
                     if (index % 2 == 0) {
                         items.add(OrderItem.ItemEven(transaction))
-             else {
+                    } else {
                         items.add(OrderItem.ItemOdd(transaction))
-            
-        
+                    }
+                }
                 items
-    
+            }
     }
 
     fun getMarketRate(order: LocalLimitOrder) {
@@ -320,12 +320,12 @@ class LimitOrderViewModel @Inject constructor(
             _getGetMarketRateCallback.value =
                 Event(GetMarketRateState.Success(BigDecimal.ONE.toDisplayNumber()))
             return
-
+        }
         getMarketRate.dispose()
         getMarketRate.execute(
             Consumer {
                 _getGetMarketRateCallback.value = Event(GetMarketRateState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getGetMarketRateCallback.value =
@@ -335,7 +335,7 @@ class LimitOrderViewModel @Inject constructor(
                             it is UnknownHostException
                         )
                     )
-    ,
+            },
             GetMarketRateUseCase.Param(
                 order.tokenSource.symbol,
                 order.tokenDest.symbol
@@ -351,15 +351,15 @@ class LimitOrderViewModel @Inject constructor(
             _getExpectedRateCallback.value =
                 Event(GetExpectedRateState.Success(listOf(BigDecimal.ONE.toDisplayNumber())))
             return
-
+        }
 
         getExpectedRateUseCase.dispose()
         getExpectedRateUseCase.execute(
             Consumer {
                 if (it.isNotEmpty() && it[0].toBigDecimalOrDefaultZero() > BigDecimal.ZERO) {
                     _getExpectedRateCallback.value = Event(GetExpectedRateState.Success(it))
-        
-    ,
+                }
+            },
             Consumer {
                 it.printStackTrace()
                 _getExpectedRateCallback.value =
@@ -369,7 +369,7 @@ class LimitOrderViewModel @Inject constructor(
                             it is UnknownHostException
                         )
                     )
-    ,
+            },
             GetExpectedRateUseCase.Param(
                 order.userAddr,
                 order.tokenSource,
@@ -390,16 +390,16 @@ class LimitOrderViewModel @Inject constructor(
             Action {
                 if (fromContinue) {
                     _saveOrderCallback.value = Event(SaveLimitOrderState.Success(""))
-        
+                }
                 if (fromSwitchToken) {
                     _swapTokenTransactionCallback.value =
                         Event(SwapTokenTransactionState.Success())
-        
-    ,
+                }
+            },
             Consumer {
                 it.printStackTrace()
                 _saveOrderCallback.value = Event(SaveLimitOrderState.ShowError(it.localizedMessage))
-    ,
+            },
             SaveLimitOrderUseCase.Param(order)
         )
     }
@@ -416,7 +416,7 @@ class LimitOrderViewModel @Inject constructor(
         getLimitOrderFee.execute(
             Consumer {
                 _getFeeCallback.value = Event(GetFeeState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getFeeCallback.value = Event(
@@ -426,7 +426,7 @@ class LimitOrderViewModel @Inject constructor(
                     )
                 )
 
-    ,
+            },
             GetLimitOrderFeeUseCase.Param(
                 order.tokenSource,
                 order.tokenDest,
@@ -440,7 +440,7 @@ class LimitOrderViewModel @Inject constructor(
     fun warningOrderList(rate: BigDecimal, pendingOrders: List<Order>): List<Order> {
         return pendingOrders.filter {
             it.minRate > rate
-
+        }
     }
 
     fun needConvertWETH(order: LocalLimitOrder?, pendingBalances: PendingBalances?): Boolean {
@@ -458,15 +458,15 @@ class LimitOrderViewModel @Inject constructor(
             Consumer {
                 if (it.success) {
                     _submitOrderCallback.value = Event(SubmitOrderState.Success(it.order))
-         else {
+                } else {
                     _submitOrderCallback.value =
                         Event(SubmitOrderState.ShowError(it.message.display()))
-        
-    ,
+                }
+            },
             Consumer {
                 it.printStackTrace()
                 _submitOrderCallback.value = Event(SubmitOrderState.ShowError(it.localizedMessage))
-    ,
+            },
             SubmitOrderUseCase.Param(order, wallet)
         )
 
@@ -487,18 +487,18 @@ class LimitOrderViewModel @Inject constructor(
                             order.gasLimit.max(
                                 (it.amountUsed.toBigDecimal().multiply(1.2.toBigDecimal())).toBigInteger()
                             )
-                 else {
+                        } else {
                             (it.amountUsed.toBigDecimal().multiply(1.2.toBigDecimal())).toBigInteger()
-                
+                        }
 
                     _getGetGasLimitCallback.value = Event(GetGasLimitState.Success(gasLimit))
-        
+                }
 
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 Event(GetGasLimitState.ShowError(it.localizedMessage))
-    ,
+            },
             EstimateGasUseCase.Param(
                 wallet,
                 order.tokenSource,
@@ -524,12 +524,12 @@ class LimitOrderViewModel @Inject constructor(
 
                 _convertCallback.value = Event(ConvertState.Success(order))
 
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _convertCallback.value =
                     Event(ConvertState.ShowError(it.localizedMessage))
-    ,
+            },
             SwapTokenUseCase.Param(wallet!!, swap)
 
         )
@@ -542,7 +542,7 @@ class LimitOrderViewModel @Inject constructor(
         var availableAmount = currentAmount - pendingAmount
         if (availableAmount < BigDecimal.ZERO) {
             availableAmount = BigDecimal.ZERO
-
+        }
 
         return availableAmount.toDisplayNumber().exactAmount()
     }
@@ -562,17 +562,17 @@ class LimitOrderViewModel @Inject constructor(
                     if (numOfSuccess == warningOrderList.size) {
                         _cancelRelatedOrderCallback.value =
                             Event(CancelOrdersState.Success(Cancelled(true)))
-            
-        ,
+                    }
+                },
                 Consumer {
                     it.printStackTrace()
                     _cancelRelatedOrderCallback.value =
                         Event(CancelOrdersState.ShowError(it.localizedMessage))
                     cancelOrderUseCase.dispose()
-        ,
+                },
                 CancelOrderUseCase.Param(it)
             )
-
+        }
     }
 
     public override fun onCleared() {

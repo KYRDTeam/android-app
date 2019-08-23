@@ -47,16 +47,16 @@ class VerifyBackupWordActivity : BaseActivity() {
         binding.title = getString(R.string.test_wallet_title)
         imgBack.setOnClickListener {
             onBackPressed()
-
+        }
         var first = words.random()
         var second: Word
         do {
             second = words.random()
- while (second == first)
+        } while (second == first)
 
         if (first.position > second.position) {
             first = second.also { second = first }
-
+        }
         disposable = CompositeDisposable()
         binding.word1 = first
         binding.word2 = second
@@ -65,29 +65,29 @@ class VerifyBackupWordActivity : BaseActivity() {
                 second.content == edtSecond.text.trim().toString()
             ) {
                 navigator.navigateToHome()
-     else {
+            } else {
 
                 if (numberOfTry > 0) {
                     dialogHelper.showWrongBackupAgain({
                         navigator.navigateToBackupWalletPage(words, wallet)
-            , {
+                    }, {
 
-            )
-         else {
+                    })
+                } else {
                     dialogHelper.showWrongBackup {
 
-            
-        
+                    }
+                }
 
                 numberOfTry = numberOfTry.inc()
-    
-
+            }
+        }
         val firstWordObservable = binding.edtFirst.textChanges().skip(1).map {
             it.toString()
-
+        }
         val secondWordObservable = binding.edtSecond.textChanges().skip(1).map {
             it.toString()
-
+        }
 
         disposable.add(
             Observables.combineLatest(
@@ -96,10 +96,10 @@ class VerifyBackupWordActivity : BaseActivity() {
             ) { f, s ->
                 {
                     f.isNotEmpty() && s.isNotEmpty()
-        
-    .subscribe {
+                }
+            }.subscribe {
                 binding.btnNext.isEnabled = true
-    )
+            })
     }
 
     override fun onDestroy() {
@@ -112,6 +112,6 @@ class VerifyBackupWordActivity : BaseActivity() {
             Intent(context, VerifyBackupWordActivity::class.java).apply {
                 putParcelableArrayListExtra(ARG_PARAM, ArrayList(words))
                 putExtra(WALLET_PARAM, wallet)
-    
+            }
     }
 }

@@ -20,8 +20,8 @@ class AutoClearedValue<T : Any>(val fragment: Fragment) : ReadWriteProperty<Frag
             @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
             fun onDestroy() {
                 value = null
-    
-)
+            }
+        })
     }
 
     override fun getValue(thisRef: Fragment, property: KProperty<*>): T {

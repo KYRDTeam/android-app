@@ -17,7 +17,7 @@ fun List<String>.display(): String {
         builder.append(s)
         if (index < this.size - 1) {
             builder.append("\n")
-
+        }
     }
     return builder.toString()
 }

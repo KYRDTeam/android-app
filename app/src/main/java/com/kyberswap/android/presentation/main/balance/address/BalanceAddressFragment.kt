@@ -59,14 +59,14 @@ class BalanceAddressFragment : BaseFragment() {
                         if (binding.wallet?.address != state.wallet.address) {
                             binding.wallet = state.wallet
                             binding.imgAddress.setImageBitmap(generateBarcode())
-                
-            
+                        }
+                    }
                     is GetWalletState.ShowError -> {
 
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         binding.tvCopy.setOnClickListener {
             val clipboard =
@@ -74,20 +74,20 @@ class BalanceAddressFragment : BaseFragment() {
             val clip = ClipData.newPlainText("Copy", binding.wallet?.address)
             clipboard!!.primaryClip = clip
             showAlert(getString(R.string.address_copy))
-
+        }
         binding.tvShare.setOnClickListener {
             val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_TEXT, binding.wallet?.address)
                 type =
                     MIME_TYPE_TEXT
-    
+            }
             startActivity(sendIntent)
-
+        }
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-
+        }
     }
 
     private fun generateBarcode(): Bitmap? {
@@ -101,10 +101,10 @@ class BalanceAddressFragment : BaseFragment() {
                 )
             )
 
- catch (e: Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
             null
-
+        }
     }
 
     companion object {
@@ -113,7 +113,7 @@ class BalanceAddressFragment : BaseFragment() {
             BalanceAddressFragment().apply {
                 arguments = Bundle().apply {
 
-        
-    
+                }
+            }
     }
 }

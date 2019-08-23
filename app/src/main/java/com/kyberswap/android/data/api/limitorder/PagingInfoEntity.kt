@@ -19,27 +19,27 @@ fun JsonObject.toPagingInfo(): PagingInfoEntity {
     return try {
         val pageCount = if (get("page_count").isJsonNull) {
             0
- else {
+        } else {
             get("page_count").asInt
-
+        }
 
         val pageIndex = if (get("page_index").isJsonNull) {
             0
- else {
+        } else {
             get("page_index").asInt
-
+        }
 
         val pageSize = if (get("page_size").isJsonNull) {
             0
- else {
+        } else {
             get("page_size").asInt
-
+        }
 
         val itemCount = if (get("items_count").isJsonNull) {
             0
- else {
+        } else {
             get("items_count").asInt
-
+        }
 
 
         PagingInfoEntity(itemCount, pageCount, pageIndex, pageSize)

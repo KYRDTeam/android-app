@@ -183,7 +183,7 @@ data class Order(
                 FILLED -> "filled"
                 INVALIDATED -> "invalidated"
                 UNKNOWN -> "unknown"
-    
+            }
     }
 }
 

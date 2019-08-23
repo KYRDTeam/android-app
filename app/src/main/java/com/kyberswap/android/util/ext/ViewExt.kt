@@ -41,8 +41,8 @@ fun EditText.setAmount(amount: String?) {
         if (isFocused) {
             amount?.let {
                 setSelection(it.length)
-    
-
+            }
+        }
     } else {
         setText("")
     }
@@ -90,23 +90,23 @@ fun TextView.colorRate(rate: BigDecimal) {
                     context.getString(R.string.limit_order_rate_higher_market),
                     ratePercent
                 )
-    
+            }
             rate < BigDecimal.ZERO -> {
                 color = ContextCompat.getColor(context, R.color.token_change24h_down)
                 text = String.format(
                     context.getString(R.string.limit_order_rate_lower_market),
                     ratePercent
                 )
-    
+            }
             else -> {
                 color = ContextCompat.getColor(context, R.color.token_change24h_same)
                 text = ""
-    
-
+            }
+        }
         if (text.isEmpty()) {
             setText("")
             return
-
+        }
         val spannableString = SpannableString(text)
 
         spannableString.setSpan(

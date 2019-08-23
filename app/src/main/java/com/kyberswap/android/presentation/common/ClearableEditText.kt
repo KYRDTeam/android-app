@@ -39,7 +39,7 @@ class ClearableEditText : ClearFocusEditText, OnTouchListener, OnFocusChangeList
     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
         if (isFocused) {
             setClearIconVisible(!TextUtils.isEmpty(text))
-
+        }
     }
 
     override fun afterTextChanged(s: Editable) {
@@ -104,25 +104,25 @@ class ClearableEditText : ClearFocusEditText, OnTouchListener, OnFocusChangeList
                     setText("")
                     if (listener != null) {
                         listener!!.didClearText()
-            
-        
+                    }
+                }
                 return true
-    
-
+            }
+        }
         return if (onTouchListener != null) {
             onTouchListener!!.onTouch(v, event)
- else false
+        } else false
     }
 
     override fun onFocusChange(v: View, hasFocus: Boolean) {
         if (hasFocus) {
             setClearIconVisible(!TextUtils.isEmpty(text))
- else {
+        } else {
             setClearIconVisible(false)
-
+        }
         if (focusChangeListener != null) {
             focusChangeListener!!.onFocusChange(v, hasFocus)
-
+        }
     }
 
 
@@ -149,15 +149,15 @@ class ClearableEditText : ClearFocusEditText, OnTouchListener, OnFocusChangeList
         drawable = null
         if (location != null) {
             drawable = compoundDrawables[location!!.position]
-
+        }
         if (drawable == null) {
             drawable = ContextCompat.getDrawable(context, android.R.drawable.presence_offline)
-
+        }
         drawable!!.setBounds(0, 0, drawable!!.intrinsicWidth, drawable!!.intrinsicHeight)
         val min = paddingTop + drawable!!.intrinsicHeight + paddingBottom
         if (suggestedMinimumHeight < min) {
             minimumHeight = min
-
+        }
     }
 
     protected fun setClearIconVisible(visible: Boolean) {
@@ -172,6 +172,6 @@ class ClearableEditText : ClearFocusEditText, OnTouchListener, OnFocusChangeList
                 if (location == Location.RIGHT) x else cd[2],
                 cd[3]
             )
-
+        }
     }
 }

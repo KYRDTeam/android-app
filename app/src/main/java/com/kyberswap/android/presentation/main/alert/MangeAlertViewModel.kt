@@ -39,12 +39,12 @@ class MangeAlertViewModel @Inject constructor(
         getAlertsUseCase.execute(
             Consumer {
                 _getAlertsCallback.value = Event(GetAlertsState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getAlertsCallback.value =
                     Event(GetAlertsState.ShowError(it.localizedMessage))
-    ,
+            },
             null
         )
     }
@@ -54,12 +54,12 @@ class MangeAlertViewModel @Inject constructor(
         getLoginStatusUseCase.execute(
             Consumer {
                 _getLoginStatusCallback.value = Event(UserInfoState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getLoginStatusCallback.value =
                     Event(UserInfoState.ShowError(it.localizedMessage))
-    ,
+            },
             null
         )
     }
@@ -76,12 +76,12 @@ class MangeAlertViewModel @Inject constructor(
         deleteAlertsUseCase.execute(
             Consumer {
                 _deleteAlertsCallback.value = Event(DeleteAlertsState.Success())
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _deleteAlertsCallback.value =
                     Event(DeleteAlertsState.ShowError(it.localizedMessage))
-    ,
+            },
             DeleteAlertsUseCase.Param(alert)
         )
     }

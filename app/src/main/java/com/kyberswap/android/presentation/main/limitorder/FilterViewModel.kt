@@ -32,12 +32,12 @@ class FilterViewModel @Inject constructor(
         getLimitOrdersFilterSettingUseCase.execute(
             Consumer {
                 _getFilterSettingCallback.value = Event(GetFilterSettingState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getFilterSettingCallback.value =
                     Event(GetFilterSettingState.ShowError(it.localizedMessage))
-    ,
+            },
             null
         )
     }
@@ -52,12 +52,12 @@ class FilterViewModel @Inject constructor(
         saveLimitOrderFilterUseCase.execute(
             Action {
                 _saveFilterStateCallback.value = Event(SaveFilterState.Success(""))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _saveFilterStateCallback.value =
                     Event(SaveFilterState.ShowError(it.localizedMessage))
-    ,
+            },
             SaveLimitOrderFilterUseCase.Param(orderFilter)
         )
     }

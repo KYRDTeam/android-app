@@ -49,20 +49,20 @@ class PromoSwapConfirmActivity : BaseActivity(), KeystoreStorage {
         wallet?.let {
             viewModel.getSwapData(it)
             binding.expiredDate = it.expiredDatePromoCode
-
+        }
 
         viewModel.getSwapDataCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSwapState.Success -> {
                         binding.swap = state.swap
-            
+                    }
                     is GetSwapState.ShowError -> {
 
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         viewModel.swapTokenTransactionCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -71,29 +71,29 @@ class PromoSwapConfirmActivity : BaseActivity(), KeystoreStorage {
                     is SwapTokenTransactionState.Success -> {
                         showAlert(getString(R.string.swap_done))
                         onBackPressed()
-            
+                    }
                     is SwapTokenTransactionState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
 
         binding.imgBack.setOnClickListener {
             onBackPressed()
-
+        }
 
         binding.tvCancel.setOnClickListener {
             onBackPressed()
-
+        }
 
         binding.tvConfirm.setOnClickListener {
             viewModel.swap(wallet, binding.swap)
-
+        }
     }
 
     override fun getKeystoreDir(): File {
@@ -106,6 +106,6 @@ class PromoSwapConfirmActivity : BaseActivity(), KeystoreStorage {
         fun newIntent(context: Context, wallet: Wallet?) =
             Intent(context, PromoSwapConfirmActivity::class.java).apply {
                 putExtra(WALLET_PARAM, wallet)
-    
+            }
     }
 }

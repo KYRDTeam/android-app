@@ -35,14 +35,14 @@ class TransactionFilterViewModel @Inject constructor(
                 val items = it.map { token ->
                     FilterItem(transactionFilter.tokens.find {
                         it == token.tokenSymbol
-             != null, token.tokenSymbol)
-        
+                    } != null, token.tokenSymbol)
+                }
                 _getTransactionFilterCallback.value = Event(
                     GetTransactionFilterState.Success(
                         transactionFilter, items
                     )
                 )
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getTransactionFilterCallback.value =
@@ -51,7 +51,7 @@ class TransactionFilterViewModel @Inject constructor(
                             it.localizedMessage
                         )
                     )
-    ,
+            },
             address
         )
     }
@@ -60,10 +60,10 @@ class TransactionFilterViewModel @Inject constructor(
         getTransactionFilterUseCase.execute(
             Consumer {
                 getTokenList(address, it)
-    ,
+            },
             Consumer {
 
-    ,
+            },
             GetTransactionFilterUseCase.Param(address)
         )
     }
@@ -72,12 +72,12 @@ class TransactionFilterViewModel @Inject constructor(
         saveTransactionFilterUseCase.execute(
             Action {
                 _saveTransactionFilterCallback.value = Event(SaveTransactionFilterState.Success(""))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _saveTransactionFilterCallback.value =
                     Event(SaveTransactionFilterState.ShowError(it.localizedMessage))
-    ,
+            },
             SaveTransactionFilterUseCase.Param(transactionFilter)
         )
     }

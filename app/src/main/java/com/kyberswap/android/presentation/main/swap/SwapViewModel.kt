@@ -85,22 +85,22 @@ class SwapViewModel @Inject constructor(
             _getGetMarketRateCallback.value =
                 Event(GetMarketRateState.Success(BigDecimal.ONE.toDisplayNumber()))
             return
-
+        }
 
         getMarketRate.dispose()
         if (swap.hasTokenPair) {
             getMarketRate.execute(
                 Consumer {
                     _getGetMarketRateCallback.value = Event(GetMarketRateState.Success(it))
-        ,
+                },
                 Consumer {
                     it.printStackTrace()
                     _getGetMarketRateCallback.value =
                         Event(GetMarketRateState.ShowError(it.localizedMessage))
-        ,
+                },
                 GetMarketRateUseCase.Param(swap.tokenSource.tokenSymbol, swap.tokenDest.tokenSymbol)
             )
-
+        }
     }
 
     fun getSwapData(wallet: Wallet, alert: NotificationAlert? = null) {
@@ -109,11 +109,11 @@ class SwapViewModel @Inject constructor(
             Consumer {
                 it.gasLimit = calculateGasLimit(it).toString()
                 _getSwapCallback.value = Event(GetSwapState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getSwapCallback.value = Event(GetSwapState.ShowError(it.localizedMessage))
-    ,
+            },
             GetSwapDataUseCase.Param(wallet, alert)
         )
     }
@@ -127,12 +127,12 @@ class SwapViewModel @Inject constructor(
         getGasPriceUseCase.execute(
             Consumer {
                 _getGetGasPriceCallback.value = Event(GetGasPriceState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getGetGasPriceCallback.value =
                     Event(GetGasPriceState.ShowError(it.localizedMessage))
-    ,
+            },
             null
         )
     }
@@ -145,21 +145,21 @@ class SwapViewModel @Inject constructor(
             _getExpectedRateCallback.value =
                 Event(GetExpectedRateState.Success(listOf(BigDecimal.ONE.toDisplayNumber())))
             return
-
+        }
 
         getExpectedRateUseCase.dispose()
         getExpectedRateUseCase.execute(
             Consumer {
                 if (it.isNotEmpty()) {
                     _getExpectedRateCallback.value = Event(GetExpectedRateState.Success(it))
-        
+                }
 
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getExpectedRateCallback.value =
                     Event(GetExpectedRateState.ShowError(it.localizedMessage))
-    ,
+            },
             GetExpectedRateUseCase.Param(
                 swap.walletAddress,
                 swap.tokenSource,
@@ -172,12 +172,12 @@ class SwapViewModel @Inject constructor(
         estimateAmountUseCase.execute(
             Consumer {
                 _estimateAmountState.value = Event(EstimateAmountState.Success(it.value))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _estimateAmountState.value =
                     Event(EstimateAmountState.ShowError(it.localizedMessage))
-    ,
+            },
             EstimateAmountUseCase.Param(
                 source,
                 dest,
@@ -202,18 +202,18 @@ class SwapViewModel @Inject constructor(
                         GetGasLimitState.Success(
                             if (specialGasLimit != null) {
                                 specialGasLimit.max(gasLimit)
-                     else {
+                            } else {
                                 gasLimit
-                    
+                            }
                         )
                     )
-        
+                }
 
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 Event(GetGasLimitState.ShowError(it.localizedMessage))
-    ,
+            },
             EstimateGasUseCase.Param(
                 wallet,
                 swap.tokenSource,
@@ -229,12 +229,12 @@ class SwapViewModel @Inject constructor(
             Action {
                 if (fromContinue) {
                     _saveSwapCallback.value = Event(SaveSwapState.Success(""))
-        
-    ,
+                }
+            },
             Consumer {
                 it.printStackTrace()
                 _saveSwapCallback.value = Event(SaveSwapState.ShowError(it.localizedMessage))
-    ,
+            },
             SaveSwapUseCase.Param(swap)
         )
     }
@@ -243,11 +243,11 @@ class SwapViewModel @Inject constructor(
         getAlertUseCase.execute(
             Consumer {
                 _getAlertState.value = Event(GetAlertState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getAlertState.value = Event(GetAlertState.ShowError(it.localizedMessage))
-    ,
+            },
             GetAlertUseCase.Param(
                 if (alertNotification.alertId > 0) alertNotification.alertId else alertNotification.testAlertId.toLongSafe()
 
@@ -273,11 +273,11 @@ class SwapViewModel @Inject constructor(
         getCombinedCapUseCase.execute(
             Consumer {
                 _getCapCallback.value = Event(GetCapState.Success(it, swap))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getCapCallback.value = Event(GetCapState.ShowError(it.localizedMessage))
-    ,
+            },
             GetCombinedCapUseCase.Param(wallet)
         )
     }

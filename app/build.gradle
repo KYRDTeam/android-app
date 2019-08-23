@@ -11,18 +11,18 @@ apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 
 android {
     signingConfigs {
-        ***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-
+        releseConfig {
+            storeFile file('/home/steve/KyberNetwork/Docs/Keystore/android_keystore')
+            storePassword 'android@kyberswap'
+            keyPassword 'android@kyber.network'
+            keyAlias = 'kyberswapandroid'
+        }
         debug {
             storeFile file('../debug.keystore')
             storePassword 'android'
             keyAlias = 'androiddebugkey'
             keyPassword 'android'
-
+        }
     }
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
@@ -43,12 +43,12 @@ android {
         kapt {
             arguments {
                 arg("room.schemaLocation", "$projectDir/schemas".toString())
-    
-
+            }
+        }
 
         kotlinOptions {
             jvmTarget = '1.8'
-
+        }
     }
 
     defaultConfig {
@@ -72,7 +72,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
-
+        }
         release {
             debuggable false
             multiDexEnabled true
@@ -80,7 +80,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.releseConfig
-
+        }
     }
 
     productFlavors {
@@ -91,28 +91,28 @@ android {
                     onesignal_app_id               : 'cb5c709a-a471-4fe3-afbc-0406c49dc768',
                     onesignal_google_project_number: 'REMOTE'
             ]
-
+        }
         stg {
             applicationIdSuffix ".stg"
             manifestPlaceholders = [
-                    onesignal_app_id               : '',
+                    onesignal_app_id               : '72a48223-d8a5-4cb5-8bbf-759b7cf4ce6b',
                     onesignal_google_project_number: 'REMOTE'
             ]
-
+        }
         prod {
             manifestPlaceholders = [
-                    onesignal_app_id               : '',
+                    onesignal_app_id               : 'd0b1db9e-1a77-4386-b32a-b27cac1d8bdb',
                     onesignal_google_project_number: 'REMOTE'
             ]
 
-
+        }
     }
     applicationVariants.all { variant ->
         copy {
             from "src/${variant.flavorName}"
             into "."
             include "google-services.json"
-
+        }
     }
 
     testOptions {
@@ -123,20 +123,20 @@ android {
         lintOptions {
             xmlReport true
             abortOnError false
-
+        }
 
         compileOptions {
             sourceCompatibility 1.8
             targetCompatibility 1.8
-
+        }
 
         androidExtensions {
             experimental = true
-
+        }
 
         packagingOptions {
             exclude 'lib/x86_64/darwin/libscrypt.dylib'
-
+        }
     }
 }
 

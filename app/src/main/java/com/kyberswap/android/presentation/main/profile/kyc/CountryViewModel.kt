@@ -27,12 +27,12 @@ class CountryViewModel @Inject constructor(
             Action {
                 _saveKycInfoCallback.value = Event(SaveKycInfoState.Success(""))
 
-    ,
+            },
             Consumer {
 
                 it.printStackTrace()
                 _saveKycInfoCallback.value = Event(SaveKycInfoState.ShowError(""))
-    ,
+            },
             SaveKycInfoUseCase.Param(value, kycInfoType)
         )
     }

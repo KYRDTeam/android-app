@@ -18,7 +18,7 @@ object ShuffleArrayUtils {
         for (i in 0 until length) {
             val change = i + random.nextInt(length - i)
             swap(array, i, change)
-
+        }
         return array
     }
 

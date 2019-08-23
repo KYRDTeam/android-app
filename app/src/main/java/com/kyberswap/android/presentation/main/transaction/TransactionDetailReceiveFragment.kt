@@ -63,7 +63,7 @@ class TransactionDetailReceiveFragment : BaseFragment() {
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-
+        }
 
         binding.imgTxHashCopy.setOnClickListener {
             val clipboard =
@@ -71,7 +71,7 @@ class TransactionDetailReceiveFragment : BaseFragment() {
             val clip = ClipData.newPlainText("Copy", transaction?.hash)
             clipboard!!.primaryClip = clip
             showAlert(getString(R.string.txhash_copy))
-
+        }
 
         binding.imgAddressCopy.setOnClickListener {
             val clipboard =
@@ -79,14 +79,14 @@ class TransactionDetailReceiveFragment : BaseFragment() {
             val clip = ClipData.newPlainText("Copy", transaction?.from)
             clipboard!!.primaryClip = clip
             showAlert(getString(R.string.address_copy))
-
+        }
 
         binding.imgEtherscan.setOnClickListener {
             openUrl(getString(R.string.transaction_etherscan_endpoint_url) + transaction?.hash)
-
+        }
         binding.imgKyber.setOnClickListener {
             openUrl(getString(R.string.transaction_kyber_endpoint_url) + transaction?.hash)
-
+        }
     }
 
 //    override fun showProgress(showProgress: Boolean) {
@@ -101,7 +101,7 @@ class TransactionDetailReceiveFragment : BaseFragment() {
                 arguments = Bundle().apply {
                     putParcelable(WALLET_PARAM, wallet)
                     putParcelable(TRANSACTION_PARAM, transaction)
-        
-    
+                }
+            }
     }
 }

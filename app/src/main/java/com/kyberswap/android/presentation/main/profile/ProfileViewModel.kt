@@ -40,12 +40,12 @@ class ProfileViewModel @Inject constructor(
         getLoginStatusUseCase.execute(
             Consumer {
                 _getLoginStatusCallback.value = Event(UserInfoState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getLoginStatusCallback.value =
                     Event(UserInfoState.ShowError(it.localizedMessage))
-    ,
+            },
             null
         )
     }
@@ -56,12 +56,12 @@ class ProfileViewModel @Inject constructor(
             Consumer {
                 _loginCallback.value =
                     Event(LoginState.Success(it, SocialInfo(type = LoginType.NORMAL)))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _loginCallback.value =
                     Event(LoginState.ShowError(it.localizedMessage))
-    ,
+            },
             LoginUseCase.Param(email, password, twoFa)
         )
     }
@@ -71,12 +71,12 @@ class ProfileViewModel @Inject constructor(
         loginSocialUseCase.execute(
             Consumer {
                 _loginCallback.value = Event(LoginState.Success(it, socialInfo))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _loginCallback.value =
                     Event(LoginState.ShowError(it.localizedMessage))
-    ,
+            },
             LoginSocialUseCase.Param(
                 socialInfo
             )
@@ -88,12 +88,12 @@ class ProfileViewModel @Inject constructor(
         resetPasswordUseCase.execute(
             Consumer {
                 _resetPasswordCallback.value = Event(ResetPasswordState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _resetPasswordCallback.value =
                     Event(ResetPasswordState.ShowError(it.localizedMessage))
-    ,
+            },
             ResetPasswordUseCase.Param(email)
         )
     }
