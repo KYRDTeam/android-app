@@ -228,7 +228,7 @@
     <string name="z_to_a"><![CDATA[A —> Z]]></string>
     <string name="order_confirm">Order Confirm</string>
     <string name="token_eth_star">ETH*</string>
-    <string name="token_eth_star_name">ETH* is the combination of ETH and WETH.</string>
+    <string name="token_eth_star_name">ETH* represents the sum of ETH &amp; WETH for easy reference.</string>
     <string name="token_amount_available">%s Available</string>
     <string name="limit_order_current_rate">1 %s = %s</string>
     <string name="rate_percent">%s%%</string>
@@ -250,7 +250,7 @@
     <string name="transaction_failed">failed</string>
     <string name="order_warning">This new order has a lower rate than some orders you have created. Below orders will be cancelled when you submitted this order.</string>
     <string name="limit_order_yes">Yes</string>
-    <string name="limit_order_broadcasted_message">Your transaction will be broadcasted when rate of %s</string>
+    <string name="limit_order_broadcasted_message">Your transaction will be broadcasted when rate of %s (for %s)</string>
     <string name="limit_order_to">To:</string>
     <string name="limit_order_confirm_info"><![CDATA[Don’t worry. You will not be charged now. You pay fees only when transaction is executed (broadcasted & mined).]]></string>
     <string name="date">Date</string>
@@ -278,7 +278,7 @@
     <string name="complete_profile_verification">Complete Your Profile Verification</string>
     <string name="my_profile">My Profile</string>
     <string name="profile_unverified">Unverified</string>
-    <string name="profile_verification_notification">Increase KyberSwap\'s trade limits Participate in token sales hosted on KyberGO</string>
+    <string name="profile_verification_notification">Increase KyberSwap\'s trade limits</string>
     <string name="profile_verify">Verify</string>
     <string name="linked_social_accounts">Linked Social Accounts</string>
     <string name="subscribe_to_newsletters">Subscribe to newsletters</string>
@@ -605,6 +605,8 @@
     <string name="fail_import_private_key">Failed to import private key</string>
     <string name="fail_import_mnemonic">Please check your seeds/mnemonic again.</string>
     <string name="fail_import_json">Fail to import json file</string>
+    <string name="reserve_under_maintainance">This token pair is temporarily under maintenance</string>
+    <string name="app_version">Version %s</string>
 
 
 </resources>

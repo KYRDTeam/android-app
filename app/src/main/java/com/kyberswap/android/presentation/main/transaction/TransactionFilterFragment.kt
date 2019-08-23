@@ -16,9 +16,10 @@ import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 
 
@@ -59,12 +60,6 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
             .get(TransactionFilterViewModel::class.java)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        wallet = arguments!!.getParcelable(WALLET_PARAM)
-    }
-
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -77,6 +72,24 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        viewModel.getSelectedWallet()
+
+        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetWalletState.Success -> {
+                        if (state.wallet.address != wallet?.address) {
+                            wallet = state.wallet
+                            viewModel.getTransactionFilter(state.wallet.address)
+                
+            
+                    is GetWalletState.ShowError -> {
+
+            
+        
+    
+)
+
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
 
@@ -87,6 +100,7 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
     
 
 
+
         binding.rvToken.layoutManager = GridLayoutManager(
             activity,
             4
@@ -95,8 +109,6 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
         val adapter = TokenFilterAdapter(appExecutors)
         binding.rvToken.adapter = adapter
 
-        wallet?.let {
-            viewModel.getTransactionFilter(it.address)
 
 
         viewModel.getTransactionFilterCallback.observe(viewLifecycleOwner, Observer {
@@ -162,7 +174,6 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
 
 
 
-
         binding.tvApply.setOnClickListener {
 
             val filter = binding.filter?.copy(
@@ -205,7 +216,6 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
         binding.tvSelectAll.setOnClickListener {
             adapter.resetFilter(isSelectAll)
             toggleSelectAll()
-
 
     }
 

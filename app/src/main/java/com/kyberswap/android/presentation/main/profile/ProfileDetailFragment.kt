@@ -81,6 +81,11 @@ class ProfileDetailFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is UserInfoState.Success -> {
+                        binding.tvKycTitle.visibility =
+                            if (UserInfo.PENDING == state.userInfo?.kycStatus ||
+                                UserInfo.BLOCKED == state.userInfo?.kycStatus ||
+                                binding.tvKycStatus.text == getString(R.string.kyc_status_unverified)
+                            ) View.VISIBLE else View.GONE
                         if (binding.user != state.userInfo) {
                             binding.user = state.userInfo
 
@@ -103,12 +108,6 @@ class ProfileDetailFragment : BaseFragment() {
                                 binding.tvKycTitle.text = getString(R.string.profile_blocked)
                                 binding.tvKycVerification.text = state.userInfo.blockReason
                     
-
-                            binding.tvKycTitle.visibility =
-                                if (UserInfo.PENDING == state.userInfo?.kycStatus ||
-                                    UserInfo.BLOCKED == state.userInfo?.kycStatus
-                                ) View.VISIBLE else View.GONE
-
                 
             
                     is UserInfoState.ShowError -> {
@@ -272,7 +271,6 @@ class ProfileDetailFragment : BaseFragment() {
             viewModel.refreshKycStatus()
 
 
-
         viewModel.reSubmitKycCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == ReSubmitState.Loading)
@@ -291,7 +289,6 @@ class ProfileDetailFragment : BaseFragment() {
         
     
 )
-
     }
 
     private fun navigateToKyc() {
@@ -310,6 +307,4 @@ class ProfileDetailFragment : BaseFragment() {
         fun newInstance() =
             ProfileDetailFragment()
     }
-
-
 }

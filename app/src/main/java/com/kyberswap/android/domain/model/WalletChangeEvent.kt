@@ -1,3 +1,3 @@
 package com.kyberswap.android.domain.model
 
-class WalletChangeEvent()
+class WalletChangeEvent(val walletAddress: String)

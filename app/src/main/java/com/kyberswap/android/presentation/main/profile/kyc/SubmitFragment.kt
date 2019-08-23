@@ -42,7 +42,6 @@ class SubmitFragment : BaseFragment() {
     @Inject
     lateinit var appExecutors: AppExecutors
 
-
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -87,7 +86,10 @@ class SubmitFragment : BaseFragment() {
                 when (state) {
                     is UserInfoState.Success -> {
                         user = state.userInfo
-                        if (binding.info != state.userInfo?.kycInfo) {
+                        if (state.userInfo?.isLoaded == true) {
+                            binding.isLoaded = state.userInfo.isLoaded
+                
+                        if (binding.info?.hasSameKycInfo(state.userInfo?.kycInfo) != true) {
                             binding.info = state.userInfo?.kycInfo
                             val info = binding.info
                             info?.let {
@@ -132,7 +134,6 @@ class SubmitFragment : BaseFragment() {
 
                                 displayImage(this.stringImage, binding.imgPhotoProofAddress)
 
-
 //                                val photoProofAddress =
 //                                    info.photoProofAddress.removePrefix(BASE64_PREFIX)
 //                                displayImage(photoProofAddress, binding.imgPhotoProofAddress)
@@ -149,8 +150,6 @@ class SubmitFragment : BaseFragment() {
 //                                displayImage(photoSelfie, binding.imgPassportHolding)
 
                     
-
-
                 
             
                     is UserInfoState.ShowError -> {
@@ -185,7 +184,6 @@ class SubmitFragment : BaseFragment() {
         
     
 )
-
     }
 
     private fun showLoadingImage(isShown: Boolean, imageView: ImageView?) {
@@ -235,7 +233,6 @@ class SubmitFragment : BaseFragment() {
     
 
         navigator.navigateToPassport(currentFragment)
-
     }
 
     private fun glideDisplayImage(byteArray: ByteArray, imageView: ImageView?) {
@@ -263,7 +260,6 @@ class SubmitFragment : BaseFragment() {
                         showLoadingImage(false, imageView)
                         return false
             
-
         )
                 .into(it)
 
@@ -274,6 +270,4 @@ class SubmitFragment : BaseFragment() {
         fun newInstance() =
             SubmitFragment()
     }
-
-
 }

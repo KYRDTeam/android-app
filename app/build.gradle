@@ -11,11 +11,17 @@ apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 
 android {
     signingConfigs {
-        releseconfig {
-            storeFile file('/Users/steve/KyberNetwork/Docs/Android KeyStore/android_keystore')
+        ***REMOVED***
 ***REMOVED***
 ***REMOVED***
 ***REMOVED***
+***REMOVED***
+
+        debug {
+            storeFile file('../debug.keystore')
+            storePassword 'android'
+            keyAlias = 'androiddebugkey'
+            keyPassword 'android'
 
     }
     compileSdkVersion rootProject.compileSdkVersion
@@ -28,7 +34,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         def versionMajor = 1
         def versionMinor = 0
-        def versionPatch = 0
+        def versionPatch = 1
         versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch * 1
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         vectorDrawables.useSupportLibrary = true
@@ -73,7 +79,7 @@ android {
             shrinkResources false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.releseconfig
+            signingConfig signingConfigs.releseConfig
 
     }
 

@@ -12,6 +12,7 @@ import com.caverock.androidsvg.SVG
 import com.kyberswap.android.R
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.presentation.main.profile.LoginType
+import com.kyberswap.android.util.ext.dpToPx
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import jdenticon.Jdenticon
 
@@ -93,12 +94,13 @@ object ImageViewBindingAdapter {
             if (resourceIcon == 0) {
                 resourceIcon = R.drawable.token_default
     
-            Glide.with(view).load(stringUrl).placeholder(resourceIcon)
+            Glide.with(view)
+                .load(stringUrl)
+                .apply(RequestOptions().override(32.dpToPx(view.context), 32.dpToPx(view.context)))
+                .placeholder(resourceIcon)
                 .error(resourceIcon).into(view)
  catch (exception: Exception) {
             exception.printStackTrace()
-
-
 
     }
 
@@ -134,7 +136,6 @@ object ImageViewBindingAdapter {
             view.visibility = View.VISIBLE
  else {
             view.visibility = View.GONE
-
 
     }
 
@@ -174,6 +175,5 @@ object ImageViewBindingAdapter {
 
 
         Glide.with(view).load(drawable).into(view)
-
     }
 }

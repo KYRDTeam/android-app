@@ -9,7 +9,12 @@ import androidx.room.PrimaryKey
 import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
 import com.kyberswap.android.presentation.common.MIN_SUPPORT_SWAP_SOURCE_AMOUNT
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
-import com.kyberswap.android.util.ext.*
+import com.kyberswap.android.util.ext.percentage
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
+import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
+import com.kyberswap.android.util.ext.toDoubleSafe
 import kotlinx.android.parcel.Parcelize
 import org.web3j.utils.Convert
 import java.math.BigDecimal
@@ -41,8 +46,13 @@ data class Swap(
     @Embedded(prefix = "gas_")
     var gas: Gas = Gas(),
     @Ignore
-    var ethToken: Token = Token()
+    var ethToken: Token = Token(),
+    @Ignore
+    var isExpectedRateZero: Boolean = false
 ) : Parcelable {
+
+    val isMarketRateZero: Boolean
+        get() = marketRate.toDoubleSafe() == 0.0
 
     val allETHBalanceGasLimit: BigInteger
         get() {
@@ -134,6 +144,15 @@ data class Swap(
         get() = sourceAmount.isNotEmpty() && expectedRate.isNotEmpty()
 
     val displaySourceToDestAmount: String
+        get() {
+            return if (tokenDest.rateEthNow == BigDecimal.ZERO) {
+                displaySourceToDestAmountETH
+     else {
+                displaySourceToDestAmountETHUSD
+    
+
+
+    private val displaySourceToDestAmountETH: String
         get() = StringBuilder().append("1 ")
             .append(tokenSource.tokenSymbol)
             .append(" = ")
@@ -145,6 +164,11 @@ data class Swap(
             )
             .append(" ")
             .append(tokenDest.tokenSymbol)
+            .toString()
+
+    private val displaySourceToDestAmountETHUSD: String
+        get() = StringBuilder()
+            .append(displaySourceToDestAmountETH)
             .append(" = ")
             .append(
                 getExpectedAmount(
@@ -156,8 +180,9 @@ data class Swap(
             .toString()
 
 
+
     val displayDestAmountUsd: String
-        get() = StringBuilder()
+        get() = if (tokenDest.rateUsdNow == BigDecimal.ZERO) "" else StringBuilder()
             .append("≈ ")
             .append(
                 getExpectedAmount(
@@ -293,7 +318,9 @@ data class Swap(
 
 
     val insufficientEthBalance: Boolean
-        get() = ethToken.currentBalance < gasFeeEth
+        get() {
+            return ethToken.currentBalance < gasFeeEth
+
 
     fun getDefaultSourceAmount(ethAmount: String): BigDecimal {
         return if (tokenSource.rateEthNow == BigDecimal.ZERO) BigDecimal.ZERO

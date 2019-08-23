@@ -1,13 +1,16 @@
 package com.kyberswap.android.presentation.main.transaction
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentTransactionStatusBinding
@@ -15,10 +18,12 @@ import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
+import timber.log.Timber
 import javax.inject.Inject
 
-class TransactionStatusFragment : BaseFragment() {
+class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private lateinit var binding: FragmentTransactionStatusBinding
 
@@ -36,11 +41,17 @@ class TransactionStatusFragment : BaseFragment() {
 
     private var transactionStatusAdapter: TransactionStatusAdapter? = null
 
+    private val handler by lazy {
+        Handler()
+    }
+
+    private val isPending: Boolean
+        get() = transactionType == Transaction.PENDING
+
     private val emptyTransaction: String
-        get() = if (transactionType == Transaction.PENDING) getString(R.string.empty_pending_transaction) else getString(
+        get() = if (isPending) getString(R.string.empty_pending_transaction) else getString(
             R.string.empty_complete_transaction
         )
-
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory)
@@ -49,9 +60,7 @@ class TransactionStatusFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        wallet = arguments?.getParcelable(WALLET_PARAM)
         transactionType = arguments?.getInt(TRANSACTION_TYPE) ?: Transaction.PENDING
-
     }
 
     override fun onCreateView(
@@ -65,10 +74,84 @@ class TransactionStatusFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        wallet?.let {
-            viewModel.getTransactionFilter(transactionType, it)
 
-        binding.wallet = wallet
+        viewModel.getSelectedWallet()
+
+        wallet?.let {
+            getTransactionsByFilter()
+
+
+        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetWalletState.Success -> {
+                        if (wallet?.address != state.wallet.address) {
+                            wallet = state.wallet
+                            getTransactionsByFilter()
+                
+                        binding.wallet = wallet
+            
+                    is GetWalletState.ShowError -> {
+
+            
+        
+    
+)
+
+        setupTransactionList()
+
+
+
+        context?.let {
+            binding.swipeLayout.setColorSchemeColors(
+                ContextCompat.getColor(
+                    it,
+                    R.color.colorAccent
+                )
+            )
+
+        binding.swipeLayout.setOnRefreshListener(this)
+
+        viewModel.getTransactionCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetTransactionState.Loading -> {
+                        Timber.e("Loading")
+                        showProgress(true)
+            
+                    is GetTransactionState.Success -> {
+                        Timber.e("state loaded: " + state.isLoaded + ": state.isPending: " + isPending + ", filterChange: " + state.isFilterChanged)
+                        if (state.isLoaded) {
+                            showProgress(false)
+                
+
+                        if (state.isFilterChanged) {
+                            transactionStatusAdapter?.submitList(null)
+                
+                        updateTransactionList(state.transactions)
+            
+                    is GetTransactionState.ShowError -> {
+                        showProgress(false)
+                        showAlert(
+                            state.message ?: getString(R.string.something_wrong),
+                            R.drawable.ic_info_error
+                        )
+            
+                    is GetTransactionState.FilterNotChange -> {
+                        Timber.e("Filter not change")
+                        showProgress(false)
+                        if (transactionStatusAdapter?.itemCount == 0) {
+                            binding.emptyTransaction = emptyTransaction
+                 else {
+                            binding.emptyTransaction = ""
+                
+            
+        
+    
+)
+    }
+
+    private fun setupTransactionList() {
         binding.rvTransaction.layoutManager = LinearLayoutManager(
             activity,
             RecyclerView.VERTICAL,
@@ -102,50 +185,47 @@ class TransactionStatusFragment : BaseFragment() {
     
 
         binding.rvTransaction.adapter = transactionStatusAdapter
+    }
 
-        viewModel.getTransactionCallback.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is GetTransactionState.Success -> {
-                        updateTransactionList(state.transactions, state.isFilterChanged)
-                        if (state.transactions.isEmpty()) {
-                            binding.emptyTransaction = emptyTransaction
-                 else {
-                            binding.emptyTransaction = ""
-                
-            
-                    is GetTransactionState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
-            
-        
-    
-)
+    private fun getTransactionsByFilter(isForceRefresh: Boolean = false) {
+        wallet?.let {
+            viewModel.getTransactionFilter(transactionType, it, isForceRefresh)
 
+    }
+
+    override fun onRefresh() {
+        getTransactionsByFilter(true)
     }
 
     private fun updateTransactionList(
-        transactions: List<TransactionItem>,
-        isFilterChanged: Boolean
+        transactions: List<TransactionItem>
     ) {
-        if (isFilterChanged) {
-            transactionStatusAdapter?.submitList(null)
- else {
-            transactionStatusAdapter?.submitList(listOf())
-
+        transactionStatusAdapter?.submitList(listOf())
         transactionStatusAdapter?.submitList(transactions)
+
+        if (transactions.isEmpty()) {
+            binding.emptyTransaction = emptyTransaction
+ else {
+            binding.emptyTransaction = ""
+
     }
 
+    override fun showProgress(showProgress: Boolean) {
+        handler.post {
+            binding.swipeLayout.isRefreshing = showProgress
+
+    }
+
+    override fun onDestroyView() {
+        handler.removeCallbacksAndMessages(null)
+        super.onDestroyView()
+    }
 
     companion object {
-        private const val WALLET_PARAM = "wallet_param"
         private const val TRANSACTION_TYPE = "transaction_type"
-        fun newInstance(type: Int, wallet: Wallet?) =
+        fun newInstance(type: Int) =
             TransactionStatusFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(WALLET_PARAM, wallet)
                     putInt(TRANSACTION_TYPE, type)
         
     

@@ -89,6 +89,7 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
+                        onBackPressed()
             
         
     

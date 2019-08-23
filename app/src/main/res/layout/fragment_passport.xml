@@ -6,6 +6,12 @@
         <variable
             name="info"
             type="com.kyberswap.android.domain.model.KycInfo" />
+
+        <variable
+            name="isLoaded"
+            type="Boolean" />
+
+        <import type="android.view.View" />
     </data>
 
     <FrameLayout
@@ -349,7 +355,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:indeterminateTint="@color/colorAccent"
-                            android:visibility="gone" />
+                            android:visibility="@{isLoaded ? View.GONE : View.VISIBLE}" />
                     </FrameLayout>
 
 
@@ -421,7 +427,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:indeterminateTint="@color/colorAccent"
-                            android:visibility="gone" />
+                            android:visibility="@{isLoaded ? View.GONE : View.VISIBLE}" />
                     </FrameLayout>
 
                     <TextView
@@ -494,7 +500,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:indeterminateTint="@color/colorAccent"
-                            android:visibility="gone" />
+                            android:visibility="@{isLoaded ? View.GONE : View.VISIBLE}" />
 
                     </FrameLayout>
 

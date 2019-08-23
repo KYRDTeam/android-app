@@ -11,7 +11,11 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentLimitOrderFilterBinding
 import com.kyberswap.android.domain.SchedulerProvider
-import com.kyberswap.android.domain.model.*
+import com.kyberswap.android.domain.model.FilterItem
+import com.kyberswap.android.domain.model.FilterSetting
+import com.kyberswap.android.domain.model.Order
+import com.kyberswap.android.domain.model.OrderFilter
+import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.Navigator
@@ -101,6 +105,7 @@ class FilterLimitOrderFragment : BaseFragment(), LoginState {
 
         viewModel.getFilterSettingCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == GetFilterSettingState.Loading)
                 when (state) {
                     is GetFilterSettingState.Success -> {
                         this.filterSetting = state.filterSetting
@@ -108,7 +113,6 @@ class FilterLimitOrderFragment : BaseFragment(), LoginState {
                         tokenPairAdapter.submitList(state.filterSetting.pairs)
                         addressAdapter.submitList(state.filterSetting.address)
                         statusAdapter.submitList(toDisplayStatus(state.filterSetting.status))
-
             
                     is GetFilterSettingState.ShowError -> {
                         showAlert(

@@ -27,6 +27,8 @@ class TransactionStatusAdapter(
                 oldItem is TransactionItem.Header && newItem is TransactionItem.Header && oldItem.date == newItem.date -> true
                 oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemOdd && oldItem.transaction.hash == newItem.transaction.hash -> true
                 oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemEven && oldItem.transaction.hash == newItem.transaction.hash -> true
+                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemEven && oldItem.transaction.hash == newItem.transaction.hash -> true
+                oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemOdd && oldItem.transaction.hash == newItem.transaction.hash -> true
                 else -> false
     
 
@@ -42,19 +44,23 @@ class TransactionStatusAdapter(
                 oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemEven && oldItem.transaction.sameDisplay(
                     newItem.transaction
                 ) -> true
+                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemEven && oldItem.transaction.sameDisplay(
+                    newItem.transaction
+                ) -> true
+                oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemOdd && oldItem.transaction.sameDisplay(
+                    newItem.transaction
+                ) -> true
                 else -> false
     
 
     }
 ) {
 
-
     override fun bind(binding: ViewDataBinding, item: TransactionItem) {
         when (item) {
             is TransactionItem.Header -> {
                 binding as ItemHeaderBinding
                 binding.tvDate.text = item.date
-
     
 
             is TransactionItem.ItemEven -> {
@@ -67,7 +73,6 @@ class TransactionStatusAdapter(
                 binding(binding, item.transaction)
     
 
-
     }
 
     private fun binding(binding: ItemTransactionBinding, transaction: Transaction) {
@@ -77,7 +82,6 @@ class TransactionStatusAdapter(
         binding.tvFail.visibility = if (transaction.isTransactionFail) View.VISIBLE else View.GONE
         binding.root.setOnClickListener {
             onTransactionClick?.invoke(transaction)
-
 
     }
 

@@ -12,7 +12,16 @@ import com.kyberswap.android.data.api.user.UserInfoEntity
 import io.reactivex.Single
 import okhttp3.RequestBody
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
+import retrofit2.http.Headers
+import retrofit2.http.PATCH
+import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Path
 import java.math.BigDecimal
 
 interface UserApi {
@@ -122,7 +131,9 @@ interface UserApi {
         @Field("kyc_profile[document_id]") documentId: String,
         @Field("kyc_profile[document_type]") documentType: String,
         @Field("kyc_profile[document_issue_date]") documentIssueDate: String?,
-        @Field("kyc_profile[document_expiry_date]") documentExpiriedDate: String?,
+        @Field("kyc_profile[issue_date_non_applicable]") isIssueDateNoneApplicable: Boolean?,
+        @Field("kyc_profile[document_expiry_date]") documentExpiredDate: String?,
+        @Field("kyc_profile[expiry_date_non_applicable]") isExpiredDateNoneApplicable: Boolean?,
         @Field("kyc_profile[photo_selfie]") photoSelfie: String,
         @Field("kyc_profile[photo_identity_front_side]") photoFrontSide: String,
         @Field("kyc_profile[photo_identity_back_side]") photoBackSide: String

@@ -121,7 +121,6 @@
                     android:layout_marginTop="10dp"
                     android:clickable="true"
                     android:focusable="true"
-                    android:scaleType="centerInside"
                     app:identifier="@{alert.tokenSymbol}"
                     app:layout_constraintBottom_toBottomOf="@+id/vChangeToken"
                     app:layout_constraintEnd_toStartOf="@+id/tvToken"

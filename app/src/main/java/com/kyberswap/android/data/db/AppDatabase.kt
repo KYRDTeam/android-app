@@ -8,8 +8,23 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.kyberswap.android.domain.model.*
+import com.kyberswap.android.domain.model.Alert
+import com.kyberswap.android.domain.model.Contact
+import com.kyberswap.android.domain.model.LocalLimitOrder
+import com.kyberswap.android.domain.model.Order
+import com.kyberswap.android.domain.model.OrderFilter
+import com.kyberswap.android.domain.model.PassCode
+import com.kyberswap.android.domain.model.PendingBalances
+import com.kyberswap.android.domain.model.Rate
+import com.kyberswap.android.domain.model.Send
+import com.kyberswap.android.domain.model.Swap
+import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.Transaction
+import com.kyberswap.android.domain.model.TransactionFilter
 import com.kyberswap.android.domain.model.Unit
+import com.kyberswap.android.domain.model.UserInfo
+import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.WalletToken
 
 @Database(
     entities = [
@@ -88,7 +103,7 @@ abstract class AppDatabase : RoomDatabase() {
             )
                 .addMigrations(MIGRATION_1_2)
                 .fallbackToDestructiveMigration()
-                .allowMainThreadQueries()
+//                .allowMainThreadQueries()
                 .build()
     }
 }

@@ -3,7 +3,13 @@ package com.kyberswap.android.util.di.module
 import android.content.Context
 import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.R
-import com.kyberswap.android.data.api.home.*
+import com.kyberswap.android.data.api.home.CurrencyApi
+import com.kyberswap.android.data.api.home.LimitOrderApi
+import com.kyberswap.android.data.api.home.PromoApi
+import com.kyberswap.android.data.api.home.SwapApi
+import com.kyberswap.android.data.api.home.TokenApi
+import com.kyberswap.android.data.api.home.TransactionApi
+import com.kyberswap.android.data.api.home.UserApi
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.util.TokenClient
 import dagger.Module
@@ -15,6 +21,7 @@ import org.web3j.protocol.http.HttpService
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -24,6 +31,7 @@ class NetworkModule {
     @Singleton
     fun provideOkHttpClient(storageMediator: StorageMediator): OkHttpClient {
         val client = OkHttpClient().newBuilder()
+            .connectTimeout(2, TimeUnit.MINUTES)
         client.addInterceptor {
             val original = it.request()
             val builder = original.newBuilder()

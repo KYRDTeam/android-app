@@ -6,17 +6,40 @@ import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.api.home.UserApi
-import com.kyberswap.android.data.db.*
+import com.kyberswap.android.data.db.ContactDao
+import com.kyberswap.android.data.db.SendDao
+import com.kyberswap.android.data.db.SwapDao
+import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.db.TransactionDao
+import com.kyberswap.android.data.db.UserDao
 import com.kyberswap.android.data.mapper.CapMapper
 import com.kyberswap.android.data.mapper.GasMapper
 import com.kyberswap.android.data.mapper.UserMapper
-import com.kyberswap.android.domain.model.*
+import com.kyberswap.android.domain.model.Alert
+import com.kyberswap.android.domain.model.Cap
+import com.kyberswap.android.domain.model.Contact
+import com.kyberswap.android.domain.model.EstimateAmount
+import com.kyberswap.android.domain.model.Gas
+import com.kyberswap.android.domain.model.ResponseStatus
+import com.kyberswap.android.domain.model.Send
+import com.kyberswap.android.domain.model.Swap
+import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.Transaction
+import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.repository.SwapRepository
 import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendUseCase
 import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
-import com.kyberswap.android.domain.usecase.swap.*
+import com.kyberswap.android.domain.usecase.swap.EstimateAmountUseCase
+import com.kyberswap.android.domain.usecase.swap.EstimateGasUseCase
+import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
+import com.kyberswap.android.domain.usecase.swap.GetCapUseCase
+import com.kyberswap.android.domain.usecase.swap.GetCombinedCapUseCase
+import com.kyberswap.android.domain.usecase.swap.GetSwapDataUseCase
+import com.kyberswap.android.domain.usecase.swap.SaveSwapDataTokenUseCase
+import com.kyberswap.android.domain.usecase.swap.SaveSwapUseCase
+import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
 import com.kyberswap.android.presentation.common.DEFAULT_NAME
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
@@ -36,7 +59,6 @@ import kotlin.math.pow
 
 class SwapDataRepository @Inject constructor(
     private val context: Context,
-    private val walletDao: WalletDao,
     private val swapDao: SwapDao,
     private val tokenDao: TokenDao,
     private val sendTokenDao: SendDao,
@@ -60,8 +82,6 @@ class SwapDataRepository @Inject constructor(
                 api.getCap(param.wallet.address)
     
 .map { capMapper.transform(it) }
-
-
     }
 
     override fun estimateAmount(param: EstimateAmountUseCase.Param): Single<EstimateAmount> {
@@ -81,44 +101,11 @@ class SwapDataRepository @Inject constructor(
                     address = param.address
                 ) ?: Contact(param.send.walletAddress, param.address, DEFAULT_NAME)
                 param.send.copy(contact = contact)
-
      else {
                 param.send
     
             val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL) ?: Token()
             sendTokenDao.updateSend(send.copy(ethToken = ethToken))
-
-    }
-
-    override fun getSendData(param: GetSendTokenUseCase.Param): Flowable<Send> {
-
-        val wallet = param.wallet
-        val send = sendTokenDao.findSendByAddress(wallet.address)
-        val defaultSend = if (send == null) {
-            val defaultSourceToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
-            Send(
-                wallet.address,
-                defaultSourceToken
-            )
- else {
-            val tokenSource =
-                tokenDao.getTokenBySymbol(send.tokenSource.tokenSymbol)
-                    ?: Token()
-            send.copy(tokenSource = tokenSource)
-
-
-        val sendByWallet =
-            defaultSend.copy(tokenSource = defaultSend.tokenSource.updateSelectedWallet(wallet))
-
-        val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
-        val eth = ethToken.updateSelectedWallet(wallet)
-
-        val updatedSend = sendByWallet.copy(ethToken = eth)
-        sendTokenDao.insertSend(updatedSend)
-        return sendTokenDao.findSendByAddressFlowable(param.wallet.address).defaultIfEmpty(
-            updatedSend
-        ).map {
-            it.copy(ethToken = eth)
 
     }
 
@@ -323,84 +310,144 @@ class SwapDataRepository @Inject constructor(
     }
 
     override fun getSwapData(param: GetSwapDataUseCase.Param): Flowable<Swap> {
-        val wallet = param.wallet
-        val alert = param.alert
-        val localSwap = swapDao.findSwapByAddress(wallet.address)
-        val defaultSwap =
-            when {
-                alert != null -> {
-                    val sourceToken = if (alert.base == Alert.BASE_USD) Token.ETH else alert.token
-                    val destToken = if (alert.base == Alert.BASE_USD) Token.KNC else Token.ETH
-                    val defaultSourceToken = tokenDao.getTokenBySymbol(sourceToken)
-                    val defaultDestToken = tokenDao.getTokenBySymbol(destToken)
-                    Swap(
-                        wallet.address,
-                        defaultSourceToken ?: Token(),
-                        defaultDestToken ?: Token()
-                    )
-        
-                localSwap == null -> {
-
-                    val promo = wallet.promo
-                    val sourceToken: String
-                    val destToken: String
-                    if (wallet.isPromo) {
-                        sourceToken = context.getString(R.string.promo_source_token)
-                        destToken =
-                            if (promo?.destinationToken?.isNotEmpty() == true) promo.destinationToken else Token.KNC
-             else {
-                        sourceToken = Token.ETH
-                        destToken = Token.KNC
+        return Flowable.fromCallable {
+            val wallet = param.wallet
+            val alert = param.alert
+            val localSwap = swapDao.findSwapByAddress(wallet.address)
+            val defaultSwap =
+                when {
+                    alert != null -> {
+                        val sourceToken =
+                            if (alert.base == Alert.BASE_USD) Token.ETH else alert.token
+                        val destToken = if (alert.base == Alert.BASE_USD) Token.KNC else Token.ETH
+                        val defaultSourceToken = tokenDao.getTokenBySymbol(sourceToken) ?: Token()
+                        val defaultDestToken = tokenDao.getTokenBySymbol(destToken) ?: Token()
+                        val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
+                        Swap(
+                            wallet.address,
+                            defaultSourceToken,
+                            defaultDestToken,
+                            ethToken = ethToken
+                        )
             
+                    localSwap == null -> {
 
-                    val defaultSourceToken = tokenDao.getTokenBySymbol(sourceToken)
-                    val defaultDestToken = tokenDao.getTokenBySymbol(destToken)
+                        val promo = wallet.promo
+                        val sourceToken: String
+                        val destToken: String
+                        if (wallet.isPromo) {
+                            sourceToken = context.getString(R.string.promo_source_token)
+                            destToken =
+                                if (promo?.destinationToken?.isNotEmpty() == true) promo.destinationToken else Token.KNC
+                 else {
+                            sourceToken = Token.ETH
+                            destToken = Token.KNC
+                
 
-                    Swap(
-                        wallet.address,
-                        defaultSourceToken ?: Token(),
-                        defaultDestToken ?: Token()
-                    )
+                        val defaultSourceToken = tokenDao.getTokenBySymbol(sourceToken) ?: Token()
+                        val defaultDestToken = tokenDao.getTokenBySymbol(destToken) ?: Token()
+                        val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
 
+                        Swap(
+                            wallet.address,
+                            defaultSourceToken,
+                            defaultDestToken,
+                            ethToken = ethToken
+                        )
+            
+                    else -> {
+                        val tokenSource =
+                            tokenDao.getTokenBySymbol(localSwap.tokenSource.tokenSymbol)
+                                ?: Token()
+                        val tokenDest =
+                            tokenDao.getTokenBySymbol(localSwap.tokenDest.tokenSymbol)
+                                ?: Token()
+
+                        val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
+                        localSwap.copy(
+                            tokenSource = tokenSource,
+                            tokenDest = tokenDest,
+                            ethToken = ethToken
+                        )
+            
         
-                else -> {
-                    val tokenSource =
-                        tokenDao.getTokenBySymbol(localSwap.tokenSource.tokenSymbol)
-                            ?: Token()
-                    val tokenDest =
-                        tokenDao.getTokenBySymbol(localSwap.tokenDest.tokenSymbol)
-                            ?: Token()
-                    localSwap.copy(tokenSource = tokenSource, tokenDest = tokenDest)
+
+            val swap = defaultSwap.copy(
+                tokenSource =
+                if (wallet.address != defaultSwap.tokenSource.selectedWalletAddress) {
+                    defaultSwap.tokenSource.updateSelectedWallet(wallet)
+         else {
+                    defaultSwap.tokenSource
         
-    
+                ,
+                tokenDest =
+                if (wallet.address != defaultSwap.tokenDest.selectedWalletAddress) {
+                    defaultSwap.tokenDest.updateSelectedWallet(wallet)
+         else {
+                    defaultSwap.tokenDest
+        ,
+                ethToken = if (wallet.address != defaultSwap.ethToken.selectedWalletAddress) {
+                    defaultSwap.ethToken.updateSelectedWallet(wallet)
+         else {
+                    defaultSwap.ethToken
+        
 
-        val swap = defaultSwap.copy(
-            tokenSource =
-            if (wallet.address != defaultSwap.tokenSource.selectedWalletAddress) {
-                defaultSwap.tokenSource.updateSelectedWallet(wallet)
-     else {
-                defaultSwap.tokenSource
-    
-            ,
-            tokenDest =
-            if (wallet.address != defaultSwap.tokenDest.selectedWalletAddress) {
-                defaultSwap.tokenDest.updateSelectedWallet(wallet)
-     else {
-                defaultSwap.tokenDest
-    
-
-        )
-
-        val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
-        val eth = ethToken.updateSelectedWallet(wallet)
-
-        swapDao.insertSwap(swap)
-        return swapDao.findSwapByAddressFlowable(wallet.address).defaultIfEmpty(
+            )
+            swapDao.insertSwap(swap)
             swap
-        ).map {
-            it.ethToken = eth
-            it
+.flatMap { swap ->
+            swapDao.findSwapByAddressFlowable(param.wallet.address).defaultIfEmpty(
+                swap
+            ).map {
+                it.ethToken = swap.ethToken
+                it
+    
 
     }
 
+    override fun getSendData(param: GetSendTokenUseCase.Param): Flowable<Send> {
+        return Flowable.fromCallable {
+            val wallet = param.wallet
+            val send = sendTokenDao.findSendByAddress(wallet.address)
+            val defaultSend = if (send == null) {
+                val defaultSourceToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
+                val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
+                Send(
+                    wallet.address,
+                    defaultSourceToken,
+                    ethToken = ethToken
+                )
+     else {
+                val tokenSource =
+                    tokenDao.getTokenBySymbol(send.tokenSource.tokenSymbol)
+                        ?: Token()
+
+                val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
+                send.copy(tokenSource = tokenSource, ethToken = ethToken)
+    
+
+            val updatedSend =
+                defaultSend.copy(
+                    tokenSource = if (defaultSend.tokenSource.selectedWalletAddress != wallet.address) {
+                        defaultSend.tokenSource.updateSelectedWallet(wallet)
+             else {
+                        defaultSend.tokenSource
+            ,
+                    ethToken = if (defaultSend.ethToken.selectedWalletAddress != wallet.address) {
+                        defaultSend.ethToken.updateSelectedWallet(wallet)
+             else {
+                        defaultSend.ethToken
+            
+                )
+
+            sendTokenDao.insertSend(updatedSend)
+            updatedSend
+.flatMap { updatedSend ->
+            sendTokenDao.findSendByAddressFlowable(param.wallet.address).defaultIfEmpty(
+                updatedSend
+            ).map {
+                it.copy(ethToken = updatedSend.ethToken)
+    
+
+    }
 }

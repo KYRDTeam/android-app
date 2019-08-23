@@ -28,7 +28,7 @@ class FilterViewModel @Inject constructor(
 
 
     fun getFilterSettings() {
-
+        _getFilterSettingCallback.postValue(Event(GetFilterSettingState.Loading))
         getLimitOrdersFilterSettingUseCase.execute(
             Consumer {
                 _getFilterSettingCallback.value = Event(GetFilterSettingState.Success(it))
@@ -40,7 +40,6 @@ class FilterViewModel @Inject constructor(
     ,
             null
         )
-
     }
 
     override fun onCleared() {

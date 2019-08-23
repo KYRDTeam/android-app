@@ -4,10 +4,12 @@ import android.animation.ObjectAnimator
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
+import android.view.inputmethod.EditorInfo
 import android.widget.CompoundButton
 import android.widget.EditText
 import androidx.lifecycle.Observer
@@ -23,6 +25,7 @@ import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.DEFAULT_ACCEPT_RATE_PERCENTAGE
+import com.kyberswap.android.presentation.common.KeyImeChange
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.common.WalletObserver
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -38,7 +41,6 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.web3j.utils.Convert
-import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.concurrent.atomic.AtomicBoolean
@@ -97,7 +99,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             )
  ?: BigDecimal.ZERO
 
-
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
@@ -126,7 +127,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     is GetWalletState.Success -> {
                         if (!state.wallet.isSameWallet(wallet)) {
                             this.wallet = state.wallet
-                            binding.walletName = state.wallet.name
+                            binding.walletName = state.wallet.display()
                             val promo = wallet?.promo
                             if (wallet?.isPromo == true) {
                                 enableTokenSearch(isSourceToken = true, isEnable = false)
@@ -140,7 +141,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
                             viewModel.getSwapData(state.wallet, alertNotification)
                 
-
             
                     is GetWalletState.ShowError -> {
 
@@ -340,6 +340,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
          else {
                     sourceAmount = it.tokenSource.currentBalance.toDisplayNumber()
                     binding.edtSource.setText(sourceAmount)
+                    verifyAmount()
         
 
     
@@ -352,11 +353,13 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         val swap =
                             if (state.list.first().toBigDecimalOrDefaultZero() > BigDecimal.ZERO) {
                                 binding.swap?.copy(
-                                    expectedRate = state.list[0]
+                                    expectedRate = state.list[0],
+                                    isExpectedRateZero = false
                                 )
                      else {
                                 binding.swap?.copy(
-                                    expectedRate = binding.swap?.marketRate ?: ""
+                                    expectedRate = binding.swap?.marketRate ?: "",
+                                    isExpectedRateZero = true
                                 )
                     
 
@@ -384,21 +387,11 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 )
                     
 
-                            binding.tvValueInUSD.text =
-                                getString(
-                                    R.string.dest_balance_usd_format,
-                                    binding.swap?.getExpectedDestUsdAmount(
-                                        edtSource.toBigDecimalOrDefaultZero(),
-                                        swap.tokenDest.rateUsdNow
-                                    )?.toDisplayNumber()
-                                )
+                            showDestValueInUsd(swap)
 
                             tvRevertNotification.text =
                                 getRevertNotification(rgRate.checkedRadioButtonId)
-
-
                 
-
             
                     is GetExpectedRateState.ShowError -> {
                         showAlert(
@@ -419,8 +412,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         )
                         tvRevertNotification.text =
                             getRevertNotification(rgRate.checkedRadioButtonId)
+
                         if (swap != binding.swap) {
                             binding.swap = swap
+                            swap?.let { it1 -> showDestValueInUsd(it1) }
                             binding.executePendingBindings()
                 
             
@@ -550,6 +545,24 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     
 
 
+        binding.edtSource.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                verifyAmount()
+    
+            false
+
+
+
+        binding.edtSource.setKeyImeChangeListener(object : KeyImeChange {
+            override fun onKeyIme(keyCode: Int, event: KeyEvent?) {
+                if (KeyEvent.KEYCODE_BACK == event?.keyCode) {
+                    verifyAmount()
+        
+    
+)
+
+
+
 
         viewModel.getGetGasPriceCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -594,8 +607,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 state.swap, true
                             )
                 
-
-
             
                     is GetCapState.ShowError -> {
                         showAlert(
@@ -631,7 +642,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         if (binding.swap != null) {
                             getRate(binding.swap!!)
                 
-
             
                     is EstimateAmountState.ShowError -> {
 
@@ -667,6 +677,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         binding.tvContinue.setOnClickListener {
             binding.swap?.let { swap ->
                 when {
+                    swap.isExpectedRateZero && swap.isMarketRateZero -> {
+                        showAlertWithoutIcon(message = getString(R.string.reserve_under_maintainance))
+            
+
                     edtSource.text.isNullOrEmpty() -> {
                         val errorAmount = getString(R.string.specify_amount)
                         showAlertWithoutIcon(
@@ -674,6 +688,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             message = errorAmount
                         )
             
+
                     edtSource.text.toString().toBigDecimalOrDefaultZero() > swap.tokenSource.currentBalance -> {
                         val errorExceedBalance = getString(R.string.exceed_balance)
                         showAlertWithoutIcon(
@@ -713,8 +728,15 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
                     rbCustom.isChecked && edtCustom.text.isNullOrEmpty() -> {
                         showAlertWithoutIcon(message = getString(R.string.custom_rate_empty))
-
             
+
+                    swap.isExpectedRateZero -> {
+                        showAlertWithoutIcon(
+                            title = getString(R.string.title_amount_too_big),
+                            message = getString(R.string.exceed_balance)
+                        )
+            
+
                     else -> wallet?.let {
 
                         val data = swap.copy(
@@ -741,12 +763,38 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
         rbFast.isChecked = true
         rbDefaultRate.isChecked = true
+    }
+
+    fun showDestValueInUsd(swap: Swap) {
+        if (swap.tokenDest.rateEthNow > BigDecimal.ZERO && edtSource.text.isNotEmpty()) {
+            binding.tvValueInUSD.text =
+                getString(
+                    R.string.dest_balance_usd_format,
+                    binding.swap?.getExpectedDestUsdAmount(
+                        edtSource.toBigDecimalOrDefaultZero(),
+                        swap.tokenDest.rateUsdNow
+                    )?.toDisplayNumber()
+                )
+ else {
+            binding.tvValueInUSD.text = ""
+
+    }
+
+    fun verifyAmount() {
+        binding.swap?.let {
+            if (it.isExpectedRateZero && it.isMarketRateZero) {
+                showAlertWithoutIcon(message = getString(R.string.reserve_under_maintainance))
+     else if (it.isExpectedRateZero) {
+                showAlertWithoutIcon(
+                    title = getString(R.string.title_amount_too_big),
+                    message = getString(R.string.exceed_balance)
+                )
+    
 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: WalletChangeEvent) {
-        Timber.e("WalletChangeEvent")
         getSwap()
     }
 
@@ -768,7 +816,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     fun getSwap() {
         wallet?.let {
             viewModel.getSwapData(it)
-
 
     }
 
@@ -796,7 +843,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
         val colorMatrix = ColorMatrix()
         colorMatrix.setSaturation(0f)
-
 
         val image = if (isSourceToken) {
             binding.imgTokenSource

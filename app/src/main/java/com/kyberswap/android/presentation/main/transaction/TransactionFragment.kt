@@ -8,7 +8,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.kyberswap.android.AppExecutors
-import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentTransactionBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Wallet
@@ -47,11 +46,6 @@ class TransactionFragment : BaseFragment() {
         ViewModelProviders.of(this, viewModelFactory).get(TransactionViewModel::class.java)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        wallet = arguments!!.getParcelable(WALLET_PARAM)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -65,25 +59,28 @@ class TransactionFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
 
         status.addAll(listOf(binding.tvPending, binding.tvMined))
-        binding.wallet = wallet
-        val adapter = TransactionPagerAdapter(
-            childFragmentManager,
-            wallet
-        )
-        binding.vpTransaction.adapter = adapter
-        binding.vpTransaction.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-            override fun onPageScrollStateChanged(state: Int) {}
-            override fun onPageScrolled(
-                position: Int,
-                positionOffset: Float,
-                positionOffsetPixels: Int
-            ) {
-    
 
-            override fun onPageSelected(position: Int) {
-                setSelectedOption(position)
+
+        viewModel.getSelectedWallet()
+
+        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetWalletState.Success -> {
+                        if (state.wallet.address != wallet?.address) {
+                            wallet = state.wallet
+                            binding.wallet = wallet
+                
+            
+                    is GetWalletState.ShowError -> {
+
+            
+        
     
 )
+
+        setupAdapter()
+
 
         binding.imgFilter.setOnClickListener {
             navigator.navigateToTransactionFilterScreen(
@@ -92,23 +89,6 @@ class TransactionFragment : BaseFragment() {
             )
 
 
-        viewModel.getWallet(wallet!!.address)
-        viewModel.getWalletCallback.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                when (state) {
-                    is GetWalletState.Success -> {
-                        this.wallet = state.wallet
-            
-
-                    is GetWalletState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
-            
-        
-    
-)
 
         setSelectedOption(selectedIndex)
 
@@ -124,6 +104,25 @@ class TransactionFragment : BaseFragment() {
 
     }
 
+    private fun setupAdapter() {
+        val adapter = TransactionPagerAdapter(
+            childFragmentManager
+        )
+        binding.vpTransaction.adapter = adapter
+        binding.vpTransaction.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {}
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+    
+
+            override fun onPageSelected(position: Int) {
+                setSelectedOption(position)
+    
+)
+    }
     private fun setSelectedOption(index: Int) {
         if (index != selectedIndex) {
             status[selectedIndex].isSelected = false

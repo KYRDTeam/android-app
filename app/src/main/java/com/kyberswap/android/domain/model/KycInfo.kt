@@ -108,6 +108,44 @@ data class KycInfo(
     val displayTaxIdentificationNumber: String
         get() = if (taxIdentificationNumber.isEmpty()) "N/A" else taxIdentificationNumber
 
+    fun hasSameIdentityInfo(other: KycInfo?): Boolean {
+        return this.documentId == other?.documentId &&
+            this.documentType == other.documentType &&
+            this.documentIssueDate == other.documentIssueDate &&
+            this.issueDateNonApplicable == other.issueDateNonApplicable &&
+            this.expiryDateNonApplicable == other.expiryDateNonApplicable &&
+            this.documentExpiryDate == other.documentExpiryDate &&
+            this.photoIdentityFrontSide == other.photoIdentityFrontSide &&
+            this.photoIdentityBackSide == other.photoIdentityBackSide &&
+            this.photoSelfie == other.photoSelfie
+    }
+
+    fun hasSamePersonalInfo(other: KycInfo?): Boolean {
+        return this.firstName == other?.firstName &&
+            this.middleName == other.middleName &&
+            this.lastName == other.lastName &&
+            this.nativeFullName == other.nativeFullName &&
+            this.nationality == other.nationality &&
+            this.country == other.country &&
+            this.dob == other.dob &&
+            this.gender == other.gender &&
+            this.residentialAddress == other.residentialAddress &&
+            this.city == other.city &&
+            this.zipCode == other.zipCode &&
+            this.documentProofAddress == other.documentProofAddress &&
+            this.photoProofAddress == other.photoProofAddress &&
+            this.occupationCode == other.occupationCode &&
+            this.industryCode == other.industryCode &&
+            this.taxResidencyCountry == other.taxResidencyCountry &&
+            this.haveTaxIdentification == other.haveTaxIdentification &&
+            this.taxIdentificationNumber == other.taxIdentificationNumber &&
+            this.sourceFund == other.sourceFund
+    }
+
+    fun hasSameKycInfo(other: KycInfo?): Boolean {
+        return hasSameIdentityInfo(other) && hasSamePersonalInfo(other)
+    }
+
     companion object {
         const val TYPE_PASSPORT = "passport"
         const val TYPE_NATIONAL_ID = "national_id"

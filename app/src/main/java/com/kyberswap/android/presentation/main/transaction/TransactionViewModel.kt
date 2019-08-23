@@ -2,18 +2,20 @@ package com.kyberswap.android.presentation.main.transaction
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
+import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.splash.GetWalletState
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class TransactionViewModel @Inject constructor(
     private val getBalancePollingUseCase: GetBalancePollingUseCase,
-    private val getWalletByAddressUseCase: GetWalletByAddressUseCase
-) : ViewModel() {
+    private val getWalletByAddressUseCase: GetWalletByAddressUseCase,
+    getSelectedWalletUseCase: GetSelectedWalletUseCase
+) : SelectedWalletViewModel(getSelectedWalletUseCase) {
 
     private val _getWalletCallback = MutableLiveData<Event<GetWalletState>>()
     val getWalletCallback: LiveData<Event<GetWalletState>>

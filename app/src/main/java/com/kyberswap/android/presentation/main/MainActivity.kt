@@ -20,11 +20,7 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityMainBinding
-import com.kyberswap.android.domain.model.NotificationAlert
-import com.kyberswap.android.domain.model.NotificationLimitOrder
-import com.kyberswap.android.domain.model.Transaction
-import com.kyberswap.android.domain.model.Wallet
-import com.kyberswap.android.domain.model.WalletChangeEvent
+import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
@@ -264,12 +260,15 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     
 )
 
-        mainViewModel.updateWalletStateCallback.observe(this, Observer { event ->
+
+        mainViewModel.switchWalletCompleteCallback.observe(this, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == UpdateWalletState.Loading)
                 when (state) {
                     is UpdateWalletState.Success -> {
-                        EventBus.getDefault().post(WalletChangeEvent())
+                        if (state.isWalletChangeEvent) {
+                            EventBus.getDefault().post(WalletChangeEvent(state.wallet.address))
+                
 
             
                     is UpdateWalletState.ShowError -> {

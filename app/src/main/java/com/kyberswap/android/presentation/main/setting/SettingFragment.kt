@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentSettingBinding
 import com.kyberswap.android.presentation.base.BaseFragment
@@ -168,6 +169,9 @@ class SettingFragment : BaseFragment() {
         binding.lnRateMyApp.setOnClickListener {
             openUrl(getString(R.string.setting_rate_my_app))
 
+
+        binding.tvVersion.text =
+            String.format(getString(R.string.app_version), BuildConfig.VERSION_NAME)
     }
 
     companion object {

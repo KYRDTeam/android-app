@@ -10,10 +10,28 @@ import com.kyberswap.android.data.db.AlertDao
 import com.kyberswap.android.data.db.UserDao
 import com.kyberswap.android.data.mapper.UserMapper
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
-import com.kyberswap.android.domain.model.*
+import com.kyberswap.android.domain.model.Alert
+import com.kyberswap.android.domain.model.AlertMethodsResponse
+import com.kyberswap.android.domain.model.KycInfo
+import com.kyberswap.android.domain.model.KycResponseStatus
+import com.kyberswap.android.domain.model.LoginUser
+import com.kyberswap.android.domain.model.ResponseStatus
+import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.repository.UserRepository
 import com.kyberswap.android.domain.usecase.alert.UpdateAlertMethodsUseCase
-import com.kyberswap.android.domain.usecase.profile.*
+import com.kyberswap.android.domain.usecase.profile.Base64DecodeUseCase
+import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
+import com.kyberswap.android.domain.usecase.profile.LoginUseCase
+import com.kyberswap.android.domain.usecase.profile.ReSubmitUserInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.ResetPasswordUseCase
+import com.kyberswap.android.domain.usecase.profile.ResizeImageUseCase
+import com.kyberswap.android.domain.usecase.profile.SaveIdPassportUseCase
+import com.kyberswap.android.domain.usecase.profile.SaveKycInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.SaveLocalPersonalInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.SavePersonalInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.SignUpUseCase
+import com.kyberswap.android.domain.usecase.profile.SubmitUserInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.UpdatePushTokenUseCase
 import com.kyberswap.android.presentation.main.profile.kyc.KycInfoType
 import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
@@ -22,6 +40,7 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Flowables
 import okhttp3.MediaType
 import okhttp3.RequestBody
+import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -43,7 +62,6 @@ class UserDataRepository @Inject constructor(
             userDao.deleteAllUsers()
             alertDao.deleteAllAlerts()
 
-
     }
 
     override fun getAlerts(): Flowable<List<Alert>> {
@@ -59,7 +77,6 @@ class UserDataRepository @Inject constructor(
         .toFlowable()
         ).map {
             it.sortedByDescending { it.id }
-
 
     }
 
@@ -83,15 +100,35 @@ class UserDataRepository @Inject constructor(
     }
 
     override fun pollingUserInfo(): Flowable<UserInfo> {
-        return userApi.getUserInfo().map {
-            userMapper.transform(it)
+        return Flowable.mergeDelayError(
+            userDao.all,
 
-            .repeatWhen {
-                it.delay(60, TimeUnit.SECONDS)
+            userApi.getUserInfo().map {
+                userMapper.transform(it)
     
-            .retryWhen { throwable ->
-                throwable.compose(zipWithFlatMap())
-    
+                .doAfterSuccess {
+                    val currentUser = userDao.getUser() ?: UserInfo()
+                    userDao.updateUser(it.copy(kycInfo = currentUser.kycInfo))
+
+        
+                .repeatWhen {
+                    it.delay(60, TimeUnit.SECONDS)
+        
+                .retryWhen { throwable ->
+                    throwable.compose(zipWithFlatMap())
+        
+
+        )
+
+//        return userApi.getUserInfo().map {
+//            userMapper.transform(it)
+//
+//            .repeatWhen {
+//                it.delay(60, TimeUnit.SECONDS)
+//    
+//            .retryWhen { throwable ->
+//                throwable.compose(zipWithFlatMap())
+//    
     }
 
     override fun refreshKycStatus(): Single<UserInfo> {
@@ -109,20 +146,53 @@ class UserDataRepository @Inject constructor(
         return Flowable.mergeDelayError(
             userDao.all,
             Flowables.zip(
-                userDao.all,
+                Flowable.fromCallable {
+                    userDao.getUser() != null
+        .flatMap {
+                    if (it) {
+                        userDao.all
+             else {
+                        Flowable.fromCallable {
+                            UserInfo()
+                
+            
+        
+                ,
                 userApi.getUserInfo().map {
                     userMapper.transform(it)
         .toFlowable()
             ) { local, remote ->
-                val kyc = remote.kycInfo
+                val remoteInfo = remote.kycInfo
+                val localInfo = local.kycInfo
                 val kycInfo = local.kycInfo.copy(
-                    photoSelfie = kyc.photoSelfie,
-                    photoIdentityBackSide = kyc.photoIdentityBackSide,
-                    photoIdentityFrontSide = kyc.photoIdentityFrontSide,
-                    photoProofAddress = kyc.photoProofAddress
+//                    firstName = if (localInfo.firstName.isNotEmpty()) localInfo.firstName else remoteInfo.firstName,
+//                    lastName = if (localInfo.lastName.isNotEmpty()) localInfo.lastName else remoteInfo.lastName,
+//                    nationality = if (localInfo.nationality.isNotEmpty()) localInfo.nationality else remoteInfo.nationality,
+//                    country = if (localInfo.country.isNotEmpty()) localInfo.country else remoteInfo.country,
+//                    dob = if (localInfo.dob.isNotEmpty()) localInfo.dob else remoteInfo.dob,
+//                    documentId = if (localInfo.documentId.isNotEmpty()) localInfo.documentId else remoteInfo.documentId,
+//                    documentType = if (localInfo.documentType.isNotEmpty()) localInfo.documentType else remoteInfo.documentType,
+//                    residentialAddress = if (localInfo.residentialAddress.isNotEmpty()) localInfo.residentialAddress else remoteInfo.residentialAddress,
+//                    city = if (localInfo.city.isNotEmpty()) localInfo.city else remoteInfo.city,
+//                    zipCode = if (localInfo.zipCode.isNotEmpty()) localInfo.zipCode else remoteInfo.zipCode,
+//                    documentProofAddress = if (localInfo.documentProofAddress.isNotEmpty()) localInfo.documentProofAddress else remoteInfo.documentProofAddress,
+//                    sourceFund = if (localInfo.sourceFund.isNotEmpty()) localInfo.sourceFund else remoteInfo.sourceFund,
+//                    occupationCode = if (localInfo.occupationCode.isNotEmpty()) localInfo.occupationCode else remoteInfo.occupationCode,
+//                    industryCode = if (localInfo.industryCode.isNotEmpty()) localInfo.industryCode else remoteInfo.industryCode,
+//                    taxResidencyCountry = if (localInfo.taxResidencyCountry.isNotEmpty()) localInfo.taxResidencyCountry else remoteInfo.taxResidencyCountry,
+//                    haveTaxIdentification = if (localInfo.haveTaxIdentification != null) localInfo.haveTaxIdentification else remoteInfo.haveTaxIdentification,
+//                    taxIdentificationNumber = if (localInfo.taxIdentificationNumber.isNotEmpty()) localInfo.taxIdentificationNumber else remoteInfo.taxIdentificationNumber,
+//                    documentIssueDate = if (localInfo.documentIssueDate.isNotEmpty()) localInfo.documentIssueDate else remoteInfo.documentIssueDate,
+//                    documentExpiryDate = if (localInfo.documentExpiryDate.isNotEmpty()) localInfo.documentExpiryDate else remoteInfo.documentExpiryDate,
+//                    middleName = if (localInfo.middleName.isNotEmpty()) localInfo.middleName else remoteInfo.middleName,
+//                    nativeFullName = if (localInfo.nativeFullName.isNotEmpty()) localInfo.nativeFullName else remoteInfo.nativeFullName,
+                    photoSelfie = remoteInfo.photoSelfie,
+                    photoIdentityBackSide = remoteInfo.photoIdentityBackSide,
+                    photoIdentityFrontSide = remoteInfo.photoIdentityFrontSide,
+                    photoProofAddress = remoteInfo.photoProofAddress
                 )
-
-                local.copy(kycInfo = kycInfo)
+                Timber.e("completed remote")
+                local.copy(kycInfo = kycInfo, isLoaded = true)
 
     
         )
@@ -211,7 +281,7 @@ class UserDataRepository @Inject constructor(
             info.nationality,
             info.country,
             info.dob,
-            if (info.gender) 1 else 0,
+            if (info.gender == true) 1 else 0,
             info.residentialAddress,
             info.city,
             info.zipCode,
@@ -277,7 +347,9 @@ class UserDataRepository @Inject constructor(
             info.documentId,
             info.documentType,
             info.documentIssueDate,
+            info.issueDateNonApplicable,
             info.documentExpiryDate,
+            info.expiryDateNonApplicable,
             info.photoSelfie,
             info.photoIdentityFrontSide,
             info.photoIdentityBackSide
@@ -379,11 +451,10 @@ class UserDataRepository @Inject constructor(
             user.kycInfo = param.kycInfo
             userDao.updateUser(user)
 
-
     }
 
 
     companion object {
-        private const val MAX_IMAGE_SIZE = 1000 * 1024
+        private const val MAX_IMAGE_SIZE = 800 * 1024
     }
 }

@@ -93,7 +93,6 @@ class PassCodeLockActivity : BaseActivity() {
 )
 
         binding.pinLockView.pinLength = 6
-        binding.pinLockView.enableLayoutShuffling()
 
         viewModel.savePinCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->

@@ -188,7 +188,7 @@ class ManageWalletFragment : BaseFragment() {
                 showProgress(state == UpdateWalletState.Loading)
                 when (state) {
                     is UpdateWalletState.Success -> {
-                        EventBus.getDefault().post(WalletChangeEvent())
+                        EventBus.getDefault().post(WalletChangeEvent(state.wallet.address))
             
                     is UpdateWalletState.ShowError -> {
 

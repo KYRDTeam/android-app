@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.usecase.balance.UpdateBalanceUseCase
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.GetTokenBalanceUseCase
@@ -35,7 +36,8 @@ class MainViewModel @Inject constructor(
     private val getLoginStatusUseCase: GetLoginStatusUseCase,
     private val getBalancePollingUseCase: GetBalancePollingUseCase,
     private val getTokenBalanceUseCase: GetTokenBalanceUseCase,
-    private val getTransactionsPeriodicallyUseCase: GetTransactionsPeriodicallyUseCase
+    private val getTransactionsPeriodicallyUseCase: GetTransactionsPeriodicallyUseCase,
+    private val updateBalanceUseCase: UpdateBalanceUseCase
 ) : SelectedWalletViewModel(getWalletUseCase) {
 
     private val _getAllWalletStateCallback = MutableLiveData<Event<GetAllWalletState>>()
@@ -51,9 +53,10 @@ class MainViewModel @Inject constructor(
     val createWalletCallback: LiveData<Event<CreateWalletState>>
         get() = _getMnemonicCallback
 
-    private val _updateWalletStateCallback = MutableLiveData<Event<UpdateWalletState>>()
-    val updateWalletStateCallback: LiveData<Event<UpdateWalletState>>
-        get() = _updateWalletStateCallback
+    private val _switchWalletCompleteCallback = MutableLiveData<Event<UpdateWalletState>>()
+    val switchWalletCompleteCallback: LiveData<Event<UpdateWalletState>>
+        get() = _switchWalletCompleteCallback
+
 
     private val _getLoginStatusCallback = MutableLiveData<Event<UserInfoState>>()
     val getLoginStatusCallback: LiveData<Event<UserInfoState>>
@@ -185,22 +188,28 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    private fun loadBalances(pair: Pair<Wallet, List<Token>>) {
+    private fun loadBalances(
+        pair: Pair<Wallet, List<Token>>,
+        isWalletChangedEvent: Boolean = false
+    ) {
         numberOfToken = 0
         pair.second.forEach { token ->
             getTokenBalanceUseCase.execute(
                 Action {
                     numberOfToken++
                     if (numberOfToken == pair.second.size) {
-                        _updateWalletStateCallback.value =
-                            Event(UpdateWalletState.Success(pair.first))
+                        _switchWalletCompleteCallback.value =
+                            Event(UpdateWalletState.Success(pair.first, isWalletChangedEvent))
+                        updateBalance(pair.first)
+
             
         ,
                 Consumer {
                     numberOfToken++
                     if (numberOfToken == pair.second.size) {
-                        _updateWalletStateCallback.value =
-                            Event(UpdateWalletState.Success(pair.first))
+                        _switchWalletCompleteCallback.value =
+                            Event(UpdateWalletState.Success(pair.first, isWalletChangedEvent))
+                        updateBalance(pair.first)
             
         ,
                 token
@@ -208,17 +217,29 @@ class MainViewModel @Inject constructor(
 
     }
 
+    private fun updateBalance(wallet: Wallet) {
+        updateBalanceUseCase.execute(
+            Action {
+
+    ,
+            Consumer {
+
+    ,
+            UpdateBalanceUseCase.Param(wallet)
+        )
+    }
+
     fun updateSelectedWallet(wallet: Wallet) {
         updateSelectedWalletUseCase.dispose()
-        _updateWalletStateCallback.postValue(Event(UpdateWalletState.Loading))
+        _switchWalletCompleteCallback.postValue(Event(UpdateWalletState.Loading))
         updateSelectedWalletUseCase.execute(
             Consumer { wl ->
-                loadBalances(wl)
+                loadBalances(wl, true)
 
     ,
             Consumer {
                 it.printStackTrace()
-                _updateWalletStateCallback.value =
+                _switchWalletCompleteCallback.value =
                     Event(UpdateWalletState.ShowError(it.localizedMessage))
     ,
             UpdateSelectedWalletUseCase.Param(wallet)
