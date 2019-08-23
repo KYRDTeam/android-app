@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presentation.main.MainActivity">
+
+    <data>
+
+        <variable
+            name="wallet"
+            type="com.kyberswap.android.domain.model.Wallet" />
+
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/placeHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/screen_background"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ImageView
+            android:id="@+id/imgBack"
+            style="@style/BackImage"
+            app:layout_constraintBottom_toBottomOf="@+id/textView26"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textView26" />
+
+        <TextView
+            android:id="@+id/textView26"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="8dp"
+            android:gravity="center"
+            android:text="@string/transactions"
+            android:textColor="#ffffff"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imgBack"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imgFilter"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:padding="4dp"
+            android:src="@drawable/ic_filter"
+            app:layout_constraintBottom_toBottomOf="@+id/textView26"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textView26" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
+            android:minHeight="46dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imgBack">
+
+            <TextView
+                android:id="@+id/tvPending"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/tab_view_state_drawable_left"
+                android:gravity="center"
+                android:minHeight="46dp"
+                android:text="@string/tab_pending"
+                android:textColor="@color/transaction_tab_text_color"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvMined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/tab_view_state_drawable_right"
+                android:gravity="center"
+                android:minHeight="46dp"
+                android:text="@string/tab_mined"
+                android:textColor="@color/transaction_tab_text_color"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/vpTransaction"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="21dp"
+            android:background="@color/color_bg_gray"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
+            app:layout_constraintVertical_bias="0.0">
+
+        </androidx.viewpager.widget.ViewPager>
+
+        <!--<TextView-->
+        <!--android:id="@+id/tvEmpty"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="21dp"-->
+        <!--android:lineSpacingExtra="8sp"-->
+        <!--android:text="@{emptyTransaction}"-->
+        <!--android:textColor="#5a5e67"-->
+        <!--android:textSize="12sp"-->
+        <!--android:visibility="@{TextUtils.isEmpty(emptyTransaction) ? View.GONE : View.VISIBLE}"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/textView8"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="24dp"-->
+        <!--android:layout_marginTop="32dp"-->
+        <!--android:layout_marginEnd="24dp"-->
+        <!--android:ellipsize="middle"-->
+        <!--android:lineSpacingExtra="8sp"-->
+        <!--android:singleLine="true"-->
+        <!--android:text="@{wallet.address}"-->
+        <!--android:textColor="#5a5e67"-->
+        <!--android:textSize="12sp"-->
+        <!--android:visibility="@{TextUtils.isEmpty(emptyTransaction) ? View.VISIBLE : View.GONE}"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />-->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

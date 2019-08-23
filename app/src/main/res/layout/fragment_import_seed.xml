@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presentation.wallet.ImportWalletActivity">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.kyberswap.android.presentation.wallet.ImportSeedViewModel" />
+    </data>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="47dp"
+                    android:gravity="center_horizontal"
+                    android:text="@string/recover_with_seeds"
+                    android:textColor="#141927"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="23dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="23dp"
+                    android:lineSpacingExtra="8sp"
+                    android:text="@string/please_use_seed"
+                    android:textColor="#141927"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+
+                <EditText
+                    android:id="@+id/edtSeed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="23dp"
+                    android:layout_marginTop="41dp"
+                    android:layout_marginEnd="23dp"
+                    android:backgroundTint="@color/edt_background_tint"
+                    android:hint="@string/enter_seeds"
+                    android:inputType="text"
+                    android:letterSpacing="0.07"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="22dp"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                    android:textColor="#9ea1aa"
+                    android:textColorHint="#9ea1aa"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+                <ImageView
+                    android:id="@+id/imgQRCode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_qr_code_send"
+                    app:layout_constraintBottom_toBottomOf="@+id/edtSeed"
+                    app:layout_constraintEnd_toEndOf="@+id/edtSeed"
+                    app:layout_constraintTop_toTopOf="@+id/edtSeed" />
+
+
+                <TextView
+                    android:id="@+id/txtWordCounter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:letterSpacing="0.07"
+                    android:textColor="#9ea1aa"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="@+id/edtSeed"
+                    app:layout_constraintTop_toBottomOf="@+id/edtSeed" />
+
+
+                <EditText
+                    android:id="@+id/edtWalletName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="23dp"
+                    android:layout_marginTop="17dp"
+                    android:layout_marginEnd="23dp"
+                    android:backgroundTint="@color/edt_background_tint"
+                    android:hint="@string/name_of_your_wallet"
+                    android:inputType="text"
+                    android:letterSpacing="0.07"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="22dp"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                    android:textColor="#9ea1aa"
+                    android:textColorHint="#9ea1aa"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txtWordCounter"
+                    tools:text="Name of your wallet" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <Button
+                android:id="@+id/btnImportWallet"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="41dp"
+                android:background="@drawable/import_wallet_toggle_drawable"
+                android:enabled="false"
+                android:gravity="center"
+                android:text="@string/import_wallet"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</layout>

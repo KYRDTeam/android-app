@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="name"
+            type="String" />
+
+        <variable
+            name="isSelected"
+            type="Boolean" />
+    </data>
+
+    <CheckBox
+        android:id="@+id/cb"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="@{isSelected}"
+        android:minHeight="22dp"
+        android:text="@{name}"
+        android:textColor="#5a5e67"
+        android:textSize="14sp"
+        android:theme="@style/CustomCheckTheme" />
+
+
+</layout>
