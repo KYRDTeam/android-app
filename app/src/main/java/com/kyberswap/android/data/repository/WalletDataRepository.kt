@@ -5,14 +5,32 @@ import android.util.Base64
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.PromoApi
-import com.kyberswap.android.data.db.*
+import com.kyberswap.android.data.db.LocalLimitOrderDao
+import com.kyberswap.android.data.db.SendDao
+import com.kyberswap.android.data.db.SwapDao
+import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.db.UnitDao
+import com.kyberswap.android.data.db.WalletDao
 import com.kyberswap.android.data.mapper.PromoMapper
-import com.kyberswap.android.domain.model.*
+import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Unit
+import com.kyberswap.android.domain.model.VerifyStatus
+import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.domain.repository.WalletRepository
-import com.kyberswap.android.domain.usecase.wallet.*
+import com.kyberswap.android.domain.usecase.wallet.ApplyKyberCodeUseCase
+import com.kyberswap.android.domain.usecase.wallet.CreateWalletUseCase
+import com.kyberswap.android.domain.usecase.wallet.DeleteWalletUseCase
+import com.kyberswap.android.domain.usecase.wallet.ExportKeystoreWalletUseCase
+import com.kyberswap.android.domain.usecase.wallet.ExportMnemonicWalletUseCase
+import com.kyberswap.android.domain.usecase.wallet.ExportPrivateKeyWalletUseCase
+import com.kyberswap.android.domain.usecase.wallet.GetMnemonicUseCase
+import com.kyberswap.android.domain.usecase.wallet.ImportWalletFromJsonUseCase
+import com.kyberswap.android.domain.usecase.wallet.ImportWalletFromPrivateKeyUseCase
+import com.kyberswap.android.domain.usecase.wallet.ImportWalletFromSeedUseCase
+import com.kyberswap.android.domain.usecase.wallet.SaveWalletUseCase
+import com.kyberswap.android.domain.usecase.wallet.UpdateSelectedWalletUseCase
 import com.kyberswap.android.util.HMAC
-import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toWalletAddress
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -37,8 +55,7 @@ class WalletDataRepository @Inject constructor(
     private val promoMapper: PromoMapper,
     private val swapDao: SwapDao,
     private val sendDao: SendDao,
-    private val limitOrderDao: LocalLimitOrderDao,
-    private val tokenClient: TokenClient
+    private val limitOrderDao: LocalLimitOrderDao
 ) : WalletRepository {
 
     override fun updatedSelectedWallet(param: UpdateSelectedWalletUseCase.Param): Single<Wallet> {
@@ -70,15 +87,18 @@ class WalletDataRepository @Inject constructor(
 
     override fun getAllWallet(): Flowable<List<Wallet>> {
         return walletDao.allWalletsFlowable
-
     }
 
     override fun getSelectedWallet(): Flowable<Wallet> {
-        if (walletDao.all.isEmpty()) {
-            return Flowable.error(Throwable("empty"))
+        return Flowable.fromCallable {
+            walletDao.all.isEmpty()
+        }.flatMap {
+            if (it) {
+                Flowable.error(Throwable("empty"))
+            } else {
+                walletDao.findSelectedWalletFlowable()
+            }
         }
-        return walletDao.findSelectedWalletFlowable()
-
     }
 
     override fun importWallet(param: ImportWalletFromSeedUseCase.Param): Single<Pair<Wallet, List<Token>>> {
@@ -136,8 +156,6 @@ class WalletDataRepository @Inject constructor(
                         generatedPassword,
                         false
                     )
-
-
                 } else {
                     WalletManager.importWalletFromPrivateKey(
                         metadata,
@@ -145,7 +163,6 @@ class WalletDataRepository @Inject constructor(
                         generatedPassword,
                         false
                     )
-
                 }
 
             val wallet = Wallet(
@@ -185,7 +202,6 @@ class WalletDataRepository @Inject constructor(
                 false
             )
 
-
             val wallet = Wallet(
                 importWalletFromKeystore.address.toWalletAddress(),
                 importWalletFromKeystore.id,
@@ -197,14 +213,6 @@ class WalletDataRepository @Inject constructor(
             val tokens = updateWalletToMonitorBalance(updateSelectedWallet(wallet))
             Pair(wallet, tokens)
         }
-    }
-
-    private fun updateWalletToMonitorBalance(wallet: Wallet): List<Token> {
-        val tokens = tokenDao.allTokens.map {
-            it.updateSelectedWallet(wallet)
-        }
-        tokenDao.updateTokens(tokens)
-        return tokens
     }
 
     private fun updateWalletToMonitorBalance(wallets: List<Wallet>): List<Token> {
@@ -308,9 +316,7 @@ class WalletDataRepository @Inject constructor(
                 mnemonicAvailable = true
             )
 
-
             val tokens = updateWalletToMonitorBalance(updateSelectedWallet(wallet))
-
 
             val words = mutableListOf<Word>()
             WalletManager.exportMnemonic(
@@ -435,7 +441,6 @@ class WalletDataRepository @Inject constructor(
         currentLimitOrder?.let {
             limitOrderDao.delete(currentLimitOrder)
         }
-
     }
 
     override fun saveWallet(param: SaveWalletUseCase.Param): Completable {

@@ -6,5 +6,7 @@ sealed class CheckEligibleAddressState {
     object Loading : CheckEligibleAddressState()
     class ShowError(val message: String?, val isNetworkUnavailable: Boolean = false) :
         CheckEligibleAddressState()
-    class Success(val eligibleAddress: EligibleAddress) : CheckEligibleAddressState()
+
+    class Success(val eligibleAddress: EligibleAddress, val isWalletChangeEvent: Boolean = false) :
+        CheckEligibleAddressState()
 }

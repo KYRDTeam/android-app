@@ -7,7 +7,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
-import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
 import kotlinx.android.parcel.Parcelize
 import org.web3j.utils.Convert
 import java.math.BigDecimal
@@ -46,7 +45,6 @@ data class Send(
     val amountUnit: BigInteger
         get() = sourceAmount.toBigDecimalOrDefaultZero().multiply(BigDecimal.TEN.pow(tokenSource.tokenDecimal)).toBigInteger()
 
-
     val displaySourceAmount: String
         get() = StringBuilder().append(sourceAmount).append(" ").append(tokenSource.tokenSymbol).toString()
 
@@ -54,7 +52,7 @@ data class Send(
         get() = sourceAmount == tokenSource.currentBalance.toDisplayNumber()
 
     val displaySourceAmountUsd: String
-        get() = if (sourceAmount.toDoubleOrDefaultZero() == 0.0) "" else
+        get() = if (tokenSource.rateUsdNow == BigDecimal.ZERO) "" else
             StringBuilder()
                 .append("≈ ")
                 .append(
@@ -115,7 +113,6 @@ data class Send(
         return (calAvailableAmount - Convert.fromWei(
             Convert.toWei(gasPrice, Convert.Unit.GWEI)
                 .multiply(gasLimit), Convert.Unit.ETHER
-        ).max(BigDecimal.ZERO)
-            )
+        )).max(BigDecimal.ZERO)
     }
 }

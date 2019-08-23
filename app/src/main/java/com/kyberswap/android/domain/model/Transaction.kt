@@ -7,14 +7,20 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.kyberswap.android.data.api.transaction.TransactionEntity
 import com.kyberswap.android.data.db.TransactionTypeConverter
-import com.kyberswap.android.util.ext.*
+import com.kyberswap.android.util.ext.displayWalletAddress
+import com.kyberswap.android.util.ext.safeToString
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.toLongSafe
 import kotlinx.android.parcel.Parcelize
 import org.web3j.protocol.core.methods.response.TransactionReceipt
 import org.web3j.utils.Convert
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 @Entity(
     tableName = "transactions",
@@ -254,6 +260,7 @@ data class Transaction(
         const val PENDING_TRANSACTION_STATUS = "pending"
         val formatterShort = SimpleDateFormat("dd MMM yyyy", Locale.US)
         val formatterFull = SimpleDateFormat("EEEE, dd MMM yyyy HH:mm:ss", Locale.US)
+        val formatterFilter = SimpleDateFormat("yyyy-MM-dd", Locale.US)
     }
 
     fun sameDisplay(other: Transaction): Boolean {
@@ -270,6 +277,9 @@ data class Transaction(
 
     val shortedDateTimeFormat: String
         get() = formatterShort.format(Date(timeStamp * 1000L))
+
+    val filterDateTimeFormat: String
+        get() = formatterFilter.format(Date(timeStamp * 1000L))
 
     val longDateTimeFormat: String
         get() {

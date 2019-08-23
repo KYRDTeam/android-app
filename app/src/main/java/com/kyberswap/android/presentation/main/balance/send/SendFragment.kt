@@ -28,7 +28,10 @@ import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.swap.*
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
-import com.kyberswap.android.util.ext.*
+import com.kyberswap.android.util.ext.isContact
+import com.kyberswap.android.util.ext.setAmount
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.synthetic.main.fragment_send.*
 import net.cachapa.expandablelayout.ExpandableLayout
 import org.greenrobot.eventbus.EventBus
@@ -476,25 +479,28 @@ class SendFragment : BaseFragment() {
 
         }
 
-        binding.grBalance.setAllOnClickListener {
-            binding.send?.let {
-                if (it.tokenSource.isETH) {
-                    showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
-                    binding.edtSource.setAmount(
-                        it.availableAmountForTransfer(
-                            it.tokenSource.currentBalance,
-                            Token.TRANSFER_ETH_GAS_LIMIT_DEFAULT.toBigDecimal(),
-                            getSelectedGasPrice(
-                                it.gas,
-                                selectedGasFeeView?.id
-                            ).toBigDecimalOrDefaultZero()
-                        ).toDisplayNumber()
-                    )
-                } else {
-                    binding.edtSource.setText(it.tokenSource.currentBalance.toDisplayNumber())
-                }
+        listOf(binding.tvTokenBalance, binding.tvBalanceDetail).forEach {
+            it.setOnClickListener {
+                binding.send?.let {
+                    if (it.tokenSource.isETH) {
+                        showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
+                        binding.edtSource.setAmount(
+                            it.availableAmountForTransfer(
+                                it.tokenSource.currentBalance,
+                                Token.TRANSFER_ETH_GAS_LIMIT_DEFAULT.toBigDecimal(),
+                                getSelectedGasPrice(
+                                    it.gas,
+                                    selectedGasFeeView?.id
+                                ).toBigDecimalOrDefaultZero()
+                            ).toDisplayNumber()
+                        )
+                    } else {
+                        binding.edtSource.setText(it.tokenSource.currentBalance.toDisplayNumber())
+                    }
 
+                }
             }
+
 
         }
 

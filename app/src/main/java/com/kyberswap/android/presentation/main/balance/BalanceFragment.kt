@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,7 +28,11 @@ import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
-import com.kyberswap.android.util.ext.*
+import com.kyberswap.android.util.ext.exactAmount
+import com.kyberswap.android.util.ext.setTextIfChange
+import com.kyberswap.android.util.ext.showDrawer
+import com.kyberswap.android.util.ext.showKeyboard
+import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_token_header.view.*
 import java.math.BigDecimal
@@ -58,7 +63,6 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     private val balanceAddress by lazy { listOf(binding.tvAddress, binding.tvQr) }
-
 
     private val handler by lazy {
         Handler()
@@ -121,6 +125,17 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        context?.let {
+            binding.swipeLayout.setColorSchemeColors(
+                ContextCompat.getColor(
+                    it,
+                    R.color.colorAccent
+                )
+            )
+        }
+
+
         viewModel.getSelectedWallet()
         wallet?.let {
             refreshBalances()
@@ -137,7 +152,6 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                             binding.tvUnit.setTextIfChange(state.wallet.unit)
                             this.wallet = state.wallet
                         }
-
                     }
                     is GetWalletState.ShowError -> {
 
@@ -412,8 +426,6 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             setCurrencyDisplay(wallet?.unit == eth)
             displayWalletBalance(it.hideBlance)
         }
-
-
     }
 
     private fun getNameBalNextSelectedIndex(index: Int): Int {
@@ -422,7 +434,6 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         } else {
             index
         }
-
     }
 
     private fun displayWalletBalance(isHide: Boolean) {
@@ -459,7 +470,6 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         wallet?.let {
             binding.tvUnit.setTextIfChange(it.unit)
         }
-
     }
 
     private val walletBalance: BigDecimal
@@ -544,7 +554,6 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                 }
         }
         return balance
-
     }
 
 

@@ -56,6 +56,7 @@ class ProfileDetailViewModel @Inject constructor(
 
 
     fun pollingKycProfile() {
+        pollingUserInfoUseCase.dispose()
         pollingUserInfoUseCase.execute(
             Consumer {
                 _getUserInfoCallback.value = Event(UserInfoState.Success(it))

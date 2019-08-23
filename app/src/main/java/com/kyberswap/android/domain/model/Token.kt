@@ -134,8 +134,8 @@ data class Token(
         if (wallet == null) return this
         val walletBalances =
             wallets.map {
-            it.copy(isSelected = false)
-        }.toMutableList()
+                it.copy(isSelected = false)
+            }.toMutableList()
 
         val walletBalance = wallets.find { it1 -> it1.walletAddress == wallet.address }
         if (walletBalance == null) {
@@ -221,7 +221,7 @@ data class Token(
         get() = if (isHide) "******" else currentBalance.toDisplayNumber().exactAmount()
 
     val displayLimitOrderBalance: String
-        get() = limitOrderBalance.toDisplayNumber().exactAmount()
+        get() = limitOrderBalance.max(BigDecimal.ZERO).toDisplayNumber().exactAmount()
 
     val displayCurrentBalanceInEth: String
         get() = StringBuilder()
@@ -234,7 +234,6 @@ data class Token(
             .append(" ETH")
             .toString()
 
-
     val displayCurrentBalanceInUSD: String
         get() = StringBuilder()
             .append("≈ ")
@@ -245,7 +244,6 @@ data class Token(
             )
             .append(" USD")
             .toString()
-
 
     val displayGasApprove: String
         get() = gasApprove.toDisplayNumber()

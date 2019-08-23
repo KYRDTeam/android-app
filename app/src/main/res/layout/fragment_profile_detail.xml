@@ -140,14 +140,14 @@
                     android:textColor="#2e3957"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="@+id/view13"
-                    app:layout_constraintEnd_toStartOf="@+id/textView57"
+                    app:layout_constraintEnd_toStartOf="@+id/tvKycStatus"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintHorizontal_chainStyle="spread_inside"
                     app:layout_constraintStart_toStartOf="@+id/view13"
                     app:layout_constraintTop_toTopOf="@+id/view13" />
 
                 <TextView
-                    android:id="@+id/textView57"
+                    android:id="@+id/tvKycStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="24dp"
@@ -263,7 +263,7 @@
                     android:padding="6dp"
                     android:src="@drawable/ic_add_alert"
                     app:layout_constraintBottom_toBottomOf="@+id/imgLeaderBoard"
-                    app:layout_constraintEnd_toEndOf="@+id/textView57"
+                    app:layout_constraintEnd_toEndOf="@+id/tvKycStatus"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/imgLeaderBoard"
                     app:layout_constraintTop_toTopOf="@+id/imgLeaderBoard" />

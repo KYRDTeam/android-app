@@ -17,7 +17,6 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
-import kotlinx.android.synthetic.main.fragment_transaction_status.*
 import javax.inject.Inject
 
 
@@ -91,10 +90,9 @@ class TransactionDetailSwapFragment : BaseFragment() {
         startActivity(intent)
     }
 
-
-    override fun showProgress(showProgress: Boolean) {
-        progressBar.visibility = if (showProgress) View.VISIBLE else View.GONE
-    }
+//    override fun showProgress(showProgress: Boolean) {
+//        progressBar.visibility = if (showProgress) View.VISIBLE else View.GONE
+//    }
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"

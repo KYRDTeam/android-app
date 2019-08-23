@@ -5,10 +5,10 @@ import android.util.DisplayMetrics
 
 fun Int.dpToPx(context: Context): Int {
     val displayMetrics = context.resources.displayMetrics
-    return Math.round(this * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT))
+    return this * (displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)
 }
 
 fun Int.pxToDp(context: Context): Int {
     val displayMetrics = context.resources.displayMetrics
-    return Math.round(this / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT))
+    return this / (displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)
 }

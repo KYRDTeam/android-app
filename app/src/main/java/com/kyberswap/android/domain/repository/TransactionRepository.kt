@@ -3,13 +3,18 @@ package com.kyberswap.android.domain.repository
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.TransactionFilter
 import com.kyberswap.android.domain.model.Wallet
-import com.kyberswap.android.domain.usecase.transaction.*
+import com.kyberswap.android.domain.usecase.transaction.GetTransactionFilterUseCase
+import com.kyberswap.android.domain.usecase.transaction.GetTransactionsPeriodicallyUseCase
+import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
+import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
+import com.kyberswap.android.domain.usecase.transaction.SaveTransactionFilterUseCase
+import com.kyberswap.android.domain.usecase.transaction.TransactionsData
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 
 interface TransactionRepository {
-    fun fetchAllTransactions(param: GetTransactionsUseCase.Param): Flowable<List<Transaction>>
+    fun fetchAllTransactions(param: GetTransactionsUseCase.Param): Flowable<TransactionsData>
 
     fun fetchTransactionPeriodically(param: GetTransactionsPeriodicallyUseCase.Param): Flowable<List<Transaction>>
 

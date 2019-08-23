@@ -35,8 +35,12 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import com.tbruyelle.rxpermissions2.RxPermissions
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import kotlinx.android.synthetic.main.fragment_passport.*
-import pl.aprilapps.easyphotopicker.*
-import java.util.*
+import pl.aprilapps.easyphotopicker.ChooserType
+import pl.aprilapps.easyphotopicker.DefaultCallback
+import pl.aprilapps.easyphotopicker.EasyImage
+import pl.aprilapps.easyphotopicker.MediaFile
+import pl.aprilapps.easyphotopicker.MediaSource
+import java.util.Calendar
 import javax.inject.Inject
 
 
@@ -53,7 +57,6 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
     @Inject
     lateinit var appExecutors: AppExecutors
 
-
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -69,7 +72,6 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
     private var selfieImageString: String? = null
 
     private var currentSelectedDate: EditText? = null
-
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(PassportViewModel::class.java)
@@ -94,14 +96,19 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is UserInfoState.Success -> {
-                        if (binding.info != state.userInfo?.kycInfo) {
+                        if (state.userInfo?.isLoaded == true) {
+                            binding.isLoaded = state.userInfo.isLoaded
+                        }
+                        if (binding.info?.hasSameIdentityInfo(state.userInfo?.kycInfo) != true) {
+
                             binding.info = state.userInfo?.kycInfo
                             val info = binding.info
                             info?.let {
                                 binding.rbId.isChecked = info.isIdentityCard
                                 binding.rbPassport.isChecked = info.isPassport
-                                binding.cbIssueDate.isChecked = info.issueDateNonApplicable
-                                binding.cbExpiryDate.isChecked = info.expiryDateNonApplicable
+                                binding.cbIssueDate.isChecked = info.issueDateNonApplicable == true
+                                binding.cbExpiryDate.isChecked =
+                                    info.expiryDateNonApplicable == true
 
                                 info.photoIdentityFrontSide.removePrefix(BASE64_PREFIX)
 
@@ -138,7 +145,6 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                 }
             }
         })
-
 
         val rxPermissions = RxPermissions(this)
 
@@ -288,7 +294,6 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                             ContextCompat.getColor(it, R.color.identity_info_gray)
                         )
                     }
-
                 } else if (it == R.id.rbPassport) {
                     binding.lnHoldingDocument.setBackgroundColor(
                         Color.TRANSPARENT
@@ -325,7 +330,6 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                             message = error
                         )
                         binding.ilDocumentId.error = error
-
                     }
 
                     !cbIssueDate.isChecked && edtIssueDate.text.toString().isBlank() -> {
@@ -377,6 +381,8 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                                 documentId = binding.edtDocumentNumber.text.toString(),
                                 documentType = if (binding.rbId.isChecked) KycInfo.TYPE_NATIONAL_ID else if (binding.rbPassport.isChecked) KycInfo.TYPE_PASSPORT else "",
                                 documentIssueDate = binding.edtIssueDate.text.toString(),
+                                issueDateNonApplicable = binding.cbIssueDate.isChecked,
+                                expiryDateNonApplicable = binding.cbExpiryDate.isChecked,
                                 documentExpiryDate = binding.edtExpiryDate.text.toString(),
                                 photoIdentityFrontSide = photoIdentityFrontSide,
                                 photoIdentityBackSide = if (rbPassport.isChecked) "" else photoIdentityBackSide,
@@ -402,8 +408,6 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                 }
             }
         })
-
-
     }
 
 
@@ -434,7 +438,6 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                 }
 
                 override fun onCanceled(source: MediaSource) {
-
                 }
             })
         }
@@ -458,7 +461,6 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                 }
             })
         }
-
     }
 
     private fun displayImage(stringImage: String?, imageView: ImageView? = null) {
@@ -517,8 +519,8 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
 
     private fun glideDisplayImage(byteArray: ByteArray, imageView: ImageView?) {
         val image = getCurrentSelectedImage(imageView)
-        image?.let {
-            Glide.with(it)
+        image?.let { img ->
+            Glide.with(img)
                 .load(byteArray)
                 .addListener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(
@@ -541,9 +543,32 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                         showLoadingImage(false, imageView)
                         return false
                     }
-
                 })
                 .into(image)
+
+//            Glide.with(img)
+//                .asBitmap()
+//                .load(
+//                    byteArray
+//                )
+//                .into(object : CustomTarget<Bitmap>() {
+//                    override fun onResourceReady(
+//                        resource: Bitmap,
+//                        transition: Transition<in Bitmap>?
+//                    ) {
+//                        showLoadingImage(false, imageView)
+//                        img.setImageBitmap(resource)
+//
+//                    }
+//
+//                    override fun onLoadCleared(placeholder: Drawable?) {
+//                        showLoadingImage(false, imageView)
+//                        // this is called when imageView is cleared on lifecycle call or for
+//                        // some other reason.
+//                        // if you are referencing the bitmap somewhere else too other than this imageView
+//                        // clear it here as you can no longer have the bitmap
+//                    }
+//                })
         }
     }
 
@@ -555,7 +580,6 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
             }
         }
         navigator.navigateToPersonalInfo(currentFragment)
-
     }
 
     override fun onDestroyView() {
@@ -569,6 +593,4 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
         fun newInstance() =
             PassportFragment()
     }
-
-
 }

@@ -2,12 +2,16 @@ package com.kyberswap.android.data.repository
 
 import com.kyberswap.android.data.api.home.CurrencyApi
 import com.kyberswap.android.data.api.home.TokenApi
+import com.kyberswap.android.data.db.LocalLimitOrderDao
+import com.kyberswap.android.data.db.SendDao
+import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.data.db.WalletDao
 import com.kyberswap.android.data.mapper.TokenMapper
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.BalanceRepository
+import com.kyberswap.android.domain.usecase.balance.UpdateBalanceUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.PrepareBalanceUseCase
 import com.kyberswap.android.util.TokenClient
@@ -16,7 +20,6 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
-import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -27,9 +30,96 @@ class BalanceDataRepository @Inject constructor(
     private val tokenMapper: TokenMapper,
     private val tokenClient: TokenClient,
     private val tokenDao: TokenDao,
-    private val walletDao: WalletDao
+    private val walletDao: WalletDao,
+    private val swapDao: SwapDao,
+    private val sendDao: SendDao,
+    private val localLimitOrderDao: LocalLimitOrderDao
 ) :
     BalanceRepository {
+    override fun updateBalance(param: UpdateBalanceUseCase.Param): Completable {
+        return Completable.fromCallable {
+            val wallet = param.wallet
+            val localSwap = swapDao.findSwapByAddress(wallet.address)
+            localSwap?.let {
+                val tokenSource = tokenDao.getTokenBySymbol(it.sourceSymbol) ?: Token()
+                val tokenDest = tokenDao.getTokenBySymbol(it.destSymbol) ?: Token()
+                val tokenEth = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
+
+                val updatedToken =
+                    it.copy(tokenSource = tokenSource, tokenDest = tokenDest, ethToken = tokenEth)
+                if (updatedToken != it) {
+                    swapDao.updateSwap(updatedToken)
+                }
+
+            }
+
+            val send = sendDao.findSendByAddress(wallet.address)
+            send?.let {
+                val tokenSource =
+                    tokenDao.getTokenBySymbol(send.tokenSource.tokenSymbol)
+                        ?: Token()
+
+                val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
+                val updatedSend = it.copy(tokenSource = tokenSource, ethToken = ethToken)
+                if (updatedSend != it) {
+                    sendDao.updateSend(updatedSend)
+                }
+            }
+
+            val limitOrder = localLimitOrderDao.findLocalLimitOrderByAddress(wallet.address)
+            limitOrder?.let {
+
+                val source = updateBalance(it.tokenSource)
+                val dest = updateBalance(it.tokenDest)
+
+                val order = when {
+                    source.isETHWETH -> {
+                        val ethToken =
+                            tokenDao.getTokenBySymbol(Token.ETH_SYMBOL) ?: Token()
+                        val wethToken =
+                            tokenDao.getTokenBySymbol(Token.WETH_SYMBOL) ?: Token()
+
+                        it.copy(
+                            ethToken = ethToken,
+                            wethToken = wethToken
+                        )
+                    }
+                    else -> it
+                }
+
+                val orderWithToken = order.copy(
+                    tokenSource = source,
+                    tokenDest = dest
+                )
+
+                if (orderWithToken != it) {
+                    localLimitOrderDao.insertOrder(orderWithToken)
+                }
+
+            }
+        }
+    }
+
+    private fun updateBalance(token: Token): Token {
+        return when {
+            token.isETHWETH -> {
+
+                val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL) ?: Token()
+                val wethToken = tokenDao.getTokenBySymbol(Token.WETH_SYMBOL) ?: Token()
+                val ethBalance = ethToken.currentBalance
+
+                val wethBalance = wethToken.currentBalance
+
+                token.updateBalance(
+                    ethBalance.plus(wethBalance)
+                )
+            }
+            else -> {
+                tokenDao.getTokenBySymbol(token.tokenSymbol) ?: token
+            }
+        }
+    }
+
 
     override fun getTokenBalance(token: Token): Completable {
         return Completable.fromCallable {
@@ -61,7 +151,7 @@ class BalanceDataRepository @Inject constructor(
                             val localTokenList = tokenDao.all.first(listOf()).blockingGet()
                             remoteTokens.map { remoteToken ->
                                 val localToken = localTokenList.find {
-                                    it.tokenSymbol == remoteToken.tokenSymbol
+                                    it.tokenAddress == remoteToken.tokenAddress
                                 }
 
                                 if (localToken != null) {
@@ -80,7 +170,6 @@ class BalanceDataRepository @Inject constructor(
                 .doAfterSuccess {
                     tokenDao.insertTokens(it)
                 }
-
         } else {
             tokenDao.all.first(listOf())
         }
@@ -129,6 +218,8 @@ class BalanceDataRepository @Inject constructor(
                 rateEthNow = remoteToken.rateEthNow,
                 changeEth24h = remoteToken.changeEth24h,
                 changeUsd24h = remoteToken.changeUsd24h,
+                tokenName = remoteToken.tokenName,
+                tokenSymbol = remoteToken.tokenSymbol,
                 isOther = false
             ) ?: remoteToken
 
@@ -161,8 +252,6 @@ class BalanceDataRepository @Inject constructor(
         } else {
             updateBalance(remoteTokens, currentWallets)
         }
-
-
     }
 
     override fun getChange24hPolling(param: GetBalancePollingUseCase.Param): Flowable<List<Token>> {

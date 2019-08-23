@@ -10,10 +10,6 @@
         android:name="android.hardware.touchscreen"
         android:required="false" />
 
-    <meta-data
-        android:name="com.onesignal.NotificationAccentColor.DEFAULT"
-        android:value="FFFFB046" />
-
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -34,6 +30,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppThemeTranslucentStatus"
         tools:targetApi="m">
+
+        <meta-data
+            android:name="com.onesignal.NotificationAccentColor.DEFAULT"
+            android:value="FFFF9008" />
         <activity
             android:name=".presentation.common.AlertActivity"
             android:launchMode="singleTop"
