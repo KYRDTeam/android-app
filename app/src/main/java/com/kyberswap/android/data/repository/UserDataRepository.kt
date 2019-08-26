@@ -61,42 +61,42 @@ class UserDataRepository @Inject constructor(
             storageMediator.clearToken()
             userDao.deleteAllUsers()
             alertDao.deleteAllAlerts()
-        }
+
     }
 
     override fun getAlerts(): Flowable<List<Alert>> {
         return Flowable.mergeDelayError(
             alertDao.all.map { alerts ->
                 alerts.filter { it.isNotLocal }
-            },
+    ,
             userApi.getAlert().map {
                 userMapper.transform(it.alerts)
-            }
+    
                 .doAfterSuccess {
                     alertDao.updateAlerts(it)
-                }.toFlowable()
+        .toFlowable()
         ).map {
             it.sortedByDescending { it.id }
-        }
+
     }
 
     override fun getNumberAlerts(): Flowable<Int> {
         return Flowable.mergeDelayError(
             alertDao.all.map { alerts ->
                 alerts.filter { it.isNotLocal }.size
-            },
+    ,
             userApi.getAlert().map {
                 userMapper.transform(it.alerts)
-            }.toFlowable().map {
+    .toFlowable().map {
                 it.size
-            }
+    
         )
     }
 
     override fun userInfo(): Single<UserInfo?> {
         return Single.fromCallable {
             userDao.getUser() ?: UserInfo()
-        }
+
     }
 
     override fun pollingUserInfo(): Flowable<UserInfo> {
@@ -105,40 +105,40 @@ class UserDataRepository @Inject constructor(
 
             userApi.getUserInfo().map {
                 userMapper.transform(it)
-            }
+    
                 .doAfterSuccess {
                     val currentUser = userDao.getUser() ?: UserInfo()
                     userDao.updateUser(it.copy(kycInfo = currentUser.kycInfo))
 
-                }
+        
                 .repeatWhen {
                     it.delay(60, TimeUnit.SECONDS)
-                }
+        
                 .retryWhen { throwable ->
                     throwable.compose(zipWithFlatMap())
-                }
+        
 
         )
 
 //        return userApi.getUserInfo().map {
 //            userMapper.transform(it)
-//        }
+//
 //            .repeatWhen {
 //                it.delay(60, TimeUnit.SECONDS)
-//            }
+//    
 //            .retryWhen { throwable ->
 //                throwable.compose(zipWithFlatMap())
-//            }
+//    
     }
 
     override fun refreshKycStatus(): Single<UserInfo> {
         return userApi.getUserInfo().map {
             userMapper.transform(it)
-        }.doAfterSuccess {
+.doAfterSuccess {
             if (it.kycInfo == KycInfo()) {
                 userDao.updateUser(it)
-            }
-        }
+    
+
     }
 
 
@@ -148,19 +148,19 @@ class UserDataRepository @Inject constructor(
             Flowables.zip(
                 Flowable.fromCallable {
                     userDao.getUser() != null
-                }.flatMap {
+        .flatMap {
                     if (it) {
                         userDao.all
-                    } else {
+             else {
                         Flowable.fromCallable {
                             UserInfo()
-                        }
-                    }
-                }
+                
+            
+        
                 ,
                 userApi.getUserInfo().map {
                     userMapper.transform(it)
-                }.toFlowable()
+        .toFlowable()
             ) { local, remote ->
                 val remoteInfo = remote.kycInfo
                 val localInfo = local.kycInfo
@@ -194,7 +194,7 @@ class UserDataRepository @Inject constructor(
                 Timber.e("completed remote")
                 local.copy(kycInfo = kycInfo, isLoaded = true)
 
-            }
+    
         )
     }
 
@@ -209,7 +209,7 @@ class UserDataRepository @Inject constructor(
     override fun resetPassword(param: ResetPasswordUseCase.Param): Single<ResponseStatus> {
         return userApi.resetPassword(param.email.toLowerCase()).map {
             userMapper.transform(it)
-        }
+
     }
 
     override fun loginSocial(param: LoginSocialUseCase.Param): Single<LoginUser> {
@@ -229,7 +229,7 @@ class UserDataRepository @Inject constructor(
             .doAfterSuccess {
                 userDao.updateUser(it.userInfo)
                 storageMediator.applyToken(it.authInfo)
-            }
+    
     }
 
     override fun login(param: LoginUseCase.Param): Single<LoginUser> {
@@ -238,7 +238,7 @@ class UserDataRepository @Inject constructor(
             .doAfterSuccess {
                 userDao.updateUser(it.userInfo)
                 storageMediator.applyToken(it.authInfo)
-            }
+    
     }
 
     override fun signUp(param: SignUpUseCase.Param): Single<ResponseStatus> {
@@ -250,7 +250,7 @@ class UserDataRepository @Inject constructor(
             param.isSubscription
         ).map {
             userMapper.transform(it)
-        }
+
     }
 
     override fun save(param: SaveKycInfoUseCase.Param): Completable {
@@ -266,10 +266,10 @@ class UserDataRepository @Inject constructor(
                 KycInfoType.OCCUPATION_CODE -> currentKycInfo.copy(occupationCode = param.value)
                 KycInfoType.INDUSTRY_CODE -> currentKycInfo.copy(industryCode = param.value)
                 KycInfoType.TAX_RESIDENCY_COUNTRY -> currentKycInfo.copy(taxResidencyCountry = param.value)
-            }
+    
             user.kycInfo = kycInfo
             userDao.updateUser(user)
-        }
+
     }
 
     override fun save(param: SavePersonalInfoUseCase.Param): Single<KycResponseStatus> {
@@ -295,11 +295,11 @@ class UserDataRepository @Inject constructor(
             info.sourceFund
         ).map {
             userMapper.transform(it)
-        }.doAfterSuccess {
+.doAfterSuccess {
             val user = userDao.getUser() ?: UserInfo()
             user.kycInfo = info
             userDao.updateUser(user)
-        }
+
     }
 
     override fun resizeImage(param: ResizeImageUseCase.Param): Single<String> {
@@ -314,22 +314,22 @@ class UserDataRepository @Inject constructor(
                 try {
                     bmpStream.flush()
                     bmpStream.reset()
-                } catch (e: IOException) {
+         catch (e: IOException) {
                     e.printStackTrace()
-                }
+        
 
                 compressQuality -= 5
                 bm.compress(Bitmap.CompressFormat.JPEG, compressQuality, bmpStream)
                 val bmpPicByteArray = bmpStream.toByteArray()
                 streamLength = (ceil(bmpPicByteArray.size / 3.0) * 4).toInt()
-            }
+    
 
 
             android.util.Base64.encodeToString(
                 bmpStream.toByteArray(),
                 android.util.Base64.DEFAULT
             )
-        }
+
     }
 
     override fun decode(param: Base64DecodeUseCase.Param): Single<ByteArray> {
@@ -338,7 +338,7 @@ class UserDataRepository @Inject constructor(
                 param.image,
                 android.util.Base64.DEFAULT
             )
-        }
+
     }
 
     override fun save(param: SaveIdPassportUseCase.Param): Single<KycResponseStatus> {
@@ -355,11 +355,11 @@ class UserDataRepository @Inject constructor(
             info.photoIdentityBackSide
         ).map {
             userMapper.transform(it)
-        }.doAfterSuccess {
+.doAfterSuccess {
             val user = userDao.getUser() ?: UserInfo()
             user.kycInfo = info
             userDao.updateUser(user)
-        }
+
     }
 
 
@@ -367,20 +367,20 @@ class UserDataRepository @Inject constructor(
         return userApi.submit()
             .map {
                 userMapper.transform(it)
-            }
+    
             .doAfterSuccess {
                 val user = userDao.getUser() ?: UserInfo()
                 userDao.updateUser(user.copy(kycStatus = UserInfo.PENDING))
-            }
+    
     }
 
     override fun reSubmit(param: ReSubmitUserInfoUseCase.Param): Single<KycResponseStatus> {
         return userApi.resubmit().map {
             userMapper.transform(it)
-        }.doAfterSuccess {
+.doAfterSuccess {
             val user = userDao.getUser() ?: UserInfo()
             userDao.updateUser(user.copy(kycStatus = UserInfo.DRAFT))
-        }
+
     }
 
 
@@ -410,7 +410,7 @@ class UserDataRepository @Inject constructor(
             )
 
             else -> bitmap
-        }
+
     }
 
     private fun rotate(bitmap: Bitmap, degrees: Float): Bitmap {
@@ -428,13 +428,13 @@ class UserDataRepository @Inject constructor(
     override fun updatePushNotification(param: UpdatePushTokenUseCase.Param): Single<ResponseStatus> {
         return userApi.updatePushToken(param.userId).map {
             userMapper.transform(it)
-        }
+
     }
 
     override fun getAlertMethods(): Single<AlertMethodsResponse> {
         return userApi.getAlertMethod().map {
             userMapper.transform(it)
-        }
+
     }
 
     override fun updateAlertMethods(param: UpdateAlertMethodsUseCase.Param): Single<ResponseStatus> {
@@ -442,7 +442,7 @@ class UserDataRepository @Inject constructor(
             RequestBody.create(MediaType.parse("text/plain"), Gson().toJson(param.alertMethods))
         return userApi.updateAlertMethods(body).map {
             userMapper.transform(it)
-        }
+
     }
 
     override fun saveLocal(param: SaveLocalPersonalInfoUseCase.Param): Completable {
@@ -450,7 +450,7 @@ class UserDataRepository @Inject constructor(
             val user = userDao.getUser() ?: UserInfo()
             user.kycInfo = param.kycInfo
             userDao.updateUser(user)
-        }
+
     }
 
 

@@ -34,9 +34,9 @@ class OrderAdapter(
                 oldItem is OrderItem.ItemOdd && newItem is OrderItem.ItemEven && oldItem.order.id == newItem.order.id -> true
                 oldItem is OrderItem.ItemEven && newItem is OrderItem.ItemOdd && oldItem.order.id == newItem.order.id -> true
                 else -> false
-            }
+    
 
-        }
+
 
         override fun areContentsTheSame(
             oldItem: OrderItem, newItem: OrderItem
@@ -59,8 +59,8 @@ class OrderAdapter(
                 -> true
 
                 else -> false
-            }
-        }
+    
+
     }
 ) {
 
@@ -72,10 +72,10 @@ class OrderAdapter(
                 is OrderItem.ItemOdd -> it.order
                 is OrderItem.ItemEven -> it.order
                 is OrderItem.Header -> Order()
-            }
-        }.filter {
+    
+.filter {
             it.id > 0
-        }
+
 
 
     fun submitOrdersList(items: List<OrderItem>) {
@@ -95,14 +95,14 @@ class OrderAdapter(
         super.onBindViewHolder(holder, position)
         when (getData()[position]) {
             is OrderItem.Header -> {
-            }
+    
             is OrderItem.ItemEven -> {
                 mItemManger.bindView(holder.itemView, position)
-            }
+    
             is OrderItem.ItemOdd -> {
                 mItemManger.bindView(holder.itemView, position)
-            }
-        }
+    
+
     }
 
     private fun binding(binding: ItemOrderBinding, item: Order) {
@@ -110,25 +110,25 @@ class OrderAdapter(
         binding.swipe.addSwipeListener(object : SimpleSwipeListener() {
             override fun onStartOpen(layout: SwipeLayout?) {
                 mItemManger.closeAllExcept(layout)
-            }
-        })
+    
+)
         binding.tvCancel.setOnClickListener {
             onCancelClick?.invoke(item)
             mItemManger.closeAllItems()
-        }
+
         binding.order = item
         binding.executePendingBindings()
         binding.clHolder.setOnClickListener {
             if (item.isMined) {
                 onMinedOrderClick?.invoke(item)
-            }
-        }
+    
+
 
         binding.imgInvalidated.setOnClickListener {
             if (item.isInvalidated && item.msg.isNotEmpty()) {
                 onInvalidatedClick?.invoke(item)
-            }
-        }
+    
+
 
 
     }
@@ -144,7 +144,7 @@ class OrderAdapter(
                 binding as ItemHeaderBinding
                 binding.tvDate.text = item.date
 
-            }
+    
 
             is OrderItem.ItemEven -> {
                 binding as ItemOrderBinding
@@ -158,9 +158,9 @@ class OrderAdapter(
 
                 binding.tvExtra.setOnClickListener {
                     onExtraClick?.invoke(item.order)
-                }
+        
 
-            }
+    
 
             is OrderItem.ItemOdd -> {
                 binding as ItemOrderBinding
@@ -173,16 +173,16 @@ class OrderAdapter(
                 binding.clHolder.setBackgroundColor(background)
                 binding.tvExtra.setOnClickListener {
                     onExtraClick?.invoke(item.order)
-                }
-            }
-        }
+        
+    
+
     }
 
     override fun getItemViewType(position: Int): Int {
         return when (getData()[position]) {
             is OrderItem.Header -> TYPE_HEADER
             else -> TYPE_ITEM
-        }
+
     }
 
     override fun getSwipeLayoutResourceId(position: Int): Int {

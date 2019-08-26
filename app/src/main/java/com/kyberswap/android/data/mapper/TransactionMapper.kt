@@ -26,7 +26,7 @@ class TransactionMapper @Inject constructor() {
     ): List<Transaction> {
         return entities.map {
             transform(it, type, txType)
-        }
+
     }
 
 
@@ -37,7 +37,7 @@ class TransactionMapper @Inject constructor() {
     ): List<Transaction> {
         return entities.map {
             transform(it, address, txType)
-        }
+
     }
 
 }

@@ -46,7 +46,7 @@ class TokenSearchViewModel @Inject constructor(
                         it.sortedByDescending { it.currentBalance }
                     )
                 )
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _getTokenListCallback.value =
@@ -55,7 +55,7 @@ class TokenSearchViewModel @Inject constructor(
                             it.localizedMessage
                         )
                     )
-            },
+    ,
             address
         )
     }
@@ -72,12 +72,12 @@ class TokenSearchViewModel @Inject constructor(
         saveSwapDataTokenUseCase.execute(
             Action {
                 _saveSwapCallback.value = Event(SaveSwapDataState.Success())
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _saveSwapCallback.value =
                     Event(SaveSwapDataState.ShowError(it.localizedMessage))
-            },
+    ,
             SaveSwapDataTokenUseCase.Param(walletAddress, token, sourceToken)
         )
     }
@@ -86,12 +86,12 @@ class TokenSearchViewModel @Inject constructor(
         saveSendTokenUseCase.execute(
             Action {
                 _saveSendCallback.value = Event(SaveSendState.Success())
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _saveSendCallback.value =
                     Event(SaveSendState.ShowError(it.localizedMessage))
-            },
+    ,
             SaveSendTokenUseCase.Param(address, token)
         )
     }

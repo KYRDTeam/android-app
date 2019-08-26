@@ -37,7 +37,7 @@ open class AppExecutors(
         private val mainThreadHandler = Handler(Looper.getMainLooper())
         override fun execute(command: Runnable) {
             mainThreadHandler.post(command)
-        }
+
     }
 
     companion object {

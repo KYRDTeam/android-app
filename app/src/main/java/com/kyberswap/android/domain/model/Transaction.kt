@@ -197,7 +197,7 @@ data class Transaction(
                 SWAP -> "SWAP"
                 SEND -> "SEND"
                 RECEIVED -> "RECEIVED"
-            }
+    
     }
 
     val isTransactionFail: Boolean
@@ -242,7 +242,7 @@ data class Transaction(
                     .append(" ")
                     .append(displayValue)
                     .toString()
-            } else
+     else
 
                 StringBuilder()
                     .append(
@@ -290,7 +290,7 @@ data class Transaction(
                 TimeZone.SHORT
             )
 
-        }
+
 
     val displayTransactionType: String
         get() = type.value
@@ -304,7 +304,7 @@ data class Transaction(
                 StringBuilder()
                     .append(if (type == TransactionType.SEND) "To: ${to.displayWalletAddress()}" else "From: ${from.displayWalletAddress()}")
                     .toString()
-            } else
+     else
                 StringBuilder().append("1")
                     .append(" ")
                     .append(tokenSource)

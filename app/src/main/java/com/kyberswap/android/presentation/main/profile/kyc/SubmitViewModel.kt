@@ -39,12 +39,12 @@ class SubmitViewModel @Inject constructor(
             Consumer {
                 _getUserInfoCallback.value = Event(UserInfoState.Success(it))
 
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _getUserInfoCallback.value =
                     Event(UserInfoState.ShowError(it.localizedMessage))
-            },
+    ,
             null
         )
     }
@@ -53,12 +53,12 @@ class SubmitViewModel @Inject constructor(
         decodeBase64DecodeUseCase.execute(
             Consumer {
                 _decodeImageCallback.value = Event(DecodeBase64State.Success(it, imageView))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _decodeImageCallback.value =
                     Event(DecodeBase64State.ShowError(it.localizedMessage))
-            },
+    ,
             Base64DecodeUseCase.Param(stringImage)
         )
 
@@ -69,16 +69,16 @@ class SubmitViewModel @Inject constructor(
             Consumer {
                 if (it.success) {
                     _submitUserInfoCallback.value = Event(SavePersonalInfoState.Success(it))
-                } else {
+         else {
                     _submitUserInfoCallback.value =
                         Event(SavePersonalInfoState.ShowError(it.reason.display()))
-                }
-            },
+        
+    ,
             Consumer {
                 it.printStackTrace()
                 _submitUserInfoCallback.value =
                     Event(SavePersonalInfoState.ShowError(it.localizedMessage))
-            },
+    ,
             SubmitUserInfoUseCase.Param(user)
         )
     }

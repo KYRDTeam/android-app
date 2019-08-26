@@ -24,17 +24,17 @@ open class ImportWalletViewModel @Inject constructor(
                     numberOfToken++
                     if (numberOfToken == pair.second.size) {
                         importWalletCallback.value = ImportWalletState.Success(pair.first)
-                    }
-                },
+            
+        ,
                 Consumer {
                     numberOfToken++
                     if (numberOfToken == pair.second.size) {
                         importWalletCallback.value = ImportWalletState.Success(pair.first)
-                    }
-                },
+            
+        ,
                 token
             )
-        }
+
     }
 
     override fun onCleared() {

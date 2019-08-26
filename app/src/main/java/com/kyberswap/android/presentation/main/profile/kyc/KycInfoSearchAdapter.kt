@@ -18,11 +18,11 @@ class KycInfoSearchAdapter(
     diffCallback = object : DiffUtil.ItemCallback<String>() {
         override fun areItemsTheSame(oldItem: String, newItem: String): Boolean {
             return oldItem == newItem
-        }
+
 
         override fun areContentsTheSame(oldItem: String, newItem: String): Boolean {
             return oldItem == newItem
-        }
+
     }
 ) {
 
@@ -35,7 +35,7 @@ class KycInfoSearchAdapter(
     override fun bind(binding: ItemKycInfoBinding, item: String) {
         binding.root.setOnClickListener {
             onTokenClick?.invoke(item)
-        }
+
         binding.setVariable(BR.item, item)
         binding.executePendingBindings()
     }

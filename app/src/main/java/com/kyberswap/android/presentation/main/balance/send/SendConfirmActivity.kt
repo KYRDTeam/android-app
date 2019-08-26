@@ -54,7 +54,7 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
         binding.isContactExist = isContactExist
         wallet?.let {
             viewModel.getSendData(it)
-        }
+
 
 
         viewModel.getSendCallback.observe(this, Observer {
@@ -63,14 +63,14 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
                     is GetSendState.Success -> {
                         if (binding.send != state.send) {
                             binding.send = state.send
-                        }
-                    }
+                
+            
                     is GetSendState.ShowError -> {
 
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.transferTokenTransactionCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -83,30 +83,30 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
                             )
                         )
                         onBackPressed()
-                    }
+            
                     is TransferTokenTransactionState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
                         onBackPressed()
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
 
         binding.imgBack.setOnClickListener {
             onBackPressed()
-        }
+
 
         binding.tvCancel.setOnClickListener {
             onBackPressed()
-        }
+
 
         binding.tvConfirm.setOnClickListener {
             viewModel.send(wallet, binding.send)
-        }
+
     }
 
     override fun getKeystoreDir(): File {
@@ -121,6 +121,6 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
             Intent(context, SendConfirmActivity::class.java).apply {
                 putExtra(WALLET_PARAM, wallet)
                 putExtra(CONTACT_EXIST_PARAM, isContactExist)
-            }
+    
     }
 }

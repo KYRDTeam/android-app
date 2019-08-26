@@ -61,7 +61,7 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
         isSourceToken = arguments?.getBoolean(TARGET_PARAM, false)
         wallet?.let {
             viewModel.getPendingBalances(it)
-        }
+
     }
 
     override fun onCreateView(
@@ -86,7 +86,7 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
             TokenSearchLimitOrderAdapter(appExecutors) { token ->
                 viewModel.saveTokenSelection(wallet!!.address, token, isSourceToken ?: false)
 
-            }
+    
         binding.rvToken.adapter = tokenAdapter
 
         viewModel.getTokenListCallback.observe(viewLifecycleOwner, Observer {
@@ -127,16 +127,16 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
                         tokenList.addAll(combineList)
                         updateFilterListToken(currentSearchString, tokenAdapter)
 
-                    }
+            
                     is GetBalanceState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.saveLimitOrderCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -144,16 +144,16 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
                 when (state) {
                     is SaveSwapDataState.Success -> {
                         onSelectionComplete()
-                    }
+            
                     is SaveSwapDataState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.compositeDisposable.add(
             binding.edtSearch.textChanges()
@@ -164,16 +164,16 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
                 )
                 .map {
                     return@map it.trim().toString().toLowerCase()
-                }.observeOn(schedulerProvider.ui())
+        .observeOn(schedulerProvider.ui())
                 .subscribe { searchedText ->
                     currentSearchString = searchedText
                     updateFilterListToken(currentSearchString, tokenAdapter)
-                })
+        )
 
         binding.imgBack.setOnClickListener {
             hideKeyboard()
             activity?.onBackPressed()
-        }
+
 
     }
 
@@ -188,14 +188,14 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
     ) {
         if (searchedText.isNullOrEmpty()) {
             tokenAdapter.submitFilterList(tokenList)
-        } else {
+ else {
             tokenAdapter.submitFilterList(
                 getFilterTokenList(
                     currentSearchString,
                     tokenList
                 )
             )
-        }
+
     }
 
 
@@ -203,7 +203,7 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
         return tokens.filter { token ->
             token.tokenSymbol.toLowerCase().contains(searchedString) or
                 token.tokenName.toLowerCase().contains(searchedString)
-        }
+
     }
 
     override fun onDestroyView() {
@@ -221,7 +221,7 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
                     putParcelable(WALLET_PARAM, wallet)
                     putBoolean(TARGET_PARAM, isSourceToken)
 
-                }
-            }
+        
+    
     }
 }

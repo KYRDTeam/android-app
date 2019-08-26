@@ -29,11 +29,11 @@ class ContactAdapter(
     diffCallback = object : DiffUtil.ItemCallback<Contact>() {
         override fun areItemsTheSame(oldItem: Contact, newItem: Contact): Boolean {
             return oldItem.address == newItem.address
-        }
+
 
         override fun areContentsTheSame(oldItem: Contact, newItem: Contact): Boolean {
             return oldItem.areContentsTheSame(newItem)
-        }
+
     }
 ) {
     override fun getSwipeLayoutResourceId(position: Int): Int {
@@ -56,37 +56,37 @@ class ContactAdapter(
         binding.executePendingBindings()
         binding.lnItem.setOnClickListener {
             onItemClick?.invoke(item)
-        }
+
 
         binding.btnSend.setOnClickListener {
 
             binding.swipe.close(true)
             handler.postDelayed({
                 onSendClick?.invoke(item)
-            }, 250)
+    , 250)
 
-        }
+
         binding.btnEdit.setOnClickListener {
             binding.swipe.close(true)
             handler.postDelayed({
                 onEditClick?.invoke(item)
-            }, 250)
-        }
+    , 250)
+
         binding.btnDelete.setOnClickListener {
             binding.swipe.close(true)
             handler.postDelayed(
                 {
                     onDeleteClick?.invoke(item)
-                }, 250
+        , 250
             )
 
-        }
+
 
         binding.swipe.addSwipeListener(object : SimpleSwipeListener() {
             override fun onStartOpen(layout: SwipeLayout?) {
                 mItemManger.closeAllExcept(layout)
-            }
-        })
+    
+)
     }
 
     override fun createBinding(parent: ViewGroup, viewType: Int): ItemContactBinding =

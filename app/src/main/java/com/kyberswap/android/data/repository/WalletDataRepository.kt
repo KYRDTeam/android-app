@@ -62,13 +62,13 @@ class WalletDataRepository @Inject constructor(
         return Single.fromCallable {
             updateWalletToMonitorBalance(updateSelectedWallet(param.wallet))
             param.wallet
-        }
+
     }
 
     override fun updateWallet(param: Wallet): Completable {
         return Completable.fromCallable {
             walletDao.updateWallet(param)
-        }
+
     }
 
     override fun getWalletByAddress(param: String): Flowable<Wallet> {
@@ -78,7 +78,7 @@ class WalletDataRepository @Inject constructor(
     override fun setSelectedUnit(unit: String): Completable {
         return Completable.fromCallable {
             unitDao.updateUnit(Unit(unit))
-        }
+
     }
 
     override fun getSelectedUnit(): Flowable<String> {
@@ -92,13 +92,13 @@ class WalletDataRepository @Inject constructor(
     override fun getSelectedWallet(): Flowable<Wallet> {
         return Flowable.fromCallable {
             walletDao.all.isEmpty()
-        }.flatMap {
+.flatMap {
             if (it) {
                 Flowable.error(Throwable("empty"))
-            } else {
+     else {
                 walletDao.findSelectedWalletFlowable()
-            }
-        }
+    
+
     }
 
     override fun importWallet(param: ImportWalletFromSeedUseCase.Param): Single<Pair<Wallet, List<Token>>> {
@@ -131,7 +131,7 @@ class WalletDataRepository @Inject constructor(
             )
             val tokens = updateWalletToMonitorBalance(updateSelectedWallet(wallet))
             Pair(wallet, tokens)
-        }
+
     }
 
     override fun importWallet(param: ImportWalletFromPrivateKeyUseCase.Param): Single<Pair<Wallet, List<Token>>> {
@@ -156,14 +156,14 @@ class WalletDataRepository @Inject constructor(
                         generatedPassword,
                         false
                     )
-                } else {
+         else {
                     WalletManager.importWalletFromPrivateKey(
                         metadata,
                         param.privateKey,
                         generatedPassword,
                         false
                     )
-                }
+        
 
             val wallet = Wallet(
                 importWalletFromPrivateKey.address.toWalletAddress(),
@@ -176,7 +176,7 @@ class WalletDataRepository @Inject constructor(
             val tokens = updateWalletToMonitorBalance(updateSelectedWallet(wallet))
             Pair(wallet, tokens)
 
-        }
+
     }
 
 
@@ -212,13 +212,13 @@ class WalletDataRepository @Inject constructor(
 
             val tokens = updateWalletToMonitorBalance(updateSelectedWallet(wallet))
             Pair(wallet, tokens)
-        }
+
     }
 
     private fun updateWalletToMonitorBalance(wallets: List<Wallet>): List<Token> {
         val tokens = tokenDao.allTokens.map {
             it.updateSelectedWallet(wallets)
-        }
+
         tokenDao.updateTokens(tokens)
         return tokens
     }
@@ -226,7 +226,7 @@ class WalletDataRepository @Inject constructor(
     private fun deleteWalletBalance(wallet: Wallet): List<Token> {
         val tokens = tokenDao.allTokens.map {
             it.deleteWallet(wallet)
-        }
+
         tokenDao.updateTokens(tokens)
         return tokens
     }
@@ -235,15 +235,15 @@ class WalletDataRepository @Inject constructor(
         val wallets = walletDao.all.toMutableList()
         if (wallets.find { it.address == wallet.address } == null) {
             wallets.add(wallet)
-        }
+
 
         val selectedWallets = wallets.map {
             if (it.address == wallet.address) {
                 it.copy(isSelected = true, name = wallet.name)
-            } else {
+     else {
                 it.copy(isSelected = false)
-            }
-        }
+    
+
         walletDao.batchUpdate(selectedWallets)
         return selectedWallets
     }
@@ -257,7 +257,7 @@ class WalletDataRepository @Inject constructor(
                     ByteArray(0)
                 ), Base64.DEFAULT
             )
-        }
+
         return ""
     }
 
@@ -279,9 +279,9 @@ class WalletDataRepository @Inject constructor(
                 param.password
             ).mnemonic.split(" ").forEachIndexed { index, s ->
                 words.add(Word(index + 1, s))
-            }
+    
             words
-        }
+
     }
 
     private fun generatePassword(): String {
@@ -324,10 +324,10 @@ class WalletDataRepository @Inject constructor(
                 generatedPassword
             ).mnemonic.split(" ").forEachIndexed { index, s ->
                 words.add(Word(index + 1, s))
-            }
+    
 
             Triple(wallet, words, tokens)
-        }
+
     }
 
     override fun createWallet(param: ApplyKyberCodeUseCase.Param): Single<Pair<Wallet, List<Token>>> {
@@ -342,7 +342,7 @@ class WalletDataRepository @Inject constructor(
             nonce
         ).map {
             promoMapper.transform(it)
-        }.flatMap {
+.flatMap {
             importWallet(
                 ImportWalletFromPrivateKeyUseCase.Param(
                     it.privateKey,
@@ -350,7 +350,7 @@ class WalletDataRepository @Inject constructor(
                     it
                 )
             )
-        }
+
     }
 
     override fun exportKeystore(param: ExportKeystoreWalletUseCase.Param): Single<String> {
@@ -362,13 +362,13 @@ class WalletDataRepository @Inject constructor(
                         Base64.decode(param.wallet.cipher, Base64.DEFAULT), ByteArray(0)
                     ), Charsets.UTF_8
                 )
-            }
+    
 
             WalletManager.changePassword(param.wallet.walletId, password, param.password)
             val json = WalletManager.exportKeystore(param.wallet.walletId, param.password)
             WalletManager.changePassword(param.wallet.walletId, param.password, password)
             json
-        }
+
     }
 
     override fun exportPrivateKey(param: ExportPrivateKeyWalletUseCase.Param): Single<String> {
@@ -380,10 +380,10 @@ class WalletDataRepository @Inject constructor(
                         Base64.decode(param.wallet.cipher, Base64.DEFAULT), ByteArray(0)
                     ), Charsets.UTF_8
                 )
-            }
+    
 
             WalletManager.exportPrivateKey(param.wallet.walletId, password)
-        }
+
     }
 
     override fun exportMnemonic(param: ExportMnemonicWalletUseCase.Param): Single<String> {
@@ -395,10 +395,10 @@ class WalletDataRepository @Inject constructor(
                         Base64.decode(param.wallet.cipher, Base64.DEFAULT), ByteArray(0)
                     ), Charsets.UTF_8
                 )
-            }
+    
 
             WalletManager.exportMnemonic(param.wallet.walletId, password).mnemonic
-        }
+
     }
 
     override fun deleteWallet(param: DeleteWalletUseCase.Param): Single<VerifyStatus> {
@@ -412,35 +412,35 @@ class WalletDataRepository @Inject constructor(
                 if (wallet.isSelected) {
                     val firstOrNull = wallets.firstOrNull {
                         it.address != wallet.address
-                    }
+            
                     firstOrNull?.let {
                         updateWalletToMonitorBalance(updateSelectedWallet(it))
-                    }
-                }
+            
+        
                 wallets.remove(wallet)
                 walletDao.deleteWallet(wallet)
                 deleteWalletBalance(wallet)
                 deleteLocalInfo(wallet)
                 status.copy(isEmptyWallet = wallets.isEmpty())
-            } else {
+     else {
                 VerifyStatus(false)
-            }
-        }
+    
+
     }
 
     private fun deleteLocalInfo(wallet: Wallet) {
         val currentSwap = swapDao.findSwapByAddress(wallet.address)
         currentSwap?.let {
             swapDao.delete(currentSwap)
-        }
+
         val currentSend = sendDao.findSendByAddress(wallet.address)
         currentSend?.let {
             sendDao.delete(currentSend)
-        }
+
         val currentLimitOrder = limitOrderDao.findLocalLimitOrderByAddress(wallet.address)
         currentLimitOrder?.let {
             limitOrderDao.delete(currentLimitOrder)
-        }
+
     }
 
     override fun saveWallet(param: SaveWalletUseCase.Param): Completable {
@@ -448,6 +448,6 @@ class WalletDataRepository @Inject constructor(
 
             val currentWallet = walletDao.findWalletByAddress(param.wallet.address)
             walletDao.updateWallet(currentWallet.copy(name = param.wallet.name))
-        }
+
     }
 }

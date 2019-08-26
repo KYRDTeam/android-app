@@ -16,15 +16,15 @@ object DateTimeHelper {
             Locale.UK
         ).apply {
             this.timeZone = TimeZone.getTimeZone("UTC")
-        }
+
     ): String {
         if (date.isNullOrEmpty()) return ""
         return try {
             displayFormat.format(fullFormat.parse(date))
-        } catch (ex: Exception) {
+ catch (ex: Exception) {
             ex.printStackTrace()
             date
-        }
+
     }
 
     fun transactionDate(
@@ -36,10 +36,10 @@ object DateTimeHelper {
         return try {
             if (time > 0) {
                 displayFormat.format(Date(time * 1000))
-            } else ""
-        } catch (ex: java.lang.Exception) {
+     else ""
+ catch (ex: java.lang.Exception) {
             ex.printStackTrace()
             ""
-        }
+
     }
 }

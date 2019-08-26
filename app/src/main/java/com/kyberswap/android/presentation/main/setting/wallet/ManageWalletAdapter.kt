@@ -28,11 +28,11 @@ class ManageWalletAdapter(
     diffCallback = object : DiffUtil.ItemCallback<Wallet>() {
         override fun areItemsTheSame(oldItem: Wallet, newItem: Wallet): Boolean {
             return oldItem == newItem
-        }
+
 
         override fun areContentsTheSame(oldItem: Wallet, newItem: Wallet): Boolean {
             return oldItem == newItem
-        }
+
     }
 ) {
     override fun getSwipeLayoutResourceId(position: Int): Int {
@@ -59,40 +59,40 @@ class ManageWalletAdapter(
 
         if (getData().size <= 1) {
             binding.btnSwitch.visibility = View.GONE
-        }
+
 
         binding.lnItem.setOnClickListener {
             onItemClick?.invoke(item)
-        }
+
         binding.btnSwitch.setOnClickListener {
 
             binding.swManageWallet.close(true)
             handler.postDelayed({
                 onSwitchClick?.invoke(item)
-            }, 250)
+    , 250)
 
-        }
+
         binding.btnEdit.setOnClickListener {
             binding.swManageWallet.close(true)
             handler.postDelayed({
                 onEditClick?.invoke(item)
-            }, 250)
-        }
+    , 250)
+
         binding.btnDelete.setOnClickListener {
             binding.swManageWallet.close(true)
             handler.postDelayed(
                 {
                     onDeleteClick?.invoke(item)
-                }, 250
+        , 250
             )
 
-        }
+
 
         binding.swManageWallet.addSwipeListener(object : SimpleSwipeListener() {
             override fun onStartOpen(layout: SwipeLayout?) {
                 mItemManger.closeAllExcept(layout)
-            }
-        })
+    
+)
     }
 
     override fun createBinding(parent: ViewGroup, viewType: Int): ItemManageWalletBinding =

@@ -400,7 +400,7 @@ public class BCrypt {
             if (off >= len) {
                 rs.append(base64_code[c1 & 0x3f]);
                 break;
-            }
+    
             c2 = d[off++] & 0xff;
             c1 |= (c2 >> 4) & 0x0f;
             rs.append(base64_code[c1 & 0x3f]);
@@ -408,12 +408,12 @@ public class BCrypt {
             if (off >= len) {
                 rs.append(base64_code[c1 & 0x3f]);
                 break;
-            }
+    
             c2 = d[off++] & 0xff;
             c1 |= (c2 >> 6) & 0x03;
             rs.append(base64_code[c1 & 0x3f]);
             rs.append(base64_code[c2 & 0x3f]);
-        }
+
         return rs.toString();
     }
 
@@ -473,7 +473,7 @@ public class BCrypt {
             o |= c4;
             rs.append((char) o);
             ++olen;
-        }
+
 
         ret = new byte[olen];
         for (off = 0; off < olen; off++)
@@ -497,7 +497,7 @@ public class BCrypt {
         for (i = 0; i < 4; i++) {
             word = (word << 8) | (data[off] & 0xff);
             off = (off + 1) % data.length;
-        }
+
 
         offp[0] = off;
         return word;
@@ -530,7 +530,7 @@ public class BCrypt {
             if (minor != 'a' || salt.charAt(3) != '$')
                 throw new IllegalArgumentException("Invalid salt revision");
             off = 4;
-        }
+
 
         // Extract number of rounds
         if (salt.charAt(off + 2) > '$')
@@ -555,7 +555,7 @@ public class BCrypt {
         if (rounds > 30) {
             throw new IllegalArgumentException(
                     "rounds exceeds maximum (30)");
-        }
+
         rs.append(rounds);
         rs.append("$");
         rs.append(encode_base64(saltb, saltb.length));
@@ -585,7 +585,7 @@ public class BCrypt {
         if (log_rounds > 30) {
             throw new IllegalArgumentException(
                     "log_rounds exceeds maximum (30)");
-        }
+
         rs.append(log_rounds);
         rs.append("$");
         rs.append(encode_base64(rnd, rnd.length));
@@ -662,7 +662,7 @@ public class BCrypt {
             n ^= S[0x200 | ((r >> 8) & 0xff)];
             n += S[0x300 | (r & 0xff)];
             l ^= n ^ P[++i];
-        }
+
         lr[off] = r ^ P[BLOWFISH_NUM_ROUNDS + 1];
         lr[off + 1] = l;
     }
@@ -693,13 +693,13 @@ public class BCrypt {
             encipher(lr, 0);
             P[i] = lr[0];
             P[i + 1] = lr[1];
-        }
+
 
         for (i = 0; i < slen; i += 2) {
             encipher(lr, 0);
             S[i] = lr[0];
             S[i + 1] = lr[1];
-        }
+
     }
 
     /**
@@ -726,7 +726,7 @@ public class BCrypt {
             encipher(lr, 0);
             P[i] = lr[0];
             P[i + 1] = lr[1];
-        }
+
 
         for (i = 0; i < slen; i += 2) {
             lr[0] ^= streamtoword(data, doffp);
@@ -734,7 +734,7 @@ public class BCrypt {
             encipher(lr, 0);
             S[i] = lr[0];
             S[i + 1] = lr[1];
-        }
+
     }
 
     /**
@@ -765,12 +765,12 @@ public class BCrypt {
         for (i = 0; i != rounds; i++) {
             key(password);
             key(salt);
-        }
+
 
         for (i = 0; i < 64; i++) {
             for (j = 0; j < (clen >> 1); j++)
                 encipher(cdata, j << 1);
-        }
+
 
         ret = new byte[clen * 4];
         for (i = 0, j = 0; i < clen; i++) {
@@ -778,7 +778,7 @@ public class BCrypt {
             ret[j++] = (byte) ((cdata[i] >> 16) & 0xff);
             ret[j++] = (byte) ((cdata[i] >> 8) & 0xff);
             ret[j++] = (byte) (cdata[i] & 0xff);
-        }
+
         return ret;
     }
 }

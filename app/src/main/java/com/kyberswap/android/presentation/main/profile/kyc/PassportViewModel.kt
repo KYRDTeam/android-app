@@ -50,12 +50,12 @@ class PassportViewModel @Inject constructor(
                 Timber.e("getUserInfo: callback")
                 _getUserInfoCallback.value = Event(UserInfoState.Success(it))
 
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _getUserInfoCallback.value =
                     Event(UserInfoState.ShowError(it.localizedMessage))
-            },
+    ,
             null
         )
     }
@@ -65,12 +65,12 @@ class PassportViewModel @Inject constructor(
         resizeImageUseCase.execute(
             Consumer {
                 _resizeImageCallback.value = Event(ResizeImageState.Success(it))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _resizeImageCallback.value =
                     Event(ResizeImageState.ShowError(it.localizedMessage))
-            },
+    ,
             ResizeImageUseCase.Param(absolutePath)
         )
     }
@@ -79,12 +79,12 @@ class PassportViewModel @Inject constructor(
         decodeBase64DecodeUseCase.execute(
             Consumer {
                 _decodeImageCallback.value = Event(DecodeBase64State.Success(it, imageView))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _decodeImageCallback.value =
                     Event(DecodeBase64State.ShowError(it.localizedMessage))
-            },
+    ,
             Base64DecodeUseCase.Param(stringImage)
         )
 
@@ -96,16 +96,16 @@ class PassportViewModel @Inject constructor(
             Consumer {
                 if (it.success) {
                     _savePersonalInfoCallback.value = Event(SavePersonalInfoState.Success(it))
-                } else {
+         else {
                     _savePersonalInfoCallback.value =
                         Event(SavePersonalInfoState.ShowError(it.reason.display()))
-                }
-            },
+        
+    ,
             Consumer {
                 it.printStackTrace()
                 _savePersonalInfoCallback.value =
                     Event(SavePersonalInfoState.ShowError(it.localizedMessage))
-            },
+    ,
             SaveIdPassportUseCase.Param(kycInfo)
         )
 

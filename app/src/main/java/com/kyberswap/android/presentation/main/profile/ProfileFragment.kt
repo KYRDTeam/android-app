@@ -109,10 +109,10 @@ class ProfileFragment : BaseFragment() {
             object : FacebookCallback<LoginResult> {
                 override fun onSuccess(result: LoginResult?) {
                     result?.accessToken?.let { meRequest(it) }
-                }
+        
 
                 override fun onCancel() {
-                }
+        
 
                 override fun onError(error: FacebookException?) {
                     Timber.e(error?.localizedMessage)
@@ -121,18 +121,18 @@ class ProfileFragment : BaseFragment() {
                         if (AccessToken.getCurrentAccessToken() != null) {
                             LoginManager.getInstance().logOut()
                             loginWithReadPermission()
-                        }
-                    }
-                }
+                
+            
+        
 
 
-            })
+    )
 
         binding.tvSignUp.setOnClickListener {
             navigator.navigateToSignUpScreen(
                 (activity as MainActivity).getCurrentFragment()
             )
-        }
+
 
         viewModel.loginCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -146,7 +146,7 @@ class ProfileFragment : BaseFragment() {
                                     currentFragment,
                                     state.socialInfo
                                 )
-                            } else if (state.login.twoFaRequired) {
+                     else if (state.login.twoFaRequired) {
                                 dialogHelper.show2FaDialog { token, dialog ->
                                     this.twoFADialog = dialog
                                     if (token.isEmpty()) {
@@ -155,22 +155,22 @@ class ProfileFragment : BaseFragment() {
                                             message = getString(R.string.two_fa_empty_code)
                                         )
                                         return@show2FaDialog
-                                    }
+                            
 
                                     if (!state.socialInfo.isNormalLogin) {
                                         viewModel.login(state.socialInfo.copy(twoFa = token))
                                         dialog.dismiss()
-                                    } else {
+                             else {
                                         viewModel.login(
                                             edtEmail.text.toString(),
                                             edtPassword.text.toString(),
                                             token
                                         )
                                         dialog.dismiss()
-                                    }
+                            
 
-                                }
-                            } else {
+                        
+                     else {
                                 twoFADialog = null
                                 showAlertWithoutIcon(
                                     message = String.format(
@@ -181,23 +181,23 @@ class ProfileFragment : BaseFragment() {
 
                                 if (fromLimitOrder) {
                                     moveToLimitOrder()
-                                }
+                        
                                 navigateToProfileDetail()
-                            }
-                        } else {
+                    
+                 else {
                             twoFADialog?.show()
                             showAlert(state.login.message)
-                        }
-                    }
+                
+            
                     is LoginState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
 
         viewModel.resetPasswordCallback.observe(viewLifecycleOwner, Observer {
@@ -209,23 +209,23 @@ class ProfileFragment : BaseFragment() {
                             resetPasswordDialog?.dismiss()
                             resetPasswordDialog = null
                             showAlertWithoutIcon(message = state.status.message)
-                        } else {
+                 else {
                             showAlertWithoutIcon(
                                 title = getString(R.string.title_error),
                                 message = state.status.message
                             )
-                        }
+                
 
-                    }
+            
                     is ResetPasswordState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.getLoginStatusCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -235,23 +235,23 @@ class ProfileFragment : BaseFragment() {
                             navigator.navigateToProfileDetail(
                                 profileFragment
                             )
-                        }
-                    }
+                
+            
                     is UserInfoState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         binding.imgFacebook.setOnClickListener {
             stopCounter()
             LoginManager.getInstance()
                 .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"))
-        }
+
 
         binding.imgGooglePlus.setOnClickListener {
             stopCounter()
@@ -260,13 +260,13 @@ class ProfileFragment : BaseFragment() {
             if (account == null) {
                 val signInIntent = googleSignInClient.signInIntent
                 startActivityForResult(signInIntent, RC_SIGN_IN)
-            } else {
+     else {
                 googleSignInClient.signOut().addOnCompleteListener {
                     val signInIntent = googleSignInClient.signInIntent
                     startActivityForResult(signInIntent, RC_SIGN_IN)
-                }
-            }
-        }
+        
+    
+
 
         binding.imgTwitter.setOnClickListener {
             stopCounter()
@@ -274,11 +274,11 @@ class ProfileFragment : BaseFragment() {
             val twitterSession = TwitterCore.getInstance().sessionManager.activeSession
             if (twitterSession != null) {
                 TwitterCore.getInstance().sessionManager.clearActiveSession()
-            }
+    
             twitterAuthClient.authorize(activity, object : Callback<TwitterSession>() {
                 override fun success(result: com.twitter.sdk.android.core.Result<TwitterSession>?) {
                     getTwitterUserProfileWthTwitterCoreApi(result?.data)
-                }
+        
 
                 override fun failure(exception: TwitterException?) {
                     exception?.printStackTrace()
@@ -287,10 +287,10 @@ class ProfileFragment : BaseFragment() {
                         exception?.localizedMessage,
                         Toast.LENGTH_SHORT
                     ).show()
-                }
+        
 
-            })
-        }
+    )
+
 
         binding.tvForgotPassword.setOnClickListener {
             dialogHelper.showResetPassword { email, dialog ->
@@ -300,11 +300,11 @@ class ProfileFragment : BaseFragment() {
                         title = getString(R.string.title_error),
                         message = getString(R.string.login_email_address_required)
                     )
-                } else {
+         else {
                     viewModel.resetPassword(email)
-                }
-            }
-        }
+        
+    
+
 
         binding.btnLogin.setOnClickListener {
 
@@ -320,7 +320,7 @@ class ProfileFragment : BaseFragment() {
 
                     binding.ilEmail.error = errorMessage
 
-                }
+        
 
                 !Patterns.EMAIL_ADDRESS.matcher(binding.edtEmail.text).matches() -> {
 
@@ -332,7 +332,7 @@ class ProfileFragment : BaseFragment() {
                     )
 
                     binding.ilEmail.error = errorMessage
-                }
+        
 
                 binding.edtPassword.text.toString().isBlank() -> {
                     val errorMessage = getString(
@@ -343,29 +343,29 @@ class ProfileFragment : BaseFragment() {
                     )
                     binding.ilPassword.error = errorMessage
 
-                }
+        
 
                 else -> {
                     viewModel.login(edtEmail.text.toString(), edtPassword.text.toString())
-                }
+        
 
-            }
+    
 
-        }
+
 
         viewModel.compositeDisposable.add(
             binding.edtEmail.textChanges()
                 .skipInitialValue()
                 .subscribe {
                     binding.ilEmail.error = null
-                })
+        )
 
         viewModel.compositeDisposable.add(
             binding.edtPassword.textChanges()
                 .skipInitialValue()
                 .subscribe {
                     binding.ilPassword.error = null
-                })
+        )
     }
 
     private fun loginWithReadPermission() {
@@ -392,7 +392,7 @@ class ProfileFragment : BaseFragment() {
         ) { me, response ->
             if (response?.error != null) {
                 showAlert(response.error.errorMessage)
-            } else {
+     else {
                 val email = me?.optString("email")
                 val name = me?.optString("name")
                 val id = me?.optString("id")
@@ -405,8 +405,8 @@ class ProfileFragment : BaseFragment() {
                     email
                 )
                 viewModel.login(socialInfo)
-            }
-        }
+    
+
 
         val parameters = Bundle()
         parameters.putString(
@@ -441,12 +441,12 @@ class ProfileFragment : BaseFragment() {
 
 
                     viewModel.login(socialInfo)
-                }
+        
 
                 override fun failure(exception: TwitterException) {
                     Toast.makeText(context, exception.localizedMessage, Toast.LENGTH_SHORT).show()
-                }
-            })
+        
+    )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -457,7 +457,7 @@ class ProfileFragment : BaseFragment() {
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             handleSignInResult(task)
-        }
+
     }
 
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
@@ -472,12 +472,12 @@ class ProfileFragment : BaseFragment() {
                     account.email
                 )
                 viewModel.login(socialInfo)
-            }
+    
 
-        } catch (e: ApiException) {
+ catch (e: ApiException) {
             e.printStackTrace()
             Timber.e(e.localizedMessage)
-        }
+
     }
 
     override fun onDestroyView() {

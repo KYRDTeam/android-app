@@ -57,7 +57,7 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         activity.startActivity(BackupWalletActivity.newIntent(activity, words, wallet, fromSetting))
         if (!fromSetting) {
             activity.finishAffinity()
-        }
+
     }
 
     fun navigateToHome() {
@@ -65,7 +65,7 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
             MainActivity.newIntent(activity)
             .apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            })
+    )
     }
 
     @JvmOverloads
@@ -78,13 +78,13 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         val transaction = fragmentManager.beginTransaction()
         if (customAnimations == IN_RIGHT_OUT_LEFT) {
             transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
-        } else if (customAnimations == IN_LEFT_OUT_RIGHT) {
+ else if (customAnimations == IN_LEFT_OUT_RIGHT) {
             transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right)
-        }
+
         transaction.replace(container, fragment, fragment.javaClass.simpleName)
         if (addToBackStack) {
             transaction.addToBackStack(fragment.javaClass.simpleName)
-        }
+
         transaction.commitAllowingStateLoss()
     }
 
@@ -150,9 +150,9 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
                     )
                 )
                 else -> activity.startActivity(PromoSwapConfirmActivity.newIntent(activity, wallet))
-            }
+    
             else -> activity.startActivity(SwapConfirmActivity.newIntent(activity, wallet))
-        }
+
     }
 
 
@@ -260,9 +260,9 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
                     newFragment,
                     addToBackStack
                 )
-            }
+    
 
-        }
+
     }
 
 
@@ -277,9 +277,9 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
                     id,
                     newFragment
                 )
-            }
+    
 
-        }
+
     }
 
     fun navigateToSignUpScreen(currentFragment: Fragment?) {
@@ -327,7 +327,7 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         transaction.replace(container, fragment, fragment.javaClass.simpleName)
         if (addToBackStack) {
             transaction.addToBackStack(fragment.javaClass.simpleName)
-        }
+
         transaction.commitAllowingStateLoss()
     }
 
@@ -418,7 +418,7 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
                 UserInfo.KYC_STEP_ID_PASSPORT -> PassportFragment.newInstance()
                 UserInfo.KYC_STEP_SUBMIT -> SubmitFragment.newInstance()
                 else -> PersonalInfoFragment.newInstance()
-            }
+    
         )
     }
 

@@ -72,35 +72,35 @@ class ManageWalletFragment : BaseFragment() {
                         walletAdapter.getData().size == 1 || it.isSelected,
                         {
                             viewModel.updateSelectedWallet(it.copy(isSelected = true))
-                        }, {
+                , {
                             navigator.navigateToEditWallet(currentFragment, it)
-                        }, {
+                , {
 
                             dialogHelper.showConfirmation(
                                 getString(R.string.title_delete),
                                 getString(R.string.delete_wallet_confirmation),
                                 {
                                     viewModel.deleteWallet(it)
-                                })
+                        )
 
 
-                        })
-                },
+                )
+        ,
                 {
 
                     viewModel.updateSelectedWallet(it.copy(isSelected = true))
-                },
+        ,
                 {
                     navigator.navigateToEditWallet(currentFragment, it)
-                },
+        ,
                 {
                     dialogHelper.showConfirmation(
                         getString(R.string.title_delete),
                         getString(R.string.delete_wallet_confirmation),
                         {
                             viewModel.deleteWallet(it)
-                        })
-                })
+                )
+        )
 
 
 
@@ -119,28 +119,28 @@ class ManageWalletFragment : BaseFragment() {
                     is GetAllWalletState.Success -> {
                         walletAdapter.submitList(listOf())
                         walletAdapter.submitList(state.wallets)
-                    }
+            
                     is GetAllWalletState.ShowError -> {
 
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         binding.imgAddWallet.setOnClickListener {
             dialogHelper.showBottomSheetDialog(
                 {
                     dialogHelper.showConfirmation {
                         viewModel.createWallet()
-                    }
+            
 
-                },
+        ,
                 {
                     navigator.navigateToImportWalletPage()
 
-                }
+        
             )
-        }
+
 
         viewModel.createWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -149,18 +149,18 @@ class ManageWalletFragment : BaseFragment() {
                     is CreateWalletState.Success -> {
                         showAlert(getString(R.string.create_wallet_success)) {
                             navigator.navigateToBackupWalletPage(state.words, state.wallet, true)
-                        }
+                
 
-                    }
+            
                     is CreateWalletState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.deleteWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -171,17 +171,17 @@ class ManageWalletFragment : BaseFragment() {
                         if (state.verifyStatus.isEmptyWallet) {
                             navigator.navigateToLandingPage()
                             activity?.finishAffinity()
-                        }
-                    }
+                
+            
                     is DeleteWalletState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.updateWalletStateCallback.observe(this, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
@@ -189,18 +189,18 @@ class ManageWalletFragment : BaseFragment() {
                 when (state) {
                     is UpdateWalletState.Success -> {
                         EventBus.getDefault().post(WalletChangeEvent(state.wallet.address))
-                    }
+            
                     is UpdateWalletState.ShowError -> {
 
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-        }
+
     }
 
 

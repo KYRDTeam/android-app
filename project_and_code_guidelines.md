@@ -189,11 +189,11 @@ class MyClass {
     int func() {
         if (something) {
             // ...
-        } else if (somethingElse) {
+ else if (somethingElse) {
             // ...
-        } else {
+ else {
             // ...
-        }
+
     }
 }
 ```
@@ -496,14 +496,14 @@ public Observable<Location> syncLocations() {
                 @Override
                  public Observable<? extends Location> call(Location location) {
                      return mRetrofitService.getLocation(location.id);
-                 }
-            })
+         
+    )
             .retry(new Func2<Integer, Throwable, Boolean>() {
                  @Override
                  public Boolean call(Integer numRetries, Throwable throwable) {
                      return throwable instanceof RetrofitError;
-                 }
-            });
+         
+    );
 }
 ```
 

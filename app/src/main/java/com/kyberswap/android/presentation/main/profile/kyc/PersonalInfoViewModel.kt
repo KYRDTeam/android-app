@@ -55,12 +55,12 @@ class PersonalInfoViewModel @Inject constructor(
             Consumer {
                 _getUserInfoCallback.value = Event(UserInfoState.Success(it))
 
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _getUserInfoCallback.value =
                     Event(UserInfoState.ShowError(it.localizedMessage))
-            },
+    ,
             null
         )
     }
@@ -70,9 +70,9 @@ class PersonalInfoViewModel @Inject constructor(
         getUserInfoUseCase.dispose()
         if (fromRemote) {
             fetchUserInfo()
-        } else {
+ else {
             getUserInfo()
-        }
+
     }
 
     fun getUserInfo() {
@@ -81,12 +81,12 @@ class PersonalInfoViewModel @Inject constructor(
             Consumer {
                 _getUserInfoCallback.value = Event(UserInfoState.Success(it))
 
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _getUserInfoCallback.value =
                     Event(UserInfoState.ShowError(it.localizedMessage))
-            },
+    ,
             null
         )
     }
@@ -103,16 +103,16 @@ class PersonalInfoViewModel @Inject constructor(
             Consumer {
                 if (it.success) {
                     _savePersonalInfoCallback.value = Event(SavePersonalInfoState.Success(it))
-                } else {
+         else {
                     _savePersonalInfoCallback.value =
                         Event(SavePersonalInfoState.ShowError(it.reason.display()))
-                }
-            },
+        
+    ,
             Consumer {
                 it.printStackTrace()
                 _savePersonalInfoCallback.value =
                     Event(SavePersonalInfoState.ShowError(it.localizedMessage))
-            },
+    ,
             SavePersonalInfoUseCase.Param(kycInfo)
         )
     }
@@ -121,11 +121,11 @@ class PersonalInfoViewModel @Inject constructor(
         saveLocalPersonalInfoUseCase.execute(
             Action {
                 _saveKycInfoCallback.value = Event(SaveKycInfoState.Success(""))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _saveKycInfoCallback.value = Event(SaveKycInfoState.ShowError(it.localizedMessage))
-            }
+    
             , SaveLocalPersonalInfoUseCase.Param(kycInfo)
         )
     }
@@ -135,12 +135,12 @@ class PersonalInfoViewModel @Inject constructor(
         resizeImageUseCase.execute(
             Consumer {
                 _resizeImageCallback.value = Event(ResizeImageState.Success(it))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _resizeImageCallback.value =
                     Event(ResizeImageState.ShowError(it.localizedMessage))
-            },
+    ,
             ResizeImageUseCase.Param(absolutePath)
         )
     }
@@ -149,12 +149,12 @@ class PersonalInfoViewModel @Inject constructor(
         decodeBase64DecodeUseCase.execute(
             Consumer {
                 _decodeImageCallback.value = Event(DecodeBase64State.Success(it))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _decodeImageCallback.value =
                     Event(DecodeBase64State.ShowError(it.localizedMessage))
-            },
+    ,
             Base64DecodeUseCase.Param(stringImage)
         )
 

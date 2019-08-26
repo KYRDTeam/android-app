@@ -54,9 +54,9 @@ public class IndicatorDots extends LinearLayout {
             mPinLength = typedArray.getInt(R.styleable.PinLockView_pinLength, DEFAULT_PIN_LENGTH);
             mIndicatorType = typedArray.getInt(R.styleable.PinLockView_indicatorType,
                     IndicatorType.FIXED);
-        } finally {
+ finally {
             typedArray.recycle();
-        }
+
 
         initView(context);
     }
@@ -74,10 +74,10 @@ public class IndicatorDots extends LinearLayout {
                 dot.setLayoutParams(params);
 
                 addView(dot);
-            }
-        } else if (mIndicatorType == 2) {
+    
+ else if (mIndicatorType == 2) {
             setLayoutTransition(new LayoutTransition());
-        }
+
     }
 
     @Override
@@ -88,7 +88,7 @@ public class IndicatorDots extends LinearLayout {
             ViewGroup.LayoutParams params = this.getLayoutParams();
             params.height = mDotDiameter;
             requestLayout();
-        }
+
     }
 
     void updateDot(int length) {
@@ -96,19 +96,19 @@ public class IndicatorDots extends LinearLayout {
             if (length > 0) {
                 if (length > mPreviousLength) {
                     fillDot(getChildAt(length - 1));
-                } else {
+         else {
                     emptyDot(getChildAt(length));
-                }
+        
                 mPreviousLength = length;
-            } else {
+     else {
                 // When {@code mPinLength} is 0, we need to reset all the views back to empty
                 for (int i = 0; i < getChildCount(); i++) {
                     View v = getChildAt(i);
                     emptyDot(v);
-                }
+        
                 mPreviousLength = 0;
-            }
-        } else {
+    
+ else {
             if (length > 0) {
                 if (length > mPreviousLength) {
                     View dot = new View(getContext());
@@ -120,15 +120,15 @@ public class IndicatorDots extends LinearLayout {
                     dot.setLayoutParams(params);
 
                     addView(dot, length - 1);
-                } else {
+         else {
                     removeViewAt(length);
-                }
+        
                 mPreviousLength = length;
-            } else {
+     else {
                 removeAllViews();
                 mPreviousLength = 0;
-            }
-        }
+    
+
     }
 
     private void emptyDot(View dot) {

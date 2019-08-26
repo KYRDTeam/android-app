@@ -78,19 +78,19 @@ class PassCodeLockActivity : BaseActivity() {
             override fun onComplete(pin: String) {
                 if (binding.title == repeatTitle || binding.title == verifyAccess) {
                     viewModel.verifyPin(pin, remainNum, System.currentTimeMillis())
-                } else {
+         else {
                     viewModel.save(pin)
-                }
-            }
+        
+    
 
             override fun onEmpty() {
-            }
+    
 
             override fun onPinChange(pinLength: Int, intermediatePin: String) {
 
-            }
+    
 
-        })
+)
 
         binding.pinLockView.pinLength = 6
 
@@ -102,16 +102,16 @@ class PassCodeLockActivity : BaseActivity() {
                         binding.pinLockView.resetPinLockView()
                         binding.title = repeatTitle
                         binding.content = repeatContent
-                    }
+            
                     is SavePinState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.verifyPinCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -126,11 +126,11 @@ class PassCodeLockActivity : BaseActivity() {
                                 binding.content = newPinContent
                                 binding.executePendingBindings()
 
-                            } else {
+                     else {
                                 (applicationContext as KyberSwapApplication).startCounter()
                                 finish()
-                            }
-                        } else {
+                    
+                 else {
                             val shakeAnimation = AnimationUtils.loadAnimation(this, R.anim.shake)
                             binding.indicatorDots.startAnimation(shakeAnimation)
 
@@ -138,13 +138,13 @@ class PassCodeLockActivity : BaseActivity() {
                             if (remainNum > 0) {
                                 binding.content =
                                     String.format(getString(R.string.number_of_attempt), remainNum)
-                            } else {
+                     else {
                                 binding.content = ""
                                 startCounter()
-                            }
+                    
                             binding.pinLockView.resetPinLockView()
-                        }
-                    }
+                
+            
                     is VerifyPinState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
@@ -152,10 +152,10 @@ class PassCodeLockActivity : BaseActivity() {
                         )
                         binding.title = newPinTitle
                         binding.content = newPinContent
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.getPinCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -169,18 +169,18 @@ class PassCodeLockActivity : BaseActivity() {
                                 binding.title = newPinTitle
                                 binding.content = newPinContent
                                 binding.executePendingBindings()
-                            } else {
+                     else {
                                 binding.title = verifyAccess
-                            }
-                        }
-                    }
+                    
+                
+            
                     is GetPinState.ShowError -> {
                         binding.title = newPinTitle
                         binding.content = newPinContent
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
     }
 
     private fun startCounter() {
@@ -197,14 +197,14 @@ class PassCodeLockActivity : BaseActivity() {
                                 getString(R.string.too_many_attempt),
                                 currentWaitingTime.toString()
                             )
-                    } else {
+             else {
                         remainNum = MAX_NUMBER_INPUT
                         currentTimePassed = 0
                         binding.pinLockView.enableInput(true)
                         binding.content = ""
                         viewModel.compositeDisposable.clear()
-                    }
-                }
+            
+        
         )
     }
 
@@ -213,13 +213,13 @@ class PassCodeLockActivity : BaseActivity() {
             if (it.remainNum > 1) {
                 remainNum = it.remainNum - 1
                 binding.content = String.format(getString(R.string.number_of_attempt), remainNum)
-            } else if (it.remainNum > 0) {
+     else if (it.remainNum > 0) {
                 if (it.time > 0) {
                     currentTimePassed = (System.currentTimeMillis() - it.time) / 1000
                     startCounter()
-                }
-            }
-        }
+        
+    
+
 
     }
 
@@ -242,7 +242,7 @@ class PassCodeLockActivity : BaseActivity() {
             Intent(context, PassCodeLockActivity::class.java)
                 .apply {
                     putExtra(TYPE_PARAM, type)
-                }
+        
     }
 
 }

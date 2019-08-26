@@ -47,7 +47,7 @@ class ImportWalletActivity : BaseActivity(), KeystoreStorage {
         binding.title = getString(R.string.import_wallet_title)
         imgBack.setOnClickListener {
             onBackPressed()
-        }
+
         options = listOf(binding.vJson, binding.vPrivateKey, binding.vSeed)
 
         binding.vJson.isSelected = true
@@ -60,14 +60,14 @@ class ImportWalletActivity : BaseActivity(), KeystoreStorage {
 
                 when {
                     view.id == R.id.vJson -> {
-                    }
+            
                     view.id == R.id.vPrivateKey -> {
-                    }
+            
                     else -> {
-                    }
-                }
-            }
-        }
+            
+        
+    
+
 
         val adapter = ImportWalletPagerAdapter(supportFragmentManager, fromMain)
         binding.vpImportOption.adapter = adapter
@@ -78,12 +78,12 @@ class ImportWalletActivity : BaseActivity(), KeystoreStorage {
                 positionOffset: Float,
                 positionOffsetPixels: Int
             ) {
-            }
+    
 
             override fun onPageSelected(position: Int) {
                 setSelectedOption(options[position])
-            }
-        })
+    
+)
     }
 
     private fun setSelectedOption(view: View) {
@@ -98,6 +98,6 @@ class ImportWalletActivity : BaseActivity(), KeystoreStorage {
             Intent(context, ImportWalletActivity::class.java)
                 .apply {
                     putExtra(FROM_MAIN_PARAM, fromMain)
-                }
+        
     }
 }

@@ -63,7 +63,7 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
         super.onActivityCreated(savedInstanceState)
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-        }
+
 
         binding.order = limitOrder
         binding.executePendingBindings()
@@ -75,28 +75,28 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
 //                    is GetLocalLimitOrderState.Success -> {
 //                        binding.order = state.order
 //                        binding.executePendingBindings()
-//                    }
+//            
 //                    is GetLocalLimitOrderState.ShowError -> {
 //
-//                    }
-//                }
-//            }
-//        })
+//            
+//        
+//    
+//)
 
         binding.imgInfo.setOnClickListener {
             showAlert(
                 getString(R.string.limit_order_confirm_info),
                 R.drawable.ic_confirm_info
             )
-        }
+
 
         binding.tvCancel.setOnClickListener {
             onBackPress()
-        }
+
 
         binding.tvContinue.setOnClickListener {
             viewModel.submitOrder(binding.order, wallet)
-        }
+
 
         viewModel.submitOrderCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -104,16 +104,16 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
                 when (state) {
                     is SubmitOrderState.Success -> {
                         onSubmitOrderSuccess()
-                    }
+            
                     is SubmitOrderState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_confirm_info
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
     }
 
     private fun onSubmitOrderSuccess() {
@@ -124,17 +124,17 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
         val fm = currentFragment.childFragmentManager
         for (i in 0 until fm.backStackEntryCount) {
             fm.popBackStack()
-        }
+
         if (currentFragment is LimitOrderFragment) {
             (currentFragment as LimitOrderFragment).onRefresh()
-        }
+
     }
 
     fun onBackPress() {
         val fm = currentFragment.childFragmentManager
         for (i in 0 until fm.backStackEntryCount) {
             fm.popBackStack()
-        }
+
 
     }
 
@@ -146,17 +146,17 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
                     is UserInfoState.Success -> {
                         if (!(state.userInfo != null && state.userInfo.uid > 0)) {
                             activity?.onBackPressed()
-                        }
-                    }
+                
+            
                     is UserInfoState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
     }
 
     companion object {
@@ -167,7 +167,7 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
                 arguments = Bundle().apply {
                     putParcelable(WALLET_PARAM, wallet)
                     putParcelable(LIMIT_ORDER, limitOrder)
-                }
-            }
+        
+    
     }
 }

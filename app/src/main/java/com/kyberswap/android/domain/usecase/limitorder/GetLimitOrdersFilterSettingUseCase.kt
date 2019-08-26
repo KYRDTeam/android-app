@@ -29,7 +29,7 @@ class GetLimitOrdersFilterSettingUseCase @Inject constructor(
             orders.forEach {
                 pairs.add(it.src to it.dst)
                 address.add(it.userAddr)
-            }
+    
             val unSelectedStatus = filter.unSelectedStatus
             val unSelectedAddress = filter.unSelectedAddresses
             val unSelectedPair = filter.unSelectedPairs
@@ -39,17 +39,17 @@ class GetLimitOrdersFilterSettingUseCase @Inject constructor(
                         TOKEN_PAIR_SEPARATOR
                     ).append(it.second).toString()
                 )
-            }
+    
 
             val addressSetting = address.map {
                 FilterItem(!unSelectedAddress.contains(it), it, it.displayWalletAddress())
-            }
+    
 
             val statusSettings = FilterSetting.DEFAULT_ORDER_STATUS.map {
                 FilterItem(!unSelectedStatus.contains(it), it)
-            }
+    
 
             FilterSetting(pairsSetting, statusSettings, addressSetting, filter.oldest, filter)
-        }
+
     }
 }

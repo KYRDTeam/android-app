@@ -60,12 +60,12 @@ class ProfileDetailViewModel @Inject constructor(
         pollingUserInfoUseCase.execute(
             Consumer {
                 _getUserInfoCallback.value = Event(UserInfoState.Success(it))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _getUserInfoCallback.value =
                     Event(UserInfoState.ShowError(it.localizedMessage))
-            },
+    ,
             null
         )
     }
@@ -75,12 +75,12 @@ class ProfileDetailViewModel @Inject constructor(
         refreshKycStatusUseCase.execute(
             Consumer {
                 _refreshKycStatus.value = Event(UserInfoState.Success(it))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _refreshKycStatus.value =
                     Event(UserInfoState.ShowError(it.localizedMessage))
-            },
+    ,
             null
         )
     }
@@ -91,17 +91,17 @@ class ProfileDetailViewModel @Inject constructor(
             Consumer {
                 if (it.success) {
                     _reSubmitKycCallback.value = Event(ReSubmitState.Success(it))
-                } else {
+         else {
                     _reSubmitKycCallback.value =
                         Event(ReSubmitState.ShowError(it.reason.display()))
-                }
+        
 
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _reSubmitKycCallback.value =
                     Event(ReSubmitState.ShowError(it.localizedMessage))
-            },
+    ,
             ReSubmitUserInfoUseCase.Param(user)
         )
     }
@@ -111,12 +111,12 @@ class ProfileDetailViewModel @Inject constructor(
         getAlertsUseCase.execute(
             Consumer {
                 _getAlertsCallback.value = Event(GetAlertsState.Success(it))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _getAlertsCallback.value =
                     Event(GetAlertsState.ShowError(it.localizedMessage))
-            },
+    ,
             null
         )
     }
@@ -126,12 +126,12 @@ class ProfileDetailViewModel @Inject constructor(
         logoutUseCase.execute(
             Action {
                 _logoutCallback.value = Event(LogoutState.Success(""))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _logoutCallback.value =
                     Event(LogoutState.ShowError(it.localizedMessage))
-            },
+    ,
             null
         )
     }
@@ -140,12 +140,12 @@ class ProfileDetailViewModel @Inject constructor(
         deleteAlertsUseCase.execute(
             Consumer {
                 _deleteAlertsCallback.value = Event(DeleteAlertsState.Success())
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _deleteAlertsCallback.value =
                     Event(DeleteAlertsState.ShowError(it.localizedMessage))
-            },
+    ,
             DeleteAlertsUseCase.Param(alert)
         )
     }
@@ -163,11 +163,11 @@ class ProfileDetailViewModel @Inject constructor(
         updatePushTokenUseCase.execute(
             Consumer {
 
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 Timber.e(it.localizedMessage)
-            },
+    ,
             UpdatePushTokenUseCase.Param(
                 userId,
                 token

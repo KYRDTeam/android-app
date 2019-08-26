@@ -13,134 +13,134 @@
             "columnName": "isHide",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "timestamp",
             "columnName": "timestamp",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSymbol",
             "columnName": "tokenSymbol",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenName",
             "columnName": "tokenName",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenAddress",
             "columnName": "tokenAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDecimal",
             "columnName": "tokenDecimal",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "rateEthNow",
             "columnName": "rateEthNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "changeEth24h",
             "columnName": "changeEth24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "rateUsdNow",
             "columnName": "rateUsdNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "changeUsd24h",
             "columnName": "changeUsd24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "cgId",
             "columnName": "cgId",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "gasApprove",
             "columnName": "gasApprove",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "gasLimit",
             "columnName": "gasLimit",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "listingTime",
             "columnName": "listingTime",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "priority",
             "columnName": "priority",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "spLimitOrder",
             "columnName": "spLimitOrder",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wallets",
             "columnName": "wallets",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "fav",
             "columnName": "fav",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "isOther",
             "columnName": "isOther",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "limitOrderBalance",
             "columnName": "limitOrderBalance",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "isQuote",
             "columnName": "isQuote",
             "affinity": "INTEGER",
             "notNull": true
-          }
+  
         ],
         "primaryKey": {
           "columnNames": [
             "tokenSymbol"
           ],
           "autoGenerate": false
-        },
+,
         "indices": [],
         "foreignKeys": []
       },
@@ -153,104 +153,104 @@
             "columnName": "address",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "walletId",
             "columnName": "walletId",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "name",
             "columnName": "name",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "cipher",
             "columnName": "cipher",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "isSelected",
             "columnName": "isSelected",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "mnemonicAvailable",
             "columnName": "mnemonicAvailable",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "unit",
             "columnName": "unit",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "balance",
             "columnName": "balance",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "createAt",
             "columnName": "createAt",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "promo.privateKey",
             "columnName": "privateKey",
             "affinity": "TEXT",
             "notNull": false
-          },
+  ,
           {
             "fieldPath": "promo.expiredDate",
             "columnName": "expiredDate",
             "affinity": "TEXT",
             "notNull": false
-          },
+  ,
           {
             "fieldPath": "promo.destinationToken",
             "columnName": "destinationToken",
             "affinity": "TEXT",
             "notNull": false
-          },
+  ,
           {
             "fieldPath": "promo.description",
             "columnName": "description",
             "affinity": "TEXT",
             "notNull": false
-          },
+  ,
           {
             "fieldPath": "promo.type",
             "columnName": "type",
             "affinity": "TEXT",
             "notNull": false
-          },
+  ,
           {
             "fieldPath": "promo.receiveAddress",
             "columnName": "receiveAddress",
             "affinity": "TEXT",
             "notNull": false
-          },
+  ,
           {
             "fieldPath": "promo.error",
             "columnName": "error",
             "affinity": "TEXT",
             "notNull": false
-          }
+  
         ],
         "primaryKey": {
           "columnNames": [
             "address"
           ],
           "autoGenerate": false
-        },
+,
         "indices": [],
         "foreignKeys": []
       },
@@ -263,14 +263,14 @@
             "columnName": "unit",
             "affinity": "TEXT",
             "notNull": true
-          }
+  
         ],
         "primaryKey": {
           "columnNames": [
             "unit"
           ],
           "autoGenerate": false
-        },
+,
         "indices": [],
         "foreignKeys": []
       },
@@ -283,332 +283,332 @@
             "columnName": "walletAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "sourceAmount",
             "columnName": "sourceAmount",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "destAmount",
             "columnName": "destAmount",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "expectedRate",
             "columnName": "expectedRate",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "slippageRate",
             "columnName": "slippageRate",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "gasPrice",
             "columnName": "gasPrice",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "gasLimit",
             "columnName": "gasLimit",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "marketRate",
             "columnName": "marketRate",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "minAcceptedRatePercent",
             "columnName": "minAcceptedRatePercent",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.isHide",
             "columnName": "source_isHide",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.timestamp",
             "columnName": "source_timestamp",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.tokenSymbol",
             "columnName": "source_tokenSymbol",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.tokenName",
             "columnName": "source_tokenName",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.tokenAddress",
             "columnName": "source_tokenAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.tokenDecimal",
             "columnName": "source_tokenDecimal",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.rateEthNow",
             "columnName": "source_rateEthNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.changeEth24h",
             "columnName": "source_changeEth24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.rateUsdNow",
             "columnName": "source_rateUsdNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.changeUsd24h",
             "columnName": "source_changeUsd24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.cgId",
             "columnName": "source_cgId",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.gasApprove",
             "columnName": "source_gasApprove",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.gasLimit",
             "columnName": "source_gasLimit",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.listingTime",
             "columnName": "source_listingTime",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.priority",
             "columnName": "source_priority",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.spLimitOrder",
             "columnName": "source_spLimitOrder",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.wallets",
             "columnName": "source_wallets",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.fav",
             "columnName": "source_fav",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.isOther",
             "columnName": "source_isOther",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.limitOrderBalance",
             "columnName": "source_limitOrderBalance",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.isQuote",
             "columnName": "source_isQuote",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.isHide",
             "columnName": "dest_isHide",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.timestamp",
             "columnName": "dest_timestamp",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.tokenSymbol",
             "columnName": "dest_tokenSymbol",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.tokenName",
             "columnName": "dest_tokenName",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.tokenAddress",
             "columnName": "dest_tokenAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.tokenDecimal",
             "columnName": "dest_tokenDecimal",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.rateEthNow",
             "columnName": "dest_rateEthNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.changeEth24h",
             "columnName": "dest_changeEth24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.rateUsdNow",
             "columnName": "dest_rateUsdNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.changeUsd24h",
             "columnName": "dest_changeUsd24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.cgId",
             "columnName": "dest_cgId",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.gasApprove",
             "columnName": "dest_gasApprove",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.gasLimit",
             "columnName": "dest_gasLimit",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.listingTime",
             "columnName": "dest_listingTime",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.priority",
             "columnName": "dest_priority",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.spLimitOrder",
             "columnName": "dest_spLimitOrder",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.wallets",
             "columnName": "dest_wallets",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.fav",
             "columnName": "dest_fav",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.isOther",
             "columnName": "dest_isOther",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.limitOrderBalance",
             "columnName": "dest_limitOrderBalance",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.isQuote",
             "columnName": "dest_isQuote",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "gas.fast",
             "columnName": "gas_fast",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "gas.standard",
             "columnName": "gas_standard",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "gas.low",
             "columnName": "gas_low",
             "affinity": "TEXT",
             "notNull": true
-          }
+  
         ],
         "primaryKey": {
           "columnNames": [
             "walletAddress"
           ],
           "autoGenerate": false
-        },
+,
         "indices": [],
         "foreignKeys": []
       },
@@ -621,326 +621,326 @@
             "columnName": "walletAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "sourceAmount",
             "columnName": "sourceAmount",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "gasPrice",
             "columnName": "gasPrice",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "gasLimit",
             "columnName": "gasLimit",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.isHide",
             "columnName": "token_isHide",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.timestamp",
             "columnName": "token_timestamp",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.tokenSymbol",
             "columnName": "token_tokenSymbol",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.tokenName",
             "columnName": "token_tokenName",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.tokenAddress",
             "columnName": "token_tokenAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.tokenDecimal",
             "columnName": "token_tokenDecimal",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.rateEthNow",
             "columnName": "token_rateEthNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.changeEth24h",
             "columnName": "token_changeEth24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.rateUsdNow",
             "columnName": "token_rateUsdNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.changeUsd24h",
             "columnName": "token_changeUsd24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.cgId",
             "columnName": "token_cgId",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.gasApprove",
             "columnName": "token_gasApprove",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.gasLimit",
             "columnName": "token_gasLimit",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.listingTime",
             "columnName": "token_listingTime",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.priority",
             "columnName": "token_priority",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.spLimitOrder",
             "columnName": "token_spLimitOrder",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.wallets",
             "columnName": "token_wallets",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.fav",
             "columnName": "token_fav",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.isOther",
             "columnName": "token_isOther",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.limitOrderBalance",
             "columnName": "token_limitOrderBalance",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.isQuote",
             "columnName": "token_isQuote",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "gas.fast",
             "columnName": "fast",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "gas.standard",
             "columnName": "standard",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "gas.low",
             "columnName": "low",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "contact.walletAddress",
             "columnName": "contact_walletAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "contact.address",
             "columnName": "contact_address",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "contact.name",
             "columnName": "contact_name",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "contact.updatedAt",
             "columnName": "contact_updatedAt",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.isHide",
             "columnName": "eth_isHide",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.timestamp",
             "columnName": "eth_timestamp",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.tokenSymbol",
             "columnName": "eth_tokenSymbol",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.tokenName",
             "columnName": "eth_tokenName",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.tokenAddress",
             "columnName": "eth_tokenAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.tokenDecimal",
             "columnName": "eth_tokenDecimal",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.rateEthNow",
             "columnName": "eth_rateEthNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.changeEth24h",
             "columnName": "eth_changeEth24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.rateUsdNow",
             "columnName": "eth_rateUsdNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.changeUsd24h",
             "columnName": "eth_changeUsd24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.cgId",
             "columnName": "eth_cgId",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.gasApprove",
             "columnName": "eth_gasApprove",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.gasLimit",
             "columnName": "eth_gasLimit",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.listingTime",
             "columnName": "eth_listingTime",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.priority",
             "columnName": "eth_priority",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.spLimitOrder",
             "columnName": "eth_spLimitOrder",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.wallets",
             "columnName": "eth_wallets",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.fav",
             "columnName": "eth_fav",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.isOther",
             "columnName": "eth_isOther",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.limitOrderBalance",
             "columnName": "eth_limitOrderBalance",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.isQuote",
             "columnName": "eth_isQuote",
             "affinity": "INTEGER",
             "notNull": true
-          }
+  
         ],
         "primaryKey": {
           "columnNames": [
             "walletAddress"
           ],
           "autoGenerate": false
-        },
+,
         "indices": [],
         "foreignKeys": []
       },
@@ -953,19 +953,19 @@
             "columnName": "walletAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSymbol",
             "columnName": "tokenSymbol",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "currentBalance",
             "columnName": "currentBalance",
             "affinity": "TEXT",
             "notNull": true
-          }
+  
         ],
         "primaryKey": {
           "columnNames": [
@@ -973,7 +973,7 @@
             "tokenSymbol"
           ],
           "autoGenerate": false
-        },
+,
         "indices": [],
         "foreignKeys": [
           {
@@ -986,7 +986,7 @@
             "referencedColumns": [
               "address"
             ]
-          },
+  ,
           {
             "table": "tokens",
             "onDelete": "NO ACTION",
@@ -997,7 +997,7 @@
             "referencedColumns": [
               "tokenSymbol"
             ]
-          }
+  
         ]
       },
       {
@@ -1009,25 +1009,25 @@
             "columnName": "source",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "dest",
             "columnName": "dest",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "rate",
             "columnName": "rate",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "minRate",
             "columnName": "minRate",
             "affinity": "TEXT",
             "notNull": true
-          }
+  
         ],
         "primaryKey": {
           "columnNames": [
@@ -1035,7 +1035,7 @@
             "dest"
           ],
           "autoGenerate": false
-        },
+,
         "indices": [],
         "foreignKeys": []
       },
@@ -1048,25 +1048,25 @@
             "columnName": "walletAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "address",
             "columnName": "address",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "name",
             "columnName": "name",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "updatedAt",
             "columnName": "updatedAt",
             "affinity": "INTEGER",
             "notNull": true
-          }
+  
         ],
         "primaryKey": {
           "columnNames": [
@@ -1074,7 +1074,7 @@
             "address"
           ],
           "autoGenerate": false
-        },
+,
         "indices": [],
         "foreignKeys": []
       },
@@ -1087,182 +1087,182 @@
             "columnName": "blockHash",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "blockNumber",
             "columnName": "blockNumber",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "confirmations",
             "columnName": "confirmations",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "contractAddress",
             "columnName": "contractAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "cumulativeGasUsed",
             "columnName": "cumulativeGasUsed",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "from",
             "columnName": "from",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "gas",
             "columnName": "gas",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "gasPrice",
             "columnName": "gasPrice",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "gasUsed",
             "columnName": "gasUsed",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "hash",
             "columnName": "hash",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "input",
             "columnName": "input",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "isError",
             "columnName": "isError",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "nonce",
             "columnName": "nonce",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "timeStamp",
             "columnName": "timeStamp",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "to",
             "columnName": "to",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "transactionIndex",
             "columnName": "transactionIndex",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "txreceiptStatus",
             "columnName": "txreceiptStatus",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "value",
             "columnName": "value",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenName",
             "columnName": "tokenName",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSymbol",
             "columnName": "tokenSymbol",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDecimal",
             "columnName": "tokenDecimal",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "type",
             "columnName": "type",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "txType",
             "columnName": "txType",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource",
             "columnName": "tokenSource",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "sourceAmount",
             "columnName": "sourceAmount",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest",
             "columnName": "tokenDest",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "destAmount",
             "columnName": "destAmount",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "transactionStatus",
             "columnName": "transactionStatus",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "walletAddress",
             "columnName": "walletAddress",
             "affinity": "TEXT",
             "notNull": true
-          }
+  
         ],
         "primaryKey": {
           "columnNames": [
             "hash"
           ],
           "autoGenerate": false
-        },
+,
         "indices": [
           {
             "name": "index_transactions_hash_transactionStatus_walletAddress",
@@ -1273,7 +1273,7 @@
               "walletAddress"
             ],
             "createSql": "CREATE  INDEX `index_transactions_hash_transactionStatus_walletAddress` ON `${TABLE_NAME}` (`hash`, `transactionStatus`, `walletAddress`)"
-          }
+  
         ],
         "foreignKeys": []
       },
@@ -1286,92 +1286,92 @@
             "columnName": "id",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "userAddr",
             "columnName": "userAddr",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "src",
             "columnName": "src",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "dst",
             "columnName": "dst",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "srcAmount",
             "columnName": "srcAmount",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "minRate",
             "columnName": "minRate",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "nonce",
             "columnName": "nonce",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "fee",
             "columnName": "fee",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "receive",
             "columnName": "receive",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "status",
             "columnName": "status",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "msg",
             "columnName": "msg",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "txHash",
             "columnName": "txHash",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "createdAt",
             "columnName": "createdAt",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "updatedAt",
             "columnName": "updatedAt",
             "affinity": "INTEGER",
             "notNull": true
-          }
+  
         ],
         "primaryKey": {
           "columnNames": [
             "id"
           ],
           "autoGenerate": false
-        },
+,
         "indices": [],
         "foreignKeys": []
       },
@@ -1384,254 +1384,254 @@
             "columnName": "avatarUrl",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "contactId",
             "columnName": "contactId",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "contactType",
             "columnName": "contactType",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycStatus",
             "columnName": "kycStatus",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycStep",
             "columnName": "kycStep",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "name",
             "columnName": "name",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "uid",
             "columnName": "uid",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "blockReason",
             "columnName": "blockReason",
             "affinity": "TEXT",
             "notNull": false
-          },
+  ,
           {
             "fieldPath": "kycInfo.id",
             "columnName": "kyc_id",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.firstName",
             "columnName": "kyc_firstName",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.lastName",
             "columnName": "kyc_lastName",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.nationality",
             "columnName": "kyc_nationality",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.country",
             "columnName": "kyc_country",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.rejectReason",
             "columnName": "kyc_rejectReason",
             "affinity": "TEXT",
             "notNull": false
-          },
+  ,
           {
             "fieldPath": "kycInfo.gender",
             "columnName": "kyc_gender",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.dob",
             "columnName": "kyc_dob",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.profileCompleted",
             "columnName": "kyc_profileCompleted",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.documentId",
             "columnName": "kyc_documentId",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.documentType",
             "columnName": "kyc_documentType",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.duplicateId",
             "columnName": "kyc_duplicateId",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.residentialAddress",
             "columnName": "kyc_residentialAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.city",
             "columnName": "kyc_city",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.zipCode",
             "columnName": "kyc_zipCode",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.documentProofAddress",
             "columnName": "kyc_documentProofAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.sourceFund",
             "columnName": "kyc_sourceFund",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.occupationCode",
             "columnName": "kyc_occupationCode",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.industryCode",
             "columnName": "kyc_industryCode",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.taxResidencyCountry",
             "columnName": "kyc_taxResidencyCountry",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.haveTaxIdentification",
             "columnName": "kyc_haveTaxIdentification",
             "affinity": "INTEGER",
             "notNull": false
-          },
+  ,
           {
             "fieldPath": "kycInfo.taxIdentificationNumber",
             "columnName": "kyc_taxIdentificationNumber",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.documentIssueDate",
             "columnName": "kyc_documentIssueDate",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.documentExpiryDate",
             "columnName": "kyc_documentExpiryDate",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.duplicateType",
             "columnName": "kyc_duplicateType",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.internalApproval",
             "columnName": "kyc_internalApproval",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.middleName",
             "columnName": "kyc_middleName",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.customReason",
             "columnName": "kyc_customReason",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.adminNote",
             "columnName": "kyc_adminNote",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.nativeFullName",
             "columnName": "kyc_nativeFullName",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.blockReason",
             "columnName": "kyc_blockReason",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.issueDateNonApplicable",
             "columnName": "kyc_issueDateNonApplicable",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "kycInfo.expiryDateNonApplicable",
             "columnName": "kyc_expiryDateNonApplicable",
             "affinity": "INTEGER",
             "notNull": true
-          }
+  
         ],
         "primaryKey": {
           "columnNames": [
             "uid"
           ],
           "autoGenerate": false
-        },
+,
         "indices": [],
         "foreignKeys": []
       },
@@ -1644,596 +1644,596 @@
             "columnName": "userAddr",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "srcAmount",
             "columnName": "srcAmount",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "marketRate",
             "columnName": "marketRate",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "expectedRate",
             "columnName": "expectedRate",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "minRate",
             "columnName": "minRate",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "destAddr",
             "columnName": "destAddr",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "nonce",
             "columnName": "nonce",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "fee",
             "columnName": "fee",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "status",
             "columnName": "status",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "txHash",
             "columnName": "txHash",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "createdAt",
             "columnName": "createdAt",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "updatedAt",
             "columnName": "updatedAt",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "gasLimit",
             "columnName": "gasLimit",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "gasPrice",
             "columnName": "gasPrice",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.isHide",
             "columnName": "source_isHide",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.timestamp",
             "columnName": "source_timestamp",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.tokenSymbol",
             "columnName": "source_tokenSymbol",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.tokenName",
             "columnName": "source_tokenName",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.tokenAddress",
             "columnName": "source_tokenAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.tokenDecimal",
             "columnName": "source_tokenDecimal",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.rateEthNow",
             "columnName": "source_rateEthNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.changeEth24h",
             "columnName": "source_changeEth24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.rateUsdNow",
             "columnName": "source_rateUsdNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.changeUsd24h",
             "columnName": "source_changeUsd24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.cgId",
             "columnName": "source_cgId",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.gasApprove",
             "columnName": "source_gasApprove",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.gasLimit",
             "columnName": "source_gasLimit",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.listingTime",
             "columnName": "source_listingTime",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.priority",
             "columnName": "source_priority",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.spLimitOrder",
             "columnName": "source_spLimitOrder",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.wallets",
             "columnName": "source_wallets",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.fav",
             "columnName": "source_fav",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.isOther",
             "columnName": "source_isOther",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.limitOrderBalance",
             "columnName": "source_limitOrderBalance",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenSource.isQuote",
             "columnName": "source_isQuote",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.isHide",
             "columnName": "dest_isHide",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.timestamp",
             "columnName": "dest_timestamp",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.tokenSymbol",
             "columnName": "dest_tokenSymbol",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.tokenName",
             "columnName": "dest_tokenName",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.tokenAddress",
             "columnName": "dest_tokenAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.tokenDecimal",
             "columnName": "dest_tokenDecimal",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.rateEthNow",
             "columnName": "dest_rateEthNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.changeEth24h",
             "columnName": "dest_changeEth24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.rateUsdNow",
             "columnName": "dest_rateUsdNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.changeUsd24h",
             "columnName": "dest_changeUsd24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.cgId",
             "columnName": "dest_cgId",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.gasApprove",
             "columnName": "dest_gasApprove",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.gasLimit",
             "columnName": "dest_gasLimit",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.listingTime",
             "columnName": "dest_listingTime",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.priority",
             "columnName": "dest_priority",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.spLimitOrder",
             "columnName": "dest_spLimitOrder",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.wallets",
             "columnName": "dest_wallets",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.fav",
             "columnName": "dest_fav",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.isOther",
             "columnName": "dest_isOther",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.limitOrderBalance",
             "columnName": "dest_limitOrderBalance",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokenDest.isQuote",
             "columnName": "dest_isQuote",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.isHide",
             "columnName": "eth_isHide",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.timestamp",
             "columnName": "eth_timestamp",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.tokenSymbol",
             "columnName": "eth_tokenSymbol",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.tokenName",
             "columnName": "eth_tokenName",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.tokenAddress",
             "columnName": "eth_tokenAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.tokenDecimal",
             "columnName": "eth_tokenDecimal",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.rateEthNow",
             "columnName": "eth_rateEthNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.changeEth24h",
             "columnName": "eth_changeEth24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.rateUsdNow",
             "columnName": "eth_rateUsdNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.changeUsd24h",
             "columnName": "eth_changeUsd24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.cgId",
             "columnName": "eth_cgId",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.gasApprove",
             "columnName": "eth_gasApprove",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.gasLimit",
             "columnName": "eth_gasLimit",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.listingTime",
             "columnName": "eth_listingTime",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.priority",
             "columnName": "eth_priority",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.spLimitOrder",
             "columnName": "eth_spLimitOrder",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.wallets",
             "columnName": "eth_wallets",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.fav",
             "columnName": "eth_fav",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.isOther",
             "columnName": "eth_isOther",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.limitOrderBalance",
             "columnName": "eth_limitOrderBalance",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "ethToken.isQuote",
             "columnName": "eth_isQuote",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.isHide",
             "columnName": "weth_isHide",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.timestamp",
             "columnName": "weth_timestamp",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.tokenSymbol",
             "columnName": "weth_tokenSymbol",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.tokenName",
             "columnName": "weth_tokenName",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.tokenAddress",
             "columnName": "weth_tokenAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.tokenDecimal",
             "columnName": "weth_tokenDecimal",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.rateEthNow",
             "columnName": "weth_rateEthNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.changeEth24h",
             "columnName": "weth_changeEth24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.rateUsdNow",
             "columnName": "weth_rateUsdNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.changeUsd24h",
             "columnName": "weth_changeUsd24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.cgId",
             "columnName": "weth_cgId",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.gasApprove",
             "columnName": "weth_gasApprove",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.gasLimit",
             "columnName": "weth_gasLimit",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.listingTime",
             "columnName": "weth_listingTime",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.priority",
             "columnName": "weth_priority",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.spLimitOrder",
             "columnName": "weth_spLimitOrder",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.wallets",
             "columnName": "weth_wallets",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.fav",
             "columnName": "weth_fav",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.isOther",
             "columnName": "weth_isOther",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.limitOrderBalance",
             "columnName": "weth_limitOrderBalance",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "wethToken.isQuote",
             "columnName": "weth_isQuote",
             "affinity": "INTEGER",
             "notNull": true
-          }
+  
         ],
         "primaryKey": {
           "columnNames": [
             "userAddr"
           ],
           "autoGenerate": false
-        },
+,
         "indices": [],
         "foreignKeys": []
       },
@@ -2246,38 +2246,38 @@
             "columnName": "walletAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "oldest",
             "columnName": "oldest",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "unSelectedPairs",
             "columnName": "unSelectedPairs",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "unSelectedAddresses",
             "columnName": "unSelectedAddresses",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "unSelectedStatus",
             "columnName": "unSelectedStatus",
             "affinity": "TEXT",
             "notNull": true
-          }
+  
         ],
         "primaryKey": {
           "columnNames": [
             "walletAddress"
           ],
           "autoGenerate": false
-        },
+,
         "indices": [],
         "foreignKeys": []
       },
@@ -2290,272 +2290,272 @@
             "columnName": "rewardId",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "id",
             "columnName": "id",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "base",
             "columnName": "base",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "symbol",
             "columnName": "symbol",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "alertType",
             "columnName": "alertType",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "alertPrice",
             "columnName": "alertPrice",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "createdAtPrice",
             "columnName": "createdAtPrice",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "percentChange",
             "columnName": "percentChange",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "isAbove",
             "columnName": "isAbove",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "status",
             "columnName": "status",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "createdAt",
             "columnName": "createdAt",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "updatedAt",
             "columnName": "updatedAt",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "triggeredAt",
             "columnName": "triggeredAt",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "filledAt",
             "columnName": "filledAt",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "userId",
             "columnName": "userId",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "rank",
             "columnName": "rank",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "userEmail",
             "columnName": "userEmail",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "telegramAccount",
             "columnName": "telegramAccount",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "reward",
             "columnName": "reward",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "message",
             "columnName": "message",
             "affinity": "TEXT",
             "notNull": false
-          },
+  ,
           {
             "fieldPath": "state",
             "columnName": "state",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "walletAddress",
             "columnName": "walletAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "userName",
             "columnName": "userName",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.isHide",
             "columnName": "isHide",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.timestamp",
             "columnName": "timestamp",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.tokenSymbol",
             "columnName": "tokenSymbol",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.tokenName",
             "columnName": "tokenName",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.tokenAddress",
             "columnName": "tokenAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.tokenDecimal",
             "columnName": "tokenDecimal",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.rateEthNow",
             "columnName": "rateEthNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.changeEth24h",
             "columnName": "changeEth24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.rateUsdNow",
             "columnName": "rateUsdNow",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.changeUsd24h",
             "columnName": "changeUsd24h",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.cgId",
             "columnName": "cgId",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.gasApprove",
             "columnName": "gasApprove",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.gasLimit",
             "columnName": "gasLimit",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.listingTime",
             "columnName": "listingTime",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.priority",
             "columnName": "priority",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.spLimitOrder",
             "columnName": "spLimitOrder",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.wallets",
             "columnName": "wallets",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.fav",
             "columnName": "fav",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.isOther",
             "columnName": "isOther",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.limitOrderBalance",
             "columnName": "limitOrderBalance",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "token.isQuote",
             "columnName": "isQuote",
             "affinity": "INTEGER",
             "notNull": true
-          }
+  
         ],
         "primaryKey": {
           "columnNames": [
             "id"
           ],
           "autoGenerate": false
-        },
+,
         "indices": [],
         "foreignKeys": []
       },
@@ -2568,32 +2568,32 @@
             "columnName": "id",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "digest",
             "columnName": "digest",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "remainNum",
             "columnName": "remainNum",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "time",
             "columnName": "time",
             "affinity": "INTEGER",
             "notNull": true
-          }
+  
         ],
         "primaryKey": {
           "columnNames": [
             "id"
           ],
           "autoGenerate": true
-        },
+,
         "indices": [],
         "foreignKeys": []
       },
@@ -2606,26 +2606,26 @@
             "columnName": "success",
             "affinity": "INTEGER",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "data",
             "columnName": "data",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "walletAddress",
             "columnName": "walletAddress",
             "affinity": "TEXT",
             "notNull": true
-          }
+  
         ],
         "primaryKey": {
           "columnNames": [
             "walletAddress"
           ],
           "autoGenerate": false
-        },
+,
         "indices": [],
         "foreignKeys": []
       },
@@ -2638,38 +2638,38 @@
             "columnName": "walletAddress",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "from",
             "columnName": "from",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "to",
             "columnName": "to",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "types",
             "columnName": "types",
             "affinity": "TEXT",
             "notNull": true
-          },
+  ,
           {
             "fieldPath": "tokens",
             "columnName": "tokens",
             "affinity": "TEXT",
             "notNull": true
-          }
+  
         ],
         "primaryKey": {
           "columnNames": [
             "walletAddress"
           ],
           "autoGenerate": false
-        },
+,
         "indices": [],
         "foreignKeys": []
       }

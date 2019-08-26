@@ -49,9 +49,9 @@ class BalanceDataRepository @Inject constructor(
                     it.copy(tokenSource = tokenSource, tokenDest = tokenDest, ethToken = tokenEth)
                 if (updatedToken != it) {
                     swapDao.updateSwap(updatedToken)
-                }
+        
 
-            }
+    
 
             val send = sendDao.findSendByAddress(wallet.address)
             send?.let {
@@ -63,8 +63,8 @@ class BalanceDataRepository @Inject constructor(
                 val updatedSend = it.copy(tokenSource = tokenSource, ethToken = ethToken)
                 if (updatedSend != it) {
                     sendDao.updateSend(updatedSend)
-                }
-            }
+        
+    
 
             val limitOrder = localLimitOrderDao.findLocalLimitOrderByAddress(wallet.address)
             limitOrder?.let {
@@ -83,9 +83,9 @@ class BalanceDataRepository @Inject constructor(
                             ethToken = ethToken,
                             wethToken = wethToken
                         )
-                    }
+            
                     else -> it
-                }
+        
 
                 val orderWithToken = order.copy(
                     tokenSource = source,
@@ -94,10 +94,10 @@ class BalanceDataRepository @Inject constructor(
 
                 if (orderWithToken != it) {
                     localLimitOrderDao.insertOrder(orderWithToken)
-                }
+        
 
-            }
-        }
+    
+
     }
 
     private fun updateBalance(token: Token): Token {
@@ -113,11 +113,11 @@ class BalanceDataRepository @Inject constructor(
                 token.updateBalance(
                     ethBalance.plus(wethBalance)
                 )
-            }
+    
             else -> {
                 tokenDao.getTokenBySymbol(token.tokenSymbol) ?: token
-            }
-        }
+    
+
     }
 
 
@@ -125,7 +125,7 @@ class BalanceDataRepository @Inject constructor(
         return Completable.fromCallable {
             val updatedToken = tokenClient.updateBalance(token)
             tokenDao.updateToken(updatedToken)
-        }
+
     }
 
     override fun getChange24h(): Flowable<List<Token>> {
@@ -143,50 +143,50 @@ class BalanceDataRepository @Inject constructor(
                         .map { internalCurrency ->
                             val tokenBySymbol = remoteTokenList.find {
                                 it.tokenSymbol == internalCurrency.symbol
-                            }
+                    
                             tokenBySymbol?.with(internalCurrency) ?: Token(internalCurrency)
-                        }
+                
                         .toList()
                         .map { remoteTokens ->
                             val localTokenList = tokenDao.all.first(listOf()).blockingGet()
                             remoteTokens.map { remoteToken ->
                                 val localToken = localTokenList.find {
                                     it.tokenAddress == remoteToken.tokenAddress
-                                }
+                        
 
                                 if (localToken != null) {
                                     remoteToken.copy(
                                         wallets = localToken.wallets,
                                         fav = localToken.fav
                                     )
-                                } else {
+                         else {
                                     remoteToken
-                                }
+                        
 
-                            }
-                        }
-                }
+                    
+                
+        
 
                 .doAfterSuccess {
                     tokenDao.insertTokens(it)
-                }
-        } else {
+        
+ else {
             tokenDao.all.first(listOf())
-        }
+
     }
 
     private fun fetchChange24h(): Single<List<Token>> {
         val singleEthSource = api.tokenPrice(ETH).map {
             it.data.map { data -> data.symbol to data.price }.toMap()
-        }
+
 
         val singleUsdSource = api.tokenPrice(USD).map {
             it.data.map { data -> data.symbol to data.price }.toMap()
-        }
+
 
         val singleChange24hSource = api.getChange24h().map { response ->
             response.entries.associate { it.key to tokenMapper.transform(it.value) }
-        }
+
 
         return Singles.zip(
             singleEthSource,
@@ -194,7 +194,7 @@ class BalanceDataRepository @Inject constructor(
             singleChange24hSource
         ) { eth, usd, change24h ->
             updateRate(eth, usd, change24h)
-        }
+
             .map { it.values.toList() }
     }
 
@@ -206,12 +206,12 @@ class BalanceDataRepository @Inject constructor(
 
         val localTokens = tokenDao.allTokens.map {
             it.updateSelectedWallet(wallets).copy(isOther = true)
-        }
+
 
         val listedTokens = remoteTokens.map { remoteToken ->
             val localToken = localTokens.find {
                 it.tokenAddress == remoteToken.tokenAddress
-            }
+    
 
             val updatedRateToken = localToken?.copy(
                 rateUsdNow = remoteToken.rateUsdNow,
@@ -225,14 +225,14 @@ class BalanceDataRepository @Inject constructor(
 
             updatedRateToken
 //            tokenClient.updateBalance(updatedRateToken)
-        }
+
 
         val listTokenSymbols = listedTokens.map { it.tokenSymbol }
 
         val otherTokens = localTokens.filterNot { listTokenSymbols.contains(it.tokenSymbol) }
 //            .map {
 //            tokenClient.updateBalance(it)
-//        }
+//
 
         val currentWallets = walletDao.all
         val localSelected = currentWallets.find { it.isSelected }
@@ -241,30 +241,30 @@ class BalanceDataRepository @Inject constructor(
         return if (selectedWallet?.address == localSelected?.address) {
             val currentFavs = tokenDao.allTokens.map {
                 it.tokenSymbol to it.fav
-            }.toMap()
+    .toMap()
             tokenDao.updateTokens(listedTokens.map {
                 it.copy(fav = currentFavs[it.tokenSymbol] ?: false)
-            })
+    )
             tokenDao.updateTokens(otherTokens.map {
                 it.copy(fav = currentFavs[it.tokenSymbol] ?: false)
-            })
+    )
             listedTokens
-        } else {
+ else {
             updateBalance(remoteTokens, currentWallets)
-        }
+
     }
 
     override fun getChange24hPolling(param: GetBalancePollingUseCase.Param): Flowable<List<Token>> {
         return fetchChange24h()
             .map { remoteTokens ->
                 updateBalance(remoteTokens, param.wallets)
-            }
+    
             .repeatWhen {
                 it.delay(15, TimeUnit.SECONDS)
-            }
+    
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
-            }
+    
     }
 
 
@@ -280,7 +280,7 @@ class BalanceDataRepository @Inject constructor(
                 rateUsdNow = usd[token.value.tokenSymbol] ?: token.value.rateUsdNow
             )
 
-        }.toMap()
+.toMap()
     }
 
     companion object {

@@ -11,10 +11,10 @@ open class Event<out T>(private val content: T) {
     fun getContentIfNotHandled(): T? {
         return if (hasBeenHandled) {
             null
-        } else {
+ else {
             hasBeenHandled = true
             content
-        }
+
     }
 
     /**

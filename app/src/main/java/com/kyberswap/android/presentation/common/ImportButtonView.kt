@@ -39,7 +39,7 @@ class ImportButtonView : LinearLayout {
 
             text = a.getString(R.styleable.ImportButtonView_text)
             a.recycle()
-        }
+
 
         val inflater = LayoutInflater.from(context)
         val binding =
@@ -52,10 +52,10 @@ class ImportButtonView : LinearLayout {
 
         drawable?.apply {
             binding.icon.background = this
-        }
+
 
         text?.apply {
             binding.text.text = this
-        }
+
     }
 }

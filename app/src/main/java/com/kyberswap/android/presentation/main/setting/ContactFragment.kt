@@ -79,24 +79,24 @@ class ContactFragment : BaseFragment() {
                     is GetWalletState.Success -> {
                         this.wallet = state.wallet
                         viewModel.getContact()
-                    }
+            
                     is GetWalletState.ShowError -> {
 
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         binding.imgAddContact.setOnClickListener {
             navigator.navigateToAddContactScreen(
                 (activity as MainActivity).getCurrentFragment(),
                 wallet
             )
-        }
+
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-        }
+
 
 
         binding.rvContact.layoutManager = LinearLayoutManager(
@@ -109,17 +109,17 @@ class ContactFragment : BaseFragment() {
             ContactAdapter(appExecutors, handler, { contact ->
                 if (fromSetting == true) {
                     navigator.navigateToAddContactScreen(currentFragment, contact = contact)
-                } else {
+         else {
                     wallet?.let {
                         viewModel.saveSendContact(it.address, contact)
-                    }
-                }
-            },
+            
+        
+    ,
                 { contact ->
                     wallet?.let {
                         viewModel.saveSendContact(it.address, contact)
-                    }
-                },
+            
+        ,
                 { contact ->
                     navigator.navigateToAddContactScreen(
                         currentFragment,
@@ -127,7 +127,7 @@ class ContactFragment : BaseFragment() {
                         contact.address,
                         contact
                     )
-                },
+        ,
                 { contact ->
 
                     dialogHelper.showConfirmation(
@@ -135,9 +135,9 @@ class ContactFragment : BaseFragment() {
                         getString(R.string.contact_confirm_delete),
                         {
                             viewModel.deleteContact(contact)
-                        })
+                )
 
-                })
+        )
         binding.rvContact.adapter = contactAdapter
 
         viewModel.saveContactCallback.observe(viewLifecycleOwner, Observer {
@@ -148,48 +148,48 @@ class ContactFragment : BaseFragment() {
                         navigator.navigateToSendScreen(
                             currentFragment, wallet
                         )
-                    }
+            
                     is SaveContactState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.getContactCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetContactState.Success -> {
                         contactAdapter.submitList(state.contacts)
-                    }
+            
                     is GetContactState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.deleteContactCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is DeleteContactState.Success -> {
                         showAlertWithoutIcon(message = getString(R.string.delete_contact_success))
-                    }
+            
                     is DeleteContactState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
     }
 
@@ -204,8 +204,8 @@ class ContactFragment : BaseFragment() {
             ContactFragment().apply {
                 arguments = Bundle().apply {
                     putBoolean(FROM_SETTING_PARAM, fromSetting)
-                }
-            }
+        
+    
     }
 
 

@@ -8,8 +8,8 @@ fun Map<String, List<String>>.display(): String {
             builder.append(s)
             if (index < value.size - 1) {
                 builder.append(", ")
-            }
-        }
+    
+
 
         builder.append("\n")
     }

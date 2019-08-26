@@ -59,8 +59,8 @@ class ImportPrivateKeyFragment : BaseFragment() {
             onTextChanged { s, _, _, _ ->
                 val count = s.toString().trim().split(" ").size
                 binding.btnImportWallet.isEnabled = count > 0
-            }
-        }
+    
+
 
         binding.btnImportWallet.setOnClickListener {
             viewModel.importFromPrivateKey(
@@ -68,7 +68,7 @@ class ImportPrivateKeyFragment : BaseFragment() {
                 if (binding.edtWalletName.text.isNotEmpty()) binding.edtWalletName.text.toString()
                 else getString(R.string.default_wallet_name)
             )
-        }
+
 
         viewModel.importWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.let { state ->
@@ -78,47 +78,47 @@ class ImportPrivateKeyFragment : BaseFragment() {
                         showAlert(getString(R.string.import_wallet_success)) {
                             if (fromMain) {
                                 activity?.onBackPressed()
-                            } else {
+                     else {
                                 navigator.navigateToHome()
-                            }
-                        }
-                    }
+                    
+                
+            
                     is ImportWalletState.ShowError -> {
                         val message = when (state.message) {
                             Messages.WALLET_EXISTS -> {
                                 getString(R.string.wallet_exist)
-                            }
+                    
 
                             Messages.PRIVATE_KEY_INVALID -> {
                                 getString(R.string.fail_import_private_key)
-                            }
+                    
 
                             Messages.MNEMONIC_BAD_WORD -> {
                                 getString(R.string.fail_import_mnemonic)
-                            }
+                    
 
                             Messages.MAC_UNMATCH -> {
                                 getString(R.string.fail_import_json)
-                            }
+                    
                             else -> {
                                 state.message ?: getString(R.string.something_wrong)
-                            }
+                    
 
-                        }
+                
 
                         showAlertWithoutIcon(
                             message = message
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         binding.imgQR.setOnClickListener {
             IntentIntegrator.forSupportFragment(this)
                 .setBeepEnabled(false)
                 .initiateScan()
-        }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -126,12 +126,12 @@ class ImportPrivateKeyFragment : BaseFragment() {
         if (result != null) {
             if (result.contents == null) {
                 showAlertWithoutIcon(message = getString(R.string.message_cancelled))
-            } else {
+     else {
                 binding.edtPrivateKey.setText(result.contents.toString())
-            }
-        } else {
+    
+ else {
             super.onActivityResult(requestCode, resultCode, data)
-        }
+
     }
 
     companion object {
@@ -140,7 +140,7 @@ class ImportPrivateKeyFragment : BaseFragment() {
             ImportPrivateKeyFragment().apply {
                 arguments = Bundle().apply {
                     putBoolean(FROM_MAIN_PARAM, fromMain)
-                }
-            }
+        
+    
     }
 }

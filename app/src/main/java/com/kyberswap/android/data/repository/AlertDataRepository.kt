@@ -25,19 +25,19 @@ class AlertDataRepository @Inject constructor(
     override fun getCampaignResult(): Single<LeaderBoard> {
         return userApi.getCampaignResult().map {
             alertMapper.transform(it)
-        }
+
     }
 
     override fun getLeaderBoardAlert(): Single<LeaderBoard> {
         return userApi.getLeaderBoard().map {
             alertMapper.transform(it)
-        }
+
     }
 
     override fun deleteAlert(param: DeleteAlertsUseCase.Param): Single<Response<Void>> {
         return userApi.deleteAlert(param.alert.id).doAfterSuccess {
             alertDao.deleteById(param.alert.id)
-        }
+
     }
 
     override fun createOrUpdateAlert(param: CreateOrUpdateAlertUseCase.Param): Single<Alert> {
@@ -51,8 +51,8 @@ class AlertDataRepository @Inject constructor(
                 alert.isAbove
             ).map {
                 alertMapper.transform(it)
-            }
-        } else {
+    
+ else {
             userApi.createAlert(
                 alert.baseInt,
                 alert.tokenSymbol,
@@ -60,13 +60,13 @@ class AlertDataRepository @Inject constructor(
                 alert.isAbove
             ).map {
                 alertMapper.transform(it)
-            }
-        }
+    
+
             .doAfterSuccess {
                 if (it.message.isNullOrEmpty()) {
                     alertDao.updateAlert(alert)
-                }
-            }
+        
+    
     }
 
 
@@ -74,9 +74,9 @@ class AlertDataRepository @Inject constructor(
         return Flowable.fromCallable {
             val id = if (param.alert == null) {
                 Alert.LOCAL_ID
-            } else {
+     else {
                 param.alert.id
-            }
+    
 
             val currentAlert = alertDao.findAlertById(id)
             val alert = if (currentAlert == null) {
@@ -88,18 +88,18 @@ class AlertDataRepository @Inject constructor(
                     state = Alert.STATE_LOCAL
                 )
 
-            } else {
+     else {
                 val token = tokenDao.getTokenBySymbol(currentAlert.tokenSymbol) ?: Token()
                 currentAlert.copy(token = token)
-            }
+    
 
             if (currentAlert != alert) {
                 alertDao.insertAlert(alert)
-            }
+    
             alert
-        }.flatMap {
+.flatMap {
             alertDao.findAlertByIdFlowable(it.id)
-        }
+
     }
 
     override fun saveAlertToken(param: SaveAlertTokenUseCase.Param): Completable {
@@ -108,15 +108,15 @@ class AlertDataRepository @Inject constructor(
             val currentAlert = if (param.alert != null && param.alert.id > 0) {
 
                 alertDao.findAlertById(param.alert.id)
-            } else {
+     else {
                 alertDao.findLocalAlert(param.walletAddress)
-            }
+    
 
             val alert = currentAlert?.copy(
                 token = param.token
             ) ?: Alert(walletAddress = param.walletAddress, token = param.token)
             alertDao.insertAlert(alert)
-        }
+
     }
 
     override fun updateCurrentAlert(param: UpdateCurrentAlertUseCase.Param): Completable {
@@ -124,16 +124,16 @@ class AlertDataRepository @Inject constructor(
             val currentAlert = alertDao.findAlertById(param.alert.id)?.copy(token = Token())
             currentAlert?.let {
                 alertDao.updateAlert(currentAlert)
-            }
+    
 
 
-        }
+
     }
 
 
     override fun getAlert(param: GetAlertUseCase.Param): Single<Alert> {
         return Single.fromCallable {
             alertDao.findAlertById(param.alertId)
-        }
+
     }
 }

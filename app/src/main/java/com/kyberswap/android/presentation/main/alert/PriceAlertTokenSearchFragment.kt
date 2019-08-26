@@ -80,7 +80,7 @@ class PriceAlertTokenSearchFragment : BaseFragment() {
             PriceAlertTokenSearchAdapter(appExecutors) { token ->
 
                 viewModel.saveToken(wallet, token, alert)
-            }
+    
 
         binding.rvToken.adapter = tokenAdapter
         viewModel.getTokenList(wallet!!.address)
@@ -94,16 +94,16 @@ class PriceAlertTokenSearchFragment : BaseFragment() {
                         tokenList.addAll(state.tokens)
                         updateFilterListToken(currentSearchString, tokenAdapter)
 
-                    }
+            
                     is GetBalanceState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.compositeDisposable.add(
             binding.edtSearch.textChanges()
@@ -114,15 +114,15 @@ class PriceAlertTokenSearchFragment : BaseFragment() {
                 )
                 .map {
                     return@map it.trim().toString().toLowerCase()
-                }.observeOn(schedulerProvider.ui())
+        .observeOn(schedulerProvider.ui())
                 .subscribe { searchedText ->
                     currentSearchString = searchedText
                     updateFilterListToken(currentSearchString, tokenAdapter)
-                })
+        )
 
         binding.imgBack.setOnClickListener {
             activity!!.onBackPressed()
-        }
+
 
 
         viewModel.saveAlertTokenState.observe(viewLifecycleOwner, Observer {
@@ -131,16 +131,16 @@ class PriceAlertTokenSearchFragment : BaseFragment() {
                 when (state) {
                     is SaveAlertTokenBalanceState.Success -> {
                         onSelectionComplete()
-                    }
+            
                     is SaveAlertTokenBalanceState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
 
     }
@@ -155,14 +155,14 @@ class PriceAlertTokenSearchFragment : BaseFragment() {
     ) {
         if (searchedText.isNullOrEmpty()) {
             alertTokenAdapter.submitFilterList(tokenList)
-        } else {
+ else {
             alertTokenAdapter.submitFilterList(
                 getFilterTokenList(
                     currentSearchString,
                     tokenList
                 )
             )
-        }
+
     }
 
 
@@ -170,7 +170,7 @@ class PriceAlertTokenSearchFragment : BaseFragment() {
         return tokens.filter { token ->
             token.tokenSymbol.toLowerCase().contains(searchedString) or
                 token.tokenName.toLowerCase().contains(searchedString)
-        }
+
     }
 
     override fun onDestroyView() {
@@ -188,7 +188,7 @@ class PriceAlertTokenSearchFragment : BaseFragment() {
                     putParcelable(WALLET_PARAM, wallet)
                     putParcelable(ALERT_PARAM, alert)
 
-                }
-            }
+        
+    
     }
 }

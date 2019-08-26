@@ -48,12 +48,12 @@ class EditWalletViewModel @Inject constructor(
         exportKeystoreWalletUseCase.execute(
             Consumer {
                 _exportKeystoreWalletCallback.value = Event(ExportWalletState.Success(it))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _exportKeystoreWalletCallback.value =
                     Event(ExportWalletState.ShowError(it.localizedMessage))
-            },
+    ,
             ExportKeystoreWalletUseCase.Param(password, wallet)
         )
     }
@@ -63,12 +63,12 @@ class EditWalletViewModel @Inject constructor(
         deleteWalletUseCase.execute(
             Consumer {
                 _deleteWalletCallback.value = Event(DeleteWalletState.Success(it))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _deleteWalletCallback.value =
                     Event(DeleteWalletState.ShowError(it.localizedMessage))
-            },
+    ,
             DeleteWalletUseCase.Param(wallet)
         )
     }
@@ -79,13 +79,13 @@ class EditWalletViewModel @Inject constructor(
         exportPrivateKeyWalletUseCase.execute(
             Consumer {
                 _exportPrivateKeyWalletCallback.value = Event(ExportWalletState.Success(it))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _exportPrivateKeyWalletCallback.value =
                     Event(ExportWalletState.ShowError(it.localizedMessage))
 
-            },
+    ,
             ExportPrivateKeyWalletUseCase.Param(wallet)
         )
 
@@ -96,12 +96,12 @@ class EditWalletViewModel @Inject constructor(
         exportMnemonicWalletUseCase.execute(
             Consumer {
                 _exportMnemonicCallback.value = Event(ExportWalletState.Success(it))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _exportMnemonicCallback.value =
                     Event(ExportWalletState.ShowError(it.localizedMessage))
-            },
+    ,
             ExportMnemonicWalletUseCase.Param(wallet)
         )
     }
@@ -110,11 +110,11 @@ class EditWalletViewModel @Inject constructor(
         saveWalletUseCase.execute(
             Action {
                 _saveWalletCallback.value = Event(SaveWalletState.Success(""))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _saveWalletCallback.value = Event(SaveWalletState.ShowError(it.localizedMessage))
-            },
+    ,
             SaveWalletUseCase.Param(wallet)
         )
     }

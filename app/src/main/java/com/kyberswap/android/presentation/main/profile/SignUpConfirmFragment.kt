@@ -63,7 +63,7 @@ class SignUpConfirmFragment : BaseFragment() {
         if (fm != null)
             for (i in 0 until fm.backStackEntryCount) {
                 fm.popBackStack()
-            }
+    
         navigator.navigateToProfileDetail(
             (activity as MainActivity).getCurrentFragment()
         )
@@ -77,11 +77,11 @@ class SignUpConfirmFragment : BaseFragment() {
             if (!binding.cbTermCondition.isChecked) {
                 showAlert(getString(R.string.term_condition_notification))
                 return@setOnClickListener
-            }
+    
             socialInfo?.let { info ->
                 viewModel.login(info.copy(subscription = binding.cbSubscription.isChecked))
-            }
-        }
+    
+
 
 
         viewModel.loginCallback.observe(viewLifecycleOwner, Observer {
@@ -95,22 +95,22 @@ class SignUpConfirmFragment : BaseFragment() {
                                     (activity as MainActivity).getCurrentFragment(),
                                     state.socialInfo
                                 )
-                            } else {
+                     else {
                                 onLoginSuccess()
-                            }
-                        } else {
+                    
+                 else {
                             showAlert(state.login.message)
-                        }
-                    }
+                
+            
                     is LoginState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.signUpCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -118,31 +118,31 @@ class SignUpConfirmFragment : BaseFragment() {
                 when (state) {
                     is SignUpState.Success -> {
                         showAlert(state.registerStatus.message)
-                    }
+            
                     is SignUpState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-        }
+
 
         binding.tvTermAndCondition.setOnClickListener {
             navigator.navigateToTermAndCondition()
-        }
+
 
         binding.tvLogin.setOnClickListener {
             navigator.navigateToSignInScreen(
                 (activity as MainActivity).getCurrentFragment()
             )
-        }
+
 
     }
 
@@ -153,8 +153,8 @@ class SignUpConfirmFragment : BaseFragment() {
             SignUpConfirmFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(SOCIAL_PARAM, socialInfo)
-                }
-            }
+        
+    
     }
 
 

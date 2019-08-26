@@ -6,23 +6,18 @@ apply plugin: 'deploygate'
 apply plugin: "io.gitlab.arturbosch.detekt"
 apply from: '../gradle/findbugs.gradle'
 apply from: '../gradle/ktlint.gradle'
+apply from: '../../config/signing-config.gradle'
 apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 
 
 android {
     signingConfigs {
-        releseConfig {
-            storeFile file('/home/steve/KyberNetwork/Docs/Keystore/android_keystore')
-            storePassword 'android@kyberswap'
-            keyPassword 'android@kyber.network'
-            keyAlias = 'kyberswapandroid'
-        }
         debug {
             storeFile file('../debug.keystore')
             storePassword 'android'
             keyAlias = 'androiddebugkey'
             keyPassword 'android'
-        }
+
     }
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
@@ -34,7 +29,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         def versionMajor = 1
         def versionMinor = 0
-        def versionPatch = 1
+        def versionPatch = 2
         versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch * 1
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         vectorDrawables.useSupportLibrary = true
@@ -43,12 +38,12 @@ android {
         kapt {
             arguments {
                 arg("room.schemaLocation", "$projectDir/schemas".toString())
-            }
-        }
+    
+
 
         kotlinOptions {
             jvmTarget = '1.8'
-        }
+
     }
 
     defaultConfig {
@@ -72,7 +67,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
-        }
+
         release {
             debuggable false
             multiDexEnabled true
@@ -80,39 +75,15 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.releseConfig
-        }
+
     }
 
-    productFlavors {
-        //todo fix app name and app icon
-        dev {
-            applicationIdSuffix ".dev"
-            manifestPlaceholders = [
-                    onesignal_app_id               : 'cb5c709a-a471-4fe3-afbc-0406c49dc768',
-                    onesignal_google_project_number: 'REMOTE'
-            ]
-        }
-        stg {
-            applicationIdSuffix ".stg"
-            manifestPlaceholders = [
-                    onesignal_app_id               : '72a48223-d8a5-4cb5-8bbf-759b7cf4ce6b',
-                    onesignal_google_project_number: 'REMOTE'
-            ]
-        }
-        prod {
-            manifestPlaceholders = [
-                    onesignal_app_id               : 'd0b1db9e-1a77-4386-b32a-b27cac1d8bdb',
-                    onesignal_google_project_number: 'REMOTE'
-            ]
-
-        }
-    }
     applicationVariants.all { variant ->
         copy {
             from "src/${variant.flavorName}"
             into "."
             include "google-services.json"
-        }
+
     }
 
     testOptions {
@@ -123,20 +94,20 @@ android {
         lintOptions {
             xmlReport true
             abortOnError false
-        }
+
 
         compileOptions {
             sourceCompatibility 1.8
             targetCompatibility 1.8
-        }
+
 
         androidExtensions {
             experimental = true
-        }
+
 
         packagingOptions {
             exclude 'lib/x86_64/darwin/libscrypt.dylib'
-        }
+
     }
 }
 
@@ -210,19 +181,6 @@ dependencies {
 
     implementation "com.orhanobut:hawk:$rootProject.hawkVersion"
 
-//    //App Inspection Tool
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-core:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-attr:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-measurement:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-disk:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-recorder:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-phoenix:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-crash:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-shared-preferences:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-geiger-counter:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-timber:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-build-config:$rootProject.hyperionVersion"
-
     // Fonts
     implementation "io.github.inflationx:calligraphy3:$calligraphy3Version"
     implementation "io.github.inflationx:viewpump:$viewpumpVersion"
@@ -277,7 +235,6 @@ dependencies {
     implementation 'com.onesignal:OneSignal:3.11.0'
 
     implementation 'org.greenrobot:eventbus:3.1.1'
-
 
 
 }

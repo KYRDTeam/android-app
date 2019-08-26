@@ -12,6 +12,6 @@ class RateMapper @Inject constructor() {
     fun transform(entities: List<RateEntity>): List<Rate> {
         return entities.map {
             transform(it)
-        }
+
     }
 }

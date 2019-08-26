@@ -19,11 +19,11 @@ class LeaderBoardAlertAdapter(
     diffCallback = object : DiffUtil.ItemCallback<Alert>() {
         override fun areItemsTheSame(oldItem: Alert, newItem: Alert): Boolean {
             return oldItem.id == newItem.id
-        }
+
 
         override fun areContentsTheSame(oldItem: Alert, newItem: Alert): Boolean {
             return oldItem.areContentsTheSame(newItem)
-        }
+
     }
 ) {
 

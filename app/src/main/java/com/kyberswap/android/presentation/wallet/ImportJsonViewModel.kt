@@ -18,14 +18,14 @@ class ImportJsonViewModel @Inject constructor(
         importWalletFromJsonUseCase.execute(
             Consumer {
                 loadBalances(it)
-            },
+    ,
             Consumer {
                 if (it is TokenException) {
                     importWalletCallback.value = ImportWalletState.ShowError(it.message)
-                } else {
+         else {
                     importWalletCallback.value = ImportWalletState.ShowError(it.localizedMessage)
-                }
-            },
+        
+    ,
             ImportWalletFromJsonUseCase.Param(uri, password, walletName)
         )
     }

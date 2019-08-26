@@ -9,7 +9,7 @@
       "_links": {
         "self": {
           "href": "/v1/articles/features/1/1"
-        }
+
       },
       "end_datetime": "2018-06-01T00:00:00Z",
       "id": 1,
@@ -21,7 +21,7 @@
       "_links": {
         "self": {
           "href": "/v1/articles/features/2/1"
-        }
+
       },
       "end_datetime": "2018-06-12T00:00:00Z",
       "id": 2,

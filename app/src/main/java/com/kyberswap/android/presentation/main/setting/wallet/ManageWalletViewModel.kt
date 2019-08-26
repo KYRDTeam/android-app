@@ -52,12 +52,12 @@ class ManageWalletViewModel @Inject constructor(
             Consumer {
                 _getMnemonicCallback.value =
                     Event(CreateWalletState.Success(it.first, it.second))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _getMnemonicCallback.value =
                     Event(CreateWalletState.ShowError(it.localizedMessage))
-            },
+    ,
             CreateWalletUseCase.Param(walletName)
         )
     }
@@ -67,12 +67,12 @@ class ManageWalletViewModel @Inject constructor(
         deleteWalletUseCase.execute(
             Consumer {
                 _deleteWalletCallback.value = Event(DeleteWalletState.Success(it))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _deleteWalletCallback.value =
                     Event(DeleteWalletState.ShowError(it.localizedMessage))
-            },
+    ,
             DeleteWalletUseCase.Param(wallet)
         )
     }
@@ -85,7 +85,7 @@ class ManageWalletViewModel @Inject constructor(
                         it
                     )
                 )
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _getAllWalletStateCallback.value =
@@ -94,7 +94,7 @@ class ManageWalletViewModel @Inject constructor(
                             it.localizedMessage
                         )
                     )
-            },
+    ,
             null
         )
     }
@@ -108,18 +108,18 @@ class ManageWalletViewModel @Inject constructor(
                     if (numberOfToken == pair.second.size) {
                         _updateWalletStateCallback.value =
                             Event(UpdateWalletState.Success(pair.first))
-                    }
-                },
+            
+        ,
                 Consumer {
                     numberOfToken++
                     if (numberOfToken == pair.second.size) {
                         _updateWalletStateCallback.value =
                             Event(UpdateWalletState.Success(pair.first))
-                    }
-                },
+            
+        ,
                 token
             )
-        }
+
     }
 
     fun updateSelectedWallet(wallet: Wallet) {
@@ -128,12 +128,12 @@ class ManageWalletViewModel @Inject constructor(
             Consumer { wl ->
                 loadBalances(wl)
 
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _updateWalletStateCallback.value =
                     Event(UpdateWalletState.ShowError(it.localizedMessage))
-            },
+    ,
             UpdateSelectedWalletUseCase.Param(wallet)
         )
     }

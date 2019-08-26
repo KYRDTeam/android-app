@@ -63,7 +63,7 @@ class LimitOrderDataRepository @Inject constructor(
     override fun eligibleAddress(param: CheckEligibleAddressUseCase.Param): Single<EligibleAddress> {
         return limitOrderApi.eligibleAddress(param.wallet.address).map {
             orderMapper.transform(it)
-        }
+
     }
 
     override fun cancelOrder(param: CancelOrderUseCase.Param): Single<Cancelled> {
@@ -71,20 +71,20 @@ class LimitOrderDataRepository @Inject constructor(
             param.order.id
         ).map {
             orderMapper.transform(it)
-        }.doAfterSuccess { status ->
+.doAfterSuccess { status ->
             if (status.cancelled) {
                 val order = limitOrderDao.findOrderById(param.order.id)
                 order?.let {
                     limitOrderDao.updateOrder(it.copy(status = Order.Status.CANCELLED.value))
-                }
-            }
-        }
+        
+    
+
     }
 
     override fun saveOrderFilter(param: SaveLimitOrderFilterUseCase.Param): Completable {
         return Completable.fromCallable {
             orderFilterDao.updateOrderFilter(param.orderFilter)
-        }
+
     }
 
     override fun getOrderFilter(): Flowable<OrderFilter> {
@@ -99,12 +99,12 @@ class LimitOrderDataRepository @Inject constructor(
                 )
                 orderFilterDao.insertOrderFilter(default)
                 default
-            } else {
+     else {
                 orderFilter
-            }
-        }.flatMap {
+    
+.flatMap {
             orderFilterDao.filterFlowable.defaultIfEmpty(it)
-        }
+
     }
 
     override fun getNonce(param: GetNonceUseCase.Param): Single<String> {
@@ -114,7 +114,7 @@ class LimitOrderDataRepository @Inject constructor(
             param.limitOrder.tokenDest.tokenAddress
         ).map {
             it.nonce
-        }
+
     }
 
     override fun submitOrder(param: SubmitOrderUseCase.Param): Single<LimitOrderResponse> {
@@ -126,7 +126,7 @@ class LimitOrderDataRepository @Inject constructor(
                         Base64.decode(param.wallet.cipher, Base64.DEFAULT), ByteArray(0)
                     ), Charsets.UTF_8
                 )
-            }
+    
 
             val credentials = WalletUtils.loadCredentials(
                 password,
@@ -139,7 +139,7 @@ class LimitOrderDataRepository @Inject constructor(
                 context.getString(R.string.limit_order_contract)
             )
             hexString
-        }.flatMap { it ->
+.flatMap { it ->
             limitOrderApi.createOrder(
                 param.wallet.address,
                 param.localLimitOrder.nonce,
@@ -152,12 +152,12 @@ class LimitOrderDataRepository @Inject constructor(
                 it
             ).map {
                 orderMapper.transform(it)
-            }.doAfterSuccess {
+    .doAfterSuccess {
                 if (it.success) {
                     limitOrderDao.insertOrder(it.order)
-                }
-            }
-        }
+        
+    
+
     }
 
     override fun getLimitOrderFee(param: GetLimitOrderFeeUseCase.Param): Flowable<Fee> {
@@ -169,13 +169,13 @@ class LimitOrderDataRepository @Inject constructor(
             param.userAddress
         ).map {
             feeMapper.transform(it)
-        }
+
             .repeatWhen {
                 it.delay(15, TimeUnit.SECONDS)
-            }
+    
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
-            }
+    
     }
 
     override fun getCurrentLimitOrders(param: GetLocalLimitOrderDataUseCase.Param): Flowable<LocalLimitOrder> {
@@ -205,20 +205,20 @@ class LimitOrderDataRepository @Inject constructor(
 
                     localLimitOrderDao.insertOrder(order)
                     order
-                }
+        
                 else -> limitOrder.copy(
                     tokenSource = if (limitOrder.tokenSource.selectedWalletAddress != wallet.address) {
                         limitOrder.tokenSource.updateSelectedWallet(wallet)
-                    } else {
+             else {
                         limitOrder.tokenSource
-                    },
+            ,
                     tokenDest = if (limitOrder.tokenDest.selectedWalletAddress != wallet.address) {
                         limitOrder.tokenDest.updateSelectedWallet(wallet)
-                    } else {
+             else {
                         limitOrder.tokenDest
-                    }
+            
                 )
-            }
+    
 
             val source = updateBalance(defaultLimitOrder.tokenSource, wallet)
             val dest = updateBalance(defaultLimitOrder.tokenDest, wallet)
@@ -234,9 +234,9 @@ class LimitOrderDataRepository @Inject constructor(
                         ethToken = ethToken,
                         wethToken = wethToken
                     )
-                }
+        
                 else -> defaultLimitOrder
-            }
+    
 
             val orderWithToken = order.copy(
                 tokenSource = source,
@@ -245,10 +245,10 @@ class LimitOrderDataRepository @Inject constructor(
 
             localLimitOrderDao.insertOrder(orderWithToken)
             orderWithToken
-        }.flatMap {
+.flatMap {
             localLimitOrderDao.findLocalLimitOrderByAddressFlowable(param.wallet.address)
                 .defaultIfEmpty(it)
-        }
+
     }
 
 
@@ -260,20 +260,20 @@ class LimitOrderDataRepository @Inject constructor(
                 val wethToken = tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)
                 val ethBalance = if (ethToken?.selectedWalletAddress != wallet.address) {
                     ethToken?.updateSelectedWallet(wallet)
-                } else {
+         else {
                     ethToken
-                }?.currentBalance ?: BigDecimal.ZERO
+        ?.currentBalance ?: BigDecimal.ZERO
 
                 val wethBalance = if (wethToken?.selectedWalletAddress != wallet.address) {
                     wethToken?.updateSelectedWallet(wallet)
-                } else {
+         else {
                     wethToken
-                }?.currentBalance ?: BigDecimal.ZERO
+        ?.currentBalance ?: BigDecimal.ZERO
 
                 token.updateBalance(
                     ethBalance.plus(wethBalance)
                 )
-            }
+    
             else -> {
                 val updatedBalanceToken = tokenDao.getTokenBySymbol(token.tokenSymbol) ?: token
                 when {
@@ -281,16 +281,16 @@ class LimitOrderDataRepository @Inject constructor(
                         wallet
                     )
                     else -> updatedBalanceToken
-                }
-            }
-        }
+        
+    
+
     }
 
 
     override fun saveLimitOrder(param: SaveLimitOrderUseCase.Param): Completable {
         return Completable.fromCallable {
             localLimitOrderDao.insertOrder(param.order)
-        }
+
     }
 
     override fun saveLimitOrder(param: SaveLimitOrderTokenUseCase.Param): Completable {
@@ -300,50 +300,50 @@ class LimitOrderDataRepository @Inject constructor(
 
             val tokenPairUnChanged = if (param.isSourceToken) {
                 currentLimitOrderForWalletAddress?.tokenSource?.tokenSymbol == param.token.tokenSymbol
-            } else {
+     else {
                 currentLimitOrderForWalletAddress?.tokenDest?.tokenSymbol == param.token.tokenSymbol
-            }
+    
 
             val resetRate = if (!tokenPairUnChanged) {
                 ""
-            } else {
+     else {
                 currentLimitOrderForWalletAddress?.expectedRate ?: ""
-            }
+    
 
             val order = if (param.isSourceToken) {
                 currentLimitOrderForWalletAddress?.copy(
                     tokenSource = param.token,
                     expectedRate = resetRate
                 )
-            } else {
+     else {
                 currentLimitOrderForWalletAddress?.copy(
                     tokenDest = param.token,
                     expectedRate = resetRate
                 )
-            }
+    
             order?.let { localLimitOrderDao.updateOrder(it) }
-        }
+
     }
 
     override fun getLimitOrders(): Flowable<List<Order>> {
         return Flowable.range(1, Integer.MAX_VALUE)
             .concatMap {
                 limitOrderApi.getOrders(it).toFlowable()
-            }
+    
             .takeUntil {
                 it.pagingInfo.pageIndex > it.pagingInfo.pageCount
-            }.reduce(
+    .reduce(
                 mutableListOf<OrderEntity>(),
                 { builder, response ->
                     if (response.pagingInfo.pageIndex == 1) {
                         builder.clear()
-                    }
+            
                     builder.addAll(response.orders)
                     builder
-                })
+        )
             .map {
                 orderMapper.transform(it)
-            }.toFlowable()
+    .toFlowable()
     }
 
     override fun getRelatedLimitOrders(param: GetRelatedLimitOrdersUseCase.Param): Flowable<List<Order>> {
@@ -355,17 +355,17 @@ class LimitOrderDataRepository @Inject constructor(
         )
             .map {
                 it.orders
-            }
+    
             .map {
                 orderMapper.transform(it)
-            }
+    
             .toFlowable()
             .repeatWhen {
                 it.delay(10, TimeUnit.SECONDS)
-            }
+    
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
-            }
+    
     }
 
     override fun getPendingBalances(param: GetPendingBalancesUseCase.Param): Flowable<PendingBalances> {
@@ -373,27 +373,27 @@ class LimitOrderDataRepository @Inject constructor(
 
             Flowable.fromCallable {
                 pendingBalancesDao.pendingBalancesByWalletAddress(param.wallet.address) != null
-            }.flatMap {
+    .flatMap {
                 if (it) {
                     pendingBalancesDao.pendingBalancesByWalletAddressFlowable(param.wallet.address)
-                } else {
+         else {
                     Flowable.fromCallable {
                         PendingBalances()
-                    }
-                }
-            },
+            
+        
+    ,
             limitOrderApi.getPendingBalances(param.wallet.address)
                 .map {
                     orderMapper.transform(it)
-                }.doAfterSuccess {
+        .doAfterSuccess {
                     pendingBalancesDao.createNewPendingBalances(it.copy(walletAddress = param.wallet.address))
-                }.toFlowable()
+        .toFlowable()
                 .repeatWhen {
                     it.delay(5, TimeUnit.SECONDS)
-                }
+        
                 .retryWhen { throwable ->
                     throwable.compose(zipWithFlatMap())
-                }
+        
 
         )
     }

@@ -25,7 +25,7 @@ class NotificationOpenedHandler : OneSignal.NotificationOpenedHandler {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 KyberSwapApplication.instance.startActivity(intent)
-            } else if (type == NOTIFICATION_TYPE_LIMITORDER) {
+     else if (type == NOTIFICATION_TYPE_LIMITORDER) {
                 val limitOrder =
                     Gson().fromJson(data.toString(), NotificationLimitOrder::class.java)
                 val intent = MainActivity.newIntent(
@@ -36,11 +36,11 @@ class NotificationOpenedHandler : OneSignal.NotificationOpenedHandler {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 KyberSwapApplication.instance.startActivity(intent)
-            }
+    
 
-        } catch (ex: Exception) {
+ catch (ex: Exception) {
             ex.printStackTrace()
-        }
+
 
     }
 

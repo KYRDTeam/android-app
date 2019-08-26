@@ -70,11 +70,11 @@ class ImportJsonFragment : BaseFragment() {
                 .subscribe { granted ->
                     if (granted) {
                         performFileSearch()
-                    } else {
+             else {
                         showAlertWithoutIcon(message = getString(R.string.permission_required))
-                    }
-                }
-        }
+            
+        
+
 
         viewModel.importWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.let { state ->
@@ -85,43 +85,43 @@ class ImportJsonFragment : BaseFragment() {
                         showAlert(getString(R.string.import_wallet_success)) {
                             if (fromMain) {
                                 activity?.onBackPressed()
-                            } else {
+                     else {
                                 navigator.navigateToHome()
-                            }
+                    
 
-                        }
-                    }
+                
+            
                     is ImportWalletState.ShowError -> {
 
                         val message = when (state.message) {
                             Messages.WALLET_EXISTS -> {
                                 getString(R.string.wallet_exist)
-                            }
+                    
 
                             Messages.PRIVATE_KEY_INVALID -> {
                                 getString(R.string.fail_import_private_key)
-                            }
+                    
 
                             Messages.MNEMONIC_BAD_WORD -> {
                                 getString(R.string.fail_import_mnemonic)
-                            }
+                    
 
                             Messages.MAC_UNMATCH -> {
                                 getString(R.string.fail_import_json)
-                            }
+                    
                             else -> {
                                 state.message ?: getString(R.string.something_wrong)
-                            }
+                    
 
-                        }
+                
 
                         showAlertWithoutIcon(
                             message = message
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         binding.btnImportWallet.setOnClickListener {
             uri?.let {
@@ -131,15 +131,15 @@ class ImportJsonFragment : BaseFragment() {
                     if (edtWalletName.text.isNotEmpty()) edtWalletName.text.trim().toString()
                     else getString(R.string.default_wallet_name)
                 )
-            }
-        }
+    
+
     }
 
     private fun performFileSearch() {
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
             type = "*/*"
             flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-        }
+
 
         startActivityForResult(
             Intent.createChooser(intent, "Select your backup file"),
@@ -155,9 +155,9 @@ class ImportJsonFragment : BaseFragment() {
                     this.uri = uri
                     binding.button.text = queryName(uri)
                     binding.btnImportWallet.isEnabled = true
-                }
-            }
-        }
+        
+    
+
     }
 
     private fun queryName(uri: Uri): String {
@@ -183,7 +183,7 @@ class ImportJsonFragment : BaseFragment() {
             ImportJsonFragment().apply {
                 arguments = Bundle().apply {
                     putBoolean(FROM_MAIN_PARAM, fromMain)
-                }
-            }
+        
+    
     }
 }

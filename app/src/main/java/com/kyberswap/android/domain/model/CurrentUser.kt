@@ -20,6 +20,6 @@ data class CurrentUser(
         entity.rank ?: 0,
         entity.activeAlerts.map {
             Alert(it)
-        }
+
     )
 }

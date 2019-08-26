@@ -80,11 +80,11 @@ class SendViewModel @Inject constructor(
                 it.gasLimit =
                     calculateGasLimit(it).toString()
                 _getSendCallback.value = Event(GetSendState.Success(it))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _getSendCallback.value = Event(GetSendState.ShowError(it.localizedMessage))
-            },
+    ,
             GetSendTokenUseCase.Param(wallet)
         )
     }
@@ -98,12 +98,12 @@ class SendViewModel @Inject constructor(
         deleteContactUseCase.execute(
             Action {
                 _deleteContactCallback.value = Event(DeleteContactState.Success(""))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _deleteContactCallback.value =
                     Event(DeleteContactState.ShowError(it.localizedMessage))
-            },
+    ,
             DeleteContactUseCase.Param(contact)
         )
     }
@@ -113,12 +113,12 @@ class SendViewModel @Inject constructor(
         saveContactUseCase.execute(
             Action {
                 _saveContactCallback.value = Event(SaveContactState.Success())
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _saveContactCallback.value =
                     Event(SaveContactState.ShowError(it.localizedMessage))
-            },
+    ,
             SaveContactUseCase.Param(walletAddress, contact.address, contact.name)
         )
     }
@@ -129,12 +129,12 @@ class SendViewModel @Inject constructor(
         getGasPriceUseCase.execute(
             Consumer {
                 _getGetGasPriceCallback.value = Event(GetGasPriceState.Success(it))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _getGetGasPriceCallback.value =
                     Event(GetGasPriceState.ShowError(it.localizedMessage))
-            },
+    ,
             null
         )
     }
@@ -145,15 +145,15 @@ class SendViewModel @Inject constructor(
                 Action {
                     if (address.isNotEmpty()) {
                         _saveSendCallback.value = Event(SaveSendState.Success(""))
-                    }
-                },
+            
+        ,
                 Consumer { error ->
                     error.printStackTrace()
                     _saveSendCallback.value = Event(SaveSendState.ShowError(error.localizedMessage))
-                },
+        ,
                 SaveSendUseCase.Param(it, address)
             )
-        }
+
 
     }
 
@@ -161,11 +161,11 @@ class SendViewModel @Inject constructor(
         getContactUseCase.execute(
             Consumer {
                 _getContactCallback.value = Event(GetContactState.Success(it))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _getContactCallback.value = Event(GetContactState.ShowError(it.localizedMessage))
-            },
+    ,
             GetContactUseCase.Param()
         )
     }
@@ -184,12 +184,12 @@ class SendViewModel @Inject constructor(
                     GetGasLimitState.Success(
                         if (specialGasLimit != null) {
                             specialGasLimit.max(gasLimit)
-                        } else {
+                 else {
                             gasLimit
-                        }
+                
                     )
                 )
-            },
+    ,
             Consumer { },
             EstimateTransferGasUseCase.Param(wallet, send)
         )

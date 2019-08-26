@@ -48,14 +48,14 @@ data class Wallet(
         val displayBuilder = StringBuilder()
         if (name.isNotEmpty()) {
             displayBuilder.append(name).append(" - ")
-        }
+
         displayBuilder.append(address.substring(0, 5))
             .append("...")
             .append(
                 address.substring(
                     if (address.length > 6) {
                         address.length - 6
-                    } else address.length
+             else address.length
                 )
             )
         return displayBuilder.toString()

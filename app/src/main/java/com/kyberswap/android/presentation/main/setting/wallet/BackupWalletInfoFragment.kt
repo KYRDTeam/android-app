@@ -62,13 +62,13 @@ class BackupWalletInfoFragment : BaseFragment() {
                 putExtra(Intent.EXTRA_TEXT, value)
                 type =
                     MIME_TYPE_TEXT
-            }
+    
             startActivity(sendIntent)
-        }
+
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-        }
+
     }
 
     private fun generateBarcode(): Bitmap? {
@@ -82,10 +82,10 @@ class BackupWalletInfoFragment : BaseFragment() {
                 )
             )
 
-        } catch (e: Exception) {
+ catch (e: Exception) {
             e.printStackTrace()
             null
-        }
+
     }
 
     companion object {
@@ -95,7 +95,7 @@ class BackupWalletInfoFragment : BaseFragment() {
             BackupWalletInfoFragment().apply {
                 arguments = Bundle().apply {
                     putString(PARAM_VALUE, value)
-                }
-            }
+        
+    
     }
 }

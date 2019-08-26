@@ -97,7 +97,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 it.allETHBalanceGasLimit.toBigDecimal(),
                 getSelectedGasPrice(it.gas, selectedGasFeeView?.id).toBigDecimalOrDefaultZero()
             )
-        } ?: BigDecimal.ZERO
+ ?: BigDecimal.ZERO
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
@@ -133,21 +133,21 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 enableTokenSearch(isSourceToken = true, isEnable = false)
                                 if (promo?.destinationToken?.isNotEmpty() == true) {
                                     enableTokenSearch(isSourceToken = false, isEnable = false)
-                                }
-                            } else {
+                        
+                     else {
                                 enableTokenSearch(isSourceToken = true, isEnable = true)
                                 enableTokenSearch(isSourceToken = false, isEnable = true)
-                            }
+                    
 
                             viewModel.getSwapData(state.wallet, alertNotification)
-                        }
-                    }
+                
+            
                     is GetWalletState.ShowError -> {
 
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.getSwapDataCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -159,7 +159,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                     title = getString(R.string.title_unsupported),
                                     message = getString(R.string.can_not_swap_same_token)
                                 )
-                            }
+                    
 
                             // Token pair change need to reset rate and get the new one
                             binding.swap = state.swap.copy(marketRate = "", expectedRate = "")
@@ -168,24 +168,24 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             sourceAmount = state.swap.sourceAmount
                             getRate(state.swap)
                             viewModel.getGasPrice()
-                        }
+                
                         viewModel.getGasLimit(wallet, binding.swap)
-                    }
+            
                     is GetSwapState.ShowError -> {
 
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         tvAdvanceOption.setOnClickListener {
             expandableLayout.expand()
             tvRevertNotification.text =
                 getRevertNotification(rgRate.checkedRadioButtonId)
-        }
+
         imgClose.setOnClickListener {
             expandableLayout.collapse()
-        }
+
 
         expandableLayout.setOnExpansionUpdateListener { _, state ->
             if (state == ExpandableLayout.State.EXPANDED) {
@@ -198,12 +198,12 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 animator.duration = 300
                 animator.interpolator = AccelerateInterpolator()
                 animator.start()
-            }
-        }
+    
+
 
         imgMenu.setOnClickListener {
             showDrawer(true)
-        }
+
 
 
         imgSwap.setOnClickListener {
@@ -212,11 +212,11 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             swap?.let {
                 viewModel.saveSwap(swap)
                 getRate(it)
-            }
+    
             binding.setVariable(BR.swap, swap)
             binding.executePendingBindings()
 
-        }
+
 
         viewModel.compositeDisposable.add(
             edtSource.textChanges()
@@ -225,15 +225,15 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 .subscribe { text ->
                     if (destLock.get() || currentFocus == binding.edtDest) {
                         return@subscribe
-                    }
+            
                     sourceAmount = text.toString()
                     if (text.isNullOrEmpty()) {
                         binding.edtDest.setText("")
-                    }
+            
                     binding.swap?.let { swap ->
                         if (swap.hasSamePair) {
                             edtDest.setText(text)
-                        } else {
+                 else {
                             edtDest.setAmount(
                                 swap.getExpectedAmount(
                                     binding.tvRate.text.toString(),
@@ -250,10 +250,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 )
                                 binding.swap = updatedSwap
                                 viewModel.saveSwap(updatedSwap)
-                            }
-                        }
-                    }
-                })
+                    
+                
+            
+        )
 
         viewModel.compositeDisposable.add(
             binding.edtDest.textChanges()
@@ -267,7 +267,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 viewModel.estimateAmount(
                                     swap.sourceSymbol, swap.destSymbol, dstAmount.toString()
                                 )
-                            } else {
+                     else {
                                 if (swap.rate.toDoubleOrDefaultZero() != 0.0) {
 
                                     val estSource = dstAmount.toBigDecimalOrDefaultZero()
@@ -282,11 +282,11 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                         swap,
                                         estSource.toPlainString()
                                     )
-                                }
-                            }
-                        }
-                    }
-                }
+                        
+                    
+                
+            
+        
         )
 
 
@@ -301,15 +301,15 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             gasPrice = getSelectedGasPrice(swap.gas, selectedGasFeeView?.id)
                         )
                     )
-                }
+        
                 navigator.navigateToTokenSearchFromSwapTokenScreen(
                     currentFragment,
                     wallet,
                     true
                 )
-            }
+    
 
-        }
+
 
         tokenDests.forEach {
             it.setOnClickListener {
@@ -322,14 +322,14 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             gasPrice = getSelectedGasPrice(swap.gas, selectedGasFeeView?.id)
                         )
                     )
-                }
+        
                 navigator.navigateToTokenSearchFromSwapTokenScreen(
                     currentFragment,
                     wallet,
                     false
                 )
-            }
-        }
+    
+
 
         binding.tvTokenBalanceValue.setOnClickListener {
             binding.swap?.let {
@@ -337,14 +337,14 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
                     sourceAmount = availableAmount.toDisplayNumber()
                     binding.edtSource.setText(sourceAmount)
-                } else {
+         else {
                     sourceAmount = it.tokenSource.currentBalance.toDisplayNumber()
                     binding.edtSource.setText(sourceAmount)
                     verifyAmount()
-                }
+        
 
-            }
-        }
+    
+
 
         viewModel.getExpectedRateCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -356,18 +356,18 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                     expectedRate = state.list[0],
                                     isExpectedRateZero = false
                                 )
-                            } else {
+                     else {
                                 binding.swap?.copy(
                                     expectedRate = binding.swap?.marketRate ?: "",
                                     isExpectedRateZero = true
                                 )
-                            }
+                    
 
                         if (swap != null) {
                             if (swap != binding.swap) {
                                 binding.swap = swap
                                 binding.executePendingBindings()
-                            }
+                    
 
                             if (destLock.get() || currentFocus == binding.edtDest) {
                                 sourceAmount = edtDest.toBigDecimalOrDefaultZero().divide(
@@ -378,30 +378,30 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 edtSource.setAmount(
                                     displaySourceAmount
                                 )
-                            } else {
+                     else {
                                 edtDest.setAmount(
                                     binding.swap?.getExpectedAmount(
                                         tvRate.text.toString(),
                                         edtSource.text.toString()
                                     )?.toDisplayNumber()
                                 )
-                            }
+                    
 
                             showDestValueInUsd(swap)
 
                             tvRevertNotification.text =
                                 getRevertNotification(rgRate.checkedRadioButtonId)
-                        }
-                    }
+                
+            
                     is GetExpectedRateState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.getGetMarketRateCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -417,17 +417,17 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             binding.swap = swap
                             swap?.let { it1 -> showDestValueInUsd(it1) }
                             binding.executePendingBindings()
-                        }
-                    }
+                
+            
                     is GetMarketRateState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.getGetGasLimitCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -443,17 +443,17 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         if (swap != binding.swap) {
                             binding.swap = swap
                             binding.executePendingBindings()
-                        }
-                    }
+                
+            
                     is GetGasLimitState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.compositeDisposable.add(
             rbCustom.checkedChanges().skipInitialValue()
@@ -464,11 +464,11 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         edtCustom.setText("3")
                         edtCustom.requestFocus()
                         edtCustom.setSelection(edtCustom.text.length)
-                    } else {
+             else {
                         edtCustom.setText("")
-                    }
+            
 
-                })
+        )
 
         viewModel.compositeDisposable.add(
             edtCustom.textChanges()
@@ -480,13 +480,13 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     if (it.isNotEmpty() && it.toString().toInt() > 0 && it.toString().toInt() <= 100) {
                         tvRevertNotification.text =
                             getRevertNotification(R.id.rbCustom)
-                    } else if (it.isNotEmpty() && it.toString().toInt() > 100) {
+             else if (it.isNotEmpty() && it.toString().toInt() > 100) {
                         val remaining = it.dropLast(1)
                         edtCustom.setText(remaining)
                         edtCustom.setSelection(remaining.length)
-                    }
+            
 
-                }
+        
         )
 
         viewModel.compositeDisposable.add(binding.edtDest.focusChanges()
@@ -498,8 +498,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     currentFocus?.isSelected = false
                     currentFocus = edtDest
                     currentFocus?.isSelected = true
-                }
-            })
+        
+    )
 
 
         viewModel.compositeDisposable.add(binding.edtSource.focusChanges()
@@ -510,8 +510,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     currentFocus?.isSelected = false
                     currentFocus = edtSource
                     currentFocus?.isSelected = true
-                }
-            })
+        
+    )
 
 
 
@@ -520,7 +520,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 .observeOn(schedulerProvider.ui())
                 .subscribe { id ->
                     tvRevertNotification.text = getRevertNotification(id)
-                })
+        )
 
         listOf(rbSuperFast, rbFast, rbRegular, rbSlow).forEach {
             it.setOnCheckedChangeListener { rb, isChecked ->
@@ -538,28 +538,28 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                     )
                                 )
                             )
-                        }
-                    }
-                }
+                
+            
+        
 
-            }
-        }
+    
+
 
         binding.edtSource.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 verifyAmount()
-            }
+    
             false
-        }
+
 
 
         binding.edtSource.setKeyImeChangeListener(object : KeyImeChange {
             override fun onKeyIme(keyCode: Int, event: KeyEvent?) {
                 if (KeyEvent.KEYCODE_BACK == event?.keyCode) {
                     verifyAmount()
-                }
-            }
-        })
+        
+    
+)
 
 
 
@@ -574,14 +574,14 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         if (swap != binding.swap) {
                             binding.swap = swap
                             binding.executePendingBindings()
-                        }
-                    }
+                
+            
                     is GetGasPriceState.ShowError -> {
 
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.getCapCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -594,7 +594,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 message =
                                 getString(R.string.cap_rich)
                             )
-                        } else if (state.swap.equivalentETHWithPrecision > state.cap.cap) {
+                 else if (state.swap.equivalentETHWithPrecision > state.cap.cap) {
                             val amount = Convert.fromWei(state.cap.cap, Convert.Unit.ETHER)
                             showAlertWithoutIcon(
                                 message = String.format(
@@ -602,21 +602,21 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                     amount.toDisplayNumber()
                                 )
                             )
-                        } else {
+                 else {
                             viewModel.saveSwap(
                                 state.swap, true
                             )
-                        }
-                    }
+                
+            
                     is GetCapState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.getAlertState.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -624,14 +624,14 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     is GetAlertState.Success -> {
                         dialogHelper.showAlertTriggerDialog(state.alert) {
 
-                        }
-                    }
+                
+            
                     is GetAlertState.ShowError -> {
 
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.estimateAmountState.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -641,14 +641,14 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         edtSource.setAmount(displaySourceAmount)
                         if (binding.swap != null) {
                             getRate(binding.swap!!)
-                        }
-                    }
+                
+            
                     is EstimateAmountState.ShowError -> {
 
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         binding.imgInfo.setOnClickListener {
             showAlert(
@@ -661,7 +661,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 ),
                 R.drawable.ic_info
             )
-        }
+
 
         viewModel.saveSwapDataCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -669,17 +669,17 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 when (state) {
                     is SaveSwapState.Success -> {
                         navigator.navigateToSwapConfirmationScreen(wallet)
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         binding.tvContinue.setOnClickListener {
             binding.swap?.let { swap ->
                 when {
                     swap.isExpectedRateZero && swap.isMarketRateZero -> {
                         showAlertWithoutIcon(message = getString(R.string.reserve_under_maintainance))
-                    }
+            
 
                     edtSource.text.isNullOrEmpty() -> {
                         val errorAmount = getString(R.string.specify_amount)
@@ -687,7 +687,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             title = getString(R.string.invalid_input),
                             message = errorAmount
                         )
-                    }
+            
 
                     edtSource.text.toString().toBigDecimalOrDefaultZero() > swap.tokenSource.currentBalance -> {
                         val errorExceedBalance = getString(R.string.exceed_balance)
@@ -695,7 +695,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             title = getString(R.string.title_amount_too_big),
                             message = errorExceedBalance
                         )
-                    }
+            
                     swap.hasSamePair -> showAlertWithoutIcon(
                         title = getString(R.string.title_unsupported),
                         message = getString(R.string.can_not_swap_same_token)
@@ -706,7 +706,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             title = getString(R.string.invalid_amount),
                             message = amountError
                         )
-                    }
+            
 
                     swap.copy(
                         gasPrice = getSelectedGasPrice(
@@ -724,18 +724,18 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             getString(R.string.insufficient_eth),
                             getString(R.string.not_enough_eth_blance)
                         )
-                    }
+            
 
                     rbCustom.isChecked && edtCustom.text.isNullOrEmpty() -> {
                         showAlertWithoutIcon(message = getString(R.string.custom_rate_empty))
-                    }
+            
 
                     swap.isExpectedRateZero -> {
                         showAlertWithoutIcon(
                             title = getString(R.string.title_amount_too_big),
                             message = getString(R.string.exceed_balance)
                         )
-                    }
+            
 
                     else -> wallet?.let {
 
@@ -750,16 +750,16 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
                         if (!((data.tokenSource.isETH && data.tokenDest.isWETH) || (data.tokenSource.isWETH && data.tokenDest.isETH))) {
                             viewModel.getCap(it, data)
-                        } else {
+                 else {
                             viewModel.saveSwap(
                                 data, true
                             )
-                        }
-                    }
-                }
-            }
+                
+            
+        
+    
 
-        }
+
 
         rbFast.isChecked = true
         rbDefaultRate.isChecked = true
@@ -775,22 +775,22 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         swap.tokenDest.rateUsdNow
                     )?.toDisplayNumber()
                 )
-        } else {
+ else {
             binding.tvValueInUSD.text = ""
-        }
+
     }
 
     fun verifyAmount() {
         binding.swap?.let {
             if (it.isExpectedRateZero && it.isMarketRateZero) {
                 showAlertWithoutIcon(message = getString(R.string.reserve_under_maintainance))
-            } else if (it.isExpectedRateZero) {
+     else if (it.isExpectedRateZero) {
                 showAlertWithoutIcon(
                     title = getString(R.string.title_amount_too_big),
                     message = getString(R.string.exceed_balance)
                 )
-            }
-        }
+    
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -816,7 +816,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     fun getSwap() {
         wallet?.let {
             viewModel.getSwapData(it)
-        }
+
     }
 
     override fun refresh() {
@@ -834,27 +834,27 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         if (isSourceToken) {
             tokenSources.forEach {
                 it.isEnabled = isEnable
-            }
-        } else {
+    
+ else {
             tokenDests.forEach {
                 it.isEnabled = isEnable
-            }
-        }
+    
+
 
         val colorMatrix = ColorMatrix()
         colorMatrix.setSaturation(0f)
 
         val image = if (isSourceToken) {
             binding.imgTokenSource
-        } else {
+ else {
             binding.imgTokenDest
-        }
+
 
         if (isEnable) {
             colorMatrix.setSaturation(1f)
-        } else {
+ else {
             colorMatrix.setSaturation(0.5f)
-        }
+
         val filter = ColorMatrixColorFilter(colorMatrix)
         image.colorFilter = filter
 
@@ -876,9 +876,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         return when (id) {
             R.id.rbCustom -> {
                 edtCustom.text.toString()
-            }
+    
             else -> DEFAULT_ACCEPT_RATE_PERCENTAGE.toString()
-        }
+
     }
 
     private fun getSelectedGasPrice(gas: Gas, id: Int?): String {
@@ -887,7 +887,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             R.id.rbRegular -> gas.standard
             R.id.rbSlow -> gas.low
             else -> gas.fast
-        }
+
     }
 
     private fun getRate(swap: Swap) {
@@ -913,7 +913,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         fun newInstance(alert: NotificationAlert?) = SwapFragment().apply {
             arguments = Bundle().apply {
                 putParcelable(ALERT_PARAM, alert)
-            }
-        }
+    
+
     }
 }

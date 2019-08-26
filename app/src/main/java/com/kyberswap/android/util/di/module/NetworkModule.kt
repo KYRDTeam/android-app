@@ -42,17 +42,17 @@ class NetworkModule {
                     "Authorization", accessToken
 
                 )
-            }
+    
 
             val request = builder.method(original.method(), original.body())
                 .build()
             it.proceed(request)
-        }
+
         if (BuildConfig.DEBUG) {
             client.addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
-            })
-        }
+    )
+
         return client.build()
     }
 

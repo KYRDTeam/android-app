@@ -20,7 +20,7 @@ class OrderDeserializer : JsonDeserializer<LimitOrderResponseEntity> {
 
         val message = if (!success) {
             jsonObject.getAsJsonObject("message").toMessage()
-        } else mapOf()
+ else mapOf()
 
         if (fields == null || order == null) return LimitOrderResponseEntity(
             success = success,
@@ -31,7 +31,7 @@ class OrderDeserializer : JsonDeserializer<LimitOrderResponseEntity> {
         return LimitOrderResponseEntity(
             fields.toList().map {
                 it.asString
-            }, order.toOrderEntity(fields),
+    , order.toOrderEntity(fields),
             success, message
         )
 

@@ -30,8 +30,8 @@ class TransactionStatusAdapter(
                 oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemEven && oldItem.transaction.hash == newItem.transaction.hash -> true
                 oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemOdd && oldItem.transaction.hash == newItem.transaction.hash -> true
                 else -> false
-            }
-        }
+    
+
 
         override fun areContentsTheSame(
             oldItem: TransactionItem, newItem: TransactionItem
@@ -51,8 +51,8 @@ class TransactionStatusAdapter(
                     newItem.transaction
                 ) -> true
                 else -> false
-            }
-        }
+    
+
     }
 ) {
 
@@ -61,18 +61,18 @@ class TransactionStatusAdapter(
             is TransactionItem.Header -> {
                 binding as ItemHeaderBinding
                 binding.tvDate.text = item.date
-            }
+    
 
             is TransactionItem.ItemEven -> {
                 binding as ItemTransactionBinding
                 binding(binding, item.transaction)
-            }
+    
 
             is TransactionItem.ItemOdd -> {
                 binding as ItemTransactionBinding
                 binding(binding, item.transaction)
-            }
-        }
+    
+
     }
 
     private fun binding(binding: ItemTransactionBinding, transaction: Transaction) {
@@ -82,7 +82,7 @@ class TransactionStatusAdapter(
         binding.tvFail.visibility = if (transaction.isTransactionFail) View.VISIBLE else View.GONE
         binding.root.setOnClickListener {
             onTransactionClick?.invoke(transaction)
-        }
+
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -90,7 +90,7 @@ class TransactionStatusAdapter(
         return when (getData()[position]) {
             is TransactionItem.Header -> TYPE_HEADER
             else -> TYPE_ITEM
-        }
+
     }
 
 
@@ -104,7 +104,7 @@ class TransactionStatusAdapter(
             is TransactionItem.Header -> R.color.transaction_header_color
             is TransactionItem.ItemEven -> R.color.transaction_item_even_color
             is TransactionItem.ItemOdd -> R.color.transaction_item_odd_color
-        }
+
 
         val root = holder.binding.root
         val background = ContextCompat.getColor(

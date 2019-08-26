@@ -13,7 +13,7 @@ data class AlertMethods(
     constructor(entity: AlertMethodsEntity) : this(
         entity.emails.map {
             Email(it)
-        },
+,
         Telegram(entity.telegram)
     )
 }

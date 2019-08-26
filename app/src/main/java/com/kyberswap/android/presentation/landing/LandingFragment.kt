@@ -57,7 +57,7 @@ class LandingFragment : BaseFragment() {
             LandingFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_PARAM, position)
-                }
-            }
+        
+    
     }
 }

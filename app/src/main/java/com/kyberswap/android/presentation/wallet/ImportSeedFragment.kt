@@ -65,22 +65,22 @@ class ImportSeedFragment : BaseFragment() {
                 )
                 if (count >= 12) {
                     binding.btnImportWallet.isEnabled = true
-                }
-            }
-        }
+        
+    
+
         binding.btnImportWallet.setOnClickListener {
             viewModel.importFromSeed(
                 edtSeed.text?.trim().toString(),
                 if (edtWalletName.text.isNotEmpty()) edtWalletName.text.trim().toString()
                 else getString(R.string.default_wallet_name)
             )
-        }
+
 
         binding.imgQRCode.setOnClickListener {
             IntentIntegrator.forSupportFragment(this)
                 .setBeepEnabled(false)
                 .initiateScan()
-        }
+
 
         viewModel.importWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.let { state ->
@@ -90,40 +90,40 @@ class ImportSeedFragment : BaseFragment() {
                         showAlert(getString(R.string.import_wallet_success)) {
                             if (fromMain) {
                                 activity?.onBackPressed()
-                            } else {
+                     else {
                                 navigator.navigateToHome()
-                            }
-                        }
-                    }
+                    
+                
+            
                     is ImportWalletState.ShowError -> {
                         val message = when (state.message) {
                             Messages.WALLET_EXISTS -> {
                                 getString(R.string.wallet_exist)
-                            }
+                    
 
                             Messages.PRIVATE_KEY_INVALID -> {
                                 getString(R.string.fail_import_private_key)
-                            }
+                    
 
                             Messages.MNEMONIC_BAD_WORD -> {
                                 getString(R.string.fail_import_mnemonic)
-                            }
+                    
 
                             Messages.MAC_UNMATCH -> {
                                 getString(R.string.fail_import_json)
-                            }
+                    
                             else -> {
                                 state.message ?: getString(R.string.something_wrong)
-                            }
+                    
 
-                        }
+                
                         showAlertWithoutIcon(
                             message = message
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -131,12 +131,12 @@ class ImportSeedFragment : BaseFragment() {
         if (result != null) {
             if (result.contents == null) {
                 showAlertWithoutIcon(message = getString(R.string.message_cancelled))
-            } else {
+     else {
                 binding.edtSeed.setText(result.contents.toString())
-            }
-        } else {
+    
+ else {
             super.onActivityResult(requestCode, resultCode, data)
-        }
+
     }
 
     companion object {
@@ -145,7 +145,7 @@ class ImportSeedFragment : BaseFragment() {
             ImportSeedFragment().apply {
                 arguments = Bundle().apply {
                     putBoolean(FROM_MAIN_PARAM, fromMain)
-                }
-            }
+        
+    
     }
 }

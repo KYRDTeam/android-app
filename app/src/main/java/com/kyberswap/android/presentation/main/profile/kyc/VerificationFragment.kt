@@ -38,12 +38,12 @@ class VerificationFragment : BaseFragment() {
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-        }
+
 
 
         handler.postDelayed({
             onBackPress()
-        }, 3000)
+, 3000)
     }
 
     private fun onBackPress() {
@@ -51,7 +51,7 @@ class VerificationFragment : BaseFragment() {
         if (fm != null)
             for (i in 0 until fm.backStackEntryCount) {
                 fm.popBackStack()
-            }
+    
     }
 
     companion object {

@@ -26,11 +26,11 @@ class TransactionViewModel @Inject constructor(
         getWalletByAddressUseCase.execute(
             Consumer {
                 _getWalletCallback.value = Event(GetWalletState.Success(it))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _getWalletCallback.value = Event(GetWalletState.ShowError(it.localizedMessage))
-            },
+    ,
             address
         )
     }

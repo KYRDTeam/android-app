@@ -50,7 +50,7 @@ class TokenPairTypeConverter {
     @TypeConverter
     fun stringToTokenPairType(value: String): List<Pair<String, String>> {
         val listType = object : TypeToken<List<Pair<String, String>>>() {
-        }.type
+.type
         return Gson().fromJson(value, listType)
     }
 
@@ -66,7 +66,7 @@ class PendingBalancesConverter {
     @TypeConverter
     fun stringToPendingBalancesType(value: String): Map<String, BigDecimal> {
         val listType = object : TypeToken<Map<String, BigDecimal>>() {
-        }.type
+.type
         return Gson().fromJson(value, listType)
     }
 
@@ -81,7 +81,7 @@ class ListStringConverter {
     @TypeConverter
     fun stringToTokenPairType(value: String): List<String> {
         val listType = object : TypeToken<List<String>>() {
-        }.type
+.type
         return Gson().fromJson(value, listType)
     }
 
@@ -97,7 +97,7 @@ class TransactionTypesConverter {
     @TypeConverter
     fun stringToTransactionTypes(value: String): List<Transaction.TransactionType> {
         val listType = object : TypeToken<List<Transaction.TransactionType>>() {
-        }.type
+.type
         return Gson().fromJson(value, listType)
     }
 
@@ -112,7 +112,7 @@ class WalletBalanceTypeConverter {
     @TypeConverter
     fun stringToWalletBalanceType(value: String): List<WalletBalance> {
         val listType = object : TypeToken<List<WalletBalance>>() {
-        }.type
+.type
         return Gson().fromJson(value, listType)
     }
 

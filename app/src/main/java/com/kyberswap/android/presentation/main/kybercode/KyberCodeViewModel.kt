@@ -32,39 +32,39 @@ class KyberCodeViewModel @Inject constructor(
                                 if (pair.first.promo?.error.isNullOrEmpty()) {
                                     _getKyberCodeCallback.value =
                                         Event(KyberCodeState.Success(pair.first))
-                                } else {
+                         else {
                                     _getKyberCodeCallback.value =
                                         Event(KyberCodeState.ShowError(pair.first.promo?.error))
-                                }
-                            }
-                        },
+                        
+                    
+                ,
                         Consumer {
                             numberOfToken++
                             if (numberOfToken == pair.second.size) {
                                 if (pair.first.promo?.error.isNullOrEmpty()) {
                                     _getKyberCodeCallback.value =
                                         Event(KyberCodeState.Success(pair.first))
-                                } else {
+                         else {
                                     _getKyberCodeCallback.value =
                                         Event(KyberCodeState.ShowError(pair.first.promo?.error))
-                                }
-                            }
-                        },
+                        
+                    
+                ,
                         token
                     )
-                }
+        
 
 
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 if (it is TokenException) {
                     _getKyberCodeCallback.value = Event(KyberCodeState.ShowError(it.message))
-                } else {
+         else {
                     _getKyberCodeCallback.value = Event(KyberCodeState.ShowError(it.localizedMessage))
-                }
+        
 
-            },
+    ,
             ApplyKyberCodeUseCase.Param(kyberCode, walletName)
         )
     }

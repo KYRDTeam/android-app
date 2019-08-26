@@ -87,14 +87,14 @@ abstract class AppDatabase : RoomDatabase() {
                 ?: synchronized(this) {
                     INSTANCE
                         ?: buildDatabase(context).also { INSTANCE = it }
-                }
+        
 
         @VisibleForTesting
         internal val MIGRATION_1_2: Migration = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE tokens " + " ADD COLUMN limitOrderBalance TEXT NOT NULL default '' ")
-            }
-        }
+    
+
 
         private fun buildDatabase(context: Context) =
             Room.databaseBuilder(

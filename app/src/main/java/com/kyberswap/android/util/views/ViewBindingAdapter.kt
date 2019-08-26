@@ -14,12 +14,12 @@ object ViewBindingAdapter {
         view.isSelected = isSelected
         val size = if (isSelected) {
             R.dimen.text_size_title
-        } else {
+ else {
             R.dimen.text_size_content
-        }
+
         if (view is TextView) {
             view.setTextSize(TypedValue.COMPLEX_UNIT_PX, view.context.resources.getDimension(size))
-        }
+
     }
 
     @BindingAdapter("app:isActive", "app:isReward")
@@ -34,30 +34,30 @@ object ViewBindingAdapter {
                 color = R.color.text_alert_reward_color
                 circleDrawable = R.drawable.circle_alert_rank_active_bg
 
-            } else {
+     else {
                 drawable = R.drawable.alert_background_normal
                 color = R.color.text_alert_normal_color
                 circleDrawable = R.drawable.circle_alert_rank_reward_bg
-            }
+    
 
-        } else {
+ else {
             if (isActive == true) {
                 drawable = R.drawable.alert_background_active
                 color = R.color.text_alert_active_color
                 circleDrawable = R.drawable.circle_alert_rank_active_bg
-            } else {
+     else {
                 drawable = R.drawable.alert_background_normal
                 color = R.color.text_alert_normal_color
                 circleDrawable = R.drawable.circle_alert_rank_bg
-            }
-        }
+    
+
 
 
         if (view is TextView) {
             view.setTextColor(ContextCompat.getColor(view.context, color))
             view.setBackgroundResource(circleDrawable)
-        } else {
+ else {
             view.setBackgroundResource(drawable)
-        }
+
     }
 }

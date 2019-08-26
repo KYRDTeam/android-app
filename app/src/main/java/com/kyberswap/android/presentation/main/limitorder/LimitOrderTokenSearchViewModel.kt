@@ -55,14 +55,14 @@ class LimitOrderTokenSearchViewModel @Inject constructor(
                                 if (!it.isETHWETH && pendingAmount > BigDecimal.ZERO) {
                                     val availableAmount = it.currentBalance - pendingAmount
                                     it.copy(limitOrderBalance = if (availableAmount > BigDecimal.ZERO) availableAmount else BigDecimal.ZERO)
-                                } else {
+                         else {
                                     it.copy(limitOrderBalance = it.currentBalance)
-                                }
+                        
 
-                            }, pendingBalances
+                    , pendingBalances
                     )
                 )
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _getTokenListCallback.value =
@@ -71,7 +71,7 @@ class LimitOrderTokenSearchViewModel @Inject constructor(
                             it.localizedMessage
                         )
                     )
-            },
+    ,
             address
         )
     }
@@ -81,7 +81,7 @@ class LimitOrderTokenSearchViewModel @Inject constructor(
         pendingBalancesUseCase.execute(
             Consumer {
                 getTokenList(wallet.address, it)
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _getTokenListCallback.value =
@@ -90,7 +90,7 @@ class LimitOrderTokenSearchViewModel @Inject constructor(
                             it.localizedMessage
                         )
                     )
-            },
+    ,
             GetPendingBalancesUseCase.Param(wallet)
         )
     }
@@ -108,7 +108,7 @@ class LimitOrderTokenSearchViewModel @Inject constructor(
         saveLimitOrderTokenUseCase.execute(
             Action {
                 _saveLimitOrderCallback.value = Event(SaveSwapDataState.Success())
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _saveLimitOrderCallback.value =
@@ -117,7 +117,7 @@ class LimitOrderTokenSearchViewModel @Inject constructor(
                             it.localizedMessage
                         )
                     )
-            },
+    ,
             SaveLimitOrderTokenUseCase.Param(walletAddress, token, sourceToken)
         )
     }

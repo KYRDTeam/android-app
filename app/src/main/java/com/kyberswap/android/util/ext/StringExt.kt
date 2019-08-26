@@ -102,7 +102,7 @@ fun String.displayWalletAddress(): String {
             substring(
                 if (length > 6) {
                     length - 6
-                } else length
+         else length
             )
         ).toString()
 }

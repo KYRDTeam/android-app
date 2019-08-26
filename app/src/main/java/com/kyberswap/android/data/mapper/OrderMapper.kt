@@ -12,7 +12,7 @@ class OrderMapper @Inject constructor() {
     fun transform(entities: List<OrderEntity>): List<Order> {
         return entities.map {
             transform(it)
-        }
+
     }
 
     fun transform(entity: LimitOrderResponseEntity): LimitOrderResponse {

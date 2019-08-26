@@ -78,7 +78,7 @@ class ConvertFragment : BaseFragment() {
         binding.order = limitOrder
         wallet?.let {
             viewModel.getPendingBalances(it)
-        }
+
 
         viewModel.getPendingBalancesCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -86,16 +86,16 @@ class ConvertFragment : BaseFragment() {
                     is GetPendingBalancesState.Success -> {
                         this.pendingBalances = state.pendingBalances
                         setupBalance(state.pendingBalances)
-                    }
+            
                     is GetPendingBalancesState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.getGasPrice()
         viewModel.getGasLimit(wallet, binding.order)
@@ -110,14 +110,14 @@ class ConvertFragment : BaseFragment() {
                         if (order != binding.order) {
                             binding.order = order
                             binding.executePendingBindings()
-                        }
-                    }
+                
+            
                     is GetGasPriceState.ShowError -> {
 
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.getGetGasLimitCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -130,17 +130,17 @@ class ConvertFragment : BaseFragment() {
                         if (order != binding.order) {
                             binding.order = order
                             binding.executePendingBindings()
-                        }
-                    }
+                
+            
                     is GetGasLimitState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.convertCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -157,24 +157,24 @@ class ConvertFragment : BaseFragment() {
                             wallet,
                             limitOrder
                         )
-                    }
+            
                     is ConvertState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         imgBack.setOnClickListener {
             onBackPressed()
-        }
+
 
         tvCancel.setOnClickListener {
             onBackPressed()
-        }
+
 
 
 
@@ -186,7 +186,7 @@ class ConvertFragment : BaseFragment() {
                 when {
                     binding.edtConvertedAmount.text.isNullOrEmpty() -> {
                         showAlert(getString(R.string.specify_amount))
-                    }
+            
                     binding.edtConvertedAmount.toBigDecimalOrDefaultZero() <
                         it.minConvertedAmount.toBigDecimalOrDefaultZero() -> {
                         showAlertWithoutIcon(
@@ -196,7 +196,7 @@ class ConvertFragment : BaseFragment() {
                             ),
                             title = getString(R.string.invalid_amount)
                         )
-                    }
+            
 
                     binding.edtConvertedAmount.toBigDecimalOrDefaultZero() >
                         it.ethToken.currentBalance -> {
@@ -204,7 +204,7 @@ class ConvertFragment : BaseFragment() {
                             message = getString(R.string.eth_balance_not_enough),
                             title = getString(R.string.insufficient_eth)
                         )
-                    }
+            
 
                     binding.edtConvertedAmount.toBigDecimalOrDefaultZero() >
                         it.availableAmountForTransfer(
@@ -218,7 +218,7 @@ class ConvertFragment : BaseFragment() {
                             ),
                             title = getString(R.string.insufficient_eth)
                         )
-                    }
+            
 
                     else -> {
 
@@ -227,11 +227,11 @@ class ConvertFragment : BaseFragment() {
                             it,
                             binding.edtConvertedAmount.toBigDecimalOrDefaultZero()
                         )
-                    }
-                }
+            
+        
 
-            }
-        }
+    
+
 
         viewModel.compositeDisposable.add(binding.edtConvertedAmount.focusChanges()
             .skipInitialValue()
@@ -239,8 +239,8 @@ class ConvertFragment : BaseFragment() {
             .subscribe {
                 if (it) {
                     hasUserFocus = it
-                }
-            })
+        
+    )
 
     }
 
@@ -254,7 +254,7 @@ class ConvertFragment : BaseFragment() {
             if (binding.tvEthBalance.text.toString() != availableEth) {
                 binding.tvEthBalance.text =
                     String.format(getString(R.string.eth_balance), availableEth)
-            }
+    
 
             val availableWeth = viewModel.calAvailableAmount(
                 order.wethToken,
@@ -264,7 +264,7 @@ class ConvertFragment : BaseFragment() {
             if (binding.tvWethBalance.text.toString() != availableWeth) {
                 binding.tvWethBalance.text =
                     String.format(getString(R.string.weth_balance), availableWeth)
-            }
+    
 
 
             if (hasUserFocus != true) {
@@ -276,9 +276,9 @@ class ConvertFragment : BaseFragment() {
                 if (minCovertAmount < BigDecimal.ZERO) minCovertAmount = BigDecimal.ZERO
                 if (binding.edtConvertedAmount.text.toString() != minCovertAmount.toPlainString()) {
                     binding.edtConvertedAmount.setAmount(minCovertAmount.stripTrailingZeros().toPlainString())
-                }
-            }
-        }
+        
+    
+
     }
 
 
@@ -294,7 +294,7 @@ class ConvertFragment : BaseFragment() {
                 arguments = Bundle().apply {
                     putParcelable(WALLET_PARAM, wallet)
                     putParcelable(LIMIT_ORDER_PARAM, order)
-                }
-            }
+        
+    
     }
 }

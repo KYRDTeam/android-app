@@ -23,13 +23,13 @@ class OrderListDeserializer : JsonDeserializer<ListLimitOrderResponseEntity> {
         for (i in 0 until orders.size()) {
             val jsonOrder = orders.get(i).asJsonArray
             entities.add(jsonOrder.toOrderEntity(fields))
-        }
+
 
 
 
         return ListLimitOrderResponseEntity(fields.toList().map {
             it.asString
-        }, entities, pagingInfo?.toPagingInfo() ?: PagingInfoEntity())
+, entities, pagingInfo?.toPagingInfo() ?: PagingInfoEntity())
 
     }
 }

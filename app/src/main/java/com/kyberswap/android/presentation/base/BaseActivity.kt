@@ -75,14 +75,14 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         if (requestCode == SHOW_ALERT) {
             if (resultCode == Activity.RESULT_OK) {
                 alertListener.invoke()
-            }
-        }
+    
+
     }
 
     companion object {
         init {
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
-        }
+
     }
 
     var dialog: ProgressDialog? = null
@@ -93,7 +93,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
                 setMessage(getString(R.string.message_loading))
                 setCanceledOnTouchOutside(false)
                 setCancelable(false)
-            }
+    
     }
 
     fun showProgress(showProgress: Boolean) {

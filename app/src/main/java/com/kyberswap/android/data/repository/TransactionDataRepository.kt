@@ -76,17 +76,17 @@ class TransactionDataRepository @Inject constructor(
                         transactionDao.insertTransaction(updatedStatus)
 //                        sendNotification(updatedStatus)
                         updateBalance(it, param.wallet)
-                    }
-                }
-            }
+            
+        
+    
             pendingTransactions
-        }
+
             .repeatWhen {
                 it.delay(15, TimeUnit.SECONDS)
-            }
+    
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
-            }
+    
     }
 
     private fun updateBalance(transaction: Transaction, wallet: Wallet) {
@@ -95,15 +95,15 @@ class TransactionDataRepository @Inject constructor(
             tokenSource?.let { src ->
                 updateTokenBalance(src, wallet)
 
-            }
-        }
+    
+
 
         if (transaction.tokenDest.isNotBlank()) {
             val tokenDest = tokenDao.getTokenBySymbol(transaction.tokenDest)
             tokenDest?.let { dest ->
                 updateTokenBalance(dest, wallet)
-            }
-        }
+    
+
 
         if (transaction.tokenSymbol.isNotBlank() && ((transaction.tokenSymbol != transaction.tokenSource) ||
                     (transaction.tokenSymbol != transaction.tokenDest))
@@ -111,8 +111,8 @@ class TransactionDataRepository @Inject constructor(
             val tokenSymbol = tokenDao.getTokenBySymbol(transaction.tokenSymbol)
             tokenSymbol?.let { symbol ->
                 updateTokenBalance(symbol, wallet)
-            }
-        }
+    
+
 
         if (!(transaction.tokenSource == Token.ETH_SYMBOL
                     || transaction.tokenDest == Token.ETH_SYMBOL
@@ -121,8 +121,8 @@ class TransactionDataRepository @Inject constructor(
             val tokenSymbol = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)
             tokenSymbol?.let { symbol ->
                 updateTokenBalance(symbol, wallet)
-            }
-        }
+    
+
     }
 
     private fun updateTokenBalance(token: Token, wallet: Wallet) {
@@ -133,18 +133,18 @@ class TransactionDataRepository @Inject constructor(
         swapByAddress?.let { swap ->
             if (swap.tokenSource.tokenSymbol == updatedBalanceToken.tokenSymbol) {
                 swapDao.updateSwap(swap.copy(tokenSource = updatedBalanceToken))
-            } else if (swap.tokenDest.tokenSymbol == updatedBalanceToken.tokenSymbol) {
+     else if (swap.tokenDest.tokenSymbol == updatedBalanceToken.tokenSymbol) {
                 swapDao.updateSwap(swap.copy(tokenDest = updatedBalanceToken))
-            }
-        }
+    
+
 
         val sendByAddress = sendDao.findSendByAddress(wallet.address)
         sendByAddress?.let { send ->
             if (send.tokenSource.tokenSymbol == updatedBalanceToken.tokenSymbol) {
                 sendDao.updateSend(send.copy(tokenSource = updatedBalanceToken))
-            }
+    
 
-        }
+
 
         val orderByAddress =
             limitOrderDao.findLocalLimitOrderByAddress(wallet.address)
@@ -178,7 +178,7 @@ class TransactionDataRepository @Inject constructor(
                             ethToken = updatedBalanceToken
                         )
                     )
-                }
+        
                 order.tokenDest.tokenSymbol == Token.ETH_SYMBOL_STAR && updatedBalanceToken.tokenSymbol == Token.ETH_SYMBOL -> {
                     val wethToken = tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)
                     val ethBalance = updatedBalanceToken.currentBalance
@@ -193,7 +193,7 @@ class TransactionDataRepository @Inject constructor(
                             ethToken = updatedBalanceToken
                         )
                     )
-                }
+        
                 order.tokenSource.tokenSymbol == Token.ETH_SYMBOL_STAR && updatedBalanceToken.tokenSymbol == Token.WETH_SYMBOL -> {
                     val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)
                     val wethBalance = updatedBalanceToken.currentBalance
@@ -208,7 +208,7 @@ class TransactionDataRepository @Inject constructor(
                             wethToken = updatedBalanceToken
                         )
                     )
-                }
+        
                 order.tokenDest.tokenSymbol == Token.ETH_SYMBOL_STAR && updatedBalanceToken.tokenSymbol == Token.WETH_SYMBOL -> {
                     val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)
                     val wethBalance = updatedBalanceToken.currentBalance
@@ -223,9 +223,9 @@ class TransactionDataRepository @Inject constructor(
                             wethToken = updatedBalanceToken
                         )
                     )
-                }
-            }
-        }
+        
+    
+
     }
 
     override fun fetchPendingTransaction(address: String): Flowable<List<Transaction>> {
@@ -249,21 +249,21 @@ class TransactionDataRepository @Inject constructor(
         )
             .map {
                 transactionMapper.transform(it.result, wallet.address, TOKEN_TRANSACTION)
-            }.doAfterSuccess {
+    .doAfterSuccess {
                 val tokensSymbols = tokenDao.allTokens.filter {
                     !it.isOther
-                }.map {
+        .map {
                     it.tokenSymbol.toLowerCase()
-                }
+        
                 val otherTokenList = it.filterNot { tx ->
                     tokensSymbols.contains(tx.tokenSymbol.toLowerCase())
-                }.map { tx ->
+        .map { tx ->
                     Token(tx).copy(isOther = true).updateSelectedWallet(wallet)
-                }.filter {
+        .filter {
                     it.tokenName.isNotEmpty()
-                }
+        
                 tokenDao.insertTokens(otherTokenList)
-            }
+    
     }
 
     override fun fetchInternalTransactions(
@@ -280,14 +280,14 @@ class TransactionDataRepository @Inject constructor(
         )
             .map {
                 it.result
-            }
+    
             .map {
                 transactionMapper.transform(
                     it,
                     Transaction.TransactionType.RECEIVED,
                     INTERNAL_TRANSACTION
                 )
-            }
+    
     }
 
     override fun fetchNormalTransaction(
@@ -304,14 +304,14 @@ class TransactionDataRepository @Inject constructor(
         )
             .map {
                 it.result
-            }
+    
             .map {
                 transactionMapper.transform(
                     it,
                     Transaction.TransactionType.SEND,
                     NORMAL_TRANSACTION
                 )
-            }
+    
     }
 
     override fun fetchAllTransactions(param: GetTransactionsUseCase.Param): Flowable<TransactionsData> {
@@ -322,10 +322,10 @@ class TransactionDataRepository @Inject constructor(
         return Flowable.fromCallable {
             transactionDao.getLatestTransaction(param.wallet.address)?.blockNumber?.toLongSafe()
                 ?: 1
-        }
+
             .flatMap { latestBlockNumber ->
                 getTransactionRemote(param.wallet, latestBlockNumber)
-            }.doOnNext {
+    .doOnNext {
                 val latestTransaction = transactionDao.getLatestTransaction(param.wallet.address)
                 val latestBlock =
                     latestTransaction?.blockNumber?.toLongSafe() ?: 1
@@ -335,20 +335,20 @@ class TransactionDataRepository @Inject constructor(
                         if (blockNumber > latestBlock) {
                             if (tx.type == Transaction.TransactionType.RECEIVED) {
                                 sendNotification(tx)
-                            }
+                    
                             updateBalance(tx, param.wallet)
-                        }
-                    }
-                }
+                
+            
+        
                 transactionDao.insertTransactionBatch(it)
 
-            }
+    
             .repeatWhen {
                 it.delay(15, TimeUnit.SECONDS)
-            }
+    
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
-            }
+    
     }
 
     private fun sendNotification(transaction: Transaction) {
@@ -403,13 +403,13 @@ class TransactionDataRepository @Inject constructor(
                         NotificationManager.IMPORTANCE_DEFAULT
                     )
                     notificationManager.createNotificationChannel(channel)
-                }
+        
 
                 notificationManager.notify(
                     Numeric.toBigInt(transaction.hash).toInt(),
                     notificationBuilder.build()
                 )
-            }
+    
 
 //            when (transaction.type) {
 //                Transaction.TransactionType.SEND -> {
@@ -423,7 +423,7 @@ class TransactionDataRepository @Inject constructor(
 //                            transaction.displayValue,
 //                            transaction.to
 //                        )
-//                    } else {
+//             else {
 //                        title = String.format(
 //                            context.getString(R.string.notification_sent_token),
 //                            transaction.tokenSymbol
@@ -433,8 +433,8 @@ class TransactionDataRepository @Inject constructor(
 //                            transaction.displayValue,
 //                            transaction.to
 //                        )
-//                    }
-//                }
+//            
+//        
 //                Transaction.TransactionType.RECEIVED -> {
 //                    if (transaction.isTransactionFail) {
 //                        title = String.format(
@@ -446,7 +446,7 @@ class TransactionDataRepository @Inject constructor(
 //                            transaction.displayValue,
 //                            transaction.from
 //                        )
-//                    } else {
+//             else {
 //                        title = String.format(
 //                            context.getString(R.string.notification_received_token),
 //                            transaction.tokenSymbol
@@ -457,8 +457,8 @@ class TransactionDataRepository @Inject constructor(
 //                            transaction.from
 //                        )
 //
-//                    }
-//                }
+//            
+//        
 //                Transaction.TransactionType.SWAP -> {
 //                    if (transaction.isTransactionFail) {
 //                        title = context.getString(R.string.notification_swap_token)
@@ -466,17 +466,17 @@ class TransactionDataRepository @Inject constructor(
 //                            context.getString(R.string.notification_fail_swap),
 //                            transaction.displayTransaction
 //                        )
-//                    } else {
+//             else {
 //                        title = context.getString(R.string.notification_swap_token)
 //                        message = String.format(
 //                            context.getString(R.string.notification_success_swap),
 //                            transaction.displayTransaction
 //                        )
-//                    }
+//            
 //
-//                }
-//            }
-        }
+//        
+//    
+
     }
 
     private fun getTransactionRemote(
@@ -486,29 +486,29 @@ class TransactionDataRepository @Inject constructor(
         val sendTransaction = fetchNormalTransaction(wallet.address, startBlock)
             .toFlowable().flatMapIterable { transactions ->
                 transactions
-            }
+    
             .filter {
                 it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO &&
                         it.from == wallet.address || it.isTransactionFail
-            }.map {
+    .map {
                 it.copy(
                     tokenSymbol = Token.ETH,
                     tokenName = Token.ETH_NAME,
                     tokenDecimal = Token.ETH_DECIMAL.toString()
                 )
-            }
+    
             .toList()
         val receivedTransaction = fetchInternalTransactions(wallet.address, startBlock)
             .toFlowable().flatMapIterable { transactions ->
                 transactions
-            }
+    
             .map {
                 it.copy(
                     tokenSymbol = Token.ETH,
                     tokenName = Token.ETH_NAME,
                     tokenDecimal = Token.ETH_DECIMAL.toString()
                 )
-            }.toList()
+    .toList()
 
         val erc20Transaction = fetchERC20TokenTransactions(wallet, startBlock)
 
@@ -522,21 +522,21 @@ class TransactionDataRepository @Inject constructor(
             transactions.addAll(received)
             transactions.addAll(erc20)
             transactions.toList().sortedByDescending { it.timeStamp }
-        }
+
             .map {
                 it.groupBy { transaction -> transaction.hash }
-            }
+    
             .map {
                 val transactionList = mutableListOf<Transaction>()
                 for ((_, transactions) in it) {
                     if (transactions.size == 2) {
                         val send = transactions.find {
                             it.type == Transaction.TransactionType.SEND
-                        }
+                
 
                         val received = transactions.find {
                             it.type == Transaction.TransactionType.RECEIVED
-                        }
+                
 
                         val sourceAmount = send?.value.toBigDecimalOrDefaultZero()
                             .divide(
@@ -578,7 +578,7 @@ class TransactionDataRepository @Inject constructor(
                                 else Transaction.TransactionType.SWAP
                             )
                         )
-                    } else {
+             else {
                         transactionList.addAll(transactions.map { tx ->
                             tx.copy(
                                 walletAddress = wallet.address,
@@ -586,11 +586,11 @@ class TransactionDataRepository @Inject constructor(
                                     tx.type
                                 else Transaction.TransactionType.SWAP
                             )
-                        })
-                    }
-                }
+                )
+            
+        
                 transactionList.toList()
-            }.toFlowable()
+    .toFlowable()
     }
 
     private fun getTransactions(
@@ -599,11 +599,11 @@ class TransactionDataRepository @Inject constructor(
         return Flowable.mergeDelayError(
             transactionDao.getCompletedTransactions(wallet.address).map {
                 TransactionsData(it, false)
-            },
+    ,
 
             Flowable.fromCallable {
                 transactionDao.getLatestTransaction(wallet.address) != null
-            }.flatMap {
+    .flatMap {
 
                 if (it) {
                     Flowables.zip(
@@ -611,7 +611,7 @@ class TransactionDataRepository @Inject constructor(
                         Flowable.fromCallable {
                             transactionDao.getLatestTransaction(wallet.address)?.blockNumber?.toLongSafe()
                                 ?: 1
-                        }.flatMap {
+                .flatMap {
                             getTransactionRemote(wallet, max(it - 10, 1))
                                 .doOnNext {
                                     val latestTransaction =
@@ -624,14 +624,14 @@ class TransactionDataRepository @Inject constructor(
                                             if (blockNumber > latestBlock) {
                                                 if (tx.type == Transaction.TransactionType.RECEIVED) {
                                                     sendNotification(tx)
-                                                }
+                                        
                                                 updateBalance(tx, wallet)
-                                            }
-                                        }
-                                    }
+                                    
+                                
+                            
                                     transactionDao.insertTransactionBatch(it)
-                                }
-                        }
+                        
+                
 
                     ) { local, remote ->
 
@@ -639,18 +639,18 @@ class TransactionDataRepository @Inject constructor(
                         transactionList.addAll(remote)
                         transactionList.addAll(local)
                         transactionList
-                    }.map {
+            .map {
                         TransactionsData(it, true)
-                    }
-                } else {
+            
+         else {
                     Flowable.fromCallable {
                         transactionDao.getLatestTransaction(wallet.address)?.blockNumber?.toLongSafe()
                             ?: 1
-                    }.flatMap {
+            .flatMap {
                         getTransactionRemote(wallet, max(it - 10, 1))
                             .map {
                                 TransactionsData(it, true)
-                            }
+                    
                             .doOnNext {
                                 val latestTransaction =
                                     transactionDao.getLatestTransaction(wallet.address)
@@ -662,17 +662,17 @@ class TransactionDataRepository @Inject constructor(
                                         if (blockNumber > latestBlock) {
                                             if (tx.type == Transaction.TransactionType.RECEIVED) {
                                                 sendNotification(tx)
-                                            }
+                                    
                                             updateBalance(tx, wallet)
-                                        }
-                                    }
-                                }
+                                
+                            
+                        
                                 transactionDao.insertTransactionBatch(it.transactionList)
-                            }
-                    }
-                }
+                    
+            
+        
 
-            }
+    
 
         )
     }
@@ -680,7 +680,7 @@ class TransactionDataRepository @Inject constructor(
     override fun saveTransactionFilter(param: SaveTransactionFilterUseCase.Param): Completable {
         return Completable.fromCallable {
             transactionFilterDao.updateTrasactionFilter(param.transactionFilter)
-        }
+
     }
 
     override fun getTransactionFilter(param: GetTransactionFilterUseCase.Param): Flowable<TransactionFilter> {
@@ -690,7 +690,7 @@ class TransactionDataRepository @Inject constructor(
                 null -> {
                     tokenDao.allTokens.map {
                         it.tokenSymbol
-                    }
+            
                     val newFilter = TransactionFilter(
                         walletAddress = param.walletAddress,
                         types = listOf(
@@ -700,18 +700,18 @@ class TransactionDataRepository @Inject constructor(
                         ),
                         tokens = tokenDao.allTokens.map {
                             it.tokenSymbol
-                        }
+                
                     )
                     transactionFilterDao.insertTransactionFilter(newFilter)
                     newFilter
-                }
+        
                 else -> filter
-            }
+    
 
-        }.flatMap {
+.flatMap {
             transactionFilterDao.findTransactionFilterByAddressFlowable(param.walletAddress)
                 .defaultIfEmpty(it)
-        }
+
     }
 
     companion object {

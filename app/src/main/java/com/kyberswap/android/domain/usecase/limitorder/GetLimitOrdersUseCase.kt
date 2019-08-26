@@ -25,12 +25,12 @@ class GetLimitOrdersUseCase @Inject constructor(
         ) { filter, orders ->
             OrdersWrapper(filterOrders(orders, filter), filter.oldest)
 
-        }.repeatWhen {
+.repeatWhen {
             it.delay(15, TimeUnit.SECONDS)
-        }
+
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
-            }
+    
     }
 
     private fun filterOrders(
@@ -42,7 +42,7 @@ class GetLimitOrdersUseCase @Inject constructor(
                 !orderFilter.unSelectedStatus.map { it.toLowerCase() }.contains(it.status.toLowerCase()) &&
                     !orderFilter.unSelectedPairs.contains(Pair(it.src, it.dst)) &&
                     !orderFilter.unSelectedAddresses.contains(it.userAddr)
-            }
+    
 
     }
 }

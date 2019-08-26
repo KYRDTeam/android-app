@@ -92,17 +92,17 @@ class LineChartFragment : BaseFragment() {
                     is GetChartState.Success -> {
                         configChart(state.chart)
                         setData(state.chart, binding.lineChart)
-                    }
+            
 
                     is GetChartState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
 
     }
@@ -136,15 +136,15 @@ class LineChartFragment : BaseFragment() {
         if (chart.c.isEmpty()) {
             lineChart.setNoDataText(getString(R.string.chart_no_token_data))
             return
-        }
+
         val chartEntries = mutableListOf<Entry>()
         if (chart.c.isEmpty()) {
             lineChart.setNoDataText(getString(R.string.chart_no_token_data))
             return
-        }
+
         chart.c.forEachIndexed { index, bigDecimal ->
             chartEntries.add(Entry(index.toFloat(), bigDecimal.toFloat()))
-        }
+
 
         val dataSet: LineDataSet
         if (lineChart.data != null && lineChart.data.dataSetCount > 0) {
@@ -153,7 +153,7 @@ class LineChartFragment : BaseFragment() {
             dataSet.notifyDataSetChanged()
             lineChart.data.notifyDataChanged()
             lineChart.notifyDataSetChanged()
-        } else {
+ else {
             dataSet = LineDataSet(chartEntries, token!!.tokenSymbol)
             dataSet.mode = LineDataSet.Mode.CUBIC_BEZIER
             dataSet.setDrawIcons(false)
@@ -197,7 +197,7 @@ class LineChartFragment : BaseFragment() {
             lineChart.axisLeft.addLimitLine(ll1)
             lineChart.axisLeft.addLimitLine(ll2)
 
-        }
+
 
 
     }
@@ -210,8 +210,8 @@ class LineChartFragment : BaseFragment() {
                 arguments = Bundle().apply {
                     putParcelable(TOKEN_PARAM, token)
                     putParcelable(CHART_TYPE, type)
-                }
-            }
+        
+    
     }
 
 

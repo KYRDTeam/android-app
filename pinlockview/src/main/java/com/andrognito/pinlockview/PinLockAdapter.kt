@@ -24,8 +24,8 @@ class PinLockAdapter :
             keyValues?.let {
                 this.mKeyValues = getAdjustKeyValues(it)
                 notifyDataSetChanged()
-            }
-        }
+    
+
 
     init {
         this.mKeyValues = getAdjustKeyValues(intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 0))
@@ -38,10 +38,10 @@ class PinLockAdapter :
         if (viewType == VIEW_TYPE_NUMBER) {
             val view = inflater.inflate(R.layout.layout_number_item, parent, false)
             viewHolder = NumberViewHolder(view)
-        } else {
+ else {
             val view = inflater.inflate(R.layout.layout_delete_item, parent, false)
             viewHolder = DeleteViewHolder(view)
-        }
+
         return viewHolder
     }
 
@@ -49,32 +49,32 @@ class PinLockAdapter :
         if (holder.itemViewType == VIEW_TYPE_NUMBER) {
             val vh1 = holder as NumberViewHolder
             configureNumberButtonHolder(vh1, position)
-        } else if (holder.itemViewType == VIEW_TYPE_DELETE) {
+ else if (holder.itemViewType == VIEW_TYPE_DELETE) {
             val vh2 = holder as DeleteViewHolder
             configureDeleteButtonHolder(vh2)
-        }
+
     }
 
     private fun configureNumberButtonHolder(holder: NumberViewHolder?, position: Int) {
         if (holder != null) {
             if (position == 9) {
                 holder.mNumberButton.visibility = View.GONE
-            } else {
+     else {
                 holder.mNumberButton.text = mKeyValues!![position].toString()
                 holder.mNumberButton.visibility = View.VISIBLE
                 holder.mNumberButton.tag = mKeyValues!![position]
-            }
-        }
+    
+
     }
 
     private fun configureDeleteButtonHolder(holder: DeleteViewHolder?) {
         if (holder != null) {
             if (customizationOptions!!.isShowDeleteButton && pinLength > 0) {
                 holder.mButtonImage.visibility = View.VISIBLE
-            } else {
+     else {
                 holder.mButtonImage.visibility = View.GONE
-            }
-        }
+    
+
     }
 
     override fun getItemCount(): Int {
@@ -84,7 +84,7 @@ class PinLockAdapter :
     override fun getItemViewType(position: Int): Int {
         return if (position == itemCount - 1) {
             VIEW_TYPE_DELETE
-        } else VIEW_TYPE_NUMBER
+ else VIEW_TYPE_NUMBER
     }
 
     private fun getAdjustKeyValues(keyValues: IntArray): IntArray {
@@ -92,11 +92,11 @@ class PinLockAdapter :
         for (i in keyValues.indices) {
             if (i < 9) {
                 adjustedKeyValues[i] = keyValues[i]
-            } else {
+     else {
                 adjustedKeyValues[i] = -1
                 adjustedKeyValues[i + 1] = keyValues[i]
-            }
-        }
+    
+
         return adjustedKeyValues
     }
 
@@ -107,9 +107,9 @@ class PinLockAdapter :
             mNumberButton.setOnClickListener { v ->
                 if (onItemClickListener != null) {
                     onItemClickListener!!.onNumberClicked(v.tag as Int)
-                }
-            }
-        }
+        
+    
+
     }
 
     inner class DeleteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -124,17 +124,17 @@ class PinLockAdapter :
                 mDeleteButton.setOnClickListener {
                     if (onDeleteClickListener != null) {
                         onDeleteClickListener!!.onDeleteClicked()
-                    }
-                }
+            
+        
 
                 mDeleteButton.setOnLongClickListener {
                     if (onDeleteClickListener != null) {
                         onDeleteClickListener!!.onDeleteLongClicked()
-                    }
+            
                     true
-                }
-            }
-        }
+        
+    
+
     }
 
     interface OnNumberClickListener {

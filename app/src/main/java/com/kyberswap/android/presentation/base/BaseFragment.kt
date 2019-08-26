@@ -25,7 +25,7 @@ abstract class BaseFragment : DaggerFragment() {
                 setMessage(getString(R.string.message_loading))
                 setCanceledOnTouchOutside(true)
                 setCancelable(true)
-            }
+    
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -42,7 +42,7 @@ abstract class BaseFragment : DaggerFragment() {
             this.alertListener = listener
             val intent = AlertActivity.newIntent(context!!, message)
             startActivityForResult(intent, SHOW_ALERT)
-        }
+
     }
 
     fun showError(message: String, listener: () -> Unit = {}) {
@@ -59,7 +59,7 @@ abstract class BaseFragment : DaggerFragment() {
             this.alertListener = listener
             val intent = AlertWithoutIconActivity.newIntent(context!!, title, message, timeInSecond)
             startActivityForResult(intent, SHOW_ALERT)
-        }
+
     }
 
     fun showAlert(message: String, resourceIcon: Int, listener: () -> Unit = {}) {
@@ -67,7 +67,7 @@ abstract class BaseFragment : DaggerFragment() {
             this.alertListener = listener
             val intent = AlertActivity.newIntent(context!!, message, resourceIcon)
             startActivityForResult(intent, SHOW_ALERT)
-        }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -75,8 +75,8 @@ abstract class BaseFragment : DaggerFragment() {
         if (requestCode == SHOW_ALERT) {
             if (resultCode == Activity.RESULT_OK) {
                 alertListener.invoke()
-            }
-        }
+    
+
     }
 
     fun showNetworkUnAvailable() {
@@ -90,7 +90,7 @@ abstract class BaseFragment : DaggerFragment() {
     fun showMessageLong(message: String) {
         if (view != null) {
             Snackbar.make(view!!, message, Snackbar.LENGTH_LONG).show()
-        }
+
     }
 
     val currentFragment: Fragment
@@ -122,13 +122,13 @@ abstract class BaseFragment : DaggerFragment() {
         val context = activity?.applicationContext
         if (context is KyberSwapApplication) {
             context.stopCounter()
-        }
+
     }
 
     fun startCounter() {
         val context = activity?.applicationContext
         if (context is KyberSwapApplication) {
             context.startCounter()
-        }
+
     }
 }

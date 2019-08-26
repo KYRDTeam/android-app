@@ -38,11 +38,11 @@ class PassCodeLockViewModel @Inject constructor(
         savePinUseCase.execute(
             Action {
                 _savePinCallback.value = Event(SavePinState.Success(""))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _savePinCallback.value = Event(SavePinState.ShowError(it.localizedMessage))
-            },
+    ,
             SavePinUseCase.Param(pin)
         )
 
@@ -52,11 +52,11 @@ class PassCodeLockViewModel @Inject constructor(
         getPinUseCase.execute(
             Consumer {
                 _getPinCallback.value = Event(GetPinState.Success(it))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _getPinCallback.value = Event(GetPinState.ShowError(it.localizedMessage))
-            },
+    ,
             null
         )
     }
@@ -66,11 +66,11 @@ class PassCodeLockViewModel @Inject constructor(
         verifyPinUseCase.execute(
             Consumer {
                 _verifyPinCallback.value = Event(VerifyPinState.Success(it))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _verifyPinCallback.value = Event(VerifyPinState.ShowError(it.localizedMessage))
-            },
+    ,
             VerifyPinUseCase.Param(pin, remainNum, time)
         )
     }

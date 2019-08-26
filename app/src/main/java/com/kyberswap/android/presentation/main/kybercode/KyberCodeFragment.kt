@@ -59,15 +59,15 @@ class KyberCodeFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-        }
+
 
 
         binding.edtKyberCode.addTextChangeListener {
             onTextChanged { s, _, _, _ ->
                 val count = s.toString().trim().split(" ").size
                 binding.tvApply.isEnabled = count > 0
-            }
-        }
+    
+
 
         binding.tvApply.setOnClickListener {
             hideKeyboard()
@@ -76,7 +76,7 @@ class KyberCodeFragment : BaseFragment() {
                 if (binding.edtWalletName.text.isNotEmpty()) binding.edtWalletName.text.toString()
                 else getString(R.string.default_wallet_name)
             )
-        }
+
 
         viewModel.getKyberCodeCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -91,46 +91,46 @@ class KyberCodeFragment : BaseFragment() {
                             )
                         ) {
                             onKyberCodeFinish()
-                        }
-                    }
+                
+            
                     is KyberCodeState.ShowError -> {
                         val message = when (state.message) {
                             Messages.WALLET_EXISTS -> {
                                 getString(R.string.wallet_exist)
-                            }
+                    
 
                             Messages.PRIVATE_KEY_INVALID -> {
                                 getString(R.string.fail_import_private_key)
-                            }
+                    
 
                             Messages.MNEMONIC_BAD_WORD -> {
                                 getString(R.string.fail_import_mnemonic)
-                            }
+                    
 
                             Messages.MAC_UNMATCH -> {
                                 getString(R.string.fail_import_json)
-                            }
+                    
                             else -> {
                                 state.message ?: getString(R.string.something_wrong)
-                            }
+                    
 
-                        }
+                
                         showAlertWithoutIcon(
                             message = message
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
     }
 
     private fun onKyberCodeFinish() {
         if (fromLandingPage == true) {
             navigator.navigateToHome()
-        } else {
+ else {
             activity?.onBackPressed()
-        }
+
     }
 
 
@@ -140,8 +140,8 @@ class KyberCodeFragment : BaseFragment() {
             .apply {
                 arguments = Bundle().apply {
                     putBoolean(FROM_LANDING_PAGE_EXTRA, fromLandingPage)
-                }
-            }
+        
+    
     }
 
 

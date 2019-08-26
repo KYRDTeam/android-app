@@ -21,11 +21,11 @@ class BackupWalletPagerAdapter constructor(
             BackupWalletFragment.newInstance(
                 subListWords
             )
-        } else {
+ else {
             BackupWalletFragmentNext.newInstance(
                 subListWords
             )
-        }
+
     }
 
     override fun getCount() = words.size / NUMBER_WORD_PER_PAGE

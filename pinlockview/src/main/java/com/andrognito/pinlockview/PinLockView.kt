@@ -26,49 +26,49 @@ class PinLockView : RecyclerView {
 
                 if (isIndicatorDotsAttached) {
                     mIndicatorDots!!.updateDot(mPin.length)
-                }
+        
 
                 if (mPin.length == 1) {
                     mAdapter!!.pinLength = mPin.length
                     mAdapter!!.notifyItemChanged(mAdapter!!.itemCount - 1)
-                }
+        
 
                 if (mPinLockListener != null) {
                     if (mPin.length == mPinLength) {
                         mPinLockListener!!.onComplete(mPin)
-                    } else {
+             else {
                         mPinLockListener!!.onPinChange(mPin.length, mPin)
-                    }
-                }
-            } else {
+            
+        
+     else {
                 if (!isShowDeleteButton) {
                     resetPinLockView()
                     mPin += keyValue.toString()
 
                     if (isIndicatorDotsAttached) {
                         mIndicatorDots!!.updateDot(mPin.length)
-                    }
+            
 
                     if (mPinLockListener != null) {
                         mPinLockListener!!.onPinChange(mPin.length, mPin)
-                    }
+            
 
-                } else {
+         else {
                     if (mPinLockListener != null) {
                         mPinLockListener!!.onComplete(mPin)
-                    }
-                }
-            }
-        }
+            
+        
+    
+
 
     }
 
     fun enableInput(isEnable: Boolean) {
         if (isEnable) {
             mAdapter?.onItemClickListener = mOnNumberClickListener
-        } else {
+ else {
             mAdapter?.onItemClickListener = null
-        }
+
     }
 
     private val mOnDeleteClickListener = object : PinLockAdapter.OnDeleteClickListener {
@@ -78,34 +78,34 @@ class PinLockView : RecyclerView {
 
                 if (isIndicatorDotsAttached) {
                     mIndicatorDots!!.updateDot(mPin.length)
-                }
+        
 
                 if (mPin.length == 0) {
                     mAdapter!!.pinLength = mPin.length
                     mAdapter!!.notifyItemChanged(mAdapter!!.itemCount - 1)
-                }
+        
 
                 if (mPinLockListener != null) {
                     if (mPin.length == 0) {
                         mPinLockListener!!.onEmpty()
                         clearInternalPin()
-                    } else {
+             else {
                         mPinLockListener!!.onPinChange(mPin.length, mPin)
-                    }
-                }
-            } else {
+            
+        
+     else {
                 if (mPinLockListener != null) {
                     mPinLockListener!!.onEmpty()
-                }
-            }
-        }
+        
+    
+
 
         override fun onDeleteLongClicked() {
             resetPinLockView()
             if (mPinLockListener != null) {
                 mPinLockListener!!.onEmpty()
-            }
-        }
+    
+
     }
 
     /**
@@ -125,8 +125,8 @@ class PinLockView : RecyclerView {
 
             if (isIndicatorDotsAttached) {
                 mIndicatorDots!!.pinLength = pinLength
-            }
-        }
+    
+
 
 
     /**
@@ -145,7 +145,7 @@ class PinLockView : RecyclerView {
             this.mShowDeleteButton = showDeleteButton
             mCustomizationOptionsBundle!!.isShowDeleteButton = showDeleteButton
             mAdapter!!.notifyDataSetChanged()
-        }
+
 
 
     var customKeySet: IntArray?
@@ -155,8 +155,8 @@ class PinLockView : RecyclerView {
 
             if (mAdapter != null) {
                 mAdapter!!.keyValues = customKeySet
-            }
-        }
+    
+
 
     /**
      * Returns true if [IndicatorDots] are attached to [PinLockView]
@@ -200,9 +200,9 @@ class PinLockView : RecyclerView {
             mShowDeleteButton =
                 typedArray.getBoolean(R.styleable.PinLockView_keypadShowDeleteButton, true)
 
-        } finally {
+ finally {
             typedArray.recycle()
-        }
+
 
         mCustomizationOptionsBundle = CustomizationOptionsBundle()
         mCustomizationOptionsBundle!!.isShowDeleteButton = mShowDeleteButton
@@ -237,7 +237,7 @@ class PinLockView : RecyclerView {
 
         if (mAdapter != null) {
             mAdapter!!.keyValues = mCustomKeySet
-        }
+
     }
 
     private fun clearInternalPin() {
@@ -257,7 +257,7 @@ class PinLockView : RecyclerView {
 
         if (mIndicatorDots != null) {
             mIndicatorDots!!.updateDot(mPin.length)
-        }
+
     }
 
     /**

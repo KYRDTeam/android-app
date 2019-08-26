@@ -28,15 +28,15 @@ class ItemSpaceDecoration(
 
             if (position < mSpanCount) {
                 outRect.top = mVerticalSpaceHeight
-            }
+    
             outRect.bottom = mVerticalSpaceHeight
-        } else {
+ else {
             outRect.left = column * mHorizontalSpaceWidth / mSpanCount
             outRect.right =
                 mHorizontalSpaceWidth - (column + 1) * mHorizontalSpaceWidth / mSpanCount
             if (position >= mSpanCount) {
                 outRect.top = mVerticalSpaceHeight
-            }
-        }
+    
+
     }
 }

@@ -23,7 +23,7 @@ class ContactDataRepository @Inject constructor(
         return Completable.fromCallable {
             val name = if (param.name.isEmpty()) {
                 DEFAULT_NAME
-            } else param.name
+     else param.name
 
             val findContactByAddress = contactDao.findContactByAddress(param.address)
             val updatedAt = System.currentTimeMillis() / 1000
@@ -39,16 +39,16 @@ class ContactDataRepository @Inject constructor(
                 val send = sendDao.findSendByAddress(param.walletAddress)
                 send?.let {
                     sendDao.updateSend(it.copy(contact = contact))
-                }
-            }
+        
+    
 
-        }
+
     }
 
     override fun getContacts(param: GetContactUseCase.Param): Flowable<List<Contact>> {
         return contactDao.all.map { contacts ->
             contacts.sortedByDescending { it.updatedAt }
-        }
+
     }
 
     override fun deleteContact(param: DeleteContactUseCase.Param): Completable {

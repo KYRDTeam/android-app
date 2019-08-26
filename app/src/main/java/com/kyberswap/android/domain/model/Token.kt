@@ -57,9 +57,9 @@ data class Token(
         get() {
             return wallets.find {
                 it.isSelected
-            }?.currentBalance
+    ?.currentBalance
                 ?: BigDecimal.ZERO
-        }
+
 
 
     constructor(entity: TokenEntity) : this(
@@ -135,7 +135,7 @@ data class Token(
         val walletBalances =
             wallets.map {
                 it.copy(isSelected = false)
-            }.toMutableList()
+    .toMutableList()
 
         val walletBalance = wallets.find { it1 -> it1.walletAddress == wallet.address }
         if (walletBalance == null) {
@@ -146,12 +146,12 @@ data class Token(
                     true
                 )
             )
-        } else {
+ else {
             val idx = walletBalances.indexOf(walletBalance)
             if (idx >= 0) {
                 walletBalances[idx] = walletBalance.copy(isSelected = true)
-            }
-        }
+    
+
 
         return copy(wallets = walletBalances)
     }
@@ -164,7 +164,7 @@ data class Token(
                 walletBalance?.currentBalance ?: BigDecimal.ZERO,
                 wallet.isSelected
             )
-        }
+
 
         return this.copy(wallets = walletBalances)
     }
@@ -175,7 +175,7 @@ data class Token(
             val updateBalances = wallets.toMutableList()
             updateBalances.remove(walletBalance)
             return copy(wallets = updateBalances)
-        }
+
         return this
     }
 
@@ -185,11 +185,11 @@ data class Token(
         val updatedWalletBalance = wallets.map {
             if (it.walletAddress == walletBalance.walletAddress) {
                 walletBalance
-            } else {
+     else {
                 it
-            }
+    
 
-        }
+
         return this.copy(wallets = updatedWalletBalance)
     }
 
@@ -298,7 +298,7 @@ data class Token(
             value > BigDecimal.ZERO -> UP
             value < BigDecimal.ZERO -> DOWN
             else -> SAME
-        }
+
     }
 
     fun updatePrecision(value: BigInteger): BigInteger {

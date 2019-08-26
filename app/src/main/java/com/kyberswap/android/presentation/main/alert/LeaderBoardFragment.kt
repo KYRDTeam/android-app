@@ -77,11 +77,11 @@ class LeaderBoardFragment : BaseFragment() {
                 binding.title = getString(R.string.campaign_result)
                 viewModel.getCampaignResult(it)
 
-            } else {
+     else {
                 binding.title = getString(R.string.alerts_leader_board)
                 viewModel.getLeaderBoard(it)
-            }
-        }
+    
+
 
         binding.isCampaignResult = isCampaignResult
         binding.rvLeaderBoard.layoutManager = LinearLayoutManager(
@@ -107,16 +107,16 @@ class LeaderBoardFragment : BaseFragment() {
                         binding.lnCampaignInfo.visibility =
                             if (state.campaignInfo.id <= 0 && isCampaignResult != true && state.lastCampaignTitle.isEmpty()) View.GONE else View.VISIBLE
                         binding.executePendingBindings()
-                    }
+            
                     is GetLeaderBoardState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         binding.tvWinner.setOnClickListener {
             navigator.navigateToLeaderBoard(
@@ -124,23 +124,23 @@ class LeaderBoardFragment : BaseFragment() {
                 userInfo,
                 true
             )
-        }
+
 
         binding.flToggle.setOnClickListener {
             binding.expandableLayout.toggle()
             binding.imgToggle.isSelected = !binding.imgToggle.isSelected
-        }
+
 
         binding.tvEligibleToken.setOnClickListener {
             dialogHelper.showEligibleToken(
                 appExecutors,
                 binding.campaign?.eligibleTokens?.split(",") ?: listOf()
             )
-        }
+
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-        }
+
 
     }
 
@@ -158,8 +158,8 @@ class LeaderBoardFragment : BaseFragment() {
                     putParcelable(USER_INFO_PARAM, userInfo)
                     putBoolean(LATEST_CAMPAIGN_RESULT, isCampaignResult)
 
-                }
-            }
+        
+    
     }
 
 

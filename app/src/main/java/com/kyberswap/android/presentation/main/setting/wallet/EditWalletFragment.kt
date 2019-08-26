@@ -70,23 +70,23 @@ class EditWalletFragment : BaseFragment() {
                     dialogHelper.showInputPassword(viewModel.compositeDisposable) {
                         wallet?.let { it1 -> viewModel.backupKeyStore(it, it1) }
 
-                    }
-                },
+            
+        ,
                 {
                     wallet?.let { it1 -> viewModel.backupPrivateKey(it1) }
-                },
+        ,
                 {
                     wallet?.let { it1 -> viewModel.backupMnemonic(it1) }
 
-                }, {
+        , {
                     copyWalletAddress()
-                }
+        
             )
-        }
+
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-        }
+
 
         binding.tvDeleteWallet.setOnClickListener {
 
@@ -95,19 +95,19 @@ class EditWalletFragment : BaseFragment() {
                 getString(R.string.delete_wallet_confirmation),
                 {
                     wallet?.let { it1 -> viewModel.deleteWallet(it1) }
-                })
-        }
+        )
+
 
         binding.imgDone.setOnClickListener {
             val name = if (binding.edtWalletName.text.isNullOrBlank()) {
                 getString(R.string.default_wallet_name)
-            } else {
+     else {
                 binding.edtWalletName.text.toString()
-            }
+    
             wallet?.copy(name = name)?.let { wl ->
                 viewModel.save(wl)
-            }
-        }
+    
+
 
         viewModel.deleteWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -116,16 +116,16 @@ class EditWalletFragment : BaseFragment() {
                     is DeleteWalletState.Success -> {
                         showAlert(getString(R.string.delete_wallet_success))
                         onDeleteWalletSuccess(state.verifyStatus)
-                    }
+            
                     is DeleteWalletState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.exportKeystoreWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -133,16 +133,16 @@ class EditWalletFragment : BaseFragment() {
                 when (state) {
                     is ExportWalletState.Success -> {
                         onExportWalletComplete(state.value)
-                    }
+            
                     is ExportWalletState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.exportPrivateKeyWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -150,16 +150,16 @@ class EditWalletFragment : BaseFragment() {
                 when (state) {
                     is ExportWalletState.Success -> {
                         navigator.navigateToBackupWalletInfo(currentFragment, state.value)
-                    }
+            
                     is ExportWalletState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
 
         viewModel.exportMnemonicCallback.observe(viewLifecycleOwner, Observer {
@@ -168,32 +168,32 @@ class EditWalletFragment : BaseFragment() {
                 when (state) {
                     is ExportWalletState.Success -> {
                         navigator.navigateToBackupWalletInfo(currentFragment, state.value)
-                    }
+            
                     is ExportWalletState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.saveWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is SaveWalletState.Success -> {
                         onSaveComplete()
-                    }
+            
                     is SaveWalletState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
     }
 
     private fun onSaveComplete() {
@@ -220,7 +220,7 @@ class EditWalletFragment : BaseFragment() {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = mimeType
             putExtra(Intent.EXTRA_TITLE, fileName)
-        }
+
 
         startActivityForResult(intent, WRITE_REQUEST_CODE)
     }
@@ -233,20 +233,20 @@ class EditWalletFragment : BaseFragment() {
             if (requestCode == WRITE_REQUEST_CODE) {
                 try {
                     cr?.takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                } catch (e: SecurityException) {
+         catch (e: SecurityException) {
                     e.printStackTrace()
-                }
+        
 
                 var os: OutputStream? = null
                 try {
                     os = cr?.openOutputStream(uri)
                     os?.write(jsonContent?.toByteArray())
-                } catch (e: Exception) {
-                } finally {
+         catch (e: Exception) {
+         finally {
                     closeQuietly(os)
-                }
-            }
-        }
+        
+    
+
 
     }
 
@@ -254,21 +254,21 @@ class EditWalletFragment : BaseFragment() {
         if (closeable != null) {
             try {
                 closeable.close()
-            } catch (rethrown: RuntimeException) {
+     catch (rethrown: RuntimeException) {
                 throw rethrown
-            } catch (ignored: Exception) {
-            }
+     catch (ignored: Exception) {
+    
 
-        }
+
     }
 
     private fun onDeleteWalletSuccess(verifyStatus: VerifyStatus) {
         if (verifyStatus.isEmptyWallet) {
             navigator.navigateToLandingPage()
             activity?.finishAffinity()
-        } else {
+ else {
             activity?.onBackPressed()
-        }
+
 
     }
 
@@ -280,8 +280,8 @@ class EditWalletFragment : BaseFragment() {
             EditWalletFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(WALLET_PARAM, wallet)
-                }
-            }
+        
+    
     }
 
 

@@ -29,12 +29,12 @@ class ManageTriggerAlertAdapter(
     diffCallback = object : DiffUtil.ItemCallback<Alert>() {
         override fun areItemsTheSame(oldItem: Alert, newItem: Alert): Boolean {
             return oldItem == newItem
-        }
+
 
 
         override fun areContentsTheSame(oldItem: Alert, newItem: Alert): Boolean {
             return oldItem == newItem
-        }
+
     }
 ) {
     override fun getSwipeLayoutResourceId(position: Int): Int {
@@ -70,19 +70,19 @@ class ManageTriggerAlertAdapter(
         binding.swipe.addSwipeListener(object : SimpleSwipeListener() {
             override fun onStartOpen(layout: SwipeLayout?) {
                 mItemManger.closeAllExcept(layout)
-            }
-        })
+    
+)
 
         binding.csLayout.setOnClickListener {
             onDeleteClick?.invoke(item)
-        }
+
 
         binding.btnDelete.setOnClickListener {
             binding.swipe.close(true)
             handler.postDelayed({
                 onDeleteClick?.invoke(item)
-            }, 250)
-        }
+    , 250)
+
 
         val color = ContextCompat.getColor(binding.root.context, R.color.color_trigger_alert_price)
         binding.tvAlertPrice.setTextColor(

@@ -23,12 +23,12 @@ open class SelectedWalletViewModel @Inject constructor(
             Consumer { wallet ->
                 _getSelectedWalletCallback.value = Event(GetWalletState.Success(wallet))
 
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _getSelectedWalletCallback.value =
                     Event(GetWalletState.ShowError(it.localizedMessage))
-            },
+    ,
             null
         )
     }

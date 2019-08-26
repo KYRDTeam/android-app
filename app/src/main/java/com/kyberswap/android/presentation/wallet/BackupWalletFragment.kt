@@ -60,7 +60,7 @@ class BackupWalletFragment : BaseFragment() {
             BackupWalletFragment().apply {
                 arguments = Bundle().apply {
                     putParcelableArrayList(ARG_PARAM, ArrayList(words))
-                }
-            }
+        
+    
     }
 }

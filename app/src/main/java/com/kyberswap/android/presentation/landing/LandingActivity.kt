@@ -48,22 +48,22 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
             dialogHelper.showConfirmation {
                 it.enable(false)
                 viewModel.createWallet()
-            }
-        }
+    
+
 
         binding.btnImportWallet.setOnClickListener {
             it.enable(false)
             navigator.navigateToImportWalletPage()
-        }
+
 
         binding.btnPromo.setOnClickListener {
             it.enable(false)
             navigator.navigateToKyberCodeFromLandingPage(R.id.flContainer)
-        }
+
 
         binding.tvTermAndCondition.setOnClickListener {
             navigator.navigateToTermAndCondition()
-        }
+
 
         viewModel.createWalletCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -73,36 +73,36 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
                         showAlert(getString(R.string.create_wallet_success)) {
                             binding.btnCreateWallet.enable(true)
                             navigator.navigateToBackupWalletPage(state.words, state.wallet)
-                        }
+                
 
-                    }
+            
                     is CreateWalletState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
         if (!binding.btnPromo.isEnabled) {
             binding.btnPromo.enable(true)
-        }
+
     }
 
     override fun onResume() {
         super.onResume()
         if (!binding.btnImportWallet.isEnabled) {
             binding.btnImportWallet.enable(true)
-        }
+
 
         if (!binding.btnCreateWallet.isEnabled) {
             binding.btnCreateWallet.enable(true)
-        }
+
     }
 
 

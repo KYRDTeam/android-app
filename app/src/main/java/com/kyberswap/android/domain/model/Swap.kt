@@ -57,7 +57,7 @@ data class Swap(
     val allETHBalanceGasLimit: BigInteger
         get() {
             return calculateDefaultGasLimit(tokenSource, tokenDest) + 10_000.toBigInteger()
-        }
+
 
     val currentExpectedDestAmount: BigDecimal
         get() = getExpectedDestAmount(sourceAmount.toBigDecimalOrDefaultZero())
@@ -147,10 +147,10 @@ data class Swap(
         get() {
             return if (tokenDest.rateEthNow == BigDecimal.ZERO) {
                 displaySourceToDestAmountETH
-            } else {
+     else {
                 displaySourceToDestAmountETHUSD
-            }
-        }
+    
+
 
     private val displaySourceToDestAmountETH: String
         get() = StringBuilder().append("1 ")
@@ -315,12 +315,12 @@ data class Swap(
                 tokenSource.rateEthNow
             )
 
-        }
+
 
     val insufficientEthBalance: Boolean
         get() {
             return ethToken.currentBalance < gasFeeEth
-        }
+
 
     fun getDefaultSourceAmount(ethAmount: String): BigDecimal {
         return if (tokenSource.rateEthNow == BigDecimal.ZERO) BigDecimal.ZERO

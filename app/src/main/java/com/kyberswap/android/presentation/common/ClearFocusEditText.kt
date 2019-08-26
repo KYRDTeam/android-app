@@ -17,10 +17,10 @@ open class ClearFocusEditText : EditText {
     override fun onKeyPreIme(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             clearFocus()
-        }
+
         if (keyImeChangeListener != null) {
             keyImeChangeListener?.onKeyIme(keyCode, event)
-        }
+
 
         return super.onKeyPreIme(keyCode, event)
     }

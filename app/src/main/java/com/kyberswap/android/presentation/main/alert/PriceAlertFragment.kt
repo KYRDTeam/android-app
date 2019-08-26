@@ -93,17 +93,17 @@ class PriceAlertFragment : BaseFragment() {
                         if (this.wallet?.address != state.wallet.address) {
                             this.wallet = state.wallet
                             viewModel.getCurrentAlert(state.wallet.address, alert)
-                        }
-                    }
+                
+            
                     is GetWalletState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.getCurrentAlertCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -114,17 +114,17 @@ class PriceAlertFragment : BaseFragment() {
                             binding.executePendingBindings()
                             updateAlert()
                             setupCurrency()
-                        }
-                    }
+                
+            
                     is GetCurrentAlertState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.getNumberOfAlerts()
         viewModel.getAllAlertsCallback.observe(viewLifecycleOwner, Observer {
@@ -133,14 +133,14 @@ class PriceAlertFragment : BaseFragment() {
                     is GetNumberAlertsState.Success -> {
                         if (currentAlertNumber != state.numOfAlert) {
                             currentAlertNumber = state.numOfAlert
-                        }
-                    }
+                
+            
                     is GetNumberAlertsState.ShowError -> {
 
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.createOrUpdateAlertCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -148,16 +148,16 @@ class PriceAlertFragment : BaseFragment() {
                 when (state) {
                     is CreateOrUpdateAlertState.Success -> {
                         onCompleted()
-                    }
+            
                     is CreateOrUpdateAlertState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-                    }
-                }
-            }
-        })
+            
+        
+    
+)
 
         viewModel.compositeDisposable.add(binding.rgCurrencies.checkedChanges()
             .skipInitialValue()
@@ -167,8 +167,8 @@ class PriceAlertFragment : BaseFragment() {
                 updateAlert()
                 if (clearAlertPrice) {
                     binding.edtRate.setText("")
-                }
-            })
+        
+    )
 
         viewModel.compositeDisposable.add(binding.tvToken.textChanges()
             .skipInitialValue()
@@ -179,28 +179,28 @@ class PriceAlertFragment : BaseFragment() {
                         viewModel.updateAlertInfo(binding.alert)
                         previousTokenPair = it
                         clearAlertPrice = true
-                    }
-                }
+            
+        
 
-            })
+    )
 
         viewModel.compositeDisposable.add(binding.edtRate.textChanges()
             .observeOn(schedulerProvider.ui())
             .subscribe {
                 binding.ratePercentage =
                     it.toString().percentage(price?.toPlainString()).toDisplayNumber()
-            })
+    )
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-        }
+
 
         binding.imgDone.setOnClickListener {
             val alert = binding.alert
             when {
                 currentAlertNumber > Alert.MAX_ALERT_NUMBER -> dialogHelper.showExceedNumberAlertDialog {
 
-                }
+        
 
 
                 binding.ratePercentage.toBigDecimalOrDefaultZero().abs() < 0.1.toBigDecimal() -> {
@@ -208,21 +208,21 @@ class PriceAlertFragment : BaseFragment() {
                         getString(R.string.title_error),
                         getString(R.string.alert_price_diffrent_price_warning)
                     )
-                }
+        
 
                 binding.ratePercentage.toBigDecimalOrDefaultZero() > 10000.toBigDecimal() -> {
                     showAlertWithoutIcon(
                         getString(R.string.title_error),
                         getString(R.string.alert_price_range_warning)
                     )
-                }
+        
 
                 alert != null && alert.id > 0 && binding.edtRate.toBigDecimalOrDefaultZero() > alert.alertPrice * 9.toBigDecimal() -> {
                     showAlertWithoutIcon(
                         getString(R.string.title_error),
                         getString(R.string.trigger_rate_too_high_than_current_rate)
                     )
-                }
+        
 
                 else -> viewModel.createOrUpdateAlert(
                     alert?.copy(
@@ -231,14 +231,14 @@ class PriceAlertFragment : BaseFragment() {
                         isAbove = binding.ratePercentage.toBigDecimalOrDefaultZero() > BigDecimal.ZERO
                     )
                 )
-            }
-        }
+    
+
 
         binding.vChangeToken.setOnClickListener {
             navigator.navigateToTokenSelection(
                 currentFragment, wallet, alert
             )
-        }
+
     }
 
 
@@ -249,11 +249,11 @@ class PriceAlertFragment : BaseFragment() {
     private fun setupCurrency() {
         val id = if (priceCurrency > 0) {
             priceCurrency
-        } else {
+ else {
             val ethBase = this.alert?.isEthBase ?: false
             if (ethBase) R.id.rbEth else
                 R.id.rbUsd
-        }
+
         binding.rgCurrencies.check(
             id
         )
@@ -264,12 +264,12 @@ class PriceAlertFragment : BaseFragment() {
 
             if (isEthWeth) {
                 binding.rgCurrencies.check(R.id.rbUsd)
-            }
-        }
+    
+
 
         handler.post {
             clearAlertPrice = true
-        }
+
     }
 
     private fun updateAlert() {
@@ -279,14 +279,14 @@ class PriceAlertFragment : BaseFragment() {
                 .append("/")
                 .append(unit)
                 .toString()
-        }
+
 
         price?.let {
             binding.tvCurrentPrice.text = String.format(
                 getString(R.string.alert_current_price),
                 it.toDisplayNumber()
             )
-        }
+
     }
 
     val unit: String
@@ -311,8 +311,8 @@ class PriceAlertFragment : BaseFragment() {
             PriceAlertFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(ALERT_PARAM, alert)
-                }
-            }
+        
+    
     }
 
 

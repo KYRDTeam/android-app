@@ -46,15 +46,15 @@ class AlertMethodViewModel @Inject constructor(
             Consumer {
                 if (it.success) {
                     _getAlertMethodsCallback.value = Event(GetAlertMethodsState.Success(it.data))
-                } else {
+         else {
                     _getAlertMethodsCallback.value = Event(GetAlertMethodsState.ShowError(""))
-                }
-            },
+        
+    ,
             Consumer {
                 it.printStackTrace()
                 _getAlertMethodsCallback.value =
                     Event(GetAlertMethodsState.ShowError(it.localizedMessage))
-            },
+    ,
             null
         )
     }
@@ -65,16 +65,16 @@ class AlertMethodViewModel @Inject constructor(
             Consumer {
                 if (it.success) {
                     _updateAlertMethodsCallback.value = Event(UpdateAlertMethodsState.Success(it))
-                } else {
+         else {
                     _updateAlertMethodsCallback.value =
                         Event(UpdateAlertMethodsState.ShowError(it.message))
-                }
-            },
+        
+    ,
             Consumer {
                 it.printStackTrace()
                 _updateAlertMethodsCallback.value =
                     Event(UpdateAlertMethodsState.ShowError(it.localizedMessage))
-            },
+    ,
             UpdateAlertMethodsUseCase.Param(alertMethod)
         )
     }
@@ -84,12 +84,12 @@ class AlertMethodViewModel @Inject constructor(
         getLoginStatusUseCase.execute(
             Consumer {
                 _getLoginStatusCallback.value = Event(UserInfoState.Success(it))
-            },
+    ,
             Consumer {
                 it.printStackTrace()
                 _getLoginStatusCallback.value =
                     Event(UserInfoState.ShowError(it.localizedMessage))
-            },
+    ,
             null
         )
     }
