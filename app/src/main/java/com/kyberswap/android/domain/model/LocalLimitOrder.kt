@@ -223,9 +223,9 @@ data class LocalLimitOrder(
             sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateEthNow)
         return if (tokenSource.isETH) {
             amount <= minSupportSourceAmount
- else {
+        } else {
             amount < minSupportSourceAmount
-
+        }
     }
 
     fun amountTooBig(sourceAmount: String?): Boolean {
@@ -233,9 +233,9 @@ data class LocalLimitOrder(
             sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateEthNow)
         return if (tokenSource.isETH) {
             amount > BigDecimal.TEN
- else {
+        } else {
             amount >= BigDecimal.TEN
-
+        }
     }
 
 

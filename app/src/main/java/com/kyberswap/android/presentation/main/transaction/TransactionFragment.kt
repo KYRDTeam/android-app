@@ -70,14 +70,14 @@ class TransactionFragment : BaseFragment() {
                         if (state.wallet.address != wallet?.address) {
                             wallet = state.wallet
                             binding.wallet = wallet
-                
-            
+                        }
+                    }
                     is GetWalletState.ShowError -> {
 
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         setupAdapter()
 
@@ -87,7 +87,7 @@ class TransactionFragment : BaseFragment() {
                 (activity as MainActivity).getCurrentFragment(),
                 wallet
             )
-
+        }
 
 
         setSelectedOption(selectedIndex)
@@ -96,12 +96,12 @@ class TransactionFragment : BaseFragment() {
             view.setOnClickListener {
                 setSelectedOption(index)
                 binding.vpTransaction.currentItem = index
-    
-
+            }
+        }
 
         imgBack.setOnClickListener {
             activity?.onBackPressed()
-
+        }
     }
 
     private fun setupAdapter() {
@@ -116,18 +116,18 @@ class TransactionFragment : BaseFragment() {
                 positionOffset: Float,
                 positionOffsetPixels: Int
             ) {
-    
+            }
 
             override fun onPageSelected(position: Int) {
                 setSelectedOption(position)
-    
-)
+            }
+        })
     }
     private fun setSelectedOption(index: Int) {
         if (index != selectedIndex) {
             status[selectedIndex].isSelected = false
             selectedIndex = index
-
+        }
         status[selectedIndex].isSelected = true
     }
 
@@ -142,7 +142,7 @@ class TransactionFragment : BaseFragment() {
             TransactionFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(WALLET_PARAM, wallet)
-        
-    
+                }
+            }
     }
 }

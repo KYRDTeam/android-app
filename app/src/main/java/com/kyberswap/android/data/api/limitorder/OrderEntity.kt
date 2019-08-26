@@ -59,7 +59,7 @@ fun JsonObject.toMessage(): Map<String, List<String>> {
     entries.forEach { entry ->
         map[entry.key] = entry.value.asJsonArray.toList().map {
             it.asString
-
+        }
     }
     return map
 }

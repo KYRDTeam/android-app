@@ -42,7 +42,7 @@ class PriceAlertTokenSearchViewModel @Inject constructor(
                         it
                     )
                 )
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getTokenListCallback.value =
@@ -51,7 +51,7 @@ class PriceAlertTokenSearchViewModel @Inject constructor(
                             it.localizedMessage
                         )
                     )
-    ,
+            },
             address
         )
     }
@@ -67,12 +67,12 @@ class PriceAlertTokenSearchViewModel @Inject constructor(
         saveAlertTokenUseCase.execute(
             Action {
                 _saveAlertTokenState.value = Event(SaveAlertTokenBalanceState.Success(""))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _saveAlertTokenState.value =
                     Event(SaveAlertTokenBalanceState.ShowError(it.localizedMessage))
-    ,
+            },
             SaveAlertTokenUseCase.Param(wallet.address, token, alert)
         )
     }

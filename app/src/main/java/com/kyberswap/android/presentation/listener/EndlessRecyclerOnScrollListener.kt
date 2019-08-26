@@ -24,8 +24,8 @@ abstract class EndlessRecyclerOnScrollListener(private val linearLayoutManager: 
             if (totalItemCount > previousTotal) {
                 loading = false
                 previousTotal = totalItemCount
-    
-
+            }
+        }
         if (!loading && (totalItemCount - visibleItemCount)
             <= (firstVisibleItem + visibleThreshold)
         ) {
@@ -33,7 +33,7 @@ abstract class EndlessRecyclerOnScrollListener(private val linearLayoutManager: 
             currentPage++
             onLoadMore(currentPage)
             loading = true
-
+        }
     }
 
     fun reset() {

@@ -43,21 +43,21 @@ class BackupWalletActivity : BaseActivity() {
         btnNext.setOnClickListener {
             if (vpBackupWallet.currentItem == adapter.count - 1) {
                 navigator.navigateVerifyBackupWordPage(words, wallet)
-     else {
+            } else {
                 vpBackupWallet.currentItem += 1
-    
-
+            }
+        }
 
         binding.tvSkip.setOnClickListener {
 
             dialogHelper.showSkipBackupPhraseDialog({
                 if (fromSetting) {
                     onBackPressed()
-         else {
+                } else {
                     navigator.navigateToHome()
-        
-    )
-
+                }
+            })
+        }
 
 
     }
@@ -68,6 +68,6 @@ class BackupWalletActivity : BaseActivity() {
                 putParcelableArrayListExtra(ARG_PARAM, ArrayList(words))
                 putExtra(WALLET_PARAM, wallet)
                 putExtra(SETTING_PARAM, fromSetting)
-    
+            }
     }
 }

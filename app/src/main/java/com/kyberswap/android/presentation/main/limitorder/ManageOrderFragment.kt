@@ -93,43 +93,43 @@ class ManageOrderFragment : BaseFragment(), LoginState {
 
                         dialogHelper.showCancelOrder(it) {
                             viewModel.cancelOrder(it)
-                
-            , {
+                        }
+                    }, {
                         dialogHelper.showBottomSheetExtraDialog(it)
 
-            , {
+                    }, {
                         openUrl(getString(R.string.transaction_etherscan_endpoint_url) + it.txHash)
-            , {
+                    }, {
                         dialogHelper.showInvalidatedDialog(it)
-            )
-
+                    })
+        }
         orderAdapter?.mode = Attributes.Mode.Single
         binding.rvOrder.adapter = orderAdapter
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-
+        }
 
         binding.imgFilter.setOnClickListener {
             navigator.navigateToLimitOrderFilterScreen(
                 currentFragment,
                 wallet
             )
-
+        }
 
         if (currentSelectedView != null) {
             if (currentSelectedView?.text == binding.tvOpenOrder.text) {
                 binding.tvOpenOrder.isSelected = true
                 currentSelectedView = binding.tvOpenOrder
-     else {
+            } else {
                 binding.tvOrderHistory.isSelected = true
                 currentSelectedView = binding.tvOrderHistory
-    
- else {
+            }
+        } else {
 
             binding.tvOpenOrder.isSelected = true
             currentSelectedView = binding.tvOpenOrder
-
+        }
 
         listOf(binding.tvOpenOrder, binding.tvOrderHistory)
             .forEach { tv ->
@@ -137,19 +137,19 @@ class ManageOrderFragment : BaseFragment(), LoginState {
                     if (currentSelectedView != it) {
                         currentSelectedView?.isSelected = false
                         currentSelectedView = tv
-            
+                    }
                     it.isSelected = true
                     orderAdapter?.submitList(null)
                     filterByTab(tv == binding.tvOpenOrder)
                     showFaq(!isHideFaq)
                     showInstruction(!isHideInstruction)
 
-        
-    
+                }
+            }
 
         wallet?.let {
             viewModel.getAllOrders()
-
+        }
 
 
         viewModel.getOrdersCallback.observe(viewLifecycleOwner, Observer {
@@ -160,16 +160,16 @@ class ManageOrderFragment : BaseFragment(), LoginState {
                         orders = state.orders
 
                         filterByTab(currentSelectedView == binding.tvOpenOrder)
-            
+                    }
                     is GetRelatedOrdersState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
 
         viewModel.cancelOrderCallback.observe(viewLifecycleOwner, Observer {
@@ -179,30 +179,30 @@ class ManageOrderFragment : BaseFragment(), LoginState {
                     is CancelOrdersState.Success -> {
                         viewModel.getAllOrders()
 
-            
+                    }
                     is CancelOrdersState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         binding.imgFaq.setOnClickListener {
             isHideFaq = true
             showFaq(false)
-
+        }
 
         binding.imgInstruction.setOnClickListener {
             isHideInstruction = true
             showInstruction(false)
-
+        }
 
         binding.tvFaq.setOnClickListener {
             openUrl(getString(R.string.order_why_order_not_filled))
-
+        }
 
     }
 
@@ -229,24 +229,24 @@ class ManageOrderFragment : BaseFragment(), LoginState {
                     is UserInfoState.Success -> {
                         if (!(state.userInfo != null && state.userInfo.uid > 0)) {
                             activity?.onBackPressed()
-                
-            
+                        }
+                    }
                     is UserInfoState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
     }
 
     private fun filterByTab(isOpenTab: Boolean) {
 
         val orders = viewModel.ordersWrapper?.orders?.filter {
             it.isOpen == isOpenTab
- ?: listOf()
+        } ?: listOf()
 
         val items = viewModel.toOrderItems(
             orders,
@@ -265,7 +265,7 @@ class ManageOrderFragment : BaseFragment(), LoginState {
             ManageOrderFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(WALLET_PARAM, wallet)
-        
-    
+                }
+            }
     }
 }

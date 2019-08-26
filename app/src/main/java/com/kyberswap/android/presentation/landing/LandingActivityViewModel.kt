@@ -24,12 +24,12 @@ class LandingActivityViewModel @Inject constructor(
             Consumer {
                 _getMnemonicCallback.value =
                     Event(CreateWalletState.Success(it.first, it.second))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getMnemonicCallback.value =
                     Event(CreateWalletState.ShowError(it.localizedMessage))
-    ,
+            },
             CreateWalletUseCase.Param(walletName)
         )
     }

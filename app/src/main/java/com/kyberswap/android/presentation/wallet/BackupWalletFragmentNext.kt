@@ -66,7 +66,7 @@ class BackupWalletFragmentNext : BaseFragment() {
             BackupWalletFragmentNext().apply {
                 arguments = Bundle().apply {
                     putParcelableArrayList(ARG_PARAM, ArrayList(words))
-        
-    
+                }
+            }
     }
 }

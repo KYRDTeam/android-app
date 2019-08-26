@@ -43,14 +43,14 @@ class HawkWrapper @Inject constructor() {
     fun <T> getItem(key: String, defValue: T?, classOfT: Class<T>): T? {
         if (!Hawk.contains(key)) {
             return defValue
-
+        }
         val json = Hawk.get<String>(key)
         return try {
             gson.fromJson(json, classOfT)
- catch (e: JsonSyntaxException) {
+        } catch (e: JsonSyntaxException) {
             Timber.e(e)
             defValue
-
+        }
     }
 
     fun put(key: String, value: String?): Boolean {

@@ -68,7 +68,7 @@ class FilterLimitOrderFragment : BaseFragment(), LoginState {
         super.onActivityCreated(savedInstanceState)
         val tokenPairAdapter = FilterItemAdapter(appExecutors) {
 
-
+        }
 
         binding.rvTokenPair.layoutManager = GridLayoutManager(
             activity,
@@ -79,7 +79,7 @@ class FilterLimitOrderFragment : BaseFragment(), LoginState {
 
         val addressAdapter = FilterItemAdapter(appExecutors) {
 
-
+        }
 
         binding.rvAddress.layoutManager = GridLayoutManager(
             activity,
@@ -90,7 +90,7 @@ class FilterLimitOrderFragment : BaseFragment(), LoginState {
 
         val statusAdapter = FilterItemAdapter(appExecutors) {
 
-
+        }
 
         binding.rvStatus.layoutManager = GridLayoutManager(
             activity,
@@ -101,7 +101,7 @@ class FilterLimitOrderFragment : BaseFragment(), LoginState {
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-
+        }
 
         viewModel.getFilterSettingCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -113,50 +113,50 @@ class FilterLimitOrderFragment : BaseFragment(), LoginState {
                         tokenPairAdapter.submitList(state.filterSetting.pairs)
                         addressAdapter.submitList(state.filterSetting.address)
                         statusAdapter.submitList(toDisplayStatus(state.filterSetting.status))
-            
+                    }
                     is GetFilterSettingState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         binding.tvApply.setOnClickListener {
             filterSetting?.orderFilter?.apply {
                 unSelectedAddresses = addressAdapter.getData().filter {
                     !it.isSelected
-        .map {
+                }.map {
                     it.name
-        
+                }
                 unSelectedPairs = tokenPairAdapter.getData().filter {
                     !it.isSelected
-        .map {
+                }.map {
                     val pair = it.name.split(OrderFilter.TOKEN_PAIR_SEPARATOR)
                     pair.first() to pair.last()
-        
+                }
 
                 unSelectedStatus = statusAdapter.getData().filter {
                     !it.isSelected
-        .map {
+                }.map {
                     it.name
-        
+                }
 
                 oldest = binding.rbOldest.isChecked
-    
+            }
 
             filterSetting?.orderFilter?.let {
                 viewModel.saveOrderFilter(it)
-    
-
+            }
+        }
 
         binding.tvReset.setOnClickListener {
             addressAdapter.resetFilter()
             statusAdapter.resetFilter()
             tokenPairAdapter.resetFilter()
-
+        }
 
         viewModel.saveFilterStateCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -164,16 +164,16 @@ class FilterLimitOrderFragment : BaseFragment(), LoginState {
                     is SaveFilterState.Success -> {
                         onSaveFilterSuccess()
 
-            
+                    }
                     is SaveFilterState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
     }
 
@@ -185,17 +185,17 @@ class FilterLimitOrderFragment : BaseFragment(), LoginState {
                     is UserInfoState.Success -> {
                         if (!(state.userInfo != null && state.userInfo.uid > 0)) {
                             activity?.onBackPressed()
-                
-            
+                        }
+                    }
                     is UserInfoState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
     }
 
     private fun toDisplayStatus(status: List<FilterItem>): List<FilterItem> {
@@ -208,9 +208,9 @@ class FilterLimitOrderFragment : BaseFragment(), LoginState {
                     Order.Status.FILLED.value -> getString(R.string.order_status_filled)
                     Order.Status.IN_PROGRESS.value -> getString(R.string.order_status_in_progress)
                     else -> getString(R.string.order_status_unknown)
-        
+                }
             )
-
+        }
 
     }
 
@@ -224,7 +224,7 @@ class FilterLimitOrderFragment : BaseFragment(), LoginState {
             FilterLimitOrderFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(WALLET_PARAM, wallet)
-        
-    
+                }
+            }
     }
 }

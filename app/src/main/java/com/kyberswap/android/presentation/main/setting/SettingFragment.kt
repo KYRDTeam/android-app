@@ -59,58 +59,58 @@ class SettingFragment : BaseFragment() {
                 when (state) {
                     is UserInfoState.Success -> {
                         hasUserInfo = state.userInfo != null && state.userInfo.uid > 0
-            
+                    }
                     is UserInfoState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
         binding.lnManageWallet.setOnClickListener {
             navigator.navigateToManageWalletFragment(
                 currentFragment
             )
-
+        }
 
         binding.lnManageAlert.setOnClickListener {
             if (hasUserInfo) {
                 navigator.navigateToManageAlert(
                     currentFragment
                 )
-     else {
+            } else {
                 showAlertWithoutIcon(
                     getString(R.string.title_error),
                     getString(R.string.sign_in_required)
                 )
-    
-
+            }
+        }
 
         binding.lnAlertMethod.setOnClickListener {
             if (hasUserInfo) {
                 navigator.navigateToAlertMethod(
                     currentFragment
                 )
-     else {
+            } else {
                 showAlertWithoutIcon(
                     getString(R.string.title_error),
                     getString(R.string.sign_in_required)
                 )
-    
-
+            }
+        }
 
         binding.lnContact.setOnClickListener {
             navigator.navigateToContactScreen(currentFragment)
-
+        }
 
         binding.lnSupport.setOnClickListener {
             val emailIntent =
                 Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:support@kyber.network"))
 
             startActivity(Intent.createChooser(emailIntent, "Chooser Title"))
-
+        }
 
         binding.lnChangePin.setOnClickListener {
             startActivity(activity?.let { context ->
@@ -121,54 +121,54 @@ class SettingFragment : BaseFragment() {
 //                    .apply {
 //                        flags =
 //                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
-//            
-    )
+//                    }
+            })
 
-
+        }
 
         binding.lnAbount.setOnClickListener {
             openUrl(getString(R.string.setting_about_url))
-
+        }
 
         binding.lnCommunity.setOnClickListener {
             openUrl(getString(R.string.setting_community_url))
-
+        }
 
         binding.imgTelegram.setOnClickListener {
             openUrl(getString(R.string.setting_kyber_network_url))
-
+        }
 
         binding.imgTelegramDeveloper.setOnClickListener {
             openUrl(getString(R.string.setting_kyber_network_developer_url))
-
+        }
 
         binding.imgGithub.setOnClickListener {
             openUrl(getString(R.string.setting_github_url))
-
+        }
 
         binding.imgTwitter.setOnClickListener {
             openUrl(getString(R.string.setting_twitter_url))
-
+        }
 
         binding.imgFacebook.setOnClickListener {
             openUrl(getString(R.string.setting_facebook_url))
-
+        }
 
         binding.imgMedium.setOnClickListener {
             openUrl(getString(R.string.setting_medium_url))
-
+        }
 
         binding.imgLinkedin.setOnClickListener {
             openUrl(getString(R.string.setting_linkedin_url))
-
+        }
 
         binding.tvShare.setOnClickListener {
             shareUrl(getString(R.string.setting_share_info))
-
+        }
 
         binding.lnRateMyApp.setOnClickListener {
             openUrl(getString(R.string.setting_rate_my_app))
-
+        }
 
         binding.tvVersion.text =
             String.format(getString(R.string.app_version), BuildConfig.VERSION_NAME)
@@ -178,8 +178,8 @@ class SettingFragment : BaseFragment() {
         fun newInstance() =
             SettingFragment().apply {
                 arguments = Bundle().apply {
-        
-    
+                }
+            }
     }
 
 

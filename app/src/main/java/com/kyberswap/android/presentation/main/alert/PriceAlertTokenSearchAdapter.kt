@@ -19,11 +19,11 @@ class PriceAlertTokenSearchAdapter(
     diffCallback = object : DiffUtil.ItemCallback<Token>() {
         override fun areItemsTheSame(oldItem: Token, newItem: Token): Boolean {
             return oldItem.tokenSymbol == newItem.tokenSymbol
-
+        }
 
         override fun areContentsTheSame(oldItem: Token, newItem: Token): Boolean {
             return oldItem.areContentsTheSame(newItem)
-
+        }
     }
 ) {
 
@@ -31,9 +31,9 @@ class PriceAlertTokenSearchAdapter(
         if (itemCount > 0) {
             submitList(null)
             submitList(tokens)
- else {
+        } else {
             submitList(tokens)
-
+        }
         notifyDataSetChanged()
 
     }
@@ -41,7 +41,7 @@ class PriceAlertTokenSearchAdapter(
     override fun bind(binding: ItemTokenSearchPriceAlertBinding, item: Token) {
         binding.root.setOnClickListener {
             onTokenClick?.invoke(item)
-
+        }
         binding.setVariable(BR.token, item)
         binding.executePendingBindings()
     }

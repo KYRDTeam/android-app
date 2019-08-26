@@ -16,6 +16,6 @@ class MnemonicDataRepository @Inject constructor(
             val seed = ByteArray(numberOfWords.correctNumberOfWords())
             random.nextBytes(seed)
             mnemonicCode.toMnemonic(seed)
-
+        }
     }
 }

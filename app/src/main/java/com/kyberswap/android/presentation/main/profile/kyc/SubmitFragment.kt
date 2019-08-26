@@ -78,7 +78,7 @@ class SubmitFragment : BaseFragment() {
 
         binding.imgBack.setOnClickListener {
             onBackPress()
-
+        }
 
         viewModel.getUserInfo()
         viewModel.getUserInfoCallback.observe(viewLifecycleOwner, Observer {
@@ -88,7 +88,7 @@ class SubmitFragment : BaseFragment() {
                         user = state.userInfo
                         if (state.userInfo?.isLoaded == true) {
                             binding.isLoaded = state.userInfo.isLoaded
-                
+                        }
                         if (binding.info?.hasSameKycInfo(state.userInfo?.kycInfo) != true) {
                             binding.info = state.userInfo?.kycInfo
                             val info = binding.info
@@ -103,7 +103,7 @@ class SubmitFragment : BaseFragment() {
                                 if (info.photoIdentityFrontSide.isNotEmpty()) {
                                     this.frontImageString =
                                         info.photoIdentityFrontSide.removePrefix(BASE64_PREFIX)
-                        
+                                }
                                 displayImage(this.frontImageString, binding.imgPassportFrontSide)
 
                                 info.photoIdentityBackSide.removePrefix(BASE64_PREFIX)
@@ -111,7 +111,7 @@ class SubmitFragment : BaseFragment() {
                                 if (info.photoIdentityBackSide.isNotEmpty()) {
                                     this.backImageString =
                                         info.photoIdentityBackSide.removePrefix(BASE64_PREFIX)
-                        
+                                }
 
                                 displayImage(this.backImageString, binding.imgPassportBackSide)
 
@@ -120,7 +120,7 @@ class SubmitFragment : BaseFragment() {
                                 if (info.photoSelfie.isNotEmpty()) {
                                     this.selfieImageString =
                                         info.photoSelfie.removePrefix(BASE64_PREFIX)
-                        
+                                }
 
                                 displayImage(this.selfieImageString, binding.imgPassportHolding)
 
@@ -130,7 +130,7 @@ class SubmitFragment : BaseFragment() {
                                         info.photoProofAddress.removePrefix(
                                             BASE64_PREFIX
                                         )
-                        
+                                }
 
                                 displayImage(this.stringImage, binding.imgPhotoProofAddress)
 
@@ -149,24 +149,24 @@ class SubmitFragment : BaseFragment() {
 //                                val photoSelfie = info.photoSelfie.removePrefix(BASE64_PREFIX)
 //                                displayImage(photoSelfie, binding.imgPassportHolding)
 
-                    
-                
-            
+                            }
+                        }
+                    }
                     is UserInfoState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         binding.tvSubmit.setOnClickListener {
             user?.let {
                 viewModel.submit(it)
-    
-
+            }
+        }
 
         viewModel.submitUserInfoCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -174,16 +174,16 @@ class SubmitFragment : BaseFragment() {
                 when (state) {
                     is SavePersonalInfoState.Success -> {
                         navigator.navigateToVerification(currentFragment)
-            
+                    }
                     is SavePersonalInfoState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
     }
 
     private fun showLoadingImage(isShown: Boolean, imageView: ImageView?) {
@@ -197,8 +197,8 @@ class SubmitFragment : BaseFragment() {
                     if (isShown) View.VISIBLE else View.GONE
                 binding.imgPhotoProofAddress -> binding.progressBarProofAddress.visibility =
                     if (isShown) View.VISIBLE else View.GONE
-    
-
+            }
+        }
     }
 
     private fun displayImage(stringImage: String?, imageView: ImageView) {
@@ -211,17 +211,17 @@ class SubmitFragment : BaseFragment() {
                 when (state) {
                     is DecodeBase64State.Success -> {
                         glideDisplayImage(state.byteArray, state.imageView)
-            
+                    }
                     is DecodeBase64State.ShowError -> {
                         showLoadingImage(false, imageView)
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
     }
 
 
@@ -230,8 +230,8 @@ class SubmitFragment : BaseFragment() {
         if (fm != null) {
             for (i in 0 until fm.backStackEntryCount) {
                 fm.popBackStack()
-    
-
+            }
+        }
         navigator.navigateToPassport(currentFragment)
     }
 
@@ -248,7 +248,7 @@ class SubmitFragment : BaseFragment() {
                     ): Boolean {
                         showLoadingImage(false, imageView)
                         return false
-            
+                    }
 
                     override fun onResourceReady(
                         resource: Drawable?,
@@ -259,10 +259,10 @@ class SubmitFragment : BaseFragment() {
                     ): Boolean {
                         showLoadingImage(false, imageView)
                         return false
-            
-        )
+                    }
+                })
                 .into(it)
-
+        }
     }
 
     companion object {

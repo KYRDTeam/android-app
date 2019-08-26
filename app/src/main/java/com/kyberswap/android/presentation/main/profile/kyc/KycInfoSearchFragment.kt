@@ -82,9 +82,9 @@ class KycInfoSearchFragment : BaseFragment() {
                 KycInfoType.OCCUPATION_CODE -> getString(R.string.occupation_code)
                 KycInfoType.INDUSTRY_CODE -> getString(R.string.industry_code)
                 KycInfoType.TAX_RESIDENCY_COUNTRY -> getString(R.string.your_country_of_tax_residency)
-    
+            }
             binding.title = title
-
+        }
 
 
 
@@ -100,12 +100,12 @@ class KycInfoSearchFragment : BaseFragment() {
                     KycInfoType.OCCUPATION_CODE, KycInfoType.INDUSTRY_CODE -> kycInfoType?.let { it1 ->
                         viewModel.save(hash.filterValues { entry ->
                             entry == it
-                .keys.first(), it1)
-            
+                        }.keys.first(), it1)
+                    }
                     else -> kycInfoType?.let { it1 -> viewModel.save(it, it1) }
-        
+                }
 
-    
+            }
 
         binding.rvSearch.adapter = searchAdapter
 
@@ -113,7 +113,7 @@ class KycInfoSearchFragment : BaseFragment() {
             KycInfoType.OCCUPATION_CODE -> KYC_OCCUPATION_CODE_FILE
             KycInfoType.INDUSTRY_CODE -> KYC_INDUSTRY_CODE_FILE
             else -> null
-
+        }
 
         file?.let {
             context?.loadJSONFromAssets(it)?.let {
@@ -122,8 +122,8 @@ class KycInfoSearchFragment : BaseFragment() {
                 hash.putAll(kycOccupationCode.data)
                 data.clear()
                 data.addAll(kycOccupationCode.data.values)
-    
-
+            }
+        }
 
         updateFilterList(currentSearchString, searchAdapter)
 
@@ -137,31 +137,31 @@ class KycInfoSearchFragment : BaseFragment() {
                 )
                 .map {
                     return@map it.trim().toString().toLowerCase()
-        .observeOn(schedulerProvider.ui())
+                }.observeOn(schedulerProvider.ui())
                 .subscribe { searchedText ->
                     currentSearchString = searchedText
                     updateFilterList(currentSearchString, searchAdapter)
-        )
+                })
 
         binding.imgBack.setOnClickListener {
             activity!!.onBackPressed()
-
+        }
 
         viewModel.saveKycInfoCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is SaveKycInfoState.Success -> {
                         onSelectionComplete()
-            
+                    }
                     is SaveKycInfoState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
 
     }
@@ -178,21 +178,21 @@ class KycInfoSearchFragment : BaseFragment() {
     private fun updateFilterList(searchedText: String?, searchAdapter: KycInfoSearchAdapter) {
         if (searchedText.isNullOrEmpty()) {
             searchAdapter.submitFilterList(data)
- else {
+        } else {
             searchAdapter.submitFilterList(
                 getFilterTokenList(
                     currentSearchString,
                     data
                 )
             )
-
+        }
     }
 
 
     private fun getFilterTokenList(searchedString: String, data: List<String>): List<String> {
         return data.filter { item ->
             item.toLowerCase().contains(searchedString)
-
+        }
     }
 
 
@@ -207,7 +207,7 @@ class KycInfoSearchFragment : BaseFragment() {
                     putStringArrayList(PARAM_DATA, ArrayList(data))
                     putParcelable(PARAM_INFO_TYPE, kycInfoType)
 
-        
-    
+                }
+            }
     }
 }

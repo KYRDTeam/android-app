@@ -49,7 +49,7 @@ object TextViewBindingAdapter {
                 spannableString.indexOf(it) + it.length,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
             )
-
+        }
 
         view.setText(spannableString, TextView.BufferType.SPANNABLE)
     }
@@ -78,9 +78,9 @@ object TextViewBindingAdapter {
             )
 
             view.setText(spannableString, TextView.BufferType.SPANNABLE)
- catch (ex: Exception) {
+        } catch (ex: Exception) {
             ex.printStackTrace()
-
+        }
     }
 
     @BindingAdapter("app:ratePercentage", "app:hasSamePair", "app:warning")
@@ -89,12 +89,12 @@ object TextViewBindingAdapter {
 
         if (samePair != null && samePair) {
             view.visibility = View.GONE
- else {
+        } else {
             val percentageRate = percent.toBigDecimalOrDefaultZero()
             if (percentageRate > (-0.1).toBigDecimal()) {
                 view.visibility = View.GONE
                 return
-    
+            }
 
             if (warning != null && warning) {
                 view.visibility = View.VISIBLE
@@ -102,13 +102,13 @@ object TextViewBindingAdapter {
                     percentageRate > BigDecimal.ZERO -> R.drawable.ic_arrow_up
                     percentageRate < BigDecimal.ZERO -> R.drawable.ic_arrow_down
                     else -> 0
-        
+                }
 
                 val color = when {
                     percentageRate > BigDecimal.ZERO -> R.color.token_change24h_up
                     percentageRate < BigDecimal.ZERO -> R.color.token_change24h_down
                     else -> R.color.token_change24h_same
-        
+                }
 
                 view.setTextColor(ContextCompat.getColor(view.context, color))
 
@@ -118,10 +118,10 @@ object TextViewBindingAdapter {
                         percentageRate.abs().toDouble()
                     )
                 view.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawable, 0)
-     else {
+            } else {
                 View.GONE
-    
-
+            }
+        }
     }
 
 
@@ -134,18 +134,18 @@ object TextViewBindingAdapter {
             percentageRate > BigDecimal.ZERO -> R.drawable.ic_arrow_up
             percentageRate < BigDecimal.ZERO -> R.drawable.ic_arrow_down
             else -> 0
-
+        }
         val color = when {
             percentageRate > BigDecimal.ZERO -> R.color.token_change24h_up
             percentageRate < BigDecimal.ZERO -> R.color.token_change24h_down
             else -> R.color.token_change24h_same
-
+        }
 
         if (percentageRate == BigDecimal.ZERO) {
             view.visibility = View.GONE
- else {
+        } else {
             view.visibility = View.VISIBLE
-
+        }
 
         view.setTextColor(ContextCompat.getColor(view.context, color))
 
@@ -166,7 +166,7 @@ object TextViewBindingAdapter {
         if (percentageRate > (-0.1).toBigDecimal()) {
             view.visibility = View.GONE
             return
-
+        }
         view.visibility = View.VISIBLE
     }
 
@@ -182,9 +182,9 @@ object TextViewBindingAdapter {
     fun documentType(view: TextView, documentType: String?) {
         if (KycInfo.TYPE_PASSPORT == documentType) {
             view.text = view.context.getString(R.string.passport)
- else if (KycInfo.TYPE_NATIONAL_ID == documentType) {
+        } else if (KycInfo.TYPE_NATIONAL_ID == documentType) {
             view.text = view.context.getString(R.string.personal_id)
-
+        }
     }
 
 
@@ -193,7 +193,7 @@ object TextViewBindingAdapter {
     fun alertPrice(view: TextView, isAbove: Boolean?, alertPrice: BigDecimal?) {
         val color = if (true == isAbove) {
             R.color.rate_up_text_color
- else R.color.rate_down_text_color
+        } else R.color.rate_down_text_color
 
         view.setTextColor(ContextCompat.getColor(view.context, color))
         view.text = StringBuilder().append(if (true == isAbove) "≥ " else "≤ ")
@@ -209,12 +209,12 @@ object TextViewBindingAdapter {
     ) {
         val color = if (true == isAbove) {
             R.color.rate_up_text_color
- else R.color.rate_down_text_color
+        } else R.color.rate_down_text_color
 
         val drawable = when (isAbove) {
             true -> R.drawable.ic_arrow_up
             else -> R.drawable.ic_arrow_down
-
+        }
         view.setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0)
         view.setTextColor(ContextCompat.getColor(view.context, color))
         view.text = StringBuilder()
@@ -232,12 +232,12 @@ object TextViewBindingAdapter {
     ) {
         val color = if (true == isAbove) {
             R.color.rate_up_text_color
- else R.color.rate_down_text_color
+        } else R.color.rate_down_text_color
 
         val drawable = when (isAbove) {
             true -> R.drawable.ic_arrow_up
             else -> R.drawable.ic_arrow_down
-
+        }
         if (isFilled) {
             val icon = view.context.getDrawable(drawable)
             val matrix = ColorMatrix()
@@ -247,9 +247,9 @@ object TextViewBindingAdapter {
 
             icon?.colorFilter = filter
 
- else {
+        } else {
             view.setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0)
-
+        }
         view.setTextColor(ContextCompat.getColor(view.context, color))
         view.text = StringBuilder()
             .append(percentChange?.setScale(2, RoundingMode.UP)?.toDisplayNumber()).append("%")
@@ -262,7 +262,7 @@ object TextViewBindingAdapter {
         val color = when {
             rate >= BigDecimal.ZERO -> R.color.rate_up_text_color
             else -> R.color.rate_down_text_color
-
+        }
 
         view.setTextColor(ContextCompat.getColor(view.context, color))
         view.text = StringBuilder().append(rate.abs().toDisplayNumber()).append(" %").toString()
@@ -280,25 +280,25 @@ object TextViewBindingAdapter {
             Order.Status.OPEN.value -> {
                 background = R.drawable.rounded_corner_order_open_background
                 textColor = R.color.text_order_status_open
-    
+            }
             Order.Status.FILLED.value -> {
                 background = R.drawable.rounded_corner_order_filled_background
                 textColor = R.color.text_order_status_filled
 
-    
+            }
             Order.Status.IN_PROGRESS.value -> {
                 background = R.drawable.rounded_corner_order_in_progress_background
                 textColor = R.color.text_order_status_in_progress
-    
+            }
             Order.Status.CANCELLED.value -> {
                 background = R.drawable.rounded_corner_order_cancelled_background
                 textColor = R.color.text_order_status_cancelled
-    
+            }
             else -> {
                 background = R.drawable.rounded_corner_order_invalidated_background
                 textColor = R.color.text_order_status_invalidated
-    
-
+            }
+        }
         view.text = orderStatus
         view.setTextColor(ContextCompat.getColor(view.context, textColor))
         view.setBackgroundResource(background)
@@ -315,7 +315,7 @@ object TextViewBindingAdapter {
             UserInfo.PENDING -> R.drawable.rounded_corner_status_pending
             UserInfo.APPROVED -> R.drawable.rounded_corner_status_approved
             else -> R.drawable.rounded_corner_status_unverified
-
+        }
 
         val stringResource = when (kycStatus) {
             UserInfo.REJECT -> R.string.kyc_status_rejected
@@ -324,7 +324,7 @@ object TextViewBindingAdapter {
             UserInfo.PENDING -> R.string.kyc_status_pending
             UserInfo.APPROVED -> R.string.kyc_status_approved
             else -> R.string.kyc_status_unverified
-
+        }
 
         view.text = view.context.getString(stringResource)
         view.setBackgroundResource(background)

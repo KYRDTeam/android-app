@@ -45,7 +45,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.tvConfirm.setOnClickListener {
             positiveListener.invoke()
             dialog.dismiss()
-
+        }
 
         dialog.setView(binding.root)
         dialog.show()
@@ -66,7 +66,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.tvOk.setOnClickListener {
             positiveListener.invoke()
             dialog.dismiss()
-
+        }
 
         dialog.setView(binding.root)
         dialog.show()
@@ -94,12 +94,12 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.tvPositiveOption.setOnClickListener {
             positiveListener.invoke()
             dialog.dismiss()
-
+        }
 
         binding.tvNegativeOption.setOnClickListener {
             negativeListener.invoke()
             dialog.dismiss()
-
+        }
 
         binding.title = title
         binding.content = content
@@ -124,16 +124,16 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.tvCreateWallet.setOnClickListener {
             onClickCreateWallet.invoke()
             dialog.dismiss()
-
+        }
 
         binding.tvImportWallet.setOnClickListener {
             onClickImportWallet.invoke()
             dialog.dismiss()
-
+        }
 
         binding.tvCancel.setOnClickListener {
             dialog.dismiss()
-
+        }
 
         dialog.show()
     }
@@ -151,7 +151,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.executePendingBindings()
         binding.tvWhy.setOnClickListener {
             openUrl(activity.getString(R.string.extra_url))
-
+        }
 
         binding.tvWhy.underline(activity.getString(R.string.question_why))
 
@@ -180,7 +180,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         val packageManager = activity.packageManager
         if (packageManager != null && intent.resolveActivity(packageManager) != null) {
             activity.startActivity(intent)
-
+        }
 
     }
 
@@ -203,12 +203,12 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.tvBackupKeystore.setOnClickListener {
             backupKeyStore.invoke()
             dialog.dismiss()
-
+        }
 
         binding.tvBackupPrivateKey.setOnClickListener {
             backupPrivateKey.invoke()
             dialog.dismiss()
-
+        }
 
 
         binding.tvBackupMnemonic.visibility = if (mnemonicAvailable) View.VISIBLE else View.GONE
@@ -216,16 +216,16 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.tvBackupMnemonic.setOnClickListener {
             backupMnemonic.invoke()
             dialog.dismiss()
-
+        }
 
         binding.tvBackupCopyAddress.setOnClickListener {
             backupCopyAddress.invoke()
             dialog.dismiss()
-
+        }
 
         binding.tvCancel.setOnClickListener {
             dialog.dismiss()
-
+        }
 
         dialog.show()
     }
@@ -248,21 +248,21 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.tvSwitchWallet.setOnClickListener {
             onClickSwitchWallet.invoke()
             dialog.dismiss()
-
+        }
 
         binding.tvEditWallet.setOnClickListener {
             onClickEditWallet.invoke()
             dialog.dismiss()
-
+        }
 
         binding.tvDeleteWallet.setOnClickListener {
             onClickDeleteWallet.invoke()
             dialog.dismiss()
-
+        }
 
         binding.tvCancel.setOnClickListener {
             dialog.dismiss()
-
+        }
 
         dialog.show()
     }
@@ -279,16 +279,16 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.tvCamera.setOnClickListener {
             onCameraSelect.invoke()
             dialog.dismiss()
-
+        }
 
         binding.tvPhotoLibrary.setOnClickListener {
             onGallerySelect.invoke()
             dialog.dismiss()
-
+        }
 
         binding.tvCancel.setOnClickListener {
             dialog.dismiss()
-
+        }
 
         dialog.show()
     }
@@ -320,7 +320,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
         val passports = resources.zip(contents) { resource, content ->
             Passport(resource, content)
-
+        }
 
         val passportAdapter = PassportAdapter(appExecutors)
 
@@ -359,7 +359,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
         val passports = resources.zip(contents) { resource, content ->
             Passport(resource, content)
-
+        }
 
         val passportAdapter = PassportAdapter(appExecutors)
 
@@ -388,11 +388,11 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.tvConfirm.setOnClickListener {
             positiveListener.invoke()
             dialog.dismiss()
-
+        }
 
         binding.tvCancel.setOnClickListener {
             dialog.dismiss()
-
+        }
         binding.order = order
         binding.executePendingBindings()
 
@@ -420,27 +420,27 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
             if (binding.edtPassword.text.isNullOrBlank()) {
                 binding.ilPassword.error = activity.getString(R.string.field_required)
                 return@setOnClickListener
-    
+            }
             if (binding.edtConfirmPassword.text.isNullOrBlank()) {
                 binding.ilConfirmPassword.error = activity.getString(R.string.field_required)
                 return@setOnClickListener
-    
+            }
             if (binding.edtPassword.text.toString() != binding.edtConfirmPassword.text.toString()) {
                 binding.ilConfirmPassword.error = activity.getString(R.string.password_mismatch)
                 return@setOnClickListener
-    
+            }
 
             onFinish.invoke(binding.edtPassword.text.toString())
             dialog.dismiss()
 
-
+        }
         compositeDisposable.add(binding.edtPassword.textChanges().skipInitialValue().subscribe {
             binding.ilPassword.error = null
-)
+        })
 
         compositeDisposable.add(binding.edtConfirmPassword.textChanges().skipInitialValue().subscribe {
             binding.ilConfirmPassword.error = null
-)
+        })
 
         dialog.show()
 
@@ -459,7 +459,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
         binding.tvSend.setOnClickListener {
             positiveListener.invoke(binding.edtEmail.text.toString(), dialog)
-
+        }
 
         dialog.setView(binding.root)
         dialog.show()
@@ -478,11 +478,11 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
         binding.tvContinue.setOnClickListener {
             positiveListener.invoke(binding.edtToken.text.toString(), dialog)
-
+        }
 
         binding.tvCancel.setOnClickListener {
             dialog.dismiss()
-
+        }
 
         binding.tvPaste.setOnClickListener {
             var textToPaste: String? = null
@@ -498,9 +498,9 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
                 // or you may coerce the data to the text representation:
                 textToPaste = clip?.getItemAt(0)?.coerceToText(activity).toString()
-    
+            }
             binding.edtToken.setText(textToPaste)
-
+        }
 
         dialog.setView(binding.root)
         dialog.show()
@@ -521,7 +521,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.tvTryAgain.setOnClickListener {
             positiveListener.invoke()
             dialog.dismiss()
-
+        }
 
         dialog.setView(binding.root)
         dialog.show()
@@ -536,9 +536,9 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
     ) {
         if (numberOfTry > 0) {
             showWrongBackupAgain(positiveListener, negativeListener)
- else {
+        } else {
             showWrongBackup(positiveListener)
-
+        }
     }
 
     fun showWrongBackupAgain(
@@ -557,12 +557,12 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.tvTryAgain.setOnClickListener {
             positiveListener.invoke()
             dialog.dismiss()
-
+        }
 
         binding.tvRetry.setOnClickListener {
             negativeListener.invoke()
             dialog.dismiss()
-
+        }
 
 
 
@@ -588,12 +588,12 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.tvOk.setOnClickListener {
             positiveListener.invoke()
             dialog.dismiss()
-
+        }
 
         binding.tvCancel.setOnClickListener {
             negativeListener.invoke()
             dialog.dismiss()
-
+        }
 
 
 
@@ -618,7 +618,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.tvOk.setOnClickListener {
             positiveListener.invoke()
             dialog.dismiss()
-
+        }
 
         binding.alert = alert
         binding.executePendingBindings()
@@ -643,12 +643,12 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.tvOk.setOnClickListener {
             positiveListener.invoke()
             dialog.dismiss()
-
+        }
 
         binding.tvCancel.setOnClickListener {
             negativeListener.invoke()
             dialog.dismiss()
-
+        }
 
 
 
@@ -663,10 +663,10 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         lp.copyFrom(dialog.window?.attributes)
         if (width != null) {
             lp.width = width
-
+        }
         if (height != null) {
             lp.height = height
-
+        }
 
         dialog.window?.attributes = lp
     }
@@ -687,10 +687,10 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
         val adapter = EligibleTokenAdapter(appExecutors) {
 
-
+        }
         binding.imgClose.setOnClickListener {
             dialog.dismiss()
-
+        }
         binding.rvToken.adapter = adapter
         adapter.submitList(tokens)
 
@@ -713,7 +713,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.tvConfirm.setOnClickListener {
             positiveListener.invoke()
             dialog.dismiss()
-
+        }
 
         dialog.setView(binding.root)
         dialog.show()
@@ -736,10 +736,10 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.tvDetail.setOnClickListener {
             positiveListener.invoke(notification.txHash)
             dialog.dismiss()
-
+        }
         binding.tvCancel.setOnClickListener {
             dialog.dismiss()
-
+        }
 
         dialog.setView(binding.root)
 

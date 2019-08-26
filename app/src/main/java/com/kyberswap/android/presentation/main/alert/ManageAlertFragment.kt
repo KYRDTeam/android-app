@@ -79,17 +79,17 @@ class ManageAlertFragment : BaseFragment(), LoginState {
                         this.userInfo = state.userInfo
                         if (!(state.userInfo != null && state.userInfo.uid > 0)) {
                             activity?.onBackPressed()
-                
-            
+                        }
+                    }
                     is UserInfoState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
         viewModel.getAlert()
         binding.rvAlert.layoutManager = LinearLayoutManager(
             activity,
@@ -102,19 +102,19 @@ class ManageAlertFragment : BaseFragment(), LoginState {
                     navigator.navigateToPriceAlertScreen(
                         currentFragment, it
                     )
-        , {
+                }, {
                     navigator.navigateToPriceAlertScreen(
                         currentFragment, it
                     )
 
-        , {
+                }, {
                     dialogHelper.showConfirmDeleteAlert(
                         {
                             viewModel.deleteAlert(it)
-                
+                        }
                     )
 
-        )
+                })
         binding.rvAlert.adapter = alertAdapter
 
         binding.rvTrigger.layoutManager = LinearLayoutManager(
@@ -128,9 +128,9 @@ class ManageAlertFragment : BaseFragment(), LoginState {
             dialogHelper.showConfirmDeleteAlert(
                 {
                     viewModel.deleteAlert(it)
-        
+                }
             )
-
+        }
 
         viewModel.deleteAlertsCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -138,16 +138,16 @@ class ManageAlertFragment : BaseFragment(), LoginState {
                 when (state) {
                     is DeleteAlertsState.Success -> {
                         showAlert(getString(R.string.delete_alert_success))
-            
+                    }
                     is DeleteAlertsState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         binding.rvTrigger.adapter = triggerAlertAdapter
 
@@ -158,25 +158,25 @@ class ManageAlertFragment : BaseFragment(), LoginState {
                         binding.isEmpty = state.alerts.isEmpty()
                         alertAdapter.submitAlerts(state.alerts.filter {
                             !it.isFilled
-                )
+                        })
 
                         val triggerList = state.alerts.filter {
                             it.isFilled
-                
+                        }
 
                         binding.isEmptyTrigger = triggerList.isEmpty()
 
                         triggerAlertAdapter.submitAlerts(triggerList)
-            
+                    }
                     is GetAlertsState.ShowError -> {
                         showAlert(
                             state.message ?: getString(R.string.something_wrong),
                             R.drawable.ic_info_error
                         )
-            
-        
-    
-)
+                    }
+                }
+            }
+        })
 
         binding.tvAdd.setOnClickListener {
             if (alertAdapter.getData().size >= 10) {
@@ -185,17 +185,17 @@ class ManageAlertFragment : BaseFragment(), LoginState {
                         R.string.alert_limit_exceeds_instruction
                     )
                 )
-     else {
+            } else {
                 navigator.navigateToPriceAlertScreen(
                     currentFragment
                 )
-    
-
+            }
+        }
 
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-
+        }
 
         binding.imgAdd.setOnClickListener {
             if (alertAdapter.getData().size >= 10) {
@@ -204,24 +204,24 @@ class ManageAlertFragment : BaseFragment(), LoginState {
                         R.string.alert_limit_exceeds_instruction
                     )
                 )
-     else {
+            } else {
                 navigator.navigateToPriceAlertScreen(
                     currentFragment
                 )
-    
+            }
 
-
+        }
 
         binding.imgLeaderBoard.setOnClickListener {
             navigator.navigateToLeaderBoard(
                 currentFragment,
                 userInfo
             )
-
+        }
 
         binding.imgSetting.setOnClickListener {
             navigator.navigateToAlertMethod(currentFragment)
-
+        }
 
 
     }

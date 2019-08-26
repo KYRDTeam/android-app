@@ -86,4 +86,5 @@ lint/tmp/
 # secret info
 prod/
 stg/
+secret.properties
 

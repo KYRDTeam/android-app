@@ -50,13 +50,13 @@ class ManageOrderViewModel @Inject constructor(
                             )
                         )
                     )
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getOrdersCallback.value =
                     Event(GetRelatedOrdersState.ShowError(it.localizedMessage))
 
-    ,
+            },
             null
         )
     }
@@ -64,28 +64,28 @@ class ManageOrderViewModel @Inject constructor(
     fun toOrderItems(orders: List<Order>, asc: Boolean): List<OrderItem> {
         return if (asc) {
             orders.sortedBy { it.time }
- else {
+        } else {
             orders.sortedByDescending { it.time }
-.groupBy { it.shortedDateTimeFormat }
+        }.groupBy { it.shortedDateTimeFormat }
             .flatMap { item ->
                 val items = mutableListOf<OrderItem>()
                 items.add(OrderItem.Header(item.key))
                 val list =
                     if (asc) {
                         item.value.sortedBy { it.time }
-             else {
+                    } else {
                         item.value.sortedByDescending { it.time }
-            
+                    }
 
                 list.forEachIndexed { index, transaction ->
                     if (index % 2 == 0) {
                         items.add(OrderItem.ItemEven(transaction))
-             else {
+                    } else {
                         items.add(OrderItem.ItemOdd(transaction))
-            
-        
+                    }
+                }
                 items
-    
+            }
     }
 
 
@@ -94,12 +94,12 @@ class ManageOrderViewModel @Inject constructor(
         cancelOrderUseCase.execute(
             Consumer {
                 _cancelOrderCallback.value = Event(CancelOrdersState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _cancelOrderCallback.value =
                     Event(CancelOrdersState.ShowError(it.localizedMessage))
-    ,
+            },
             CancelOrderUseCase.Param(order)
         )
     }

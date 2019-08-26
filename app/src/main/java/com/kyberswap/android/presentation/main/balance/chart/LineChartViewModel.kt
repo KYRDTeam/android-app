@@ -22,11 +22,11 @@ class LineChartViewModel @Inject constructor(
         getChartDataForTokenUseCase.execute(
             Consumer {
                 _getChartCallback.value = Event(GetChartState.Success(it))
-    ,
+            },
             Consumer {
                 it.printStackTrace()
                 _getChartCallback.value = Event(GetChartState.ShowError(it.localizedMessage))
-    ,
+            },
             GetChartDataForTokenUseCase.Param(token, chartType)
         )
 

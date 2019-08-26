@@ -15,7 +15,7 @@ class ImportWalletPagerAdapter constructor(
             JSON -> ImportJsonFragment.newInstance(fromMain)
             PRIVATE_KEY -> return ImportPrivateKeyFragment.newInstance(fromMain)
             else -> return ImportSeedFragment.newInstance(fromMain)
-
+        }
     }
 
     override fun getCount() = 3

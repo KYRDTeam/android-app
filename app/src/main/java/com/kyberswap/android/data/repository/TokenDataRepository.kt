@@ -48,7 +48,7 @@ class TokenDataRepository @Inject constructor(
                 .map { rateMapper.transform(it) }
                 .doAfterSuccess {
                     rateDao.updateAll(it)
-        
+                }
                 .toFlowable()
         )
             .map { rates ->
@@ -61,7 +61,7 @@ class TokenDataRepository @Inject constructor(
                     .multiply(
                         etherToDestTokenRate?.rate?.updatePrecision().toBigDecimalOrDefaultZero()
                     ).toPlainString()
-    
+            }
 
     }
 
@@ -78,13 +78,13 @@ class TokenDataRepository @Inject constructor(
                 amount
             )
             expectedRate
-
+        }
             .repeatWhen {
                 it.delay(15, TimeUnit.SECONDS)
-    
+            }
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
-    
+            }
     }
 
     override fun getChartData(param: GetChartDataForTokenUseCase.Param): Single<Chart> {
@@ -107,8 +107,8 @@ class TokenDataRepository @Inject constructor(
             local?.let {
                 val favToken = local.copy(fav = param.token.fav)
                 tokenDao.updateToken(favToken)
-    
+            }
 
-
+        }
     }
 }

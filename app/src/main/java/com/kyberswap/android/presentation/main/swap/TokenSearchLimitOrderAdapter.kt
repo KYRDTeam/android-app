@@ -19,11 +19,11 @@ class TokenSearchLimitOrderAdapter(
     diffCallback = object : DiffUtil.ItemCallback<Token>() {
         override fun areItemsTheSame(oldItem: Token, newItem: Token): Boolean {
             return oldItem.tokenSymbol == newItem.tokenSymbol
-
+        }
 
         override fun areContentsTheSame(oldItem: Token, newItem: Token): Boolean {
             return oldItem.areContentsTheSame(newItem)
-
+        }
     }
 ) {
 
@@ -35,7 +35,7 @@ class TokenSearchLimitOrderAdapter(
     override fun bind(binding: ItemTokenSearchLimitOrderBinding, item: Token) {
         binding.root.setOnClickListener {
             onTokenClick?.invoke(item)
-
+        }
         binding.setVariable(BR.token, item)
         binding.executePendingBindings()
     }

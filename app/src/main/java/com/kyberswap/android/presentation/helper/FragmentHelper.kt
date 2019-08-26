@@ -18,13 +18,13 @@ class FragmentHelper @Inject constructor(private val fragmentManager: FragmentMa
         val transaction = fragmentManager.beginTransaction()
         if (customAnimations == IN_RIGHT_OUT_LEFT) {
             transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
- else if (customAnimations == IN_LEFT_OUT_RIGHT) {
+        } else if (customAnimations == IN_LEFT_OUT_RIGHT) {
             transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right)
-
+        }
         transaction.replace(containerId, fragment, fragment.javaClass.simpleName)
         if (addToBackStack) {
             transaction.addToBackStack(fragment.javaClass.simpleName)
-
+        }
         transaction.commitAllowingStateLoss()
     }
 
