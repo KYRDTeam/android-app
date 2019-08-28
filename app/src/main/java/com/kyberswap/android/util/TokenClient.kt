@@ -4,7 +4,11 @@ import com.kyberswap.android.domain.model.LocalLimitOrder
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
 import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
-import com.kyberswap.android.presentation.common.*
+import com.kyberswap.android.presentation.common.DEFAULT_MAX_AMOUNT
+import com.kyberswap.android.presentation.common.DEFAULT_WALLET_ID
+import com.kyberswap.android.presentation.common.PERM
+import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
+import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfer
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import org.web3j.abi.FunctionEncoder
@@ -29,7 +33,7 @@ import java.io.IOException
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
-import java.util.*
+import java.util.ArrayList
 import javax.inject.Inject
 import kotlin.math.pow
 
@@ -126,7 +130,6 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                 )
             }
         )
-
     }
 
     @Throws(Exception::class)
@@ -210,7 +213,8 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     @Throws(java.lang.Exception::class)
     fun estimateGasForTransfer(
         walletAddress: String,
-        contractAddress: String,
+        tokenAddress: String,
+        contactAddress: String,
         value: String,
         isEth: Boolean
     ): EthEstimateGas? {
@@ -221,9 +225,14 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                 null,
                 null,
                 null,
-                contractAddress,
+                if (isEth) contactAddress else tokenAddress,
                 if (isEth) value.toBigIntegerOrDefaultZero() else BigInteger.ZERO,
-                FunctionEncoder.encode(transfer(contractAddress, value))
+                FunctionEncoder.encode(
+                    transfer(
+                        if (contactAddress.isNotEmpty()) contactAddress else walletAddress,
+                        value
+                    )
+                )
             )
         ).send()
     }
@@ -233,7 +242,6 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         val getNonce =
             web3j.ethGetTransactionCount(addr, DefaultBlockParameterName.PENDING).send()
         return getNonce.transactionCount
-
     }
 
     @Throws(IOException::class)
@@ -277,7 +285,6 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             )
             else param.swap.gasLimit.toBigInteger()
 
-
         val tradeWithHintAmount = if (param.swap.isSwapAll) {
             param.swap.tokenSource.currentBalance
         } else {
@@ -296,7 +303,6 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         val walletAddress = if (param.wallet.isPromoPayment) param.wallet.promo?.receiveAddress
             ?: param.wallet.address else
             param.wallet.address
-
 
         val txManager = RawTransactionManager(web3j, credentials)
 
@@ -327,7 +333,6 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                 txManager
             )
         }
-
     }
 
 
@@ -340,7 +345,6 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             Convert.Unit.GWEI
         ).toBigInteger()
 
-
         val gasLimit =
 
             if (param.send.gasLimit.toBigIntegerOrDefaultZero() > BigInteger.ZERO) {
@@ -350,7 +354,6 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             }
 
         val isEth = param.send.tokenSource.isETH
-
 
         val amount = if (param.send.isSendAll) {
             param.send.tokenSource.currentBalance
@@ -450,7 +453,6 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                 fromToken,
                 contractAddress,
                 gasPrice,
-                gasLimit,
                 txManager
             )
         }
@@ -520,10 +522,8 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         token: Token,
         contractAddress: String,
         gasPriceWei: BigInteger,
-        gasLimit: BigInteger,
         transactionManager: TransactionManager
     ) {
-
 
         if (allowanceAmount > BigInteger.ZERO) {
             sendContractApproveTransfer(
@@ -531,17 +531,16 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                 token,
                 contractAddress,
                 gasPriceWei,
-                if (token.gasApprove > BigDecimal.ZERO) token.gasApprove.toBigInteger() else gasLimit,
+                if (token.gasApprove > BigDecimal.ZERO) token.gasApprove.toBigInteger() else Token.APPROVE_TOKEN_GAS_LIMIT_DEFAULT.toBigInteger(),
                 transactionManager
             )
-
         }
         sendContractApproveTransfer(
             DEFAULT_MAX_AMOUNT,
             token,
             contractAddress,
             gasPriceWei,
-            gasLimit,
+            if (token.gasApprove > BigDecimal.ZERO) token.gasApprove.toBigInteger() else Token.APPROVE_TOKEN_GAS_LIMIT_DEFAULT.toBigInteger(),
             transactionManager
         )
     }
@@ -603,11 +602,6 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
 
         val txManager = RawTransactionManager(web3j, credentials)
 
-        val gasLimit =
-            if (order.gasLimit == BigInteger.ZERO) DEFAULT_GAS_LIMIT
-            else order.gasLimit
-
-
         val allowanceAmount =
             getContractAllowanceAmount(
                 order.userAddr,
@@ -624,11 +618,9 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                     order.gasPrice.toBigDecimalOrDefaultZero(),
                     Convert.Unit.GWEI
                 ).toBigInteger(),
-                gasLimit,
                 txManager
             )
         }
-
 
         val signValue = StringBuilder()
             .append(order.userAddr.removePrefix("0x"))

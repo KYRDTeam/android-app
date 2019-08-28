@@ -20,7 +20,6 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
-import timber.log.Timber
 import javax.inject.Inject
 
 class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -116,11 +115,9 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetTransactionState.Loading -> {
-                        Timber.e("Loading")
                         showProgress(true)
                     }
                     is GetTransactionState.Success -> {
-                        Timber.e("state loaded: " + state.isLoaded + ": state.isPending: " + isPending + ", filterChange: " + state.isFilterChanged)
                         if (state.isLoaded) {
                             showProgress(false)
                         }
@@ -138,7 +135,6 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                         )
                     }
                     is GetTransactionState.FilterNotChange -> {
-                        Timber.e("Filter not change")
                         showProgress(false)
                         if (transactionStatusAdapter?.itemCount == 0) {
                             binding.emptyTransaction = emptyTransaction
