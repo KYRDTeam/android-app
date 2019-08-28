@@ -16,6 +16,7 @@ import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.util.Locale
 
 @Entity(tableName = "tokens")
 @Parcelize
@@ -131,6 +132,7 @@ data class Token(
     }
 
     fun updateSelectedWallet(wallet: Wallet?): Token {
+        if (this.selectedWalletAddress == wallet?.address) return this
         if (wallet == null) return this
         val walletBalances =
             wallets.map {
@@ -249,31 +251,31 @@ data class Token(
         get() = gasApprove.toDisplayNumber()
 
     val isETH: Boolean
-        get() = tokenSymbol.toLowerCase() == ETH_SYMBOL.toLowerCase()
+        get() = tokenSymbol.toLowerCase(Locale.getDefault()) == ETH_SYMBOL.toLowerCase(Locale.getDefault())
 
     val isWETH: Boolean
-        get() = tokenSymbol.toLowerCase() == WETH_SYMBOL.toLowerCase()
+        get() = tokenSymbol.toLowerCase(Locale.getDefault()) == WETH_SYMBOL.toLowerCase(Locale.getDefault())
 
     val isDGX: Boolean
-        get() = tokenSymbol.toLowerCase() == DGX.toLowerCase()
+        get() = tokenSymbol.toLowerCase(Locale.getDefault()) == DGX.toLowerCase(Locale.getDefault())
 
     val isDAI: Boolean
-        get() = tokenSymbol.toLowerCase() == DAI.toLowerCase()
+        get() = tokenSymbol.toLowerCase(Locale.getDefault()) == DAI.toLowerCase(Locale.getDefault())
 
     val isMKR: Boolean
-        get() = tokenSymbol.toLowerCase() == MKR.toLowerCase()
+        get() = tokenSymbol.toLowerCase(Locale.getDefault()) == MKR.toLowerCase(Locale.getDefault())
 
     val isPRO: Boolean
-        get() = tokenSymbol.toLowerCase() == PRO.toLowerCase()
+        get() = tokenSymbol.toLowerCase(Locale.getDefault()) == PRO.toLowerCase(Locale.getDefault())
 
     val isPT: Boolean
-        get() = tokenSymbol.toLowerCase() == PT.toLowerCase()
+        get() = tokenSymbol.toLowerCase(Locale.getDefault()) == PT.toLowerCase(Locale.getDefault())
 
     val isTUSD: Boolean
-        get() = tokenSymbol.toLowerCase() == TUSD.toLowerCase()
+        get() = tokenSymbol.toLowerCase(Locale.getDefault()) == TUSD.toLowerCase(Locale.getDefault())
 
     val isETHWETH: Boolean
-        get() = tokenSymbol.toLowerCase() == ETH_SYMBOL_STAR.toLowerCase()
+        get() = tokenSymbol.toLowerCase(Locale.getDefault()) == ETH_SYMBOL_STAR.toLowerCase(Locale.getDefault())
 
     fun areContentsTheSame(other: Token): Boolean {
         return this.tokenSymbol == other.tokenSymbol &&
@@ -282,7 +284,8 @@ data class Token(
             this.rateUsdNow == other.rateUsdNow &&
             this.changeUsd24h == other.changeUsd24h &&
             this.changeEth24h == other.changeEth24h &&
-            this.fav == other.fav
+            this.fav == other.fav &&
+            this.shouldShowAsNew == other.shouldShowAsNew
     }
 
     fun change24hStatus(isEth: Boolean): Int {

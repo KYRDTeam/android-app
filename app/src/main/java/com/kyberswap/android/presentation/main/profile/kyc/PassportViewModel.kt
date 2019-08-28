@@ -14,7 +14,6 @@ import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.ext.display
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
-import timber.log.Timber
 import javax.inject.Inject
 
 class PassportViewModel @Inject constructor(
@@ -47,7 +46,6 @@ class PassportViewModel @Inject constructor(
         getUserInfoUseCase.dispose()
         getUserInfoUseCase.execute(
             Consumer {
-                Timber.e("getUserInfo: callback")
                 _getUserInfoCallback.value = Event(UserInfoState.Success(it))
 
             },

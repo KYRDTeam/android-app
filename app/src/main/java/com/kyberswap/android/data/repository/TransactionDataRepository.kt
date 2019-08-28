@@ -45,6 +45,7 @@ import org.web3j.utils.Numeric
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.max
@@ -106,7 +107,7 @@ class TransactionDataRepository @Inject constructor(
         }
 
         if (transaction.tokenSymbol.isNotBlank() && ((transaction.tokenSymbol != transaction.tokenSource) ||
-                    (transaction.tokenSymbol != transaction.tokenDest))
+                (transaction.tokenSymbol != transaction.tokenDest))
         ) {
             val tokenSymbol = tokenDao.getTokenBySymbol(transaction.tokenSymbol)
             tokenSymbol?.let { symbol ->
@@ -115,8 +116,8 @@ class TransactionDataRepository @Inject constructor(
         }
 
         if (!(transaction.tokenSource == Token.ETH_SYMBOL
-                    || transaction.tokenDest == Token.ETH_SYMBOL
-                    || transaction.tokenSymbol == Token.ETH_SYMBOL)
+                || transaction.tokenDest == Token.ETH_SYMBOL
+                || transaction.tokenSymbol == Token.ETH_SYMBOL)
         ) {
             val tokenSymbol = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)
             tokenSymbol?.let { symbol ->
@@ -253,10 +254,10 @@ class TransactionDataRepository @Inject constructor(
                 val tokensSymbols = tokenDao.allTokens.filter {
                     !it.isOther
                 }.map {
-                    it.tokenSymbol.toLowerCase()
+                    it.tokenSymbol.toLowerCase(Locale.getDefault())
                 }
                 val otherTokenList = it.filterNot { tx ->
-                    tokensSymbols.contains(tx.tokenSymbol.toLowerCase())
+                    tokensSymbols.contains(tx.tokenSymbol.toLowerCase(Locale.getDefault()))
                 }.map { tx ->
                     Token(tx).copy(isOther = true).updateSelectedWallet(wallet)
                 }.filter {
@@ -324,7 +325,7 @@ class TransactionDataRepository @Inject constructor(
                 ?: 1
         }
             .flatMap { latestBlockNumber ->
-                getTransactionRemote(param.wallet, latestBlockNumber)
+                getTransactionRemote(param.wallet, max(latestBlockNumber - 10, 1))
             }.doOnNext {
                 val latestTransaction = transactionDao.getLatestTransaction(param.wallet.address)
                 val latestBlock =
@@ -489,7 +490,7 @@ class TransactionDataRepository @Inject constructor(
             }
             .filter {
                 it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO &&
-                        it.from == wallet.address || it.isTransactionFail
+                    it.from == wallet.address || it.isTransactionFail
             }.map {
                 it.copy(
                     tokenSymbol = Token.ETH,

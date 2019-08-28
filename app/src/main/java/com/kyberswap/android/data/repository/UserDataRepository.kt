@@ -40,9 +40,9 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Flowables
 import okhttp3.MediaType
 import okhttp3.RequestBody
-import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.ceil
@@ -191,7 +191,6 @@ class UserDataRepository @Inject constructor(
                     photoIdentityFrontSide = remoteInfo.photoIdentityFrontSide,
                     photoProofAddress = remoteInfo.photoProofAddress
                 )
-                Timber.e("completed remote")
                 local.copy(kycInfo = kycInfo, isLoaded = true)
 
             }
@@ -207,7 +206,7 @@ class UserDataRepository @Inject constructor(
     }
 
     override fun resetPassword(param: ResetPasswordUseCase.Param): Single<ResponseStatus> {
-        return userApi.resetPassword(param.email.toLowerCase()).map {
+        return userApi.resetPassword(param.email.toLowerCase(Locale.getDefault())).map {
             userMapper.transform(it)
         }
     }
@@ -233,7 +232,11 @@ class UserDataRepository @Inject constructor(
     }
 
     override fun login(param: LoginUseCase.Param): Single<LoginUser> {
-        return userApi.login(param.email.toLowerCase(), param.password, param.twoFa)
+        return userApi.login(
+            param.email.toLowerCase(Locale.getDefault()),
+            param.password,
+            param.twoFa
+        )
             .map { userMapper.transform(it) }
             .doAfterSuccess {
                 userDao.updateUser(it.userInfo)
@@ -243,7 +246,7 @@ class UserDataRepository @Inject constructor(
 
     override fun signUp(param: SignUpUseCase.Param): Single<ResponseStatus> {
         return userApi.register(
-            param.email.toLowerCase(),
+            param.email.toLowerCase(Locale.getDefault()),
             param.password,
             param.password,
             param.displayName,
