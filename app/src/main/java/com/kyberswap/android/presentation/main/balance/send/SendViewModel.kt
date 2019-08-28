@@ -17,10 +17,17 @@ import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfer
 import com.kyberswap.android.presentation.common.specialGasLimitDefault
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
-import com.kyberswap.android.presentation.main.swap.*
+import com.kyberswap.android.presentation.main.swap.DeleteContactState
+import com.kyberswap.android.presentation.main.swap.GetContactState
+import com.kyberswap.android.presentation.main.swap.GetGasLimitState
+import com.kyberswap.android.presentation.main.swap.GetGasPriceState
+import com.kyberswap.android.presentation.main.swap.GetSendState
+import com.kyberswap.android.presentation.main.swap.SaveContactState
+import com.kyberswap.android.presentation.main.swap.SaveSendState
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
+import timber.log.Timber
 import java.math.BigInteger
 import javax.inject.Inject
 
@@ -62,7 +69,6 @@ class SendViewModel @Inject constructor(
     private val _deleteContactCallback = MutableLiveData<Event<DeleteContactState>>()
     val deleteContactCallback: LiveData<Event<DeleteContactState>>
         get() = _deleteContactCallback
-
 
     val currentContactSelection: LiveData<Event<Contact>>
         get() = _currentSelection
@@ -154,7 +160,6 @@ class SendViewModel @Inject constructor(
                 SaveSendUseCase.Param(it, address)
             )
         }
-
     }
 
     fun getContact() {
@@ -175,6 +180,10 @@ class SendViewModel @Inject constructor(
         estimateTransferGasUseCase.dispose()
         estimateTransferGasUseCase.execute(
             Consumer {
+
+                Timber.e(it.amountUsed.toString())
+                Timber.e(calculateDefaultGasLimitTransfer(send.tokenSource).toString())
+
                 val gasLimit = calculateDefaultGasLimitTransfer(send.tokenSource)
                     .min(it.amountUsed.multiply(120.toBigInteger()).divide(100.toBigInteger()))
 
@@ -203,5 +212,4 @@ class SendViewModel @Inject constructor(
         estimateTransferGasUseCase.dispose()
         super.onCleared()
     }
-
 }

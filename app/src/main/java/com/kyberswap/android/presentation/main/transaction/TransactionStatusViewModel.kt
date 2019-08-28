@@ -14,6 +14,7 @@ import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.util.ext.toDate
 import io.reactivex.functions.Consumer
 import timber.log.Timber
+import java.util.Locale
 import javax.inject.Inject
 
 class TransactionStatusViewModel @Inject constructor(
@@ -67,7 +68,6 @@ class TransactionStatusViewModel @Inject constructor(
             }
         } else {
             if (currentFilter != transactionFilter || isForceRefresh) {
-                Timber.e("Request: isFilterChange: "+ (currentFilter != transactionFilter) + " isForceRefresh: "+isForceRefresh)
                 getTransactionsUseCase.dispose()
                 _getTransactionCallback.postValue(Event(GetTransactionState.Loading))
                 getTransactionsUseCase.execute(
@@ -110,13 +110,13 @@ class TransactionStatusViewModel @Inject constructor(
         return transactions
             .sortedByDescending { it.timeStamp }
             .filter {
-                val tokenList = transactionFilter.tokens.map { it.toLowerCase() }
+                val tokenList = transactionFilter.tokens.map { it.toLowerCase(Locale.getDefault()) }
                 (transactionFilter.from.isEmpty() || it.filterDateTimeFormat.toDate().time >= transactionFilter.from.toDate().time) &&
                         (transactionFilter.to.isEmpty() || it.filterDateTimeFormat.toDate().time <= transactionFilter.to.toDate().time) &&
                         transactionFilter.types.contains(it.type) &&
-                        (tokenList.contains(it.tokenSymbol.toLowerCase()) ||
-                                tokenList.contains(it.tokenSource.toLowerCase())
-                                || tokenList.contains(it.tokenDest.toLowerCase()))
+                    (tokenList.contains(it.tokenSymbol.toLowerCase(Locale.getDefault())) ||
+                        tokenList.contains(it.tokenSource.toLowerCase(Locale.getDefault()))
+                        || tokenList.contains(it.tokenDest.toLowerCase(Locale.getDefault())))
             }
             .groupBy { it.shortedDateTimeFormat }
             .flatMap { item ->

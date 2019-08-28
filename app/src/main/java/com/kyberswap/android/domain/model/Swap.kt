@@ -68,15 +68,11 @@ data class Swap(
         limitOrder.ethToken,
         limitOrder.wethToken,
         minConvertedAmount.stripTrailingZeros().toPlainString(),
-        "",
+        minConvertedAmount.stripTrailingZeros().toPlainString(),
         BigDecimal.ONE.toDisplayNumber(),
         "",
         limitOrder.gasPrice,
-        if (limitOrder.gasLimit > BigInteger.ZERO) limitOrder.gasLimit.toString()
-        else if (limitOrder.ethToken.gasLimit.toBigIntegerOrDefaultZero()
-            == BigInteger.ZERO
-        ) DEFAULT_GAS_LIMIT.toString()
-        else limitOrder.ethToken.gasLimit,
+        calculateDefaultGasLimit(limitOrder.ethToken, limitOrder.wethToken).toString(),
         BigDecimal.ONE.toDisplayNumber(),
         3.toString()
     )
@@ -179,8 +175,6 @@ data class Swap(
             .append(" USD")
             .toString()
 
-
-
     val displayDestAmountUsd: String
         get() = if (tokenDest.rateUsdNow == BigDecimal.ZERO) "" else StringBuilder()
             .append("≈ ")
@@ -213,7 +207,6 @@ data class Swap(
 
     val destSymbol: String
         get() = tokenDest.tokenSymbol
-
 
     val displayDestRateEthUsd: String
         get() = StringBuilder()
@@ -314,7 +307,6 @@ data class Swap(
             ).toBigDecimal().multiply(
                 tokenSource.rateEthNow
             )
-
         }
 
     val insufficientEthBalance: Boolean

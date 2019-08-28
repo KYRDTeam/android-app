@@ -1,5 +1,6 @@
 package com.kyberswap.android.data.repository
 
+import com.google.gson.Gson
 import com.kyberswap.android.data.api.home.CurrencyApi
 import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.db.LocalLimitOrderDao
@@ -20,6 +21,7 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
+import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -124,7 +126,14 @@ class BalanceDataRepository @Inject constructor(
     override fun getTokenBalance(token: Token): Completable {
         return Completable.fromCallable {
             val updatedToken = tokenClient.updateBalance(token)
-            tokenDao.updateToken(updatedToken)
+            if (token.symbol == "BQX") {
+                Timber.e(Gson().toJson(updatedToken))
+            }
+
+            if (token.currentBalance != updatedToken.currentBalance) {
+                tokenDao.updateToken(updatedToken)
+            }
+
         }
     }
 
