@@ -6,24 +6,14 @@ apply plugin: 'deploygate'
 apply plugin: "io.gitlab.arturbosch.detekt"
 apply from: '../gradle/findbugs.gradle'
 apply from: '../gradle/ktlint.gradle'
+
+apply from: '../gradle/signing.gradle'
+apply from: '../gradle/onesignal.gradle'
 apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 
 
 android {
-    signingConfigs {
-        releseConfig {
-            storeFile file('/home/steve/KyberNetwork/Docs/Keystore/android_keystore')
-            storePassword 'android@kyberswap'
-            keyPassword 'android@kyber.network'
-            keyAlias = 'kyberswapandroid'
-        }
-        debug {
-            storeFile file('../debug.keystore')
-            storePassword 'android'
-            keyAlias = 'androiddebugkey'
-            keyPassword 'android'
-        }
-    }
+
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
     flavorDimensions "default"
@@ -34,7 +24,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         def versionMajor = 1
         def versionMinor = 0
-        def versionPatch = 1
+        def versionPatch = 2
         versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch * 1
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         vectorDrawables.useSupportLibrary = true
@@ -83,30 +73,6 @@ android {
         }
     }
 
-    productFlavors {
-        //todo fix app name and app icon
-        dev {
-            applicationIdSuffix ".dev"
-            manifestPlaceholders = [
-                    onesignal_app_id               : 'cb5c709a-a471-4fe3-afbc-0406c49dc768',
-                    onesignal_google_project_number: 'REMOTE'
-            ]
-        }
-        stg {
-            applicationIdSuffix ".stg"
-            manifestPlaceholders = [
-                    onesignal_app_id               : '72a48223-d8a5-4cb5-8bbf-759b7cf4ce6b',
-                    onesignal_google_project_number: 'REMOTE'
-            ]
-        }
-        prod {
-            manifestPlaceholders = [
-                    onesignal_app_id               : 'd0b1db9e-1a77-4386-b32a-b27cac1d8bdb',
-                    onesignal_google_project_number: 'REMOTE'
-            ]
-
-        }
-    }
     applicationVariants.all { variant ->
         copy {
             from "src/${variant.flavorName}"
@@ -277,7 +243,6 @@ dependencies {
     implementation 'com.onesignal:OneSignal:3.11.0'
 
     implementation 'org.greenrobot:eventbus:3.1.1'
-
 
 
 }
