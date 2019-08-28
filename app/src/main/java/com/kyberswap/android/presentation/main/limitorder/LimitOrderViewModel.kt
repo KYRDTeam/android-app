@@ -2,18 +2,43 @@ package com.kyberswap.android.presentation.main.limitorder
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.kyberswap.android.domain.model.*
-import com.kyberswap.android.domain.usecase.limitorder.*
+import com.kyberswap.android.domain.model.Cancelled
+import com.kyberswap.android.domain.model.LocalLimitOrder
+import com.kyberswap.android.domain.model.Order
+import com.kyberswap.android.domain.model.PendingBalances
+import com.kyberswap.android.domain.model.Swap
+import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.usecase.limitorder.CancelOrderUseCase
+import com.kyberswap.android.domain.usecase.limitorder.CheckEligibleAddressUseCase
+import com.kyberswap.android.domain.usecase.limitorder.GetLimitOrderFeeUseCase
+import com.kyberswap.android.domain.usecase.limitorder.GetLocalLimitOrderDataUseCase
+import com.kyberswap.android.domain.usecase.limitorder.GetNonceUseCase
+import com.kyberswap.android.domain.usecase.limitorder.GetPendingBalancesUseCase
+import com.kyberswap.android.domain.usecase.limitorder.GetRelatedLimitOrdersUseCase
+import com.kyberswap.android.domain.usecase.limitorder.SaveLimitOrderUseCase
+import com.kyberswap.android.domain.usecase.limitorder.SubmitOrderUseCase
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
-import com.kyberswap.android.domain.usecase.swap.*
+import com.kyberswap.android.domain.usecase.swap.EstimateGasUseCase
+import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
+import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
+import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
+import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
-import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.profile.UserInfoState
-import com.kyberswap.android.presentation.main.swap.*
-import com.kyberswap.android.util.ext.*
+import com.kyberswap.android.presentation.main.swap.GetExpectedRateState
+import com.kyberswap.android.presentation.main.swap.GetGasLimitState
+import com.kyberswap.android.presentation.main.swap.GetGasPriceState
+import com.kyberswap.android.presentation.main.swap.GetMarketRateState
+import com.kyberswap.android.presentation.main.swap.SwapTokenTransactionState
+import com.kyberswap.android.util.ext.display
+import com.kyberswap.android.util.ext.exactAmount
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
+import com.kyberswap.android.util.ext.toDisplayNumber
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -54,7 +79,6 @@ class LimitOrderViewModel @Inject constructor(
     val submitOrderCallback: LiveData<Event<SubmitOrderState>>
         get() = _submitOrderCallback
 
-
     private val _getGetNonceStateCallback = MutableLiveData<Event<GetNonceState>>()
     val getGetNonceStateCallback: LiveData<Event<GetNonceState>>
         get() = _getGetNonceStateCallback
@@ -66,7 +90,6 @@ class LimitOrderViewModel @Inject constructor(
     private val _getRelatedOrderCallback = MutableLiveData<Event<GetRelatedOrdersState>>()
     val getRelatedOrderCallback: LiveData<Event<GetRelatedOrdersState>>
         get() = _getRelatedOrderCallback
-
 
     private val _getExpectedRateCallback = MutableLiveData<Event<GetExpectedRateState>>()
     val getExpectedRateCallback: LiveData<Event<GetExpectedRateState>>
@@ -85,7 +108,6 @@ class LimitOrderViewModel @Inject constructor(
     private val _getGetMarketRateCallback = MutableLiveData<Event<GetMarketRateState>>()
     val getGetMarketRateCallback: LiveData<Event<GetMarketRateState>>
         get() = _getGetMarketRateCallback
-
 
     private val _getFeeCallback = MutableLiveData<Event<GetFeeState>>()
     val getFeeCallback: LiveData<Event<GetFeeState>>
@@ -178,7 +200,6 @@ class LimitOrderViewModel @Inject constructor(
                 GetLocalLimitOrderDataUseCase.Param(wallet)
             )
         }
-
     }
 
     private fun calculateGasLimit(limitOrder: LocalLimitOrder): BigInteger {
@@ -186,11 +207,11 @@ class LimitOrderViewModel @Inject constructor(
             if (limitOrder.tokenSource.gasLimit.toBigIntegerOrDefaultZero()
                 == BigInteger.ZERO
             )
-                DEFAULT_GAS_LIMIT
+                Token.EXCHANGE_ETH_TOKEN_GAS_LIMIT_DEFAULT.toBigInteger()
             else limitOrder.tokenSource.gasLimit.toBigIntegerOrDefaultZero()
         val gasLimitEthToSource =
             if (limitOrder.tokenDest.gasLimit.toBigIntegerOrDefaultZero() == BigInteger.ZERO)
-                DEFAULT_GAS_LIMIT
+                Token.EXCHANGE_ETH_TOKEN_GAS_LIMIT_DEFAULT.toBigInteger()
             else limitOrder.tokenDest.gasLimit.toBigIntegerOrDefaultZero()
 
         return gasLimitSourceToEth + gasLimitEthToSource
@@ -292,7 +313,6 @@ class LimitOrderViewModel @Inject constructor(
                 order.tokenSource, order.tokenDest
             )
         )
-
     }
 
     fun toOrderItems(orders: List<Order>): List<OrderItem> {
@@ -382,7 +402,6 @@ class LimitOrderViewModel @Inject constructor(
     fun saveLimitOrder(
         order: LocalLimitOrder,
         fromContinue: Boolean = false,
-        fromConvert: Boolean = false,
         fromSwitchToken: Boolean = false
     ) {
 
@@ -469,7 +488,6 @@ class LimitOrderViewModel @Inject constructor(
             },
             SubmitOrderUseCase.Param(order, wallet)
         )
-
     }
 
     fun getGasLimit(wallet: Wallet?, order: LocalLimitOrder?) {
@@ -593,5 +611,4 @@ class LimitOrderViewModel @Inject constructor(
         compositeDisposable.dispose()
         super.onCleared()
     }
-
 }

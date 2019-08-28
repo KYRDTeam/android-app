@@ -251,6 +251,7 @@ class SwapDataRepository @Inject constructor(
             tokenClient.estimateGasForTransfer(
                 param.wallet.address,
                 param.send.tokenSource.tokenAddress,
+                param.send.contact.address,
                 param.send.estimateSource.toBigDecimalOrDefaultZero().times(
                     BigDecimal.TEN.pow(param.send.tokenSource.tokenDecimal)
                 ).toBigInteger().toString(),

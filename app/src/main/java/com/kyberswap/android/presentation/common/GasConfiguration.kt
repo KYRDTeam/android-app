@@ -34,7 +34,6 @@ fun calculateDefaultGasLimit(from: Token, to: Token): BigInteger {
             Token.EXCHANGE_ETH_TOKEN_GAS_LIMIT_DEFAULT.toBigInteger()
         }
 
-
     val gasETHToDest =
         if (to.gasLimit.toBigIntegerOrDefaultZero() > BigInteger.ZERO) {
             to.gasLimit.toBigIntegerOrDefaultZero()
@@ -93,3 +92,6 @@ fun calculateDefaultGasLimitTransfer(token: Token): BigInteger {
     }()
     return gasDefault * 120.toBigInteger() / 100.toBigInteger()
 }
+
+const val APPROVE_LIMIT_ORDER_GAS_LIMIT_DEFAULT = 380_000
+
