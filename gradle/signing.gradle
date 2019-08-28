@@ -1,0 +1,26 @@
+def propertiesFilename = "secret.properties"
+if (!project.file(propertiesFilename).exists()) {
+    propertiesFilename = "default.properties"
+}
+
+def signingProperties = new Properties()
+signingProperties.load(new FileInputStream(file(propertiesFilename)))
+
+android {
+    signingConfigs {
+        releseConfig {
+            keyAlias signingProperties.releaseSignKeyAlias
+            keyPassword signingProperties.releaseSignKeyPassword
+            storeFile file(signingProperties.releaseStoreFilePath)
+            storePassword signingProperties.releaseStorePassword
+        }
+
+        debug {
+            storeFile file('../debug.keystore')
+            storePassword 'android'
+            keyAlias = 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
+
+}
