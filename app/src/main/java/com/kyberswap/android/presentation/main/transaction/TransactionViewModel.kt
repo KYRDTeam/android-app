@@ -8,14 +8,16 @@ import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class TransactionViewModel @Inject constructor(
     private val getBalancePollingUseCase: GetBalancePollingUseCase,
     private val getWalletByAddressUseCase: GetWalletByAddressUseCase,
-    getSelectedWalletUseCase: GetSelectedWalletUseCase
-) : SelectedWalletViewModel(getSelectedWalletUseCase) {
+    getSelectedWalletUseCase: GetSelectedWalletUseCase,
+    private val errorHandler: ErrorHandler
+) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
 
     private val _getWalletCallback = MutableLiveData<Event<GetWalletState>>()
     val getWalletCallback: LiveData<Event<GetWalletState>>
@@ -29,7 +31,8 @@ class TransactionViewModel @Inject constructor(
             },
             Consumer {
                 it.printStackTrace()
-                _getWalletCallback.value = Event(GetWalletState.ShowError(it.localizedMessage))
+                _getWalletCallback.value =
+                    Event(GetWalletState.ShowError(errorHandler.getError(it)))
             },
             address
         )

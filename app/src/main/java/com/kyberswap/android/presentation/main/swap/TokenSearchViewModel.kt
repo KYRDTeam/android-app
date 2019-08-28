@@ -10,6 +10,7 @@ import com.kyberswap.android.domain.usecase.token.GetTokenUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.balance.GetBalanceState
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -19,7 +20,8 @@ class TokenSearchViewModel @Inject constructor(
     private val getTokenListUseCase: GetTokenUseCase,
     private val getWalletByAddressUseCase: GetWalletByAddressUseCase,
     private val saveSwapDataTokenUseCase: SaveSwapDataTokenUseCase,
-    private val saveSendTokenUseCase: SaveSendTokenUseCase
+    private val saveSendTokenUseCase: SaveSendTokenUseCase,
+    private val errorHandler: ErrorHandler
 ) : ViewModel() {
 
     private val _getTokenListCallback = MutableLiveData<Event<GetBalanceState>>()
@@ -52,7 +54,7 @@ class TokenSearchViewModel @Inject constructor(
                 _getTokenListCallback.value =
                     Event(
                         GetBalanceState.ShowError(
-                            it.localizedMessage
+                            errorHandler.getError(it)
                         )
                     )
             },
@@ -76,7 +78,7 @@ class TokenSearchViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _saveSwapCallback.value =
-                    Event(SaveSwapDataState.ShowError(it.localizedMessage))
+                    Event(SaveSwapDataState.ShowError(errorHandler.getError(it)))
             },
             SaveSwapDataTokenUseCase.Param(walletAddress, token, sourceToken)
         )
@@ -90,7 +92,7 @@ class TokenSearchViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _saveSendCallback.value =
-                    Event(SaveSendState.ShowError(it.localizedMessage))
+                    Event(SaveSendState.ShowError(errorHandler.getError(it)))
             },
             SaveSendTokenUseCase.Param(address, token)
         )

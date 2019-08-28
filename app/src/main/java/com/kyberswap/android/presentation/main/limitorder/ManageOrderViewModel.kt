@@ -8,15 +8,17 @@ import com.kyberswap.android.domain.usecase.limitorder.GetLimitOrdersUseCase
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.GetLoginStatusViewModel
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class ManageOrderViewModel @Inject constructor(
     private val getLimitOrdersUseCase: GetLimitOrdersUseCase,
     private val cancelOrderUseCase: CancelOrderUseCase,
-    val getLoginStatusUseCase: GetLoginStatusUseCase
+    val getLoginStatusUseCase: GetLoginStatusUseCase,
+    private val errorHandler: ErrorHandler
 
-) : GetLoginStatusViewModel(getLoginStatusUseCase) {
+) : GetLoginStatusViewModel(getLoginStatusUseCase, errorHandler) {
 
     private val _getOrdersCallback = MutableLiveData<Event<GetRelatedOrdersState>>()
     val getOrdersCallback: LiveData<Event<GetRelatedOrdersState>>
@@ -54,7 +56,7 @@ class ManageOrderViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getOrdersCallback.value =
-                    Event(GetRelatedOrdersState.ShowError(it.localizedMessage))
+                    Event(GetRelatedOrdersState.ShowError(errorHandler.getError(it)))
 
             },
             null
@@ -98,7 +100,7 @@ class ManageOrderViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _cancelOrderCallback.value =
-                    Event(CancelOrdersState.ShowError(it.localizedMessage))
+                    Event(CancelOrdersState.ShowError(errorHandler.getError(it)))
             },
             CancelOrderUseCase.Param(order)
         )

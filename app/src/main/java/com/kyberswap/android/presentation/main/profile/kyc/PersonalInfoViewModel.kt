@@ -5,15 +5,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.KycInfo
-import com.kyberswap.android.domain.usecase.profile.*
+import com.kyberswap.android.domain.usecase.profile.Base64DecodeUseCase
+import com.kyberswap.android.domain.usecase.profile.FetchUserInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.GetUserInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.ResizeImageUseCase
+import com.kyberswap.android.domain.usecase.profile.SaveLocalPersonalInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.SavePersonalInfoUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.profile.UserInfoState
+import com.kyberswap.android.util.ErrorHandler
 import com.kyberswap.android.util.ext.display
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import kotlinx.android.parcel.Parcelize
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 
 class PersonalInfoViewModel @Inject constructor(
@@ -22,7 +28,8 @@ class PersonalInfoViewModel @Inject constructor(
     private val savePersonalInfoUseCase: SavePersonalInfoUseCase,
     private val saveLocalPersonalInfoUseCase: SaveLocalPersonalInfoUseCase,
     private val resizeImageUseCase: ResizeImageUseCase,
-    private val decodeBase64DecodeUseCase: Base64DecodeUseCase
+    private val decodeBase64DecodeUseCase: Base64DecodeUseCase,
+    private val errorHandler: ErrorHandler
 ) : ViewModel() {
 
     private val _getUserInfoCallback = MutableLiveData<Event<UserInfoState>>()
@@ -59,7 +66,7 @@ class PersonalInfoViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getUserInfoCallback.value =
-                    Event(UserInfoState.ShowError(it.localizedMessage))
+                    Event(UserInfoState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -85,7 +92,7 @@ class PersonalInfoViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getUserInfoCallback.value =
-                    Event(UserInfoState.ShowError(it.localizedMessage))
+                    Event(UserInfoState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -111,7 +118,7 @@ class PersonalInfoViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _savePersonalInfoCallback.value =
-                    Event(SavePersonalInfoState.ShowError(it.localizedMessage))
+                    Event(SavePersonalInfoState.ShowError(errorHandler.getError(it)))
             },
             SavePersonalInfoUseCase.Param(kycInfo)
         )
