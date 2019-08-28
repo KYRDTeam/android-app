@@ -25,6 +25,7 @@ import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
 import com.kyberswap.android.presentation.main.profile.kyc.ReSubmitState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.onesignal.OneSignal
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -70,6 +71,7 @@ class ProfileDetailFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
 
         OneSignal.idsAvailable { _, _ ->
+            Timber.e(" OneSignal.getPermissionSubscriptionState().subscriptionStatus.userId")
             viewModel.updatePushToken(
                 OneSignal.getPermissionSubscriptionState().subscriptionStatus.userId,
                 OneSignal.getPermissionSubscriptionState().subscriptionStatus.pushToken
