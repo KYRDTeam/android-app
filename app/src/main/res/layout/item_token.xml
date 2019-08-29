@@ -3,6 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="token"
+            type="com.kyberswap.android.domain.model.Token" />
+
+        <variable
+            name="showEth"
+            type="Boolean" />
+
+        <import type="android.view.View" />
+    </data>
+
     <com.daimajia.swipe.SwipeLayout
         android:id="@+id/swipe"
         android:layout_width="match_parent"
@@ -57,25 +70,6 @@
             android:orientation="horizontal">
 
 
-            <FrameLayout
-                android:id="@+id/flState"
-                android:layout_width="11dp"
-                android:layout_height="11dp"
-                app:layout_constraintBottom_toBottomOf="@+id/textView124"
-                app:layout_constraintEnd_toStartOf="@+id/tvChange24h"
-                app:layout_constraintStart_toEndOf="@+id/textView124"
-                app:layout_constraintTop_toTopOf="@+id/textView124">
-
-                <ImageView
-                    android:id="@+id/imgState"
-                    android:layout_width="11dp"
-                    android:layout_height="11dp"
-                    android:src="@drawable/ic_arrow_up"
-
-                    tools:src="@drawable/ic_arrow_up" />
-            </FrameLayout>
-
-
             <ImageView
                 android:id="@+id/imgToken"
                 android:layout_width="32dp"
@@ -88,20 +82,36 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
 
-            <ImageView
-                android:id="@+id/imgFav"
+            <TextView
+                android:id="@+id/textView121"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="8dp"
-                android:padding="8dp"
-                android:src="@drawable/ic_token_favorite_selective"
-                app:layout_constraintBottom_toBottomOf="@+id/tvChange24h"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/tvChange24h"
-                app:layout_constraintTop_toTopOf="@+id/tvChange24h"
-                app:selected="@{token.fav}" />
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="2dp"
+                android:text="@{token.tokenSymbol}"
+                android:textAllCaps="true"
+                android:textColor="#1d303a"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toTopOf="@+id/textView123"
+                app:layout_constraintStart_toEndOf="@+id/imgToken"
+                app:layout_constraintTop_toTopOf="@+id/imgToken"
+                tools:text="KNC" />
+
+
+            <TextView
+                android:id="@+id/tvNew"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/token_new"
+                android:textColor="#f96363"
+
+                android:textSize="10sp"
+                android:visibility="@{token.shouldShowAsNew ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="@+id/textView121"
+                app:layout_constraintStart_toEndOf="@+id/textView121"
+                app:layout_constraintTop_toTopOf="@+id/textView121"
+                tools:ignore="SmallSp" />
 
 
             <TextView
@@ -117,6 +127,14 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView121"
                 tools:text="36000" />
 
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="end"
+                app:constraint_referenced_ids="textView123,tvNew"
+                tools:layout_editor_absoluteX="411dp" />
 
             <TextView
                 android:id="@+id/textView124"
@@ -137,20 +155,22 @@
                 app:layout_constraintTop_toTopOf="@+id/textView121"
                 tools:text="0.002025" />
 
-            <TextView
-                android:id="@+id/textView121"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginBottom="2dp"
-                android:text="@{token.tokenSymbol}"
-                android:textAllCaps="true"
-                android:textColor="#1d303a"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toTopOf="@+id/textView123"
-                app:layout_constraintStart_toEndOf="@+id/imgToken"
-                app:layout_constraintTop_toTopOf="@+id/imgToken"
-                tools:text="KNC" />
+            <FrameLayout
+                android:id="@+id/flState"
+                android:layout_width="11dp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView124"
+                app:layout_constraintEnd_toStartOf="@+id/tvChange24h"
+                app:layout_constraintStart_toEndOf="@+id/textView124"
+                app:layout_constraintTop_toTopOf="@+id/textView124"
+                android:layout_height="11dp">
+                <ImageView
+                    android:id="@+id/imgState"
+                    android:layout_width="11dp"
+                    android:layout_height="11dp"
+                    android:src="@drawable/ic_arrow_up"
+                    tools:src="@drawable/ic_arrow_up" />
+            </FrameLayout>
+
 
             <TextView
                 android:id="@+id/tvChange24h"
@@ -158,6 +178,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:gravity="end"
+                android:minWidth="42dp"
                 android:textColor="@color/token_change24h_up"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/flState"
@@ -167,46 +188,24 @@
                 tools:text="-2.2%" />
 
 
-            <TextView
-                android:id="@+id/tvNew"
+            <ImageView
+                android:id="@+id/imgFav"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/token_new"
-                android:textColor="#f96363"
-
-                android:textSize="10sp"
-                android:visibility="@{token.shouldShowAsNew ? View.VISIBLE : View.GONE}"
-                app:layout_constraintBottom_toBottomOf="@+id/textView121"
-                app:layout_constraintStart_toEndOf="@+id/textView121"
-                app:layout_constraintTop_toTopOf="@+id/textView121"
-                tools:ignore="SmallSp" />
-
-
-            <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/barrier6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:barrierDirection="end"
-                app:constraint_referenced_ids="textView123,tvNew"
-                tools:layout_editor_absoluteX="411dp" />
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="8dp"
+                android:padding="8dp"
+                android:src="@drawable/ic_token_favorite_selective"
+                app:layout_constraintBottom_toBottomOf="@+id/tvChange24h"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/tvChange24h"
+                app:layout_constraintTop_toTopOf="@+id/tvChange24h"
+                app:selected="@{token.fav}" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.daimajia.swipe.SwipeLayout>
-
-    <data>
-
-        <import type="android.view.View" />
-
-        <variable
-            name="showEth"
-            type="Boolean" />
-
-        <variable
-            name="token"
-            type="com.kyberswap.android.domain.model.Token" />
-    </data>
 
 </layout>
