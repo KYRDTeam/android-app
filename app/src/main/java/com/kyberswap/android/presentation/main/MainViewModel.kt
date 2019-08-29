@@ -21,6 +21,7 @@ import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.wallet.UpdateWalletState
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import timber.log.Timber
@@ -37,8 +38,9 @@ class MainViewModel @Inject constructor(
     private val getBalancePollingUseCase: GetBalancePollingUseCase,
     private val getTokenBalanceUseCase: GetTokenBalanceUseCase,
     private val getTransactionsPeriodicallyUseCase: GetTransactionsPeriodicallyUseCase,
-    private val updateBalanceUseCase: UpdateBalanceUseCase
-) : SelectedWalletViewModel(getWalletUseCase) {
+    private val updateBalanceUseCase: UpdateBalanceUseCase,
+    private val errorHandler: ErrorHandler
+) : SelectedWalletViewModel(getWalletUseCase, errorHandler) {
 
     private val _getAllWalletStateCallback = MutableLiveData<Event<GetAllWalletState>>()
     val getAllWalletStateCallback: LiveData<Event<GetAllWalletState>>
@@ -73,7 +75,7 @@ class MainViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getLoginStatusCallback.value =
-                    Event(UserInfoState.ShowError(it.localizedMessage))
+                    Event(UserInfoState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -94,7 +96,7 @@ class MainViewModel @Inject constructor(
                 _getAllWalletStateCallback.value =
                     Event(
                         GetAllWalletState.ShowError(
-                            it.localizedMessage
+                            errorHandler.getError(it)
                         )
                     )
             },
@@ -164,7 +166,7 @@ class MainViewModel @Inject constructor(
                 Timber.e(it.localizedMessage)
                 _getPendingTransactionStateCallback.value = Event(
                     GetPendingTransactionState.ShowError(
-                        it.localizedMessage
+                        errorHandler.getError(it)
                     )
                 )
             },
@@ -182,7 +184,7 @@ class MainViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getMnemonicCallback.value =
-                    Event(CreateWalletState.ShowError(it.localizedMessage))
+                    Event(CreateWalletState.ShowError(errorHandler.getError(it)))
             },
             CreateWalletUseCase.Param(walletName)
         )
@@ -240,7 +242,7 @@ class MainViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _switchWalletCompleteCallback.value =
-                    Event(UpdateWalletState.ShowError(it.localizedMessage))
+                    Event(UpdateWalletState.ShowError(errorHandler.getError(it)))
             },
             UpdateSelectedWalletUseCase.Param(wallet)
         )

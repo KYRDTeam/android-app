@@ -3,19 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-
-        <variable
-            name="token"
-            type="com.kyberswap.android.domain.model.Token" />
-
-        <variable
-            name="showEth"
-            type="Boolean" />
-
-        <import type="android.view.View" />
-    </data>
-
     <com.daimajia.swipe.SwipeLayout
         android:id="@+id/swipe"
         android:layout_width="match_parent"
@@ -70,6 +57,25 @@
             android:orientation="horizontal">
 
 
+            <FrameLayout
+                android:id="@+id/flState"
+                android:layout_width="11dp"
+                android:layout_height="11dp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView124"
+                app:layout_constraintEnd_toStartOf="@+id/tvChange24h"
+                app:layout_constraintStart_toEndOf="@+id/textView124"
+                app:layout_constraintTop_toTopOf="@+id/textView124">
+
+                <ImageView
+                    android:id="@+id/imgState"
+                    android:layout_width="11dp"
+                    android:layout_height="11dp"
+                    android:src="@drawable/ic_arrow_up"
+
+                    tools:src="@drawable/ic_arrow_up" />
+            </FrameLayout>
+
+
             <ImageView
                 android:id="@+id/imgToken"
                 android:layout_width="32dp"
@@ -80,105 +86,6 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-
-            <TextView
-                android:id="@+id/textView121"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginBottom="2dp"
-                android:text="@{token.tokenSymbol}"
-                android:textAllCaps="true"
-                android:textColor="#1d303a"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toTopOf="@+id/textView123"
-                app:layout_constraintStart_toEndOf="@+id/imgToken"
-                app:layout_constraintTop_toTopOf="@+id/imgToken"
-                tools:text="KNC" />
-
-
-            <TextView
-                android:id="@+id/tvNew"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/token_new"
-                android:textColor="#f96363"
-
-                android:textSize="10sp"
-                android:visibility="@{token.shouldShowAsNew ? View.VISIBLE : View.GONE}"
-                app:layout_constraintBottom_toBottomOf="@+id/textView121"
-                app:layout_constraintStart_toEndOf="@+id/textView121"
-                app:layout_constraintTop_toTopOf="@+id/textView121"
-                tools:ignore="SmallSp" />
-
-
-            <TextView
-                android:id="@+id/textView123"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="@{token.displayCurrentBalance}"
-                android:textColor="#b8babe"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/imgToken"
-                app:layout_constraintStart_toStartOf="@+id/textView121"
-                app:layout_constraintTop_toBottomOf="@+id/textView121"
-                tools:text="36000" />
-
-
-            <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/barrier6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:barrierDirection="end"
-                app:constraint_referenced_ids="textView123,tvNew"
-                tools:layout_editor_absoluteX="411dp" />
-
-            <TextView
-                android:id="@+id/textView124"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
-                android:gravity="center|end"
-                android:text="@{showEth ? token.displayRateEthNow : token.displayRateUsdNow}"
-                android:textColor="#1d303a"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="@+id/textView123"
-                app:layout_constraintEnd_toStartOf="@+id/imgState"
-                app:layout_constraintHorizontal_chainStyle="spread"
-                app:layout_constraintStart_toEndOf="@+id/barrier6"
-                app:layout_constraintTop_toTopOf="@+id/textView121"
-                tools:text="0.002025" />
-
-            <ImageView
-                android:id="@+id/imgState"
-                android:layout_width="11dp"
-                android:layout_height="11dp"
-                android:src="@drawable/ic_arrow_up"
-                app:layout_constraintBottom_toBottomOf="@+id/textView124"
-                app:layout_constraintEnd_toStartOf="@+id/tvChange24h"
-                app:layout_constraintStart_toEndOf="@+id/textView124"
-                app:layout_constraintTop_toTopOf="@+id/textView124"
-                tools:src="@drawable/ic_arrow_up" />
-
-            <TextView
-                android:id="@+id/tvChange24h"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:gravity="end"
-                android:textColor="@color/token_change24h_up"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/imgState"
-                app:layout_constraintEnd_toStartOf="@+id/imgFav"
-                app:layout_constraintStart_toEndOf="@+id/imgState"
-                app:layout_constraintTop_toTopOf="@+id/imgState"
-                tools:text="-2.2%" />
 
 
             <ImageView
@@ -197,8 +104,109 @@
                 app:selected="@{token.fav}" />
 
 
+            <TextView
+                android:id="@+id/textView123"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@{token.displayCurrentBalance}"
+                android:textColor="#b8babe"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/imgToken"
+                app:layout_constraintStart_toStartOf="@+id/textView121"
+                app:layout_constraintTop_toBottomOf="@+id/textView121"
+                tools:text="36000" />
+
+
+            <TextView
+                android:id="@+id/textView124"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="center|end"
+                android:text="@{showEth ? token.displayRateEthNow : token.displayRateUsdNow}"
+                android:textColor="#1d303a"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView123"
+                app:layout_constraintEnd_toStartOf="@+id/flState"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintStart_toEndOf="@+id/barrier6"
+                app:layout_constraintTop_toTopOf="@+id/textView121"
+                tools:text="0.002025" />
+
+            <TextView
+                android:id="@+id/textView121"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="2dp"
+                android:text="@{token.tokenSymbol}"
+                android:textAllCaps="true"
+                android:textColor="#1d303a"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toTopOf="@+id/textView123"
+                app:layout_constraintStart_toEndOf="@+id/imgToken"
+                app:layout_constraintTop_toTopOf="@+id/imgToken"
+                tools:text="KNC" />
+
+            <TextView
+                android:id="@+id/tvChange24h"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:gravity="end"
+                android:textColor="@color/token_change24h_up"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/flState"
+                app:layout_constraintEnd_toStartOf="@+id/imgFav"
+                app:layout_constraintStart_toEndOf="@+id/flState"
+                app:layout_constraintTop_toTopOf="@+id/flState"
+                tools:text="-2.2%" />
+
+
+            <TextView
+                android:id="@+id/tvNew"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/token_new"
+                android:textColor="#f96363"
+
+                android:textSize="10sp"
+                android:visibility="@{token.shouldShowAsNew ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="@+id/textView121"
+                app:layout_constraintStart_toEndOf="@+id/textView121"
+                app:layout_constraintTop_toTopOf="@+id/textView121"
+                tools:ignore="SmallSp" />
+
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="end"
+                app:constraint_referenced_ids="textView123,tvNew"
+                tools:layout_editor_absoluteX="411dp" />
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.daimajia.swipe.SwipeLayout>
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="showEth"
+            type="Boolean" />
+
+        <variable
+            name="token"
+            type="com.kyberswap.android.domain.model.Token" />
+    </data>
 
 </layout>

@@ -4,7 +4,6 @@ package com.kyberswap.android.presentation.main.profile.kyc
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,9 +15,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
-import com.bumptech.glide.request.transition.Transition
 import com.google.gson.Gson
 import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.jakewharton.rxbinding3.widget.textChanges
@@ -210,9 +207,8 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                         }
                     }
                     is UserInfoState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -227,9 +223,8 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                         navigator.navigateToPassport(currentFragment)
                     }
                     is SavePersonalInfoState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -244,9 +239,8 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                         navigateToSearch()
                     }
                     is SaveKycInfoState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -707,9 +701,8 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                             displayImage(state.stringImage)
                         }
                         is ResizeImageState.ShowError -> {
-                            showAlert(
-                                state.message ?: getString(R.string.something_wrong),
-                                R.drawable.ic_info_error
+                            showError(
+                                state.message ?: getString(R.string.something_wrong)
                             )
                         }
                     }
@@ -732,9 +725,8 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                     }
                     is DecodeBase64State.ShowError -> {
                         binding.progressBar.visibility = View.GONE
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }

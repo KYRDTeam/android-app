@@ -10,12 +10,14 @@ import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.swap.GetSendState
 import com.kyberswap.android.presentation.main.swap.TransferTokenTransactionState
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class SendConfirmViewModel @Inject constructor(
     private val getSendTokenUseCase: GetSendTokenUseCase,
-    private val transferTokenUseCase: TransferTokenUseCase
+    private val transferTokenUseCase: TransferTokenUseCase,
+    private val errorHandler: ErrorHandler
 ) : ViewModel() {
 
     private val _getSendCallback = MutableLiveData<Event<GetSendState>>()
@@ -36,7 +38,7 @@ class SendConfirmViewModel @Inject constructor(
             },
             Consumer {
                 it.printStackTrace()
-                _getSendCallback.value = Event(GetSendState.ShowError(it.localizedMessage))
+                _getSendCallback.value = Event(GetSendState.ShowError(errorHandler.getError(it)))
             },
             GetSendTokenUseCase.Param(wallet)
         )
@@ -53,7 +55,7 @@ class SendConfirmViewModel @Inject constructor(
                 Consumer {
                     it.printStackTrace()
                     _transferTokenTransactionCallback.value =
-                        Event(TransferTokenTransactionState.ShowError(it.localizedMessage))
+                        Event(TransferTokenTransactionState.ShowError(errorHandler.getError(it)))
                 },
                 TransferTokenUseCase.Param(wallet!!, send)
 

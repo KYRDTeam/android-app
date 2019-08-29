@@ -76,9 +76,8 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
                         onBackPressed()
                     }
                     is SwapTokenTransactionState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }

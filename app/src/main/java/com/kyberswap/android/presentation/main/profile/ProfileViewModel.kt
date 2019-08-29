@@ -10,6 +10,7 @@ import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
 import com.kyberswap.android.domain.usecase.profile.LoginUseCase
 import com.kyberswap.android.domain.usecase.profile.ResetPasswordUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
 import kotlinx.android.parcel.Parcelize
@@ -19,7 +20,8 @@ class ProfileViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val loginSocialUseCase: LoginSocialUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
-    private val getLoginStatusUseCase: GetLoginStatusUseCase
+    private val getLoginStatusUseCase: GetLoginStatusUseCase,
+    private val errorHandler: ErrorHandler
 ) : ViewModel() {
     private val _loginCallback = MutableLiveData<Event<LoginState>>()
     val loginCallback: LiveData<Event<LoginState>>
@@ -44,7 +46,7 @@ class ProfileViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getLoginStatusCallback.value =
-                    Event(UserInfoState.ShowError(it.localizedMessage))
+                    Event(UserInfoState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -60,7 +62,7 @@ class ProfileViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _loginCallback.value =
-                    Event(LoginState.ShowError(it.localizedMessage))
+                    Event(LoginState.ShowError(errorHandler.getError(it)))
             },
             LoginUseCase.Param(email, password, twoFa)
         )
@@ -75,7 +77,7 @@ class ProfileViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _loginCallback.value =
-                    Event(LoginState.ShowError(it.localizedMessage))
+                    Event(LoginState.ShowError(errorHandler.getError(it)))
             },
             LoginSocialUseCase.Param(
                 socialInfo
@@ -92,7 +94,7 @@ class ProfileViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _resetPasswordCallback.value =
-                    Event(ResetPasswordState.ShowError(it.localizedMessage))
+                    Event(ResetPasswordState.ShowError(errorHandler.getError(it)))
             },
             ResetPasswordUseCase.Param(email)
         )

@@ -10,14 +10,16 @@ import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.profile.alert.GetLeaderBoardState
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class LeaderBoardViewModel @Inject constructor(
     private val getLeaderBoardAlertsUseCase: GetLeaderBoardAlertsUseCase,
     private val getCampaignResultUseCase: GetCampaignResultUseCase,
-    getSelectedWalletUseCase: GetSelectedWalletUseCase
-) : SelectedWalletViewModel(getSelectedWalletUseCase) {
+    getSelectedWalletUseCase: GetSelectedWalletUseCase,
+    private val errorHandler: ErrorHandler
+) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
 
     private val _getAlertsCallback = MutableLiveData<Event<GetLeaderBoardState>>()
     val getAlertsCallback: LiveData<Event<GetLeaderBoardState>>
@@ -50,7 +52,7 @@ class LeaderBoardViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getAlertsCallback.value =
-                    Event(GetLeaderBoardState.ShowError(it.localizedMessage))
+                    Event(GetLeaderBoardState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -80,7 +82,7 @@ class LeaderBoardViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getAlertsCallback.value =
-                    Event(GetLeaderBoardState.ShowError(it.localizedMessage))
+                    Event(GetLeaderBoardState.ShowError(errorHandler.getError(it)))
             },
             null
         )

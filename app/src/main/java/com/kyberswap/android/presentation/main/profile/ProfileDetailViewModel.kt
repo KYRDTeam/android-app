@@ -7,11 +7,17 @@ import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.usecase.alert.DeleteAlertsUseCase
 import com.kyberswap.android.domain.usecase.alert.GetAlertsUseCase
-import com.kyberswap.android.domain.usecase.profile.*
+import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
+import com.kyberswap.android.domain.usecase.profile.LogoutUseCase
+import com.kyberswap.android.domain.usecase.profile.PollingUserInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.ReSubmitUserInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.RefreshKycStatusUseCase
+import com.kyberswap.android.domain.usecase.profile.UpdatePushTokenUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.profile.alert.DeleteAlertsState
 import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
 import com.kyberswap.android.presentation.main.profile.kyc.ReSubmitState
+import com.kyberswap.android.util.ErrorHandler
 import com.kyberswap.android.util.ext.display
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -26,7 +32,8 @@ class ProfileDetailViewModel @Inject constructor(
     private val pollingUserInfoUseCase: PollingUserInfoUseCase,
     private val refreshKycStatusUseCase: RefreshKycStatusUseCase,
     private val reSubmitUserInfoUseCase: ReSubmitUserInfoUseCase,
-    private val updatePushTokenUseCase: UpdatePushTokenUseCase
+    private val updatePushTokenUseCase: UpdatePushTokenUseCase,
+    private val errorHandler: ErrorHandler
 ) : ViewModel() {
 
     private val _getAlertsCallback = MutableLiveData<Event<GetAlertsState>>()
@@ -64,7 +71,7 @@ class ProfileDetailViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getUserInfoCallback.value =
-                    Event(UserInfoState.ShowError(it.localizedMessage))
+                    Event(UserInfoState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -79,7 +86,7 @@ class ProfileDetailViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _refreshKycStatus.value =
-                    Event(UserInfoState.ShowError(it.localizedMessage))
+                    Event(UserInfoState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -100,7 +107,7 @@ class ProfileDetailViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _reSubmitKycCallback.value =
-                    Event(ReSubmitState.ShowError(it.localizedMessage))
+                    Event(ReSubmitState.ShowError(errorHandler.getError(it)))
             },
             ReSubmitUserInfoUseCase.Param(user)
         )
@@ -115,7 +122,7 @@ class ProfileDetailViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getAlertsCallback.value =
-                    Event(GetAlertsState.ShowError(it.localizedMessage))
+                    Event(GetAlertsState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -130,7 +137,7 @@ class ProfileDetailViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _logoutCallback.value =
-                    Event(LogoutState.ShowError(it.localizedMessage))
+                    Event(LogoutState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -144,7 +151,7 @@ class ProfileDetailViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _deleteAlertsCallback.value =
-                    Event(DeleteAlertsState.ShowError(it.localizedMessage))
+                    Event(DeleteAlertsState.ShowError(errorHandler.getError(it)))
             },
             DeleteAlertsUseCase.Param(alert)
         )

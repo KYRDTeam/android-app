@@ -167,12 +167,15 @@ class ImportJsonFragment : BaseFragment() {
             null,
             null,
             null
-        )!!
-        val nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-        returnCursor.moveToFirst()
-        val name = returnCursor.getString(nameIndex)
-        returnCursor.close()
-        return name
+        )
+        returnCursor?.let {
+            val nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            returnCursor.moveToFirst()
+            val name = returnCursor.getString(nameIndex)
+            returnCursor.close()
+            return name
+        }
+        return ""
     }
 
 

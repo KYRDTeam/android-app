@@ -34,6 +34,7 @@ import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.main.swap.GetMarketRateState
 import com.kyberswap.android.presentation.main.swap.SwapTokenTransactionState
+import com.kyberswap.android.util.ErrorHandler
 import com.kyberswap.android.util.ext.display
 import com.kyberswap.android.util.ext.exactAmount
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
@@ -64,8 +65,9 @@ class LimitOrderViewModel @Inject constructor(
     private val getLoginStatusUseCase: GetLoginStatusUseCase,
     private val pendingBalancesUseCase: GetPendingBalancesUseCase,
     private val elegibleAddressUseCase: CheckEligibleAddressUseCase,
-    getSelectedWalletUseCase: GetSelectedWalletUseCase
-) : SelectedWalletViewModel(getSelectedWalletUseCase) {
+    getSelectedWalletUseCase: GetSelectedWalletUseCase,
+    private val errorHandler: ErrorHandler
+) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
 
     private val _cancelOrderCallback = MutableLiveData<Event<CancelOrdersState>>()
     val cancelOrderCallback: LiveData<Event<CancelOrdersState>>
@@ -153,7 +155,7 @@ class LimitOrderViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getLoginStatusCallback.value =
-                    Event(UserInfoState.ShowError(it.localizedMessage))
+                    Event(UserInfoState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -172,7 +174,7 @@ class LimitOrderViewModel @Inject constructor(
                 _getPendingBalancesCallback.value =
                     Event(
                         GetPendingBalancesState.ShowError(
-                            it.localizedMessage
+                            errorHandler.getError(it)
                         )
                     )
             },
@@ -195,7 +197,7 @@ class LimitOrderViewModel @Inject constructor(
                 Consumer {
                     it.printStackTrace()
                     _getLocalLimitOrderCallback.value =
-                        Event(GetLocalLimitOrderState.ShowError(it.localizedMessage))
+                        Event(GetLocalLimitOrderState.ShowError(errorHandler.getError(it)))
                 },
                 GetLocalLimitOrderDataUseCase.Param(wallet)
             )
@@ -227,7 +229,7 @@ class LimitOrderViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _cancelOrderCallback.value =
-                    Event(CancelOrdersState.ShowError(it.localizedMessage))
+                    Event(CancelOrdersState.ShowError(errorHandler.getError(it)))
             },
             CancelOrderUseCase.Param(order)
         )
@@ -243,7 +245,12 @@ class LimitOrderViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getGetNonceStateCallback.value =
-                    Event(GetNonceState.ShowError(it.localizedMessage, it is UnknownHostException))
+                    Event(
+                        GetNonceState.ShowError(
+                            errorHandler.getError(it),
+                            it is UnknownHostException
+                        )
+                    )
             },
             GetNonceUseCase.Param(order, wallet)
         )
@@ -262,7 +269,7 @@ class LimitOrderViewModel @Inject constructor(
                 _getEligibleAddressCallback.value =
                     Event(
                         CheckEligibleAddressState.ShowError(
-                            it.localizedMessage,
+                            errorHandler.getError(it),
                             it is UnknownHostException
                         )
                     )
@@ -280,7 +287,7 @@ class LimitOrderViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getGetGasPriceCallback.value =
-                    Event(GetGasPriceState.ShowError(it.localizedMessage))
+                    Event(GetGasPriceState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -302,7 +309,7 @@ class LimitOrderViewModel @Inject constructor(
                 _getRelatedOrderCallback.value =
                     Event(
                         GetRelatedOrdersState.ShowError(
-                            it.localizedMessage,
+                            errorHandler.getError(it),
                             it is UnknownHostException
                         )
                     )
@@ -351,8 +358,7 @@ class LimitOrderViewModel @Inject constructor(
                 _getGetMarketRateCallback.value =
                     Event(
                         GetMarketRateState.ShowError(
-                            it.localizedMessage,
-                            it is UnknownHostException
+                            errorHandler.getError(it)
                         )
                     )
             },
@@ -385,7 +391,7 @@ class LimitOrderViewModel @Inject constructor(
                 _getExpectedRateCallback.value =
                     Event(
                         GetExpectedRateState.ShowError(
-                            it.localizedMessage,
+                            errorHandler.getError(it),
                             it is UnknownHostException
                         )
                     )
@@ -417,7 +423,8 @@ class LimitOrderViewModel @Inject constructor(
             },
             Consumer {
                 it.printStackTrace()
-                _saveOrderCallback.value = Event(SaveLimitOrderState.ShowError(it.localizedMessage))
+                _saveOrderCallback.value =
+                    Event(SaveLimitOrderState.ShowError(errorHandler.getError(it)))
             },
             SaveLimitOrderUseCase.Param(order)
         )
@@ -440,7 +447,7 @@ class LimitOrderViewModel @Inject constructor(
                 it.printStackTrace()
                 _getFeeCallback.value = Event(
                     GetFeeState.ShowError(
-                        it.localizedMessage,
+                        errorHandler.getError(it),
                         isNetworkUnAvailable = it is UnknownHostException
                     )
                 )
@@ -484,7 +491,8 @@ class LimitOrderViewModel @Inject constructor(
             },
             Consumer {
                 it.printStackTrace()
-                _submitOrderCallback.value = Event(SubmitOrderState.ShowError(it.localizedMessage))
+                _submitOrderCallback.value =
+                    Event(SubmitOrderState.ShowError(errorHandler.getError(it)))
             },
             SubmitOrderUseCase.Param(order, wallet)
         )
@@ -515,7 +523,7 @@ class LimitOrderViewModel @Inject constructor(
             },
             Consumer {
                 it.printStackTrace()
-                Event(GetGasLimitState.ShowError(it.localizedMessage))
+                Event(GetGasLimitState.ShowError(errorHandler.getError(it)))
             },
             EstimateGasUseCase.Param(
                 wallet,
@@ -546,7 +554,7 @@ class LimitOrderViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _convertCallback.value =
-                    Event(ConvertState.ShowError(it.localizedMessage))
+                    Event(ConvertState.ShowError(errorHandler.getError(it)))
             },
             SwapTokenUseCase.Param(wallet!!, swap)
 
@@ -585,7 +593,7 @@ class LimitOrderViewModel @Inject constructor(
                 Consumer {
                     it.printStackTrace()
                     _cancelRelatedOrderCallback.value =
-                        Event(CancelOrdersState.ShowError(it.localizedMessage))
+                        Event(CancelOrdersState.ShowError(errorHandler.getError(it)))
                     cancelOrderUseCase.dispose()
                 },
                 CancelOrderUseCase.Param(it)

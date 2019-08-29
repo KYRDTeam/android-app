@@ -11,6 +11,7 @@ import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
+import com.kyberswap.android.util.ErrorHandler
 import com.kyberswap.android.util.ext.toDate
 import io.reactivex.functions.Consumer
 import timber.log.Timber
@@ -21,8 +22,9 @@ class TransactionStatusViewModel @Inject constructor(
     private val getTransactionFilterUseCase: GetTransactionFilterUseCase,
     private val getPendingTransactionsUseCase: GetPendingTransactionsUseCase,
     private val getTransactionsUseCase: GetTransactionsUseCase,
-    getSelectedWalletUseCase: GetSelectedWalletUseCase
-) : SelectedWalletViewModel(getSelectedWalletUseCase) {
+    getSelectedWalletUseCase: GetSelectedWalletUseCase,
+    private val errorHandler: ErrorHandler
+) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
 
     private val _getTransactionCallback = MutableLiveData<Event<GetTransactionState>>()
     val getTransactionCallback: LiveData<Event<GetTransactionState>>
@@ -61,7 +63,7 @@ class TransactionStatusViewModel @Inject constructor(
                     Consumer {
                         Timber.e(it.localizedMessage)
                         _getTransactionCallback.value =
-                            Event(GetTransactionState.ShowError(it.localizedMessage))
+                            Event(GetTransactionState.ShowError(errorHandler.getError(it)))
                     },
                     wallet.address
                 )
@@ -95,7 +97,7 @@ class TransactionStatusViewModel @Inject constructor(
                     Consumer {
                         Timber.e(it.localizedMessage)
                         _getTransactionCallback.value =
-                            Event(GetTransactionState.ShowError(it.localizedMessage))
+                            Event(GetTransactionState.ShowError(errorHandler.getError(it)))
                     },
                     GetTransactionsUseCase.Param(wallet)
                 )
@@ -152,7 +154,7 @@ class TransactionStatusViewModel @Inject constructor(
                 it.printStackTrace()
                 Timber.e(it.localizedMessage)
                 _getTransactionCallback.value =
-                    Event(GetTransactionState.ShowError(it.localizedMessage))
+                    Event(GetTransactionState.ShowError(errorHandler.getError(it)))
             },
             GetTransactionFilterUseCase.Param(wallet.address)
         )

@@ -104,9 +104,8 @@ class PassCodeLockActivity : BaseActivity() {
                         binding.content = repeatContent
                     }
                     is SavePinState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -146,9 +145,8 @@ class PassCodeLockActivity : BaseActivity() {
                         }
                     }
                     is VerifyPinState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                         binding.title = newPinTitle
                         binding.content = newPinContent

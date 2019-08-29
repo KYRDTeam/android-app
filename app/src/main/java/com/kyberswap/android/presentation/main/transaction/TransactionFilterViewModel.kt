@@ -10,6 +10,7 @@ import com.kyberswap.android.domain.usecase.transaction.SaveTransactionFilterUse
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
@@ -18,8 +19,9 @@ class TransactionFilterViewModel @Inject constructor(
     private val getTokenListUseCase: GetTokenListUseCase,
     private val getTransactionFilterUseCase: GetTransactionFilterUseCase,
     private val saveTransactionFilterUseCase: SaveTransactionFilterUseCase,
-    getSelectedWalletUseCase: GetSelectedWalletUseCase
-) : SelectedWalletViewModel(getSelectedWalletUseCase) {
+    getSelectedWalletUseCase: GetSelectedWalletUseCase,
+    private val errorHandler: ErrorHandler
+) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
     private val _getTransactionFilterCallback = MutableLiveData<Event<GetTransactionFilterState>>()
     val getTransactionFilterCallback: LiveData<Event<GetTransactionFilterState>>
         get() = _getTransactionFilterCallback
@@ -48,7 +50,7 @@ class TransactionFilterViewModel @Inject constructor(
                 _getTransactionFilterCallback.value =
                     Event(
                         GetTransactionFilterState.ShowError(
-                            it.localizedMessage
+                            errorHandler.getError(it)
                         )
                     )
             },
@@ -76,7 +78,7 @@ class TransactionFilterViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _saveTransactionFilterCallback.value =
-                    Event(SaveTransactionFilterState.ShowError(it.localizedMessage))
+                    Event(SaveTransactionFilterState.ShowError(errorHandler.getError(it)))
             },
             SaveTransactionFilterUseCase.Param(transactionFilter)
         )

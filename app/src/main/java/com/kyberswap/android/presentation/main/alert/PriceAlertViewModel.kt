@@ -11,6 +11,7 @@ import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.profile.alert.GetNumberAlertsState
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -21,8 +22,9 @@ class PriceAlertViewModel @Inject constructor(
     private val getCurrentAlertUseCase: GetCurrentAlertUseCase,
     private val createOrUpdateAlertUseCase: CreateOrUpdateAlertUseCase,
     private val getNumberAlertsUseCase: GetNumberAlertsUseCase,
-    private val updateCurrentAlertUseCase: UpdateCurrentAlertUseCase
-) : SelectedWalletViewModel(getSelectedWalletUseCase) {
+    private val updateCurrentAlertUseCase: UpdateCurrentAlertUseCase,
+    private val errorHandler: ErrorHandler
+) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
 
     val compositeDisposable = CompositeDisposable()
 
@@ -48,7 +50,7 @@ class PriceAlertViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getCurrentAlertCallback.value =
-                    Event(GetCurrentAlertState.ShowError(it.localizedMessage))
+                    Event(GetCurrentAlertState.ShowError(errorHandler.getError(it)))
             },
             GetCurrentAlertUseCase.Param(walletAddress, alert)
         )
@@ -62,7 +64,7 @@ class PriceAlertViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getAllAlertsCallback.value =
-                    Event(GetNumberAlertsState.ShowError(it.localizedMessage))
+                    Event(GetNumberAlertsState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -83,7 +85,7 @@ class PriceAlertViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _createOrUpdateAlertCallback.value =
-                    Event(CreateOrUpdateAlertState.ShowError(it.localizedMessage))
+                    Event(CreateOrUpdateAlertState.ShowError(errorHandler.getError(it)))
             },
             CreateOrUpdateAlertUseCase.Param(alert)
         )

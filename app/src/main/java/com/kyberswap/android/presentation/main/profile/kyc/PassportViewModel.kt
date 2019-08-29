@@ -11,6 +11,7 @@ import com.kyberswap.android.domain.usecase.profile.ResizeImageUseCase
 import com.kyberswap.android.domain.usecase.profile.SaveIdPassportUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.profile.UserInfoState
+import com.kyberswap.android.util.ErrorHandler
 import com.kyberswap.android.util.ext.display
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
@@ -20,7 +21,8 @@ class PassportViewModel @Inject constructor(
     private val getUserInfoUseCase: FetchUserInfoUseCase,
     private val resizeImageUseCase: ResizeImageUseCase,
     private val decodeBase64DecodeUseCase: Base64DecodeUseCase,
-    private val saveIdPassportUseCase: SaveIdPassportUseCase
+    private val saveIdPassportUseCase: SaveIdPassportUseCase,
+    private val errorHandler: ErrorHandler
 ) : ViewModel() {
 
     val compositeDisposable = CompositeDisposable()
@@ -52,7 +54,7 @@ class PassportViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getUserInfoCallback.value =
-                    Event(UserInfoState.ShowError(it.localizedMessage))
+                    Event(UserInfoState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -102,7 +104,7 @@ class PassportViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _savePersonalInfoCallback.value =
-                    Event(SavePersonalInfoState.ShowError(it.localizedMessage))
+                    Event(SavePersonalInfoState.ShowError(errorHandler.getError(it)))
             },
             SaveIdPassportUseCase.Param(kycInfo)
         )

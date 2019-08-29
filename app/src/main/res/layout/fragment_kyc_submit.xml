@@ -181,14 +181,14 @@
                         android:id="@+id/edtFirstName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.firstName}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -206,14 +206,14 @@
                         android:id="@+id/edtMiddleName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.middleName}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -232,14 +232,14 @@
                         android:id="@+id/edtLastName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.lastName}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -257,14 +257,14 @@
                         android:id="@+id/edtFullName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.nativeFullName}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -283,14 +283,14 @@
                         android:id="@+id/edtGender"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.gender ? @string/male : @string/female}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -308,14 +308,14 @@
                         android:id="@+id/edtDob"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.dob}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -333,14 +333,14 @@
                         android:id="@+id/edtNationality"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.nationality}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -367,14 +367,14 @@
                         android:id="@+id/edtResidentAddress"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.residentialAddress}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textColorHint="#9ea1aa"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -393,14 +393,14 @@
                         android:id="@+id/edtCountryResident"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.country}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -418,14 +418,14 @@
                         android:id="@+id/edtCityResident"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.city}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -444,14 +444,14 @@
                         android:id="@+id/edtPostalCode"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.zipCode}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -491,14 +491,14 @@
                         android:id="@+id/edtProofAddress"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@string/bank_statement"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -576,7 +576,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:drawablePadding="8dp"
                         android:enabled="false"
                         android:letterSpacing="0.07"
@@ -584,7 +584,7 @@
                         android:singleLine="true"
                         android:text="@{info.sourceFund}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -603,7 +603,7 @@
                         android:id="@+id/edtOccupationCode"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:drawablePadding="8dp"
                         android:enabled="false"
                         android:letterSpacing="0.07"
@@ -611,7 +611,7 @@
                         android:singleLine="true"
                         android:text="@{info.occupationCode}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -630,7 +630,7 @@
                         android:id="@+id/edtIndus"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:drawablePadding="8dp"
                         android:enabled="false"
                         android:letterSpacing="0.07"
@@ -638,7 +638,7 @@
                         android:singleLine="true"
                         android:text="@{info.industryCode}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -656,7 +656,7 @@
                         android:id="@+id/edtTaxCountry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:drawablePadding="8dp"
                         android:enabled="false"
                         android:letterSpacing="0.07"
@@ -664,7 +664,7 @@
                         android:singleLine="true"
                         android:text="@{info.taxResidencyCountry}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -683,7 +683,7 @@
                         android:id="@+id/edtTin"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:drawablePadding="8dp"
                         android:enabled="false"
                         android:letterSpacing="0.07"
@@ -691,7 +691,7 @@
                         android:singleLine="true"
                         android:text="@{info.displayTaxIdentificationNumber}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -727,14 +727,14 @@
                         android:id="@+id/edtDocumentType"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:drawablePadding="8dp"
                         android:enabled="false"
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp"
                         app:documentType="@{info.documentType}" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -753,7 +753,7 @@
                         android:id="@+id/edtDocumentNumber"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:drawablePadding="8dp"
                         android:enabled="false"
                         android:letterSpacing="0.07"
@@ -761,7 +761,7 @@
                         android:singleLine="true"
                         android:text="@{info.documentId}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -780,7 +780,7 @@
                         android:id="@+id/edtIssueDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:drawablePadding="8dp"
                         android:enabled="false"
                         android:letterSpacing="0.07"
@@ -788,7 +788,7 @@
                         android:singleLine="true"
                         android:text="@{info.displayIssueDate}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -807,7 +807,7 @@
                         android:id="@+id/edtExpiryDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/edt_background_tint"
+                        android:backgroundTint="@color/edt_background_tint_submit"
                         android:drawablePadding="8dp"
                         android:enabled="false"
                         android:letterSpacing="0.07"
@@ -815,7 +815,7 @@
                         android:singleLine="true"
                         android:text="@{info.displayExpiredDate}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
-                        android:textColor="#5a5e67"
+                        android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
