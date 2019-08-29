@@ -291,7 +291,7 @@ class SignUpFragment : BaseFragment() {
                         if (state.login.success) {
                             if (state.login.confirmSignUpRequired) {
                                 navigator.navigateToSignUpConfirmScreen(
-                                    (activity as MainActivity).getCurrentFragment(),
+                                    currentFragment,
                                     state.socialInfo
                                 )
                             } else {
