@@ -45,7 +45,7 @@ class SignUpViewModel @Inject constructor(
     }
 
 
-    fun login(socialInfo: SocialInfo, isConfirm: Boolean= true) {
+    fun login(socialInfo: SocialInfo, isConfirm: Boolean= false) {
         _loginCallback.postValue(Event(LoginState.Loading))
         loginSocialUseCase.execute(
             Consumer {
