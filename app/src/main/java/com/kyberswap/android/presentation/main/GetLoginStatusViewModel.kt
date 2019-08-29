@@ -6,11 +6,13 @@ import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.profile.UserInfoState
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 open class GetLoginStatusViewModel @Inject constructor(
-    private val getLoginStatusUseCase: GetLoginStatusUseCase
+    private val getLoginStatusUseCase: GetLoginStatusUseCase,
+    private val errorHandler: ErrorHandler
 ) : ViewModel() {
 
     private val _getLoginStatusCallback = MutableLiveData<Event<UserInfoState>>()
@@ -26,7 +28,7 @@ open class GetLoginStatusViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getLoginStatusCallback.value =
-                    Event(UserInfoState.ShowError(it.localizedMessage))
+                    Event(UserInfoState.ShowError(errorHandler.getError(it)))
             },
             null
         )

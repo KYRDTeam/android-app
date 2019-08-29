@@ -20,6 +20,7 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.balance.GetBalanceState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.hideKeyboard
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -106,9 +107,8 @@ class TokenSearchFragment : BaseFragment() {
 
                     }
                     is GetBalanceState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -123,9 +123,8 @@ class TokenSearchFragment : BaseFragment() {
                         onSelectionComplete()
                     }
                     is SaveSwapDataState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -140,9 +139,8 @@ class TokenSearchFragment : BaseFragment() {
                         onSelectionComplete()
                     }
                     is SaveSendState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -157,7 +155,7 @@ class TokenSearchFragment : BaseFragment() {
                     TimeUnit.MILLISECONDS
                 )
                 .map {
-                    return@map it.trim().toString().toLowerCase()
+                    return@map it.trim().toString().toLowerCase(Locale.getDefault())
                 }.observeOn(schedulerProvider.ui())
                 .subscribe { searchedText ->
                     currentSearchString = searchedText
@@ -193,8 +191,8 @@ class TokenSearchFragment : BaseFragment() {
 
     private fun getFilterTokenList(searchedString: String, tokens: List<Token>): List<Token> {
         return tokens.filter { token ->
-            token.tokenSymbol.toLowerCase().contains(searchedString) or
-                token.tokenName.toLowerCase().contains(searchedString)
+            token.tokenSymbol.toLowerCase(Locale.getDefault()).contains(searchedString) or
+                token.tokenName.toLowerCase(Locale.getDefault()).contains(searchedString)
         }
     }
 

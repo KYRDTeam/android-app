@@ -205,8 +205,8 @@
 
             <ImageView
                 android:id="@+id/imgGooglePlus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:src="@drawable/ic_google_plus_register"
                 app:layout_constraintBottom_toBottomOf="@+id/textView43"
                 app:layout_constraintEnd_toStartOf="@+id/imgFacebook"
@@ -216,8 +216,8 @@
 
             <ImageView
                 android:id="@+id/imgFacebook"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:src="@drawable/ic_facebook_register"
                 app:layout_constraintBottom_toBottomOf="@+id/imgGooglePlus"
                 app:layout_constraintEnd_toStartOf="@+id/imgTwitter"
@@ -228,9 +228,9 @@
 
             <ImageView
                 android:id="@+id/imgTwitter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_twitter_register"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:src="@drawable/ic_twitter"
                 app:layout_constraintBottom_toBottomOf="@+id/imgFacebook"
                 app:layout_constraintEnd_toEndOf="@+id/view10"
                 app:layout_constraintHorizontal_bias="0.5"

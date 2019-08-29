@@ -11,6 +11,7 @@ import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.api.home.TransactionApi
 import com.kyberswap.android.data.api.home.UserApi
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
+import com.kyberswap.android.util.ErrorHandler
 import com.kyberswap.android.util.TokenClient
 import dagger.Module
 import dagger.Provides
@@ -127,6 +128,12 @@ class NetworkModule {
             context.getString(R.string.user_endpoint_url),
             client
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideErrorHandler(context: Context): ErrorHandler {
+        return ErrorHandler(context)
     }
 
     @Provides

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.usecase.token.GetTokenBalanceUseCase
 import com.kyberswap.android.domain.usecase.wallet.ApplyKyberCodeUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import org.consenlabs.tokencore.wallet.model.TokenException
@@ -13,7 +14,8 @@ import javax.inject.Inject
 
 class KyberCodeViewModel @Inject constructor(
     private val applyKyberCodeUseCase: ApplyKyberCodeUseCase,
-    private val getTokenBalance: GetTokenBalanceUseCase
+    private val getTokenBalance: GetTokenBalanceUseCase,
+    private val errorHandler: ErrorHandler
 ) : ViewModel() {
     private val _getKyberCodeCallback = MutableLiveData<Event<KyberCodeState>>()
     val getKyberCodeCallback: LiveData<Event<KyberCodeState>>
@@ -61,7 +63,8 @@ class KyberCodeViewModel @Inject constructor(
                 if (it is TokenException) {
                     _getKyberCodeCallback.value = Event(KyberCodeState.ShowError(it.message))
                 } else {
-                    _getKyberCodeCallback.value = Event(KyberCodeState.ShowError(it.localizedMessage))
+                    _getKyberCodeCallback.value =
+                        Event(KyberCodeState.ShowError(errorHandler.getError(it)))
                 }
 
             },

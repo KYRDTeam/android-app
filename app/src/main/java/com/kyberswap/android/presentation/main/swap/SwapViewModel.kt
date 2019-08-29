@@ -6,7 +6,14 @@ import com.kyberswap.android.domain.model.NotificationAlert
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.alert.GetAlertUseCase
-import com.kyberswap.android.domain.usecase.swap.*
+import com.kyberswap.android.domain.usecase.swap.EstimateAmountUseCase
+import com.kyberswap.android.domain.usecase.swap.EstimateGasUseCase
+import com.kyberswap.android.domain.usecase.swap.GetCombinedCapUseCase
+import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
+import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
+import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
+import com.kyberswap.android.domain.usecase.swap.GetSwapDataUseCase
+import com.kyberswap.android.domain.usecase.swap.SaveSwapUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
@@ -14,6 +21,7 @@ import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
 import com.kyberswap.android.presentation.common.specialGasLimitDefault
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.alert.GetAlertState
+import com.kyberswap.android.util.ErrorHandler
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toLongSafe
 import io.reactivex.disposables.CompositeDisposable
@@ -21,6 +29,7 @@ import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 class SwapViewModel @Inject constructor(
@@ -34,13 +43,13 @@ class SwapViewModel @Inject constructor(
     private val getAlertUseCase: GetAlertUseCase,
     private val estimateAmountUseCase: EstimateAmountUseCase,
     private val getCombinedCapUseCase: GetCombinedCapUseCase,
-    getWalletUseCase: GetSelectedWalletUseCase
-) : SelectedWalletViewModel(getWalletUseCase) {
+    getWalletUseCase: GetSelectedWalletUseCase,
+    private val errorHandler: ErrorHandler
+) : SelectedWalletViewModel(getWalletUseCase, errorHandler) {
 
     private val _getSwapCallback = MutableLiveData<Event<GetSwapState>>()
     val getSwapDataCallback: LiveData<Event<GetSwapState>>
         get() = _getSwapCallback
-
 
     private val _getGetGasLimitCallback = MutableLiveData<Event<GetGasLimitState>>()
     val getGetGasLimitCallback: LiveData<Event<GetGasLimitState>>
@@ -49,7 +58,6 @@ class SwapViewModel @Inject constructor(
     private val _getGetGasPriceCallback = MutableLiveData<Event<GetGasPriceState>>()
     val getGetGasPriceCallback: LiveData<Event<GetGasPriceState>>
         get() = _getGetGasPriceCallback
-
 
     private val _getCapCallback = MutableLiveData<Event<GetCapState>>()
     val getCapCallback: LiveData<Event<GetCapState>>
@@ -95,8 +103,14 @@ class SwapViewModel @Inject constructor(
                 },
                 Consumer {
                     it.printStackTrace()
+
                     _getGetMarketRateCallback.value =
-                        Event(GetMarketRateState.ShowError(it.localizedMessage))
+                        Event(
+                            GetMarketRateState.ShowError(
+                                errorHandler.getError(it),
+                                it is UnknownHostException
+                            )
+                        )
                 },
                 GetMarketRateUseCase.Param(swap.tokenSource.tokenSymbol, swap.tokenDest.tokenSymbol)
             )
@@ -112,7 +126,7 @@ class SwapViewModel @Inject constructor(
             },
             Consumer {
                 it.printStackTrace()
-                _getSwapCallback.value = Event(GetSwapState.ShowError(it.localizedMessage))
+                _getSwapCallback.value = Event(GetSwapState.ShowError(errorHandler.getError(it)))
             },
             GetSwapDataUseCase.Param(wallet, alert)
         )
@@ -131,7 +145,7 @@ class SwapViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getGetGasPriceCallback.value =
-                    Event(GetGasPriceState.ShowError(it.localizedMessage))
+                    Event(GetGasPriceState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -158,7 +172,7 @@ class SwapViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getExpectedRateCallback.value =
-                    Event(GetExpectedRateState.ShowError(it.localizedMessage))
+                    Event(GetExpectedRateState.ShowError(errorHandler.getError(it)))
             },
             GetExpectedRateUseCase.Param(
                 swap.walletAddress,
@@ -176,7 +190,7 @@ class SwapViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _estimateAmountState.value =
-                    Event(EstimateAmountState.ShowError(it.localizedMessage))
+                    Event(EstimateAmountState.ShowError(errorHandler.getError(it)))
             },
             EstimateAmountUseCase.Param(
                 source,
@@ -212,7 +226,7 @@ class SwapViewModel @Inject constructor(
             },
             Consumer {
                 it.printStackTrace()
-                Event(GetGasLimitState.ShowError(it.localizedMessage))
+                Event(GetGasLimitState.ShowError(errorHandler.getError(it)))
             },
             EstimateGasUseCase.Param(
                 wallet,
@@ -233,7 +247,7 @@ class SwapViewModel @Inject constructor(
             },
             Consumer {
                 it.printStackTrace()
-                _saveSwapCallback.value = Event(SaveSwapState.ShowError(it.localizedMessage))
+                _saveSwapCallback.value = Event(SaveSwapState.ShowError(errorHandler.getError(it)))
             },
             SaveSwapUseCase.Param(swap)
         )
@@ -246,7 +260,7 @@ class SwapViewModel @Inject constructor(
             },
             Consumer {
                 it.printStackTrace()
-                _getAlertState.value = Event(GetAlertState.ShowError(it.localizedMessage))
+                _getAlertState.value = Event(GetAlertState.ShowError(errorHandler.getError(it)))
             },
             GetAlertUseCase.Param(
                 if (alertNotification.alertId > 0) alertNotification.alertId else alertNotification.testAlertId.toLongSafe()
@@ -276,7 +290,7 @@ class SwapViewModel @Inject constructor(
             },
             Consumer {
                 it.printStackTrace()
-                _getCapCallback.value = Event(GetCapState.ShowError(it.localizedMessage))
+                _getCapCallback.value = Event(GetCapState.ShowError(errorHandler.getError(it)))
             },
             GetCombinedCapUseCase.Param(wallet)
         )

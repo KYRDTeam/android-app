@@ -118,9 +118,8 @@ class EditWalletFragment : BaseFragment() {
                         onDeleteWalletSuccess(state.verifyStatus)
                     }
                     is DeleteWalletState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -135,9 +134,8 @@ class EditWalletFragment : BaseFragment() {
                         onExportWalletComplete(state.value)
                     }
                     is ExportWalletState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -152,9 +150,8 @@ class EditWalletFragment : BaseFragment() {
                         navigator.navigateToBackupWalletInfo(currentFragment, state.value)
                     }
                     is ExportWalletState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -170,9 +167,8 @@ class EditWalletFragment : BaseFragment() {
                         navigator.navigateToBackupWalletInfo(currentFragment, state.value)
                     }
                     is ExportWalletState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -186,9 +182,8 @@ class EditWalletFragment : BaseFragment() {
                         onSaveComplete()
                     }
                     is SaveWalletState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }

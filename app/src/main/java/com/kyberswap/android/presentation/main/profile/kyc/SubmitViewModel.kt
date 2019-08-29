@@ -10,6 +10,7 @@ import com.kyberswap.android.domain.usecase.profile.FetchUserInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.SubmitUserInfoUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.profile.UserInfoState
+import com.kyberswap.android.util.ErrorHandler
 import com.kyberswap.android.util.ext.display
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
@@ -17,7 +18,8 @@ import javax.inject.Inject
 class SubmitViewModel @Inject constructor(
     private val getUserInfoUseCase: FetchUserInfoUseCase,
     private val decodeBase64DecodeUseCase: Base64DecodeUseCase,
-    private val submitUserInfoUseCase: SubmitUserInfoUseCase
+    private val submitUserInfoUseCase: SubmitUserInfoUseCase,
+    private val errorHandler: ErrorHandler
 ) : ViewModel() {
 
     private val _getUserInfoCallback = MutableLiveData<Event<UserInfoState>>()
@@ -43,7 +45,7 @@ class SubmitViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getUserInfoCallback.value =
-                    Event(UserInfoState.ShowError(it.localizedMessage))
+                    Event(UserInfoState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -77,7 +79,7 @@ class SubmitViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _submitUserInfoCallback.value =
-                    Event(SavePersonalInfoState.ShowError(it.localizedMessage))
+                    Event(SavePersonalInfoState.ShowError(errorHandler.getError(it)))
             },
             SubmitUserInfoUseCase.Param(user)
         )

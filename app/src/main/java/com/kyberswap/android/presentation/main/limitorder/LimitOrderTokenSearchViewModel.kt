@@ -13,6 +13,7 @@ import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.balance.GetBalanceState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -23,7 +24,8 @@ class LimitOrderTokenSearchViewModel @Inject constructor(
     private val getTokenListUseCase: GetTokenUseCase,
     private val getWalletByAddressUseCase: GetWalletByAddressUseCase,
     private val saveLimitOrderTokenUseCase: SaveLimitOrderTokenUseCase,
-    private val pendingBalancesUseCase: GetPendingBalancesUseCase
+    private val pendingBalancesUseCase: GetPendingBalancesUseCase,
+    private val errorHandler: ErrorHandler
 ) : ViewModel() {
 
     private val _getTokenListCallback = MutableLiveData<Event<GetBalanceState>>()
@@ -68,7 +70,7 @@ class LimitOrderTokenSearchViewModel @Inject constructor(
                 _getTokenListCallback.value =
                     Event(
                         GetBalanceState.ShowError(
-                            it.localizedMessage
+                            errorHandler.getError(it)
                         )
                     )
             },
@@ -87,7 +89,7 @@ class LimitOrderTokenSearchViewModel @Inject constructor(
                 _getTokenListCallback.value =
                     Event(
                         GetBalanceState.ShowError(
-                            it.localizedMessage
+                            errorHandler.getError(it)
                         )
                     )
             },
@@ -114,7 +116,7 @@ class LimitOrderTokenSearchViewModel @Inject constructor(
                 _saveLimitOrderCallback.value =
                     Event(
                         SaveSwapDataState.ShowError(
-                            it.localizedMessage
+                            errorHandler.getError(it)
                         )
                     )
             },

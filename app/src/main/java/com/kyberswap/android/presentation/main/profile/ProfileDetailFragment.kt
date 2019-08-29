@@ -24,6 +24,7 @@ import com.kyberswap.android.presentation.main.profile.alert.DeleteAlertsState
 import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
 import com.kyberswap.android.presentation.main.profile.kyc.ReSubmitState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.onesignal.OneSignal
 import javax.inject.Inject
 
@@ -111,10 +112,11 @@ class ProfileDetailFragment : BaseFragment() {
                         }
                     }
                     is UserInfoState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
+                        if (isNetworkAvailable()) {
+                            showError(
+                                state.message ?: getString(R.string.something_wrong)
+                            )
+                        }
                     }
                 }
             }
@@ -128,9 +130,8 @@ class ProfileDetailFragment : BaseFragment() {
                         navigateToKyc()
                     }
                     is UserInfoState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -172,10 +173,11 @@ class ProfileDetailFragment : BaseFragment() {
                         alertAdapter.submitAlerts(state.alerts.take(2))
                     }
                     is GetAlertsState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
+                        if (isNetworkAvailable()) {
+                            showError(
+                                state.message ?: getString(R.string.something_wrong)
+                            )
+                        }
                     }
                 }
             }
@@ -219,9 +221,8 @@ class ProfileDetailFragment : BaseFragment() {
                         navigator.navigateToSignInScreen(currentFragment)
                     }
                     is LogoutState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -281,9 +282,8 @@ class ProfileDetailFragment : BaseFragment() {
                         )
                     }
                     is ReSubmitState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
