@@ -27,7 +27,7 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.synthetic.main.fragment_line_chart.*
 import java.math.BigDecimal
-import java.util.*
+import java.util.ArrayList
 import javax.inject.Inject
 
 class LineChartFragment : BaseFragment() {
@@ -95,9 +95,8 @@ class LineChartFragment : BaseFragment() {
                     }
 
                     is GetChartState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }

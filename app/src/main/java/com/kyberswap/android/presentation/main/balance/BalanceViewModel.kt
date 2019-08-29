@@ -17,6 +17,7 @@ import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -31,8 +32,9 @@ class BalanceViewModel @Inject constructor(
     private val saveSendTokenUseCase: SaveSendTokenUseCase,
     private val prepareBalanceUseCase: PrepareBalanceUseCase,
     private val saveTokenUseCase: SaveTokenUseCase,
-    getSelectedWalletUseCase: GetSelectedWalletUseCase
-) : SelectedWalletViewModel(getSelectedWalletUseCase) {
+    getSelectedWalletUseCase: GetSelectedWalletUseCase,
+    private val errorHandler: ErrorHandler
+) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
 
     private val _getBalanceStateCallback = MutableLiveData<Event<GetBalanceState>>()
     val getBalanceStateCallback: LiveData<Event<GetBalanceState>>
@@ -82,7 +84,7 @@ class BalanceViewModel @Inject constructor(
                 _getBalanceStateCallback.value =
                     Event(
                         GetBalanceState.ShowError(
-                            it.localizedMessage
+                            errorHandler.getError(it)
                         )
                     )
             },
@@ -99,7 +101,7 @@ class BalanceViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _saveWalletCallback.value =
-                    Event(SaveWalletState.ShowError(it.localizedMessage))
+                    Event(SaveWalletState.ShowError(errorHandler.getError(it)))
             },
             wallet
         )
@@ -127,7 +129,7 @@ class BalanceViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _callback.value =
-                    Event(SaveSwapDataState.ShowError(it.localizedMessage))
+                    Event(SaveSwapDataState.ShowError(errorHandler.getError(it)))
             },
             SaveSwapDataTokenUseCase.Param(walletAddress, token, isSell)
         )
@@ -159,7 +161,7 @@ class BalanceViewModel @Inject constructor(
                 _getBalanceStateCallback.value =
                     Event(
                         GetBalanceState.ShowError(
-                            error.localizedMessage
+                            errorHandler.getError(error)
                         )
                     )
 
@@ -178,7 +180,8 @@ class BalanceViewModel @Inject constructor(
             Consumer {
                 getTokenBalance()
                 it.printStackTrace()
-                _saveTokenCallback.value = Event(SaveTokenState.ShowError(it.localizedMessage))
+                _saveTokenCallback.value =
+                    Event(SaveTokenState.ShowError(errorHandler.getError(it)))
             },
             SaveTokenUseCase.Param(token)
         )

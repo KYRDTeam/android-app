@@ -7,6 +7,7 @@ import com.kyberswap.android.domain.usecase.setting.GetPinUseCase
 import com.kyberswap.android.domain.usecase.setting.SavePinUseCase
 import com.kyberswap.android.domain.usecase.setting.VerifyPinUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -15,7 +16,8 @@ import javax.inject.Inject
 class PassCodeLockViewModel @Inject constructor(
     private val savePinUseCase: SavePinUseCase,
     private val verifyPinUseCase: VerifyPinUseCase,
-    private val getPinUseCase: GetPinUseCase
+    private val getPinUseCase: GetPinUseCase,
+    private val errorHandler: ErrorHandler
 
 ) : ViewModel() {
 
@@ -41,7 +43,7 @@ class PassCodeLockViewModel @Inject constructor(
             },
             Consumer {
                 it.printStackTrace()
-                _savePinCallback.value = Event(SavePinState.ShowError(it.localizedMessage))
+                _savePinCallback.value = Event(SavePinState.ShowError(errorHandler.getError(it)))
             },
             SavePinUseCase.Param(pin)
         )
@@ -55,7 +57,7 @@ class PassCodeLockViewModel @Inject constructor(
             },
             Consumer {
                 it.printStackTrace()
-                _getPinCallback.value = Event(GetPinState.ShowError(it.localizedMessage))
+                _getPinCallback.value = Event(GetPinState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -69,7 +71,8 @@ class PassCodeLockViewModel @Inject constructor(
             },
             Consumer {
                 it.printStackTrace()
-                _verifyPinCallback.value = Event(VerifyPinState.ShowError(it.localizedMessage))
+                _verifyPinCallback.value =
+                    Event(VerifyPinState.ShowError(errorHandler.getError(it)))
             },
             VerifyPinUseCase.Param(pin, remainNum, time)
         )

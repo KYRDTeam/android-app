@@ -115,9 +115,8 @@ class FilterLimitOrderFragment : BaseFragment(), LoginState {
                         statusAdapter.submitList(toDisplayStatus(state.filterSetting.status))
                     }
                     is GetFilterSettingState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -166,9 +165,8 @@ class FilterLimitOrderFragment : BaseFragment(), LoginState {
 
                     }
                     is SaveFilterState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -188,9 +186,8 @@ class FilterLimitOrderFragment : BaseFragment(), LoginState {
                         }
                     }
                     is UserInfoState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }

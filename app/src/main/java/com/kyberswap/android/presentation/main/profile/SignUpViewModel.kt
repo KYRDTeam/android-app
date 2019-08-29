@@ -7,13 +7,15 @@ import com.kyberswap.android.domain.model.SocialInfo
 import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
 import com.kyberswap.android.domain.usecase.profile.SignUpUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class SignUpViewModel @Inject constructor(
     private val loginSocialUseCase: LoginSocialUseCase,
-    private val signUpUseCase: SignUpUseCase
+    private val signUpUseCase: SignUpUseCase,
+    private val errorHandler: ErrorHandler
 ) : ViewModel() {
 
     private val _signUpCallback = MutableLiveData<Event<SignUpState>>()
@@ -36,7 +38,7 @@ class SignUpViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _signUpCallback.value =
-                    Event(SignUpState.ShowError(it.localizedMessage))
+                    Event(SignUpState.ShowError(errorHandler.getError(it)))
             },
             SignUpUseCase.Param(email, displayName, password, isSubscription)
         )
@@ -52,7 +54,7 @@ class SignUpViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _loginCallback.value =
-                    Event(LoginState.ShowError(it.localizedMessage))
+                    Event(LoginState.ShowError(errorHandler.getError(it)))
             },
             LoginSocialUseCase.Param(
                 socialInfo, true

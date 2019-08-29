@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <array name="tab_colors">
+        <item name="tab_1">#fea34c</item>
+        <item name="tab_2">#fea34c</item>
+        <item name="tab_3">#fea34c</item>
+        <item name="tab_4">#fea34c</item>
+    </array>
     <color name="colorPrimary">#2980b9</color>
     <color name="colorPrimaryDark">#2980b9</color>
     <color name="colorAccent">#FFFFB046</color>
@@ -14,6 +20,7 @@
     <color name="color_active">#f070c0cb</color>
     <color name="color_bg_gray">#F6F7FA</color>
     <color name="edt_background_tint">#acb3c6</color>
+    <color name="edt_background_tint_submit">#eeeeee</color>
     <color name="import_button_color_active">#9ea1aa</color>
     <color name="import_button_color_normal">#ffffff</color>
     <color name="import_text_view_active_color">#ffffff</color>
@@ -70,10 +77,5 @@
     <color name="identity_info_gray">#f2f3f6</color>
     <color name="notification_background">#FFFF9008</color>
 
-    <array name="tab_colors">
-        <item name="tab_1">#fea34c</item>
-        <item name="tab_2">#fea34c</item>
-        <item name="tab_3">#fea34c</item>
-        <item name="tab_4">#fea34c</item>
-    </array>
+    <color name="kyc_submit_active_color">#141927</color>
 </resources>

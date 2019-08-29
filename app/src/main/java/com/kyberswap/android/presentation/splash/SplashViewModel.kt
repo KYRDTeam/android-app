@@ -5,11 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.usecase.token.PreloadUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class SplashViewModel @Inject constructor(
-    private val preloadUseCase: PreloadUseCase
+    private val preloadUseCase: PreloadUseCase,
+    private val errorHandler: ErrorHandler
 ) :
     ViewModel() {
 
@@ -31,7 +33,7 @@ class SplashViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getWalletStateCallback.value =
-                    Event(GetUserWalletState.ShowError(it.localizedMessage))
+                    Event(GetUserWalletState.ShowError(errorHandler.getError(it)))
             },
             null
         )

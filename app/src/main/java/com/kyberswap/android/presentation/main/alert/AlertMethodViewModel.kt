@@ -14,6 +14,7 @@ import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.profile.alert.GetAlertMethodsState
 import com.kyberswap.android.presentation.main.profile.alert.UpdateAlertMethodsState
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
@@ -23,8 +24,9 @@ class AlertMethodViewModel @Inject constructor(
     private val deleteAlertsUseCase: DeleteAlertsUseCase,
     private val getLoginStatusUseCase: GetLoginStatusUseCase,
     private val getAlertMethodsUseCase: GetAlertMethodsUseCase,
-    private val updateAlertMethodsUseCase: UpdateAlertMethodsUseCase
-) : SelectedWalletViewModel(getSelectedWalletUseCase) {
+    private val updateAlertMethodsUseCase: UpdateAlertMethodsUseCase,
+    private val errorHandler: ErrorHandler
+) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
 
 
     private val _getLoginStatusCallback = MutableLiveData<Event<UserInfoState>>()
@@ -53,7 +55,7 @@ class AlertMethodViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getAlertMethodsCallback.value =
-                    Event(GetAlertMethodsState.ShowError(it.localizedMessage))
+                    Event(GetAlertMethodsState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -73,7 +75,7 @@ class AlertMethodViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _updateAlertMethodsCallback.value =
-                    Event(UpdateAlertMethodsState.ShowError(it.localizedMessage))
+                    Event(UpdateAlertMethodsState.ShowError(errorHandler.getError(it)))
             },
             UpdateAlertMethodsUseCase.Param(alertMethod)
         )
@@ -88,7 +90,7 @@ class AlertMethodViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getLoginStatusCallback.value =
-                    Event(UserInfoState.ShowError(it.localizedMessage))
+                    Event(UserInfoState.ShowError(errorHandler.getError(it)))
             },
             null
         )

@@ -12,6 +12,7 @@ import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.profile.alert.DeleteAlertsState
 import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
@@ -19,8 +20,9 @@ class MangeAlertViewModel @Inject constructor(
     private val getAlertsUseCase: GetAlertsUseCase,
     getSelectedWalletUseCase: GetSelectedWalletUseCase,
     private val deleteAlertsUseCase: DeleteAlertsUseCase,
-    private val getLoginStatusUseCase: GetLoginStatusUseCase
-) : SelectedWalletViewModel(getSelectedWalletUseCase) {
+    private val getLoginStatusUseCase: GetLoginStatusUseCase,
+    private val errorHandler: ErrorHandler
+) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
 
     private val _getAlertsCallback = MutableLiveData<Event<GetAlertsState>>()
     val getAlertsCallback: LiveData<Event<GetAlertsState>>
@@ -43,7 +45,7 @@ class MangeAlertViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getAlertsCallback.value =
-                    Event(GetAlertsState.ShowError(it.localizedMessage))
+                    Event(GetAlertsState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -58,7 +60,7 @@ class MangeAlertViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getLoginStatusCallback.value =
-                    Event(UserInfoState.ShowError(it.localizedMessage))
+                    Event(UserInfoState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -80,7 +82,7 @@ class MangeAlertViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _deleteAlertsCallback.value =
-                    Event(DeleteAlertsState.ShowError(it.localizedMessage))
+                    Event(DeleteAlertsState.ShowError(errorHandler.getError(it)))
             },
             DeleteAlertsUseCase.Param(alert)
         )

@@ -12,6 +12,7 @@ import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.swap.DeleteContactState
 import com.kyberswap.android.presentation.main.swap.GetContactState
 import com.kyberswap.android.presentation.main.swap.SaveContactState
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
@@ -20,8 +21,9 @@ class ContactViewModel @Inject constructor(
     private val saveContactUseCase: SaveContactUseCase,
     private val getContactUseCase: GetContactUseCase,
     private val deleteContactUseCase: DeleteContactUseCase,
-    getSelectedWalletUseCase: GetSelectedWalletUseCase
-) : SelectedWalletViewModel(getSelectedWalletUseCase) {
+    getSelectedWalletUseCase: GetSelectedWalletUseCase,
+    errorHandler: ErrorHandler
+) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
     private val _saveContactCallback = MutableLiveData<Event<SaveContactState>>()
     val saveContactCallback: LiveData<Event<SaveContactState>>
         get() = _saveContactCallback

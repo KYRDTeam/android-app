@@ -153,9 +153,8 @@ class SubmitFragment : BaseFragment() {
                         }
                     }
                     is UserInfoState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -176,9 +175,8 @@ class SubmitFragment : BaseFragment() {
                         navigator.navigateToVerification(currentFragment)
                     }
                     is SavePersonalInfoState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -214,9 +212,8 @@ class SubmitFragment : BaseFragment() {
                     }
                     is DecodeBase64State.ShowError -> {
                         showLoadingImage(false, imageView)
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }

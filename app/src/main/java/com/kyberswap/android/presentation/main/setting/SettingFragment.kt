@@ -61,9 +61,8 @@ class SettingFragment : BaseFragment() {
                         hasUserInfo = state.userInfo != null && state.userInfo.uid > 0
                     }
                     is UserInfoState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
