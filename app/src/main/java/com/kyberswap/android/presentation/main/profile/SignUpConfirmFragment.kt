@@ -79,7 +79,7 @@ class SignUpConfirmFragment : BaseFragment() {
                 return@setOnClickListener
             }
             socialInfo?.let { info ->
-                viewModel.login(info.copy(subscription = binding.cbSubscription.isChecked))
+                viewModel.login(info.copy(subscription = binding.cbSubscription.isChecked), true)
             }
         }
 
@@ -92,7 +92,7 @@ class SignUpConfirmFragment : BaseFragment() {
                         if (state.login.success) {
                             if (state.login.confirmSignUpRequired) {
                                 navigator.navigateToSignUpConfirmScreen(
-                                    (activity as MainActivity).getCurrentFragment(),
+                                    currentFragment,
                                     state.socialInfo
                                 )
                             } else {
@@ -138,10 +138,9 @@ class SignUpConfirmFragment : BaseFragment() {
 
         binding.tvLogin.setOnClickListener {
             navigator.navigateToSignInScreen(
-                (activity as MainActivity).getCurrentFragment()
+                currentFragment
             )
         }
-
     }
 
     companion object {
@@ -154,6 +153,4 @@ class SignUpConfirmFragment : BaseFragment() {
                 }
             }
     }
-
-
 }

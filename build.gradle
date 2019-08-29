@@ -90,5 +90,4 @@ ext {
     androidMPChartVersion = 'v3.1.0'
     androidTinkVersion = '1.2.2'
     threeTenAbpVersion = '1.2.0'
-
 }

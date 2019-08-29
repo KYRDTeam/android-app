@@ -176,19 +176,6 @@ dependencies {
 
     implementation "com.orhanobut:hawk:$rootProject.hawkVersion"
 
-//    //App Inspection Tool
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-core:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-attr:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-measurement:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-disk:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-recorder:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-phoenix:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-crash:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-shared-preferences:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-geiger-counter:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-timber:$rootProject.hyperionVersion"
-//    debugImplementation "com.willowtreeapps.hyperion:hyperion-build-config:$rootProject.hyperionVersion"
-
     // Fonts
     implementation "io.github.inflationx:calligraphy3:$calligraphy3Version"
     implementation "io.github.inflationx:viewpump:$viewpumpVersion"
@@ -243,7 +230,6 @@ dependencies {
     implementation 'com.onesignal:OneSignal:3.11.0'
 
     implementation 'org.greenrobot:eventbus:3.1.1'
-
 
 }
 
