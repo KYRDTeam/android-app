@@ -56,7 +56,6 @@ class ManageOrderFragment : BaseFragment(), LoginState {
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
-
     var orders: List<OrderItem> = mutableListOf()
 
     var orderAdapter: OrderAdapter? = null
@@ -162,9 +161,8 @@ class ManageOrderFragment : BaseFragment(), LoginState {
                         filterByTab(currentSelectedView == binding.tvOpenOrder)
                     }
                     is GetRelatedOrdersState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -178,12 +176,10 @@ class ManageOrderFragment : BaseFragment(), LoginState {
                 when (state) {
                     is CancelOrdersState.Success -> {
                         viewModel.getAllOrders()
-
                     }
                     is CancelOrdersState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -203,7 +199,6 @@ class ManageOrderFragment : BaseFragment(), LoginState {
         binding.tvFaq.setOnClickListener {
             openUrl(getString(R.string.order_why_order_not_filled))
         }
-
     }
 
     override fun showProgress(showProgress: Boolean) {
@@ -232,9 +227,8 @@ class ManageOrderFragment : BaseFragment(), LoginState {
                         }
                     }
                     is UserInfoState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }

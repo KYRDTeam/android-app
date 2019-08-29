@@ -103,9 +103,8 @@ class SignUpConfirmFragment : BaseFragment() {
                         }
                     }
                     is LoginState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -120,9 +119,8 @@ class SignUpConfirmFragment : BaseFragment() {
                         showAlert(state.registerStatus.message)
                     }
                     is SignUpState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }

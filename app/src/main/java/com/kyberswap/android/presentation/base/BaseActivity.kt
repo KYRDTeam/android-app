@@ -57,6 +57,10 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         startActivityForResult(intent, SHOW_ALERT)
     }
 
+    fun showError(message: String, listener: () -> Unit = {}) {
+        showAlert(message, R.drawable.ic_info_error, listener)
+    }
+
     fun showNetworkUnAvailable() {
         showAlertWithoutIcon(
             title = getString(R.string.title_error),

@@ -150,9 +150,8 @@ class ContactFragment : BaseFragment() {
                         )
                     }
                     is SaveContactState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -166,9 +165,8 @@ class ContactFragment : BaseFragment() {
                         contactAdapter.submitList(state.contacts)
                     }
                     is GetContactState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -182,9 +180,8 @@ class ContactFragment : BaseFragment() {
                         showAlertWithoutIcon(message = getString(R.string.delete_contact_success))
                     }
                     is DeleteContactState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }

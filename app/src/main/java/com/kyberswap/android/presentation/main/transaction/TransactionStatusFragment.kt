@@ -129,9 +129,8 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                     }
                     is GetTransactionState.ShowError -> {
                         showProgress(false)
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                     is GetTransactionState.FilterNotChange -> {

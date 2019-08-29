@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
@@ -20,7 +19,11 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityMainBinding
-import com.kyberswap.android.domain.model.*
+import com.kyberswap.android.domain.model.NotificationAlert
+import com.kyberswap.android.domain.model.NotificationLimitOrder
+import com.kyberswap.android.domain.model.Transaction
+import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
@@ -78,7 +81,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     var fromLimitOrder: Boolean = false
 
-
     private val mainViewModel: MainViewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
     }
@@ -134,7 +136,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         binding.vpNavigation.offscreenPageLimit = 4
         listener = object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
-
             }
 
             override fun onPageScrolled(
@@ -142,14 +143,15 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                 positionOffset: Float,
                 positionOffsetPixels: Int
             ) {
-
             }
 
             override fun onPageSelected(position: Int) {
-                if (!isNetworkAvailable()) {
-                    showNetworkUnAvailable()
-                }
                 currentFragment = adapter?.getRegisteredFragment(position)
+                currentFragment?.let {
+                    if (!isNetworkAvailable()) {
+                        showNetworkUnAvailable()
+                    }
+                }
                 showPendingTransaction()
                 when (currentFragment) {
                     is BalanceFragment -> {
@@ -173,7 +175,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                         with((currentFragment as SwapFragment)) {
                             getSwap()
                         }
-
                     }
                     is SettingFragment -> {
                         (currentFragment as SettingFragment).getLoginStatus()
@@ -190,7 +191,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         listener?.let {
             binding.vpNavigation.addOnPageChangeListener(it)
         }
-
 
         val initial = if (limitOrder != null) {
             MainPagerAdapter.LIMIT_ORDER
@@ -269,7 +269,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                         if (state.isWalletChangeEvent) {
                             EventBus.getDefault().post(WalletChangeEvent(state.wallet.address))
                         }
-
                     }
                     is UpdateWalletState.ShowError -> {
 
@@ -321,7 +320,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                                             transaction.displaySource, transaction.displayDest
                                         )
                                     }
-
                                 }
                                 Transaction.TransactionType.RECEIVED -> {
                                     title = ""
@@ -342,9 +340,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                         setPendingTransaction(pending.size)
                     }
                     is GetPendingTransactionState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -411,14 +408,9 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                             navigator.navigateToBackupWalletPage(state.words, state.wallet, true)
 
                         }
-
                     }
                     is CreateWalletState.ShowError -> {
-                        Toast.makeText(
-                            this,
-                            state.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        showError(state.message ?: getString(R.string.something_wrong))
                     }
                 }
             }
@@ -445,7 +437,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             if (numOfPendingTransaction > 0) View.VISIBLE else View.INVISIBLE
         tvPendingTransaction.text = numOfPendingTransaction.toString()
         showPendingTransaction()
-
     }
 
     private fun showPendingTransaction() {
@@ -488,7 +479,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
             if (currentFragment is LimitOrderFragment) {
                 (currentFragment as LimitOrderFragment).onRefresh()
-
             } else if (currentFragment is SwapFragment) {
                 (currentFragment as SwapFragment).getSwap()
             }
@@ -497,8 +487,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         } else {
             super.onBackPressed()
         }
-
-
     }
 
     fun moveToTab(tab: Int, fromLimitOrder: Boolean = false) {

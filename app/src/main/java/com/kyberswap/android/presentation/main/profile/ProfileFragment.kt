@@ -12,7 +12,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.facebook.*
+import com.facebook.AccessToken
+import com.facebook.CallbackManager
+import com.facebook.FacebookAuthorizationException
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.GraphRequest
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -32,6 +37,7 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainPagerAdapter
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.twitter.sdk.android.core.Callback
 import com.twitter.sdk.android.core.TwitterCore
 import com.twitter.sdk.android.core.TwitterException
@@ -40,7 +46,7 @@ import com.twitter.sdk.android.core.identity.TwitterAuthClient
 import com.twitter.sdk.android.core.models.User
 import kotlinx.android.synthetic.main.fragment_profile.*
 import timber.log.Timber
-import java.util.*
+import java.util.Arrays
 import javax.inject.Inject
 
 
@@ -124,8 +130,6 @@ class ProfileFragment : BaseFragment() {
                         }
                     }
                 }
-
-
             })
 
         binding.tvSignUp.setOnClickListener {
@@ -190,9 +194,8 @@ class ProfileFragment : BaseFragment() {
                         }
                     }
                     is LoginState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -215,12 +218,10 @@ class ProfileFragment : BaseFragment() {
                                 message = state.status.message
                             )
                         }
-
                     }
                     is ResetPasswordState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -238,10 +239,11 @@ class ProfileFragment : BaseFragment() {
                         }
                     }
                     is UserInfoState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
+                        if (isNetworkAvailable()) {
+                            showError(
+                                state.message ?: getString(R.string.something_wrong)
+                            )
+                        }
                     }
                 }
             }
@@ -288,7 +290,6 @@ class ProfileFragment : BaseFragment() {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-
             })
         }
 
@@ -308,7 +309,6 @@ class ProfileFragment : BaseFragment() {
 
         binding.btnLogin.setOnClickListener {
 
-
             when {
                 binding.edtEmail.text.toString().isBlank() -> {
                     val errorMessage = getString(
@@ -319,7 +319,6 @@ class ProfileFragment : BaseFragment() {
                     )
 
                     binding.ilEmail.error = errorMessage
-
                 }
 
                 !Patterns.EMAIL_ADDRESS.matcher(binding.edtEmail.text).matches() -> {
@@ -342,7 +341,6 @@ class ProfileFragment : BaseFragment() {
                         title = getString(R.string.title_error), message = errorMessage
                     )
                     binding.ilPassword.error = errorMessage
-
                 }
 
                 else -> {
@@ -473,7 +471,6 @@ class ProfileFragment : BaseFragment() {
                 )
                 viewModel.login(socialInfo)
             }
-
         } catch (e: ApiException) {
             e.printStackTrace()
             Timber.e(e.localizedMessage)
@@ -491,6 +488,4 @@ class ProfileFragment : BaseFragment() {
         fun newInstance() =
             ProfileFragment()
     }
-
-
 }

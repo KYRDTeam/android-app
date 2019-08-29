@@ -128,9 +128,8 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
                         }
                     }
                     is GetTransactionFilterState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -204,9 +203,8 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
                         onSuccess()
                     }
                     is SaveTransactionFilterState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }

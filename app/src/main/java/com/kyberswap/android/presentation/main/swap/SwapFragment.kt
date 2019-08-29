@@ -38,6 +38,7 @@ import com.kyberswap.android.presentation.main.alert.GetAlertState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.getAmountOrDefaultValue
+import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.kyberswap.android.util.ext.setAmount
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
@@ -403,10 +404,11 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         }
                     }
                     is GetExpectedRateState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
+                        if (isNetworkAvailable()) {
+                            showError(
+                                state.message ?: getString(R.string.something_wrong)
+                            )
+                        }
                     }
                 }
             }
@@ -429,10 +431,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         }
                     }
                     is GetMarketRateState.ShowError -> {
-                        if (!state.isNetworkUnAvailable) {
-                            showAlert(
-                                state.message ?: getString(R.string.something_wrong),
-                                R.drawable.ic_info_error
+                        if (isNetworkAvailable()) {
+                            showError(
+                                state.message ?: getString(R.string.something_wrong)
                             )
                         }
                     }
@@ -457,10 +458,11 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         }
                     }
                     is GetGasLimitState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
+                        if (isNetworkAvailable()) {
+                            showError(
+                                state.message ?: getString(R.string.something_wrong)
+                            )
+                        }
                     }
                 }
             }
@@ -620,9 +622,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         }
                     }
                     is GetCapState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }

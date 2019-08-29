@@ -88,9 +88,8 @@ class ConvertFragment : BaseFragment() {
                         setupBalance(state.pendingBalances)
                     }
                     is GetPendingBalancesState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -133,9 +132,8 @@ class ConvertFragment : BaseFragment() {
                         }
                     }
                     is GetGasLimitState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -159,9 +157,8 @@ class ConvertFragment : BaseFragment() {
                         )
                     }
                     is ConvertState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
