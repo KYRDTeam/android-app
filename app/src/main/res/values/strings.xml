@@ -76,7 +76,7 @@
     <string name="enter_private_key">Enter Private Key</string>
     <string name="enter_seeds">Enter Seeds</string>
     <string name="permission_required">The permission is required to perform this action</string>
-    <string name="something_wrong">Something went wrong.</string>
+    <string name="something_wrong">Something went wrong, please try again later</string>
     <string name="your_private_key">Your Private Key</string>
     <string name="text_counter">word count: %d</string>
     <string name="message_cancelled">Cancelled</string>
@@ -438,10 +438,6 @@
     <string name="backup_mnemonic">Backup Mnemonic</string>
     <string name="backup_your_wallet">Backup Your Wallet</string>
 
-    <string-array name="backup_wallet_description_bold">
-        <item>@string/backup_wallet_description_2</item>
-        <item>@string/backup_wallet_description_5</item>
-    </string-array>
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="alert_trigger_content"><![CDATA[Your price alert for %s %s just got triggered]]></string>
     <string name="maximum_alerts_title">You have maximum alerts</string>
@@ -607,6 +603,12 @@
     <string name="fail_import_json">Fail to import json file</string>
     <string name="reserve_under_maintainance">This token pair is temporarily under maintenance</string>
     <string name="app_version">Version %s</string>
+    <string name="error_http_exception">An error occurred while attempting to connect to the server, please try again later</string>
+    <string name="error_unknown_host">The host could not be determined, please try again later</string>
+    <string-array name="backup_wallet_description_bold">
+        <item>@string/backup_wallet_description_2</item>
+        <item>@string/backup_wallet_description_5</item>
+    </string-array>
 
 
 </resources>

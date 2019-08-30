@@ -46,7 +46,20 @@ abstract class BaseFragment : DaggerFragment() {
     }
 
     fun showError(message: String, listener: () -> Unit = {}) {
+        showAlertWithoutIcon(
+            getString(R.string.title_error),
+            message,
+            DEFAULT_ALERT_TIME_SECONDS,
+            listener
+        )
+    }
+
+    fun showErrorIcon(message: String, listener: () -> Unit = {}) {
         showAlert(message, R.drawable.ic_info_error, listener)
+    }
+
+    fun showErrorMessage(message: String) {
+        showAlertWithoutIcon(title = getString(R.string.title_error), message = message)
     }
 
     fun showAlertWithoutIcon(
@@ -116,6 +129,7 @@ abstract class BaseFragment : DaggerFragment() {
 
     companion object {
         const val SHOW_ALERT = 0
+        const val DEFAULT_ALERT_TIME_SECONDS = 3
     }
 
     fun stopCounter() {

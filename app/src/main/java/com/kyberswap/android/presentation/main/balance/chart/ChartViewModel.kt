@@ -10,17 +10,20 @@ import com.kyberswap.android.domain.usecase.swap.SaveSwapDataTokenUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import kotlinx.android.parcel.Parcelize
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 class ChartViewModel @Inject constructor(
     private val saveSwapDataTokenUseCase: SaveSwapDataTokenUseCase,
-    private val saveSendTokenUseCase: SaveSendTokenUseCase
+    private val saveSendTokenUseCase: SaveSendTokenUseCase,
+    private val errorHandler: ErrorHandler
 ) : ViewModel() {
 
     private val _callback = MutableLiveData<Event<SaveSwapDataState>>()
@@ -39,7 +42,7 @@ class ChartViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _callback.value =
-                    Event(SaveSwapDataState.ShowError(it.localizedMessage))
+                    Event(SaveSwapDataState.ShowError(errorHandler.getError(it)))
             },
             SaveSwapDataTokenUseCase.Param(walletAddress, token, isSell)
         )

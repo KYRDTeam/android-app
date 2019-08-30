@@ -17,10 +17,18 @@ import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfer
 import com.kyberswap.android.presentation.common.specialGasLimitDefault
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
-import com.kyberswap.android.presentation.main.swap.*
+import com.kyberswap.android.presentation.main.swap.DeleteContactState
+import com.kyberswap.android.presentation.main.swap.GetContactState
+import com.kyberswap.android.presentation.main.swap.GetGasLimitState
+import com.kyberswap.android.presentation.main.swap.GetGasPriceState
+import com.kyberswap.android.presentation.main.swap.GetSendState
+import com.kyberswap.android.presentation.main.swap.SaveContactState
+import com.kyberswap.android.presentation.main.swap.SaveSendState
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
+import timber.log.Timber
 import java.math.BigInteger
 import javax.inject.Inject
 
@@ -32,8 +40,9 @@ class SendViewModel @Inject constructor(
     private val getContactUseCase: GetContactUseCase,
     private val deleteContactUseCase: DeleteContactUseCase,
     private val estimateTransferGasUseCase: EstimateTransferGasUseCase,
-    getSelectedWalletUseCase: GetSelectedWalletUseCase
-) : SelectedWalletViewModel(getSelectedWalletUseCase) {
+    getSelectedWalletUseCase: GetSelectedWalletUseCase,
+    private val errorHandler: ErrorHandler
+) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
     val compositeDisposable = CompositeDisposable()
     private val _getGetGasPriceCallback = MutableLiveData<Event<GetGasPriceState>>()
     val getGetGasPriceCallback: LiveData<Event<GetGasPriceState>>
@@ -63,7 +72,6 @@ class SendViewModel @Inject constructor(
     val deleteContactCallback: LiveData<Event<DeleteContactState>>
         get() = _deleteContactCallback
 
-
     val currentContactSelection: LiveData<Event<Contact>>
         get() = _currentSelection
 
@@ -83,7 +91,7 @@ class SendViewModel @Inject constructor(
             },
             Consumer {
                 it.printStackTrace()
-                _getSendCallback.value = Event(GetSendState.ShowError(it.localizedMessage))
+                _getSendCallback.value = Event(GetSendState.ShowError(errorHandler.getError(it)))
             },
             GetSendTokenUseCase.Param(wallet)
         )
@@ -102,7 +110,7 @@ class SendViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _deleteContactCallback.value =
-                    Event(DeleteContactState.ShowError(it.localizedMessage))
+                    Event(DeleteContactState.ShowError(errorHandler.getError(it)))
             },
             DeleteContactUseCase.Param(contact)
         )
@@ -117,7 +125,7 @@ class SendViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _saveContactCallback.value =
-                    Event(SaveContactState.ShowError(it.localizedMessage))
+                    Event(SaveContactState.ShowError(errorHandler.getError(it)))
             },
             SaveContactUseCase.Param(walletAddress, contact.address, contact.name)
         )
@@ -133,7 +141,7 @@ class SendViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getGetGasPriceCallback.value =
-                    Event(GetGasPriceState.ShowError(it.localizedMessage))
+                    Event(GetGasPriceState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -149,12 +157,12 @@ class SendViewModel @Inject constructor(
                 },
                 Consumer { error ->
                     error.printStackTrace()
-                    _saveSendCallback.value = Event(SaveSendState.ShowError(error.localizedMessage))
+                    _saveSendCallback.value =
+                        Event(SaveSendState.ShowError(errorHandler.getError(error)))
                 },
                 SaveSendUseCase.Param(it, address)
             )
         }
-
     }
 
     fun getContact() {
@@ -164,7 +172,8 @@ class SendViewModel @Inject constructor(
             },
             Consumer {
                 it.printStackTrace()
-                _getContactCallback.value = Event(GetContactState.ShowError(it.localizedMessage))
+                _getContactCallback.value =
+                    Event(GetContactState.ShowError(errorHandler.getError(it)))
             },
             GetContactUseCase.Param()
         )
@@ -175,6 +184,10 @@ class SendViewModel @Inject constructor(
         estimateTransferGasUseCase.dispose()
         estimateTransferGasUseCase.execute(
             Consumer {
+
+                Timber.e(it.amountUsed.toString())
+                Timber.e(calculateDefaultGasLimitTransfer(send.tokenSource).toString())
+
                 val gasLimit = calculateDefaultGasLimitTransfer(send.tokenSource)
                     .min(it.amountUsed.multiply(120.toBigInteger()).divide(100.toBigInteger()))
 
@@ -203,5 +216,4 @@ class SendViewModel @Inject constructor(
         estimateTransferGasUseCase.dispose()
         super.onCleared()
     }
-
 }

@@ -113,7 +113,7 @@
         android:id="@+id/tvChange24h"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="36dp"
         android:gravity="center|end"
         android:text="@string/change_24h"
         android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"

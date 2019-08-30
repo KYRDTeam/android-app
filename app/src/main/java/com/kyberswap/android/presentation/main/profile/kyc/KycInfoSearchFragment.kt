@@ -19,6 +19,7 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.loadJSONFromAssets
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -136,7 +137,7 @@ class KycInfoSearchFragment : BaseFragment() {
                     TimeUnit.MILLISECONDS
                 )
                 .map {
-                    return@map it.trim().toString().toLowerCase()
+                    return@map it.trim().toString().toLowerCase(Locale.getDefault())
                 }.observeOn(schedulerProvider.ui())
                 .subscribe { searchedText ->
                     currentSearchString = searchedText
@@ -154,9 +155,8 @@ class KycInfoSearchFragment : BaseFragment() {
                         onSelectionComplete()
                     }
                     is SaveKycInfoState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -191,7 +191,7 @@ class KycInfoSearchFragment : BaseFragment() {
 
     private fun getFilterTokenList(searchedString: String, data: List<String>): List<String> {
         return data.filter { item ->
-            item.toLowerCase().contains(searchedString)
+            item.toLowerCase(Locale.getDefault()).contains(searchedString)
         }
     }
 

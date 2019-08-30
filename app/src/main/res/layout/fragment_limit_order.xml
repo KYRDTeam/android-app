@@ -172,12 +172,11 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         app:identifier="@{order.tokenSource.tokenSymbol}"
-                        app:layout_constraintBottom_toBottomOf="@+id/tvSource"
                         app:layout_constraintEnd_toStartOf="@+id/tvSource"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintHorizontal_chainStyle="spread_inside"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/tvSource" />
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/tvSource"
@@ -226,7 +225,8 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toEndOf="@+id/imgInfo"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="@+id/imgTokenSource"
+                        app:layout_constraintBottom_toBottomOf="@+id/imgTokenSource" />
 
 
                     <ImageView
@@ -234,12 +234,12 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         app:identifier="@{order.tokenDest.tokenSymbol}"
-                        app:layout_constraintBottom_toBottomOf="@+id/tvDest"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/tvDest"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintHorizontal_chainStyle="spread_inside"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/tvDest" />
+                        />
 
                     <TextView
                         android:id="@+id/tvDest"
@@ -272,7 +272,8 @@
                         android:singleLine="true"
                         android:textColor="@color/amount_text_view_color"
                         android:textSize="24sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintBottom_toBottomOf="@+id/imgTokenDest"
+                        app:layout_constraintTop_toTopOf="@+id/imgTokenDest"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toEndOf="@+id/tvDest" />

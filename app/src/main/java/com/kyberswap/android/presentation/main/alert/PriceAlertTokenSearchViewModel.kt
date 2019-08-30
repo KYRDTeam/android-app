@@ -10,6 +10,7 @@ import com.kyberswap.android.domain.usecase.alert.SaveAlertTokenUseCase
 import com.kyberswap.android.domain.usecase.token.GetTokenUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.balance.GetBalanceState
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 class PriceAlertTokenSearchViewModel @Inject constructor(
     private val getTokenListUseCase: GetTokenUseCase,
-    private val saveAlertTokenUseCase: SaveAlertTokenUseCase
+    private val saveAlertTokenUseCase: SaveAlertTokenUseCase,
+    private val errorHandler: ErrorHandler
 
 ) : ViewModel() {
 
@@ -48,7 +50,7 @@ class PriceAlertTokenSearchViewModel @Inject constructor(
                 _getTokenListCallback.value =
                     Event(
                         GetBalanceState.ShowError(
-                            it.localizedMessage
+                            errorHandler.getError(it)
                         )
                     )
             },
@@ -71,7 +73,7 @@ class PriceAlertTokenSearchViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _saveAlertTokenState.value =
-                    Event(SaveAlertTokenBalanceState.ShowError(it.localizedMessage))
+                    Event(SaveAlertTokenBalanceState.ShowError(errorHandler.getError(it)))
             },
             SaveAlertTokenUseCase.Param(wallet.address, token, alert)
         )

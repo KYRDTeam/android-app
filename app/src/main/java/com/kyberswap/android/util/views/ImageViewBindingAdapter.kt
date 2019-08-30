@@ -169,7 +169,7 @@ object ImageViewBindingAdapter {
                 R.drawable.ic_facebook_register
             }
             LoginType.TWITTER -> {
-                R.drawable.ic_twitter_register
+                R.drawable.ic_twitter
             }
             LoginType.NORMAL -> 0
         }

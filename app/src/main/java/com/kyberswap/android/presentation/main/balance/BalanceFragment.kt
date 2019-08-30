@@ -36,6 +36,7 @@ import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_token_header.view.*
 import java.math.BigDecimal
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -212,7 +213,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     TimeUnit.MILLISECONDS
                 )
                 .map {
-                    return@map it.trim().toString().toLowerCase()
+                    return@map it.trim().toString().toLowerCase(Locale.getDefault())
                 }.observeOn(schedulerProvider.ui())
                 .subscribe { searchedText ->
                     tokenAdapter?.let {
@@ -360,9 +361,8 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     is SaveWalletState.Success -> {
                     }
                     is SaveWalletState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -378,9 +378,8 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                         moveToSwapTab()
                     }
                     is SaveSwapDataState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -395,9 +394,8 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                         navigateToSendScreen()
                     }
                     is SaveSendState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -524,16 +522,16 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     private fun getFilterTokenList(searchedString: String, tokens: List<Token>): List<Token> {
         return tokens.filter { token ->
-            token.tokenSymbol.toLowerCase().contains(searchedString) or
-                token.tokenName.toLowerCase().contains(searchedString)
+            token.tokenSymbol.toLowerCase(Locale.getDefault()).contains(searchedString) or
+                token.tokenName.toLowerCase(Locale.getDefault()).contains(searchedString)
         }
     }
 
     private fun getFilterTokenList(searchedString: String): List<Token> {
         val tokenList = tokenAdapter?.getFullTokenList() ?: listOf()
         return tokenList.filter { token ->
-            token.tokenSymbol.toLowerCase().contains(searchedString) or
-                token.tokenName.toLowerCase().contains(searchedString)
+            token.tokenSymbol.toLowerCase(Locale.getDefault()).contains(searchedString) or
+                token.tokenName.toLowerCase(Locale.getDefault()).contains(searchedString)
         }
     }
 

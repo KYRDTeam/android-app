@@ -1,0 +1,33 @@
+def propertiesFilename = "secret.properties"
+if (!project.file(propertiesFilename).exists()) {
+    propertiesFilename = "default.properties"
+}
+
+def oneSignalProperties = new Properties()
+oneSignalProperties.load(new FileInputStream(file(propertiesFilename)))
+
+android {
+    productFlavors {
+        dev {
+            applicationIdSuffix ".dev"
+            manifestPlaceholders = [
+                    onesignal_app_id               : oneSignalProperties.onesignalAppIdDev,
+                    onesignal_google_project_number: 'REMOTE'
+            ]
+        }
+        stg {
+            applicationIdSuffix ".stg"
+            manifestPlaceholders = [
+                    onesignal_app_id               : oneSignalProperties.onesignalAppIdStg,
+                    onesignal_google_project_number: 'REMOTE'
+            ]
+        }
+        prod {
+            manifestPlaceholders = [
+                    onesignal_app_id               : oneSignalProperties.onesignalAppIdProd,
+                    onesignal_google_project_number: 'REMOTE'
+            ]
+
+        }
+    }
+}

@@ -165,7 +165,6 @@ class TokenAdapter(
     ) {
         mItemManger.bindView(holder.itemView, position)
         super.onBindViewHolder(holder, position, payloads)
-
     }
 
     override fun bind(binding: ItemTokenBinding, item: Token) {
@@ -239,16 +238,15 @@ class TokenAdapter(
         binding.tvChange24h.text = rate24h
 
         binding.executePendingBindings()
-
     }
 
 
     override fun onBindViewHolder(holder: DataBoundViewHolder<ItemTokenBinding>, position: Int) {
-        super.onBindViewHolder(holder, position)
         val binding = holder.binding
         val background =
             if (position % 2 == 0) R.drawable.item_even_background else R.drawable.item_odd_background
         binding.lnItem.setBackgroundResource(background)
+        super.onBindViewHolder(holder, position)
     }
 
     override fun createBinding(parent: ViewGroup, viewType: Int): ItemTokenBinding =

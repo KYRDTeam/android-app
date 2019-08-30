@@ -124,7 +124,10 @@ class BalanceDataRepository @Inject constructor(
     override fun getTokenBalance(token: Token): Completable {
         return Completable.fromCallable {
             val updatedToken = tokenClient.updateBalance(token)
-            tokenDao.updateToken(updatedToken)
+            if (token.currentBalance != updatedToken.currentBalance) {
+                tokenDao.updateToken(updatedToken)
+            }
+
         }
     }
 

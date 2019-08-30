@@ -20,15 +20,26 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentSendBinding
 import com.kyberswap.android.domain.SchedulerProvider
-import com.kyberswap.android.domain.model.*
+import com.kyberswap.android.domain.model.Contact
+import com.kyberswap.android.domain.model.Gas
+import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
-import com.kyberswap.android.presentation.main.swap.*
+import com.kyberswap.android.presentation.main.swap.DeleteContactState
+import com.kyberswap.android.presentation.main.swap.GetContactState
+import com.kyberswap.android.presentation.main.swap.GetGasLimitState
+import com.kyberswap.android.presentation.main.swap.GetGasPriceState
+import com.kyberswap.android.presentation.main.swap.GetSendState
+import com.kyberswap.android.presentation.main.swap.SaveContactState
+import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.isContact
+import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.kyberswap.android.util.ext.setAmount
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
@@ -37,6 +48,7 @@ import net.cachapa.expandablelayout.ExpandableLayout
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.util.Locale
 import javax.inject.Inject
 
 
@@ -74,11 +86,14 @@ class SendFragment : BaseFragment() {
 
     private val isContactExist: Boolean
         get() = contacts.find { ct ->
-            ct.address.toLowerCase() == currentSelection?.address?.toLowerCase() || ct.address.toLowerCase() == onlyAddress(
+            ct.address.toLowerCase(Locale.getDefault()) == currentSelection?.address?.toLowerCase(
+                Locale.getDefault()
+            ) || ct.address.toLowerCase(
+                Locale.getDefault()
+            ) == onlyAddress(
                 edtAddress.text.toString()
-            ).toLowerCase()
+            ).toLowerCase(Locale.getDefault())
         } != null
-
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
@@ -108,8 +123,6 @@ class SendFragment : BaseFragment() {
                         }
                         binding.edtSource.setText("")
                         binding.walletName = wallet?.name
-
-
                     }
                     is GetWalletState.ShowError -> {
 
@@ -139,11 +152,9 @@ class SendFragment : BaseFragment() {
                         )
                     }
                     is GetSendState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
-
                     }
                 }
             }
@@ -159,10 +170,11 @@ class SendFragment : BaseFragment() {
                         binding.send = send
                     }
                     is GetGasPriceState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
+                        if (isNetworkAvailable()) {
+                            showError(
+                                state.message ?: getString(R.string.something_wrong)
+                            )
+                        }
                     }
                 }
             }
@@ -274,7 +286,6 @@ class SendFragment : BaseFragment() {
                             binding.edtAddress.setText(it.nameAddressDisplay)
                         }
                     }
-
                 }
             })
 
@@ -288,6 +299,20 @@ class SendFragment : BaseFragment() {
                         tvAddContact.text = getString(R.string.edit_contact)
                     } else {
                         tvAddContact.text = getString(R.string.add_contact)
+                    }
+
+                    if (onlyAddress(it.toString()).isContact()) {
+                        binding.send?.let { send ->
+                            viewModel.getGasLimit(
+                                send.copy(
+                                    contact = send.contact.copy(
+                                        address = onlyAddress(
+                                            it.toString()
+                                        )
+                                    )
+                                ), wallet
+                            )
+                        }
                     }
                 })
 
@@ -327,9 +352,8 @@ class SendFragment : BaseFragment() {
 
                     }
                     is SaveContactState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -343,9 +367,8 @@ class SendFragment : BaseFragment() {
                         showAlertWithoutIcon(message = getString(R.string.delete_contact_success))
                     }
                     is DeleteContactState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -364,26 +387,30 @@ class SendFragment : BaseFragment() {
 
                         if (currentSelection == null) {
                             currentSelection = contacts.find { ct ->
-                                ct.address.toLowerCase() == onlyAddress(edtAddress.text.toString()).toLowerCase()
+                                ct.address.toLowerCase(Locale.getDefault()) == onlyAddress(
+                                    edtAddress.text.toString()
+                                ).toLowerCase(
+                                    Locale.getDefault()
+                                )
                             }
                         }
 
                         currentSelection?.let {
                             currentSelection = contacts.find { ct ->
-                                ct.address.toLowerCase() == it.address.toLowerCase()
+                                ct.address.toLowerCase(Locale.getDefault()) == it.address.toLowerCase(
+                                    Locale.getDefault()
+                                )
                             }
 
                             currentSelection?.let { it1 -> sendToContact(it1) }
-
 
                         }
 
                         contactAdapter.submitList(state.contacts.take(2))
                     }
                     is GetContactState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -401,10 +428,11 @@ class SendFragment : BaseFragment() {
                         binding.send = send
                     }
                     is GetGasLimitState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
-                        )
+                        if (isNetworkAvailable()) {
+                            showError(
+                                state.message ?: getString(R.string.something_wrong)
+                            )
+                        }
                     }
                 }
             }
@@ -501,7 +529,6 @@ class SendFragment : BaseFragment() {
                 }
             }
 
-
         }
 
         viewModel.saveSendCallback.observe(viewLifecycleOwner, Observer {
@@ -512,9 +539,8 @@ class SendFragment : BaseFragment() {
                         navigator.navigateToSendConfirmationScreen(wallet, isContactExist)
                     }
                     is SaveSendState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -522,7 +548,6 @@ class SendFragment : BaseFragment() {
         })
 
         binding.rbFast.isChecked = true
-
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -578,7 +603,7 @@ class SendFragment : BaseFragment() {
             if (result.contents != null) {
                 val resultContent = result.contents.toString()
                 val contact = contacts.find {
-                    it.address.toLowerCase() == resultContent.toLowerCase()
+                    it.address.toLowerCase(Locale.getDefault()) == resultContent.toLowerCase(Locale.getDefault())
                 }
                 if (contact != null) {
                     currentSelection = contact
@@ -608,7 +633,6 @@ class SendFragment : BaseFragment() {
         } else {
             fullAddress
         }
-
     }
 
     companion object {

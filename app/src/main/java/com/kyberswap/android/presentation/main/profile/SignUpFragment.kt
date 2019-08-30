@@ -10,7 +10,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.facebook.*
+import com.facebook.AccessToken
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.GraphRequest
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -37,7 +41,7 @@ import com.twitter.sdk.android.core.identity.TwitterAuthClient
 import com.twitter.sdk.android.core.models.User
 import kotlinx.android.synthetic.main.fragment_signup.*
 import timber.log.Timber
-import java.util.*
+import java.util.Arrays
 import javax.inject.Inject
 
 
@@ -191,9 +195,8 @@ class SignUpFragment : BaseFragment() {
                         )
                     }
                     is SignUpState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }
@@ -288,7 +291,7 @@ class SignUpFragment : BaseFragment() {
                         if (state.login.success) {
                             if (state.login.confirmSignUpRequired) {
                                 navigator.navigateToSignUpConfirmScreen(
-                                    (activity as MainActivity).getCurrentFragment(),
+                                    currentFragment,
                                     state.socialInfo
                                 )
                             } else {
@@ -299,9 +302,8 @@ class SignUpFragment : BaseFragment() {
                         }
                     }
                     is LoginState.ShowError -> {
-                        showAlert(
-                            state.message ?: getString(R.string.something_wrong),
-                            R.drawable.ic_info_error
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
                         )
                     }
                 }

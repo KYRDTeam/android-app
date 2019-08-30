@@ -8,6 +8,7 @@ import com.kyberswap.android.domain.usecase.limitorder.SaveLimitOrderFilterUseCa
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.GetLoginStatusViewModel
+import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
@@ -15,8 +16,9 @@ import javax.inject.Inject
 class FilterViewModel @Inject constructor(
     private val saveLimitOrderFilterUseCase: SaveLimitOrderFilterUseCase,
     private val getLimitOrdersFilterSettingUseCase: GetLimitOrdersFilterSettingUseCase,
-    val getLoginStatusUseCase: GetLoginStatusUseCase
-) : GetLoginStatusViewModel(getLoginStatusUseCase) {
+    val getLoginStatusUseCase: GetLoginStatusUseCase,
+    private val errorHandler: ErrorHandler
+) : GetLoginStatusViewModel(getLoginStatusUseCase, errorHandler) {
 
     private val _getFilterSettingCallback = MutableLiveData<Event<GetFilterSettingState>>()
     val getFilterSettingCallback: LiveData<Event<GetFilterSettingState>>
@@ -36,7 +38,7 @@ class FilterViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getFilterSettingCallback.value =
-                    Event(GetFilterSettingState.ShowError(it.localizedMessage))
+                    Event(GetFilterSettingState.ShowError(errorHandler.getError(it)))
             },
             null
         )
@@ -56,7 +58,7 @@ class FilterViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _saveFilterStateCallback.value =
-                    Event(SaveFilterState.ShowError(it.localizedMessage))
+                    Event(SaveFilterState.ShowError(errorHandler.getError(it)))
             },
             SaveLimitOrderFilterUseCase.Param(orderFilter)
         )

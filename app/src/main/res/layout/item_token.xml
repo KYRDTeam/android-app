@@ -149,22 +149,28 @@
                 android:textColor="#1d303a"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView123"
-                app:layout_constraintEnd_toStartOf="@+id/imgState"
+                app:layout_constraintEnd_toStartOf="@+id/flState"
                 app:layout_constraintHorizontal_chainStyle="spread"
                 app:layout_constraintStart_toEndOf="@+id/barrier6"
                 app:layout_constraintTop_toTopOf="@+id/textView121"
                 tools:text="0.002025" />
 
-            <ImageView
-                android:id="@+id/imgState"
+            <FrameLayout
+                android:id="@+id/flState"
                 android:layout_width="11dp"
-                android:layout_height="11dp"
-                android:src="@drawable/ic_arrow_up"
                 app:layout_constraintBottom_toBottomOf="@+id/textView124"
                 app:layout_constraintEnd_toStartOf="@+id/tvChange24h"
                 app:layout_constraintStart_toEndOf="@+id/textView124"
                 app:layout_constraintTop_toTopOf="@+id/textView124"
-                tools:src="@drawable/ic_arrow_up" />
+                android:layout_height="11dp">
+                <ImageView
+                    android:id="@+id/imgState"
+                    android:layout_width="11dp"
+                    android:layout_height="11dp"
+                    android:src="@drawable/ic_arrow_up"
+                    tools:src="@drawable/ic_arrow_up" />
+            </FrameLayout>
+
 
             <TextView
                 android:id="@+id/tvChange24h"
@@ -172,12 +178,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:gravity="end"
+                android:minWidth="42dp"
                 android:textColor="@color/token_change24h_up"
                 android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/imgState"
+                app:layout_constraintBottom_toBottomOf="@+id/flState"
                 app:layout_constraintEnd_toStartOf="@+id/imgFav"
-                app:layout_constraintStart_toEndOf="@+id/imgState"
-                app:layout_constraintTop_toTopOf="@+id/imgState"
+                app:layout_constraintStart_toEndOf="@+id/flState"
+                app:layout_constraintTop_toTopOf="@+id/flState"
                 tools:text="-2.2%" />
 
 
