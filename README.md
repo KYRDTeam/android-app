@@ -2,9 +2,11 @@
   
     
 # KyberSwap mobile app    
-### Download app on Google Play store [<img src="https://kyberswap.com/app/images/google_play_store.svg">](https://play.google.com/store/apps/details?id=com.kyberswap.android)      
+### Download app on Google Play store 
+[<img src="https://kyberswap.com/app/images/google_play_store.svg">](https://play.google.com/store/apps/details?id=com.kyberswap.android)      
       
-### Also available on iOS, download it from App Store [<img src="https://kyberswap.com/app/images/apple_store.svg">](https://itunes.apple.com/us/app/kyberswap/id1453691309)      
+### Also available on iOS, download it from App Store 
+[<img src="https://kyberswap.com/app/images/apple_store.svg">](https://itunes.apple.com/us/app/kyberswap/id1453691309)      
       
 [iOS source](https://github.com/KyberNetwork/KyberSwap-iOS)      
       
