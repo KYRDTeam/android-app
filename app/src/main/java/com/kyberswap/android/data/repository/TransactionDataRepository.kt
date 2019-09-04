@@ -286,7 +286,8 @@ class TransactionDataRepository @Inject constructor(
                 transactionMapper.transform(
                     it,
                     Transaction.TransactionType.RECEIVED,
-                    INTERNAL_TRANSACTION
+                    INTERNAL_TRANSACTION,
+                    address
                 )
             }
     }
@@ -310,7 +311,8 @@ class TransactionDataRepository @Inject constructor(
                 transactionMapper.transform(
                     it,
                     Transaction.TransactionType.SEND,
-                    NORMAL_TRANSACTION
+                    NORMAL_TRANSACTION,
+                    address
                 )
             }
     }
@@ -489,8 +491,7 @@ class TransactionDataRepository @Inject constructor(
                 transactions
             }
             .filter {
-                it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO &&
-                    it.from == wallet.address || it.isTransactionFail
+                (it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO) || it.isTransactionFail
             }.map {
                 it.copy(
                     tokenSymbol = Token.ETH,
@@ -531,54 +532,64 @@ class TransactionDataRepository @Inject constructor(
                 val transactionList = mutableListOf<Transaction>()
                 for ((_, transactions) in it) {
                     if (transactions.size == 2) {
-                        val send = transactions.find {
-                            it.type == Transaction.TransactionType.SEND
+                        if (transactions.first() == transactions.last()) {
+
+                            transactionList.add(
+                                transactions.last().copy(
+                                    walletAddress = wallet.address,
+                                    type = Transaction.TransactionType.SEND
+                                )
+                            )
+                        } else {
+                            val send = transactions.find {
+                                it.type == Transaction.TransactionType.SEND
+                            }
+
+                            val received = transactions.find {
+                                it.type == Transaction.TransactionType.RECEIVED
+                            }
+
+                            val sourceAmount = send?.value.toBigDecimalOrDefaultZero()
+                                .divide(
+                                    BigDecimal.TEN
+                                        .pow(
+                                            (send?.tokenDecimal ?: Token.ETH_DECIMAL.toString())
+                                                .toBigDecimalOrDefaultZero().toInt()
+                                        ),
+                                    18,
+                                    RoundingMode.HALF_EVEN
+                                )
+
+                            val destAmount = received?.value.toBigDecimalOrDefaultZero()
+                                .divide(
+                                    BigDecimal.TEN
+                                        .pow(
+                                            (received?.tokenDecimal ?: Token.ETH_DECIMAL.toString())
+                                                .toBigDecimalOrDefaultZero().toInt()
+                                        )
+                                    , 18,
+                                    RoundingMode.HALF_EVEN
+                                )
+                            val tx =
+                                if (transactions.first().gasPrice.isEmpty()) transactions.last() else transactions.first()
+
+                            val transaction = tx.copy(
+                                tokenSource = send?.tokenSymbol ?: "",
+                                sourceAmount = sourceAmount.toDisplayNumber(),
+                                tokenDest = received?.tokenSymbol ?: "",
+                                destAmount = destAmount.toDisplayNumber(),
+                                walletAddress = wallet.address
+
+                            )
+
+                            transactionList.add(
+                                transaction.copy(
+                                    type = if (transaction.isTransfer)
+                                        transaction.type
+                                    else Transaction.TransactionType.SWAP
+                                )
+                            )
                         }
-
-                        val received = transactions.find {
-                            it.type == Transaction.TransactionType.RECEIVED
-                        }
-
-                        val sourceAmount = send?.value.toBigDecimalOrDefaultZero()
-                            .divide(
-                                BigDecimal.TEN
-                                    .pow(
-                                        (send?.tokenDecimal ?: Token.ETH_DECIMAL.toString())
-                                            .toBigDecimalOrDefaultZero().toInt()
-                                    ),
-                                18,
-                                RoundingMode.HALF_EVEN
-                            )
-
-                        val destAmount = received?.value.toBigDecimalOrDefaultZero()
-                            .divide(
-                                BigDecimal.TEN
-                                    .pow(
-                                        (received?.tokenDecimal ?: Token.ETH_DECIMAL.toString())
-                                            .toBigDecimalOrDefaultZero().toInt()
-                                    )
-                                , 18,
-                                RoundingMode.HALF_EVEN
-                            )
-                        val tx =
-                            if (transactions.first().gasPrice.isEmpty()) transactions.last() else transactions.first()
-
-                        val transaction = tx.copy(
-                            tokenSource = send?.tokenSymbol ?: "",
-                            sourceAmount = sourceAmount.toDisplayNumber(),
-                            tokenDest = received?.tokenSymbol ?: "",
-                            destAmount = destAmount.toDisplayNumber(),
-                            walletAddress = wallet.address
-
-                        )
-
-                        transactionList.add(
-                            transaction.copy(
-                                type = if (transaction.isTransfer)
-                                    transaction.type
-                                else Transaction.TransactionType.SWAP
-                            )
-                        )
                     } else {
                         transactionList.addAll(transactions.map { tx ->
                             tx.copy(

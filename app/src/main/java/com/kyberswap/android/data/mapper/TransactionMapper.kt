@@ -2,6 +2,7 @@ package com.kyberswap.android.data.mapper
 
 import com.kyberswap.android.data.api.transaction.TransactionEntity
 import com.kyberswap.android.domain.model.Transaction
+import java.util.Locale
 import javax.inject.Inject
 
 class TransactionMapper @Inject constructor() {
@@ -22,10 +23,20 @@ class TransactionMapper @Inject constructor() {
     fun transform(
         entities: List<TransactionEntity>,
         type: Transaction.TransactionType,
-        txType: String
+        txType: String,
+        walletAddres: String
     ): List<Transaction> {
         return entities.map {
-            transform(it, type, txType)
+            val transactionType =
+                if (walletAddres.toLowerCase(Locale.getDefault()) == it.from.toLowerCase(Locale.getDefault())
+                ) {
+                    Transaction.TransactionType.SEND
+                } else if (walletAddres.toLowerCase(Locale.getDefault()) == it.to.toLowerCase(Locale.getDefault())) {
+                    Transaction.TransactionType.RECEIVED
+                } else {
+                    type
+                }
+            transform(it, transactionType, txType)
         }
     }
 
@@ -39,5 +50,4 @@ class TransactionMapper @Inject constructor() {
             transform(it, address, txType)
         }
     }
-
 }

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "f2343f141b169c4dd748f80eb3b61d8d",
+    "identityHash": "984495c3d7a22bf3f8753e66f5759341",
     "entities": [
       {
         "tableName": "tokens",
@@ -1080,7 +1080,7 @@
       },
       {
         "tableName": "transactions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`blockHash` TEXT NOT NULL, `blockNumber` TEXT NOT NULL, `confirmations` TEXT NOT NULL, `contractAddress` TEXT NOT NULL, `cumulativeGasUsed` TEXT NOT NULL, `from` TEXT NOT NULL, `gas` TEXT NOT NULL, `gasPrice` TEXT NOT NULL, `gasUsed` TEXT NOT NULL, `hash` TEXT NOT NULL, `input` TEXT NOT NULL, `isError` TEXT NOT NULL, `nonce` TEXT NOT NULL, `timeStamp` INTEGER NOT NULL, `to` TEXT NOT NULL, `transactionIndex` TEXT NOT NULL, `txreceiptStatus` TEXT NOT NULL, `value` TEXT NOT NULL, `tokenName` TEXT NOT NULL, `tokenSymbol` TEXT NOT NULL, `tokenDecimal` TEXT NOT NULL, `type` INTEGER NOT NULL, `txType` TEXT NOT NULL, `tokenSource` TEXT NOT NULL, `sourceAmount` TEXT NOT NULL, `tokenDest` TEXT NOT NULL, `destAmount` TEXT NOT NULL, `transactionStatus` TEXT NOT NULL, `walletAddress` TEXT NOT NULL, PRIMARY KEY(`hash`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`blockHash` TEXT NOT NULL, `blockNumber` TEXT NOT NULL, `confirmations` TEXT NOT NULL, `contractAddress` TEXT NOT NULL, `cumulativeGasUsed` TEXT NOT NULL, `from` TEXT NOT NULL, `gas` TEXT NOT NULL, `gasPrice` TEXT NOT NULL, `gasUsed` TEXT NOT NULL, `hash` TEXT NOT NULL, `input` TEXT NOT NULL, `isError` TEXT NOT NULL, `nonce` TEXT NOT NULL, `timeStamp` INTEGER NOT NULL, `to` TEXT NOT NULL, `transactionIndex` TEXT NOT NULL, `txreceiptStatus` TEXT NOT NULL, `value` TEXT NOT NULL, `tokenName` TEXT NOT NULL, `tokenSymbol` TEXT NOT NULL, `tokenDecimal` TEXT NOT NULL, `type` INTEGER NOT NULL, `txType` TEXT NOT NULL, `tokenSource` TEXT NOT NULL, `sourceAmount` TEXT NOT NULL, `tokenDest` TEXT NOT NULL, `destAmount` TEXT NOT NULL, `transactionStatus` TEXT NOT NULL, `walletAddress` TEXT NOT NULL, PRIMARY KEY(`hash`, `from`, `to`))",
         "fields": [
           {
             "fieldPath": "blockHash",
@@ -1259,7 +1259,9 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "hash"
+            "hash",
+            "from",
+            "to"
           ],
           "autoGenerate": false
         },
@@ -2677,7 +2679,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f2343f141b169c4dd748f80eb3b61d8d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '984495c3d7a22bf3f8753e66f5759341')"
     ]
   }
 }

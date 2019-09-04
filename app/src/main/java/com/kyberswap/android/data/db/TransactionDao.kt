@@ -1,6 +1,11 @@
 package com.kyberswap.android.data.db
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
 import com.kyberswap.android.domain.model.Transaction
 import io.reactivex.Flowable
 
@@ -51,7 +56,7 @@ interface TransactionDao {
     @get:Query("SELECT * FROM transactions")
     val all: Flowable<List<Transaction>>
 
-    @Query("SELECT * FROM transactions WHERE walletAddress = :walletAddress AND transactionStatus != :pending")
+    @Query("SELECT * FROM transactions WHERE (walletAddress = :walletAddress OR `from` = :walletAddress OR `to` = :walletAddress) AND transactionStatus != :pending")
     fun getCompletedTransactions(
         walletAddress: String,
         pending: String = Transaction.PENDING_TRANSACTION_STATUS
@@ -62,6 +67,5 @@ interface TransactionDao {
 
     @Query("SELECT * FROM transactions WHERE walletAddress = :walletAddress AND transactionStatus = :status")
     fun getTransactionByStatus(walletAddress: String, status: String): Flowable<List<Transaction>>
-
 }
 

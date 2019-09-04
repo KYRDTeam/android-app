@@ -279,11 +279,11 @@ data class Token(
 
     fun areContentsTheSame(other: Token): Boolean {
         return this.tokenSymbol == other.tokenSymbol &&
-            this.currentBalance == other.currentBalance &&
-            this.rateEthNow == other.rateEthNow &&
-            this.rateUsdNow == other.rateUsdNow &&
-            this.changeUsd24h == other.changeUsd24h &&
-            this.changeEth24h == other.changeEth24h &&
+            this.currentBalance.toDisplayNumber() == other.currentBalance.toDisplayNumber() &&
+            this.rateEthNow.toDisplayNumber() == other.rateEthNow.toDisplayNumber() &&
+            this.rateUsdNow.toDisplayNumber() == other.rateUsdNow.toDisplayNumber() &&
+            this.changeUsd24h.toDisplayNumber() == other.changeUsd24h.toDisplayNumber() &&
+            this.changeEth24h.toDisplayNumber() == other.changeEth24h.toDisplayNumber() &&
             this.fav == other.fav &&
             this.shouldShowAsNew == other.shouldShowAsNew
     }
@@ -335,7 +335,7 @@ data class Token(
         const val EXCHANGE_ETH_TOKEN_GAS_LIMIT_DEFAULT = 380_000
         const val APPROVE_TOKEN_GAS_LIMIT_DEFAULT = 120_000
         const val TRANSFER_TOKEN_GAS_LIMIT_DEFAULT = 125_000
-        const val TRANSFER_ETH_GAS_LIMIT_DEFAULT = 30_000
+        const val TRANSFER_ETH_GAS_LIMIT_DEFAULT = 100_000
         const val TRANSFER_GAS_LIMIT_DEFAULT = 100_000
         const val BUY_TOKEN_SALE_BY_ETH_GAS_LIMIT_DEFAULT = 550_000
         const val BUY_TOKEN_SALE_BY_TOKEN_GAS_LIMIT_DEFAULT = 700_000
