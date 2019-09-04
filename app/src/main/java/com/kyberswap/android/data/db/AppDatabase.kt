@@ -8,23 +8,8 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.kyberswap.android.domain.model.Alert
-import com.kyberswap.android.domain.model.Contact
-import com.kyberswap.android.domain.model.LocalLimitOrder
-import com.kyberswap.android.domain.model.Order
-import com.kyberswap.android.domain.model.OrderFilter
-import com.kyberswap.android.domain.model.PassCode
-import com.kyberswap.android.domain.model.PendingBalances
-import com.kyberswap.android.domain.model.Rate
-import com.kyberswap.android.domain.model.Send
-import com.kyberswap.android.domain.model.Swap
-import com.kyberswap.android.domain.model.Token
-import com.kyberswap.android.domain.model.Transaction
-import com.kyberswap.android.domain.model.TransactionFilter
+import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.domain.model.Unit
-import com.kyberswap.android.domain.model.UserInfo
-import com.kyberswap.android.domain.model.Wallet
-import com.kyberswap.android.domain.model.WalletToken
 
 @Database(
     entities = [
@@ -109,6 +94,12 @@ abstract class AppDatabase : RoomDatabase() {
                     """
                     CREATE TABLE IF NOT EXISTS new_transactions (`blockHash` TEXT NOT NULL, `blockNumber` TEXT NOT NULL, `confirmations` TEXT NOT NULL, `contractAddress` TEXT NOT NULL, `cumulativeGasUsed` TEXT NOT NULL, `from` TEXT NOT NULL, `gas` TEXT NOT NULL, `gasPrice` TEXT NOT NULL, `gasUsed` TEXT NOT NULL, `hash` TEXT NOT NULL, `input` TEXT NOT NULL, `isError` TEXT NOT NULL, `nonce` TEXT NOT NULL, `timeStamp` INTEGER NOT NULL, `to` TEXT NOT NULL, `transactionIndex` TEXT NOT NULL, `txreceiptStatus` TEXT NOT NULL, `value` TEXT NOT NULL, `tokenName` TEXT NOT NULL, `tokenSymbol` TEXT NOT NULL, `tokenDecimal` TEXT NOT NULL, `type` INTEGER NOT NULL, `txType` TEXT NOT NULL, `tokenSource` TEXT NOT NULL, `sourceAmount` TEXT NOT NULL, `tokenDest` TEXT NOT NULL, `destAmount` TEXT NOT NULL, `transactionStatus` TEXT NOT NULL, `walletAddress` TEXT NOT NULL, PRIMARY KEY(`hash`, `from`, `to`))
                 """.trimIndent()
+                )
+
+                database.execSQL(
+                    """
+                        CREATE  INDEX `index_transactions_transactionStatus_walletAddress` ON new_transactions (`hash`, `transactionStatus`, `walletAddress`)
+                    """.trimIndent()
                 )
 
                 database.execSQL(
