@@ -113,6 +113,12 @@ abstract class AppDatabase : RoomDatabase() {
 
                 database.execSQL(
                     """
+                        CREATE  INDEX `index_transactions_transactionStatus_walletAddress` ON new_transactions (`hash`, `transactionStatus`, `walletAddress`)
+                    """.trimIndent()
+                )
+
+                database.execSQL(
+                    """
                 INSERT INTO new_transactions (blockHash, blockNumber, confirmations, contractAddress, cumulativeGasUsed, `from`, gas, gasPrice, gasUsed, hash, input, isError, nonce, timeStamp, `to`, transactionIndex, txreceiptStatus, value, tokenName, tokenSymbol, tokenDecimal, type, txType, tokenSource, sourceAmount, tokenDest, destAmount, transactionStatus, walletAddress)
                 SELECT blockHash, blockNumber, confirmations, contractAddress, cumulativeGasUsed, `from`, gas, gasPrice, gasUsed, hash, input, isError, nonce, timeStamp, `to`, transactionIndex, txreceiptStatus, value, tokenName, tokenSymbol, tokenDecimal, type, txType, tokenSource, sourceAmount, tokenDest, destAmount, transactionStatus, walletAddress FROM transactions
                 """.trimIndent()
