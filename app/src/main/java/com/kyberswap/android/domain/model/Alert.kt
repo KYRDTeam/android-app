@@ -65,6 +65,11 @@ data class Alert(
         entity.message ?: ""
     )
 
+    val time: Long
+        get() = if (triggeredAt.isNotBlank()) DateTimeHelper.toLong(triggeredAt) else DateTimeHelper.toLong(
+            updatedAt
+        )
+
     val displayUserInfo: String
         get() = if (telegramAccount.isNotBlank()) telegramAccount else userEmail
 
