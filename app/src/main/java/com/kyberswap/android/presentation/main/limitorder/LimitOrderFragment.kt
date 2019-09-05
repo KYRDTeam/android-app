@@ -852,7 +852,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         binding.tvOff.text = String.format(
                             getString(R.string.discount_fee), state.fee.discountPercent
                         )
-                        val order = binding.order?.copy(fee = state.fee.totalFee.toBigDecimal())
+                        val order = binding.order?.copy(fee = state.fee.fee.toBigDecimal(), transferFee = state.fee.transferFee.toBigDecimal())
                         if (order != binding.order) {
                             binding.order = order
                             binding.executePendingBindings()

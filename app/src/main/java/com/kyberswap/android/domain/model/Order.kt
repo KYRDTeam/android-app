@@ -10,7 +10,8 @@ import com.kyberswap.android.util.ext.toLongSafe
 import kotlinx.android.parcel.Parcelize
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 @Entity(tableName = "orders")
 @Parcelize
@@ -40,7 +41,7 @@ data class Order(
         entity.srcAmount,
         entity.minRate,
         entity.nonce,
-        entity.fee,
+        entity.fee + entity.transferFee,
         entity.receive,
         entity.status,
         entity.msg,
@@ -63,7 +64,7 @@ data class Order(
         notification.srcAmount,
         notification.minRate,
         "",
-        notification.fee,
+        notification.fee + notification.transferFee,
         notification.receive,
         Status.FILLED.value,
         "",
@@ -105,7 +106,6 @@ data class Order(
             .append(dst)
             .toString()
 
-
     val destDisplayFee: String
         get() = StringBuilder()
             .append(fee.multiply(srcAmount).toDisplayNumber())
@@ -135,7 +135,6 @@ data class Order(
     val isInvalidated: Boolean
         get() = status.toLowerCase() == Status.INVALIDATED.value.toLowerCase() &&
             msg.isNotEmpty()
-
 
     val isPending: Boolean
         get() = status.toLowerCase() == Status.OPEN.value || status.toLowerCase() == Status.IN_PROGRESS.value

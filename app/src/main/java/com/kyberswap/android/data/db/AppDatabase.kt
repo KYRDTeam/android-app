@@ -46,7 +46,7 @@ import com.kyberswap.android.domain.model.WalletToken
         PendingBalances::class,
         TransactionFilter::class
     ],
-    version = 4
+    version = 5
 )
 @TypeConverters(
     DataTypeConverter::class,
@@ -103,6 +103,14 @@ abstract class AppDatabase : RoomDatabase() {
         }
 
         @VisibleForTesting
+        internal val MIGRATION_4_5: Migration = object : Migration(4, 5) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // for adding transfer fee
+                database.execSQL("ALTER TABLE current_orders " + " ADD COLUMN transferFee TEXT NOT NULL default '' ")
+            }
+        }
+
+        @VisibleForTesting
         internal val MIGRATION_3_4: Migration = object : Migration(3, 4) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
@@ -134,7 +142,7 @@ abstract class AppDatabase : RoomDatabase() {
                 context.applicationContext,
                 AppDatabase::class.java, "kyberswap.db"
             )
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
 //                .fallbackToDestructiveMigration()
 //                .allowMainThreadQueries()
                 .build()

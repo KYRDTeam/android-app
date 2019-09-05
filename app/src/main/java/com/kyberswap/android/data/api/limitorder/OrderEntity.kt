@@ -23,6 +23,8 @@ data class OrderEntity(
     val nonce: String = "",
     @SerializedName("fee")
     val fee: BigDecimal = BigDecimal.ZERO,
+    @SerializedName("transfer_fee")
+    val transferFee: BigDecimal = BigDecimal.ZERO,
     @SerializedName("receive")
     val receive: BigDecimal = BigDecimal.ZERO,
     @SerializedName("status")
@@ -75,7 +77,6 @@ fun JsonArray.toOrderEntity(jsonArray: JsonArray): OrderEntity {
         get(keys.indexOf("id"))?.asLong ?: 0
     }
 
-
     val userAddr =
         if (get(keys.indexOf("addr")).isJsonNull) "" else get(keys.indexOf("addr"))?.asString ?: ""
     val src =
@@ -92,6 +93,10 @@ fun JsonArray.toOrderEntity(jsonArray: JsonArray): OrderEntity {
             ?: ""
     val fee =
         if (get(keys.indexOf("fee")).isJsonNull) BigDecimal.ZERO else get(keys.indexOf("fee"))?.asBigDecimal
+            ?: BigDecimal.ZERO
+
+    val transferFee =
+        if (get(keys.indexOf("transfer_fee")).isJsonNull) BigDecimal.ZERO else get(keys.indexOf("transfer_fee"))?.asBigDecimal
             ?: BigDecimal.ZERO
 
     val receive =
@@ -126,6 +131,7 @@ fun JsonArray.toOrderEntity(jsonArray: JsonArray): OrderEntity {
         minRate,
         nonce,
         fee,
+        transferFee,
         receive,
         status,
         msg,

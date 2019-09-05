@@ -5,6 +5,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.WalletBalance
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import java.math.BigDecimal
 import java.math.BigInteger
 
@@ -12,7 +14,7 @@ import java.math.BigInteger
 class DataTypeConverter {
     @TypeConverter
     fun stringToDecimal(data: String?): BigDecimal {
-        return BigDecimal(data)
+        return data.toBigDecimalOrDefaultZero()
     }
 
     @TypeConverter
@@ -24,7 +26,7 @@ class DataTypeConverter {
 class BigIntegerDataTypeConverter {
     @TypeConverter
     fun stringToBigInteger(data: String?): BigInteger {
-        return BigInteger(data)
+        return data.toBigIntegerOrDefaultZero()
     }
 
     @TypeConverter
