@@ -196,7 +196,7 @@ class SendViewModel @Inject constructor(
                 _getGetGasLimitCallback.value = Event(
                     GetGasLimitState.Success(
                         if (specialGasLimit != null) {
-                            specialGasLimit.max(gasLimit)
+                            specialGasLimit.min(gasLimit)
                         } else {
                             gasLimit
                         }
