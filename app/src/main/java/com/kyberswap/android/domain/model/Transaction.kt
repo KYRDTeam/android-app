@@ -6,19 +6,25 @@ import androidx.room.Index
 import androidx.room.TypeConverters
 import com.kyberswap.android.data.api.transaction.TransactionEntity
 import com.kyberswap.android.data.db.TransactionTypeConverter
-import com.kyberswap.android.util.ext.*
+import com.kyberswap.android.util.ext.displayWalletAddress
+import com.kyberswap.android.util.ext.safeToString
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.toLongSafe
 import kotlinx.android.parcel.Parcelize
 import org.web3j.protocol.core.methods.response.TransactionReceipt
 import org.web3j.utils.Convert
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 @Entity(
     tableName = "transactions",
-    indices = [Index(value = ["hash", "transactionStatus", "walletAddress"])],
-    primaryKeys = ["hash", "from", "to"]
+    primaryKeys = ["hash", "from", "to"],
+    indices = [Index(value = ["hash", "transactionStatus", "walletAddress"])]
 )
 @Parcelize
 data class Transaction(
