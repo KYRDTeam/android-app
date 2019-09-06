@@ -272,6 +272,12 @@ data class Transaction(
             this.timeStamp == other.timeStamp
     }
 
+    fun sameKey(other: Transaction): Boolean {
+        return this.hash == other.hash &&
+            this.from == other.from &&
+            this.to == other.to
+    }
+
 
     val isPendingTransaction: Boolean
         get() = transactionStatus == PENDING_TRANSACTION_STATUS
