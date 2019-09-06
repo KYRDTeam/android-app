@@ -286,7 +286,8 @@ class TransactionDataRepository @Inject constructor(
                 transactionMapper.transform(
                     it,
                     Transaction.TransactionType.RECEIVED,
-                    INTERNAL_TRANSACTION
+                    INTERNAL_TRANSACTION,
+                    address
                 )
             }
     }
@@ -310,13 +311,14 @@ class TransactionDataRepository @Inject constructor(
                 transactionMapper.transform(
                     it,
                     Transaction.TransactionType.SEND,
-                    NORMAL_TRANSACTION
+                    NORMAL_TRANSACTION,
+                    address
                 )
             }
     }
 
     override fun fetchAllTransactions(param: GetTransactionsUseCase.Param): Flowable<TransactionsData> {
-        return getTransactions(param.wallet)
+        return getTransactions(param.wallet, param.isForceRefresh)
     }
 
     override fun fetchTransactionPeriodically(param: GetTransactionsPeriodicallyUseCase.Param): Flowable<List<Transaction>> {
@@ -480,6 +482,58 @@ class TransactionDataRepository @Inject constructor(
         }
     }
 
+    private fun composedTransaction(
+        send: Transaction,
+        received: Transaction,
+        transactions: List<Transaction>,
+        wallet: Wallet
+    ): Transaction {
+        val sourceAmount = send.value.toBigDecimalOrDefaultZero()
+            .divide(
+                BigDecimal.TEN
+                    .pow(
+                        send.tokenDecimal
+                            .toBigDecimalOrDefaultZero().toInt()
+                    ),
+                18,
+                RoundingMode.HALF_EVEN
+            )
+
+        val destAmount = received.value.toBigDecimalOrDefaultZero()
+            .divide(
+                BigDecimal.TEN
+                    .pow(
+                        received.tokenDecimal
+                            .toBigDecimalOrDefaultZero().toInt()
+                    )
+                , 18,
+                RoundingMode.HALF_EVEN
+            )
+        val tx =
+            if (transactions.first().gasPrice.isEmpty()) transactions.last() else transactions.first()
+
+        return tx.copy(
+            tokenSource = send.tokenSymbol,
+            sourceAmount = sourceAmount.toDisplayNumber(),
+            tokenDest = received.tokenSymbol,
+            destAmount = destAmount.toDisplayNumber(),
+            walletAddress = wallet.address
+
+        )
+    }
+
+    private fun findTransactionPair(transactions: List<Transaction>): Pair<Transaction?, Transaction?> {
+        val send = transactions.find {
+            it.type == Transaction.TransactionType.SEND
+        }
+
+        val received = transactions.find {
+            it.type == Transaction.TransactionType.RECEIVED
+        }
+
+        return Pair(send, received)
+    }
+
     private fun getTransactionRemote(
         wallet: Wallet,
         startBlock: Long = 1
@@ -489,8 +543,7 @@ class TransactionDataRepository @Inject constructor(
                 transactions
             }
             .filter {
-                it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO &&
-                    it.from == wallet.address || it.isTransactionFail
+                (it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO) || it.isTransactionFail
             }.map {
                 it.copy(
                     tokenSymbol = Token.ETH,
@@ -531,54 +584,85 @@ class TransactionDataRepository @Inject constructor(
                 val transactionList = mutableListOf<Transaction>()
                 for ((_, transactions) in it) {
                     if (transactions.size == 2) {
-                        val send = transactions.find {
-                            it.type == Transaction.TransactionType.SEND
-                        }
+                        if (transactions.first() == transactions.last()) {
 
-                        val received = transactions.find {
-                            it.type == Transaction.TransactionType.RECEIVED
-                        }
-
-                        val sourceAmount = send?.value.toBigDecimalOrDefaultZero()
-                            .divide(
-                                BigDecimal.TEN
-                                    .pow(
-                                        (send?.tokenDecimal ?: Token.ETH_DECIMAL.toString())
-                                            .toBigDecimalOrDefaultZero().toInt()
-                                    ),
-                                18,
-                                RoundingMode.HALF_EVEN
+                            transactionList.add(
+                                transactions.last().copy(
+                                    walletAddress = wallet.address,
+                                    type = Transaction.TransactionType.SEND
+                                )
                             )
+                        } else {
+                            val pair = findTransactionPair(transactions)
+                            val send = pair.first
+                            val received = pair.second
 
-                        val destAmount = received?.value.toBigDecimalOrDefaultZero()
-                            .divide(
-                                BigDecimal.TEN
-                                    .pow(
-                                        (received?.tokenDecimal ?: Token.ETH_DECIMAL.toString())
-                                            .toBigDecimalOrDefaultZero().toInt()
+                            if (send != null && received != null) {
+                                val transaction =
+                                    composedTransaction(send, received, transactions, wallet)
+                                transactionList.add(
+                                    transaction.copy(
+                                        type = if (transaction.isTransfer)
+                                            transaction.type
+                                        else Transaction.TransactionType.SWAP
                                     )
-                                , 18,
-                                RoundingMode.HALF_EVEN
+                                )
+                            } else {
+                                transactionList.add(
+                                    transactions.last().copy(
+                                        walletAddress = wallet.address
+                                    )
+                                )
+                                transactionList.add(
+                                    transactions.first().copy(
+                                        walletAddress = wallet.address
+                                    )
+                                )
+
+
+                            }
+                        }
+                    } else if (transactions.size > 2) {
+                        val pair = findTransactionPair(transactions)
+                        val send = pair.first
+                        val received = pair.second
+
+                        if (send != null && received != null) {
+
+                            val transaction =
+                                composedTransaction(send, received, transactions, wallet)
+
+                            transactionList.add(
+                                transaction.copy(
+                                    type = if (transaction.isTransfer)
+                                        transaction.type
+                                    else Transaction.TransactionType.SWAP
+                                )
                             )
-                        val tx =
-                            if (transactions.first().gasPrice.isEmpty()) transactions.last() else transactions.first()
 
-                        val transaction = tx.copy(
-                            tokenSource = send?.tokenSymbol ?: "",
-                            sourceAmount = sourceAmount.toDisplayNumber(),
-                            tokenDest = received?.tokenSymbol ?: "",
-                            destAmount = destAmount.toDisplayNumber(),
-                            walletAddress = wallet.address
-
-                        )
-
-                        transactionList.add(
-                            transaction.copy(
-                                type = if (transaction.isTransfer)
-                                    transaction.type
-                                else Transaction.TransactionType.SWAP
-                            )
-                        )
+                            val remainingTransactions = transactions.toMutableList()
+                            remainingTransactions.remove(send)
+                            remainingTransactions.remove(received)
+                            if (remainingTransactions.size > 0) {
+                                transactionList.addAll(remainingTransactions.map { tx ->
+                                    tx.copy(
+                                        walletAddress = wallet.address,
+                                        type = if (tx.isTransfer)
+                                            tx.type
+                                        else Transaction.TransactionType.SWAP
+                                    )
+                                })
+                            }
+                        } else {
+                            transactionList.addAll(transactions.map { tx ->
+                                tx.copy(
+                                    walletAddress = wallet.address,
+                                    type = if (tx.isTransfer)
+                                        tx.type
+                                    else Transaction.TransactionType.SWAP
+                                )
+                            })
+                        }
                     } else {
                         transactionList.addAll(transactions.map { tx ->
                             tx.copy(
@@ -595,7 +679,7 @@ class TransactionDataRepository @Inject constructor(
     }
 
     private fun getTransactions(
-        wallet: Wallet
+        wallet: Wallet, isForceRefesh: Boolean
     ): Flowable<TransactionsData> {
         return Flowable.mergeDelayError(
             transactionDao.getCompletedTransactions(wallet.address).map {
@@ -613,7 +697,7 @@ class TransactionDataRepository @Inject constructor(
                             transactionDao.getLatestTransaction(wallet.address)?.blockNumber?.toLongSafe()
                                 ?: 1
                         }.flatMap {
-                            getTransactionRemote(wallet, max(it - 10, 1))
+                            getTransactionRemote(wallet, if (isForceRefesh) 1 else max(it - 10, 1))
                                 .doOnNext {
                                     val latestTransaction =
                                         transactionDao.getLatestTransaction(wallet.address)
@@ -630,7 +714,14 @@ class TransactionDataRepository @Inject constructor(
                                             }
                                         }
                                     }
-                                    transactionDao.insertTransactionBatch(it)
+                                    if (isForceRefesh) {
+                                        transactionDao.forceUpdateTransactionBatch(
+                                            it,
+                                            wallet.address
+                                        )
+                                    } else {
+                                        transactionDao.insertTransactionBatch(it)
+                                    }
                                 }
                         }
 
@@ -648,7 +739,7 @@ class TransactionDataRepository @Inject constructor(
                         transactionDao.getLatestTransaction(wallet.address)?.blockNumber?.toLongSafe()
                             ?: 1
                     }.flatMap {
-                        getTransactionRemote(wallet, max(it - 10, 1))
+                        getTransactionRemote(wallet, if (isForceRefesh) 1 else max(it - 10, 1))
                             .map {
                                 TransactionsData(it, true)
                             }
@@ -668,7 +759,14 @@ class TransactionDataRepository @Inject constructor(
                                         }
                                     }
                                 }
-                                transactionDao.insertTransactionBatch(it.transactionList)
+                                if (isForceRefesh) {
+                                    transactionDao.forceUpdateTransactionBatch(
+                                        it.transactionList,
+                                        wallet.address
+                                    )
+                                } else {
+                                    transactionDao.insertTransactionBatch(it.transactionList)
+                                }
                             }
                     }
                 }

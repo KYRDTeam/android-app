@@ -19,7 +19,8 @@ class GetTransactionsUseCase @Inject constructor(
     }
 
     class Param(
-        val wallet: Wallet
+        val wallet: Wallet,
+        val isForceRefresh: Boolean = false
     )
 }
 

@@ -7,12 +7,20 @@ data class Fee(
     val success: Boolean = false,
     val fee: Double = 0.0,
     val discountPercent: Double = 0.0,
-    val nonDiscountedFee: Double = 0.0
+    val nonDiscountedFee: Double = 0.0,
+    val transferFee: Double = 0.0
 ) {
     constructor(entity: FeeEntity) : this(
         entity.success,
         entity.fee,
         entity.discountPercent,
-        entity.nonDiscountedFee
+        entity.nonDiscountedFee,
+        entity.transferFee
     )
+
+    val totalFee: Double
+        get() = fee + transferFee
+
+    val totalNonDiscountedFee: Double
+        get() = nonDiscountedFee + transferFee
 }

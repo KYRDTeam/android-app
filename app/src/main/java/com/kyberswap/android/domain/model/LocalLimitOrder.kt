@@ -44,9 +44,14 @@ data class LocalLimitOrder(
     @Embedded(prefix = "eth_")
     val ethToken: Token = Token(),
     @Embedded(prefix = "weth_")
-    val wethToken: Token = Token()
+    val wethToken: Token = Token(),
+    @TypeConverters(DataTypeConverter::class)
+    val transferFee: BigDecimal = BigDecimal.ZERO
 
 ) : Parcelable {
+    val totalFee: BigDecimal
+        get() = fee + transferFee
+
     val hasSamePair: Boolean
         get() = tokenSource.tokenSymbol == tokenDest.tokenSymbol
 
@@ -80,6 +85,7 @@ data class LocalLimitOrder(
             this.gasPrice == other.gasPrice &&
             this.minRate == other.minRate &&
             this.fee == other.fee &&
+            this.transferFee == other.transferFee &&
             this.tokenSource.currentBalance == other.tokenSource.currentBalance &&
             this.tokenDest.currentBalance == other.tokenDest.currentBalance
     }
@@ -142,7 +148,6 @@ data class LocalLimitOrder(
             .append(Token.ETH)
             .toString()
 
-
     val displayedSrcAmount: String
         get() = StringBuilder()
             .append(srcAmount)
@@ -159,7 +164,7 @@ data class LocalLimitOrder(
     val displayReceivedAmount: String
         get() = StringBuilder()
             .append(
-                (BigDecimal.ONE - fee).multiply(srcAmount.toBigDecimalOrDefaultZero()).multiply(
+                (BigDecimal.ONE - totalFee).multiply(srcAmount.toBigDecimalOrDefaultZero()).multiply(
                     minRate
                 ).toDisplayNumber()
             ).append(" ")
@@ -170,7 +175,7 @@ data class LocalLimitOrder(
             .append("(")
             .append(srcAmount)
             .append(" - ")
-            .append(fee.multiply(srcAmount.toBigDecimalOrDefaultZero()).toDisplayNumber())
+            .append(totalFee.multiply(srcAmount.toBigDecimalOrDefaultZero()).toDisplayNumber())
             .append(")")
             .append(tokenSource.symbol)
             .append(" * ")
@@ -187,7 +192,7 @@ data class LocalLimitOrder(
             .toString()
 
     val feeAmount: BigDecimal
-        get() = fee.multiply(srcAmount.toBigDecimalOrDefaultZero())
+        get() = totalFee.multiply(srcAmount.toBigDecimalOrDefaultZero())
 
     val feeAmountWithPrecision: BigInteger
         get() = fee.multiply(BigDecimal.TEN.pow(6)).toBigInteger()

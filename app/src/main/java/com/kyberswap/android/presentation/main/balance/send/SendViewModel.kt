@@ -28,7 +28,6 @@ import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
-import timber.log.Timber
 import java.math.BigInteger
 import javax.inject.Inject
 
@@ -185,9 +184,6 @@ class SendViewModel @Inject constructor(
         estimateTransferGasUseCase.execute(
             Consumer {
 
-                Timber.e(it.amountUsed.toString())
-                Timber.e(calculateDefaultGasLimitTransfer(send.tokenSource).toString())
-
                 val gasLimit = calculateDefaultGasLimitTransfer(send.tokenSource)
                     .min(it.amountUsed.multiply(120.toBigInteger()).divide(100.toBigInteger()))
 
@@ -196,7 +192,7 @@ class SendViewModel @Inject constructor(
                 _getGetGasLimitCallback.value = Event(
                     GetGasLimitState.Success(
                         if (specialGasLimit != null) {
-                            specialGasLimit.max(gasLimit)
+                            specialGasLimit.min(gasLimit)
                         } else {
                             gasLimit
                         }

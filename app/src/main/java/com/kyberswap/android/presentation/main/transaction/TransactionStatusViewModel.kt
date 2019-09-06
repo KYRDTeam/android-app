@@ -99,7 +99,7 @@ class TransactionStatusViewModel @Inject constructor(
                         _getTransactionCallback.value =
                             Event(GetTransactionState.ShowError(errorHandler.getError(it)))
                     },
-                    GetTransactionsUseCase.Param(wallet)
+                    GetTransactionsUseCase.Param(wallet, isForceRefresh)
                 )
             }
         }

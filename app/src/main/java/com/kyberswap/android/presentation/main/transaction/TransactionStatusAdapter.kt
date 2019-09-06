@@ -27,8 +27,8 @@ class TransactionStatusAdapter(
                 oldItem is TransactionItem.Header && newItem is TransactionItem.Header && oldItem.date == newItem.date -> true
                 oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemOdd && oldItem.transaction.hash == newItem.transaction.hash -> true
                 oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemEven && oldItem.transaction.hash == newItem.transaction.hash -> true
-                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemEven && oldItem.transaction.hash == newItem.transaction.hash -> true
-                oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemOdd && oldItem.transaction.hash == newItem.transaction.hash -> true
+//                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemEven && oldItem.transaction.hash == newItem.transaction.hash -> true
+//                oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemOdd && oldItem.transaction.hash == newItem.transaction.hash -> true
                 else -> false
             }
         }

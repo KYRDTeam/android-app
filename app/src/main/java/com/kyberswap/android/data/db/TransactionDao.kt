@@ -1,6 +1,11 @@
 package com.kyberswap.android.data.db
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
 import com.kyberswap.android.domain.model.Transaction
 import io.reactivex.Flowable
 
@@ -18,6 +23,12 @@ interface TransactionDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertTransactionBatch(transactions: List<Transaction>)
+
+    @androidx.room.Transaction
+    fun forceUpdateTransactionBatch(transactions: List<Transaction>, walletAddress: String) {
+        deleteTransactions(getCompletedTransactionsList(walletAddress))
+        insertTransactionBatch(transactions)
+    }
 
     @androidx.room.Transaction
     fun forceUpdateTransactions(transactions: List<Transaction>) {
@@ -51,17 +62,22 @@ interface TransactionDao {
     @get:Query("SELECT * FROM transactions")
     val all: Flowable<List<Transaction>>
 
-    @Query("SELECT * FROM transactions WHERE walletAddress = :walletAddress AND transactionStatus != :pending")
+    @Query("SELECT * FROM transactions WHERE (walletAddress = :walletAddress OR `from` = :walletAddress OR `to` = :walletAddress) AND transactionStatus != :pending")
     fun getCompletedTransactions(
         walletAddress: String,
         pending: String = Transaction.PENDING_TRANSACTION_STATUS
     ): Flowable<List<Transaction>>
+
+    @Query("SELECT * FROM transactions WHERE (walletAddress = :walletAddress OR `from` = :walletAddress OR `to` = :walletAddress) AND transactionStatus != :pending")
+    fun getCompletedTransactionsList(
+        walletAddress: String,
+        pending: String = Transaction.PENDING_TRANSACTION_STATUS
+    ): List<Transaction>
 
     @Query("SELECT * FROM transactions WHERE hash = :hash AND transactionStatus = :status")
     fun findTransaction(hash: String, status: String): Transaction?
 
     @Query("SELECT * FROM transactions WHERE walletAddress = :walletAddress AND transactionStatus = :status")
     fun getTransactionByStatus(walletAddress: String, status: String): Flowable<List<Transaction>>
-
 }
 

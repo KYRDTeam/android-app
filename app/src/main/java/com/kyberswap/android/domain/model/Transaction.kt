@@ -3,7 +3,6 @@ package com.kyberswap.android.domain.model
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.Index
-import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.kyberswap.android.data.api.transaction.TransactionEntity
 import com.kyberswap.android.data.db.TransactionTypeConverter
@@ -24,6 +23,7 @@ import java.util.TimeZone
 
 @Entity(
     tableName = "transactions",
+    primaryKeys = ["hash", "from", "to"],
     indices = [Index(value = ["hash", "transactionStatus", "walletAddress"])]
 )
 @Parcelize
@@ -37,7 +37,6 @@ data class Transaction(
     val gas: String = "",
     val gasPrice: String = "",
     val gasUsed: String = "",
-    @PrimaryKey
     val hash: String = "",
     val input: String = "",
     val isError: String = "",
@@ -71,7 +70,7 @@ data class Transaction(
         entity.gas,
         entity.gasPrice,
         entity.gasUsed,
-        entity.hash.toLowerCase(),
+        entity.hash.toLowerCase(Locale.getDefault()),
         entity.input,
         entity.isError,
         entity.nonce,
@@ -98,7 +97,7 @@ data class Transaction(
         entity.gas,
         entity.gasPrice,
         entity.gasUsed,
-        entity.hash.toLowerCase(),
+        entity.hash.toLowerCase(Locale.getDefault()),
         entity.input,
         entity.isError,
         entity.nonce,
@@ -130,7 +129,7 @@ data class Transaction(
         tx.nonce.safeToString(),
         0,
         tx.to,
-        tx.transactionIndex.toString(),
+        if (tx.transactionIndexRaw.isNullOrEmpty()) "" else tx.transactionIndex.safeToString(),
         "",
         tx.value.toString(),
         transactionStatus = PENDING_TRANSACTION_STATUS
@@ -142,13 +141,14 @@ data class Transaction(
             blockHash = tx.blockHash ?: "",
             blockNumber = if (tx.blockNumberRaw.isNullOrEmpty()) "" else tx.blockNumber.safeToString(),
             from = tx.from ?: "",
+            to = tx.to ?: "",
             gasUsed = tx.gas.safeToString(),
             gasPrice = tx.gasPrice.safeToString(),
             hash = tx.hash ?: "",
             input = tx.input ?: "",
             isError = "0",
             nonce = tx.nonce.safeToString(),
-            transactionIndex = tx.transactionIndex.toString(),
+            transactionIndex = if (tx.transactionIndexRaw.isNullOrEmpty()) "" else tx.transactionIndex.safeToString(),
             value = tx.value.toString()
 
         )
@@ -156,7 +156,7 @@ data class Transaction(
 
     constructor(tx: TransactionReceipt) : this(
         tx.blockHash ?: "",
-        tx.blockNumber.toString(),
+        if (tx.blockNumberRaw.isNullOrEmpty()) "" else tx.blockNumber.safeToString(),
         "",
         tx.contractAddress ?: "",
         tx.cumulativeGasUsed.toString(),
@@ -170,21 +170,22 @@ data class Transaction(
         "",
         System.currentTimeMillis() / 1000,
         tx.to ?: "",
-        tx.transactionIndex.toString(),
+        if (tx.transactionIndexRaw.isNullOrEmpty()) "" else tx.transactionIndex.safeToString(),
         tx.status ?: ""
     )
 
     fun with(tx: TransactionReceipt): Transaction {
         return this.copy(
             blockHash = tx.blockHash ?: "",
-            blockNumber = tx.blockNumber.toString(),
+            blockNumber = if (tx.blockNumberRaw.isNullOrEmpty()) "" else tx.blockNumber.safeToString(),
             contractAddress = tx.contractAddress ?: "",
             cumulativeGasUsed = tx.cumulativeGasUsed.toString(),
             from = tx.from ?: "",
+            to = tx.to ?: "",
             gasUsed = tx.gasUsed.toString(),
             hash = tx.transactionHash ?: "",
             isError = if (tx.isStatusOK) "0" else "1",
-            transactionIndex = tx.transactionIndex.toString(),
+            transactionIndex = if (tx.transactionIndexRaw.isNullOrEmpty()) "" else tx.transactionIndex.safeToString(),
             txreceiptStatus = tx.status ?: ""
         )
     }
@@ -289,12 +290,10 @@ data class Transaction(
                 false,
                 TimeZone.SHORT
             )
-
         }
 
     val displayTransactionType: String
         get() = type.value
-
 
     val isTransfer: Boolean
         get() = tokenSource.isEmpty() && tokenDest.isEmpty()
@@ -313,7 +312,6 @@ data class Transaction(
                     .append(" ")
                     .append(tokenDest)
                     .toString()
-
 
     val rate: String
         get() = if (sourceAmount.toDouble() == 0.0) "0" else

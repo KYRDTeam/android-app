@@ -7,6 +7,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
 import kotlinx.android.parcel.Parcelize
 import org.web3j.utils.Convert
 import java.math.BigDecimal
@@ -33,7 +34,7 @@ data class Send(
 ) : Parcelable {
 
     val estimateSource: String
-        get() = if (sourceAmount.isEmpty()) "0.001" else sourceAmount
+        get() = if (sourceAmount.toDoubleOrDefaultZero() > 0.0) sourceAmount else "0.001"
 
     fun isSameTokenPair(other: Send?): Boolean {
         return this.walletAddress == other?.walletAddress &&
