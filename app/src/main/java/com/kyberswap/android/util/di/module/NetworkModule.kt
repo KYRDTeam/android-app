@@ -33,6 +33,8 @@ class NetworkModule {
     fun provideOkHttpClient(storageMediator: StorageMediator): OkHttpClient {
         val client = OkHttpClient().newBuilder()
             .connectTimeout(2, TimeUnit.MINUTES)
+            .readTimeout(1, TimeUnit.MINUTES)
+            .writeTimeout(1, TimeUnit.MINUTES)
         client.addInterceptor {
             val original = it.request()
             val builder = original.newBuilder()
