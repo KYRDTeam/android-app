@@ -25,8 +25,8 @@ interface TransactionDao {
     fun insertTransactionBatch(transactions: List<Transaction>)
 
     @androidx.room.Transaction
-    fun forceUpdateTransactionBatch(transactions: List<Transaction>) {
-        deleteAllTransactions()
+    fun forceUpdateTransactionBatch(transactions: List<Transaction>, walletAddress: String) {
+        deleteTransactions(getCompletedTransactionsList(walletAddress))
         insertTransactionBatch(transactions)
     }
 
@@ -67,6 +67,12 @@ interface TransactionDao {
         walletAddress: String,
         pending: String = Transaction.PENDING_TRANSACTION_STATUS
     ): Flowable<List<Transaction>>
+
+    @Query("SELECT * FROM transactions WHERE (walletAddress = :walletAddress OR `from` = :walletAddress OR `to` = :walletAddress) AND transactionStatus != :pending")
+    fun getCompletedTransactionsList(
+        walletAddress: String,
+        pending: String = Transaction.PENDING_TRANSACTION_STATUS
+    ): List<Transaction>
 
     @Query("SELECT * FROM transactions WHERE hash = :hash AND transactionStatus = :status")
     fun findTransaction(hash: String, status: String): Transaction?

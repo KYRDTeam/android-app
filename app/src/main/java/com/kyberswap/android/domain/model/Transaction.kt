@@ -70,7 +70,7 @@ data class Transaction(
         entity.gas,
         entity.gasPrice,
         entity.gasUsed,
-        entity.hash.toLowerCase(),
+        entity.hash.toLowerCase(Locale.getDefault()),
         entity.input,
         entity.isError,
         entity.nonce,
@@ -97,7 +97,7 @@ data class Transaction(
         entity.gas,
         entity.gasPrice,
         entity.gasUsed,
-        entity.hash.toLowerCase(),
+        entity.hash.toLowerCase(Locale.getDefault()),
         entity.input,
         entity.isError,
         entity.nonce,
@@ -129,7 +129,7 @@ data class Transaction(
         tx.nonce.safeToString(),
         0,
         tx.to,
-        tx.transactionIndex.toString(),
+        if (tx.transactionIndexRaw.isNullOrEmpty()) "" else tx.transactionIndex.safeToString(),
         "",
         tx.value.toString(),
         transactionStatus = PENDING_TRANSACTION_STATUS
@@ -147,7 +147,7 @@ data class Transaction(
             input = tx.input ?: "",
             isError = "0",
             nonce = tx.nonce.safeToString(),
-            transactionIndex = tx.transactionIndex.toString(),
+            transactionIndex = if (tx.transactionIndexRaw.isNullOrEmpty()) "" else tx.transactionIndex.safeToString(),
             value = tx.value.toString()
 
         )
@@ -155,7 +155,7 @@ data class Transaction(
 
     constructor(tx: TransactionReceipt) : this(
         tx.blockHash ?: "",
-        tx.blockNumber.toString(),
+        if (tx.blockNumberRaw.isNullOrEmpty()) "" else tx.blockNumber.safeToString(),
         "",
         tx.contractAddress ?: "",
         tx.cumulativeGasUsed.toString(),
@@ -169,21 +169,21 @@ data class Transaction(
         "",
         System.currentTimeMillis() / 1000,
         tx.to ?: "",
-        tx.transactionIndex.toString(),
+        if (tx.transactionIndexRaw.isNullOrEmpty()) "" else tx.transactionIndex.safeToString(),
         tx.status ?: ""
     )
 
     fun with(tx: TransactionReceipt): Transaction {
         return this.copy(
             blockHash = tx.blockHash ?: "",
-            blockNumber = tx.blockNumber.toString(),
+            blockNumber = if (tx.blockNumberRaw.isNullOrEmpty()) "" else tx.blockNumber.safeToString(),
             contractAddress = tx.contractAddress ?: "",
             cumulativeGasUsed = tx.cumulativeGasUsed.toString(),
             from = tx.from ?: "",
             gasUsed = tx.gasUsed.toString(),
             hash = tx.transactionHash ?: "",
             isError = if (tx.isStatusOK) "0" else "1",
-            transactionIndex = tx.transactionIndex.toString(),
+            transactionIndex = if (tx.transactionIndexRaw.isNullOrEmpty()) "" else tx.transactionIndex.safeToString(),
             txreceiptStatus = tx.status ?: ""
         )
     }

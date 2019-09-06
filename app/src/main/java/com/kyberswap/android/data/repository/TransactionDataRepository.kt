@@ -714,7 +714,10 @@ class TransactionDataRepository @Inject constructor(
                                         }
                                     }
                                     if (isForceRefesh) {
-                                        transactionDao.forceUpdateTransactionBatch(it)
+                                        transactionDao.forceUpdateTransactionBatch(
+                                            it,
+                                            wallet.address
+                                        )
                                     } else {
                                         transactionDao.insertTransactionBatch(it)
                                     }
@@ -756,7 +759,10 @@ class TransactionDataRepository @Inject constructor(
                                     }
                                 }
                                 if (isForceRefesh) {
-                                    transactionDao.forceUpdateTransactionBatch(it.transactionList)
+                                    transactionDao.forceUpdateTransactionBatch(
+                                        it.transactionList,
+                                        wallet.address
+                                    )
                                 } else {
                                     transactionDao.insertTransactionBatch(it.transactionList)
                                 }
