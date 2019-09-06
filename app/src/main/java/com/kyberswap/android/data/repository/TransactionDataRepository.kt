@@ -609,16 +609,17 @@ class TransactionDataRepository @Inject constructor(
                                 )
                             } else {
                                 transactionList.add(
+                                    transactions.last().copy(
+                                        walletAddress = wallet.address
+                                    )
+                                )
+                                transactionList.add(
                                     transactions.first().copy(
                                         walletAddress = wallet.address
                                     )
                                 )
 
-                                transactionList.add(
-                                    transactions.last().copy(
-                                        walletAddress = wallet.address
-                                    )
-                                )
+
                             }
                         }
                     } else if (transactions.size > 2) {

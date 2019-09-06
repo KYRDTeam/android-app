@@ -141,6 +141,7 @@ data class Transaction(
             blockHash = tx.blockHash ?: "",
             blockNumber = if (tx.blockNumberRaw.isNullOrEmpty()) "" else tx.blockNumber.safeToString(),
             from = tx.from ?: "",
+            to = tx.to ?: "",
             gasUsed = tx.gas.safeToString(),
             gasPrice = tx.gasPrice.safeToString(),
             hash = tx.hash ?: "",
@@ -180,6 +181,7 @@ data class Transaction(
             contractAddress = tx.contractAddress ?: "",
             cumulativeGasUsed = tx.cumulativeGasUsed.toString(),
             from = tx.from ?: "",
+            to = tx.to ?: "",
             gasUsed = tx.gasUsed.toString(),
             hash = tx.transactionHash ?: "",
             isError = if (tx.isStatusOK) "0" else "1",
@@ -288,12 +290,10 @@ data class Transaction(
                 false,
                 TimeZone.SHORT
             )
-
         }
 
     val displayTransactionType: String
         get() = type.value
-
 
     val isTransfer: Boolean
         get() = tokenSource.isEmpty() && tokenDest.isEmpty()
@@ -312,7 +312,6 @@ data class Transaction(
                     .append(" ")
                     .append(tokenDest)
                     .toString()
-
 
     val rate: String
         get() = if (sourceAmount.toDouble() == 0.0) "0" else
