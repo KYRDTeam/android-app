@@ -137,7 +137,6 @@ class MainViewModel @Inject constructor(
                     monitorPendingTransactionsUseCase.dispose()
                     monitorPendingTransactionsUseCase.execute(
                         Consumer { tx ->
-
                             _getPendingTransactionStateCallback.value = Event(
                                 GetPendingTransactionState.Success(tx)
                             )

@@ -94,4 +94,5 @@ fun calculateDefaultGasLimitTransfer(token: Token): BigInteger {
 }
 
 const val APPROVE_LIMIT_ORDER_GAS_LIMIT_DEFAULT = 380_000
+const val ADITIONAL_SWAP_GAS_LIMIT = 100_000
 

@@ -827,32 +827,32 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
                         binding.hasDiscount =
                             state.fee.discountPercent > 0 && srcAmount.toBigDecimalOrDefaultZero().times(
-                                state.fee.fee.toBigDecimal()
+                                state.fee.totalFee.toBigDecimal()
                             ) > BigDecimal.ZERO
 
 
                         binding.tvFee.text = String.format(
                             getString(R.string.limit_order_fee),
-                            srcAmount.toBigDecimalOrDefaultZero().times(state.fee.fee.toBigDecimal()).toDisplayNumber().exactAmount(),
+                            srcAmount.toBigDecimalOrDefaultZero().times(state.fee.totalFee.toBigDecimal()).toDisplayNumber().exactAmount(),
                             tokenSourceSymbol
                         )
 
                         binding.tvFeeNoDiscount.text = String.format(
                             getString(R.string.limit_order_fee_no_discount),
-                            srcAmount.toBigDecimalOrDefaultZero().times(state.fee.fee.toBigDecimal()).toDisplayNumber().exactAmount(),
+                            srcAmount.toBigDecimalOrDefaultZero().times(state.fee.totalFee.toBigDecimal()).toDisplayNumber().exactAmount(),
                             tokenSourceSymbol
                         )
 
                         binding.tvOriginalFee.text = String.format(
                             getString(R.string.limit_order_fee),
-                            srcAmount.toBigDecimalOrDefaultZero().times(state.fee.nonDiscountedFee.toBigDecimal()).toDisplayNumber().exactAmount(),
+                            srcAmount.toBigDecimalOrDefaultZero().times(state.fee.totalNonDiscountedFee.toBigDecimal()).toDisplayNumber().exactAmount(),
                             tokenSourceSymbol
                         )
 
                         binding.tvOff.text = String.format(
                             getString(R.string.discount_fee), state.fee.discountPercent
                         )
-                        val order = binding.order?.copy(fee = state.fee.fee.toBigDecimal())
+                        val order = binding.order?.copy(fee = state.fee.fee.toBigDecimal(), transferFee = state.fee.transferFee.toBigDecimal())
                         if (order != binding.order) {
                             binding.order = order
                             binding.executePendingBindings()
