@@ -545,7 +545,7 @@
                     android:background="@drawable/border_button"
                     android:gravity="center"
                     android:minHeight="45dp"
-                    android:text="@string/upload_document"
+                    android:text="@string/browse"
                     android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#141927"
                     android:textSize="14sp" />

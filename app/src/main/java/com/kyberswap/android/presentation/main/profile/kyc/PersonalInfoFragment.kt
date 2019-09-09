@@ -107,7 +107,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
         val rxPermissions = RxPermissions(this)
 
         easyImage = EasyImage.Builder(this.context!!)
-            .setChooserTitle(getString(R.string.upload_document))
+            .setChooserTitle(getString(R.string.browse))
             .setCopyImagesToPublicGalleryFolder(true)
             .setChooserType(ChooserType.CAMERA_AND_GALLERY)
             .setFolderName("kyc")
