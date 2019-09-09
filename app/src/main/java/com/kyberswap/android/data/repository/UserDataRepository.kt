@@ -76,7 +76,7 @@ class UserDataRepository @Inject constructor(
                     alertDao.updateAlerts(it)
                 }.toFlowable()
         ).map {
-            it.sortedByDescending { it.id }
+            it.sortedByDescending { it.time }
         }
     }
 

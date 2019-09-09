@@ -25,10 +25,19 @@ class TransactionStatusAdapter(
         override fun areItemsTheSame(oldItem: TransactionItem, newItem: TransactionItem): Boolean {
             return when {
                 oldItem is TransactionItem.Header && newItem is TransactionItem.Header && oldItem.date == newItem.date -> true
-                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemOdd && oldItem.transaction.hash == newItem.transaction.hash -> true
-                oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemEven && oldItem.transaction.hash == newItem.transaction.hash -> true
-//                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemEven && oldItem.transaction.hash == newItem.transaction.hash -> true
-//                oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemOdd && oldItem.transaction.hash == newItem.transaction.hash -> true
+                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemOdd && oldItem.transaction.sameKey(
+                    newItem.transaction
+                ) -> true
+                oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemEven && oldItem.transaction.sameKey(
+                    newItem.transaction
+                ) -> true
+//                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemEven && oldItem.transaction.sameKey(
+//                    newItem.transaction
+//                ) -> true
+//                oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemOdd && oldItem.transaction.sameKey(
+//                    newItem.transaction
+//                ) -> true
+
                 else -> false
             }
         }
@@ -44,12 +53,12 @@ class TransactionStatusAdapter(
                 oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemEven && oldItem.transaction.sameDisplay(
                     newItem.transaction
                 ) -> true
-                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemEven && oldItem.transaction.sameDisplay(
-                    newItem.transaction
-                ) -> true
-                oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemOdd && oldItem.transaction.sameDisplay(
-                    newItem.transaction
-                ) -> true
+//                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemEven && oldItem.transaction.sameDisplay(
+//                    newItem.transaction
+//                ) -> true
+//                oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemOdd && oldItem.transaction.sameDisplay(
+//                    newItem.transaction
+//                ) -> true
                 else -> false
             }
         }

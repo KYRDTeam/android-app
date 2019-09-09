@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import com.google.gson.Gson
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.TransactionApi
 import com.kyberswap.android.data.db.LocalLimitOrderDao
@@ -42,6 +43,7 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Flowables
 import io.reactivex.rxkotlin.Singles
 import org.web3j.utils.Numeric
+import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.Date
@@ -71,11 +73,7 @@ class TransactionDataRepository @Inject constructor(
                     transactionDao.findTransaction(tx.hash, Transaction.PENDING_TRANSACTION_STATUS)
                 transaction?.let {
                     if (tx.blockNumber.toLongSafe() > 0) {
-
                         transactionDao.delete(it)
-                        val updatedStatus = tx.copy(transactionStatus = "")
-                        transactionDao.insertTransaction(updatedStatus)
-//                        sendNotification(updatedStatus)
                         updateBalance(it, param.wallet)
                     }
                 }
@@ -343,6 +341,7 @@ class TransactionDataRepository @Inject constructor(
                         }
                     }
                 }
+                Timber.e(Gson().toJson(it))
                 transactionDao.insertTransactionBatch(it)
 
             }
@@ -543,7 +542,7 @@ class TransactionDataRepository @Inject constructor(
                 transactions
             }
             .filter {
-                (it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO) || it.isTransactionFail
+                it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO || it.isTransactionFail
             }.map {
                 it.copy(
                     tokenSymbol = Token.ETH,
@@ -563,6 +562,7 @@ class TransactionDataRepository @Inject constructor(
                     tokenDecimal = Token.ETH_DECIMAL.toString()
                 )
             }.toList()
+
 
         val erc20Transaction = fetchERC20TokenTransactions(wallet, startBlock)
 
@@ -609,17 +609,17 @@ class TransactionDataRepository @Inject constructor(
                                 )
                             } else {
                                 transactionList.add(
+
                                     transactions.last().copy(
                                         walletAddress = wallet.address
                                     )
                                 )
+
                                 transactionList.add(
                                     transactions.first().copy(
                                         walletAddress = wallet.address
                                     )
                                 )
-
-
                             }
                         }
                     } else if (transactions.size > 2) {
@@ -715,6 +715,7 @@ class TransactionDataRepository @Inject constructor(
                                         }
                                     }
                                     if (isForceRefesh) {
+
                                         transactionDao.forceUpdateTransactionBatch(
                                             it,
                                             wallet.address

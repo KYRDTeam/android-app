@@ -61,55 +61,55 @@ data class Transaction(
 
 ) : Parcelable {
     constructor(entity: TransactionEntity, transactionType: TransactionType, txType: String) : this(
-        entity.blockHash,
-        entity.blockNumber,
-        entity.confirmations,
-        entity.contractAddress,
-        entity.cumulativeGasUsed,
-        entity.from,
-        entity.gas,
-        entity.gasPrice,
-        entity.gasUsed,
-        entity.hash.toLowerCase(Locale.getDefault()),
-        entity.input,
-        entity.isError,
-        entity.nonce,
-        entity.timeStamp.toLongSafe(),
-        entity.to,
-        entity.transactionIndex,
-        entity.txreceiptStatus,
-        entity.value,
-        entity.tokenName,
-        entity.tokenSymbol,
-        entity.tokenDecimal,
+        entity.blockHash ?: "",
+        entity.blockNumber ?: "",
+        entity.confirmations ?: "",
+        entity.contractAddress ?: "",
+        entity.cumulativeGasUsed ?: "",
+        entity.from ?: "",
+        entity.gas ?: "",
+        entity.gasPrice ?: "",
+        entity.gasUsed ?: "",
+        entity.hash?.toLowerCase(Locale.getDefault()) ?: "",
+        entity.input ?: "",
+        entity.isError ?: "",
+        entity.nonce ?: "",
+        entity.timeStamp?.toLongSafe() ?: 0,
+        entity.to ?: "",
+        entity.transactionIndex ?: "",
+        entity.txreceiptStatus ?: "",
+        entity.value ?: "",
+        entity.tokenName ?: "",
+        entity.tokenSymbol ?: "",
+        entity.tokenDecimal ?: "",
         transactionType,
         txType
     )
 
 
     constructor(entity: TransactionEntity, address: String, txType: String) : this(
-        entity.blockHash,
-        entity.blockNumber,
-        entity.confirmations,
-        entity.contractAddress,
-        entity.cumulativeGasUsed,
-        entity.from,
-        entity.gas,
-        entity.gasPrice,
-        entity.gasUsed,
-        entity.hash.toLowerCase(Locale.getDefault()),
-        entity.input,
-        entity.isError,
-        entity.nonce,
-        entity.timeStamp.toLongSafe(),
-        entity.to,
-        entity.transactionIndex,
-        entity.txreceiptStatus,
-        entity.value,
-        entity.tokenName,
-        entity.tokenSymbol,
-        entity.tokenDecimal,
-        if (entity.from == address) TransactionType.SEND else TransactionType.RECEIVED,
+        entity.blockHash ?: "",
+        entity.blockNumber ?: "",
+        entity.confirmations ?: "",
+        entity.contractAddress ?: "",
+        entity.cumulativeGasUsed ?: "",
+        entity.from ?: "",
+        entity.gas ?: "",
+        entity.gasPrice ?: "",
+        entity.gasUsed ?: "",
+        entity.hash?.toLowerCase(Locale.getDefault()) ?: "",
+        entity.input ?: "",
+        entity.isError ?: "",
+        entity.nonce ?: "",
+        entity.timeStamp?.toLongSafe() ?: 0,
+        entity.to ?: "",
+        entity.transactionIndex ?: "",
+        entity.txreceiptStatus ?: "",
+        entity.value ?: "",
+        entity.tokenName ?: "",
+        entity.tokenSymbol ?: "",
+        entity.tokenDecimal ?: "",
+        if (entity.from?.toLowerCase(Locale.getDefault()) == address.toLowerCase(Locale.getDefault())) TransactionType.SEND else TransactionType.RECEIVED,
         txType
     )
 
@@ -126,7 +126,7 @@ data class Transaction(
         tx.hash,
         tx.input,
         "0",
-        tx.nonce.safeToString(),
+        tx.nonce.safeToString(), +
         0,
         tx.to,
         if (tx.transactionIndexRaw.isNullOrEmpty()) "" else tx.transactionIndex.safeToString(),
@@ -270,6 +270,12 @@ data class Transaction(
             this.displayTransactionType == other.displayTransactionType &&
             this.isTransactionFail == other.isTransactionFail &&
             this.timeStamp == other.timeStamp
+    }
+
+    fun sameKey(other: Transaction): Boolean {
+        return this.hash == other.hash &&
+            this.from == other.from &&
+            this.to == other.to
     }
 
 

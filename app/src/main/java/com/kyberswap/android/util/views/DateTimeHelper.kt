@@ -1,7 +1,9 @@
 package com.kyberswap.android.util.views
 
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 object DateTimeHelper {
 
@@ -9,11 +11,11 @@ object DateTimeHelper {
         date: String?,
         displayFormat: SimpleDateFormat = SimpleDateFormat(
             "HH:mm dd/MM/yyyy",
-            Locale.UK
+            Locale.US
         ),
         fullFormat: SimpleDateFormat = SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-            Locale.UK
+            Locale.US
         ).apply {
             this.timeZone = TimeZone.getTimeZone("UTC")
         }
@@ -25,6 +27,17 @@ object DateTimeHelper {
             ex.printStackTrace()
             date
         }
+    }
+
+    fun toLong(date: String): Long {
+        val fullFormat: SimpleDateFormat = SimpleDateFormat(
+            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+            Locale.US
+        ).apply {
+            this.timeZone = TimeZone.getTimeZone("UTC")
+        }
+
+        return fullFormat.parse(date).time
     }
 
     fun transactionDate(

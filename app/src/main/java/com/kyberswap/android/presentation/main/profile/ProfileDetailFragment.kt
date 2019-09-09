@@ -170,7 +170,7 @@ class ProfileDetailFragment : BaseFragment() {
                         binding.isEmpty = state.alerts.isEmpty()
                         this.alerts.clear()
                         this.alerts.addAll(state.alerts)
-                        alertAdapter.submitAlerts(state.alerts.take(2))
+                        alertAdapter.submitAlerts(state.alerts.take(2).sortedByDescending { it.status })
                     }
                     is GetAlertsState.ShowError -> {
                         if (isNetworkAvailable()) {
