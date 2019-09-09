@@ -71,11 +71,11 @@ No tracking, no ads or privacy concerns. That’s our promise.
 ## Folder structure  
 ```  
 ├── data… Data layer 
-│   ├── api… Contain all responsed entities from APIs 
-│   ├── mapper… Convert a responsed entity to business model 
-│   └── repository… The implementation of repositoried interfaces from Domain Layer 
+│   ├── api… Contain entities from APIs 
+│   ├── mapper… Convert an entity to business model 
+│   └── repository… The implementation of repository interfaces from Domain Layer 
 ├── domain… Business logic layer 
-│   ├── model… Cotain all business models 
+│   ├── model… Contain business models 
 │   ├── repository… Interface to communicate with Data Layer 
 │   └── usecase… Implement business logic 
 ├── presentation… Presentation layer, UI and UI logic 

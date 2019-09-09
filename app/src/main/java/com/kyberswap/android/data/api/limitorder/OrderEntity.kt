@@ -78,48 +78,84 @@ fun JsonArray.toOrderEntity(jsonArray: JsonArray): OrderEntity {
     }
 
     val userAddr =
-        if (get(keys.indexOf("addr")).isJsonNull) "" else get(keys.indexOf("addr"))?.asString ?: ""
+        if (keys.indexOf("addr") < 0 || get(keys.indexOf("addr")).isJsonNull) "" else get(
+            keys.indexOf(
+                "addr"
+            )
+        )?.asString ?: ""
     val src =
-        if (get(keys.indexOf("src")).isJsonNull) "" else get(keys.indexOf("src"))?.asString ?: ""
+        if (keys.indexOf("src") < 0 || get(keys.indexOf("src")).isJsonNull) "" else get(
+            keys.indexOf(
+                "src"
+            )
+        )?.asString ?: ""
     val dst =
-        if (get(keys.indexOf("dst")).isJsonNull) "" else get(keys.indexOf("dst"))?.asString ?: ""
-    val srcAmount =
+        if (keys.indexOf("dst") < 0 || get(keys.indexOf("dst")).isJsonNull) "" else get(
+            keys.indexOf(
+                "dst"
+            )
+        )?.asString ?: ""
+    val srcAmount = if (keys.indexOf("src_amount") < 0) BigDecimal.ZERO else
         get(keys.indexOf("src_amount"))?.asBigDecimal ?: BigDecimal.ZERO
     val minRate =
-        if (get(keys.indexOf("min_rate")).isJsonNull) BigDecimal.ZERO else get(keys.indexOf("min_rate"))?.asBigDecimal
+        if (keys.indexOf("min_rate") < 0 || get(keys.indexOf("min_rate")).isJsonNull) BigDecimal.ZERO else get(
+            keys.indexOf("min_rate")
+        )?.asBigDecimal
             ?: BigDecimal.ZERO
     val nonce =
-        if (get(keys.indexOf("nonce")).isJsonNull) "" else get(keys.indexOf("nonce"))?.asString
+        if (keys.indexOf("nonce") < 0 || get(keys.indexOf("nonce")).isJsonNull) "" else get(
+            keys.indexOf(
+                "nonce"
+            )
+        )?.asString
             ?: ""
     val fee =
-        if (get(keys.indexOf("fee")).isJsonNull) BigDecimal.ZERO else get(keys.indexOf("fee"))?.asBigDecimal
+        if (keys.indexOf("fee") < 0 || get(keys.indexOf("fee")).isJsonNull) BigDecimal.ZERO else get(
+            keys.indexOf("fee")
+        )?.asBigDecimal
             ?: BigDecimal.ZERO
 
     val transferFee =
-        if (get(keys.indexOf("transfer_fee")).isJsonNull) BigDecimal.ZERO else get(keys.indexOf("transfer_fee"))?.asBigDecimal
+        if (keys.indexOf("transfer_fee") < 0 || get(keys.indexOf("transfer_fee")).isJsonNull) BigDecimal.ZERO else get(
+            keys.indexOf("transfer_fee")
+        )?.asBigDecimal
             ?: BigDecimal.ZERO
 
     val receive =
-        if (get(keys.indexOf("receive")).isJsonNull) BigDecimal.ZERO else get(keys.indexOf("receive"))?.asBigDecimal
+        if (keys.indexOf("receive") < 0 || get(keys.indexOf("receive")).isJsonNull) BigDecimal.ZERO else get(
+            keys.indexOf("receive")
+        )?.asBigDecimal
             ?: BigDecimal.ZERO
     val status =
-        if (get(keys.indexOf("status")).isJsonNull) "" else get(keys.indexOf("status"))?.asString
+        if (keys.indexOf("status") < 0 || get(keys.indexOf("status")).isJsonNull) "" else get(
+            keys.indexOf(
+                "status"
+            )
+        )?.asString
             ?: ""
 
     val msg =
-        if (get(keys.indexOf("msg")).isJsonNull) "" else get(keys.indexOf("msg"))?.asString
+        if (keys.indexOf("msg") < 0 || get(keys.indexOf("msg")).isJsonNull) "" else get(
+            keys.indexOf(
+                "msg"
+            )
+        )?.asString
             ?: ""
 
-    val txHash = if (get(keys.indexOf("tx_hash")).isJsonNull) {
+    val txHash = if (keys.indexOf("tx_hash") < 0 || get(keys.indexOf("tx_hash")).isJsonNull) {
         ""
     } else {
         get(keys.indexOf("tx_hash"))?.asString ?: ""
     }
     val createdAt =
-        if (get(keys.indexOf("created_at")).isJsonNull) 0 else get(keys.indexOf("created_at"))?.asLong
+        if (keys.indexOf("created_at") < 0 || get(keys.indexOf("created_at")).isJsonNull) 0 else get(
+            keys.indexOf("created_at")
+        )?.asLong
             ?: 0
     val updatedAt =
-        if (get(keys.indexOf("updated_at")).isJsonNull) 0 else get(keys.indexOf("updated_at"))?.asLong
+        if (keys.indexOf("updated_at") < 0 || get(keys.indexOf("updated_at")).isJsonNull) 0 else get(
+            keys.indexOf("updated_at")
+        )?.asLong
             ?: 0
 
     return OrderEntity(
