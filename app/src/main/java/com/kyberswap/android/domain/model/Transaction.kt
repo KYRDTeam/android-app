@@ -6,20 +6,14 @@ import androidx.room.Index
 import androidx.room.TypeConverters
 import com.kyberswap.android.data.api.transaction.TransactionEntity
 import com.kyberswap.android.data.db.TransactionTypeConverter
-import com.kyberswap.android.util.ext.displayWalletAddress
-import com.kyberswap.android.util.ext.safeToString
-import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
-import com.kyberswap.android.util.ext.toDisplayNumber
-import com.kyberswap.android.util.ext.toLongSafe
+import com.kyberswap.android.util.ext.*
 import kotlinx.android.parcel.Parcelize
 import org.web3j.protocol.core.methods.response.TransactionReceipt
 import org.web3j.utils.Convert
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
+import java.util.*
 
 @Entity(
     tableName = "transactions",
@@ -109,7 +103,7 @@ data class Transaction(
         entity.tokenName,
         entity.tokenSymbol,
         entity.tokenDecimal,
-        if (entity.from == address) TransactionType.SEND else TransactionType.RECEIVED,
+        if (entity.from.toLowerCase(Locale.getDefault()) == address.toLowerCase(Locale.getDefault())) TransactionType.SEND else TransactionType.RECEIVED,
         txType
     )
 

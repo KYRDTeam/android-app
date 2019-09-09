@@ -13,24 +13,14 @@ import androidx.core.content.ContextCompat
 import com.google.gson.Gson
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.TransactionApi
-import com.kyberswap.android.data.db.LocalLimitOrderDao
-import com.kyberswap.android.data.db.SendDao
-import com.kyberswap.android.data.db.SwapDao
-import com.kyberswap.android.data.db.TokenDao
-import com.kyberswap.android.data.db.TransactionDao
-import com.kyberswap.android.data.db.TransactionFilterDao
+import com.kyberswap.android.data.db.*
 import com.kyberswap.android.data.mapper.TransactionMapper
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.TransactionFilter
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.TransactionRepository
-import com.kyberswap.android.domain.usecase.transaction.GetTransactionFilterUseCase
-import com.kyberswap.android.domain.usecase.transaction.GetTransactionsPeriodicallyUseCase
-import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
-import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
-import com.kyberswap.android.domain.usecase.transaction.SaveTransactionFilterUseCase
-import com.kyberswap.android.domain.usecase.transaction.TransactionsData
+import com.kyberswap.android.domain.usecase.transaction.*
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
@@ -46,8 +36,7 @@ import org.web3j.utils.Numeric
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.Date
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.max
@@ -74,13 +63,7 @@ class TransactionDataRepository @Inject constructor(
                     transactionDao.findTransaction(tx.hash, Transaction.PENDING_TRANSACTION_STATUS)
                 transaction?.let {
                     if (tx.blockNumber.toLongSafe() > 0) {
-
                         transactionDao.delete(it)
-                        val updatedStatus = tx.copy(transactionStatus = "")
-                        if (!(updatedStatus.tokenSymbol == Token.DGX || updatedStatus.tokenSource == Token.DGX)) {
-                            transactionDao.insertTransaction(updatedStatus)
-                        }
-//                        sendNotification(updatedStatus)
                         updateBalance(it, param.wallet)
                     }
                 }
@@ -549,7 +532,7 @@ class TransactionDataRepository @Inject constructor(
                 transactions
             }
             .filter {
-                (it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO) || it.isTransactionFail
+                it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO || it.isTransactionFail
             }.map {
                 it.copy(
                     tokenSymbol = Token.ETH,
@@ -569,6 +552,7 @@ class TransactionDataRepository @Inject constructor(
                     tokenDecimal = Token.ETH_DECIMAL.toString()
                 )
             }.toList()
+
 
         val erc20Transaction = fetchERC20TokenTransactions(wallet, startBlock)
 
