@@ -41,8 +41,8 @@
     <string name="kyberswap">KyberSwap</string>
     <string name="backup_message">We will give you a list of 12 random words. Please write down on paper and keep safe. This paper is the only way to restore your Kyber Wallet if you lose your phone or forget your password.</string>
     <string name="bold_font_path" translatable="false">fonts/Montserrat-Bold.ttf</string>
-    <string name="semi_bold_font_path">fonts/Montserrat-Bold.ttf</string>
-    <string name="semi_bold_italic_font_path">fonts/Montserrat-SemiBoldItalic.ttf</string>
+    <string name="semi_bold_font_path" translatable="false">fonts/Montserrat-Bold.ttf</string>
+    <string name="semi_bold_italic_font_path" translatable="false">fonts/Montserrat-SemiBoldItalic.ttf</string>
     <string name="verify_word_description">To make sure you have written down all of your backup words. Please enter the following:</string>
     <string name="backup_json">JSON</string>
     <string name="backup_private_key">Private Key</string>
@@ -205,7 +205,7 @@
     <string name="token_eth_star_name">ETH* represents the sum of ETH &amp; WETH for easy reference.</string>
     <string name="token_amount_available">%s Available</string>
     <string name="limit_order_current_rate">1 %s = %s</string>
-    <string name="rate_percent">%s%%</string>
+    <string name="rate_percent" translatable="false">%s%%</string>
     <string name="limit_order_rate_lower_market">Your target rate is %s lower than current Market rate</string>
     <string name="limit_order_rate_higher_market">Your target rate is %s higher than current Market rate</string>
     <string name="percent_25">25%</string>
@@ -240,8 +240,8 @@
     <string name="pending_transaction">Please wait for other transactions to be mined before making a transfer</string>
     <string name="sign_in_with">Or sign in with</string>
     <string name="agree_to">"Agree to "</string>
-    <string name="term_and_condition">https://files.kyberswap.com/tac.pdf</string>
-    <string name="term_condition_notification">Please accept terms and conditions</string>
+    <string name="term_and_condition" translatable="false">https://files.kyberswap.com/tac.pdf</string>
+    <string name="term_condition_notification">Please accept our Terms and Conditions to continue</string>
     <string name="complete_profile_verification">Complete Your Profile Verification</string>
     <string name="my_profile">My Profile</string>
     <string name="profile_unverified">Unverified</string>
@@ -261,7 +261,7 @@
     <string name="alert_triggered">Triggered</string>
     <string name="alert_edit">Edit</string>
     <string name="title_delete">Delete</string>
-    <string name="trigger_on">Trigger on:</string>
+    <string name="trigger_on">Triggered:</string>
     <string name="delete_alert_success">Alert deleted!</string>
     <string name="alerts_leader_board">Alert LeaderBoard</string>
     <string name="pair">Pair</string>
@@ -422,22 +422,22 @@
     <string name="delete_contact_success">Delete contact successfully</string>
     <string name="too_many_attempt">Too many attempts, please try in %s seconds</string>
     <string name="number_of_attempt">You have %d attempts</string>
-    <string name="setting_about_url">https://kyber.network/about/company</string>
-    <string name="setting_community_url">https://kyber.network/community</string>
+    <string name="setting_about_url" translatable="false">https://kyber.network/about/company</string>
+    <string name="setting_community_url" translatable="false">https://kyber.network/community</string>
     <string name="setting_support_message">Please send request to support@kyber.network</string>
-    <string name="setting_kyber_network_url">https://t.me/kybernetwork</string>
-    <string name="setting_kyber_network_developer_url">https://t.me/KyberDeveloper</string>
-    <string name="setting_github_url">https://github.com/KyberNetwork</string>
-    <string name="setting_twitter_url">https://twitter.com/KyberSwap</string>
-    <string name="setting_facebook_url">https://www.facebook.com/kybernetwork</string>
-    <string name="setting_medium_url">https://medium.com/@kyberswap</string>
-    <string name="setting_linkedin_url">https://www.linkedin.com/company/kybernetwork</string>
+    <string name="setting_kyber_network_url" translatable="false">https://t.me/kybernetwork</string>
+    <string name="setting_kyber_network_developer_url" translatable="false">https://t.me/KyberDeveloper</string>
+    <string name="setting_github_url" translatable="false">https://github.com/KyberNetwork</string>
+    <string name="setting_twitter_url" translatable="false">https://twitter.com/KyberSwap</string>
+    <string name="setting_facebook_url" translatable="false">https://www.facebook.com/kybernetwork</string>
+    <string name="setting_medium_url" translatable="false">https://medium.com/@kyberswap</string>
+    <string name="setting_linkedin_url" translatable="false">https://www.linkedin.com/company/kybernetwork</string>
     <string name="setting_share_info">I just found an awesome wallet app. Check out here https://play.google.com/store/apps/details?id=com.kyberswap.android</string>
-    <string name="setting_rate_my_app">https://play.google.com/store/apps/details?id=com.kyberswap.android</string>
-    <string name="order_why_order_not_filled">https://kyberswap.com/faq#I-submitted-the-limit-order-but-it-was-not-triggered-even-though-my-desired-price-was-hit</string>
+    <string name="setting_rate_my_app" translatable="false">https://play.google.com/store/apps/details?id=com.kyberswap.android</string>
+    <string name="order_why_order_not_filled" translatable="false">https://kyberswap.com/faq#I-submitted-the-limit-order-but-it-was-not-triggered-even-though-my-desired-price-was-hit</string>
     <string name="extra_url" translatable="false">https://kyberswap.com/faq#Why-received-amount-is-higher-than-estimated-amount</string>
-    <string name="order_fee_url">https://kyberswap.com/faq#I-have-KNC-in-my-wallet-Do-I-get-any-discount-on-trading-fees</string>
-    <string name="same_token_pair_url">https://kyberswap.com/faq#can-I-submit-multiple-limit-orders-for-same-token-pair</string>
+    <string name="order_fee_url" translatable="false">https://kyberswap.com/faq#I-have-KNC-in-my-wallet-Do-I-get-any-discount-on-trading-fees</string>
+    <string name="same_token_pair_url" translatable="false">https://kyberswap.com/faq#can-I-submit-multiple-limit-orders-for-same-token-pair</string>
     <string name="item_token_header_bal">Bal</string>
     <string name="token_new">New</string>
     <string name="add_fav_success">Successfully added to your favorites</string>
@@ -508,7 +508,7 @@
     <string name="actual_receive_amount">Actual receive amount: %s</string>
     <string name="estimated_amount">Estimated amount: %s</string>
     <string name="extra_amount">You got extra amount: %s</string>
-    <string name="you_do_not_have_any_orders">You do not have any orders</string>
+    <string name="you_do_not_have_any_orders">You have no orders yet.</string>
     <string name="order_submitted_message">Your order have been submitted sucessfully to server. You can check the order in your order list.</string>
     <string name="title_unsupported">Unsupported</string>
     <string name="can_not_swap_same_token">Can not swap the same token</string>
@@ -527,7 +527,7 @@
     <string name="custom_rate_empty">Please enter a value between 0 and 100 for custom field in advanced settings view</string>
     <string name="two_fa_empty_code">Please enter a valid token (6 digits) to continue</string>
     <string name="submit_order_promo_code">You cannot submit order with promo code. Please use other wallets.</string>
-    <string name="trigger_rate_too_high_than_current_rate">Trigger Rate is too high, only allow 900% greater than the current rat</string>
+    <string name="trigger_rate_too_high_than_current_rate">Trigger Rate is too high, only allow 900% greater than the current rate</string>
     <string name="active_your_account">A message with a confirmation link has been sent to your email address. Please follow the link to activate your account.</string>
     <string name="invalid_document_type">Invalid document type</string>
     <string name="invalid_document_number">Invalid document number</string>
