@@ -12,7 +12,7 @@
     <string name="landing_3_title">프로필</string>
     <string name="landing_1_content">한 차원 높은 수준의 보안. 다른 지갑앱에서 쉽게 계정을 가져오고 내보낼 수 있습니다.</string>
     <string name="landing_2_content">보증금 없이 토큰을 스왑합니다.</string>
-    <string name="landing_3_content">쉽게 프로필을 관리 하 고 다른 기능의 잠금을 해제 합니다. \\n앱에서 바로.</string>
+    <string name="landing_3_content">쉽게 프로필을 관리 하 고 다른 기능의 잠금을 해제 합니다.\n앱에서 바로.</string>
     <string name="company_name">Kyber</string>
     <string name="title_confirmation">확인</string>
     <string name="title_wrong_backup">잘못된 백업</string>
@@ -39,7 +39,7 @@
     <string name="word_2">단어#2</string>
     <string name="word_6">단어#6</string>
     <string name="kyberswap">KyberSwap</string>
-    <string name="backup_message">12 개의 임의의 단어 목록이 제공됩니다. 종이에 받아 적어주세요. 안전하게 보호하십시오. \\n \\n 키는 유일한 방법입니다. 휴대 전화를 분실했거나 암호를 잊어 버린 경우 Kyber 월렛을 복원할 수 있는</string>
+    <string name="backup_message">12 개의 임의의 단어 목록이 제공됩니다. 종이에 받아 적어주세요. 안전하게 보호하십시오. \n \n 키는 유일한 방법입니다. 휴대 전화를 분실했거나 암호를 잊어 버린 경우 Kyber 월렛을 복원할 수 있는</string>
     <string name="bold_font_path">fonts/Montserrat-Bold.ttf</string>
     <string name="semi_bold_font_path">fonts/Montserrat-Bold.ttf</string>
     <string name="semi_bold_italic_font_path">fonts/Montserrat-SemiBoldItalic.ttf</string>
@@ -221,7 +221,7 @@
     <string name="limit_order_yes">예</string>
     <string name="limit_order_broadcasted_message">%s 인 경우에만 거래가 체결됩니다. (%s)</string>
     <string name="limit_order_to">To:</string>
-    <string name="limit_order_confirm_info"><![CDATA[걱정 마세요. \ n 거래가 실행 된 경우에만 수수료를 지불합니다. (브로드 캐스트 및 채굴)]]></string>
+    <string name="limit_order_confirm_info"><![CDATA[걱정 마세요.\n거래가 실행 된 경우에만 수수료를 지불합니다. (브로드 캐스트 및 채굴)]]></string>
     <string name="date">날짜</string>
     <string name="sort_latest">최근</string>
     <string name="sort_oldest">오래 된</string>
@@ -310,10 +310,10 @@
     <string name="industry_code">산업 코드</string>
     <string name="your_country_of_tax_residency">과세 국가</string>
     <string name="tax_identification_no_tin_or_equivalent">세금 식별 번호 (TIN) 또는 이에 상응하는 문서</string>
-    <string name="middle_name">중간 이름\"</string>
+    <string name="middle_name">중간 이름</string>
     <string name="last_name">성</string>
     <string name="full_name_in_native_characters">성명 (모국어 글자)</string>
-    <string name="residential_address_hint">도로명, 사서함, 아파트, 스위트, 유닛, 건물, 층, ...</string>
+    <string name="residential_address_hint">도로명, 사서함, 아파트, 스위트, 유닛, 건물, 층, …</string>
     <string name="document_must_display_your_name_and_current_residential_address_in_6_months">귀하의 이름과 현재 거주지 주소를 나타내야 합니다.</string>
     <string name="acceptable_proof_of_address_document_types">문서 유형</string>
     <string name="primary_source_of_funds">주요 자금 출처</string>
@@ -322,7 +322,7 @@
     <string name="occupation_code_optional">직업 코드 (선택 사항)</string>
     <string name="industry_code_optional">산업 코드 (선택 사항)</string>
     <string name="please_indicate_your_country_of_tax_residency_optional">귀하의 거주 국가를 표시하십시오 (선택 사항)</string>
-    <string name="information_compliance">관련 세금 규정을 준수하여이 정보를 수집하고 있습니다. \\n 정보가 정확히 입력되게 확인해주세요</string>
+    <string name="information_compliance">관련 세금 규정을 준수하여이 정보를 수집하고 있습니다. \n 정보가 정확히 입력되게 확인해주세요</string>
     <string name="country">국가</string>
     <string name="have_a_tax_identification_no">세금 확인 번호가 없습니까?</string>
     <string name="option_no">아니요</string>
@@ -503,7 +503,7 @@
     <string name="wonder_why_your_orders_are_not_filled">왜 주문이 실행되지 않았나요?</string>
     <string name="swipe_left_to_cancel_order">Swipe left to cancel order</string>
     <string name="sign_in_required_title">로그인이 필요합니다.</string>
-    <string name="sign_in_to_use_limit_order_feature">리밋 주문 기능을 사용하기 위해서는 반드시 로그인 해야합니다.</string>
+    <string name="sign_in_to_use_limit_order_feature">Please sign in to your Profile to use Limit Order feature</string>
     <string name="question_why">Why?</string>
     <string name="actual_receive_amount">실제로 받는 금액: %s</string>
     <string name="estimated_amount">예상되는 금액: %s</string>
@@ -564,8 +564,11 @@
         <item>@string/backup_wallet_description_5</item>
     </string-array>
     <string name="limit_order_rate_too_big">목표 비율이 너무 높습니다. 최대치는 현재 비율의 10배입니다.</string>
-    <string name="login">로그인\"</string>
+    <string name="login">로그인</string>
     <string name="nationality_singaporean">SINGAPOREAN</string>
+    <string name="country_singapore">SINGAPORE</string>
+    <string name="kyc_not_support">죄송합니다. 현재 %s의 신청서는 받을 수 없습니다.</string>
+    <string name="landing_limit_order_description">목표가격에 토큰을 교환하고 자금을 완전히 통제할 수 있으며, 낮은 수수료와 세련된 UX를 제공합니다.</string>
 
 
 </resources>

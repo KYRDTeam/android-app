@@ -195,7 +195,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         val initial = if (limitOrder != null) {
             MainPagerAdapter.LIMIT_ORDER
         } else {
-            MainPagerAdapter.SWAP
+            MainPagerAdapter.BALANCE
         }
 
         binding.vpNavigation.post {

@@ -12,12 +12,12 @@
     <string name="landing_2_title">Hoán đổi tức thì với KyberSwap</string>
     <string name="landing_3_title">Hồ sơ</string>
     <string name="landing_1_content">Được thiết kế với tiêu chuẩn bảo mật cao nhất.  Dễ dàng nhập và xuất tài khoản từ các ứng dụng ví khác.</string>
-    <string name="landing_2_content">Hoán đổi giữa các cặp token tùy ý một cách nhanh chóng.\n Không cần gửi tiền.</string>
-    <string name="landing_3_content">Dễ dàng quản lý hồ sơ của bạn và sử dụng các tính năng khác.  \\nTrực tiếp từ ứng dụng.</string>
+    <string name="landing_2_content">Hoán đổi giữa các cặp token tùy ý một cách nhanh chóng.\nKhông cần gửi tiền.</string>
+    <string name="landing_3_content">Dễ dàng quản lý hồ sơ của bạn và sử dụng các tính năng khác.\nTrực tiếp từ ứng dụng.</string>
     <string name="company_name">Kyber</string>
     <string name="title_confirmation">Xác nhận</string>
     <string name="title_wrong_backup">Sao lưu sai</string>
-    <string name="message_close_app_confirmation">Điều này sẽ tạo ra một ví mới. Nó không thể hoàn tác, nhưng bạn có thể từ bỏ nó</string>
+    <string name="message_close_app_confirmation">Quy trình này sẽ tạo một địa chỉ ví mới. Vui lòng xác nhận nếu bạn muốn tiếp tục.</string>
     <string name="message_wrong_backup">Các từ dự phòng của bạn không chính xác.  Vui lòng thử lại.</string>
     <string name="message_wrong_backup_again">Bạn đã nhập sai từ dự phòng cho một lần khác. Bạn muốn sao lưu lại?</string>
     <string name="confirm">Xác nhận</string>
@@ -310,7 +310,7 @@
     <string name="middle_name">Tên đệm</string>
     <string name="last_name">Họ</string>
     <string name="full_name_in_native_characters">Tên đầy đủ bằng ngôn ngữ bản địa</string>
-    <string name="residential_address_hint">Số nhà, tầng, toà nhà, tên đường, ...</string>
+    <string name="residential_address_hint">Số nhà, tầng, toà nhà, tên đường, …</string>
     <string name="document_must_display_your_name_and_current_residential_address_in_6_months">Giấy tờ phải hiển thị tên và địa chỉ cư trú hiện tại của bạn. Yêu cầu trong vòng 6 tháng kể từ ngày cấp tài liệu.</string>
     <string name="acceptable_proof_of_address_document_types">Loại Tài Liệu</string>
     <string name="primary_source_of_funds">Nguồn vốn chính</string>
@@ -402,7 +402,7 @@
     <string name="order_filled_close">Close</string>
     <string name="title_error">Lỗi</string>
     <string name="title_fail">Thất bại</string>
-    <string name="sign_in_required">Bạn phải đăng nhập để sử dụng tính năng Thông Báo Giá</string>
+    <string name="sign_in_required">Vui lòng đăng nhập để sử dụng tính năng Price Alert</string>
     <string name="wellcome_back">Chào mừng trở lại, %s</string>
     <string name="lout_out_confirmation">Bạn có muốn đăng xuất không?</string>
     <string name="alert_notification_title">Nhận thông báo Price Alert bằng:</string>
@@ -566,6 +566,9 @@
     <string name="target">Mục tiêu</string>
     <string name="tips_on_how_your_passport_should_look">Mẹo về cách chụp tài liệu của bạn</string>
     <string name="nationality_singaporean">SINGAPOREAN</string>
+    <string name="country_singapore">SINGAPORE</string>
+    <string name="kyc_not_support">Xin lỗi! Hiện giờ chúng tôi không nhận hồ sơ từ %s</string>
+    <string name="landing_limit_order_description">Trao đổi với tỉ giá mong muốn, hoàn toàn kiểm soát tài sản, phí giao dịch thấp, dễ dàng sử dụng</string>
 
 
 </resources>

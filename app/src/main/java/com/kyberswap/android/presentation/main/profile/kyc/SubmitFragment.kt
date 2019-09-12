@@ -26,6 +26,7 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.di.ViewModelFactory
+import java.util.Locale
 import javax.inject.Inject
 
 
@@ -162,9 +163,39 @@ class SubmitFragment : BaseFragment() {
         })
 
         binding.tvSubmit.setOnClickListener {
+
             user?.let {
-                viewModel.submit(it)
+                when {
+                    it.kycInfo.nationality.toLowerCase(Locale.getDefault()) == getString(R.string.nationality_singaporean).toLowerCase(
+                        Locale.getDefault()
+                    ) -> {
+                        showAlertWithoutIcon(
+                            title = getString(R.string.invalid_nationality),
+                            message = String.format(
+                                getString(R.string.kyc_not_support),
+                                getString(R.string.country_singapore)
+                            )
+                        )
+                    }
+
+                    it.kycInfo.country.toLowerCase(Locale.getDefault()) == getString(R.string.country_singapore).toLowerCase(
+                        Locale.getDefault()
+                    ) -> {
+                        showAlertWithoutIcon(
+                            title = getString(R.string.invalid_input), message = String.format(
+                                getString(R.string.kyc_not_support),
+                                getString(R.string.country_singapore)
+                            )
+                        )
+                    }
+
+                    else -> {
+                        viewModel.submit(it)
+                    }
+                }
+
             }
+
         }
 
         viewModel.submitUserInfoCallback.observe(viewLifecycleOwner, Observer {

@@ -42,6 +42,7 @@ import pl.aprilapps.easyphotopicker.EasyImage
 import pl.aprilapps.easyphotopicker.MediaFile
 import pl.aprilapps.easyphotopicker.MediaSource
 import java.util.Calendar
+import java.util.Locale
 import javax.inject.Inject
 
 
@@ -458,8 +459,16 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                     binding.ilNationality.error = error
                 }
 
-                edtNationality.text.toString().toLowerCase() == getString(R.string.nationality_singaporean).toLowerCase() -> {
-
+                edtNationality.text.toString().toLowerCase(Locale.getDefault()) == getString(R.string.nationality_singaporean).toLowerCase(
+                    Locale.getDefault()
+                ) -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_nationality),
+                        message = String.format(
+                            getString(R.string.kyc_not_support),
+                            getString(R.string.country_singapore)
+                        )
+                    )
                 }
 
                 edtCityResident.text.toString().isBlank() -> {
@@ -498,6 +507,17 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                     val error = getString(R.string.kyc_country_resident_required)
                     showAlertWithoutIcon(title = getString(R.string.invalid_input), message = error)
                     binding.ilCountry.error = error
+                }
+
+                edtCountryResident.text.toString().toLowerCase(Locale.getDefault()) == getString(R.string.country_singapore).toLowerCase(
+                    Locale.getDefault()
+                ) -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_input), message = String.format(
+                            getString(R.string.kyc_not_support),
+                            getString(R.string.country_singapore)
+                        )
+                    )
                 }
 
                 edtResidentAddress.text.toString().isBlank() -> {

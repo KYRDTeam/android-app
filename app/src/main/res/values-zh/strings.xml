@@ -12,7 +12,7 @@
     <string name="landing_3_title">资料</string>
     <string name="landing_1_content">采用最高的安全标准进行设计。从其他钱包应用程序轻松导入和导出帐户。</string>
     <string name="landing_2_content">在任意代币对之间切换。无需充币。</string>
-    <string name="landing_3_content">轻松管理您的个人资料并解锁其他功能。\\n直接从应用程序。</string>
+    <string name="landing_3_content">轻松管理您的个人资料并解锁其他功能。\n直接从应用程序。</string>
     <string name="company_name">Kyber</string>
     <string name="title_confirmation">确认</string>
     <string name="title_wrong_backup">错误的备份</string>
@@ -30,7 +30,7 @@
     <string name="backup_wallet_description_5">唯一的办法</string>
     <string name="backup_wallet_description_6">如果您丢失手机或忘记密码，请恢复您的Kyber钱包。</string>
     <string name="backup_wallet_description_title">仅限纸张</string>
-    <string name="description_words_from_1_4">写下 1 - 4:</string>
+    <string name="description_words_from_1_4">写下 1 – 4:</string>
     <string name="backup_wallet_title">备份你的钱包</string>
     <string name="test_wallet_title">测试备份</string>
     <string name="import_wallet_title">导入钱包</string>
@@ -39,7 +39,7 @@
     <string name="word_2">字#2</string>
     <string name="word_6">字#6</string>
     <string name="kyberswap">KyberSwap</string>
-    <string name="backup_message">我们将为您提供12个随机单词列表。请 把它们写在纸上 并保持安全。 \\n \\n纸秘钥是 唯一的办法 如果您丢失手机或忘记密码，请恢复您的Kyber钱包。</string>
+    <string name="backup_message">我们将为您提供12个随机单词列表。请 把它们写在纸上 并保持安全。\n\n纸秘钥是 唯一的办法 如果您丢失手机或忘记密码，请恢复您的Kyber钱包。</string>
     <string name="bold_font_path">fonts/Montserrat-Bold.ttf</string>
     <string name="semi_bold_font_path">fonts/Montserrat-Bold.ttf</string>
     <string name="semi_bold_italic_font_path">fonts/Montserrat-SemiBoldItalic.ttf</string>
@@ -107,7 +107,7 @@
     <string name="three_percentage">3%</string>
     <string name="percentage">%</string>
     <string name="custom_value">自定义:</string>
-    <string name="rate_revert_notification">如果费率%s-%s低于%s （当前费率%s ），那么交易将被退回</string>
+    <string name="rate_revert_notification">如果费率%s-%s低于%s(当前费率%s),那么交易将被退回</string>
     <string name="swap_continue">继续</string>
     <string name="swap_rate_notification">此价格比目前的市场价低%s%%</string>
     <string name="tab_day">24H</string>
@@ -203,7 +203,7 @@
     <string name="order_confirm">确认订单</string>
     <string name="token_eth_star">ETH*</string>
     <string name="token_eth_star_name">ETH*表示ETH WETH便于参考。</string>
-    <string name="token_amount_available">％s可用</string>
+    <string name="token_amount_available">%s 可用</string>
     <string name="limit_order_current_rate">1 %s = %s</string>
     <string name="rate_percent">%s%%</string>
     <string name="limit_order_rate_lower_market">Your target rate is %s lower than current Market rate</string>
@@ -320,7 +320,7 @@
     <string name="occupation_code_optional">职业代码 (可选)</string>
     <string name="industry_code_optional">行业代码 (可选)</string>
     <string name="please_indicate_your_country_of_tax_residency_optional">请注明您所在的纳税国家/地区 (可选)</string>
-    <string name="information_compliance">我们根据相关税收法规收集此信息。 \\n帮助我们确保信息的准确性和最新性</string>
+    <string name="information_compliance">我们根据相关税收法规收集此信息。\n帮助我们确保信息的准确性和最新性</string>
     <string name="country">国家</string>
     <string name="have_a_tax_identification_no">有税号吗?</string>
     <string name="option_no">不</string>
@@ -396,7 +396,7 @@
     <string name="backup_your_wallet">备份你的钱包</string>
 
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
-    <string name="alert_trigger_content"><![CDATA[您的％s％s的价格警报刚刚被触发]]></string>
+    <string name="alert_trigger_content"><![CDATA[您的%s%s的价格警报刚刚被触发]]></string>
     <string name="maximum_alerts_title">超过警报限额</string>
     <string name="maximum_alerts_content">您已经有10个(上限)警报了。添加新的警报前请先删除一个现有警报</string>
     <string name="your_order_is_filled">您的订单已提交</string>
@@ -455,10 +455,10 @@
     <string name="kyc_photo_id_front_required">请提供您的文件照片进行验证</string>
     <string name="eth_balance">%s ETH</string>
     <string name="weth_balance">%s WETH</string>
-    <string name="min_eth_amount">您必须至少转换％s ETH才能继续创建订单</string>
+    <string name="min_eth_amount">您必须至少转换%s ETH才能继续创建订单</string>
     <string name="invalid_amount">无效数额</string>
     <string name="eth_balance_not_enough">您的ETH余额不足以进行交易</string>
-    <string name="eth_balance_not_enough_for_fee">您没有足够的ETH来支付％s的交易费用</string>
+    <string name="eth_balance_not_enough_for_fee">您没有足够的ETH来支付%s的交易费用</string>
     <string name="login_invalid_email_address">请输入有效的邮箱地址再继续</string>
     <string name="login_email_address_required">请输入有效的邮箱地址再继续</string>
     <string name="login_password_required">请输入密码再继续</string>
@@ -480,7 +480,7 @@
     <string name="notification_success_sent">%s成功发送到%s</string>
     <string name="notification_fail_sent">Can not send %s to %s</string>
     <string name="notification_swap_token">兑换</string>
-    <string name="notification_success_swap">％s成功转换为％s</string>
+    <string name="notification_success_swap">%s成功转换为%s</string>
     <string name="notification_fail_swap">无法从%s转换为%s</string>
     <string name="transaction_broadcasted">已广播</string>
     <string name="transaction_broadcasted_message">您的交易已被广播！</string>
@@ -501,9 +501,9 @@
     <string name="sign_in_required_title">需要登录</string>
     <string name="sign_in_to_use_limit_order_feature">请登录您的个人资料以使用限价订单功能</string>
     <string name="question_why">Why?</string>
-    <string name="actual_receive_amount">实际收到金额：％s</string>
-    <string name="estimated_amount">估计金额：％s</string>
-    <string name="extra_amount">获得额外的金额：％s</string>
+    <string name="actual_receive_amount">实际收到金额：%s</string>
+    <string name="estimated_amount">估计金额：%s</string>
+    <string name="extra_amount">获得额外的金额：%s</string>
     <string name="you_do_not_have_any_orders">您目前还没有订单</string>
     <string name="order_submitted_message">您的订单已被成功提交至服务器。您可以在订单列表里查看订单。</string>
     <string name="title_unsupported">不支持</string>
@@ -566,6 +566,9 @@
     <string name="share_with_friends">和朋友分享</string>
     <string name="small_amount_of_eth_transaction_fee">少量的ETH将用于交易费用</string>
     <string name="nationality_singaporean">SINGAPOREAN</string>
+    <string name="country_singapore">SINGAPORE</string>
+    <string name="kyc_not_support">抱歉!我们目前无法接受来自%s的申请</string>
+    <string name="landing_limit_order_description">以您的目标价格兑换，时刻掌控您的资金，低费用，便捷的用户体验</string>
 
 
 </resources>
