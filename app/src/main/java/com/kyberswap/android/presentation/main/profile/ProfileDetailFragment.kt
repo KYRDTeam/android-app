@@ -10,11 +10,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentProfileDetailBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Alert
+import com.kyberswap.android.domain.model.KycInfo
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -25,7 +27,10 @@ import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
 import com.kyberswap.android.presentation.main.profile.kyc.ReSubmitState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.isNetworkAvailable
+import com.kyberswap.android.util.ext.underline
 import com.onesignal.OneSignal
+import timber.log.Timber
+import java.util.Locale
 import javax.inject.Inject
 
 
@@ -77,11 +82,13 @@ class ProfileDetailFragment : BaseFragment() {
             )
         }
 
+        binding.tvPDPAUpdate.underline(getString(R.string.about_pdpa_update))
         viewModel.pollingKycProfile()
         viewModel.getUserInfoCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is UserInfoState.Success -> {
+                        handlePDPA(binding.user?.kycInfo)
                         binding.tvKycTitle.visibility =
                             if (UserInfo.PENDING == state.userInfo?.kycStatus ||
                                 UserInfo.BLOCKED == state.userInfo?.kycStatus ||
@@ -272,6 +279,11 @@ class ProfileDetailFragment : BaseFragment() {
             viewModel.refreshKycStatus()
 
         }
+
+        binding.tvPDPAUpdate.setOnClickListener {
+            dialogHelper.showPDPAUpdate()
+        }
+
         viewModel.reSubmitKycCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == ReSubmitState.Loading)
@@ -289,6 +301,22 @@ class ProfileDetailFragment : BaseFragment() {
                 }
             }
         })
+    }
+
+    private fun handlePDPA(kycInfo: KycInfo?) {
+        Timber.e(Gson().toJson(kycInfo))
+        val isFromSingapore =
+            kycInfo?.country?.toLowerCase(Locale.getDefault()) == getString(R.string.country_singapore).toLowerCase(
+                Locale.getDefault()
+            ) ||
+                kycInfo?.nationality?.toLowerCase(Locale.getDefault()) == getString(R.string.nationality_singaporean).toLowerCase(
+                Locale.getDefault()
+            ) ||
+                kycInfo?.taxResidencyCountry?.toLowerCase(Locale.getDefault()) == getString(R.string.country_singapore).toLowerCase(
+                Locale.getDefault()
+            )
+
+        binding.tvPDPAUpdate.visibility = if (isFromSingapore) View.VISIBLE else View.GONE
     }
 
     private fun navigateToKyc() {

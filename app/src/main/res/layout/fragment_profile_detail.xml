@@ -168,51 +168,69 @@
                     tools:ignore="SmallSp" />
 
                 <LinearLayout
-                    android:id="@+id/lnVerify"
+                    android:id="@+id/lnInfo"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingBottom="40dp"
                     app:layout_constraintEnd_toEndOf="@+id/tvName"
                     app:layout_constraintStart_toStartOf="@+id/imgProfile"
                     app:layout_constraintTop_toBottomOf="@+id/view13">
 
-                    <TextView
-                        android:id="@+id/tvKycTitle"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:id="@+id/lnVerify"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="24dp"
-                        android:lineSpacingExtra="8sp"
-                        android:text="@string/complete_profile_verification"
+                        android:orientation="vertical"
+                        android:paddingBottom="40dp">
+
+                        <TextView
+                            android:id="@+id/tvKycTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="24dp"
+                            android:lineSpacingExtra="8sp"
+                            android:text="@string/complete_profile_verification"
+                            android:textColor="#141927"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tvKycVerification"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:lineSpacingExtra="8sp"
+                            android:text="@string/profile_verification_notification"
+                            android:textColor="#5a5e67"
+                            android:textSize="14sp" />
+
+
+                        <TextView
+                            android:id="@+id/tvAction"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="24dp"
+                            android:background="@drawable/border_button"
+                            android:gravity="center"
+                            android:minWidth="126dp"
+                            android:minHeight="45dp"
+                            android:text="@string/profile_verify"
+                            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                            android:textColor="#141927"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvPDPAUpdate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:lineSpacingExtra="10sp"
+                        android:layout_marginBottom="40dp"
+                        android:text="@string/about_pdpa_update"
                         android:textColor="#141927"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/tvKycVerification"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:lineSpacingExtra="8sp"
-                        android:text="@string/profile_verification_notification"
-                        android:textColor="#5a5e67"
-                        android:textSize="14sp" />
-
-
-                    <TextView
-                        android:id="@+id/tvAction"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="24dp"
-                        android:background="@drawable/border_button"
-                        android:gravity="center"
-                        android:minWidth="126dp"
-                        android:minHeight="45dp"
-                        android:text="@string/profile_verify"
-                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-                        android:textColor="#141927"
-                        android:textSize="16sp" />
-
+                        android:textSize="12sp"
+                        />
                 </LinearLayout>
 
                 <View
@@ -223,7 +241,7 @@
                     android:background="#e4e7fd"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lnVerify" />
+                    app:layout_constraintTop_toBottomOf="@+id/lnInfo" />
 
 
                 <TextView

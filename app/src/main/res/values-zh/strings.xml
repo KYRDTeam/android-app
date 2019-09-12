@@ -3,7 +3,7 @@
     <string name="message_loading">载入中…</string>
     <string name="content_description_done">完成</string>
     <string name="ok">OK</string>
-    <string name="promo_code">Promo Code</string>
+    <string name="promo_code">优惠码</string>
     <string name="create_wallet">创建钱包</string>
     <string name="import_wallet">导入钱包</string>
     <string name="terms_and_conditions">条款和条件</string>
@@ -178,20 +178,20 @@
     <string name="signup_display_name">昵称</string>
     <string name="confirm_sign_up_with">确认注册</string>
     <string name="reset_my_password">重置密码</string>
-    <string name="transaction_filter">Filter</string>
+    <string name="transaction_filter">过滤器</string>
     <string name="filter_time">时间</string>
     <string name="filter_from">从</string>
     <string name="filter_to">至</string>
-    <string name="filter_transaction_type">Transaction Type</string>
+    <string name="filter_transaction_type">交易类型</string>
     <string name="filter_send">发送</string>
     <string name="filter_receive">接收</string>
     <string name="filter_swap">兑换</string>
     <string name="filter_token">Token</string>
     <string name="filter_see_more">看到更多</string>
-    <string name="filter_select_all">Select All</string>
-    <string name="filter_deselect_all">Deselect All</string>
+    <string name="filter_select_all">全选</string>
+    <string name="filter_deselect_all">取消全选</string>
     <string name="filter_see_less">收回</string>
-    <string name="filter_reset">Reset</string>
+    <string name="filter_reset">重置</string>
     <string name="filter_apply">提交</string>
     <string name="manage_orders">管理您的订单</string>
     <string name="related_orders">相关订单</string>
@@ -199,7 +199,7 @@
     <string name="condition">条件</string>
     <string name="filter_address">地址</string>
     <string name="filter_status">状态</string>
-    <string name="limit_order_filter">Filter</string>
+    <string name="limit_order_filter">过滤器</string>
     <string name="order_confirm">确认订单</string>
     <string name="token_eth_star">ETH*</string>
     <string name="token_eth_star_name">ETH*表示ETH WETH便于参考。</string>
@@ -207,11 +207,11 @@
     <string name="limit_order_current_rate">1 %s = %s</string>
     <string name="rate_percent">%s%%</string>
     <string name="limit_order_rate_lower_market">Your target rate is %s lower than current Market rate</string>
-    <string name="limit_order_rate_higher_market">Your target rate is %s higher than current Market rate</string>
+    <string name="limit_order_rate_higher_market">你的目标价格是%s高于目前的市场价格</string>
     <string name="percent_25">25%</string>
     <string name="percent_50">50%</string>
     <string name="percent_100">100%</string>
-    <string name="limit_order_rate_of">Rate of</string>
+    <string name="limit_order_rate_of">汇率</string>
     <string name="limit_order_discount">持有2000KNC以上可享受享受折扣。</string>
     <string name="limit_order_fee">%s %s </string>
     <string name="discount_fee">%.2f%% OFF</string>
@@ -238,7 +238,7 @@
     <string name="token_eth">ETH</string>
     <string name="token_weth">WETH</string>
     <string name="pending_transaction">请等待其他交易上链完成后再发起新的交易</string>
-    <string name="sign_in_with">Or sign in with</string>
+    <string name="sign_in_with">或用其它方式登录</string>
     <string name="agree_to">同意</string>
     <string name="term_and_condition">https://files.kyberswap.com/tac.pdf</string>
     <string name="term_condition_notification">请接受我们的条款和条件再继续</string>
@@ -255,7 +255,7 @@
     <string name="price_alert">价格提醒</string>
     <string name="currency">Currency</string>
     <string name="alert_price">警报价格</string>
-    <string name="alert_current_price">Current Price: %s</string>
+    <string name="alert_current_price">目前的价格: %s</string>
     <string name="default_hint">0</string>
     <string name="more_alerts">更多提醒</string>
     <string name="alert_triggered">触发</string>
@@ -270,7 +270,7 @@
     <string name="target">目标</string>
     <string name="delete_alert_confirmation">是否要删除此警报？</string>
     <string name="alert_campaign">运动</string>
-    <string name="eligible_tokens">Eligible Tokens</string>
+    <string name="eligible_tokens">符合条件的代币</string>
     <string name="campaign_reward_unit">Reward currency: %s</string>
     <string name="id_passport">身份证/护照</string>
     <string name="personal_info_submit">提交</string>
@@ -310,7 +310,7 @@
     <string name="industry_code">行业代码</string>
     <string name="your_country_of_tax_residency">税收居住国家</string>
     <string name="tax_identification_no_tin_or_equivalent">税务识别号（TIN）或类似</string>
-    <string name="middle_name">Middle Name</string>
+    <string name="middle_name">中间名</string>
     <string name="last_name">姓氏</string>
     <string name="full_name_in_native_characters">你的姓名(全名)</string>
     <string name="residential_address_hint">街道地址，邮政信箱，公寓，套房，单位，建筑物，楼层，......</string>
@@ -359,7 +359,7 @@
     <string name="promo_transaction_fee">手续费</string>
     <string name="swap_and_send_to_the_organizer">兑换并发送给主办方</string>
     <string name="expired_date_notification">在兑换之后，请将您的代币在%s之前转移至您的私人钱包</string>
-    <string name="promo_gift">1 Gift</string>
+    <string name="promo_gift">1个礼物</string>
     <string name="insufficient_eth">ETH不足</string>
     <string name="not_enough_eth_blance">没有足够的ETH来支付交易费用</string>
     <string name="can_not_tranfer_token">无法转移此令牌</string>
@@ -472,8 +472,8 @@
     <string name="alert_leader_board_name">你 - %s</string>
     <string name="no_alert_message">当价格高于或低于您的目标时，我们会向您发送通知</string>
     <string name="add_alert">添加警报</string>
-    <string name="campaign_start_time">Start: %s</string>
-    <string name="campaign_end_time">End: %s</string>
+    <string name="campaign_start_time">开始: %s</string>
+    <string name="campaign_end_time">结束: %s</string>
     <string name="notification_received_token">收到%s</string>
     <string name="notification_success_received">成功接收%s从%s</string>
     <string name="notification_sent_token">发送成功 %s</string>
@@ -518,11 +518,11 @@
     <string name="two_factor_authentication_2fa">双重认证（2FA）</string>
     <string name="two_fa_hint_token">Token</string>
     <string name="two_fa_continue">继续</string>
-    <string name="two_fa_paste">Paste</string>
+    <string name="two_fa_paste">粘贴</string>
     <string name="custom_rate_empty">请输入要继续的数量</string>
-    <string name="two_fa_empty_code">Please enter a valid token (6 digits) to continue</string>
+    <string name="two_fa_empty_code">请输入有效的6位数验证码在继续</string>
     <string name="submit_order_promo_code">您不能使用兑奖码下单。请使用其他钱包。</string>
-    <string name="trigger_rate_too_high_than_current_rate">Trigger Rate is too high, only allow 900% greater than the current rat</string>
+    <string name="trigger_rate_too_high_than_current_rate">触发频率太高，仅允许比目前汇率高900％</string>
     <string name="active_your_account">一封邮件和验证网址已经发到了您的邮箱。请点击网址激活您的账户。</string>
     <string name="invalid_document_type">文档类型无效</string>
     <string name="invalid_document_number">文件编号无效</string>
@@ -569,6 +569,8 @@
     <string name="country_singapore">SINGAPORE</string>
     <string name="kyc_not_support">抱歉!我们目前无法接受来自%s的申请</string>
     <string name="landing_limit_order_description">以您的目标价格兑换，时刻掌控您的资金，低费用，便捷的用户体验</string>
+    <string name="about_pdpa_update">About PDPA update</string>
+    <string name="pdpa_content"><![CDATA[We are aware of the revised Advisory Guidelines on the PDPA for NRIC and other National Identification Numbers that Personal Data Protection Commission (PDPA) issued on 31 August 2018. We seek your understanding that we are continuing  with the collection and use of NRIC Numbers / Foreign Identification Numbers / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers to ensure that KyberSwap does not deal with assets or funds that are proceeds of drug dealing, criminal conduct or property relating to money laundering or terrorism financing offence.   We assure you that we will undertake proper safeguarding measures to protect your personal data (including NRIC Numbers / FIN / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers) under our care. Contact us at support@kyber.network should you have any queries or concerns.]]></string>
 
 
 </resources>

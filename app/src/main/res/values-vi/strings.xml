@@ -517,11 +517,11 @@
     <string name="two_factor_authentication_2fa">Bảo mật hai lớp (2FA)</string>
     <string name="two_fa_hint_token">Token</string>
     <string name="two_fa_continue">Tiếp tục</string>
-    <string name="two_fa_paste">Paste</string>
+    <string name="two_fa_paste">Dán</string>
     <string name="custom_rate_empty">Vui lòng nhập một số để tiếp tục</string>
-    <string name="two_fa_empty_code">Please enter a valid token (6 digits) to continue</string>
+    <string name="two_fa_empty_code">Vui lòng nhập token hợp lệ (6 chữ số) để tiếp tục</string>
     <string name="submit_order_promo_code">Bạn không thể đặt lệnh bằng promo code. Vui lòng sử dụng các loại ví khác</string>
-    <string name="trigger_rate_too_high_than_current_rate">Trigger Rate is too high, only allow 900% greater than the current rate</string>
+    <string name="trigger_rate_too_high_than_current_rate">Tỉ giá bạn đặt quá cao, lệnh chỉ được thực hiện với tỉ giá cao hơn 900% so với tỉ giá hiện tại</string>
     <string name="active_your_account">Một tin nhắn có đường link xác nhận đã được gửi đến địa chỉ email của bạn. Vui lòng bấm vào đường link để kích hoạt tài khoản của bạn.</string>
     <string name="invalid_document_type">Loại tài liệu không hợp lệ</string>
     <string name="invalid_document_number">Số tài liệu không hợp lệ</string>
@@ -569,6 +569,8 @@
     <string name="country_singapore">SINGAPORE</string>
     <string name="kyc_not_support">Xin lỗi! Hiện giờ chúng tôi không nhận hồ sơ từ %s</string>
     <string name="landing_limit_order_description">Trao đổi với tỉ giá mong muốn, hoàn toàn kiểm soát tài sản, phí giao dịch thấp, dễ dàng sử dụng</string>
+    <string name="about_pdpa_update">About PDPA update</string>
+    <string name="pdpa_content"><![CDATA[We are aware of the revised Advisory Guidelines on the PDPA for NRIC and other National Identification Numbers that Personal Data Protection Commission (PDPA) issued on 31 August 2018. We seek your understanding that we are continuing  with the collection and use of NRIC Numbers / Foreign Identification Numbers / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers to ensure that KyberSwap does not deal with assets or funds that are proceeds of drug dealing, criminal conduct or property relating to money laundering or terrorism financing offence.   We assure you that we will undertake proper safeguarding measures to protect your personal data (including NRIC Numbers / FIN / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers) under our care. Contact us at support@kyber.network should you have any queries or concerns.]]></string>
 
 
 </resources>
