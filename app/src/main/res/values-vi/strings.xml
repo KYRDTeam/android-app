@@ -90,6 +90,7 @@
     <string name="address_copy">Đã sao chép địa chỉ</string>
     <string name="create_wallet_success">Bạn đã tạo thành công một chiếc ví mới!</string>
     <string name="default_wallet_name">Không tiêu đề</string>
+    <string name="default_kyber_code_wallet_name">Promo Code wallet</string>
     <string name="token">Token</string>
     <string name="default_swap_amount">0.000</string>
     <string name="advanced_optional">Nâng cao (tuỳ chọn)</string>
@@ -564,6 +565,7 @@
     <string name="rate_revert_notification">Giao dịch sẽ huỷ bỏ nếu tỷ giá %s-%s thấp hơn %s (Tỷ giá hiện tại %s)</string>
     <string name="target">Mục tiêu</string>
     <string name="tips_on_how_your_passport_should_look">Mẹo về cách chụp tài liệu của bạn</string>
+    <string name="nationality_singaporean">SINGAPOREAN</string>
 
 
 </resources>

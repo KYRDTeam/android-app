@@ -458,6 +458,10 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                     binding.ilNationality.error = error
                 }
 
+                edtNationality.text.toString().toLowerCase() == getString(R.string.nationality_singaporean).toLowerCase() -> {
+
+                }
+
                 edtCityResident.text.toString().isBlank() -> {
                     val error = getString(R.string.kyc_city_required)
                     showAlertWithoutIcon(title = getString(R.string.invalid_input), message = error)

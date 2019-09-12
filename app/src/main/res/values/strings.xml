@@ -16,7 +16,7 @@
     <string name="company_name">Kyber</string>
     <string name="title_confirmation">Confirm</string>
     <string name="title_wrong_backup">Wrong Backup</string>
-    <string name="message_close_app_confirmation">This will create a new wallet. It can not be undone, but you could abandon it</string>
+    <string name="message_close_app_confirmation">This process will create a new wallet for you. Please confirm so that we know you did not accidently pressed the button.</string>
     <string name="message_wrong_backup">Your backup words are incorrect.\n Please try again.</string>
     <string name="message_wrong_backup_again">You entered the wrong backup words for another time. Want to backup again?</string>
     <string name="confirm">Confirm</string>
@@ -89,6 +89,7 @@
     <string name="address_copy">Address copied</string>
     <string name="create_wallet_success">You have created successfully a new wallet</string>
     <string name="default_wallet_name">Untitled</string>
+    <string name="default_kyber_code_wallet_name">Promo Code wallet</string>
     <string name="token">Token</string>
     <string name="default_swap_amount">0.000</string>
     <string name="advanced_optional">Advanced (optional)</string>
@@ -407,7 +408,6 @@
     <string name="order_filled_details">Details</string>
     <string name="title_error">Error</string>
     <string name="title_fail">Fail</string>
-    <string name="sign_in_required">You must sign in to use Price Alert feature</string>
     <string name="wellcome_back">Welcome back, %s</string>
     <string name="lout_out_confirmation">Do you want to logout</string>
     <string name="alert_notification_title">Get Alert notifications by:</string>
@@ -503,7 +503,7 @@
     <string name="wonder_why_your_orders_are_not_filled">Wonder why your orders are not filled?</string>
     <string name="swipe_left_to_cancel_order">Swipe left to cancel order</string>
     <string name="sign_in_required_title">Sign in required</string>
-    <string name="sign_in_to_use_limit_order_feature">You must sign in to use Limit Order feature</string>
+    <string name="sign_in_to_use_limit_order_feature">Please sign in to your Profile to use Limit Order feature</string>
     <string name="question_why">Why?</string>
     <string name="actual_receive_amount">Actual receive amount: %s</string>
     <string name="estimated_amount">Estimated amount: %s</string>
@@ -564,6 +564,8 @@
         <item>@string/backup_wallet_description_2</item>
         <item>@string/backup_wallet_description_5</item>
     </string-array>
+    <string name="sign_in_required">Please sign in to your Profile to use Price Alert</string>
+    <string name="nationality_singaporean">SINGAPOREAN</string>
 
 
 </resources>

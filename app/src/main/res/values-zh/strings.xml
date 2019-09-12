@@ -16,7 +16,7 @@
     <string name="company_name">Kyber</string>
     <string name="title_confirmation">确认</string>
     <string name="title_wrong_backup">错误的备份</string>
-    <string name="message_close_app_confirmation">这将创建一个新的钱包。它无法撤消，但你可以抛弃它</string>
+    <string name="message_close_app_confirmation">此过程将为您创建一个新钱包。 请确认，以便我们知道您没有意外按下按钮。</string>
     <string name="message_wrong_backup">您的备份词不正确。请重试。</string>
     <string name="message_wrong_backup_again">您输入了错误的备份单词。要重新备份吗？</string>
     <string name="confirm">确认</string>
@@ -89,6 +89,7 @@
     <string name="address_copy">地址复制成功</string>
     <string name="create_wallet_success">您已成功创建新钱包！</string>
     <string name="default_wallet_name">无标题</string>
+    <string name="default_kyber_code_wallet_name">Promo Code wallet</string>
     <string name="token">Token</string>
     <string name="default_swap_amount">0.000</string>
     <string name="advanced_optional">高级 (可选)</string>
@@ -403,7 +404,7 @@
     <string name="order_filled_details">更多细节</string>
     <string name="title_error">错误</string>
     <string name="title_fail">已失败</string>
-    <string name="sign_in_required">您必须登录才能使用价格提醒功能</string>
+    <string name="sign_in_required">请登录您的个人资料以使用价格警報</string>
     <string name="wellcome_back">欢迎回来, %s</string>
     <string name="lout_out_confirmation">您想注销吗?</string>
     <string name="alert_notification_title">获取警报通知:</string>
@@ -498,7 +499,7 @@
     <string name="wonder_why_your_orders_are_not_filled">想知道为什么您的订单没有成交吗？</string>
     <string name="swipe_left_to_cancel_order">向左滑动即可取消订单</string>
     <string name="sign_in_required_title">需要登录</string>
-    <string name="sign_in_to_use_limit_order_feature">您必须登录才能使用限价订单功能</string>
+    <string name="sign_in_to_use_limit_order_feature">请登录您的个人资料以使用限价订单功能</string>
     <string name="question_why">Why?</string>
     <string name="actual_receive_amount">实际收到金额：％s</string>
     <string name="estimated_amount">估计金额：％s</string>
@@ -564,6 +565,7 @@
     <string name="setting_support_message">请将您的请求发送至support@kyber.network</string>
     <string name="share_with_friends">和朋友分享</string>
     <string name="small_amount_of_eth_transaction_fee">少量的ETH将用于交易费用</string>
+    <string name="nationality_singaporean">SINGAPOREAN</string>
 
 
 </resources>

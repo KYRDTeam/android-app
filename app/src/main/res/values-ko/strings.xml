@@ -89,6 +89,7 @@
     <string name="address_copy">주소 복사 됨</string>
     <string name="create_wallet_success">새 지갑을 성공적으로 만들었습니다!</string>
     <string name="default_wallet_name">제목 없음</string>
+    <string name="default_kyber_code_wallet_name">Promo Code wallet</string>
     <string name="token">Token</string>
     <string name="default_swap_amount">0.000</string>
     <string name="advanced_optional">고급 (선택 사항)</string>
@@ -406,7 +407,7 @@
     <string name="order_filled_details">자세히</string>
     <string name="title_error">오류</string>
     <string name="title_fail">실패</string>
-    <string name="sign_in_required">You must sign in to use Price Alert feature</string>
+    <string name="sign_in_required">Please sign in to your Profile to use Price Alert</string>
     <string name="wellcome_back">다시 오신 것을 환영합니다, %s</string>
     <string name="lout_out_confirmation">로그 아웃 하시겠습니까?</string>
     <string name="alert_notification_title">Get Alert notifications by:</string>
@@ -564,6 +565,7 @@
     </string-array>
     <string name="limit_order_rate_too_big">목표 비율이 너무 높습니다. 최대치는 현재 비율의 10배입니다.</string>
     <string name="login">로그인\"</string>
+    <string name="nationality_singaporean">SINGAPOREAN</string>
 
 
 </resources>
