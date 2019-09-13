@@ -11,13 +11,13 @@
     <string name="landing_2_title">Instant Swap with KyberSwap</string>
     <string name="landing_3_title">Profile</string>
     <string name="landing_1_content">Designed with highest security standard.\n Easily import &amp; export accounts from other\n wallet apps.</string>
-    <string name="landing_2_content">Swap between arbitrary token pair.\nNo desposit needed.</string>
+    <string name="landing_2_content">Swap between arbitrary token pair.\nNo deposit needed.</string>
     <string name="landing_3_content">Easy to manage your profile and unlock other features. \nStraight from the app.</string>
     <string name="landing_limit_order_description">Swap at your target price, fully control of your funds, low fees, seamless UX</string>
     <string name="company_name">Kyber</string>
     <string name="title_confirmation">Confirm</string>
     <string name="title_wrong_backup">Wrong Backup</string>
-    <string name="message_close_app_confirmation">This process will create a new wallet for you. Please confirm so that we know you did not accidentally pressed the button.</string>
+    <string name="message_close_app_confirmation">This creates a new Ethereum wallet for you to receive and send tokens.</string>
     <string name="message_wrong_backup">Your backup words are incorrect.\n Please try again.</string>
     <string name="message_wrong_backup_again">You entered the wrong backup words for another time. Want to backup again?</string>
     <string name="confirm">Confirm</string>

@@ -16,7 +16,7 @@
     <string name="company_name">Kyber</string>
     <string name="title_confirmation">확인</string>
     <string name="title_wrong_backup">잘못된 백업</string>
-    <string name="message_close_app_confirmation">새 지갑을 생성합니다. 실행 취소 할 수는 없지만, 추후에 지갑 목록에서 삭제할 수 있습니다.</string>
+    <string name="message_close_app_confirmation">토큰을 받고 전송하기 위한 새로운 이더리움 지갑이 생성됩니다.</string>
     <string name="message_wrong_backup">백업 단어가 잘못되었습니다. 다시 시도하십시오.</string>
     <string name="message_wrong_backup_again">잘못된 백업 단어를 입력했습니다. 다시 백업할까요?</string>
     <string name="confirm">확인</string>

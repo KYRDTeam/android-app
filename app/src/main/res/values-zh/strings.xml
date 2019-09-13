@@ -16,7 +16,7 @@
     <string name="company_name">Kyber</string>
     <string name="title_confirmation">确认</string>
     <string name="title_wrong_backup">错误的备份</string>
-    <string name="message_close_app_confirmation">此过程将为您创建一个新钱包。 请确认，以便我们知道您没有意外按下按钮。</string>
+    <string name="message_close_app_confirmation">这会创建一个新的以太坊钱包，讓您接收和发送代幣。</string>
     <string name="message_wrong_backup">您的备份词不正确。请重试。</string>
     <string name="message_wrong_backup_again">您输入了错误的备份单词。要重新备份吗？</string>
     <string name="confirm">确认</string>

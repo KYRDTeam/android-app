@@ -17,7 +17,7 @@
     <string name="company_name">Kyber</string>
     <string name="title_confirmation">Xác nhận</string>
     <string name="title_wrong_backup">Sao lưu sai</string>
-    <string name="message_close_app_confirmation">Quy trình này sẽ tạo một địa chỉ ví mới. Vui lòng xác nhận nếu bạn muốn tiếp tục.</string>
+    <string name="message_close_app_confirmation">Tạo ví Ethereum mới để nhận và gửi các loại token.</string>
     <string name="message_wrong_backup">Các từ dự phòng của bạn không chính xác.  Vui lòng thử lại.</string>
     <string name="message_wrong_backup_again">Bạn đã nhập sai từ dự phòng cho một lần khác. Bạn muốn sao lưu lại?</string>
     <string name="confirm">Xác nhận</string>
