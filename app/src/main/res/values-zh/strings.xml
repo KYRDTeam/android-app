@@ -555,10 +555,6 @@
     <string name="error_http_exception">尝试连接服务器时出错，请稍后再试</string>
     <string name="error_unknown_host">找不到可连接的主机，请稍后再试</string>
     <string name="convert">Convert</string>
-    <string-array name="backup_wallet_description_bold">
-        <item>@string/backup_wallet_description_2</item>
-        <item>@string/backup_wallet_description_5</item>
-    </string-array>
     <string name="name_your_wallet">钱包名称 (可选)</string>
     <string name="see_less">收回</string>
     <string name="see_more">看到更多</string>
@@ -571,6 +567,48 @@
     <string name="landing_limit_order_description">以您的目标价格兑换，时刻掌控您的资金，低费用，便捷的用户体验</string>
     <string name="about_pdpa_update">About PDPA update</string>
     <string name="pdpa_content"><![CDATA[We are aware of the revised Advisory Guidelines on the PDPA for NRIC and other National Identification Numbers that Personal Data Protection Commission (PDPA) issued on 31 August 2018. We seek your understanding that we are continuing  with the collection and use of NRIC Numbers / Foreign Identification Numbers / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers to ensure that KyberSwap does not deal with assets or funds that are proceeds of drug dealing, criminal conduct or property relating to money laundering or terrorism financing offence.   We assure you that we will undertake proper safeguarding measures to protect your personal data (including NRIC Numbers / FIN / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers) under our care. Contact us at support@kyber.network should you have any queries or concerns.]]></string>
+    <string-array name="backup_wallet_description_bold">
+        <item>@string/backup_wallet_description_2</item>
+        <item>@string/backup_wallet_description_5</item>
+    </string-array>
 
+    <string-array name="proof_address">
+        <item>银行对帐单</item>
+        <item>来自银行的信件</item>
+        <item>投票表决</item>
+        <item>退税</item>
+        <item>来自政府机构的通</item>
+        <item>水电</item>
+        <item>电话账单</item>
+    </string-array>
+    <string-array name="source_funds">
+        <item>薪水</item>
+        <item>遗产</item>
+        <item>贷款</item>
+        <item>彩票/意外收入</item>
+        <item>租金收入</item>
+        <item>营业收入</item>
+        <item>投资收益</item>
+    </string-array>
+
+    <string-array name="proof_address_key">
+        <item>Bank Statement</item>
+        <item>Correspondences from Bank</item>
+        <item>Polling vote</item>
+        <item>Tax return</item>
+        <item>Correspondence from a government agency</item>
+        <item>Utility</item>
+        <item>Telephone Bill</item>
+    </string-array>
+
+    <string-array name="source_funds_key">
+        <item>Salary</item>
+        <item>Inheritance</item>
+        <item>Loan</item>
+        <item>Lottery/Windfall</item>
+        <item>Rental income</item>
+        <item>Business revenue</item>
+        <item>Investment gain</item>
+    </string-array>
 
 </resources>

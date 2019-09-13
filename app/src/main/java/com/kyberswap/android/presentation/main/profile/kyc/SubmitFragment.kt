@@ -26,7 +26,8 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.di.ViewModelFactory
-import java.util.Locale
+import kotlinx.android.synthetic.main.fragment_personal_info.*
+import java.util.*
 import javax.inject.Inject
 
 
@@ -48,6 +49,22 @@ class SubmitFragment : BaseFragment() {
 
     private val handler by lazy {
         Handler()
+    }
+
+    private val sourceFunds by lazy {
+        resources.getStringArray(R.array.source_funds)
+    }
+
+    private val sourceFundsKeys by lazy {
+        resources.getStringArray(R.array.source_funds_key)
+    }
+
+    private val proofAddress by lazy {
+        resources.getStringArray(R.array.proof_address)
+    }
+
+    private val proofAddressKeys by lazy {
+        resources.getStringArray(R.array.proof_address_key)
     }
 
     private var user: UserInfo? = null
@@ -98,9 +115,20 @@ class SubmitFragment : BaseFragment() {
                                 binding.lnBackSide.visibility =
                                     if (it.isPassport) View.GONE else View.VISIBLE
 
+                                val sourceFundIndex = sourceFundsKeys.indexOf(it.sourceFund)
+                                if (sourceFundIndex >= 0) {
+                                    edtSourceFund.setText(sourceFunds[sourceFundIndex])
+                                } else {
+                                    edtSourceFund.setText(it.sourceFund)
+                                }
 
-
-
+                                val proofAddressIndex =
+                                    proofAddressKeys.indexOf(it.documentProofAddress)
+                                if (proofAddressIndex >= 0) {
+                                    edtProofAddress.setText(proofAddress[proofAddressIndex])
+                                } else {
+                                    edtProofAddress.setText(it.documentProofAddress)
+                                }
                                 if (info.photoIdentityFrontSide.isNotEmpty()) {
                                     this.frontImageString =
                                         info.photoIdentityFrontSide.removePrefix(BASE64_PREFIX)

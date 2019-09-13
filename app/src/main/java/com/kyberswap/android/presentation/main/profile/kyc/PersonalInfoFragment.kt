@@ -36,13 +36,8 @@ import com.kyberswap.android.util.ext.toDate
 import com.tbruyelle.rxpermissions2.RxPermissions
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import kotlinx.android.synthetic.main.fragment_personal_info.*
-import pl.aprilapps.easyphotopicker.ChooserType
-import pl.aprilapps.easyphotopicker.DefaultCallback
-import pl.aprilapps.easyphotopicker.EasyImage
-import pl.aprilapps.easyphotopicker.MediaFile
-import pl.aprilapps.easyphotopicker.MediaSource
-import java.util.Calendar
-import java.util.Locale
+import pl.aprilapps.easyphotopicker.*
+import java.util.*
 import javax.inject.Inject
 
 
@@ -90,7 +85,21 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 
     private var stringImage: String? = null
 
-    private var currentDisplayString: String? = null
+    private val sourceFunds by lazy {
+        resources.getStringArray(R.array.source_funds)
+    }
+
+    private val sourceFundsKeys by lazy {
+        resources.getStringArray(R.array.source_funds_key)
+    }
+
+    private val proofAddress by lazy {
+        resources.getStringArray(R.array.proof_address)
+    }
+
+    private val proofAddressKeys by lazy {
+        resources.getStringArray(R.array.proof_address_key)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -166,6 +175,21 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                                 binding.rgGender.check(R.id.rbMale)
                             } else {
                                 binding.rgGender.check(R.id.rbFemale)
+                            }
+
+                            val sourceFundIndex = sourceFundsKeys.indexOf(binding.info?.sourceFund)
+                            if (sourceFundIndex >= 0) {
+                                edtSourceFund.setText(sourceFunds[sourceFundIndex])
+                            } else {
+                                edtSourceFund.setText(binding.info?.sourceFund)
+                            }
+
+                            val proofAddressIndex =
+                                proofAddressKeys.indexOf(binding.info?.documentProofAddress)
+                            if (proofAddressIndex >= 0) {
+                                edtProofAddress.setText(proofAddress[proofAddressIndex])
+                            } else {
+                                edtProofAddress.setText(binding.info?.documentProofAddress)
                             }
 
                             val occupationCode = binding.info?.occupationCode?.trim()
@@ -540,7 +564,10 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                             residentialAddress = binding.edtResidentAddress.text.toString(),
                             city = binding.edtCityResident.text.toString(),
                             zipCode = binding.edtPostalCode.text.toString(),
-                            documentProofAddress = binding.edtProofAddress.text.toString(),
+                            documentProofAddress =
+                            if (proofAddress.indexOf(binding.edtProofAddress.text.toString()) >= 0) {
+                                proofAddressKeys[proofAddress.indexOf(binding.edtProofAddress.text.toString())]
+                            } else binding.edtProofAddress.text.toString(),
                             photoProofAddress = BASE64_PREFIX + stringImage,
                             occupationCode = binding.edtOccupationCode.text.toString().split("-").firstOrNull()
                                 ?: "",
@@ -549,7 +576,11 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                             taxResidencyCountry = binding.edtTaxCountry.text.toString(),
                             haveTaxIdentification = binding.rbYes.isChecked,
                             taxIdentificationNumber = binding.edtTaxCountry.text.toString(),
-                            sourceFund = binding.edtSourceFund.text.toString()
+                            sourceFund =
+                            if (sourceFunds.indexOf(binding.edtSourceFund.text.toString()) >= 0) {
+                                sourceFundsKeys[sourceFunds.indexOf(binding.edtSourceFund.text.toString())]
+                            } else
+                                binding.edtSourceFund.text.toString()
                         )
                     )
                 }
@@ -571,7 +602,9 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
             residentialAddress = binding.edtResidentAddress.text.toString(),
             city = binding.edtCityResident.text.toString(),
             zipCode = binding.edtPostalCode.text.toString(),
-            documentProofAddress = binding.edtProofAddress.text.toString(),
+            documentProofAddress = if (proofAddress.indexOf(binding.edtProofAddress.text.toString()) >= 0) {
+                proofAddressKeys[proofAddress.indexOf(binding.edtProofAddress.text.toString())]
+            } else binding.edtProofAddress.text.toString(),
             photoProofAddress = BASE64_PREFIX + stringImage,
             occupationCode = binding.edtOccupationCode.text.toString().split("-").firstOrNull()
                 ?: "",
@@ -580,7 +613,10 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
             taxResidencyCountry = binding.edtTaxCountry.text.toString(),
             haveTaxIdentification = binding.rbYes.isChecked,
             taxIdentificationNumber = binding.edtTaxCountry.text.toString(),
-            sourceFund = binding.edtSourceFund.text.toString()
+            sourceFund = if (sourceFunds.indexOf(binding.edtSourceFund.text.toString()) >= 0) {
+                sourceFundsKeys[sourceFunds.indexOf(binding.edtSourceFund.text.toString())]
+            } else
+                binding.edtSourceFund.text.toString()
         )
             ?.let {
                 viewModel.saveLocal(
@@ -778,7 +814,6 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 //                    // clear it here as you can no longer have the bitmap
 //                }
 //            })
-
         Glide.with(binding.imgAddress)
             .load(byteArray)
             .addListener(object : RequestListener<Drawable> {
@@ -803,6 +838,8 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                     return false
                 }
             })
+            .dontAnimate()
+            .fitCenter()
             .into(binding.imgAddress)
     }
 
