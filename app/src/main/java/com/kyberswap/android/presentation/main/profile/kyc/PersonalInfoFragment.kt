@@ -4,6 +4,7 @@ package com.kyberswap.android.presentation.main.profile.kyc
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,10 +13,8 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.gson.Gson
 import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.jakewharton.rxbinding3.widget.textChanges
@@ -42,6 +41,7 @@ import pl.aprilapps.easyphotopicker.EasyImage
 import pl.aprilapps.easyphotopicker.MediaFile
 import pl.aprilapps.easyphotopicker.MediaSource
 import java.util.Calendar
+import java.util.Locale
 import javax.inject.Inject
 
 
@@ -89,7 +89,21 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 
     private var stringImage: String? = null
 
-    private var currentDisplayString: String? = null
+    private val sourceFunds by lazy {
+        resources.getStringArray(R.array.source_funds)
+    }
+
+    private val sourceFundsKeys by lazy {
+        resources.getStringArray(R.array.source_funds_key)
+    }
+
+    private val proofAddress by lazy {
+        resources.getStringArray(R.array.proof_address)
+    }
+
+    private val proofAddressKeys by lazy {
+        resources.getStringArray(R.array.proof_address_key)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -107,7 +121,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
         val rxPermissions = RxPermissions(this)
 
         easyImage = EasyImage.Builder(this.context!!)
-            .setChooserTitle(getString(R.string.upload_document))
+            .setChooserTitle(getString(R.string.browse))
             .setCopyImagesToPublicGalleryFolder(true)
             .setChooserType(ChooserType.CAMERA_AND_GALLERY)
             .setFolderName("kyc")
@@ -165,6 +179,21 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                                 binding.rgGender.check(R.id.rbMale)
                             } else {
                                 binding.rgGender.check(R.id.rbFemale)
+                            }
+
+                            val sourceFundIndex = sourceFundsKeys.indexOf(binding.info?.sourceFund)
+                            if (sourceFundIndex >= 0) {
+                                edtSourceFund.setText(sourceFunds[sourceFundIndex])
+                            } else {
+                                edtSourceFund.setText(binding.info?.sourceFund)
+                            }
+
+                            val proofAddressIndex =
+                                proofAddressKeys.indexOf(binding.info?.documentProofAddress)
+                            if (proofAddressIndex >= 0) {
+                                edtProofAddress.setText(proofAddress[proofAddressIndex])
+                            } else {
+                                edtProofAddress.setText(binding.info?.documentProofAddress)
                             }
 
                             val occupationCode = binding.info?.occupationCode?.trim()
@@ -458,6 +487,18 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                     binding.ilNationality.error = error
                 }
 
+                edtNationality.text.toString().toLowerCase(Locale.getDefault()) == getString(R.string.nationality_singaporean).toLowerCase(
+                    Locale.getDefault()
+                ) -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_nationality),
+                        message = String.format(
+                            getString(R.string.kyc_not_support),
+                            getString(R.string.country_singapore)
+                        )
+                    )
+                }
+
                 edtCityResident.text.toString().isBlank() -> {
                     val error = getString(R.string.kyc_city_required)
                     showAlertWithoutIcon(title = getString(R.string.invalid_input), message = error)
@@ -496,6 +537,17 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                     binding.ilCountry.error = error
                 }
 
+                edtCountryResident.text.toString().toLowerCase(Locale.getDefault()) == getString(R.string.country_singapore).toLowerCase(
+                    Locale.getDefault()
+                ) -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_input), message = String.format(
+                            getString(R.string.kyc_not_support),
+                            getString(R.string.country_singapore)
+                        )
+                    )
+                }
+
                 edtResidentAddress.text.toString().isBlank() -> {
                     val error = getString(R.string.kyc_residental_address_required)
                     showAlertWithoutIcon(title = getString(R.string.invalid_input), message = error)
@@ -516,7 +568,10 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                             residentialAddress = binding.edtResidentAddress.text.toString(),
                             city = binding.edtCityResident.text.toString(),
                             zipCode = binding.edtPostalCode.text.toString(),
-                            documentProofAddress = binding.edtProofAddress.text.toString(),
+                            documentProofAddress =
+                            if (proofAddress.indexOf(binding.edtProofAddress.text.toString()) >= 0) {
+                                proofAddressKeys[proofAddress.indexOf(binding.edtProofAddress.text.toString())]
+                            } else binding.edtProofAddress.text.toString(),
                             photoProofAddress = BASE64_PREFIX + stringImage,
                             occupationCode = binding.edtOccupationCode.text.toString().split("-").firstOrNull()
                                 ?: "",
@@ -525,7 +580,11 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                             taxResidencyCountry = binding.edtTaxCountry.text.toString(),
                             haveTaxIdentification = binding.rbYes.isChecked,
                             taxIdentificationNumber = binding.edtTaxCountry.text.toString(),
-                            sourceFund = binding.edtSourceFund.text.toString()
+                            sourceFund =
+                            if (sourceFunds.indexOf(binding.edtSourceFund.text.toString()) >= 0) {
+                                sourceFundsKeys[sourceFunds.indexOf(binding.edtSourceFund.text.toString())]
+                            } else
+                                binding.edtSourceFund.text.toString()
                         )
                     )
                 }
@@ -547,7 +606,9 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
             residentialAddress = binding.edtResidentAddress.text.toString(),
             city = binding.edtCityResident.text.toString(),
             zipCode = binding.edtPostalCode.text.toString(),
-            documentProofAddress = binding.edtProofAddress.text.toString(),
+            documentProofAddress = if (proofAddress.indexOf(binding.edtProofAddress.text.toString()) >= 0) {
+                proofAddressKeys[proofAddress.indexOf(binding.edtProofAddress.text.toString())]
+            } else binding.edtProofAddress.text.toString(),
             photoProofAddress = BASE64_PREFIX + stringImage,
             occupationCode = binding.edtOccupationCode.text.toString().split("-").firstOrNull()
                 ?: "",
@@ -556,7 +617,10 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
             taxResidencyCountry = binding.edtTaxCountry.text.toString(),
             haveTaxIdentification = binding.rbYes.isChecked,
             taxIdentificationNumber = binding.edtTaxCountry.text.toString(),
-            sourceFund = binding.edtSourceFund.text.toString()
+            sourceFund = if (sourceFunds.indexOf(binding.edtSourceFund.text.toString()) >= 0) {
+                sourceFundsKeys[sourceFunds.indexOf(binding.edtSourceFund.text.toString())]
+            } else
+                binding.edtSourceFund.text.toString()
         )
             ?.let {
                 viewModel.saveLocal(
@@ -754,32 +818,47 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 //                    // clear it here as you can no longer have the bitmap
 //                }
 //            })
-
         Glide.with(binding.imgAddress)
+            .asBitmap()
             .load(byteArray)
-            .addListener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    isFirstResource: Boolean
-                ): Boolean {
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                     binding.progressBar.visibility = View.GONE
-                    return false
+                    binding.imgAddress.setImageBitmap(resource)
                 }
 
-                override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    dataSource: DataSource?,
-                    isFirstResource: Boolean
-                ): Boolean {
+                override fun onLoadCleared(placeholder: Drawable?) {
                     binding.progressBar.visibility = View.GONE
-                    return false
+                    // this is called when imageView is cleared on lifecycle call or for
+                    // some other reason.
+                    // if you are referencing the bitmap somewhere else too other than this imageView
+                    // clear it here as you can no longer have the bitmap
                 }
             })
-            .into(binding.imgAddress)
+//            .addListener(object : RequestListener<Drawable> {
+//                override fun onLoadFailed(
+//                    e: GlideException?,
+//                    model: Any?,
+//                    target: Target<Drawable>?,
+//                    isFirstResource: Boolean
+//                ): Boolean {
+//                    binding.progressBar.visibility = View.GONE
+//                    return false
+//                }
+//
+//                override fun onResourceReady(
+//                    resource: Drawable?,
+//                    model: Any?,
+//                    target: Target<Drawable>?,
+//                    dataSource: DataSource?,
+//                    isFirstResource: Boolean
+//                ): Boolean {
+//                    binding.progressBar.visibility = View.GONE
+//                    return false
+//                }
+//            })
+
+//            .into(binding.imgAddress)
     }
 
     companion object {

@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 data class TransactionsEntity(
     @SerializedName("message")
-    val message: String = "",
+    val message: String? = "",
     @SerializedName("result")
     val result: List<TransactionEntity> = listOf(),
     @SerializedName("status")
-    val status: String = ""
+    val status: String? = ""
 )

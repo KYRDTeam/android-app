@@ -133,17 +133,21 @@ data class Order(
         get() = isMined && extraDisplay.isNotEmpty()
 
     val isInvalidated: Boolean
-        get() = status.toLowerCase() == Status.INVALIDATED.value.toLowerCase() &&
+        get() = status.toLowerCase(Locale.getDefault()) == Status.INVALIDATED.value.toLowerCase(
+            Locale.getDefault()
+        ) &&
             msg.isNotEmpty()
 
     val isPending: Boolean
-        get() = status.toLowerCase() == Status.OPEN.value || status.toLowerCase() == Status.IN_PROGRESS.value
+        get() = status.toLowerCase(Locale.getDefault()) == Status.OPEN.value
 
     val isOpen: Boolean
-        get() = status.toLowerCase() == Status.OPEN.value || status.toLowerCase() == Status.IN_PROGRESS.value
+        get() = status.toLowerCase(Locale.getDefault()) == Status.OPEN.value || status.toLowerCase(
+            Locale.getDefault()
+        ) == Status.IN_PROGRESS.value
 
     val isMined: Boolean
-        get() = status.toLowerCase() == Status.FILLED.value
+        get() = status.toLowerCase(Locale.getDefault()) == Status.FILLED.value
 
     val displayedDate: String
         get() = formatterShort.format(Date(time * 1000L))

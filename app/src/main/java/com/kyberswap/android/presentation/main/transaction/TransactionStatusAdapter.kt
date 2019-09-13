@@ -31,12 +31,13 @@ class TransactionStatusAdapter(
                 oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemEven && oldItem.transaction.sameKey(
                     newItem.transaction
                 ) -> true
-                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemEven && oldItem.transaction.sameKey(
-                    newItem.transaction
-                ) -> true
-                oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemOdd && oldItem.transaction.sameKey(
-                    newItem.transaction
-                ) -> true
+//                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemEven && oldItem.transaction.sameKey(
+//                    newItem.transaction
+//                ) -> true
+//                oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemOdd && oldItem.transaction.sameKey(
+//                    newItem.transaction
+//                ) -> true
+
                 else -> false
             }
         }
@@ -52,12 +53,12 @@ class TransactionStatusAdapter(
                 oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemEven && oldItem.transaction.sameDisplay(
                     newItem.transaction
                 ) -> true
-                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemEven && oldItem.transaction.sameDisplay(
-                    newItem.transaction
-                ) -> true
-                oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemOdd && oldItem.transaction.sameDisplay(
-                    newItem.transaction
-                ) -> true
+//                oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemEven && oldItem.transaction.sameDisplay(
+//                    newItem.transaction
+//                ) -> true
+//                oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemOdd && oldItem.transaction.sameDisplay(
+//                    newItem.transaction
+//                ) -> true
                 else -> false
             }
         }

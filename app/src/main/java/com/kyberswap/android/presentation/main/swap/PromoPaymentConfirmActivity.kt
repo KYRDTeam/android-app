@@ -68,7 +68,7 @@ class PromoPaymentConfirmActivity : BaseActivity(), KeystoreStorage {
                 showProgress(state == SwapTokenTransactionState.Loading)
                 when (state) {
                     is SwapTokenTransactionState.Success -> {
-                        showAlert(getString(R.string.swap_done))
+                        showAlert(getString(R.string.transaction_broadcasted_message))
                         onBackPressed()
                     }
                     is SwapTokenTransactionState.ShowError -> {

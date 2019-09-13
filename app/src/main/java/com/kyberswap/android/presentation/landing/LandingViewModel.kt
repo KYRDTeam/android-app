@@ -16,17 +16,20 @@ class LandingViewModel @Inject constructor(
 ) : ViewModel() {
     val landingList by lazy {
         listOf(
-            Landing(
-                R.drawable.ic_security_check,
-                R.string.landing_1_title,
-                R.string.landing_1_content
-            ),
+
             Landing(R.drawable.swap, R.string.landing_2_title, R.string.landing_2_content),
             Landing(
-                R.drawable.profile,
-                R.string.landing_3_title,
-                R.string.landing_3_content
-            )
+                R.drawable.ic_litmit_order_icons,
+                R.string.limit_order,
+                R.string.landing_limit_order_description
+            ),
+
+                Landing(
+                R.drawable.ic_security_check,
+            R.string.landing_1_title,
+            R.string.landing_1_content
+        )
+
         )
     }
 

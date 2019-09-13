@@ -7,7 +7,11 @@ import com.kyberswap.android.domain.model.Send
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
+import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfer
+import com.kyberswap.android.presentation.common.specialGasLimitDefault
+import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetSendState
 import com.kyberswap.android.presentation.main.swap.TransferTokenTransactionState
 import com.kyberswap.android.util.ErrorHandler
@@ -17,12 +21,17 @@ import javax.inject.Inject
 class SendConfirmViewModel @Inject constructor(
     private val getSendTokenUseCase: GetSendTokenUseCase,
     private val transferTokenUseCase: TransferTokenUseCase,
+    private val estimateTransferGasUseCase: EstimateTransferGasUseCase,
     private val errorHandler: ErrorHandler
 ) : ViewModel() {
 
     private val _getSendCallback = MutableLiveData<Event<GetSendState>>()
     val getSendCallback: LiveData<Event<GetSendState>>
         get() = _getSendCallback
+
+    private val _getGetGasLimitCallback = MutableLiveData<Event<GetGasLimitState>>()
+    val getGetGasLimitCallback: LiveData<Event<GetGasLimitState>>
+        get() = _getGetGasLimitCallback
 
 
     private val _transferTokenTransactionCallback =
@@ -41,6 +50,34 @@ class SendConfirmViewModel @Inject constructor(
                 _getSendCallback.value = Event(GetSendState.ShowError(errorHandler.getError(it)))
             },
             GetSendTokenUseCase.Param(wallet)
+        )
+    }
+
+    fun getGasLimit(send: Send?, wallet: Wallet?) {
+        if (send == null || wallet == null) return
+        estimateTransferGasUseCase.dispose()
+        estimateTransferGasUseCase.execute(
+            Consumer {
+
+                val gasLimit = calculateDefaultGasLimitTransfer(send.tokenSource)
+                    .min(it.amountUsed.multiply(120.toBigInteger()).divide(100.toBigInteger()))
+
+                val specialGasLimit = specialGasLimitDefault(send.tokenSource, send.tokenSource)
+
+                _getGetGasLimitCallback.value = Event(
+                    GetGasLimitState.Success(
+                        if (specialGasLimit != null) {
+                            specialGasLimit.min(gasLimit)
+                        } else {
+                            gasLimit
+                        }
+                    )
+                )
+            },
+            Consumer {
+                it.printStackTrace()
+            },
+            EstimateTransferGasUseCase.Param(wallet, send)
         )
     }
 

@@ -74,13 +74,7 @@ class TransactionDataRepository @Inject constructor(
                     transactionDao.findTransaction(tx.hash, Transaction.PENDING_TRANSACTION_STATUS)
                 transaction?.let {
                     if (tx.blockNumber.toLongSafe() > 0) {
-
                         transactionDao.delete(it)
-                        val updatedStatus = tx.copy(transactionStatus = "")
-                        if (!(updatedStatus.tokenSymbol == Token.DGX || updatedStatus.tokenSource == Token.DGX)) {
-                            transactionDao.insertTransaction(updatedStatus)
-                        }
-//                        sendNotification(updatedStatus)
                         updateBalance(it, param.wallet)
                     }
                 }
@@ -549,7 +543,7 @@ class TransactionDataRepository @Inject constructor(
                 transactions
             }
             .filter {
-                (it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO) || it.isTransactionFail
+                it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO || it.isTransactionFail
             }.map {
                 it.copy(
                     tokenSymbol = Token.ETH,
@@ -569,6 +563,7 @@ class TransactionDataRepository @Inject constructor(
                     tokenDecimal = Token.ETH_DECIMAL.toString()
                 )
             }.toList()
+
 
         val erc20Transaction = fetchERC20TokenTransactions(wallet, startBlock)
 
@@ -615,10 +610,12 @@ class TransactionDataRepository @Inject constructor(
                                 )
                             } else {
                                 transactionList.add(
+
                                     transactions.last().copy(
                                         walletAddress = wallet.address
                                     )
                                 )
+
                                 transactionList.add(
                                     transactions.first().copy(
                                         walletAddress = wallet.address
@@ -719,6 +716,7 @@ class TransactionDataRepository @Inject constructor(
                                         }
                                     }
                                     if (isForceRefesh) {
+
                                         transactionDao.forceUpdateTransactionBatch(
                                             it,
                                             wallet.address

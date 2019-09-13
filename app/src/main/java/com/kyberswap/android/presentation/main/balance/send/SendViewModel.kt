@@ -199,7 +199,9 @@ class SendViewModel @Inject constructor(
                     )
                 )
             },
-            Consumer { },
+            Consumer {
+                it.printStackTrace()
+            },
             EstimateTransferGasUseCase.Param(wallet, send)
         )
     }
