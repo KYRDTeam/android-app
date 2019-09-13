@@ -73,8 +73,7 @@ class KyberCodeFragment : BaseFragment() {
             hideKeyboard()
             viewModel.createWalletByKyberCode(
                 binding.edtKyberCode.text?.trim().toString(),
-                if (binding.edtWalletName.text.isNotEmpty()) binding.edtWalletName.text.toString()
-                else getString(R.string.default_wallet_name)
+                getString(R.string.default_kyber_code_wallet_name)
             )
         }
 

@@ -496,7 +496,6 @@
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="@string/bank_statement"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
@@ -582,7 +581,6 @@
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:text="@{info.sourceFund}"
                         android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />

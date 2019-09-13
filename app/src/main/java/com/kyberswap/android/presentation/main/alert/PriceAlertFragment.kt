@@ -256,8 +256,8 @@ class PriceAlertFragment : BaseFragment() {
         )
         binding.alert?.let {
             val isEthWeth = it.token.isETH || it.token.isWETH
-            binding.rbEth.isEnabled =
-                !isEthWeth
+            binding.rbEth.visibility =
+                if (isEthWeth) View.GONE else View.VISIBLE
 
             if (isEthWeth) {
                 binding.rgCurrencies.check(R.id.rbUsd)

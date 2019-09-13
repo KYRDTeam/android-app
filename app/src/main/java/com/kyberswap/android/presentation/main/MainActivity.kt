@@ -195,14 +195,14 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         val initial = if (limitOrder != null) {
             MainPagerAdapter.LIMIT_ORDER
         } else {
-            MainPagerAdapter.SWAP
+            MainPagerAdapter.BALANCE
         }
 
         binding.vpNavigation.post {
             listener?.onPageSelected(initial)
         }
-        bottomNavigation.currentItem = initial
-        binding.vpNavigation.currentItem = initial
+//        bottomNavigation.currentItem = initial
+//        binding.vpNavigation.currentItem = initial
 
 
         binding.navView.rvWallet.layoutManager = LinearLayoutManager(

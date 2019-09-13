@@ -1,6 +1,7 @@
 package com.kyberswap.android.presentation.main.profile.kyc
 
 
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
@@ -11,10 +12,8 @@ import android.widget.ImageView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentKycSubmitBinding
@@ -26,6 +25,8 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.di.ViewModelFactory
+import kotlinx.android.synthetic.main.fragment_personal_info.*
+import java.util.Locale
 import javax.inject.Inject
 
 
@@ -47,6 +48,22 @@ class SubmitFragment : BaseFragment() {
 
     private val handler by lazy {
         Handler()
+    }
+
+    private val sourceFunds by lazy {
+        resources.getStringArray(R.array.source_funds)
+    }
+
+    private val sourceFundsKeys by lazy {
+        resources.getStringArray(R.array.source_funds_key)
+    }
+
+    private val proofAddress by lazy {
+        resources.getStringArray(R.array.proof_address)
+    }
+
+    private val proofAddressKeys by lazy {
+        resources.getStringArray(R.array.proof_address_key)
     }
 
     private var user: UserInfo? = null
@@ -97,9 +114,20 @@ class SubmitFragment : BaseFragment() {
                                 binding.lnBackSide.visibility =
                                     if (it.isPassport) View.GONE else View.VISIBLE
 
+                                val sourceFundIndex = sourceFundsKeys.indexOf(it.sourceFund)
+                                if (sourceFundIndex >= 0) {
+                                    edtSourceFund.setText(sourceFunds[sourceFundIndex])
+                                } else {
+                                    edtSourceFund.setText(it.sourceFund)
+                                }
 
-
-
+                                val proofAddressIndex =
+                                    proofAddressKeys.indexOf(it.documentProofAddress)
+                                if (proofAddressIndex >= 0) {
+                                    edtProofAddress.setText(proofAddress[proofAddressIndex])
+                                } else {
+                                    edtProofAddress.setText(it.documentProofAddress)
+                                }
                                 if (info.photoIdentityFrontSide.isNotEmpty()) {
                                     this.frontImageString =
                                         info.photoIdentityFrontSide.removePrefix(BASE64_PREFIX)
@@ -162,9 +190,39 @@ class SubmitFragment : BaseFragment() {
         })
 
         binding.tvSubmit.setOnClickListener {
+
             user?.let {
-                viewModel.submit(it)
+                when {
+                    it.kycInfo.nationality.toLowerCase(Locale.getDefault()) == getString(R.string.nationality_singaporean).toLowerCase(
+                        Locale.getDefault()
+                    ) -> {
+                        showAlertWithoutIcon(
+                            title = getString(R.string.invalid_nationality),
+                            message = String.format(
+                                getString(R.string.kyc_not_support),
+                                getString(R.string.country_singapore)
+                            )
+                        )
+                    }
+
+                    it.kycInfo.country.toLowerCase(Locale.getDefault()) == getString(R.string.country_singapore).toLowerCase(
+                        Locale.getDefault()
+                    ) -> {
+                        showAlertWithoutIcon(
+                            title = getString(R.string.invalid_input), message = String.format(
+                                getString(R.string.kyc_not_support),
+                                getString(R.string.country_singapore)
+                            )
+                        )
+                    }
+
+                    else -> {
+                        viewModel.submit(it)
+                    }
+                }
+
             }
+
         }
 
         viewModel.submitUserInfoCallback.observe(viewLifecycleOwner, Observer {
@@ -233,32 +291,80 @@ class SubmitFragment : BaseFragment() {
     }
 
     private fun glideDisplayImage(byteArray: ByteArray, imageView: ImageView?) {
-        imageView?.let {
-            Glide.with(it)
-                .load(byteArray)
-                .addListener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        isFirstResource: Boolean
-                    ): Boolean {
+//        imageView?.let {
+////            Glide.with(it)
+////                .load(byteArray)
+////                .addListener(object : RequestListener<Drawable> {
+////                    override fun onLoadFailed(
+////                        e: GlideException?,
+////                        model: Any?,
+////                        target: Target<Drawable>?,
+////                        isFirstResource: Boolean
+////                    ): Boolean {
+////                        showLoadingImage(false, imageView)
+////                        return false
+////                    }
+////
+////                    override fun onResourceReady(
+////                        resource: Drawable?,
+////                        model: Any?,
+////                        target: Target<Drawable>?,
+////                        dataSource: DataSource?,
+////                        isFirstResource: Boolean
+////                    ): Boolean {
+////                        showLoadingImage(false, imageView)
+////                        return false
+////                    }
+////                })
+////                .into(it)
+//
+//            Glide.with(it)
+//                .asBitmap()
+//                .load(
+//                    byteArray
+//                )
+//                .into(object : CustomTarget<Bitmap>() {
+//                    override fun onResourceReady(
+//                        resource: Bitmap,
+//                        transition: Transition<in Bitmap>?
+//                    ) {
+//                        showLoadingImage(false, imageView)
+//                        it.setImageBitmap(resource)
+//
+//                    }
+//
+//                    override fun onLoadCleared(placeholder: Drawable?) {
+//                        showLoadingImage(false, imageView)
+//                        // this is called when imageView is cleared on lifecycle call or for
+//                        // some other reason.
+//                        // if you are referencing the bitmap somewhere else too other than this imageView
+//                        // clear it here as you can no longer have the bitmap
+//                    }
+//                })
+//        }
+        if (imageView != null) {
+            Glide.with(imageView)
+                .asBitmap()
+                .load(
+                    byteArray
+                )
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: Transition<in Bitmap>?
+                    ) {
                         showLoadingImage(false, imageView)
-                        return false
+                        imageView.setImageBitmap(resource)
                     }
 
-                    override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource?,
-                        isFirstResource: Boolean
-                    ): Boolean {
+                    override fun onLoadCleared(placeholder: Drawable?) {
                         showLoadingImage(false, imageView)
-                        return false
+                        // this is called when imageView is cleared on lifecycle call or for
+                        // some other reason.
+                        // if you are referencing the bitmap somewhere else too other than this imageView
+                        // clear it here as you can no longer have the bitmap
                     }
                 })
-                .into(it)
         }
     }
 

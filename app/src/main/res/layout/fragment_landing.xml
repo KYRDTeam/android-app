@@ -35,11 +35,11 @@
 
             <TextView
                 android:id="@+id/tvLanding"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="45dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="16dp"
                 android:gravity="center_horizontal"
                 android:textAppearance="@style/TextAppearance.Montserrat.Medium"
                 android:textColor="#ffffff"
@@ -51,11 +51,11 @@
 
             <TextView
                 android:id="@+id/tvLandingContent"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="29dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="16dp"
                 android:gravity="center_horizontal"
                 android:minHeight="73dp"
                 android:textAppearance="@style/TextAppearance.Montserrat.Medium"

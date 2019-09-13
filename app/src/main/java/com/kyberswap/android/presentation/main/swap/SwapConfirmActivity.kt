@@ -13,6 +13,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.isNetworkAvailable
 import org.consenlabs.tokencore.wallet.KeystoreStorage
 import org.consenlabs.tokencore.wallet.WalletManager
 import java.io.File
@@ -55,6 +56,7 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
                 when (state) {
                     is GetSwapState.Success -> {
                         binding.swap = state.swap
+                        viewModel.getGasLimit(wallet, binding.swap)
                     }
                     is GetSwapState.ShowError -> {
 
@@ -79,6 +81,33 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
                         showError(
                             state.message ?: getString(R.string.something_wrong)
                         )
+                    }
+                }
+            }
+        })
+
+        viewModel.getGetGasLimitCallback.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetGasLimitState.Success -> {
+                        if (state.gasLimit.toString() != binding.swap?.gasLimit) {
+                            val swap = binding.swap?.copy(
+                                gasLimit = state.gasLimit.toString()
+                            )
+
+
+                            if (swap != binding.swap) {
+                                binding.swap = swap
+                                binding.executePendingBindings()
+                            }
+                        }
+                    }
+                    is GetGasLimitState.ShowError -> {
+                        if (isNetworkAvailable()) {
+                            showError(
+                                state.message ?: getString(R.string.something_wrong)
+                            )
+                        }
                     }
                 }
             }

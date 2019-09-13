@@ -4,46 +4,46 @@ import com.google.gson.annotations.SerializedName
 
 data class TransactionEntity(
     @SerializedName("blockHash")
-    val blockHash: String = "",
+    val blockHash: String? = "",
     @SerializedName("blockNumber")
-    val blockNumber: String = "",
+    val blockNumber: String? = "",
     @SerializedName("confirmations")
-    val confirmations: String = "",
+    val confirmations: String? = "",
     @SerializedName("contractAddress")
-    val contractAddress: String = "",
+    val contractAddress: String? = "",
     @SerializedName("cumulativeGasUsed")
-    val cumulativeGasUsed: String = "",
+    val cumulativeGasUsed: String? = "",
     @SerializedName("from")
-    val from: String = "",
+    val from: String? = "",
     @SerializedName("gas")
-    val gas: String = "",
+    val gas: String? = "",
     @SerializedName("gasPrice")
-    val gasPrice: String = "",
+    val gasPrice: String? = "",
     @SerializedName("gasUsed")
-    val gasUsed: String = "",
+    val gasUsed: String? = "",
     @SerializedName("hash")
-    val hash: String = "",
+    val hash: String? = "",
     @SerializedName("input")
-    val input: String = "",
+    val input: String? = "",
     @SerializedName("isError")
-    val isError: String = "",
+    val isError: String? = "",
     @SerializedName("nonce")
-    val nonce: String = "",
+    val nonce: String? = "",
     @SerializedName("timeStamp")
-    val timeStamp: String = "",
+    val timeStamp: String? = "",
     @SerializedName("to")
-    val to: String = "",
+    val to: String? = "",
     @SerializedName("transactionIndex")
-    val transactionIndex: String = "",
+    val transactionIndex: String? = "",
     @SerializedName("txreceipt_status")
-    val txreceiptStatus: String = "",
+    val txreceiptStatus: String? = "",
     @SerializedName("value")
-    val value: String = "",
+    val value: String? = "",
     @SerializedName("tokenName")
-    val tokenName: String = "",
+    val tokenName: String? = "",
     @SerializedName("tokenSymbol")
-    val tokenSymbol: String = "",
+    val tokenSymbol: String? = "",
     @SerializedName("tokenDecimal")
-    val tokenDecimal: String = ""
+    val tokenDecimal: String? = ""
 
 )

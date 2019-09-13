@@ -28,10 +28,13 @@ class TransactionMapper @Inject constructor() {
     ): List<Transaction> {
         return entities.map {
             val transactionType =
-                if (walletAddres.toLowerCase(Locale.getDefault()) == it.from.toLowerCase(Locale.getDefault())
+                if (walletAddres.toLowerCase(Locale.getDefault()) == it.from?.toLowerCase(Locale.getDefault())
                 ) {
                     Transaction.TransactionType.SEND
-                } else if (walletAddres.toLowerCase(Locale.getDefault()) == it.to.toLowerCase(Locale.getDefault())) {
+                } else if (walletAddres.toLowerCase(Locale.getDefault()) == it.to?.toLowerCase(
+                        Locale.getDefault()
+                    )
+                ) {
                     Transaction.TransactionType.RECEIVED
                 } else {
                     type

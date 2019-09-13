@@ -161,7 +161,7 @@ class WalletDataRepository @Inject constructor(
                         metadata,
                         param.privateKey,
                         generatedPassword,
-                        false
+                        param.promo != null
                     )
                 }
 

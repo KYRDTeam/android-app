@@ -19,9 +19,10 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.loadJSONFromAssets
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 class KycInfoSearchFragment : BaseFragment() {
     private lateinit var binding: FragmentKycInfoSearchBinding
@@ -49,6 +50,10 @@ class KycInfoSearchFragment : BaseFragment() {
     private val gson by lazy {
         Gson()
     }
+
+    private var sourceOfFunds = arrayOf<String>()
+
+    private var proofAddress = arrayOf<String>()
 
     private val hash = mutableMapOf<String, String>()
 
@@ -78,8 +83,14 @@ class KycInfoSearchFragment : BaseFragment() {
             val title = when (it) {
                 KycInfoType.NATIONALITY -> getString(R.string.nationality)
                 KycInfoType.COUNTRY_OF_RESIDENCE -> getString(R.string.country_of_residence)
-                KycInfoType.PROOF_ADDRESS -> getString(R.string.proof_of_address)
-                KycInfoType.SOURCE_FUND -> getString(R.string.source_of_funds)
+                KycInfoType.PROOF_ADDRESS -> {
+                    proofAddress = resources.getStringArray(R.array.proof_address)
+                    getString(R.string.proof_of_address)
+                }
+                KycInfoType.SOURCE_FUND -> {
+                    sourceOfFunds = resources.getStringArray(R.array.source_funds)
+                    getString(R.string.source_of_funds)
+                }
                 KycInfoType.OCCUPATION_CODE -> getString(R.string.occupation_code)
                 KycInfoType.INDUSTRY_CODE -> getString(R.string.industry_code)
                 KycInfoType.TAX_RESIDENCY_COUNTRY -> getString(R.string.your_country_of_tax_residency)
@@ -102,6 +113,24 @@ class KycInfoSearchFragment : BaseFragment() {
                         viewModel.save(hash.filterValues { entry ->
                             entry == it
                         }.keys.first(), it1)
+                    }
+                    KycInfoType.SOURCE_FUND -> {
+                        kycInfoType?.let { type ->
+                            viewModel.save(
+                                if (sourceOfFunds.indexOf(it.trim()) >= 0) data[sourceOfFunds.indexOf(
+                                    it.trim()
+                                )] else "", type
+                            )
+                        }
+                    }
+                    KycInfoType.PROOF_ADDRESS -> {
+                        kycInfoType?.let { type ->
+                            viewModel.save(
+                                if (proofAddress.indexOf(it.trim()) >= 0) data[proofAddress.indexOf(
+                                    it.trim()
+                                )] else "", type
+                            )
+                        }
                     }
                     else -> kycInfoType?.let { it1 -> viewModel.save(it, it1) }
                 }
@@ -176,13 +205,19 @@ class KycInfoSearchFragment : BaseFragment() {
     }
 
     private fun updateFilterList(searchedText: String?, searchAdapter: KycInfoSearchAdapter) {
+        val dataList = when (kycInfoType) {
+            KycInfoType.PROOF_ADDRESS -> proofAddress.toList()
+            KycInfoType.SOURCE_FUND -> sourceOfFunds.toList()
+            else -> data
+        }
         if (searchedText.isNullOrEmpty()) {
-            searchAdapter.submitFilterList(data)
+
+            searchAdapter.submitFilterList(dataList)
         } else {
             searchAdapter.submitFilterList(
                 getFilterTokenList(
                     currentSearchString,
-                    data
+                    dataList
                 )
             )
         }

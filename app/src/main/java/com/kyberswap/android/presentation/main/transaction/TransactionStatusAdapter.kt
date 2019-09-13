@@ -37,6 +37,7 @@ class TransactionStatusAdapter(
 //                oldItem is TransactionItem.ItemEven && newItem is TransactionItem.ItemOdd && oldItem.transaction.sameKey(
 //                    newItem.transaction
 //                ) -> true
+
                 else -> false
             }
         }

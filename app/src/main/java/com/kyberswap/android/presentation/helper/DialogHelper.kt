@@ -18,7 +18,30 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
-import com.kyberswap.android.databinding.*
+import com.kyberswap.android.databinding.Dialog2faBinding
+import com.kyberswap.android.databinding.DialogAlertTriggerBinding
+import com.kyberswap.android.databinding.DialogBackupMessageAgainBinding
+import com.kyberswap.android.databinding.DialogBackupMessageBinding
+import com.kyberswap.android.databinding.DialogBackupPhraseBottomSheetBinding
+import com.kyberswap.android.databinding.DialogBottomSheetBinding
+import com.kyberswap.android.databinding.DialogCancelOrderConfirmationBinding
+import com.kyberswap.android.databinding.DialogConfirmDeleteAlertBinding
+import com.kyberswap.android.databinding.DialogConfirmationBinding
+import com.kyberswap.android.databinding.DialogConfirmationWithNegativeOptionBinding
+import com.kyberswap.android.databinding.DialogEligibleTokenBinding
+import com.kyberswap.android.databinding.DialogExtraBottomSheetBinding
+import com.kyberswap.android.databinding.DialogForgotPasswordBinding
+import com.kyberswap.android.databinding.DialogHoldingPassportBottomSheetBinding
+import com.kyberswap.android.databinding.DialogImagePickerBottomSheetBinding
+import com.kyberswap.android.databinding.DialogInfoBinding
+import com.kyberswap.android.databinding.DialogInvalidatedBottomSheetBinding
+import com.kyberswap.android.databinding.DialogManageWalletBottomSheetBinding
+import com.kyberswap.android.databinding.DialogMaximumAlertBinding
+import com.kyberswap.android.databinding.DialogOrderFilledBinding
+import com.kyberswap.android.databinding.DialogPassportBottomSheetBinding
+import com.kyberswap.android.databinding.DialogPasswordBackupWalletBinding
+import com.kyberswap.android.databinding.DialogPdpaUpdateBinding
+import com.kyberswap.android.databinding.DialogSkipBackupPhraseBinding
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.NotificationLimitOrder
 import com.kyberswap.android.domain.model.Order
@@ -108,7 +131,6 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         dialog.setView(binding.root)
         dialog.show()
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
     }
 
 
@@ -181,7 +203,6 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         if (packageManager != null && intent.resolveActivity(packageManager) != null) {
             activity.startActivity(intent)
         }
-
     }
 
 
@@ -399,7 +420,6 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         dialog.setView(binding.root)
         dialog.show()
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
     }
 
 
@@ -445,7 +465,6 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         dialog.show()
 
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
     }
 
     fun showResetPassword(positiveListener: (email: String, dialog: AlertDialog) -> Unit) {
@@ -464,7 +483,6 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         dialog.setView(binding.root)
         dialog.show()
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
     }
 
     fun show2FaDialog(positiveListener: (token: String, dialog: AlertDialog) -> Unit) {
@@ -505,7 +523,6 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         dialog.setView(binding.root)
         dialog.show()
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
     }
 
     fun showWrongBackup(positiveListener: () -> Unit) {
@@ -526,7 +543,6 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         dialog.setView(binding.root)
         dialog.show()
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
     }
 
     fun showWrongBackup(
@@ -698,7 +714,6 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         dialog.setView(binding.root)
         dialog.show()
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
     }
 
     fun showExceedNumberAlertDialog(positiveListener: () -> Unit = {}) {
@@ -746,6 +761,23 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.order = Order(notification)
         binding.executePendingBindings()
 
+        dialog.show()
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    }
+
+    fun showPDPAUpdate() {
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogPdpaUpdateBinding>(
+                LayoutInflater.from(activity), R.layout.dialog_pdpa_update, null, false
+            )
+
+        binding.imgClose.setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.setView(binding.root)
         dialog.show()
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }

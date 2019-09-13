@@ -10,17 +10,26 @@ import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import com.google.gson.Gson
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.TransactionApi
-import com.kyberswap.android.data.db.*
+import com.kyberswap.android.data.db.LocalLimitOrderDao
+import com.kyberswap.android.data.db.SendDao
+import com.kyberswap.android.data.db.SwapDao
+import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.db.TransactionDao
+import com.kyberswap.android.data.db.TransactionFilterDao
 import com.kyberswap.android.data.mapper.TransactionMapper
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.TransactionFilter
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.TransactionRepository
-import com.kyberswap.android.domain.usecase.transaction.*
+import com.kyberswap.android.domain.usecase.transaction.GetTransactionFilterUseCase
+import com.kyberswap.android.domain.usecase.transaction.GetTransactionsPeriodicallyUseCase
+import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
+import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
+import com.kyberswap.android.domain.usecase.transaction.SaveTransactionFilterUseCase
+import com.kyberswap.android.domain.usecase.transaction.TransactionsData
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
@@ -33,10 +42,10 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Flowables
 import io.reactivex.rxkotlin.Singles
 import org.web3j.utils.Numeric
-import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.max
@@ -57,7 +66,6 @@ class TransactionDataRepository @Inject constructor(
     override fun monitorPendingTransactionsPolling(param: MonitorPendingTransactionUseCase.Param): Flowable<List<Transaction>> {
         return Flowable.fromCallable {
             val pendingTransactions = tokenClient.monitorPendingTransactions(param.transactions)
-            Timber.e("pendingTransactions: " + Gson().toJson(pendingTransactions))
             pendingTransactions.forEach { tx ->
                 val transaction =
                     transactionDao.findTransaction(tx.hash, Transaction.PENDING_TRANSACTION_STATUS)
@@ -331,7 +339,6 @@ class TransactionDataRepository @Inject constructor(
                         }
                     }
                 }
-                Timber.e(Gson().toJson(it))
                 transactionDao.insertTransactionBatch(it)
 
             }
@@ -599,10 +606,12 @@ class TransactionDataRepository @Inject constructor(
                                 )
                             } else {
                                 transactionList.add(
+
                                     transactions.last().copy(
                                         walletAddress = wallet.address
                                     )
                                 )
+
                                 transactionList.add(
                                     transactions.first().copy(
                                         walletAddress = wallet.address
@@ -703,6 +712,7 @@ class TransactionDataRepository @Inject constructor(
                                         }
                                     }
                                     if (isForceRefesh) {
+
                                         transactionDao.forceUpdateTransactionBatch(
                                             it,
                                             wallet.address
