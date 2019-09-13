@@ -108,7 +108,15 @@ class UserDataRepository @Inject constructor(
             }
                 .doAfterSuccess {
                     val currentUser = userDao.getUser() ?: UserInfo()
-                    userDao.updateUser(it.copy(kycInfo = currentUser.kycInfo))
+                    userDao.updateUser(
+                        it.copy(
+                            kycInfo = currentUser.kycInfo.copy(
+                                nationality = it.kycInfo.nationality,
+                                country = it.kycInfo.country,
+                                taxResidencyCountry = it.kycInfo.taxResidencyCountry
+                            )
+                        )
+                    )
 
                 }
                 .repeatWhen {

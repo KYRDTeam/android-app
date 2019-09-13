@@ -26,7 +26,6 @@ import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.di.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_personal_info.*
-import timber.log.Timber
 import java.util.Locale
 import javax.inject.Inject
 
@@ -292,7 +291,6 @@ class SubmitFragment : BaseFragment() {
     }
 
     private fun glideDisplayImage(byteArray: ByteArray, imageView: ImageView?) {
-        Timber.e(imageView?.id.toString())
 //        imageView?.let {
 ////            Glide.with(it)
 ////                .load(byteArray)

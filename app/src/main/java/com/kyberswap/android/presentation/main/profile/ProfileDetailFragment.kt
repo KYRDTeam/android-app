@@ -10,7 +10,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentProfileDetailBinding
@@ -29,7 +28,6 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.kyberswap.android.util.ext.underline
 import com.onesignal.OneSignal
-import timber.log.Timber
 import java.util.Locale
 import javax.inject.Inject
 
@@ -304,7 +302,6 @@ class ProfileDetailFragment : BaseFragment() {
     }
 
     private fun handlePDPA(kycInfo: KycInfo?) {
-        Timber.e(Gson().toJson(kycInfo))
         val isFromSingapore =
             kycInfo?.country?.toLowerCase(Locale.getDefault()) == getString(R.string.country_singapore).toLowerCase(
                 Locale.getDefault()

@@ -177,11 +177,11 @@
                     app:layout_constraintTop_toBottomOf="@+id/view13">
 
                     <LinearLayout
+                        android:layout_marginBottom="24dp"
                         android:id="@+id/lnVerify"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingBottom="40dp">
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/tvKycTitle"
@@ -224,9 +224,9 @@
                         android:id="@+id/tvPDPAUpdate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:minHeight="48dp"
                         android:gravity="center_vertical"
                         android:lineSpacingExtra="10sp"
-                        android:layout_marginBottom="40dp"
                         android:text="@string/about_pdpa_update"
                         android:textColor="#141927"
                         android:textSize="12sp"

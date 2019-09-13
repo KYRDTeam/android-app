@@ -12,9 +12,11 @@ import com.kyberswap.android.databinding.ActivitySendConfirmBinding
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetSendState
 import com.kyberswap.android.presentation.main.swap.TransferTokenTransactionState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.isNetworkAvailable
 import org.consenlabs.tokencore.wallet.KeystoreStorage
 import org.consenlabs.tokencore.wallet.WalletManager
 import java.io.File
@@ -63,6 +65,7 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
                     is GetSendState.Success -> {
                         if (binding.send != state.send) {
                             binding.send = state.send
+                            viewModel.getGasLimit(binding.send, wallet)
                         }
                     }
                     is GetSendState.ShowError -> {
@@ -89,6 +92,30 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
                             state.message ?: getString(R.string.something_wrong)
                         )
                         onBackPressed()
+                    }
+                }
+            }
+        })
+
+        viewModel.getGetGasLimitCallback.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetGasLimitState.Success -> {
+
+                        if (state.gasLimit.toString() != binding.send?.gasLimit) {
+                            val send = binding.send?.copy(
+                                gasLimit = state.gasLimit.toString()
+                            )
+
+                            binding.send = send
+                        }
+                    }
+                    is GetGasLimitState.ShowError -> {
+                        if (isNetworkAvailable()) {
+                            showError(
+                                state.message ?: getString(R.string.something_wrong)
+                            )
+                        }
                     }
                 }
             }
