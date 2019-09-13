@@ -185,7 +185,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                 now.get(Calendar.DAY_OF_MONTH)
             )
             dpd.maxDate = now
-            dpd.show(fragmentManager, "Datepickerdialog")
+            fragmentManager?.let { it1 -> dpd.show(it1, "Datepickerdialog") }
         }
 
         binding.edtExpiryDate.setOnClickListener {
@@ -198,7 +198,7 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
                 now.get(Calendar.DAY_OF_MONTH)
             )
             dpd.minDate = now
-            dpd.show(fragmentManager, "Datepickerdialog")
+            fragmentManager?.let { it1 -> dpd.show(it1, "Datepickerdialog") }
         }
 
         listOf(

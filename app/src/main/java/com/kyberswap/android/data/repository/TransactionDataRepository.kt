@@ -10,7 +10,6 @@ import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import com.google.gson.Gson
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.TransactionApi
 import com.kyberswap.android.data.db.LocalLimitOrderDao
@@ -43,7 +42,6 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Flowables
 import io.reactivex.rxkotlin.Singles
 import org.web3j.utils.Numeric
-import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.Date
@@ -68,7 +66,6 @@ class TransactionDataRepository @Inject constructor(
     override fun monitorPendingTransactionsPolling(param: MonitorPendingTransactionUseCase.Param): Flowable<List<Transaction>> {
         return Flowable.fromCallable {
             val pendingTransactions = tokenClient.monitorPendingTransactions(param.transactions)
-            Timber.e("pendingTransactions: " + Gson().toJson(pendingTransactions))
             pendingTransactions.forEach { tx ->
                 val transaction =
                     transactionDao.findTransaction(tx.hash, Transaction.PENDING_TRANSACTION_STATUS)
@@ -342,7 +339,6 @@ class TransactionDataRepository @Inject constructor(
                         }
                     }
                 }
-                Timber.e(Gson().toJson(it))
                 transactionDao.insertTransactionBatch(it)
 
             }

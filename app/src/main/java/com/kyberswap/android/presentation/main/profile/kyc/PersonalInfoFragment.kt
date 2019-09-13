@@ -324,7 +324,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                 now.get(Calendar.MONTH),
                 now.get(Calendar.DAY_OF_MONTH)
             )
-            dpd.show(fragmentManager, "Datepickerdialog")
+            fragmentManager?.let { it1 -> dpd.show(it1, "Datepickerdialog") }
         }
 
         binding.edtOccupationCode.setOnClickListener {
