@@ -4,6 +4,7 @@ package com.kyberswap.android.presentation.main.profile.kyc
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,10 +13,8 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.gson.Gson
 import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.jakewharton.rxbinding3.widget.textChanges
@@ -36,8 +35,13 @@ import com.kyberswap.android.util.ext.toDate
 import com.tbruyelle.rxpermissions2.RxPermissions
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import kotlinx.android.synthetic.main.fragment_personal_info.*
-import pl.aprilapps.easyphotopicker.*
-import java.util.*
+import pl.aprilapps.easyphotopicker.ChooserType
+import pl.aprilapps.easyphotopicker.DefaultCallback
+import pl.aprilapps.easyphotopicker.EasyImage
+import pl.aprilapps.easyphotopicker.MediaFile
+import pl.aprilapps.easyphotopicker.MediaSource
+import java.util.Calendar
+import java.util.Locale
 import javax.inject.Inject
 
 
@@ -815,32 +819,46 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 //                }
 //            })
         Glide.with(binding.imgAddress)
+            .asBitmap()
             .load(byteArray)
-            .addListener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    isFirstResource: Boolean
-                ): Boolean {
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                     binding.progressBar.visibility = View.GONE
-                    return false
+                    binding.imgAddress.setImageBitmap(resource)
                 }
 
-                override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    dataSource: DataSource?,
-                    isFirstResource: Boolean
-                ): Boolean {
+                override fun onLoadCleared(placeholder: Drawable?) {
                     binding.progressBar.visibility = View.GONE
-                    return false
+                    // this is called when imageView is cleared on lifecycle call or for
+                    // some other reason.
+                    // if you are referencing the bitmap somewhere else too other than this imageView
+                    // clear it here as you can no longer have the bitmap
                 }
             })
-            .dontAnimate()
-            .fitCenter()
-            .into(binding.imgAddress)
+//            .addListener(object : RequestListener<Drawable> {
+//                override fun onLoadFailed(
+//                    e: GlideException?,
+//                    model: Any?,
+//                    target: Target<Drawable>?,
+//                    isFirstResource: Boolean
+//                ): Boolean {
+//                    binding.progressBar.visibility = View.GONE
+//                    return false
+//                }
+//
+//                override fun onResourceReady(
+//                    resource: Drawable?,
+//                    model: Any?,
+//                    target: Target<Drawable>?,
+//                    dataSource: DataSource?,
+//                    isFirstResource: Boolean
+//                ): Boolean {
+//                    binding.progressBar.visibility = View.GONE
+//                    return false
+//                }
+//            })
+
+//            .into(binding.imgAddress)
     }
 
     companion object {

@@ -343,11 +343,13 @@
                             android:id="@+id/imgPassportFrontSide"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="25dp"
                             android:layout_marginEnd="16dp"
                             android:background="#ffffff"
-                            android:maxHeight="196dp" />
+                            android:minHeight="196dp"
+                            android:scaleType="fitCenter" />
 
                         <ProgressBar
                             android:id="@+id/progressBarPassportFrontSide"
@@ -417,9 +419,11 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="25dp"
+                            android:adjustViewBounds="true"
+                            android:minHeight="196dp"
                             android:layout_marginEnd="16dp"
                             android:background="#ffffff"
-                            android:maxHeight="196dp" />
+                            android:scaleType="fitCenter" />
 
                         <ProgressBar
                             android:id="@+id/progressBarPassportBackSide"
@@ -492,7 +496,9 @@
                             android:layout_marginTop="25dp"
                             android:layout_marginEnd="16dp"
                             android:background="#ffffff"
-                            android:maxHeight="196dp" />
+                            android:adjustViewBounds="true"
+                            android:minHeight="196dp"
+                            android:scaleType="fitCenter" />
 
                         <ProgressBar
                             android:id="@+id/progressBarPassportHolding"
