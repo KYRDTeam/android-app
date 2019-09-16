@@ -204,7 +204,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 //        bottomNavigation.currentItem = initial
 //        binding.vpNavigation.currentItem = initial
 
-
         binding.navView.rvWallet.layoutManager = LinearLayoutManager(
             this,
             RecyclerView.VERTICAL,
@@ -288,7 +287,14 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                         txList.forEach { transaction ->
                             val title: String
                             val message: String
-                            when (transaction.type) {
+
+                            val type = when {
+                                transaction.from == wallet?.address -> Transaction.TransactionType.SEND
+                                transaction.to == wallet?.address -> Transaction.TransactionType.RECEIVED
+                                else -> transaction.type
+                            }
+
+                            when (type) {
                                 Transaction.TransactionType.SEND -> {
                                     if (transaction.isTransactionFail) {
                                         title = getString(R.string.title_fail)

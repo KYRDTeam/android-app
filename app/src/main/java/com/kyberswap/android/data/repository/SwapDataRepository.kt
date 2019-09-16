@@ -52,6 +52,7 @@ import org.web3j.crypto.WalletUtils
 import org.web3j.protocol.core.methods.response.EthEstimateGas
 import org.web3j.utils.Convert
 import java.math.BigDecimal
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.pow
@@ -138,7 +139,7 @@ class SwapDataRepository @Inject constructor(
                 val swap = param.swap
                 transactionDao.insertTransaction(
                     Transaction(
-                        hash = it,
+                        hash = it.toLowerCase(Locale.getDefault()),
                         transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
                         timeStamp = System.currentTimeMillis() / 1000L,
                         from = swap.tokenSource.tokenAddress,
@@ -199,7 +200,7 @@ class SwapDataRepository @Inject constructor(
                 val transfer = param.send
                 transactionDao.insertTransaction(
                     Transaction(
-                        hash = it,
+                        hash = it.toLowerCase(Locale.getDefault()),
                         transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
                         timeStamp = System.currentTimeMillis() / 1000L,
                         from = transfer.tokenSource.tokenAddress,

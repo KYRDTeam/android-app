@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import com.google.gson.Gson
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.TransactionApi
 import com.kyberswap.android.data.db.LocalLimitOrderDao
@@ -42,6 +43,7 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Flowables
 import io.reactivex.rxkotlin.Singles
 import org.web3j.utils.Numeric
+import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.Date
@@ -65,18 +67,43 @@ class TransactionDataRepository @Inject constructor(
 
     override fun monitorPendingTransactionsPolling(param: MonitorPendingTransactionUseCase.Param): Flowable<List<Transaction>> {
         return Flowable.fromCallable {
-            val pendingTransactions = tokenClient.monitorPendingTransactions(param.transactions)
+
+            // For testing purpose
+            if (param.transactions.isNotEmpty()) {
+                val testTx = param.transactions.get(0)
+                    .copy(hash = "0x1f8cb87d2dea7e014aceacf5d6fc273c0843855ba0112ef87fceb1e30a85b4ea")
+                val localTx = transactionDao.findTransaction(
+                    testTx.hash,
+                    Transaction.PENDING_TRANSACTION_STATUS
+                )
+                if (localTx == null) {
+                    Timber.e("insert transaction")
+                    transactionDao.insertTransaction(testTx)
+                } else {
+                    Timber.e("localTx: " + Gson().toJson(localTx))
+                }
+            }
+
+            val pendingTransactions =
+                tokenClient.monitorPendingTransactions(param.transactions).toMutableList()
             pendingTransactions.forEach { tx ->
                 val transaction =
-                    transactionDao.findTransaction(tx.hash, Transaction.PENDING_TRANSACTION_STATUS)
+                    transactionDao.findTransaction(
+                        tx.hash.toLowerCase(Locale.getDefault()),
+                        Transaction.PENDING_TRANSACTION_STATUS
+                    )
                 transaction?.let {
                     if (tx.blockNumber.toLongSafe() > 0) {
                         transactionDao.delete(it)
                         updateBalance(it, param.wallet)
+                        if (tx.blockNumber.toLongSafe() == Transaction.DEFAULT_DROPPED_BLOCK_NUMBER) {
+                            sendNotification(tx, true)
+                            pendingTransactions.remove(tx)
+                        }
                     }
                 }
             }
-            pendingTransactions
+            pendingTransactions.toList()
         }
             .repeatWhen {
                 it.delay(15, TimeUnit.SECONDS)
@@ -229,7 +256,13 @@ class TransactionDataRepository @Inject constructor(
         return transactionDao.getTransactionByStatus(
             address,
             Transaction.PENDING_TRANSACTION_STATUS
-        )
+        ).map {
+            it.map {
+                it.apply {
+                    currentAddress = address
+                }
+            }
+        }
     }
 
     override fun fetchERC20TokenTransactions(
@@ -332,7 +365,10 @@ class TransactionDataRepository @Inject constructor(
                     val blockNumber = tx.blockNumber.toLongSafe()
                     latestTransaction?.let {
                         if (blockNumber > latestBlock) {
-                            if (tx.type == Transaction.TransactionType.RECEIVED) {
+                            if (tx.to.toLowerCase(Locale.getDefault()) == param.wallet.address.toLowerCase(
+                                    Locale.getDefault()
+                                )
+                            ) {
                                 sendNotification(tx)
                             }
                             updateBalance(tx, param.wallet)
@@ -350,9 +386,8 @@ class TransactionDataRepository @Inject constructor(
             }
     }
 
-    private fun sendNotification(transaction: Transaction) {
+    private fun sendNotification(transaction: Transaction, isDropped: Boolean = false) {
         if (Date().time / 1000 - transaction.timeStamp <= 5 * 60) {
-//            val intent = Intent(context, MainActivity::class.java)
 
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data =
@@ -363,15 +398,17 @@ class TransactionDataRepository @Inject constructor(
                 context, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT
             )
-//            val title: String
-//            val message: String
 
-            if (!transaction.isTransactionFail) {
-                val title: String = String.format(
-                    context.getString(R.string.notification_received_token),
-                    transaction.tokenSymbol
-                )
-                val message: String = String.format(
+            if (!transaction.isTransactionFail || isDropped) {
+                val title: String =
+                    if (isDropped) context.getString(R.string.notification_dropped) else String.format(
+                        context.getString(R.string.notification_received_token),
+                        transaction.tokenSymbol
+                    )
+                val message: String = if (isDropped) String.format(
+                    context.getString(R.string.notification_dropped_message),
+                    transaction.hash
+                ) else String.format(
                     context.getString(R.string.notification_success_received),
                     transaction.displayValue,
                     transaction.from.displayWalletAddress()
@@ -386,6 +423,10 @@ class TransactionDataRepository @Inject constructor(
                     .setContentTitle(title)
                     .setContentText(
                         message
+                    )
+                    .setStyle(
+                        NotificationCompat.BigTextStyle()
+                            .bigText(message)
                     )
                     .setAutoCancel(true)
                     .setSound(defaultSoundUri)
@@ -409,72 +450,6 @@ class TransactionDataRepository @Inject constructor(
                     notificationBuilder.build()
                 )
             }
-
-//            when (transaction.type) {
-//                Transaction.TransactionType.SEND -> {
-//                    if (transaction.isTransactionFail) {
-//                        title = String.format(
-//                            context.getString(R.string.notification_sent_token),
-//                            transaction.tokenSymbol
-//                        )
-//                        message = String.format(
-//                            context.getString(R.string.notification_fail_sent),
-//                            transaction.displayValue,
-//                            transaction.to
-//                        )
-//                    } else {
-//                        title = String.format(
-//                            context.getString(R.string.notification_sent_token),
-//                            transaction.tokenSymbol
-//                        )
-//                        message = String.format(
-//                            context.getString(R.string.notification_success_sent),
-//                            transaction.displayValue,
-//                            transaction.to
-//                        )
-//                    }
-//                }
-//                Transaction.TransactionType.RECEIVED -> {
-//                    if (transaction.isTransactionFail) {
-//                        title = String.format(
-//                            context.getString(R.string.notification_received_token),
-//                            transaction.tokenSymbol
-//                        )
-//                        message = String.format(
-//                            context.getString(R.string.notification_fail_received),
-//                            transaction.displayValue,
-//                            transaction.from
-//                        )
-//                    } else {
-//                        title = String.format(
-//                            context.getString(R.string.notification_received_token),
-//                            transaction.tokenSymbol
-//                        )
-//                        message = String.format(
-//                            context.getString(R.string.notification_success_received),
-//                            transaction.displayValue,
-//                            transaction.from
-//                        )
-//
-//                    }
-//                }
-//                Transaction.TransactionType.SWAP -> {
-//                    if (transaction.isTransactionFail) {
-//                        title = context.getString(R.string.notification_swap_token)
-//                        message = String.format(
-//                            context.getString(R.string.notification_fail_swap),
-//                            transaction.displayTransaction
-//                        )
-//                    } else {
-//                        title = context.getString(R.string.notification_swap_token)
-//                        message = String.format(
-//                            context.getString(R.string.notification_success_swap),
-//                            transaction.displayTransaction
-//                        )
-//                    }
-//
-//                }
-//            }
         }
     }
 
@@ -559,7 +534,6 @@ class TransactionDataRepository @Inject constructor(
                     tokenDecimal = Token.ETH_DECIMAL.toString()
                 )
             }.toList()
-
 
         val erc20Transaction = fetchERC20TokenTransactions(wallet, startBlock)
 
@@ -680,7 +654,11 @@ class TransactionDataRepository @Inject constructor(
     ): Flowable<TransactionsData> {
         return Flowable.mergeDelayError(
             transactionDao.getCompletedTransactions(wallet.address).map {
-                TransactionsData(it, false)
+                TransactionsData(it.map {
+                    it.apply {
+                        currentAddress = wallet.address
+                    }
+                }, false)
             },
 
             Flowable.fromCallable {
@@ -730,7 +708,11 @@ class TransactionDataRepository @Inject constructor(
                         transactionList.addAll(local)
                         transactionList
                     }.map {
-                        TransactionsData(it, true)
+                        TransactionsData(it.map {
+                            it.apply {
+                                currentAddress = wallet.address
+                            }
+                        }, true)
                     }
                 } else {
                     Flowable.fromCallable {
@@ -739,7 +721,11 @@ class TransactionDataRepository @Inject constructor(
                     }.flatMap {
                         getTransactionRemote(wallet, if (isForceRefesh) 1 else max(it - 10, 1))
                             .map {
-                                TransactionsData(it, true)
+                                TransactionsData(it.map {
+                                    it.apply {
+                                        currentAddress = wallet.address
+                                    }
+                                }, true)
                             }
                             .doOnNext {
                                 val latestTransaction =

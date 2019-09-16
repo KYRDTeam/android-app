@@ -59,7 +59,6 @@ class MainViewModel @Inject constructor(
     val switchWalletCompleteCallback: LiveData<Event<UpdateWalletState>>
         get() = _switchWalletCompleteCallback
 
-
     private val _getLoginStatusCallback = MutableLiveData<Event<UserInfoState>>()
     val getLoginStatusCallback: LiveData<Event<UserInfoState>>
         get() = _getLoginStatusCallback
@@ -115,7 +114,6 @@ class MainViewModel @Inject constructor(
             },
             GetBalancePollingUseCase.Param(wallets)
         )
-
     }
 
     fun getTransactionPeriodically(wallet: Wallet) {
@@ -202,7 +200,6 @@ class MainViewModel @Inject constructor(
                         _switchWalletCompleteCallback.value =
                             Event(UpdateWalletState.Success(pair.first, isWalletChangedEvent))
                         updateBalance(pair.first)
-
                     }
                 },
                 Consumer {
@@ -246,5 +243,4 @@ class MainViewModel @Inject constructor(
             UpdateSelectedWalletUseCase.Param(wallet)
         )
     }
-
 }

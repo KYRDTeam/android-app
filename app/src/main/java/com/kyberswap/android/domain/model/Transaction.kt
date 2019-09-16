@@ -2,6 +2,7 @@ package com.kyberswap.android.domain.model
 
 import android.os.Parcelable
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.TypeConverters
 import com.kyberswap.android.data.api.transaction.TransactionEntity
@@ -11,6 +12,7 @@ import com.kyberswap.android.util.ext.safeToString
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toLongSafe
+import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import org.web3j.protocol.core.methods.response.TransactionReceipt
 import org.web3j.utils.Convert
@@ -60,6 +62,10 @@ data class Transaction(
     val walletAddress: String = ""
 
 ) : Parcelable {
+    @IgnoredOnParcel
+    @Ignore
+    var currentAddress: String = ""
+
     constructor(entity: TransactionEntity, transactionType: TransactionType, txType: String) : this(
         entity.blockHash ?: "",
         entity.blockNumber ?: "",
@@ -239,7 +245,7 @@ data class Transaction(
         get() =
             if (isTransfer) {
                 StringBuilder()
-                    .append(if (type == TransactionType.SEND) "-" else "+")
+                    .append(if (isSend) "-" else "+")
                     .append(" ")
                     .append(displayValue)
                     .toString()
@@ -262,6 +268,7 @@ data class Transaction(
         val formatterShort = SimpleDateFormat("dd MMM yyyy", Locale.US)
         val formatterFull = SimpleDateFormat("EEEE, dd MMM yyyy HH:mm:ss", Locale.US)
         val formatterFilter = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        const val DEFAULT_DROPPED_BLOCK_NUMBER = 1L
     }
 
     fun sameDisplay(other: Transaction): Boolean {
@@ -303,11 +310,15 @@ data class Transaction(
 
     val isTransfer: Boolean
         get() = tokenSource.isEmpty() && tokenDest.isEmpty()
+
+    val isSend: Boolean
+        get() = isTransfer && from == currentAddress
+
     val displayRate: String
         get() =
             if (isTransfer) {
                 StringBuilder()
-                    .append(if (type == TransactionType.SEND) "To: ${to.displayWalletAddress()}" else "From: ${from.displayWalletAddress()}")
+                    .append(if (isSend) "To: ${to.displayWalletAddress()}" else "From: ${from.displayWalletAddress()}")
                     .toString()
             } else
                 StringBuilder().append("1")
