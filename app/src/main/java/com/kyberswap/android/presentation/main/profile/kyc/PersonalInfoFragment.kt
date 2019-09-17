@@ -40,6 +40,7 @@ import pl.aprilapps.easyphotopicker.DefaultCallback
 import pl.aprilapps.easyphotopicker.EasyImage
 import pl.aprilapps.easyphotopicker.MediaFile
 import pl.aprilapps.easyphotopicker.MediaSource
+import timber.log.Timber
 import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
@@ -163,6 +164,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
             industrialCodes.putAll(kycOccupationCode.data)
         }
 
+        Timber.e("onActivityCreated")
         viewModel.fetchUserInfo()
 
         viewModel.getUserInfoCallback.observe(viewLifecycleOwner, Observer { event ->

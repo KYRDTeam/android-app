@@ -265,9 +265,9 @@ data class Transaction(
         const val PENDING = 0
         const val MINED = 1
         const val PENDING_TRANSACTION_STATUS = "pending"
-        val formatterShort = SimpleDateFormat("dd MMM yyyy", Locale.US)
-        val formatterFull = SimpleDateFormat("EEEE, dd MMM yyyy HH:mm:ss", Locale.US)
-        val formatterFilter = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        var formatterShort = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+        var formatterFull = SimpleDateFormat("EEEE, dd MMM yyyy HH:mm:ss", Locale.getDefault())
+        var formatterFilter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         const val DEFAULT_DROPPED_BLOCK_NUMBER = 1L
     }
 
@@ -311,7 +311,7 @@ data class Transaction(
     val isTransfer: Boolean
         get() = tokenSource.isEmpty() && tokenDest.isEmpty()
 
-    val isSend: Boolean
+    private val isSend: Boolean
         get() = isTransfer && from == currentAddress
 
     val displayRate: String

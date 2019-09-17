@@ -142,14 +142,14 @@ class SwapDataRepository @Inject constructor(
                         hash = it.toLowerCase(Locale.getDefault()),
                         transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
                         timeStamp = System.currentTimeMillis() / 1000L,
-                        from = swap.tokenSource.tokenAddress,
+                        from = param.wallet.address,
                         gas = swap.gasLimit,
                         gasUsed = swap.gasLimit,
                         gasPrice = Convert.toWei(
                             swap.gasPrice.toBigDecimalOrDefaultZero(),
                             Convert.Unit.GWEI
                         ).toString(),
-                        to = swap.tokenDest.tokenAddress,
+                        to = param.wallet.address,
                         tokenSource = swap.tokenSource.tokenSymbol,
                         tokenDest = swap.tokenDest.tokenSymbol,
                         sourceAmount = swap.sourceAmount,
@@ -203,7 +203,7 @@ class SwapDataRepository @Inject constructor(
                         hash = it.toLowerCase(Locale.getDefault()),
                         transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
                         timeStamp = System.currentTimeMillis() / 1000L,
-                        from = transfer.tokenSource.tokenAddress,
+                        from = param.wallet.address,
                         gas = transfer.gasLimit,
                         gasUsed = transfer.gasLimit,
                         gasPrice = Convert.toWei(

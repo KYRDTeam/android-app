@@ -10,7 +10,6 @@ import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import com.google.gson.Gson
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.TransactionApi
 import com.kyberswap.android.data.db.LocalLimitOrderDao
@@ -43,7 +42,6 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Flowables
 import io.reactivex.rxkotlin.Singles
 import org.web3j.utils.Numeric
-import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.Date
@@ -67,44 +65,26 @@ class TransactionDataRepository @Inject constructor(
 
     override fun monitorPendingTransactionsPolling(param: MonitorPendingTransactionUseCase.Param): Flowable<List<Transaction>> {
         return Flowable.fromCallable {
-
-            // For testing purpose
-            if (param.transactions.isNotEmpty()) {
-                val testTx = param.transactions.get(0)
-                    .copy(hash = "0x1f8cb87d2dea7e014aceacf5d6fc273c0843855ba0112ef87fceb1e30a85b4ea")
-                val localTx = transactionDao.findTransaction(
-                    testTx.hash,
-                    Transaction.PENDING_TRANSACTION_STATUS
-                )
-                if (localTx == null) {
-                    Timber.e("insert transaction")
-                    transactionDao.insertTransaction(testTx)
-                } else {
-                    Timber.e("localTx: " + Gson().toJson(localTx))
-                }
-            }
-
-            val pendingTransactions =
-                tokenClient.monitorPendingTransactions(param.transactions).toMutableList()
-            pendingTransactions.forEach { tx ->
-                val transaction =
-                    transactionDao.findTransaction(
-                        tx.hash.toLowerCase(Locale.getDefault()),
-                        Transaction.PENDING_TRANSACTION_STATUS
-                    )
-                transaction?.let {
-                    if (tx.blockNumber.toLongSafe() > 0) {
-                        transactionDao.delete(it)
-                        updateBalance(it, param.wallet)
-                        if (tx.blockNumber.toLongSafe() == Transaction.DEFAULT_DROPPED_BLOCK_NUMBER) {
-                            sendNotification(tx, true)
-                            pendingTransactions.remove(tx)
+            tokenClient.monitorPendingTransactions(param.transactions)
+        }
+            .doAfterNext { pendingTransactions ->
+                pendingTransactions.forEach { tx ->
+                    val transaction =
+                        transactionDao.findTransaction(
+                            tx.hash.toLowerCase(Locale.getDefault()),
+                            Transaction.PENDING_TRANSACTION_STATUS
+                        )
+                    transaction?.let {
+                        if (tx.blockNumber.toLongSafe() > 0) {
+                            if (tx.blockNumber.toLongSafe() == Transaction.DEFAULT_DROPPED_BLOCK_NUMBER) {
+                                sendNotification(tx, true)
+                            }
+                            transactionDao.delete(it)
+                            updateBalance(it, param.wallet)
                         }
                     }
                 }
             }
-            pendingTransactions.toList()
-        }
             .repeatWhen {
                 it.delay(15, TimeUnit.SECONDS)
             }
@@ -256,8 +236,8 @@ class TransactionDataRepository @Inject constructor(
         return transactionDao.getTransactionByStatus(
             address,
             Transaction.PENDING_TRANSACTION_STATUS
-        ).map {
-            it.map {
+        ).map { txs ->
+            txs.map {
                 it.apply {
                     currentAddress = address
                 }

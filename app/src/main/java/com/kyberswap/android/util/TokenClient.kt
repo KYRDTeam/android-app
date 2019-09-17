@@ -1,6 +1,5 @@
 package com.kyberswap.android.util
 
-import com.google.gson.Gson
 import com.kyberswap.android.domain.model.LocalLimitOrder
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
@@ -30,7 +29,6 @@ import org.web3j.tx.RawTransactionManager
 import org.web3j.tx.TransactionManager
 import org.web3j.utils.Convert
 import org.web3j.utils.Numeric
-import timber.log.Timber
 import java.io.IOException
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -571,7 +569,6 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     fun monitorPendingTransactions(transactions: List<com.kyberswap.android.domain.model.Transaction>): List<com.kyberswap.android.domain.model.Transaction> {
         val transactionsList = mutableListOf<com.kyberswap.android.domain.model.Transaction>()
         for (s in transactions) {
-            Timber.e(Gson().toJson(s))
             val transaction = web3j.ethGetTransactionByHash(s.hash).send().transaction
             if (transaction.isPresent) {
                 val tx = transaction.get()
@@ -580,14 +577,11 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                         web3j.ethGetTransactionReceipt(tx.hash).send().transactionReceipt
                     if (transactionReceipt.isPresent) {
                         val txReceipt = transactionReceipt.get()
-                        Timber.e("txReceipt: " + Gson().toJson(txReceipt))
                         transactionsList.add(s.with(txReceipt))
                     } else {
-                        Timber.e("transactionReceipt not present: " + Gson().toJson(tx))
                         transactionsList.add(s.with(tx))
                     }
                 } else {
-                    Timber.e("tx.hash is empty: " + Gson().toJson(tx))
                     transactionsList.add(
                         com.kyberswap.android.domain.model.Transaction(tx).copy(
                             hash = s.hash
@@ -595,11 +589,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                     )
                 }
             } else {
-                Timber.e("" + System.currentTimeMillis() / 1000)
-                Timber.e("" + s.timeStamp)
-                Timber.e("Time: " + (System.currentTimeMillis() / 1000 - s.timeStamp) / 60f)
-                if ((System.currentTimeMillis() / 1000 - s.timeStamp) / 60f > 2f) {
-                    Timber.e("transaction is not exist: " + Gson().toJson(transaction))
+                if ((System.currentTimeMillis() / 1000 - s.timeStamp) / 60f > 10f) {
                     transactionsList.add(s.copy(blockNumber = com.kyberswap.android.domain.model.Transaction.DEFAULT_DROPPED_BLOCK_NUMBER.toString()))
                 } else {
                     transactionsList.add(s)

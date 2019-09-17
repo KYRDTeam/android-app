@@ -24,20 +24,16 @@ class TransactionMapper @Inject constructor() {
         entities: List<TransactionEntity>,
         type: Transaction.TransactionType,
         txType: String,
-        walletAddres: String
+        walletAddress: String
     ): List<Transaction> {
         return entities.map {
             val transactionType =
-                if (walletAddres.toLowerCase(Locale.getDefault()) == it.from?.toLowerCase(Locale.getDefault())
-                ) {
-                    Transaction.TransactionType.SEND
-                } else if (walletAddres.toLowerCase(Locale.getDefault()) == it.to?.toLowerCase(
+                when {
+                    walletAddress.toLowerCase(Locale.getDefault()) == it.from?.toLowerCase(Locale.getDefault()) -> Transaction.TransactionType.SEND
+                    walletAddress.toLowerCase(Locale.getDefault()) == it.to?.toLowerCase(
                         Locale.getDefault()
-                    )
-                ) {
-                    Transaction.TransactionType.RECEIVED
-                } else {
-                    type
+                    ) -> Transaction.TransactionType.RECEIVED
+                    else -> type
                 }
             transform(it, transactionType, txType)
         }

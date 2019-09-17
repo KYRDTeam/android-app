@@ -284,13 +284,14 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                             it.blockNumber.isNotEmpty()
                         }
 
+
                         txList.forEach { transaction ->
                             val title: String
                             val message: String
 
                             val type = when {
-                                transaction.from == wallet?.address -> Transaction.TransactionType.SEND
-                                transaction.to == wallet?.address -> Transaction.TransactionType.RECEIVED
+                                transaction.isTransfer && transaction.from == wallet?.address -> Transaction.TransactionType.SEND
+                                transaction.isTransfer && transaction.to == wallet?.address -> Transaction.TransactionType.RECEIVED
                                 else -> transaction.type
                             }
 
