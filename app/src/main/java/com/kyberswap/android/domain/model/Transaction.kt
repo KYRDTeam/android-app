@@ -146,8 +146,6 @@ data class Transaction(
         return this.copy(
             blockHash = tx.blockHash ?: "",
             blockNumber = if (tx.blockNumberRaw.isNullOrEmpty()) "" else tx.blockNumber.safeToString(),
-            from = tx.from ?: "",
-            to = tx.to ?: "",
             gasUsed = tx.gas.safeToString(),
             gasPrice = tx.gasPrice.safeToString(),
             hash = tx.hash ?: "",
@@ -186,8 +184,6 @@ data class Transaction(
             blockNumber = if (tx.blockNumberRaw.isNullOrEmpty()) "" else tx.blockNumber.safeToString(),
             contractAddress = tx.contractAddress ?: "",
             cumulativeGasUsed = tx.cumulativeGasUsed.toString(),
-            from = tx.from ?: "",
-            to = tx.to ?: "",
             gasUsed = tx.gasUsed.toString(),
             hash = tx.transactionHash ?: "",
             isError = if (tx.isStatusOK) "0" else "1",

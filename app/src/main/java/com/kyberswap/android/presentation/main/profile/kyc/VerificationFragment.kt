@@ -54,6 +54,11 @@ class VerificationFragment : BaseFragment() {
             }
     }
 
+    override fun onDestroyView() {
+        handler.removeCallbacksAndMessages(null)
+        super.onDestroyView()
+    }
+
     companion object {
         fun newInstance() =
             VerificationFragment()

@@ -39,16 +39,17 @@ object TextViewBindingAdapter {
         )
 
         words.forEach {
-            val calligraphyTypeface = CalligraphyTypefaceSpan(
-                typeface
-            )
-
-            spannableString.setSpan(
-                calligraphyTypeface,
-                spannableString.indexOf(it),
-                spannableString.indexOf(it) + it.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
+            if(spannableString.indexOf(it) >= 0 && (spannableString.indexOf(it) + it.length <= spannableString.length)) {
+                val calligraphyTypeface = CalligraphyTypefaceSpan(
+                    typeface
+                )
+                spannableString.setSpan(
+                    calligraphyTypeface,
+                    spannableString.indexOf(it),
+                    spannableString.indexOf(it) + it.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
         }
 
         view.setText(spannableString, TextView.BufferType.SPANNABLE)

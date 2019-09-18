@@ -44,7 +44,7 @@
             android:layout_marginEnd="45dp"
             android:letterSpacing="0.07"
             android:singleLine="true"
-            android:text="@{wallet.address}"
+            android:text="@{wallet.displayWalletAddress}"
             android:textColor="#9ea1aa"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"

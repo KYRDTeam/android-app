@@ -168,14 +168,22 @@ class ImportJsonFragment : BaseFragment() {
             null,
             null
         )
+        var name = ""
         returnCursor?.let {
-            val nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            returnCursor.moveToFirst()
-            val name = returnCursor.getString(nameIndex)
-            returnCursor.close()
-            return name
+            try {
+                val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (nameIndex >= 0) {
+                    it.moveToFirst()
+                    name = it.getString(nameIndex)
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            } finally {
+                it.close()
+            }
+
         }
-        return ""
+        return name
     }
 
 
