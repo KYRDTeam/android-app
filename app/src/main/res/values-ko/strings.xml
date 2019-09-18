@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">KyberSwap</string>
     <string name="message_loading">로딩 중…</string>
     <string name="content_description_done">완료</string>
     <string name="ok">OK</string>
@@ -40,9 +39,6 @@
     <string name="word_6">단어#6</string>
     <string name="kyberswap">KyberSwap</string>
     <string name="backup_message">12 개의 임의의 단어 목록이 제공됩니다. 종이에 받아 적어주세요. 안전하게 보호하십시오. \n \n 키는 유일한 방법입니다. 휴대 전화를 분실했거나 암호를 잊어 버린 경우 Kyber 월렛을 복원할 수 있는</string>
-    <string name="bold_font_path">fonts/Montserrat-Bold.ttf</string>
-    <string name="semi_bold_font_path">fonts/Montserrat-Bold.ttf</string>
-    <string name="semi_bold_italic_font_path">fonts/Montserrat-SemiBoldItalic.ttf</string>
     <string name="verify_word_description">모든 백업 단어를 기록했는지 확인하십시오, 다음을 입력하십시오:</string>
     <string name="backup_json">JSON</string>
     <string name="backup_private_key">프라이빗 키</string>
@@ -95,8 +91,6 @@
     <string name="advanced_optional">고급 (선택 사항)</string>
     <string name="rate">교환 비율</string>
     <string name="default_source_amount">0.001</string>
-    <string name="percentage_format" formatted="false" translatable="false">"%.2f %%"</string>
-    <string name="dest_balance_usd_format" formatted="false" translatable="false">"≈ %s USD"</string>
     <string name="default_dest_balance_usd">≈ 0.0 USD</string>
     <string name="gas_fee_gwei">가스 비용 (Gwei)</string>
     <string name="gas_super_fast">%s\n빠른 슈퍼</string>
@@ -205,7 +199,6 @@
     <string name="token_eth_star_name">ETH* 는 편의상 ETH &amp; WETH의 합을 가리킵니다.</string>
     <string name="token_amount_available">%s 만큼 사용가능</string>
     <string name="limit_order_current_rate">1 %s = %s</string>
-    <string name="rate_percent">%s%%</string>
     <string name="limit_order_rate_lower_market">Your target rate is %s lower than current Market rate</string>
     <string name="limit_order_rate_higher_market">Your target rate is %s higher than current Market rate</string>
     <string name="percent_25">25%</string>
@@ -240,7 +233,6 @@
     <string name="pending_transaction">Please wait for other transactions to be mined before making a transfer</string>
     <string name="sign_in_with">Or sign in with</string>
     <string name="agree_to">"Agree to "</string>
-    <string name="term_and_condition">https://files.kyberswap.com/tac.pdf</string>
     <string name="term_condition_notification">Please accept our Terms and Conditions to continue</string>
     <string name="complete_profile_verification">프로필 확인 완료</string>
     <string name="my_profile">내 프로필</string>
@@ -363,8 +355,8 @@
     <string name="swap_and_send_to_the_organizer">Swap and Send to the Organizer</string>
     <string name="expired_date_notification">After swapping please transfer your token to your personal wallet before %s</string>
     <string name="promo_gift">1 Gift</string>
-    <string name="insufficient_eth">ETH가 부족합니다.</string>
-    <string name="not_enough_eth_blance">거래 수수료를 지불하기에 충분한 ETH가 없습니다.</string>
+    <string name="insufficient_eth">거래에 필요한 ETH가 부족합니다</string>
+    <string name="not_enough_eth_blance">ETH를 더 입금하거나 Advanced를 클릭하여 가스비를 낮추세요.</string>
     <string name="can_not_tranfer_token">이 토큰을 전송할 수 없습니다.</string>
     <string name="import_success_notification">축하합니다!!!</string>
     <string name="import_success_detail">지갑을 성공적으로 가져 왔습니다. 지갑의 자산을 %s까지 이동해주세요</string>
@@ -398,7 +390,6 @@
     <string name="backup_mnemonic">Mnemonic 백업</string>
     <string name="backup_your_wallet">지갑 백업</string>
 
-    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="alert_trigger_content"><![CDATA[%s %s로 설정한 가격 알람이 방금 전 발동되었습니다. ]]></string>
     <string name="maximum_alerts_title">알림 한도 초과</string>
     <string name="maximum_alerts_content">이미 10개의 알림을 설정하셨습니다. 새로운 알림을 설정하기 위해 기존 알림 설정을 삭제해주세요.</string>
@@ -422,22 +413,8 @@
     <string name="delete_contact_success">연락처 완전히 삭제하기</string>
     <string name="too_many_attempt">너무 많은 시도가 감지 되었습니다 %s초 후에 다시 시도해주세요.</string>
     <string name="number_of_attempt">%d 회 시도 하였습니다.</string>
-    <string name="setting_about_url">https://kyber.network/about/company</string>
-    <string name="setting_community_url">https://kyber.network/community</string>
     <string name="setting_support_message">귀하의 요청을 support@kyber.network로 보내주시기 바랍니다.</string>
-    <string name="setting_kyber_network_url">https://t.me/kybernetwork</string>
-    <string name="setting_kyber_network_developer_url">https://t.me/KyberDeveloper</string>
-    <string name="setting_github_url">https://github.com/KyberNetwork</string>
-    <string name="setting_twitter_url">https://twitter.com/KyberSwap</string>
-    <string name="setting_facebook_url">https://www.facebook.com/kybernetwork</string>
-    <string name="setting_medium_url">https://medium.com/@kyberswap</string>
-    <string name="setting_linkedin_url">https://www.linkedin.com/company/kybernetwork</string>
     <string name="setting_share_info">최고의 암호화폐 지갑앱을 추천합니다. https://play.google.com/store/apps/details?id=com.kyberswap.android</string>
-    <string name="setting_rate_my_app">https://play.google.com/store/apps/details?id=com.kyberswap.android</string>
-    <string name="order_why_order_not_filled">https://kyberswap.com/faq#I-submitted-the-limit-order-but-it-was-not-triggered-even-though-my-desired-price-was-hit</string>
-    <string name="extra_url">https://kyberswap.com/faq#Why-received-amount-is-higher-than-estimated-amount</string>
-    <string name="order_fee_url">https://kyberswap.com/faq#I-have-KNC-in-my-wallet-Do-I-get-any-discount-on-trading-fees</string>
-    <string name="same_token_pair_url">https://kyberswap.com/faq#can-I-submit-multiple-limit-orders-for-same-token-pair</string>
     <string name="item_token_header_bal">Bal</string>
     <string name="token_new">새로운</string>
     <string name="add_fav_success">즐겨 찾기에 추가되었습니다.</string>
@@ -574,6 +551,7 @@
     <string name="notification_dropped">Dropped</string>
     <string name="notification_dropped_message">Your transaction %s might be lost, please check Etherscan for more information</string>
     <string name="swap_now">지금 환전하기</string>
+    <string name="transfer_now">지금 송금하기</string>
     <string-array name="proof_address">
         <item>은행 성명서</item>
         <item>은행의 서신</item>

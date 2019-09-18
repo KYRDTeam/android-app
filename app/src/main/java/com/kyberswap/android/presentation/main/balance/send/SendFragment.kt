@@ -121,7 +121,6 @@ class SendFragment : BaseFragment() {
                         wallet?.let {
                             viewModel.getSendInfo(it)
                         }
-                        binding.edtSource.setText("")
                         binding.walletName = wallet?.name
                     }
                     is GetWalletState.ShowError -> {
@@ -192,7 +191,7 @@ class SendFragment : BaseFragment() {
         listOf(binding.imgTokenSource, binding.tvSource).forEach {
             it.setOnClickListener {
                 navigator.navigateToTokenSearchFromSendTokenScreen(
-                    (activity as MainActivity).getCurrentFragment(),
+                    currentFragment,
                     wallet
                 )
             }
@@ -224,6 +223,7 @@ class SendFragment : BaseFragment() {
         }
 
         binding.tvAddContact.setOnClickListener {
+            saveSend()
             navigator.navigateToAddContactScreen(
                 currentFragment,
                 wallet,
@@ -233,18 +233,7 @@ class SendFragment : BaseFragment() {
         }
 
         binding.tvMore.setOnClickListener {
-            binding.send?.let { send ->
-                viewModel.saveSend(
-                    send.copy(
-                        gasPrice = getSelectedGasPrice(
-                            send.gas,
-                            selectedGasFeeView?.id
-                        ),
-                        contact = send.contact.copy(address = onlyAddress(edtAddress.text.toString())),
-                        sourceAmount = edtSource.text.toString()
-                    )
-                )
-            }
+            saveSend()
             navigator.navigateToContactScreen(currentFragment)
         }
 
@@ -328,6 +317,7 @@ class SendFragment : BaseFragment() {
                         viewModel.saveSendContact(wallet.address, it)
                     }
                 }, {
+                    saveSend()
                     navigator.navigateToAddContactScreen(
                         currentFragment,
                         wallet,
@@ -550,6 +540,21 @@ class SendFragment : BaseFragment() {
         binding.rbFast.isChecked = true
     }
 
+    private fun saveSend() {
+        binding.send?.let { send ->
+            viewModel.saveSend(
+                send.copy(
+                    gasPrice = getSelectedGasPrice(
+                        send.gas,
+                        selectedGasFeeView?.id
+                    ),
+                    contact = send.contact.copy(address = onlyAddress(edtAddress.text.toString())),
+                    sourceAmount = edtSource.text.toString()
+                )
+            )
+        }
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: WalletChangeEvent) {
         wallet?.let {
@@ -593,7 +598,6 @@ class SendFragment : BaseFragment() {
 
     override fun onDestroyView() {
         handler.removeCallbacksAndMessages(null)
-        viewModel.compositeDisposable.clear()
         super.onDestroyView()
     }
 

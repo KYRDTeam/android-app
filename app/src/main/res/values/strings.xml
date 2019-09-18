@@ -365,8 +365,8 @@
     <string name="swap_and_send_to_the_organizer">Swap and Send to the Organizer</string>
     <string name="expired_date_notification">After swapping, please transfer your token to your personal wallet before %s</string>
     <string name="promo_gift">1 Gift</string>
-    <string name="insufficient_eth">Insufficient ETH</string>
-    <string name="not_enough_eth_blance">Not have enough ETH to pay for transaction fee</string>
+    <string name="insufficient_eth">Insufficient ETH for transaction</string>
+    <string name="not_enough_eth_blance">Deposit more ETH or click Advanced to lower GAS fee</string>
     <string name="can_not_tranfer_token">Can not transfer this token</string>
     <string name="import_success_notification">Congratulations!!!</string>
     <string name="import_success_detail">You have successfully imported your wallet. Please move all assets to your wallet by %s</string>
@@ -428,7 +428,7 @@
     <string name="setting_support_message">Please send request to support@kyber.network</string>
     <string name="setting_kyber_network_url" translatable="false">https://t.me/kybernetwork</string>
     <string name="setting_kyber_network_developer_url" translatable="false">https://t.me/KyberDeveloper</string>
-    <string name="setting_github_url" translatable="false">https://github.com/KyberNetwork</string>
+    <string name="setting_github_url" translatable="false">https://github.com/KyberSwap/android-app</string>
     <string name="setting_twitter_url" translatable="false">https://twitter.com/KyberSwap</string>
     <string name="setting_facebook_url" translatable="false">https://www.facebook.com/kybernetwork</string>
     <string name="setting_medium_url" translatable="false">https://medium.com/@kyberswap</string>
@@ -574,6 +574,7 @@
     <string name="notification_dropped">Dropped</string>
     <string name="notification_dropped_message">Your transaction %s might be lost, please check Etherscan for more information</string>
     <string name="swap_now">Swap Now</string>
+    <string name="transfer_now">Transfer Now</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>

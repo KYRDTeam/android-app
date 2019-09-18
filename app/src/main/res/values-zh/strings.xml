@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">KyberSwap</string>
     <string name="message_loading">载入中…</string>
     <string name="content_description_done">完成</string>
     <string name="ok">OK</string>
@@ -40,9 +39,6 @@
     <string name="word_6">字#6</string>
     <string name="kyberswap">KyberSwap</string>
     <string name="backup_message">我们将为您提供12个随机单词列表。请 把它们写在纸上 并保持安全。\n\n纸秘钥是 唯一的办法 如果您丢失手机或忘记密码，请恢复您的Kyber钱包。</string>
-    <string name="bold_font_path">fonts/Montserrat-Bold.ttf</string>
-    <string name="semi_bold_font_path">fonts/Montserrat-Bold.ttf</string>
-    <string name="semi_bold_italic_font_path">fonts/Montserrat-SemiBoldItalic.ttf</string>
     <string name="verify_word_description">确保您已记下所有备用字词, 请输入以下内容:</string>
     <string name="backup_json">JSON</string>
     <string name="backup_private_key">私钥</string>
@@ -95,8 +91,6 @@
     <string name="advanced_optional">高级 (可选)</string>
     <string name="rate">汇率</string>
     <string name="default_source_amount">0.001</string>
-    <string name="percentage_format" formatted="false" translatable="false">"%.2f %%"</string>
-    <string name="dest_balance_usd_format" formatted="false" translatable="false">"≈ %s USD"</string>
     <string name="default_dest_balance_usd">≈ 0.0 USD</string>
     <string name="gas_fee_gwei">燃料费用（Gwei）</string>
     <string name="gas_super_fast">%s\n极速</string>
@@ -205,7 +199,6 @@
     <string name="token_eth_star_name">ETH*表示ETH WETH便于参考。</string>
     <string name="token_amount_available">%s 可用</string>
     <string name="limit_order_current_rate">1 %s = %s</string>
-    <string name="rate_percent">%s%%</string>
     <string name="limit_order_rate_lower_market">Your target rate is %s lower than current Market rate</string>
     <string name="limit_order_rate_higher_market">你的目标价格是%s高于目前的市场价格</string>
     <string name="percent_25">25%</string>
@@ -240,7 +233,6 @@
     <string name="pending_transaction">请等待其他交易上链完成后再发起新的交易</string>
     <string name="sign_in_with">或用其它方式登录</string>
     <string name="agree_to">同意</string>
-    <string name="term_and_condition">https://files.kyberswap.com/tac.pdf</string>
     <string name="term_condition_notification">请接受我们的条款和条件再继续</string>
     <string name="complete_profile_verification">完成您的个人资料验证</string>
     <string name="my_profile">我的资料</string>
@@ -360,8 +352,8 @@
     <string name="swap_and_send_to_the_organizer">兑换并发送给主办方</string>
     <string name="expired_date_notification">在兑换之后，请将您的代币在%s之前转移至您的私人钱包</string>
     <string name="promo_gift">1个礼物</string>
-    <string name="insufficient_eth">ETH不足</string>
-    <string name="not_enough_eth_blance">没有足够的ETH来支付交易费用</string>
+    <string name="insufficient_eth">没有足够的ETH交易</string>
+    <string name="not_enough_eth_blance">" 存入更多ETH或点击高级选项以降低GAS费用"</string>
     <string name="can_not_tranfer_token">无法转移此令牌</string>
     <string name="import_success_notification">恭喜!!!</string>
     <string name="import_success_detail">您已成功导入钱包。请通过%s将所有资产移至钱包</string>
@@ -395,7 +387,6 @@
     <string name="backup_mnemonic">备份Mnemonic</string>
     <string name="backup_your_wallet">备份你的钱包</string>
 
-    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="alert_trigger_content"><![CDATA[您的%s%s的价格警报刚刚被触发]]></string>
     <string name="maximum_alerts_title">超过警报限额</string>
     <string name="maximum_alerts_content">您已经有10个(上限)警报了。添加新的警报前请先删除一个现有警报</string>
@@ -419,21 +410,7 @@
     <string name="delete_contact_success">成功删除联系人</string>
     <string name="too_many_attempt">太多次尝试了， 请 %s 秒后再试。</string>
     <string name="number_of_attempt">您有 %d 次尝试机会。</string>
-    <string name="setting_about_url">https://kyber.network/about/company</string>
-    <string name="setting_community_url">https://kyber.network/community</string>
-    <string name="setting_kyber_network_url">https://t.me/kybernetwork</string>
-    <string name="setting_kyber_network_developer_url">https://t.me/KyberDeveloper</string>
-    <string name="setting_github_url">https://github.com/KyberNetwork</string>
-    <string name="setting_twitter_url">https://twitter.com/KyberSwap</string>
-    <string name="setting_facebook_url">https://www.facebook.com/kybernetwork</string>
-    <string name="setting_medium_url">https://medium.com/@kyberswap</string>
-    <string name="setting_linkedin_url">https://www.linkedin.com/company/kybernetwork</string>
     <string name="setting_share_info">我刚刚找到一个很棒的钱包应用程序。在这里查看https://play.google.com/store/apps/details?id=com.kyberswap.android</string>
-    <string name="setting_rate_my_app">https://play.google.com/store/apps/details?id=com.kyberswap.android</string>
-    <string name="order_why_order_not_filled">https://kyberswap.com/faq#I-submitted-the-limit-order-but-it-was-not-triggered-even-though-my-desired-price-was-hit</string>
-    <string name="extra_url">https://kyberswap.com/faq#Why-received-amount-is-higher-than-estimated-amount</string>
-    <string name="order_fee_url">https://kyberswap.com/faq#I-have-KNC-in-my-wallet-Do-I-get-any-discount-on-trading-fees</string>
-    <string name="same_token_pair_url">https://kyberswap.com/faq#can-I-submit-multiple-limit-orders-for-same-token-pair</string>
     <string name="item_token_header_bal">Bal</string>
     <string name="token_new">新</string>
     <string name="add_fav_success">已成功添加到您的收藏夹</string>
@@ -613,5 +590,6 @@
         <item>Business revenue</item>
         <item>Investment gain</item>
     </string-array>
+    <string name="transfer_now">现在转账</string>
 
 </resources>
