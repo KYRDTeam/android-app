@@ -120,7 +120,7 @@
     <string name="recipient_address">Địa chỉ nhận</string>
     <string name="recent_contact">Gần đây</string>
     <string name="more">Nhiều hơn</string>
-    <string name="send">Chuyển</string>
+    <string name="send">Chuyển Khoản</string>
     <string name="add_contact">Thêm liên hệ</string>
     <string name="manage_wallet">Quản Lý Ví</string>
     <string name="manage_alert">Quảng Lý Thông Báo</string>
@@ -177,7 +177,7 @@
     <string name="filter_from">Từ</string>
     <string name="filter_to">Đến</string>
     <string name="filter_transaction_type">Kiểu giao dịch"</string>
-    <string name="filter_send">Chuyển</string>
+    <string name="filter_send">Chuyển Khoản</string>
     <string name="filter_receive">Nhận</string>
     <string name="filter_swap">Trao đổi</string>
     <string name="filter_token">Token</string>
@@ -440,7 +440,7 @@
     <string name="login_password_required">Vui lòng điền mật khẩu để tiếp tục</string>
     <string name="register_invalid_password">Mật khẩu phải có ít nhất 8 ký tự bao gồm chữ hoa, chữ thường và chữ số.</string>
     <string name="register_display_name_required">Vui lòng điền tên hiển thị để tiếp tục</string>
-    <string name="send_token">Chuyển token</string>
+    <string name="send_token">Gửi Token</string>
     <string name="alert_price_diffrent_price_warning">Giá bạn đặt phải khác ít nhất 0.1% so với giá hiện tại</string>
     <string name="alert_price_range_warning">Mức giá nên từ 1% đến 10000% so với mức giá hiện tại</string>
     <string name="alert_limit_exceed">Vượt quá số lượng thông báo</string>

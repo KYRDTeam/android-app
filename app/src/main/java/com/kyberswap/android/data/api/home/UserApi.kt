@@ -105,6 +105,7 @@ interface UserApi {
     @FormUrlEncoded
     fun savePersonalInfo(
         @Field("kyc_profile[first_name]") firstName: String,
+        @Field("kyc_profile[middle_name]") middleName: String,
         @Field("kyc_profile[last_name]") lastName: String,
         @Field("kyc_profile[native_full_name]") fullName: String?,
         @Field("kyc_profile[nationality]") nationality: String,

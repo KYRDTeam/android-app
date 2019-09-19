@@ -120,7 +120,7 @@
     <string name="recipient_address">수신자 주소</string>
     <string name="recent_contact">최근 연락처</string>
     <string name="more">more</string>
-    <string name="send">보내기</string>
+    <string name="send">송금</string>
     <string name="add_contact">주소록에 추가</string>
     <string name="manage_wallet">지갑 관리</string>
     <string name="manage_alert">Manage Alert</string>
@@ -177,7 +177,7 @@
     <string name="filter_from">From</string>
     <string name="filter_to">To</string>
     <string name="filter_transaction_type">Transaction Type</string>
-    <string name="filter_send">보내기</string>
+    <string name="filter_send">송금</string>
     <string name="filter_receive">수신</string>
     <string name="filter_swap">교환</string>
     <string name="filter_token">Token</string>

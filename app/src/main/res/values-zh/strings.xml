@@ -120,7 +120,7 @@
     <string name="recipient_address">收件人地址</string>
     <string name="recent_contact">最近联系</string>
     <string name="more">更多</string>
-    <string name="send">发送</string>
+    <string name="send">转移</string>
     <string name="add_contact">增加联系人</string>
     <string name="manage_wallet">管理钱包</string>
     <string name="manage_alert">管理警报</string>
@@ -177,7 +177,7 @@
     <string name="filter_from">从</string>
     <string name="filter_to">至</string>
     <string name="filter_transaction_type">交易类型</string>
-    <string name="filter_send">发送</string>
+    <string name="filter_send">转移</string>
     <string name="filter_receive">接收</string>
     <string name="filter_swap">兑换</string>
     <string name="filter_token">Token</string>
@@ -441,7 +441,7 @@
     <string name="login_password_required">请输入密码再继续</string>
     <string name="register_invalid_password">密码需要至少八个字符，包括大写，小写，和符号。</string>
     <string name="register_display_name_required">请输入您的昵称再继续</string>
-    <string name="send_token">发送代币</string>
+    <string name="send_token">转移代币</string>
     <string name="alert_price_diffrent_price_warning">您的目标价格需要与当前价格有0.1%的价差</string>
     <string name="alert_price_range_warning">你们的目标价格应该是当前价格的1%到10000%</string>
     <string name="alert_limit_exceed">超过警报限额</string>

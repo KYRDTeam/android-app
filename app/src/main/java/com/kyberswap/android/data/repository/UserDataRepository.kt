@@ -267,6 +267,7 @@ class UserDataRepository @Inject constructor(
         val info = param.kycInfo
         return userApi.savePersonalInfo(
             info.firstName,
+            info.middleName,
             info.lastName,
             info.nativeFullName,
             info.nationality,
