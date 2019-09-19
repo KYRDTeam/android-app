@@ -178,8 +178,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             sourceAmount = state.swap.sourceAmount
                             getRate(state.swap)
                             viewModel.getGasPrice()
+                        } else if (currentFragment is SwapFragment) {
+                            viewModel.getGasLimit(wallet, binding.swap)
                         }
-                        viewModel.getGasLimit(wallet, binding.swap)
                     }
                     is GetSwapState.ShowError -> {
 
@@ -582,7 +583,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 when (state) {
                     is GetGasPriceState.Success -> {
                         val swap = binding.swap?.copy(
-                            gas = state.gas
+                            gas = if (wallet?.isPromo == true) state.gas.toPromoGas() else state.gas
                         )
                         if (swap != binding.swap) {
                             binding.swap = swap
@@ -917,7 +918,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     }
 
     override fun showNotification(showNotification: Boolean) {
-        binding.vNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
+        if (::binding.isInitialized) {
+            binding.vNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
+        }
     }
 
     companion object {

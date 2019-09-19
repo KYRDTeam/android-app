@@ -588,6 +588,12 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                         )
                     )
                 }
+            } else {
+                if ((System.currentTimeMillis() / 1000 - s.timeStamp) / 60f > 10f) {
+                    transactionsList.add(s.copy(blockNumber = com.kyberswap.android.domain.model.Transaction.DEFAULT_DROPPED_BLOCK_NUMBER.toString()))
+                } else {
+                    transactionsList.add(s)
+                }
             }
         }
         if (transactionsList.isEmpty()) return transactions

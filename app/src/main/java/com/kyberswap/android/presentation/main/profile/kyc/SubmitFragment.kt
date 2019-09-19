@@ -1,7 +1,6 @@
 package com.kyberswap.android.presentation.main.profile.kyc
 
 
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
@@ -12,8 +11,9 @@ import android.widget.ImageView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentKycSubmitBinding
@@ -317,8 +317,9 @@ class SubmitFragment : BaseFragment() {
 ////                    }
 ////                })
 ////                .into(it)
-//
-//            Glide.with(it)
+//        }
+        if (imageView != null) {
+//            Glide.with(imageView)
 //                .asBitmap()
 //                .load(
 //                    byteArray
@@ -329,8 +330,7 @@ class SubmitFragment : BaseFragment() {
 //                        transition: Transition<in Bitmap>?
 //                    ) {
 //                        showLoadingImage(false, imageView)
-//                        it.setImageBitmap(resource)
-//
+//                        imageView.setImageBitmap(resource)
 //                    }
 //
 //                    override fun onLoadCleared(placeholder: Drawable?) {
@@ -341,30 +341,32 @@ class SubmitFragment : BaseFragment() {
 //                        // clear it here as you can no longer have the bitmap
 //                    }
 //                })
-//        }
-        if (imageView != null) {
+
             Glide.with(imageView)
-                .asBitmap()
-                .load(
-                    byteArray
-                )
-                .into(object : CustomTarget<Bitmap>() {
-                    override fun onResourceReady(
-                        resource: Bitmap,
-                        transition: Transition<in Bitmap>?
-                    ) {
+                .load(byteArray)
+                .addListener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: com.bumptech.glide.request.target.Target<Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
                         showLoadingImage(false, imageView)
-                        imageView.setImageBitmap(resource)
+                        return false
                     }
 
-                    override fun onLoadCleared(placeholder: Drawable?) {
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any?,
+                        target: com.bumptech.glide.request.target.Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
                         showLoadingImage(false, imageView)
-                        // this is called when imageView is cleared on lifecycle call or for
-                        // some other reason.
-                        // if you are referencing the bitmap somewhere else too other than this imageView
-                        // clear it here as you can no longer have the bitmap
+                        return false
                     }
                 })
+                .into(imageView)
         }
     }
 

@@ -440,7 +440,9 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     override fun showNotification(showNotification: Boolean) {
-        binding.vNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
+        if(::binding.isInitialized) {
+            binding.vNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
+        }
     }
 
     private fun setSelectedOption(view: View) {
@@ -521,6 +523,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     private fun getFilterTokenList(searchedString: String, tokens: List<Token>): List<Token> {
+        if(searchedString.isEmpty()) return tokens
         return tokens.filter { token ->
             token.tokenSymbol.toLowerCase(Locale.getDefault()).contains(searchedString) or
                 token.tokenName.toLowerCase(Locale.getDefault()).contains(searchedString)

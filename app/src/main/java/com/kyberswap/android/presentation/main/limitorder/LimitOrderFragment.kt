@@ -1280,7 +1280,9 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
     }
 
     override fun showNotification(showNotification: Boolean) {
-        binding.vNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
+        if(::binding.isInitialized) {
+            binding.vNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
+        }
     }
 
     companion object {

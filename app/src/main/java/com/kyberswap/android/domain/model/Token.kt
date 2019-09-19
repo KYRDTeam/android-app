@@ -3,6 +3,7 @@ package com.kyberswap.android.domain.model
 import android.os.Parcelable
 import androidx.annotation.NonNull
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.kyberswap.android.data.api.currencies.TokenCurrencyEntity
@@ -53,6 +54,14 @@ data class Token(
 
     @IgnoredOnParcel
     var isHide: Boolean = false
+    @IgnoredOnParcel
+    @Ignore
+    var delistTime: Long = 0
+
+    val isDelist: Boolean
+        get() {
+            return delistTime > 0 && delistTime > listingTime
+        }
 
     val currentBalance: BigDecimal
         get() {
@@ -94,8 +103,9 @@ data class Token(
         priority = entity.priority,
         spLimitOrder = entity.spLimitOrder ?: false,
         isQuote = entity.isQuote ?: false
-
-    )
+    ) {
+        delistTime = entity.delistTime ?: 0L
+    }
 
     val symbol: String
         get() = if (tokenSymbol == ETH_SYMBOL_STAR) WETH_SYMBOL else tokenSymbol
@@ -107,7 +117,9 @@ data class Token(
         get() = currentWalletBalance?.walletAddress ?: ""
 
     val isListed: Boolean
-        get() = System.currentTimeMillis() / 1000 - listingTime >= 0
+        get() {
+            return (System.currentTimeMillis() / 1000 - listingTime >= 0) && !isDelist
+        }
 
     val shouldShowAsNew: Boolean
         get() = 7.0 * 24.0 * 60.0 * 60.0 >= System.currentTimeMillis() / 1000 - listingTime && System.currentTimeMillis() / 1000 - listingTime >= 0
@@ -116,7 +128,7 @@ data class Token(
         get() = if (isETHWETH) WETH_SYMBOL else tokenSymbol
 
     fun with(entity: TokenCurrencyEntity): Token {
-        return this.copy(
+        return copy(
             tokenSymbol = entity.symbol,
             tokenName = entity.name,
             tokenAddress = entity.address,
@@ -128,7 +140,9 @@ data class Token(
             priority = entity.priority,
             spLimitOrder = entity.spLimitOrder ?: false,
             isQuote = entity.isQuote ?: false
-        )
+        ).apply {
+            delistTime = entity.delistTime ?: 0L
+        }
     }
 
     fun updateSelectedWallet(wallet: Wallet?): Token {

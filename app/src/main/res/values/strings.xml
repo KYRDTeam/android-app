@@ -127,7 +127,7 @@
     <string name="recipient_address">Recipient address</string>
     <string name="recent_contact">Recent Contact</string>
     <string name="more">more</string>
-    <string name="send">Send</string>
+    <string name="send">Transfer</string>
     <string name="add_contact">Add Contact</string>
     <string name="manage_wallet">Manage Wallet</string>
     <string name="manage_alert">Manage Alert</string>
@@ -185,7 +185,7 @@
     <string name="filter_from">From</string>
     <string name="filter_to">To</string>
     <string name="filter_transaction_type">Transaction Type</string>
-    <string name="filter_send">Send</string>
+    <string name="filter_send">Transfer</string>
     <string name="filter_receive">Receive</string>
     <string name="filter_swap">Swap</string>
     <string name="filter_token">Token</string>
@@ -365,8 +365,8 @@
     <string name="swap_and_send_to_the_organizer">Swap and Send to the Organizer</string>
     <string name="expired_date_notification">After swapping, please transfer your token to your personal wallet before %s</string>
     <string name="promo_gift">1 Gift</string>
-    <string name="insufficient_eth">Insufficient ETH</string>
-    <string name="not_enough_eth_blance">Not have enough ETH to pay for transaction fee</string>
+    <string name="insufficient_eth">Insufficient ETH for transaction</string>
+    <string name="not_enough_eth_blance">Deposit more ETH or click Advanced to lower GAS fee</string>
     <string name="can_not_tranfer_token">Can not transfer this token</string>
     <string name="import_success_notification">Congratulations!!!</string>
     <string name="import_success_detail">You have successfully imported your wallet. Please move all assets to your wallet by %s</string>
@@ -428,7 +428,7 @@
     <string name="setting_support_message">Please send request to support@kyber.network</string>
     <string name="setting_kyber_network_url" translatable="false">https://t.me/kybernetwork</string>
     <string name="setting_kyber_network_developer_url" translatable="false">https://t.me/KyberDeveloper</string>
-    <string name="setting_github_url" translatable="false">https://github.com/KyberNetwork</string>
+    <string name="setting_github_url" translatable="false">https://github.com/KyberSwap/android-app</string>
     <string name="setting_twitter_url" translatable="false">https://twitter.com/KyberSwap</string>
     <string name="setting_facebook_url" translatable="false">https://www.facebook.com/kybernetwork</string>
     <string name="setting_medium_url" translatable="false">https://medium.com/@kyberswap</string>
@@ -469,7 +469,7 @@
     <string name="login_password_required">Please enter a password to continue</string>
     <string name="register_invalid_password">Password must be at least eight characters including one uppercase letter, one lower case letter and alphanumeric characters.</string>
     <string name="register_display_name_required">Please enter a display name to continue</string>
-    <string name="send_token">Send Token</string>
+    <string name="send_token">Transfer Token</string>
     <string name="alert_price_diffrent_price_warning">Your target price should be different at least 0.1% from current price</string>
     <string name="alert_price_range_warning">Your target price should be from 1% to 10000% of current price</string>
     <string name="alert_limit_exceed">Alert limit exceeded</string>
@@ -571,6 +571,10 @@
     <string name="sign_in_required">Please sign in to your Profile to use Price Alert</string>
     <string name="about_pdpa_update">About PDPA update</string>
     <string name="pdpa_content"><![CDATA[We are aware of the revised Advisory Guidelines on the PDPA for NRIC and other National Identification Numbers that Personal Data Protection Commission (PDPA) issued on 31 August 2018.\n\nWe seek your understanding that we are continuing  with the collection and use of NRIC Numbers / Foreign Identification Numbers / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers to ensure that KyberSwap does not deal with assets or funds that are proceeds of drug dealing, criminal conduct or property relating to money laundering or terrorism financing offence.\n\nWe assure you that we will undertake proper safeguarding measures to protect your personal data (including NRIC Numbers / FIN / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers) under our care.\n\nContact us at support@kyber.network should you have any queries or concerns.]]></string>
+    <string name="notification_dropped">Dropped</string>
+    <string name="notification_dropped_message">Your transaction %s might be lost, please check Etherscan for more information</string>
+    <string name="swap_now">Swap Now</string>
+    <string name="transfer_now">Transfer Now</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>

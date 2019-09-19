@@ -248,7 +248,7 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
             now.get(Calendar.MONTH),
             now.get(Calendar.DAY_OF_MONTH)
         )
-        dpd.show(fragmentManager, "Datepickerdialog")
+        fragmentManager?.let { dpd.show(it, "Datepickerdialog") }
     }
 
     override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {

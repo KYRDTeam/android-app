@@ -81,7 +81,7 @@ class ProfileDetailFragment : BaseFragment() {
         }
 
         binding.tvPDPAUpdate.underline(getString(R.string.about_pdpa_update))
-        viewModel.pollingKycProfile()
+        viewModel.getLoginStatus()
         viewModel.getUserInfoCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {

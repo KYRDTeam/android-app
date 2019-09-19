@@ -75,7 +75,7 @@ interface TransactionDao {
         pending: String = Transaction.PENDING_TRANSACTION_STATUS
     ): List<Transaction>
 
-    @Query("SELECT * FROM transactions WHERE hash = :hash AND transactionStatus = :status")
+    @Query("SELECT * FROM transactions WHERE hash = :hash COLLATE NOCASE AND transactionStatus = :status")
     fun findTransaction(hash: String, status: String): Transaction?
 
     @Query("SELECT * FROM transactions WHERE walletAddress = :walletAddress AND transactionStatus = :status")
