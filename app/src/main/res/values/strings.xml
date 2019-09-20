@@ -17,7 +17,7 @@
     <string name="company_name">Kyber</string>
     <string name="title_confirmation">Confirm</string>
     <string name="title_wrong_backup">Wrong Backup</string>
-    <string name="message_close_app_confirmation">This creates a new Ethereum wallet for you to receive and send tokens.</string>
+    <string name="message_close_app_confirmation">This creates a new Ethereum wallet for you to receive and transfer tokens.</string>
     <string name="message_wrong_backup">Your backup words are incorrect.\n Please try again.</string>
     <string name="message_wrong_backup_again">You entered the wrong backup words for another time. Want to backup again?</string>
     <string name="confirm">Confirm</string>
@@ -143,16 +143,16 @@
     <string name="add_contacts">Add Contact</string>
     <string name="contacts">Contacts</string>
     <string name="contact_save">Save</string>
-    <string name="provide_receive_address">Please enter a valid address to send</string>
-    <string name="amount_to_send">Amount to Send</string>
+    <string name="provide_receive_address">Please enter a valid address to transfer</string>
+    <string name="amount_to_send">Amount to transfer</string>
     <string name="specify_amount">Please enter an amount to continue</string>
     <string name="swap_amount_small">Amount too small to perform swap, minimum equivalent to 0.001 ETH</string>
     <string name="title_amount_too_big">Amount too big</string>
     <string name="exceed_balance">Balance is not enough to make the transaction.</string>
 
-    <string name="specify_contact_address">Please enter a valid address to send</string>
+    <string name="specify_contact_address">Please enter a valid address to transfer</string>
     <string name="invalid_contact_address_title">Invalid Address</string>
-    <string name="invalid_contact_address">Please enter a valid address to send</string>
+    <string name="invalid_contact_address">Please enter a valid address to transfer</string>
     <string name="not_in_contact">Not in contact</string>
     <string name="chart_no_token_data">There is no data for this token</string>
     <string name="chart_updating_data">Updating data…</string>
@@ -362,7 +362,7 @@
     <string name="promo_to">To</string>
     <string name="promo_receive">Receive</string>
     <string name="promo_transaction_fee">Transaction Fee</string>
-    <string name="swap_and_send_to_the_organizer">Swap and Send to the Organizer</string>
+    <string name="swap_and_send_to_the_organizer">Swap and Transfer to the Organizer</string>
     <string name="expired_date_notification">After swapping, please transfer your token to your personal wallet before %s</string>
     <string name="promo_gift">1 Gift</string>
     <string name="insufficient_eth">Insufficient ETH for transaction</string>
@@ -483,7 +483,7 @@
     <string name="notification_success_received">You have received %s from %s</string>
     <string name="notification_sent_token">Sent %s</string>
     <string name="notification_success_sent"> %s successfully sent to %s</string>
-    <string name="notification_fail_sent">Can not send %s to %s</string>
+    <string name="notification_fail_sent">Can not transfer %s to %s</string>
     <string name="notification_swap_token">Swap</string>
     <string name="notification_success_swap">%s successfully converted to %s </string>
     <string name="notification_fail_swap">Can not convert from %s to %s</string>

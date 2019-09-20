@@ -14,6 +14,7 @@ import com.kyberswap.android.databinding.ItemTransactionBinding
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.presentation.base.DataBoundListAdapter
 import com.kyberswap.android.presentation.base.DataBoundViewHolder
+import java.util.Locale
 
 class TransactionStatusAdapter(
     appExecutors: AppExecutors,
@@ -87,7 +88,21 @@ class TransactionStatusAdapter(
     private fun binding(binding: ItemTransactionBinding, transaction: Transaction) {
         binding.tvTransactionDetail.text = transaction.displayTransaction
         binding.tvRate.text = transaction.displayRate
-        binding.tvTransactionType.text = transaction.displayTransactionType
+        val context = binding.tvRate.context
+        val transactionType = when (transaction.type) {
+            Transaction.TransactionType.SEND -> {
+                context.getString(R.string.filter_send)
+            }
+
+            Transaction.TransactionType.RECEIVED -> {
+                context.getString(R.string.filter_receive)
+            }
+
+            Transaction.TransactionType.SWAP -> {
+                context.getString(R.string.filter_swap)
+            }
+        }
+        binding.tvTransactionType.text = transactionType.toUpperCase(Locale.getDefault())
         binding.tvFail.visibility = if (transaction.isTransactionFail) View.VISIBLE else View.GONE
         binding.root.setOnClickListener {
             onTransactionClick?.invoke(transaction)
