@@ -581,7 +581,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                                 ?: "",
                             taxResidencyCountry = binding.edtTaxCountry.text.toString(),
                             haveTaxIdentification = binding.rbYes.isChecked,
-                            taxIdentificationNumber = binding.edtTaxCountry.text.toString(),
+                            taxIdentificationNumber = binding.edtTin.text.toString(),
                             sourceFund =
                             if (sourceFunds.indexOf(binding.edtSourceFund.text.toString()) >= 0) {
                                 sourceFundsKeys[sourceFunds.indexOf(binding.edtSourceFund.text.toString())]
@@ -618,7 +618,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                 ?: "",
             taxResidencyCountry = binding.edtTaxCountry.text.toString(),
             haveTaxIdentification = binding.rbYes.isChecked,
-            taxIdentificationNumber = binding.edtTaxCountry.text.toString(),
+            taxIdentificationNumber = binding.edtTin.text.toString(),
             sourceFund = if (sourceFunds.indexOf(binding.edtSourceFund.text.toString()) >= 0) {
                 sourceFundsKeys[sourceFunds.indexOf(binding.edtSourceFund.text.toString())]
             } else
