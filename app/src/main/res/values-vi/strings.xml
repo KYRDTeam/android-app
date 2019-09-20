@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">KyberSwap</string>
     <string name="message_loading">Đang tải…</string>
     <string name="content_description_done">Xong</string>
     <string name="ok">OK</string>
@@ -41,9 +40,6 @@
     <string name="word_6">Từ #6</string>
     <string name="kyberswap">KyberSwap</string>
     <string name="backup_message">Chúng tôi sẽ cung cấp cho bạn một danh sách 12 từ ngẫu nhiên. Xin vui lòng viết chúng xuống giấy và giữ an toàn.    Khoá giấy này là cách duy nht để khôi phục Ví điện tử Kyber của bạn nếu bạn mất điện thoại hoặc quên mật khẩu.</string>
-    <string name="bold_font_path">fonts/Montserrat-Bold.ttf</string>
-    <string name="semi_bold_font_path">fonts/Montserrat-Bold.ttf</string>
-    <string name="semi_bold_italic_font_path">fonts/Montserrat-SemiBoldItalic.ttf</string>
     <string name="verify_word_description">Để đảm bảo bạn đã viết ra tất cả các từ dự phòng của mình, vui lòng điền vào thông tin sau đây:</string>
     <string name="backup_json">JSON</string>
     <string name="backup_private_key">Khóa cá nhân</string>
@@ -96,8 +92,6 @@
     <string name="advanced_optional">Nâng cao (tuỳ chọn)</string>
     <string name="rate">Tỷ Giá</string>
     <string name="default_source_amount">0.001</string>
-    <string name="percentage_format" formatted="false" translatable="false">"%.2f %%"</string>
-    <string name="dest_balance_usd_format" formatted="false" translatable="false">"≈ %s USD"</string>
     <string name="default_dest_balance_usd">≈ 0.0 USD</string>
     <string name="gas_fee_gwei">Phí GAS (Gwei)</string>
     <string name="gas_super_fast">%s\nRất Nhanh</string>
@@ -126,7 +120,7 @@
     <string name="recipient_address">Địa chỉ nhận</string>
     <string name="recent_contact">Gần đây</string>
     <string name="more">Nhiều hơn</string>
-    <string name="send">Chuyển</string>
+    <string name="send">Chuyển Khoản</string>
     <string name="add_contact">Thêm liên hệ</string>
     <string name="manage_wallet">Quản Lý Ví</string>
     <string name="manage_alert">Quảng Lý Thông Báo</string>
@@ -183,7 +177,7 @@
     <string name="filter_from">Từ</string>
     <string name="filter_to">Đến</string>
     <string name="filter_transaction_type">Kiểu giao dịch"</string>
-    <string name="filter_send">Chuyển</string>
+    <string name="filter_send">Chuyển Khoản</string>
     <string name="filter_receive">Nhận</string>
     <string name="filter_swap">Trao đổi</string>
     <string name="filter_token">Token</string>
@@ -205,7 +199,6 @@
     <string name="token_eth_star_name">ETH* là tổng của ETH và WETH</string>
     <string name="token_amount_available">%s khả dụng</string>
     <string name="limit_order_current_rate">1 %s = %s</string>
-    <string name="rate_percent">%s%%</string>
     <string name="limit_order_rate_lower_market">Tỉ giá bạn đặt %s thấp hơn tỉ giá hiện tại</string>
     <string name="limit_order_rate_higher_market">Tỉ giá bạn đặt %s cao hơn tỉ giá hiện tại</string>
     <string name="percent_25">25%</string>
@@ -240,7 +233,6 @@
     <string name="pending_transaction">Vui lòng đợi những giao dịch khác hoàn thành trước khi thực hiện chuyển token đi</string>
     <string name="sign_in_with">Hoặc sử dụng</string>
     <string name="agree_to">"Đồng ý "</string>
-    <string name="term_and_condition">https://files.kyberswap.com/tac.pdf</string>
     <string name="term_condition_notification">Vui lòng đồng ý với Terms &amp; Conditions để tiếp tục</string>
     <string name="complete_profile_verification">Hoàn tất xác minh hồ sơ của bạn</string>
     <string name="profile_unverified">Chưa được xác minh</string>
@@ -359,8 +351,8 @@
     <string name="swap_and_send_to_the_organizer">Trao đổi và Chuyển đến Ban tổ chức</string>
     <string name="expired_date_notification">Sau khi trao đổi, hãy chuyển toàn bộ token vào ví riêng của bạn trước %s</string>
     <string name="promo_gift">1 Món quà</string>
-    <string name="insufficient_eth">Không đủ ETH</string>
-    <string name="not_enough_eth_blance">Không có đủ ETH để thanh toán phí giao dịch</string>
+    <string name="insufficient_eth">Không đủ ETH để thực hiện giao dịch</string>
+    <string name="not_enough_eth_blance">Gửi thêm ETH vào ví hoặc bấm Nâng cao để hạ thấp phí gas.</string>
     <string name="can_not_tranfer_token">Không thể chuyển token này</string>
     <string name="import_success_notification">Chúc mừng!!!</string>
     <string name="import_success_detail">Bạn đã nhập ví thành công. Xin vui lòng chuyển tất cả tiền qua ví của bạn trước %s</string>
@@ -394,7 +386,6 @@
     <string name="backup_mnemonic">Sao lưu Mnemonic</string>
     <string name="backup_your_wallet">Sao Lưu Ví</string>
 
-    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="alert_trigger_content"><![CDATA[Giá bạn đặt cho %s %s đã đạt được]]></string>
     <string name="maximum_alerts_title">Vượt quá số lượng thông báo</string>
     <string name="maximum_alerts_content">Bạn đã có 10 (tối đa) số lượng thông báo. Vui lòng xoá bớt thông báo hiện có để thêm thông báo mới.</string>
@@ -417,22 +408,8 @@
     <string name="delete_contact_success">Xóa liên lạc thành công</string>
     <string name="too_many_attempt">Quá nhiều lần thử, xin vui lòng chờ %s giây.</string>
     <string name="number_of_attempt">Bạn có %d lần thử</string>
-    <string name="setting_about_url">https://kyber.network/about/company</string>
-    <string name="setting_community_url">https://kyber.network/community</string>
     <string name="setting_support_message">Vui lòng gửi yêu cầu của bạn đến support@kyber.network</string>
-    <string name="setting_kyber_network_url">https://t.me/kybernetwork</string>
-    <string name="setting_kyber_network_developer_url">https://t.me/KyberDeveloper</string>
-    <string name="setting_github_url">https://github.com/KyberNetwork</string>
-    <string name="setting_twitter_url">https://twitter.com/KyberSwap</string>
-    <string name="setting_facebook_url">https://www.facebook.com/kybernetwork</string>
-    <string name="setting_medium_url">https://medium.com/@kyberswap</string>
-    <string name="setting_linkedin_url">https://www.linkedin.com/company/kybernetwork</string>
     <string name="setting_share_info">Tôi vừa tìm thấy một ứng dụng ví tuyệt vời. Kiểm tra ở đây https://play.google.com/store/apps/details?id=com.kyberswap.android</string>
-    <string name="setting_rate_my_app">https://play.google.com/store/apps/details?id=com.kyberswap.android</string>
-    <string name="order_why_order_not_filled">https://kyberswap.com/faq#I-submitted-the-limit-order-but-it-was-not-triggered-even-though-my-desired-price-was-hit</string>
-    <string name="extra_url">https://kyberswap.com/faq#Why-received-amount-is-higher-than-estimated-amount</string>
-    <string name="order_fee_url">https://kyberswap.com/faq#I-have-KNC-in-my-wallet-Do-I-get-any-discount-on-trading-fees</string>
-    <string name="same_token_pair_url">https://kyberswap.com/faq#can-I-submit-multiple-limit-orders-for-same-token-pair</string>
     <string name="item_token_header_bal">Bal</string>
     <string name="token_new">Mới</string>
     <string name="add_fav_success">Đã thêm vào mục yêu thích của bạn</string>
@@ -463,7 +440,7 @@
     <string name="login_password_required">Vui lòng điền mật khẩu để tiếp tục</string>
     <string name="register_invalid_password">Mật khẩu phải có ít nhất 8 ký tự bao gồm chữ hoa, chữ thường và chữ số.</string>
     <string name="register_display_name_required">Vui lòng điền tên hiển thị để tiếp tục</string>
-    <string name="send_token">Chuyển token</string>
+    <string name="send_token">Gửi Token</string>
     <string name="alert_price_diffrent_price_warning">Giá bạn đặt phải khác ít nhất 0.1% so với giá hiện tại</string>
     <string name="alert_price_range_warning">Mức giá nên từ 1% đến 10000% so với mức giá hiện tại</string>
     <string name="alert_limit_exceed">Vượt quá số lượng thông báo</string>
@@ -571,6 +548,10 @@
     <string name="landing_limit_order_description">Trao đổi với tỉ giá mong muốn, hoàn toàn kiểm soát tài sản, phí giao dịch thấp, dễ dàng sử dụng</string>
     <string name="about_pdpa_update">About PDPA update</string>
     <string name="pdpa_content"><![CDATA[We are aware of the revised Advisory Guidelines on the PDPA for NRIC and other National Identification Numbers that Personal Data Protection Commission (PDPA) issued on 31 August 2018.\n\nWe seek your understanding that we are continuing  with the collection and use of NRIC Numbers / Foreign Identification Numbers / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers to ensure that KyberSwap does not deal with assets or funds that are proceeds of drug dealing, criminal conduct or property relating to money laundering or terrorism financing offence.\n\nWe assure you that we will undertake proper safeguarding measures to protect your personal data (including NRIC Numbers / FIN / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers) under our care.\n\nContact us at support@kyber.network should you have any queries or concerns.]]></string>
+    <string name="notification_dropped">Dropped</string>
+    <string name="notification_dropped_message">Your transaction %s might be lost, please check Etherscan for more information</string>
+    <string name="swap_now">Trao đổi</string>
+    <string name="transfer_now">Chuyển</string>
     <string-array name="proof_address">
         <item>Bảng sao kê ngân hàng</item>
         <item>Thư uỷ thác của Ngân hàng</item>

@@ -52,6 +52,7 @@ import org.web3j.crypto.WalletUtils
 import org.web3j.protocol.core.methods.response.EthEstimateGas
 import org.web3j.utils.Convert
 import java.math.BigDecimal
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.pow
@@ -138,17 +139,17 @@ class SwapDataRepository @Inject constructor(
                 val swap = param.swap
                 transactionDao.insertTransaction(
                     Transaction(
-                        hash = it,
+                        hash = it.toLowerCase(Locale.getDefault()),
                         transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
                         timeStamp = System.currentTimeMillis() / 1000L,
-                        from = swap.tokenSource.tokenAddress,
+                        from = param.wallet.address,
                         gas = swap.gasLimit,
                         gasUsed = swap.gasLimit,
                         gasPrice = Convert.toWei(
                             swap.gasPrice.toBigDecimalOrDefaultZero(),
                             Convert.Unit.GWEI
                         ).toString(),
-                        to = swap.tokenDest.tokenAddress,
+                        to = param.wallet.address,
                         tokenSource = swap.tokenSource.tokenSymbol,
                         tokenDest = swap.tokenDest.tokenSymbol,
                         sourceAmount = swap.sourceAmount,
@@ -199,10 +200,10 @@ class SwapDataRepository @Inject constructor(
                 val transfer = param.send
                 transactionDao.insertTransaction(
                     Transaction(
-                        hash = it,
+                        hash = it.toLowerCase(Locale.getDefault()),
                         transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
                         timeStamp = System.currentTimeMillis() / 1000L,
-                        from = transfer.tokenSource.tokenAddress,
+                        from = param.wallet.address,
                         gas = transfer.gasLimit,
                         gasUsed = transfer.gasLimit,
                         gasPrice = Convert.toWei(

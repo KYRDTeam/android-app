@@ -56,13 +56,27 @@ class ProfileDetailViewModel @Inject constructor(
     val refreshKycStatus: LiveData<Event<UserInfoState>>
         get() = _refreshKycStatus
 
-
     private val _reSubmitKycCallback = MutableLiveData<Event<ReSubmitState>>()
     val reSubmitKycCallback: LiveData<Event<ReSubmitState>>
         get() = _reSubmitKycCallback
 
+    fun getLoginStatus() {
+        getLoginStatusUseCase.dispose()
+        getLoginStatusUseCase.execute(
+            Consumer {
+                pollingKycProfile()
+                _getUserInfoCallback.value = Event(UserInfoState.Success(it))
+            },
+            Consumer {
+                it.printStackTrace()
+                _getUserInfoCallback.value =
+                    Event(UserInfoState.ShowError(errorHandler.getError(it)))
+            },
+            null
+        )
+    }
 
-    fun pollingKycProfile() {
+    private fun pollingKycProfile() {
         pollingUserInfoUseCase.dispose()
         pollingUserInfoUseCase.execute(
             Consumer {
@@ -181,5 +195,4 @@ class ProfileDetailViewModel @Inject constructor(
             )
         )
     }
-
 }

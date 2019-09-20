@@ -77,7 +77,6 @@ fun TextView.toBigDecimalOrDefaultZero(): BigDecimal {
 fun TextView.colorRate(rate: BigDecimal) {
     try {
 
-
         val color: Int
         val ratePercent =
             String.format(context.getString(R.string.rate_percent), rate.abs().toString())
@@ -124,12 +123,14 @@ fun TextView.colorRate(rate: BigDecimal) {
 
 fun TextView.colorize(colorString: String, color: Int) {
     val spannableString = SpannableString(text)
-    spannableString.setSpan(
-        ForegroundColorSpan(ContextCompat.getColor(context, color)),
-        spannableString.indexOf(colorString),
-        spannableString.indexOf(colorString) + colorString.length,
-        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-    )
+    if (spannableString.indexOf(colorString) >= 0 && (spannableString.indexOf(colorString) + colorString.length <= spannableString.length)) {
+        spannableString.setSpan(
+            ForegroundColorSpan(ContextCompat.getColor(context, color)),
+            spannableString.indexOf(colorString),
+            spannableString.indexOf(colorString) + colorString.length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+    }
 
     setText(spannableString, TextView.BufferType.SPANNABLE)
 }

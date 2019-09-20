@@ -25,6 +25,8 @@ data class TokenCurrencyEntity(
     @SerializedName("sp_limit_order")
     val spLimitOrder: Boolean? = false,
     @SerializedName("is_quote")
-    val isQuote: Boolean? = false
+    val isQuote: Boolean? = false,
+    @SerializedName("delist_time")
+    val delistTime: Long? = 0
 
 )

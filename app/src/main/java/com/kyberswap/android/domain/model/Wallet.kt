@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toWalletAddress
@@ -36,6 +37,8 @@ data class Wallet(
         wallet.id,
         wallet.metadata.name
     )
+    val displayWalletAddress: String
+        get() = address.displayWalletAddress()
 
     fun isSameWallet(other: com.kyberswap.android.domain.model.Wallet?): Boolean {
         return this.address == other?.address &&

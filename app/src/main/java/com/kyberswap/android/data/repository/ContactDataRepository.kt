@@ -10,6 +10,7 @@ import com.kyberswap.android.domain.usecase.contact.SaveContactUseCase
 import com.kyberswap.android.presentation.common.DEFAULT_NAME
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import java.util.Locale
 import javax.inject.Inject
 
 
@@ -28,11 +29,10 @@ class ContactDataRepository @Inject constructor(
             val findContactByAddress = contactDao.findContactByAddress(param.address)
             val updatedAt = System.currentTimeMillis() / 1000
             val contact = findContactByAddress?.copy(
-                walletAddress = param.walletAddress,
-                address = param.address.toLowerCase(),
+                address = param.address.toLowerCase(Locale.getDefault()),
                 name = name,
                 updatedAt = updatedAt
-            ) ?: Contact(param.walletAddress, param.address.toLowerCase(), name, updatedAt)
+            ) ?: Contact(param.walletAddress, param.address.toLowerCase(Locale.getDefault()), name, updatedAt)
             contactDao.insertContact(contact)
 
             if (param.isSend) {

@@ -415,7 +415,7 @@
                             android:background="@drawable/default_button"
                             android:gravity="center"
                             android:minHeight="45dp"
-                            android:text="@string/swap_continue"
+                            android:text="@string/swap_now"
                             android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                             android:textColor="#ffffff"
                             android:textSize="16sp" />

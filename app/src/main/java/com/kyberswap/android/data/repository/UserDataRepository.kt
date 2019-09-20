@@ -100,43 +100,23 @@ class UserDataRepository @Inject constructor(
     }
 
     override fun pollingUserInfo(): Flowable<UserInfo> {
-        return Flowable.mergeDelayError(
-            userDao.all,
-
-            userApi.getUserInfo().map {
-                userMapper.transform(it)
-            }
-                .doAfterSuccess {
-                    val currentUser = userDao.getUser() ?: UserInfo()
-                    userDao.updateUser(
-                        it.copy(
-                            kycInfo = currentUser.kycInfo.copy(
-                                nationality = it.kycInfo.nationality,
-                                country = it.kycInfo.country,
-                                taxResidencyCountry = it.kycInfo.taxResidencyCountry
-                            )
-                        )
+        return userApi.getUserInfo().map {
+            userMapper.transform(it)
+        }
+            .doAfterSuccess {
+                val currentUser = userDao.getUser() ?: UserInfo()
+                userDao.updateUser(
+                    it.copy(
+                        kycInfo = currentUser.kycInfo
                     )
-
-                }
-                .repeatWhen {
-                    it.delay(60, TimeUnit.SECONDS)
-                }
-                .retryWhen { throwable ->
-                    throwable.compose(zipWithFlatMap())
-                }
-
-        )
-
-//        return userApi.getUserInfo().map {
-//            userMapper.transform(it)
-//        }
-//            .repeatWhen {
-//                it.delay(60, TimeUnit.SECONDS)
-//            }
-//            .retryWhen { throwable ->
-//                throwable.compose(zipWithFlatMap())
-//            }
+                )
+            }
+            .repeatWhen {
+                it.delay(60, TimeUnit.SECONDS)
+            }
+            .retryWhen { throwable ->
+                throwable.compose(zipWithFlatMap())
+            }
     }
 
     override fun refreshKycStatus(): Single<UserInfo> {
@@ -287,6 +267,7 @@ class UserDataRepository @Inject constructor(
         val info = param.kycInfo
         return userApi.savePersonalInfo(
             info.firstName,
+            info.middleName,
             info.lastName,
             info.nativeFullName,
             info.nationality,

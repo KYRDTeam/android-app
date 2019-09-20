@@ -8,6 +8,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
+import com.kyberswap.android.presentation.common.ADDITIONAL_SEND_GAS_LIMIT
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfer
 import com.kyberswap.android.presentation.common.specialGasLimitDefault
@@ -60,7 +61,7 @@ class SendConfirmViewModel @Inject constructor(
             Consumer {
 
                 val gasLimit = calculateDefaultGasLimitTransfer(send.tokenSource)
-                    .min(it.amountUsed.multiply(120.toBigInteger()).divide(100.toBigInteger()))
+                    .min(it.amountUsed.multiply(120.toBigInteger()).divide(100.toBigInteger()) + ADDITIONAL_SEND_GAS_LIMIT.toBigInteger())
 
                 val specialGasLimit = specialGasLimitDefault(send.tokenSource, send.tokenSource)
 

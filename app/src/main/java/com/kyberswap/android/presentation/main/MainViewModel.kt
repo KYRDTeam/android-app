@@ -3,6 +3,7 @@ package com.kyberswap.android.presentation.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.balance.UpdateBalanceUseCase
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
@@ -59,10 +60,11 @@ class MainViewModel @Inject constructor(
     val switchWalletCompleteCallback: LiveData<Event<UpdateWalletState>>
         get() = _switchWalletCompleteCallback
 
-
     private val _getLoginStatusCallback = MutableLiveData<Event<UserInfoState>>()
     val getLoginStatusCallback: LiveData<Event<UserInfoState>>
         get() = _getLoginStatusCallback
+
+    private var currentPendingList: List<Transaction> = listOf()
 
     private var numberOfToken = 0
 
@@ -115,7 +117,6 @@ class MainViewModel @Inject constructor(
             },
             GetBalancePollingUseCase.Param(wallets)
         )
-
     }
 
     fun getTransactionPeriodically(wallet: Wallet) {
@@ -133,7 +134,8 @@ class MainViewModel @Inject constructor(
         getPendingTransactionsUseCase.dispose()
         getPendingTransactionsUseCase.execute(
             Consumer {
-                if (it.isNotEmpty()) {
+                if (it.isNotEmpty() && it != currentPendingList) {
+                    currentPendingList = it
                     monitorPendingTransactionsUseCase.dispose()
                     monitorPendingTransactionsUseCase.execute(
                         Consumer { tx ->
@@ -202,7 +204,6 @@ class MainViewModel @Inject constructor(
                         _switchWalletCompleteCallback.value =
                             Event(UpdateWalletState.Success(pair.first, isWalletChangedEvent))
                         updateBalance(pair.first)
-
                     }
                 },
                 Consumer {
@@ -246,5 +247,4 @@ class MainViewModel @Inject constructor(
             UpdateSelectedWalletUseCase.Param(wallet)
         )
     }
-
 }
