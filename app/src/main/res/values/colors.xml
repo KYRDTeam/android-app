@@ -78,4 +78,10 @@
     <color name="notification_background">#FFFF9008</color>
 
     <color name="kyc_submit_active_color">#141927</color>
+    <color name="fingerprint_success">#009688</color>
+    <color name="finerprint_error">#F4511E</color>
+    <color name="fingerprint_fill">#FFFFFF</color>
+    <color name="hint_color">#42000000</color>
+    <color name="success_color">#009688</color>
+    <color name="warning_color">#f4511e</color>
 </resources>

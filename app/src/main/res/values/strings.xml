@@ -135,7 +135,7 @@
     <string name="setting_contact">Contact</string>
     <string name="setting_support">Support</string>
     <string name="change_pin">Change PIN</string>
-    <string name="setting_about">About</string>
+    <string name="setting_about">Get Started</string>
     <string name="setting_community">Community</string>
     <string name="share_with_friends">Share with friends</string>
     <string name="rate_app">Rate our App</string>
@@ -423,7 +423,7 @@
     <string name="delete_contact_success">Delete contact successfully</string>
     <string name="too_many_attempt">Too many attempts, please try in %s seconds</string>
     <string name="number_of_attempt">You have %d attempts</string>
-    <string name="setting_about_url" translatable="false">https://kyber.network/about/company</string>
+    <string name="setting_about_url" translatable="false">https://medium.com/kyberswap/get-started-on-kyberswap-mobile-ios-and-android-c56de6d7cc52</string>
     <string name="setting_community_url" translatable="false">https://kyber.network/community</string>
     <string name="setting_support_message">Please send request to support@kyber.network</string>
     <string name="setting_kyber_network_url" translatable="false">https://t.me/kybernetwork</string>
@@ -575,6 +575,17 @@
     <string name="notification_dropped_message">Your transaction %s might be lost, please check Etherscan for more information</string>
     <string name="swap_now">Swap Now</string>
     <string name="transfer_now">Transfer Now</string>
+    <string name="fingerprint_hint">Touch sensor</string>
+    <string name="fingerprint_not_recognized">Fingerprint not recognized. Try again</string>
+    <string name="fingerprint_success">Fingerprint recognized</string>
+    <string name="sign_in">Sign in</string>
+    <string name="password_description">Enter your store password to continue</string>
+    <string name="new_fingerprint_enrolled_description">A new fingerprint was added to this device, so your password is required.</string>
+    <string name="use_fingerprint_in_future">Use fingerprint in the future</string>
+    <string name="use_fingerprint_to_authenticate_key" >use_fingerprint_to_authenticate_key</string>
+    <string name="use_password">Use password</string>
+    <string name="description_fingerprint_icon">Fingerprint icon</string>
+    <string name="fingerprint_description">Confirm fingerprint to continue</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>

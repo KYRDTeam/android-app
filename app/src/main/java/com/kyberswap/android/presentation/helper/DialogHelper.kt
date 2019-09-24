@@ -72,7 +72,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
         dialog.setView(binding.root)
         dialog.show()
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
     fun showDialogInfo(title: String, content: String, positiveListener: () -> Unit = {}) {
@@ -93,7 +93,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
         dialog.setView(binding.root)
         dialog.show()
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
 
@@ -130,7 +130,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
         dialog.setView(binding.root)
         dialog.show()
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
 
@@ -419,7 +419,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
         dialog.setView(binding.root)
         dialog.show()
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
 
@@ -464,7 +464,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
         dialog.show()
 
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
     fun showResetPassword(positiveListener: (email: String, dialog: AlertDialog) -> Unit) {
@@ -482,7 +482,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
         dialog.setView(binding.root)
         dialog.show()
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
     fun show2FaDialog(positiveListener: (token: String, dialog: AlertDialog) -> Unit) {
@@ -522,7 +522,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
         dialog.setView(binding.root)
         dialog.show()
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
     fun showWrongBackup(positiveListener: () -> Unit) {
@@ -542,7 +542,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
         dialog.setView(binding.root)
         dialog.show()
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
     fun showWrongBackup(
@@ -584,7 +584,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
         dialog.setView(binding.root)
         dialog.show()
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
 
@@ -615,7 +615,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
         dialog.setView(binding.root)
         dialog.show()
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
     fun showAlertTriggerDialog(
@@ -640,7 +640,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.executePendingBindings()
         dialog.setView(binding.root)
         dialog.show()
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
     fun showSkipBackupPhraseDialog(
@@ -670,7 +670,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
         dialog.setView(binding.root)
         dialog.show()
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
     private fun setDialogDimens(dialog: AlertDialog, width: Int?, height: Int? = null) {
@@ -713,7 +713,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
         dialog.setView(binding.root)
         dialog.show()
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
     fun showExceedNumberAlertDialog(positiveListener: () -> Unit = {}) {
@@ -732,7 +732,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
 
         dialog.setView(binding.root)
         dialog.show()
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
     fun showOrderFillDialog(
@@ -762,7 +762,7 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.executePendingBindings()
 
         dialog.show()
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
     fun showPDPAUpdate() {
@@ -779,6 +779,6 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         }
         dialog.setView(binding.root)
         dialog.show()
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 }
