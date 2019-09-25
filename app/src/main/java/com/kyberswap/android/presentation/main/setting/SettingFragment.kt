@@ -117,10 +117,6 @@ class SettingFragment : BaseFragment() {
                     context,
                     PassCodeLockActivity.PASS_CODE_LOCK_TYPE_CHANGE
                 )
-//                    .apply {
-//                        flags =
-//                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
-//                    }
             })
 
         }

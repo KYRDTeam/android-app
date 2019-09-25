@@ -83,6 +83,9 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
         getString(R.string.pl_verify_access)
     }
 
+    private val isChangePinCode: Boolean
+        get() = PASS_CODE_LOCK_TYPE_CHANGE == type
+
     private var remainNum = MAX_NUMBER_INPUT
 
     private var passCode: PassCode? = null
@@ -192,6 +195,7 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
                                 binding.executePendingBindings()
                             } else {
                                 binding.title = verifyAccess
+                                showFingerPrint()
                             }
                         }
                     }
@@ -202,11 +206,13 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
                 }
             }
         })
+    }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    private fun showFingerPrint() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !isChangePinCode) {
             val keyguardManager = getSystemService(KeyguardManager::class.java)
             val fingerprintManager = getSystemService(FingerprintManager::class.java)
-            if (keyguardManager.isKeyguardSecure && fingerprintManager.hasEnrolledFingerprints()) {0
+            if (keyguardManager.isKeyguardSecure && fingerprintManager.hasEnrolledFingerprints()) {
                 setupKeyStoreAndKeyGenerator()
                 createKey(DEFAULT_KEY_NAME)
                 val cipher = setupCiphers()
@@ -353,7 +359,9 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
     }
 
     override fun onBackPressed() {
-        finishAffinity()
+        if (!isChangePinCode) {
+            finishAffinity()
+        }
         super.onBackPressed()
     }
 

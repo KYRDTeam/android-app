@@ -138,6 +138,9 @@ data class Order(
         ) &&
             msg.isNotEmpty()
 
+    val hasErrorMessage: Boolean
+        get() = msg.isNotEmpty()
+
     val isPending: Boolean
         get() = status.toLowerCase(Locale.getDefault()) == Status.OPEN.value
 
