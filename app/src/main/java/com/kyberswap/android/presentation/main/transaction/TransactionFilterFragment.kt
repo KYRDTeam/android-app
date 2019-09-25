@@ -18,6 +18,7 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.toDate
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import java.util.Calendar
 import javax.inject.Inject
@@ -249,6 +250,22 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
             now.get(Calendar.DAY_OF_MONTH)
         )
         fragmentManager?.let { dpd.show(it, "Datepickerdialog") }
+        if (selectedView == binding.edtFrom) {
+            dpd.maxDate =   if(binding.edtTo.text.isNotEmpty()) {
+                now.time = binding.edtTo.text.toString().toDate()
+                now
+            } else {
+                now
+            }
+        } else if (selectedView == binding.edtTo) {
+            dpd.minDate =  if(binding.edtFrom.text.isNotEmpty()) {
+                now.time = binding.edtFrom.text.toString().toDate()
+                now
+            } else {
+                now
+            }
+            dpd.maxDate = Calendar.getInstance()
+        }
     }
 
     override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {

@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License
- */
-
 package com.kyberswap.android.presentation.setting.fingerprint
 
 import android.hardware.fingerprint.FingerprintManager
@@ -76,21 +60,24 @@ internal constructor(
         showError(icon.resources.getString(R.string.fingerprint_not_recognized))
 
     override fun onAuthenticationSucceeded(result: FingerprintManager.AuthenticationResult) {
-        errorTextView.run {
-            setTextColor(errorTextView.resources.getColor(R.color.success_color, null))
-            text = errorTextView.resources.getString(R.string.fingerprint_success)
-        }
-        icon.run {
-            setImageResource(R.drawable.ic_fingerprint_success)
-            postDelayed({ callback.onAuthenticated() }, SUCCESS_DELAY_MILLIS)
-        }
+//        errorTextView.run {
+//            setTextColor(errorTextView.resources.getColor(R.color.success_color, null))
+//            text = errorTextView.resources.getString(R.string.fingerprint_success)
+//        }
+//        icon.run {
+//            setImageResource(R.drawable.ic_fingerprint_success)
+//            postDelayed({ callback.onAuthenticated() }, SUCCESS_DELAY_MILLIS)
+//        }
+        icon.postDelayed({ callback.onAuthenticated() }, SUCCESS_DELAY_MILLIS)
     }
 
     private fun showError(error: CharSequence) {
-        icon.setImageResource(R.drawable.ic_fingerprint_error)
-        errorTextView.run {
-            text = error
-            setTextColor(errorTextView.resources.getColor(R.color.warning_color, null))
+        if(error.isNotEmpty()) {
+            icon.setImageResource(R.drawable.ic_fingerprint_error)
+            errorTextView.run {
+                text = error
+                setTextColor(errorTextView.resources.getColor(R.color.warning_color, null))
+            }
         }
     }
 
@@ -101,6 +88,6 @@ internal constructor(
 
     companion object {
         const val ERROR_TIMEOUT_MILLIS: Long = 1600
-        const val SUCCESS_DELAY_MILLIS: Long = 500
+        const val SUCCESS_DELAY_MILLIS: Long = 300
     }
 }
