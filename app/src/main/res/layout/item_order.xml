@@ -70,7 +70,7 @@
                 android:layout_marginStart="4dp"
                 android:padding="4dp"
                 android:src="@drawable/ic_warning_invalid"
-                android:visibility="@{order.isInvalidated ? View.VISIBLE : View.GONE}"
+                android:visibility="@{order.hasErrorMessage ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="@+id/textView73"
                 app:layout_constraintStart_toEndOf="@+id/textView73"
                 app:layout_constraintTop_toTopOf="@+id/textView73" />

@@ -34,5 +34,21 @@
     <dimen name="marker_height">76dp</dimen>
     <dimen name="contact_size">32dp</dimen>
     <dimen name="order_status_dimen">3dp</dimen>
-
+    <dimen name="card_corner">2dp</dimen>
+    <dimen name="default_elevation">4dp</dimen>
+    <dimen name="logo_square_dimen">150dp</dimen>
+    <dimen name="logo_square_margin">32dp</dimen>
+    <dimen name="default_padding">16dp</dimen>
+    <dimen name="default_margin">16dp</dimen>
+    <dimen name="default_margin_end">4dp</dimen>
+    <dimen name="default_margin_small">8dp</dimen>
+    <dimen name="fingerprint_padding_horizontal">12dp</dimen>
+    <dimen name="fingerprint_padding_vertical">4dp</dimen>
+    <dimen name="fingerprint_margin">24dp</dimen>
+    <dimen name="default_padding_small">8dp</dimen>
+    <dimen name="fingerprint_margin_horizontal">20dp</dimen>
+    <dimen name="fingerprint_margin_vertical">16dp</dimen>
+    <dimen name="default_padding_large">24dp</dimen>
+    <dimen name="fingerprint_square_dimen">40dp</dimen>
+    <dimen name="fingerprint_square_dimen_viewport" type="float">40.0</dimen>
 </resources>

@@ -19,11 +19,7 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityMainBinding
-import com.kyberswap.android.domain.model.NotificationAlert
-import com.kyberswap.android.domain.model.NotificationLimitOrder
-import com.kyberswap.android.domain.model.Transaction
-import com.kyberswap.android.domain.model.Wallet
-import com.kyberswap.android.domain.model.WalletChangeEvent
+import com.kyberswap.android.domain.model.*
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
@@ -289,13 +285,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                             val title: String
                             val message: String
 
-                            val type = when {
-                                transaction.isTransfer && transaction.from == wallet?.address -> Transaction.TransactionType.SEND
-                                transaction.isTransfer && transaction.to == wallet?.address -> Transaction.TransactionType.RECEIVED
-                                else -> transaction.type
-                            }
-
-                            when (type) {
+                            when (transaction.transactionType) {
                                 Transaction.TransactionType.SEND -> {
                                     if (transaction.isTransactionFail) {
                                         title = getString(R.string.title_fail)

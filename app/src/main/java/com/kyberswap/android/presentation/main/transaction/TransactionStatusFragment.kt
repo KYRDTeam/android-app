@@ -154,15 +154,8 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
         )
 
         if (transactionStatusAdapter == null) {
-            transactionStatusAdapter = TransactionStatusAdapter(appExecutors) {
-
-                val type = when {
-                    it.isTransfer && it.from == wallet?.address -> Transaction.TransactionType.SEND
-                    it.isTransfer && it.to == wallet?.address -> Transaction.TransactionType.RECEIVED
-                    else -> it.type
-                }
-
-                when (type) {
+            transactionStatusAdapter = TransactionStatusAdapter(appExecutors, wallet?.address) {
+                when (it.transactionType) {
                     Transaction.TransactionType.SWAP ->
                         navigator.navigateToSwapTransactionScreen(
                             currentFragment,

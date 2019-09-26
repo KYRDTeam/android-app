@@ -242,7 +242,6 @@
                         android:layout_height="24dp"
                         android:scaleType="centerInside"
                         android:src="@drawable/ic_about" />
-
                     <TextView
                         android:id="@+id/tvAbout"
                         android:layout_width="wrap_content"

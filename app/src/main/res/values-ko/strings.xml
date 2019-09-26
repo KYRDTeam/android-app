@@ -128,7 +128,7 @@
     <string name="setting_contact">연락처</string>
     <string name="setting_support">지원</string>
     <string name="change_pin">PIN 변경</string>
-    <string name="setting_about">About</string>
+    <string name="setting_about">Get Started</string>
     <string name="setting_community">커뮤니티</string>
     <string name="share_with_friends">친구와 공유하기</string>
     <string name="rate_app">신청서 평가</string>
@@ -590,5 +590,16 @@
         <item>Business revenue</item>
         <item>Investment gain</item>
     </string-array>
+    <string name="fingerprint_hint">Touch sensor</string>
+    <string name="fingerprint_not_recognized">Fingerprint not recognized. Try again</string>
+    <string name="fingerprint_success">Fingerprint recognized</string>
+    <string name="sign_in">Sign in</string>
+    <string name="password_description">Enter your store password to continue</string>
+    <string name="new_fingerprint_enrolled_description">A new fingerprint was added to this device, so your password is required.</string>
+    <string name="use_fingerprint_in_future">Use fingerprint in the future</string>
+    <string name="use_fingerprint_to_authenticate_key">use_fingerprint_to_authenticate_key</string>
+    <string name="use_password">Use password</string>
+    <string name="description_fingerprint_icon">Fingerprint icon</string>
+    <string name="fingerprint_description">Confirm fingerprint to continue</string>
 
 </resources>

@@ -7,11 +7,7 @@ import androidx.room.Index
 import androidx.room.TypeConverters
 import com.kyberswap.android.data.api.transaction.TransactionEntity
 import com.kyberswap.android.data.db.TransactionTypeConverter
-import com.kyberswap.android.util.ext.displayWalletAddress
-import com.kyberswap.android.util.ext.safeToString
-import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
-import com.kyberswap.android.util.ext.toDisplayNumber
-import com.kyberswap.android.util.ext.toLongSafe
+import com.kyberswap.android.util.ext.*
 import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import org.web3j.protocol.core.methods.response.TransactionReceipt
@@ -19,9 +15,7 @@ import org.web3j.utils.Convert
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
+import java.util.*
 
 @Entity(
     tableName = "transactions",
@@ -268,12 +262,20 @@ data class Transaction(
     }
 
     fun sameDisplay(other: Transaction): Boolean {
+
         return this.displayTransaction == other.displayTransaction &&
             this.displayRate == other.displayRate &&
-            this.displayTransactionType == other.displayTransactionType &&
+            this.transactionType == other.transactionType &&
             this.isTransactionFail == other.isTransactionFail &&
             this.timeStamp == other.timeStamp
     }
+
+    val transactionType: TransactionType
+        get() = when {
+            this.isTransfer && this.from == currentAddress -> TransactionType.SEND
+            this.isTransfer && this.to == currentAddress -> TransactionType.RECEIVED
+            else -> this.type
+        }
 
     fun sameKey(other: Transaction): Boolean {
         return this.hash == other.hash &&
@@ -300,9 +302,6 @@ data class Transaction(
                 TimeZone.SHORT
             )
         }
-
-    val displayTransactionType: String
-        get() = type.value
 
     val isTransfer: Boolean
         get() = tokenSource.isEmpty() && tokenDest.isEmpty()

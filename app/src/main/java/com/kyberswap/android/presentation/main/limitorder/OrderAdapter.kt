@@ -125,7 +125,7 @@ class OrderAdapter(
         }
 
         binding.imgInvalidated.setOnClickListener {
-            if (item.isInvalidated && item.msg.isNotEmpty()) {
+            if (item.hasErrorMessage) {
                 onInvalidatedClick?.invoke(item)
             }
         }

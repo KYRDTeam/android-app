@@ -518,11 +518,15 @@
                                     android:text="@string/market_rate"
                                     android:textColor="#5a5e67"
                                     android:textSize="14sp"
+                                    android:minHeight="36dp"
+                                    android:gravity="center"
                                     app:layout_constraintEnd_toStartOf="@+id/tvRate"
                                     app:layout_constraintHorizontal_bias="0.0"
                                     app:layout_constraintHorizontal_chainStyle="packed"
                                     app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent" />
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    />
 
                                 <TextView
                                     android:id="@+id/tvRate"
@@ -533,7 +537,8 @@
                                     android:textSize="14sp"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintStart_toEndOf="@+id/tvCurrentRate"
-                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintTop_toTopOf="@+id/tvCurrentRate"
+                                    app:layout_constraintBottom_toTopOf="@+id/tvRateRevert"
                                     tools:text="1ETH = 1270KNC" />
 
                                 <TextView
@@ -547,6 +552,7 @@
                                     app:layout_constraintEnd_toEndOf="@+id/tvRate"
                                     app:layout_constraintStart_toStartOf="@+id/tvRate"
                                     app:layout_constraintTop_toBottomOf="@+id/tvRate"
+                                    app:layout_constraintBottom_toBottomOf="@+id/tvCurrentRate"
                                     tools:text="1ETH = 1270KNC" />
 
 
