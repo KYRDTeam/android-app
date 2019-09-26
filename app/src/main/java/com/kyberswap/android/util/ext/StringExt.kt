@@ -70,8 +70,14 @@ fun String?.percentage(other: String?): BigDecimal {
 }
 
 fun String.toDate(): Date {
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-    return dateFormat.parse(this)
+    return try {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        dateFormat.parse(this)
+    } catch (ex: Exception) {
+        ex.printStackTrace()
+        Date()
+    }
+
 }
 
 fun String?.toBigDecimalOrDefaultZero(): BigDecimal {

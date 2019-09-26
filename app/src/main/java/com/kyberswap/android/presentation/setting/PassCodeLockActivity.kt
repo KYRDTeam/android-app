@@ -1,9 +1,17 @@
 package com.kyberswap.android.presentation.setting
 
+import android.annotation.TargetApi
+import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
+import android.hardware.fingerprint.FingerprintManager
+import android.os.Build
 import android.os.Bundle
+import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyPermanentlyInvalidatedException
+import android.security.keystore.KeyProperties
 import android.view.animation.AnimationUtils
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -13,15 +21,30 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityPassCodeLockBinding
 import com.kyberswap.android.domain.model.PassCode
 import com.kyberswap.android.presentation.base.BaseActivity
+import com.kyberswap.android.presentation.common.DEFAULT_KEY_NAME
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.setting.fingerprint.FingerprintAuthenticationDialogFragment
 import com.kyberswap.android.util.di.ViewModelFactory
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import java.io.IOException
+import java.security.InvalidAlgorithmParameterException
+import java.security.InvalidKeyException
+import java.security.KeyStore
+import java.security.KeyStoreException
+import java.security.NoSuchAlgorithmException
+import java.security.NoSuchProviderException
+import java.security.UnrecoverableKeyException
+import java.security.cert.CertificateException
 import java.util.concurrent.TimeUnit
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+import javax.crypto.NoSuchPaddingException
+import javax.crypto.SecretKey
 import javax.inject.Inject
 
 
-class PassCodeLockActivity : BaseActivity() {
+class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFragment.Callback {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -60,6 +83,9 @@ class PassCodeLockActivity : BaseActivity() {
         getString(R.string.pl_verify_access)
     }
 
+    private val isChangePinCode: Boolean
+        get() = PASS_CODE_LOCK_TYPE_CHANGE == type
+
     private var remainNum = MAX_NUMBER_INPUT
 
     private var passCode: PassCode? = null
@@ -68,6 +94,9 @@ class PassCodeLockActivity : BaseActivity() {
 
     private var currentTimePassed: Long = 0
 
+    private lateinit var keyStore: KeyStore
+
+    private lateinit var keyGenerator: KeyGenerator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,9 +116,7 @@ class PassCodeLockActivity : BaseActivity() {
             }
 
             override fun onPinChange(pinLength: Int, intermediatePin: String) {
-
             }
-
         })
 
         binding.pinLockView.pinLength = 6
@@ -124,7 +151,6 @@ class PassCodeLockActivity : BaseActivity() {
                                 binding.title = newPinTitle
                                 binding.content = newPinContent
                                 binding.executePendingBindings()
-
                             } else {
                                 (applicationContext as KyberSwapApplication).startCounter()
                                 finish()
@@ -169,6 +195,7 @@ class PassCodeLockActivity : BaseActivity() {
                                 binding.executePendingBindings()
                             } else {
                                 binding.title = verifyAccess
+                                showFingerPrint()
                             }
                         }
                     }
@@ -179,6 +206,84 @@ class PassCodeLockActivity : BaseActivity() {
                 }
             }
         })
+    }
+
+    private fun showFingerPrint() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !isChangePinCode) {
+            val keyguardManager = getSystemService(KeyguardManager::class.java)
+            val fingerprintManager = getSystemService(FingerprintManager::class.java)
+            if (keyguardManager.isKeyguardSecure && fingerprintManager.hasEnrolledFingerprints()) {
+                setupKeyStoreAndKeyGenerator()
+                createKey(DEFAULT_KEY_NAME)
+                val cipher = setupCiphers()
+                val fragment = FingerprintAuthenticationDialogFragment()
+                fragment.setCryptoObject(FingerprintManager.CryptoObject(cipher))
+                fragment.setCallback(this)
+                if (initCipher(cipher, DEFAULT_KEY_NAME)) {
+                    fragment.show(supportFragmentManager, DIALOG_FRAGMENT_TAG)
+                }
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun setupCiphers(): Cipher {
+        val defaultCipher: Cipher
+        try {
+            val cipherString =
+                "${KeyProperties.KEY_ALGORITHM_AES}/${KeyProperties.BLOCK_MODE_CBC}/${KeyProperties.ENCRYPTION_PADDING_PKCS7}"
+            defaultCipher = Cipher.getInstance(cipherString)
+        } catch (e: Exception) {
+            when (e) {
+                is NoSuchAlgorithmException,
+                is NoSuchPaddingException ->
+                    throw RuntimeException("Failed to get an instance of Cipher", e)
+                else -> throw e
+            }
+        }
+        return defaultCipher
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun initCipher(cipher: Cipher, keyName: String): Boolean {
+        try {
+            keyStore.load(null)
+            cipher.init(Cipher.ENCRYPT_MODE, keyStore.getKey(keyName, null) as SecretKey)
+            return true
+        } catch (e: Exception) {
+            when (e) {
+                is KeyPermanentlyInvalidatedException -> return false
+                is KeyStoreException,
+                is CertificateException,
+                is UnrecoverableKeyException,
+                is IOException,
+                is NoSuchAlgorithmException,
+                is InvalidKeyException -> throw RuntimeException("Failed to init Cipher", e)
+                else -> throw e
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun setupKeyStoreAndKeyGenerator() {
+        try {
+            keyStore = KeyStore.getInstance(ANDROID_KEY_STORE)
+        } catch (e: KeyStoreException) {
+            throw RuntimeException("Failed to get an instance of KeyStore", e)
+        }
+
+        try {
+            keyGenerator =
+                KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEY_STORE)
+        } catch (e: Exception) {
+            when (e) {
+                is NoSuchAlgorithmException,
+                is NoSuchProviderException ->
+                    throw RuntimeException("Failed to get an instance of KeyGenerator", e)
+                else -> throw e
+            }
+        }
     }
 
     private fun startCounter() {
@@ -218,11 +323,45 @@ class PassCodeLockActivity : BaseActivity() {
                 }
             }
         }
+    }
 
+    override fun onAuthSuccess() {
+        (applicationContext as KyberSwapApplication).startCounter()
+        finish()
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun createKey(keyName: String, invalidatedByBiometricEnrollment: Boolean) {
+        try {
+            keyStore.load(null)
+
+            val keyProperties = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+            val builder = KeyGenParameterSpec.Builder(keyName, keyProperties)
+                .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+                .setUserAuthenticationRequired(true)
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
+                .setInvalidatedByBiometricEnrollment(invalidatedByBiometricEnrollment)
+
+            keyGenerator.run {
+                init(builder.build())
+                generateKey()
+            }
+        } catch (e: Exception) {
+            when (e) {
+                is NoSuchAlgorithmException,
+                is InvalidAlgorithmParameterException,
+                is CertificateException,
+                is IOException -> throw RuntimeException(e)
+                else -> throw e
+            }
+        }
     }
 
     override fun onBackPressed() {
-        finishAffinity()
+        if (!isChangePinCode) {
+            finishAffinity()
+        }
         super.onBackPressed()
     }
 
@@ -236,11 +375,12 @@ class PassCodeLockActivity : BaseActivity() {
         const val PASS_CODE_LOCK_TYPE_VERIFY = 0
         const val PASS_CODE_LOCK_TYPE_CHANGE = 1
         private const val TYPE_PARAM = "type_param"
+        private const val DIALOG_FRAGMENT_TAG = "fingerprint_fragment"
+        private const val ANDROID_KEY_STORE = "AndroidKeyStore"
         fun newIntent(context: Context, type: Int = PASS_CODE_LOCK_TYPE_VERIFY) =
             Intent(context, PassCodeLockActivity::class.java)
                 .apply {
                     putExtra(TYPE_PARAM, type)
                 }
     }
-
 }

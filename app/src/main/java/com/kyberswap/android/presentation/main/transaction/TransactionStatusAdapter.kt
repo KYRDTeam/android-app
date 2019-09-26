@@ -14,10 +14,11 @@ import com.kyberswap.android.databinding.ItemTransactionBinding
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.presentation.base.DataBoundListAdapter
 import com.kyberswap.android.presentation.base.DataBoundViewHolder
-import java.util.Locale
+import java.util.*
 
 class TransactionStatusAdapter(
     appExecutors: AppExecutors,
+    private val walletAddress: String?,
     private val onTransactionClick: ((Transaction) -> Unit)?
 
 ) : DataBoundListAdapter<TransactionItem, ViewDataBinding>(
@@ -89,7 +90,9 @@ class TransactionStatusAdapter(
         binding.tvTransactionDetail.text = transaction.displayTransaction
         binding.tvRate.text = transaction.displayRate
         val context = binding.tvRate.context
-        val transactionType = when (transaction.type) {
+
+
+        val transactionType = when (transaction.transactionType) {
             Transaction.TransactionType.SEND -> {
                 context.getString(R.string.filter_send)
             }

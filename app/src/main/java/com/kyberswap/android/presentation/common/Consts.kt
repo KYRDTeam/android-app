@@ -12,3 +12,6 @@ const val MIN_SUPPORT_SWAP_SOURCE_AMOUNT = 0.001
 val KEEP_ETH_BALANCE_FOR_GAS = 600_000.toBigDecimal()
 
 
+enum class Stage { FINGERPRINT, NEW_FINGERPRINT_ENROLLED, PASSWORD }
+
+const val DEFAULT_KEY_NAME = "default_key"
