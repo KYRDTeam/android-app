@@ -296,8 +296,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         }
 
         binding.tvBalance.setOnClickListener {
-            hideKeyboard()
             updateCurrentFocus(edtSource)
+            hideKeyboard()
             binding.order?.let {
                 if (it.tokenSource.isETHWETH) {
                     binding.edtSource.setText(
@@ -314,8 +314,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         }
 
         binding.tv25Percent.setOnClickListener {
-            hideKeyboard()
             updateCurrentFocus(edtSource)
+            hideKeyboard()
             binding.edtSource.setAmount(
                 tvBalance.text.toString().toBigDecimalOrDefaultZero().multiply(
                     0.25.toBigDecimal()
@@ -324,8 +324,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         }
 
         binding.tv50Percent.setOnClickListener {
-            hideKeyboard()
             updateCurrentFocus(edtSource)
+            hideKeyboard()
             binding.edtSource.setAmount(
                 tvBalance.text.toString().toBigDecimalOrDefaultZero().multiply(
                     0.5.toBigDecimal()
@@ -334,8 +334,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         }
 
         binding.tv100Percent.setOnClickListener {
-            hideKeyboard()
             updateCurrentFocus(edtSource)
+            hideKeyboard()
             binding.order?.let {
                 if (it.tokenSource.isETHWETH) {
                     binding.edtSource.setText(
@@ -583,6 +583,9 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 sourceLock.set(it || isSourceFocus)
                 if (it) {
                     updateCurrentFocus(edtSource)
+                    if (binding.edtSource.text.isNullOrEmpty()) {
+                        binding.edtDest.setText("")
+                    }
                 }
             })
 
@@ -593,7 +596,11 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 destLock.set(it)
                 if (it) {
                     updateCurrentFocus(edtDest)
+                    if (binding.edtDest.text.isNullOrEmpty()) {
+                        binding.edtSource.setText("")
+                    }
                 }
+
             })
 
         viewModel.compositeDisposable.add(binding.edtDest.textChanges()
@@ -601,11 +608,12 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
             .observeOn(schedulerProvider.ui())
             .subscribe { text ->
                 if (destLock.get()) {
-                    if (rateText.toBigDecimalOrDefaultZero() == BigDecimal.ZERO) {
-                        binding.edtSource.setText("")
-                    } else {
-
-                        binding.edtSource.setAmount(
+                    when {
+                        rateText.toBigDecimalOrDefaultZero() == BigDecimal.ZERO -> binding.edtSource.setText(
+                            ""
+                        )
+                        text.isNullOrEmpty() -> binding.edtSource.setText("")
+                        else -> binding.edtSource.setAmount(
                             text.toBigDecimalOrDefaultZero()
                                 .divide(
                                     rateText.toBigDecimalOrDefaultZero(),
@@ -624,33 +632,23 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
             .subscribe { text ->
                 if (!sourceLock.get() || isDestFocus) return@subscribe
 
-                if (text.isNullOrEmpty()) {
-                    binding.edtDest.setText("")
-                }
-
                 binding.order?.let { order ->
-                    if (rateText.isEmpty()) {
-                        edtDest.setAmount(
-                            order.getExpectedDestAmount(
-                                text.toString()
-                                    .toBigDecimalOrDefaultZero()
+                    when {
+                        rateText.isEmpty() -> {
+                            edtDest.setText("")
+
+                            viewModel.getExpectedRate(
+                                order,
+                                if (text.isNullOrEmpty()) getString(R.string.default_source_amount) else text.toString()
                             )
-                                .toDisplayNumber()
-                        )
-
-
-                        viewModel.getExpectedRate(
-                            order,
-                            if (text.isNullOrEmpty()) getString(R.string.default_source_amount) else text.toString()
-                        )
-                    } else {
-                        edtDest.setAmount(
+                        }
+                        text.isNullOrEmpty() -> edtDest.setText("")
+                        else -> edtDest.setAmount(
                             text.toBigDecimalOrDefaultZero().multiply(
                                 rateText.toBigDecimalOrDefaultZero()
                             ).toDisplayNumber()
                         )
                     }
-
 
                     viewModel.getFee(
                         binding.order,
@@ -673,6 +671,9 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
                     }
                 }
+                if (text.isNullOrEmpty()) {
+                    binding.edtDest.setText("")
+                }
             })
 
         viewModel.compositeDisposable.add(
@@ -682,10 +683,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 .subscribe { text ->
 
                     binding.tvRateWarning.colorRate(text.toString().percentage(rate))
-                    if (text.isNullOrEmpty()) {
-                        binding.edtDest.setText("")
-                    }
-
                     binding.order?.let { order ->
                         if (isDestFocus) {
                             binding.edtSource.setAmount(expectedSourceAmount)
@@ -707,6 +704,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                             }
                         }
                     }
+                    if (text.isNullOrEmpty()) {
+                        binding.edtDest.setText("")
+                    }
+
                 })
 
         viewModel.getExpectedRateCallback.observe(viewLifecycleOwner, Observer {
@@ -740,9 +741,11 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         if (isDestFocus) {
                             binding.edtSource.setAmount(expectedSourceAmount)
                         } else {
-                            binding.edtDest.setAmount(
-                                expectedDestAmount
-                            )
+                            if (binding.edtRate.text.isNotEmpty()) {
+                                binding.edtDest.setAmount(
+                                    expectedDestAmount
+                                )
+                            }
                         }
                     }
                     is GetExpectedRateState.ShowError -> {
@@ -852,7 +855,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         binding.tvOff.text = String.format(
                             getString(R.string.discount_fee), state.fee.discountPercent
                         )
-                        val order = binding.order?.copy(fee = state.fee.fee.toBigDecimal(), transferFee = state.fee.transferFee.toBigDecimal())
+                        val order = binding.order?.copy(
+                            fee = state.fee.fee.toBigDecimal(),
+                            transferFee = state.fee.transferFee.toBigDecimal()
+                        )
                         if (order != binding.order) {
                             binding.order = order
                             binding.executePendingBindings()
@@ -1280,7 +1286,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
     }
 
     override fun showNotification(showNotification: Boolean) {
-        if(::binding.isInitialized) {
+        if (::binding.isInitialized) {
             binding.vNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
         }
     }

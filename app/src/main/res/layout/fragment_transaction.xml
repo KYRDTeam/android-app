@@ -58,57 +58,55 @@
             app:layout_constraintTop_toTopOf="@+id/textView26" />
 
         <LinearLayout
-            android:id="@+id/linearLayout4"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="24dp"
-            android:minHeight="46dp"
-            android:orientation="horizontal"
+            android:layout_height="0dp"
+            android:background="@color/color_bg_gray"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imgBack">
 
-            <TextView
-                android:id="@+id/tvPending"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/linearLayout4"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/tab_view_state_drawable_left"
-                android:gravity="center"
-                android:minHeight="46dp"
-                android:text="@string/tab_pending"
-                android:textColor="@color/transaction_tab_text_color"
-                android:textSize="14sp" />
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tvMined"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/tab_view_state_drawable_right"
-                android:gravity="center"
-                android:minHeight="46dp"
-                android:text="@string/tab_mined"
-                android:textColor="@color/transaction_tab_text_color"
-                android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/tvPending"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:minHeight="56dp"
+                    android:padding="8dp"
+                    android:text="@string/tab_pending"
+                    android:textColor="@color/manage_order_text_color"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvMined"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:minHeight="56dp"
+                    android:padding="8dp"
+                    android:text="@string/tab_mined"
+                    android:textColor="@color/manage_order_text_color"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/vpTransaction"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </androidx.viewpager.widget.ViewPager>
+
         </LinearLayout>
 
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/vpTransaction"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="21dp"
-            android:background="@color/color_bg_gray"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
-            app:layout_constraintVertical_bias="0.0">
-
-        </androidx.viewpager.widget.ViewPager>
 
         <!--<TextView-->
         <!--android:id="@+id/tvEmpty"-->
