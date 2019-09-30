@@ -49,16 +49,16 @@ class FingerprintAuthenticationDialogFragment : DialogFragment(),
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         dialog?.setTitle(getString(R.string.app_name))
         dialog?.window?.setBackgroundDrawableResource(R.drawable.rounded_corner_dialog_background)
         binding.cancelButton.setOnClickListener { dismiss() }
         activity?.let {
             fingerprintUiHelper = FingerprintUiHelper(
                 it.getSystemService(FingerprintManager::class.java),
-                view.findViewById(R.id.fingerprint_icon),
-                view.findViewById(R.id.fingerprint_status),
+                binding.fingerprintIcon,
+                binding.fingerprintStatus,
                 this
             )
         }

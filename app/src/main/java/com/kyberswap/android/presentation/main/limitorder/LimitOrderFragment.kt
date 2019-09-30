@@ -829,9 +829,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                     is GetFeeState.Success -> {
 
                         binding.hasDiscount =
-                            state.fee.discountPercent > 0 && srcAmount.toBigDecimalOrDefaultZero().times(
-                                state.fee.totalFee.toBigDecimal()
-                            ) > BigDecimal.ZERO
+                            state.fee.discountPercent > 0
 
 
                         binding.tvFee.text = String.format(
@@ -852,9 +850,19 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                             tokenSourceSymbol
                         )
 
-                        binding.tvOff.text = String.format(
-                            getString(R.string.discount_fee), state.fee.discountPercent
-                        )
+                        binding.tvOff.text =
+
+                            if (state.fee.discountPercent % 1 == 0.0) {
+                                String.format(
+                                    getString(R.string.discount_fee_long_type),
+                                    state.fee.discountPercent.toLong()
+                                )
+                            } else {
+                                String.format(
+                                    getString(R.string.discount_fee), state.fee.discountPercent
+                                )
+                            }
+
                         val order = binding.order?.copy(
                             fee = state.fee.fee.toBigDecimal(),
                             transferFee = state.fee.transferFee.toBigDecimal()
@@ -862,6 +870,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         if (order != binding.order) {
                             binding.order = order
                             binding.executePendingBindings()
+                            binding.invalidateAll()
                         }
                     }
                     is GetFeeState.ShowError -> {

@@ -18,8 +18,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
+                android:layout_marginStart="36dp"
+                android:layout_marginEnd="36dp"
                 android:gravity="center"
                 android:lineSpacingExtra="8sp"
                 android:text="@{emptyTransaction}"
@@ -37,7 +37,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
         </FrameLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#ffffff"
+            android:ellipsize="middle"
+            android:gravity="center"
+            android:lineSpacingExtra="8sp"
+            android:minHeight="36dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:singleLine="true"
+            android:text="@{wallet.address}"
+            android:textColor="#5a5e67"
+            android:textSize="12sp"
+            android:visibility="@{TextUtils.isEmpty(emptyTransaction) ? View.VISIBLE : View.GONE}" />
 
         <!--<FrameLayout-->
         <!--android:layout_width="match_parent"-->
@@ -64,22 +81,6 @@
         <!--android:backgroundTint="@color/colorAccent"-->
         <!--android:visibility="gone" />-->
         <!--</FrameLayout>-->
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="16dp"
-            android:ellipsize="middle"
-            android:lineSpacingExtra="8sp"
-            android:singleLine="true"
-            android:text="@{wallet.address}"
-            android:textColor="#5a5e67"
-            android:textSize="12sp"
-            android:visibility="@{TextUtils.isEmpty(emptyTransaction) ? View.VISIBLE : View.GONE}" />
-
 
     </LinearLayout>
 
