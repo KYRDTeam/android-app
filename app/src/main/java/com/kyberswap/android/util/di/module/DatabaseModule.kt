@@ -1,7 +1,23 @@
 package com.kyberswap.android.util.di.module
 
 import android.app.Application
-import com.kyberswap.android.data.db.*
+import com.kyberswap.android.data.db.AlertDao
+import com.kyberswap.android.data.db.AppDatabase
+import com.kyberswap.android.data.db.ContactDao
+import com.kyberswap.android.data.db.LimitOrderDao
+import com.kyberswap.android.data.db.LocalLimitOrderDao
+import com.kyberswap.android.data.db.OrderFilterDao
+import com.kyberswap.android.data.db.PassCodeDao
+import com.kyberswap.android.data.db.PendingBalancesDao
+import com.kyberswap.android.data.db.RateDao
+import com.kyberswap.android.data.db.SendDao
+import com.kyberswap.android.data.db.SwapDao
+import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.db.TransactionDao
+import com.kyberswap.android.data.db.TransactionFilterDao
+import com.kyberswap.android.data.db.UnitDao
+import com.kyberswap.android.data.db.UserDao
+import com.kyberswap.android.data.db.WalletDao
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -40,12 +56,6 @@ class DatabaseModule {
     @Singleton
     fun provideSendDao(appDatabase: AppDatabase): SendDao {
         return appDatabase.sendDao()
-    }
-
-    @Provides
-    @Singleton
-    fun provideWalletTokenDao(appDatabase: AppDatabase): WalletTokenDao {
-        return appDatabase.walletTokenDao()
     }
 
     @Provides

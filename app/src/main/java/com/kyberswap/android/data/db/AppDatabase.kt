@@ -24,7 +24,6 @@ import com.kyberswap.android.domain.model.TransactionFilter
 import com.kyberswap.android.domain.model.Unit
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.model.Wallet
-import com.kyberswap.android.domain.model.WalletToken
 
 @Database(
     entities = [
@@ -33,7 +32,6 @@ import com.kyberswap.android.domain.model.WalletToken
         Unit::class,
         Swap::class,
         Send::class,
-        WalletToken::class,
         Rate::class,
         Contact::class,
         Transaction::class,
@@ -46,7 +44,7 @@ import com.kyberswap.android.domain.model.WalletToken
         PendingBalances::class,
         TransactionFilter::class
     ],
-    version = 5
+    version = 6
 )
 @TypeConverters(
     DataTypeConverter::class,
@@ -64,7 +62,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun walletDao(): WalletDao
     abstract fun unitDao(): UnitDao
     abstract fun swapDao(): SwapDao
-    abstract fun walletTokenDao(): WalletTokenDao
     abstract fun rateDao(): RateDao
     abstract fun contactDao(): ContactDao
     abstract fun sendDao(): SendDao
@@ -111,6 +108,24 @@ abstract class AppDatabase : RoomDatabase() {
         }
 
         @VisibleForTesting
+        internal val MIGRATION_5_6: Migration = object : Migration(5, 6) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // for adding transfer fee
+                database.execSQL("CREATE TABLE IF NOT EXISTS new_tokens (`isHide` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL, `tokenSymbol` TEXT NOT NULL, `tokenName` TEXT NOT NULL, `tokenAddress` TEXT NOT NULL, `tokenDecimal` INTEGER NOT NULL, `rateEthNow` TEXT NOT NULL, `changeEth24h` TEXT NOT NULL, `rateUsdNow` TEXT NOT NULL, `changeUsd24h` TEXT NOT NULL, `cgId` TEXT NOT NULL, `gasApprove` TEXT NOT NULL, `gasLimit` TEXT NOT NULL, `listingTime` INTEGER NOT NULL, `priority` INTEGER NOT NULL, `spLimitOrder` INTEGER NOT NULL, `wallets` TEXT NOT NULL, `fav` INTEGER NOT NULL, `isOther` INTEGER NOT NULL, `limitOrderBalance` TEXT NOT NULL, `isQuote` INTEGER NOT NULL, PRIMARY KEY(`tokenAddress`))")
+
+
+                database.execSQL(
+                    """
+                INSERT INTO new_tokens (isHide, timestamp, tokenSymbol, tokenName, tokenAddress, tokenDecimal, rateEthNow, changeEth24h, rateUsdNow, changeUsd24h, cgId, gasApprove, gasLimit, listingTime, priority, spLimitOrder, wallets, fav, isOther, limitOrderBalance, isQuote)
+                SELECT isHide, timestamp, tokenSymbol, tokenName, tokenAddress, tokenDecimal, rateEthNow, changeEth24h, rateUsdNow, changeUsd24h, cgId, gasApprove, gasLimit, listingTime, priority, spLimitOrder, wallets, fav, isOther, limitOrderBalance, isQuote FROM tokens
+                """.trimIndent()
+                )
+                database.execSQL("DROP TABLE tokens")
+                database.execSQL("ALTER TABLE new_tokens RENAME TO tokens")
+            }
+        }
+
+        @VisibleForTesting
         internal val MIGRATION_3_4: Migration = object : Migration(3, 4) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
@@ -142,7 +157,13 @@ abstract class AppDatabase : RoomDatabase() {
                 context.applicationContext,
                 AppDatabase::class.java, "kyberswap.db"
             )
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                .addMigrations(
+                    MIGRATION_1_2,
+                    MIGRATION_2_3,
+                    MIGRATION_3_4,
+                    MIGRATION_4_5,
+                    MIGRATION_5_6
+                )
 //                .fallbackToDestructiveMigration()
 //                .allowMainThreadQueries()
                 .build()

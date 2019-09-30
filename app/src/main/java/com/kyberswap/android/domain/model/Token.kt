@@ -23,10 +23,10 @@ import java.util.Locale
 @Parcelize
 data class Token(
     val timestamp: Long = 0,
-    @NonNull
-    @PrimaryKey
     val tokenSymbol: String = "",
     val tokenName: String = "",
+    @NonNull
+    @PrimaryKey
     val tokenAddress: String = "",
     val tokenDecimal: Int = 0,
     @TypeConverters(DataTypeConverter::class)

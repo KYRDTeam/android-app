@@ -209,6 +209,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
                     android:layout_marginTop="28dp"
                     android:background="@drawable/rounded_corner_buy_sell_send_background"
                     android:gravity="center"
@@ -225,6 +227,8 @@
                     app:layout_constraintTop_toBottomOf="@+id/vpChart" />
 
                 <TextView
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
                     android:id="@+id/tvSend"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -243,6 +247,8 @@
                     app:layout_constraintStart_toEndOf="@+id/tvSell" />
 
                 <TextView
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
                     android:id="@+id/tvSell"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

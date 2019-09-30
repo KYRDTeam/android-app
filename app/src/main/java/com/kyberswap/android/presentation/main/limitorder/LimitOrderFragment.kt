@@ -829,7 +829,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                     is GetFeeState.Success -> {
 
                         binding.hasDiscount =
-                            state.fee.discountPercent > 0
+                            state.fee.discountPercent > 0 && srcAmount.isNotEmpty()
 
 
                         binding.tvFee.text = String.format(
