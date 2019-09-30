@@ -15,17 +15,11 @@
             android:paddingEnd="@dimen/default_padding_large"
             android:paddingBottom="@dimen/default_padding_small">
 
-            <Button
-                android:id="@+id/cancel_button"
-                style="?android:attr/buttonBarNegativeButtonStyle"
-                android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/fingerprint_description"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|end"
-                android:paddingStart="@dimen/fingerprint_padding_horizontal"
-                android:paddingTop="@dimen/fingerprint_padding_vertical"
-                android:paddingEnd="@dimen/fingerprint_padding_horizontal"
-                android:paddingBottom="@dimen/fingerprint_padding_vertical"
-                android:text="@string/cancel" />
+                android:text="@string/fingerprint_description" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -53,11 +47,17 @@
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/fingerprint_description"
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/cancel_button"
+                style="?android:attr/buttonBarNegativeButtonStyle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/fingerprint_description" />
+                android:layout_gravity="center_vertical|end"
+                android:paddingStart="@dimen/fingerprint_padding_horizontal"
+                android:paddingTop="@dimen/fingerprint_padding_vertical"
+                android:paddingEnd="@dimen/fingerprint_padding_horizontal"
+                android:paddingBottom="@dimen/fingerprint_padding_vertical"
+                android:text="@string/cancel" />
 
         </LinearLayout>
     </FrameLayout>
