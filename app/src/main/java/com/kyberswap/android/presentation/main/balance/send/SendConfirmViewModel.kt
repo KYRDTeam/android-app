@@ -8,11 +8,13 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
+import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
 import com.kyberswap.android.presentation.common.ADDITIONAL_SEND_GAS_LIMIT
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfer
 import com.kyberswap.android.presentation.common.specialGasLimitDefault
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
+import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.main.swap.GetSendState
 import com.kyberswap.android.presentation.main.swap.TransferTokenTransactionState
 import com.kyberswap.android.util.ErrorHandler
@@ -23,6 +25,7 @@ class SendConfirmViewModel @Inject constructor(
     private val getSendTokenUseCase: GetSendTokenUseCase,
     private val transferTokenUseCase: TransferTokenUseCase,
     private val estimateTransferGasUseCase: EstimateTransferGasUseCase,
+    private val getGasPriceUseCase: GetGasPriceUseCase,
     private val errorHandler: ErrorHandler
 ) : ViewModel() {
 
@@ -33,6 +36,10 @@ class SendConfirmViewModel @Inject constructor(
     private val _getGetGasLimitCallback = MutableLiveData<Event<GetGasLimitState>>()
     val getGetGasLimitCallback: LiveData<Event<GetGasLimitState>>
         get() = _getGetGasLimitCallback
+
+    private val _getGetGasPriceCallback = MutableLiveData<Event<GetGasPriceState>>()
+    val getGetGasPriceCallback: LiveData<Event<GetGasPriceState>>
+        get() = _getGetGasPriceCallback
 
 
     private val _transferTokenTransactionCallback =
@@ -51,6 +58,21 @@ class SendConfirmViewModel @Inject constructor(
                 _getSendCallback.value = Event(GetSendState.ShowError(errorHandler.getError(it)))
             },
             GetSendTokenUseCase.Param(wallet)
+        )
+    }
+
+    fun getGasPrice() {
+        getGasPriceUseCase.dispose()
+        getGasPriceUseCase.execute(
+            Consumer {
+                _getGetGasPriceCallback.value = Event(GetGasPriceState.Success(it))
+            },
+            Consumer {
+                it.printStackTrace()
+                _getGetGasPriceCallback.value =
+                    Event(GetGasPriceState.ShowError(errorHandler.getError(it)))
+            },
+            null
         )
     }
 

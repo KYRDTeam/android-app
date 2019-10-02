@@ -18,24 +18,37 @@ class NotificationOpenedHandler : OneSignal.NotificationOpenedHandler {
 
         try {
             val type = data.getString(NOTIFICATION_TYPE)
-            if (type == NOTIFICATION_TYPE_ALERT) {
-                val alert = Gson().fromJson(data.toString(), NotificationAlert::class.java)
-                val intent = MainActivity.newIntent(KyberSwapApplication.instance, alert = alert)
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                KyberSwapApplication.instance.startActivity(intent)
-            } else if (type == NOTIFICATION_TYPE_LIMITORDER) {
-                val limitOrder =
-                    Gson().fromJson(data.toString(), NotificationLimitOrder::class.java)
-                val intent = MainActivity.newIntent(
-                    KyberSwapApplication.instance,
-                    limitOrderNotification = limitOrder
-                )
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                KyberSwapApplication.instance.startActivity(intent)
+            when (type) {
+                NOTIFICATION_TYPE_ALERT -> {
+                    val alert = Gson().fromJson(data.toString(), NotificationAlert::class.java)
+                    val intent =
+                        MainActivity.newIntent(KyberSwapApplication.instance, alert = alert)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    KyberSwapApplication.instance.startActivity(intent)
+                }
+                NOTIFICATION_TYPE_LIMITORDER -> {
+                    val limitOrder =
+                        Gson().fromJson(data.toString(), NotificationLimitOrder::class.java)
+                    val intent = MainActivity.newIntent(
+                        KyberSwapApplication.instance,
+                        limitOrderNotification = limitOrder
+                    )
+                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    KyberSwapApplication.instance.startActivity(intent)
+                }
+                else -> {
+                    val intent = MainActivity.newIntent(
+                        KyberSwapApplication.instance
+                    )
+                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    KyberSwapApplication.instance.startActivity(intent)
+                }
             }
 
         } catch (ex: Exception) {

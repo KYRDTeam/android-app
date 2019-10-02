@@ -57,6 +57,7 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
                     is GetSwapState.Success -> {
                         binding.swap = state.swap
                         viewModel.getGasLimit(wallet, binding.swap)
+                        viewModel.getGasPrice()
                     }
                     is GetSwapState.ShowError -> {
 
@@ -108,6 +109,27 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
                                 state.message ?: getString(R.string.something_wrong)
                             )
                         }
+                    }
+                }
+            }
+        })
+
+        viewModel.getGetGasPriceCallback.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetGasPriceState.Success -> {
+                        if (state.gas != binding.swap?.gas) {
+                            val swap = binding.swap?.copy(
+                                gas = if (wallet?.isPromo == true) state.gas.toPromoGas() else state.gas
+                            )
+                            if (swap != binding.swap) {
+                                binding.swap = swap
+                                binding.executePendingBindings()
+                            }
+                        }
+                    }
+                    is GetGasPriceState.ShowError -> {
+
                     }
                 }
             }
