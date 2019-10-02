@@ -19,7 +19,11 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityMainBinding
-import com.kyberswap.android.domain.model.*
+import com.kyberswap.android.domain.model.NotificationAlert
+import com.kyberswap.android.domain.model.NotificationLimitOrder
+import com.kyberswap.android.domain.model.Transaction
+import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
@@ -41,6 +45,7 @@ import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.wallet.UpdateWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.isNetworkAvailable
+import com.kyberswap.android.util.ext.toLongSafe
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_drawer.*
 import kotlinx.android.synthetic.main.layout_drawer.view.*
@@ -277,7 +282,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                 when (state) {
                     is GetPendingTransactionState.Success -> {
                         val txList = state.transactions.filter {
-                            it.blockNumber.isNotEmpty()
+                            it.blockNumber.isNotEmpty() && it.blockNumber.toLongSafe() != Transaction.DEFAULT_DROPPED_BLOCK_NUMBER
                         }
 
 

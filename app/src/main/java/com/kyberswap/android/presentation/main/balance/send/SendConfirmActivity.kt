@@ -13,6 +13,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
+import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.main.swap.GetSendState
 import com.kyberswap.android.presentation.main.swap.TransferTokenTransactionState
 import com.kyberswap.android.util.di.ViewModelFactory
@@ -66,6 +67,7 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
                         if (binding.send != state.send) {
                             binding.send = state.send
                             viewModel.getGasLimit(binding.send, wallet)
+                            viewModel.getGasPrice()
                         }
                     }
                     is GetSendState.ShowError -> {
@@ -111,6 +113,28 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
                         }
                     }
                     is GetGasLimitState.ShowError -> {
+                        if (isNetworkAvailable()) {
+                            showError(
+                                state.message ?: getString(R.string.something_wrong)
+                            )
+                        }
+                    }
+                }
+            }
+        })
+
+        viewModel.getGetGasPriceCallback.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetGasPriceState.Success -> {
+                        if (state.gas != binding.send?.gas) {
+                            val send = binding.send?.copy(
+                                gas = state.gas
+                            )
+                            binding.send = send
+                        }
+                    }
+                    is GetGasPriceState.ShowError -> {
                         if (isNetworkAvailable()) {
                             showError(
                                 state.message ?: getString(R.string.something_wrong)

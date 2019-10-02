@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.swap.EstimateGasUseCase
+import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
 import com.kyberswap.android.domain.usecase.swap.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
 import com.kyberswap.android.presentation.common.ADDITIONAL_SWAP_GAS_LIMIT
@@ -18,6 +19,7 @@ import javax.inject.Inject
 class SwapConfirmViewModel @Inject constructor(
     private val getSwapData: GetSwapDataUseCase,
     private val estimateGasUseCase: EstimateGasUseCase,
+    private val getGasPriceUseCase: GetGasPriceUseCase,
     private val swapTokenUseCase: SwapTokenUseCase
 ) : ViewModel() {
 
@@ -34,6 +36,10 @@ class SwapConfirmViewModel @Inject constructor(
         MutableLiveData<Event<SwapTokenTransactionState>>()
     val swapTokenTransactionCallback: LiveData<Event<SwapTokenTransactionState>>
         get() = _swapTokenTransactionCallback
+
+    private val _getGetGasPriceCallback = MutableLiveData<Event<GetGasPriceState>>()
+    val getGetGasPriceCallback: LiveData<Event<GetGasPriceState>>
+        get() = _getGetGasPriceCallback
 
 
     fun getSwapData(wallet: Wallet) {
@@ -66,6 +72,19 @@ class SwapConfirmViewModel @Inject constructor(
 
             )
         }
+    }
+
+    fun getGasPrice() {
+        getGasPriceUseCase.dispose()
+        getGasPriceUseCase.execute(
+            Consumer {
+                _getGetGasPriceCallback.value = Event(GetGasPriceState.Success(it))
+            },
+            Consumer {
+                it.printStackTrace()
+            },
+            null
+        )
     }
 
     fun getGasLimit(wallet: Wallet?, swap: Swap?) {

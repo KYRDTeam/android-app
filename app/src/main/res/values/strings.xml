@@ -217,6 +217,7 @@
     <string name="limit_order_discount">Hold from 2000 KNC to get discount for your orders</string>
     <string name="limit_order_fee">%s %s </string>
     <string name="discount_fee">%.2f%% OFF</string>
+    <string name="discount_fee_long_type" translatable="false">%d%% OFF</string>
     <string name="transaction_from">From</string>
     <string name="transaction_failed">failed</string>
     <string name="order_warning">By submitting this order, you also CANCEL the following orders:</string>
