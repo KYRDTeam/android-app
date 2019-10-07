@@ -292,7 +292,7 @@ class PriceAlertFragment : BaseFragment() {
         )
 
     private val price: BigDecimal?
-        get() = if (binding.rgCurrencies.checkedRadioButtonId == R.id.rbEth) binding.alert?.token?.rateEthNow else binding.alert?.token?.rateUsdNow
+        get() = if (binding.rgCurrencies.checkedRadioButtonId == R.id.rbEth) binding.alert?.token?.rateEthNowOrDefaultValue else binding.alert?.token?.rateUsdNow
 
 
     override fun onDestroyView() {

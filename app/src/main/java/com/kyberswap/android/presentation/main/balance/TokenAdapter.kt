@@ -81,10 +81,10 @@ class TokenAdapter(
             OrderType.NAME -> tokens.sortedBy { it.tokenSymbol }
             OrderType.BALANCE -> tokens.sortedByDescending { it.currentBalance }
             OrderType.ETH_ASC -> tokens.sortedBy {
-                it.rateEthNow
+                it.rateEthNowOrDefaultValue
             }
             OrderType.ETH_DESC -> tokens.sortedByDescending {
-                it.rateEthNow
+                it.rateEthNowOrDefaultValue
             }
             OrderType.USD_ASC -> tokens.sortedBy { it.rateUsdNow }
             OrderType.USD_DESC -> tokens.sortedByDescending {

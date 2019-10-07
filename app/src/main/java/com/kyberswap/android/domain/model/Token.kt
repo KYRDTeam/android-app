@@ -63,6 +63,9 @@ data class Token(
             return delistTime > 0 && delistTime > listingTime
         }
 
+    val rateEthNowOrDefaultValue: BigDecimal
+        get() = if(isETHWETH) BigDecimal.ONE else rateEthNow
+
     val currentBalance: BigDecimal
         get() {
             return wallets.find {
@@ -225,7 +228,7 @@ data class Token(
     }
 
     val displayRateEthNow: String
-        get() = rateEthNow.toDisplayNumber()
+        get() = rateEthNowOrDefaultValue.toDisplayNumber()
     val displayChangeEth24h: String
         get() = changeEth24h.toDisplayNumber()
     val displayRateUsdNow: String
@@ -244,7 +247,7 @@ data class Token(
             .append(if (isETH) "" else "≈ ")
             .append(
                 if (currentBalance > BigDecimal.ZERO) currentBalance
-                    .multiply(rateEthNow)
+                    .multiply(rateEthNowOrDefaultValue)
                     .toDisplayNumber() else "0"
             )
             .append(" ETH")

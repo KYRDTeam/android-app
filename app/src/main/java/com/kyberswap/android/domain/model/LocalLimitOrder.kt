@@ -225,7 +225,7 @@ data class LocalLimitOrder(
 
     fun amountTooSmall(sourceAmount: String?): Boolean {
         val amount =
-            sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateEthNow)
+            sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateEthNowOrDefaultValue)
         return if (tokenSource.isETH) {
             amount <= minSupportSourceAmount
         } else {
@@ -235,7 +235,7 @@ data class LocalLimitOrder(
 
     fun amountTooBig(sourceAmount: String?): Boolean {
         val amount =
-            sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateEthNow)
+            sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateEthNowOrDefaultValue)
         return if (tokenSource.isETH) {
             amount > BigDecimal.TEN
         } else {
