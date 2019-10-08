@@ -10,7 +10,6 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityInsufficientAlertBinding
 import com.kyberswap.android.presentation.base.BaseActivity
 
-
 class AlertWithoutIconActivity : BaseActivity() {
 
     var displayTime: Int = DEFAULT_DISPLAY_TIME
@@ -52,7 +51,7 @@ class AlertWithoutIconActivity : BaseActivity() {
         setResult(Activity.RESULT_OK, returnIntent)
 
         finish()
-        overridePendingTransition(R.anim.from_top, R.anim.back_to_top)
+        overridePendingTransition(R.anim.from_top, android.R.anim.fade_out)
     }
 
 

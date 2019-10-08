@@ -774,6 +774,14 @@ class TransactionDataRepository @Inject constructor(
         }.flatMap {
             transactionFilterDao.findTransactionFilterByAddressFlowable(param.walletAddress)
                 .defaultIfEmpty(it)
+        }.map {
+            it.apply {
+                symbolToAddressMap = tokenDao.allTokens.map {
+                    it.tokenSymbol.toLowerCase(Locale.getDefault()) to it.tokenAddress.toLowerCase(
+                        Locale.getDefault()
+                    )
+                }.toMap()
+            }
         }
     }
 

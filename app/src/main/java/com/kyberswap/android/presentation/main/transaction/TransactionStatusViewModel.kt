@@ -109,16 +109,22 @@ class TransactionStatusViewModel @Inject constructor(
         transactions: List<Transaction>,
         transactionFilter: TransactionFilter
     ): List<TransactionItem> {
+
         return transactions
             .sortedByDescending { it.timeStamp }
             .filter {
                 val tokenList = transactionFilter.tokens.map { it.toLowerCase(Locale.getDefault()) }
+                val addressList = tokenList.map {
+                    transactionFilter.symbolToAddressMap[it]
+                }
                 (transactionFilter.from.isEmpty() || it.filterDateTimeFormat.toDate().time >= transactionFilter.from.toDate().time) &&
                         (transactionFilter.to.isEmpty() || it.filterDateTimeFormat.toDate().time <= transactionFilter.to.toDate().time) &&
                         transactionFilter.types.contains(it.type) &&
                     (tokenList.contains(it.tokenSymbol.toLowerCase(Locale.getDefault())) ||
                         tokenList.contains(it.tokenSource.toLowerCase(Locale.getDefault()))
-                        || tokenList.contains(it.tokenDest.toLowerCase(Locale.getDefault())))
+                        || tokenList.contains(it.tokenDest.toLowerCase(Locale.getDefault())) ||
+                        addressList.contains(it.contractAddress.toLowerCase(Locale.getDefault()))
+                        )
             }
             .groupBy { it.shortedDateTimeFormat }
             .flatMap { item ->
