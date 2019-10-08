@@ -47,10 +47,11 @@ class AlertWithoutIconActivity : BaseActivity() {
 
 
     override fun onBackPressed() {
+        handler.removeCallbacksAndMessages(null)
         val returnIntent = Intent()
         setResult(Activity.RESULT_OK, returnIntent)
 
-        super.onBackPressed()
+        finish()
         overridePendingTransition(R.anim.from_top, R.anim.back_to_top)
     }
 

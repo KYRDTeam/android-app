@@ -85,7 +85,6 @@ class LineChartFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
         binding.lineChart.setNoDataText(getString(R.string.chart_updating_data))
         viewModel.getChartData(token, chartType)
-        binding.lineChart.setNoDataText(getString(R.string.chart_updating_data))
         viewModel.getChartCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -95,6 +94,8 @@ class LineChartFragment : BaseFragment() {
                     }
 
                     is GetChartState.ShowError -> {
+                        binding.lineChart.setNoDataText(getString(R.string.something_wrong))
+                        binding.lineChart.invalidate()
                         showError(
                             state.message ?: getString(R.string.something_wrong)
                         )
@@ -141,6 +142,8 @@ class LineChartFragment : BaseFragment() {
             lineChart.setNoDataText(getString(R.string.chart_no_token_data))
             return
         }
+
+        lineChart.setNoDataText("")
         chart.c.forEachIndexed { index, bigDecimal ->
             chartEntries.add(Entry(index.toFloat(), bigDecimal.toFloat()))
         }

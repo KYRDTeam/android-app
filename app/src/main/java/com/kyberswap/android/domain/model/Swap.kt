@@ -225,11 +225,14 @@ data class Swap(
         )
 
     private val gasFeeUsd: BigDecimal
-        get() = gasFeeEth.divide(
-            tokenSource.rateEthNowOrDefaultValue,
-            18,
-            RoundingMode.UP
-        ).multiply(tokenSource.rateUsdNow)
+        get() =
+            if (tokenSource.rateEthNowOrDefaultValue == BigDecimal.ZERO) BigDecimal.ZERO
+            else
+                gasFeeEth.divide(
+                    tokenSource.rateEthNowOrDefaultValue,
+                    18,
+                    RoundingMode.UP
+                ).multiply(tokenSource.rateUsdNow)
 
     val displayGasFee: String
         get() = StringBuilder()
