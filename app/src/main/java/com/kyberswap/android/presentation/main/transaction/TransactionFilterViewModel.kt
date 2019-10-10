@@ -34,7 +34,7 @@ class TransactionFilterViewModel @Inject constructor(
     private fun getTokenList(address: String, transactionFilter: TransactionFilter) {
         getTokenListUseCase.execute(
             Consumer {
-                val items = it.map { token ->
+                val items = it.sortedBy { it.tokenSymbol }.map { token ->
                     FilterItem(transactionFilter.tokens.find {
                         it == token.tokenSymbol
                     } != null, token.tokenSymbol)

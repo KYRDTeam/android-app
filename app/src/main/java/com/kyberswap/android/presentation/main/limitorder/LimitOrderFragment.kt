@@ -106,6 +106,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
     private val srcAmount: String
         get() = binding.edtSource.text.toString()
+    private val destAmount: String
+        get() = binding.edtDest.text.toString()
 
     private val expectedDestAmount: String
         get() =
@@ -916,7 +918,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                     title = getString(R.string.title_unsupported),
                     message = getString(R.string.limit_order_source_different_dest)
                 )
-                binding.order?.amountTooSmall(srcAmount) == true -> {
+                binding.order?.amountTooSmall(srcAmount, destAmount) == true -> {
                     showAlertWithoutIcon(
                         title = getString(R.string.invalid_amount),
                         message = getString(R.string.limit_order_amount_too_small)

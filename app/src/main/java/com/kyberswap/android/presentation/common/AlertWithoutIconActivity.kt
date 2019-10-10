@@ -10,7 +10,6 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityInsufficientAlertBinding
 import com.kyberswap.android.presentation.base.BaseActivity
 
-
 class AlertWithoutIconActivity : BaseActivity() {
 
     var displayTime: Int = DEFAULT_DISPLAY_TIME
@@ -47,11 +46,12 @@ class AlertWithoutIconActivity : BaseActivity() {
 
 
     override fun onBackPressed() {
+        handler.removeCallbacksAndMessages(null)
         val returnIntent = Intent()
         setResult(Activity.RESULT_OK, returnIntent)
 
-        super.onBackPressed()
-        overridePendingTransition(R.anim.from_top, R.anim.back_to_top)
+        finish()
+        overridePendingTransition(R.anim.from_top, android.R.anim.fade_out)
     }
 
 

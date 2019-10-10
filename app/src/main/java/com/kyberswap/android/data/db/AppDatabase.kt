@@ -116,7 +116,7 @@ abstract class AppDatabase : RoomDatabase() {
 
                 database.execSQL(
                     """
-                INSERT INTO new_tokens (isHide, timestamp, tokenSymbol, tokenName, tokenAddress, tokenDecimal, rateEthNow, changeEth24h, rateUsdNow, changeUsd24h, cgId, gasApprove, gasLimit, listingTime, priority, spLimitOrder, wallets, fav, isOther, limitOrderBalance, isQuote)
+                INSERT OR REPLACE INTO new_tokens (isHide, timestamp, tokenSymbol, tokenName, tokenAddress, tokenDecimal, rateEthNow, changeEth24h, rateUsdNow, changeUsd24h, cgId, gasApprove, gasLimit, listingTime, priority, spLimitOrder, wallets, fav, isOther, limitOrderBalance, isQuote)
                 SELECT isHide, timestamp, tokenSymbol, tokenName, tokenAddress, tokenDecimal, rateEthNow, changeEth24h, rateUsdNow, changeUsd24h, cgId, gasApprove, gasLimit, listingTime, priority, spLimitOrder, wallets, fav, isOther, limitOrderBalance, isQuote FROM tokens
                 """.trimIndent()
                 )

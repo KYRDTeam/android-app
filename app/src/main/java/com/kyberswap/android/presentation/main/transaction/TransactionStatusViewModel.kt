@@ -109,6 +109,7 @@ class TransactionStatusViewModel @Inject constructor(
         transactions: List<Transaction>,
         transactionFilter: TransactionFilter
     ): List<TransactionItem> {
+
         return transactions
             .sortedByDescending { it.timeStamp }
             .filter {
@@ -118,7 +119,8 @@ class TransactionStatusViewModel @Inject constructor(
                         transactionFilter.types.contains(it.type) &&
                     (tokenList.contains(it.tokenSymbol.toLowerCase(Locale.getDefault())) ||
                         tokenList.contains(it.tokenSource.toLowerCase(Locale.getDefault()))
-                        || tokenList.contains(it.tokenDest.toLowerCase(Locale.getDefault())))
+                        || tokenList.contains(it.tokenDest.toLowerCase(Locale.getDefault()))
+                        )
             }
             .groupBy { it.shortedDateTimeFormat }
             .flatMap { item ->
@@ -141,14 +143,6 @@ class TransactionStatusViewModel @Inject constructor(
         getTransactionFilterUseCase.execute(
             Consumer {
                 getTransaction(type, wallet, it, isForceRefresh)
-//                if (currentFilter != it || isForceRefresh) {
-//                    currentFilter = it
-//                    getTransaction(type, wallet, it, isForceRefresh)
-//                } else {
-//                    _getTransactionCallback.value =
-//                        Event(GetTransactionState.FilterNotChange(true))
-//                }
-
             },
             Consumer {
                 it.printStackTrace()

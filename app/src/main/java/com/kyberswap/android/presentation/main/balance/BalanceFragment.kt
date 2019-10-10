@@ -547,7 +547,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                 } else {
                     token.currentBalance.multiply(
                         if (isETH) {
-                            token.rateEthNow
+                            token.rateEthNowOrDefaultValue
                         } else {
                             token.rateUsdNow
                         }

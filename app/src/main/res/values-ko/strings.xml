@@ -601,5 +601,6 @@
     <string name="use_password">Use password</string>
     <string name="description_fingerprint_icon">Fingerprint icon</string>
     <string name="fingerprint_description">Confirm fingerprint to continue</string>
+    <string name="can_not_handle_amount">금액을 처리 할 수 없음</string>
 
 </resources>

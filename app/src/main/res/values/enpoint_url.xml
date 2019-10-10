@@ -12,4 +12,5 @@
     <string name="limit_order_contract" formatted="false" translatable="false">0xa33caaed059f0c574c07136a5da9f28dc2fa27c2</string>
     <string name="kyber_code_api_key" translatable="false">9872342987234234b</string>
     <string name="promo_source_token" translatable="false">OMG</string>
+    <string name="chart_endpoint_url" formatted="false" translatable="false">https://dev-api.knstats.com/</string>
 </resources>

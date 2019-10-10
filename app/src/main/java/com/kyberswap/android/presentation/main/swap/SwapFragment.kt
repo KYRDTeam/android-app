@@ -274,7 +274,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     if (destLock.get()) {
                         binding.swap?.let { swap ->
 
-                            if ((dstAmount.toBigDecimalOrDefaultZero() * swap.tokenDest.rateEthNow) > 100.toBigDecimal()) {
+                            if ((dstAmount.toBigDecimalOrDefaultZero() * swap.tokenDest.rateEthNowOrDefaultValue) > 100.toBigDecimal()) {
                                 viewModel.estimateAmount(
                                     swap.sourceSymbol, swap.destSymbol, dstAmount.toString()
                                 )
@@ -746,7 +746,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     swap.isExpectedRateZero -> {
                         showAlertWithoutIcon(
                             title = getString(R.string.title_amount_too_big),
-                            message = getString(R.string.exceed_balance)
+                            message = getString(R.string.can_not_handle_amount)
                         )
                     }
 
@@ -779,7 +779,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     }
 
     fun showDestValueInUsd(swap: Swap) {
-        if (swap.tokenDest.rateEthNow > BigDecimal.ZERO && edtSource.text.isNotEmpty()) {
+        if (swap.tokenDest.rateEthNowOrDefaultValue > BigDecimal.ZERO && edtSource.text.isNotEmpty()) {
             binding.tvValueInUSD.text =
                 getString(
                     R.string.dest_balance_usd_format,
@@ -800,7 +800,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             } else if (it.isExpectedRateZero) {
                 showAlertWithoutIcon(
                     title = getString(R.string.title_amount_too_big),
-                    message = getString(R.string.exceed_balance)
+                    message = getString(R.string.can_not_handle_amount)
                 )
             }
         }
