@@ -746,7 +746,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     swap.isExpectedRateZero -> {
                         showAlertWithoutIcon(
                             title = getString(R.string.title_amount_too_big),
-                            message = getString(R.string.exceed_balance)
+                            message = getString(R.string.can_not_handle_amount)
                         )
                     }
 
@@ -800,7 +800,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             } else if (it.isExpectedRateZero) {
                 showAlertWithoutIcon(
                     title = getString(R.string.title_amount_too_big),
-                    message = getString(R.string.exceed_balance)
+                    message = getString(R.string.can_not_handle_amount)
                 )
             }
         }

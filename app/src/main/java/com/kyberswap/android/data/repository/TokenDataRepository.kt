@@ -2,8 +2,8 @@ package com.kyberswap.android.data.repository
 
 import android.content.Context
 import com.kyberswap.android.R
+import com.kyberswap.android.data.api.home.ChartApi
 import com.kyberswap.android.data.api.home.SwapApi
-import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.db.RateDao
 import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.data.mapper.ChartMapper
@@ -30,7 +30,7 @@ import kotlin.math.pow
 class TokenDataRepository @Inject constructor(
     private val tokenClient: TokenClient,
     private val api: SwapApi,
-    private val tokenApi: TokenApi,
+    private val chartApi: ChartApi,
     private val rateDao: RateDao,
     private val tokenDao: TokenDao,
     private val rateMapper: RateMapper,
@@ -91,7 +91,7 @@ class TokenDataRepository @Inject constructor(
         val to = System.currentTimeMillis() / 1000
         val from = param.charType.fromTime(to)
 
-        return tokenApi.getChartHistory(
+        return chartApi.getChartHistory(
             param.token.tokenSymbol,
             param.charType.resolution,
             param.rateType,

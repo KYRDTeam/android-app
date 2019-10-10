@@ -223,9 +223,10 @@ data class LocalLimitOrder(
     val minSupportSourceAmount: BigDecimal
         get() = if (BuildConfig.FLAVOR == "dev" || BuildConfig.FLAVOR == "stg") 0.001.toBigDecimal() else 0.1.toBigDecimal()
 
-    fun amountTooSmall(sourceAmount: String?): Boolean {
+    fun amountTooSmall(sourceAmount: String?, destAmount: String?): Boolean {
         val amount =
-            sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateEthNowOrDefaultValue)
+            if (tokenDest.isETHWETH) destAmount.toBigDecimalOrDefaultZero() else
+                sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateEthNowOrDefaultValue)
         return if (tokenSource.isETH) {
             amount <= minSupportSourceAmount
         } else {

@@ -1,6 +1,7 @@
 package com.kyberswap.android.util.di.module
 
 import android.content.Context
+import com.kyberswap.android.data.api.home.ChartApi
 import com.kyberswap.android.data.api.home.CurrencyApi
 import com.kyberswap.android.data.api.home.LimitOrderApi
 import com.kyberswap.android.data.api.home.PromoApi
@@ -125,7 +126,7 @@ object DataModule {
     fun provideTokenRepository(
         client: TokenClient,
         api: SwapApi,
-        tokenApi: TokenApi,
+        chartApi: ChartApi,
         rateDao: RateDao,
         tokenDao: TokenDao,
         rateMapper: RateMapper,
@@ -135,7 +136,7 @@ object DataModule {
         TokenDataRepository(
             client,
             api,
-            tokenApi,
+            chartApi,
             rateDao,
             tokenDao,
             rateMapper,

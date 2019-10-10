@@ -3,6 +3,7 @@ package com.kyberswap.android.util.di.module
 import android.content.Context
 import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.R
+import com.kyberswap.android.data.api.home.ChartApi
 import com.kyberswap.android.data.api.home.CurrencyApi
 import com.kyberswap.android.data.api.home.LimitOrderApi
 import com.kyberswap.android.data.api.home.PromoApi
@@ -65,6 +66,16 @@ class NetworkModule {
         return createApiClient(
             TokenApi::class.java,
             context.getString(R.string.token_endpoint_url),
+            client
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideChartApi(context: Context, client: OkHttpClient): ChartApi {
+        return createApiClient(
+            ChartApi::class.java,
+            context.getString(R.string.chart_endpoint_url),
             client
         )
     }

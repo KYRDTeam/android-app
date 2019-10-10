@@ -137,7 +137,7 @@ data class Swap(
             .toString()
 
     val warning: Boolean
-        get() = sourceAmount.isNotEmpty() && expectedRate.isNotEmpty()
+        get() = sourceAmount.toDoubleSafe() > 0.0 && expectedRate.isNotEmpty()
 
     val displaySourceToDestAmount: String
         get() {

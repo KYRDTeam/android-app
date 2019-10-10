@@ -260,13 +260,13 @@ class TransactionDataRepository @Inject constructor(
             .map {
                 transactionMapper.transform(it.result, wallet.address, TOKEN_TRANSACTION)
             }.doAfterSuccess {
-                val tokensSymbols = tokenDao.allTokens.filter {
+                val tokenAddress = tokenDao.allTokens.filter {
                     !it.isOther
                 }.map {
-                    it.tokenSymbol.toLowerCase(Locale.getDefault())
+                    it.tokenAddress.toLowerCase(Locale.getDefault())
                 }
                 val otherTokenList = it.filterNot { tx ->
-                    tokensSymbols.contains(tx.tokenSymbol.toLowerCase(Locale.getDefault()))
+                    tokenAddress.contains(tx.contractAddress.toLowerCase(Locale.getDefault()))
                 }.map { tx ->
                     Token(tx).copy(isOther = true).updateSelectedWallet(wallet)
                 }.filter {
@@ -437,7 +437,8 @@ class TransactionDataRepository @Inject constructor(
         send: Transaction,
         received: Transaction,
         transactions: List<Transaction>,
-        wallet: Wallet
+        wallet: Wallet,
+        addressToSymbolMap: Map<String, String>
     ): Transaction {
         val sourceAmount = send.value.toBigDecimalOrDefaultZero()
             .divide(
@@ -464,12 +465,13 @@ class TransactionDataRepository @Inject constructor(
             if (transactions.first().gasPrice.isEmpty()) transactions.last() else transactions.first()
 
         return tx.copy(
-            tokenSource = send.tokenSymbol,
+            tokenSource = addressToSymbolMap[send.contractAddress] ?: send.tokenSymbol,
+            from = send.from,
+            to = received.to,
             sourceAmount = sourceAmount.toDisplayNumber(),
-            tokenDest = received.tokenSymbol,
+            tokenDest = addressToSymbolMap[received.contractAddress] ?: received.tokenSymbol,
             destAmount = destAmount.toDisplayNumber(),
             walletAddress = wallet.address
-
         )
     }
 
@@ -533,14 +535,20 @@ class TransactionDataRepository @Inject constructor(
             }
             .map {
                 val transactionList = mutableListOf<Transaction>()
+                val addressToSymbolMap = tokenDao.allTokens.map {
+                    it.tokenAddress to it.tokenSymbol
+                }.toMap()
+
                 for ((_, transactions) in it) {
                     if (transactions.size == 2) {
                         if (transactions.first() == transactions.last()) {
-
+                            val last = transactions.last()
                             transactionList.add(
-                                transactions.last().copy(
+                                last.copy(
                                     walletAddress = wallet.address,
-                                    type = Transaction.TransactionType.SEND
+                                    type = Transaction.TransactionType.SEND,
+                                    tokenSymbol = addressToSymbolMap[last.contractAddress]
+                                        ?: last.tokenSymbol
                                 )
                             )
                         } else {
@@ -550,7 +558,13 @@ class TransactionDataRepository @Inject constructor(
 
                             if (send != null && received != null) {
                                 val transaction =
-                                    composedTransaction(send, received, transactions, wallet)
+                                    composedTransaction(
+                                        send,
+                                        received,
+                                        transactions,
+                                        wallet,
+                                        addressToSymbolMap
+                                    )
                                 transactionList.add(
                                     transaction.copy(
                                         type = if (transaction.isTransfer)
@@ -562,13 +576,17 @@ class TransactionDataRepository @Inject constructor(
                                 transactionList.add(
 
                                     transactions.last().copy(
-                                        walletAddress = wallet.address
+                                        walletAddress = wallet.address,
+                                        tokenSymbol = addressToSymbolMap[transactions.last().contractAddress]
+                                            ?: transactions.last().tokenSymbol
                                     )
                                 )
 
                                 transactionList.add(
                                     transactions.first().copy(
-                                        walletAddress = wallet.address
+                                        walletAddress = wallet.address,
+                                        tokenSymbol = addressToSymbolMap[transactions.first().contractAddress]
+                                            ?: transactions.first().tokenSymbol
                                     )
                                 )
                             }
@@ -581,7 +599,13 @@ class TransactionDataRepository @Inject constructor(
                         if (send != null && received != null) {
 
                             val transaction =
-                                composedTransaction(send, received, transactions, wallet)
+                                composedTransaction(
+                                    send,
+                                    received,
+                                    transactions,
+                                    wallet,
+                                    addressToSymbolMap
+                                )
 
                             transactionList.add(
                                 transaction.copy(
@@ -600,7 +624,9 @@ class TransactionDataRepository @Inject constructor(
                                         walletAddress = wallet.address,
                                         type = if (tx.isTransfer)
                                             tx.type
-                                        else Transaction.TransactionType.SWAP
+                                        else Transaction.TransactionType.SWAP,
+                                        tokenSymbol = addressToSymbolMap[tx.contractAddress]
+                                            ?: tx.tokenSymbol
                                     )
                                 })
                             }
@@ -610,7 +636,9 @@ class TransactionDataRepository @Inject constructor(
                                     walletAddress = wallet.address,
                                     type = if (tx.isTransfer)
                                         tx.type
-                                    else Transaction.TransactionType.SWAP
+                                    else Transaction.TransactionType.SWAP,
+                                    tokenSymbol = addressToSymbolMap[tx.contractAddress]
+                                        ?: tx.tokenSymbol
                                 )
                             })
                         }
@@ -620,7 +648,9 @@ class TransactionDataRepository @Inject constructor(
                                 walletAddress = wallet.address,
                                 type = if (tx.isTransfer)
                                     tx.type
-                                else Transaction.TransactionType.SWAP
+                                else Transaction.TransactionType.SWAP,
+                                tokenSymbol = addressToSymbolMap[tx.contractAddress]
+                                    ?: tx.tokenSymbol
                             )
                         })
                     }
@@ -630,7 +660,7 @@ class TransactionDataRepository @Inject constructor(
     }
 
     private fun getTransactions(
-        wallet: Wallet, isForceRefesh: Boolean
+        wallet: Wallet, isForceRefresh: Boolean
     ): Flowable<TransactionsData> {
         return Flowable.mergeDelayError(
             transactionDao.getCompletedTransactions(wallet.address).map {
@@ -644,7 +674,6 @@ class TransactionDataRepository @Inject constructor(
             Flowable.fromCallable {
                 transactionDao.getLatestTransaction(wallet.address) != null
             }.flatMap {
-
                 if (it) {
                     Flowables.zip(
                         transactionDao.getCompletedTransactions(wallet.address),
@@ -652,7 +681,7 @@ class TransactionDataRepository @Inject constructor(
                             transactionDao.getLatestTransaction(wallet.address)?.blockNumber?.toLongSafe()
                                 ?: 1
                         }.flatMap {
-                            getTransactionRemote(wallet, if (isForceRefesh) 1 else max(it - 10, 1))
+                            getTransactionRemote(wallet, if (isForceRefresh) 1 else max(it - 10, 1))
                                 .doOnNext {
                                     val latestTransaction =
                                         transactionDao.getLatestTransaction(wallet.address)
@@ -669,7 +698,7 @@ class TransactionDataRepository @Inject constructor(
                                             }
                                         }
                                     }
-                                    if (isForceRefesh) {
+                                    if (isForceRefresh) {
 
                                         transactionDao.forceUpdateTransactionBatch(
                                             it,
@@ -699,7 +728,7 @@ class TransactionDataRepository @Inject constructor(
                         transactionDao.getLatestTransaction(wallet.address)?.blockNumber?.toLongSafe()
                             ?: 1
                     }.flatMap {
-                        getTransactionRemote(wallet, if (isForceRefesh) 1 else max(it - 10, 1))
+                        getTransactionRemote(wallet, if (isForceRefresh) 1 else max(it - 10, 1))
                             .map {
                                 TransactionsData(it.map {
                                     it.apply {
@@ -723,7 +752,7 @@ class TransactionDataRepository @Inject constructor(
                                         }
                                     }
                                 }
-                                if (isForceRefesh) {
+                                if (isForceRefresh) {
                                     transactionDao.forceUpdateTransactionBatch(
                                         it.transactionList,
                                         wallet.address
@@ -774,14 +803,6 @@ class TransactionDataRepository @Inject constructor(
         }.flatMap {
             transactionFilterDao.findTransactionFilterByAddressFlowable(param.walletAddress)
                 .defaultIfEmpty(it)
-        }.map {
-            it.apply {
-                symbolToAddressMap = tokenDao.allTokens.map {
-                    it.tokenSymbol.toLowerCase(Locale.getDefault()) to it.tokenAddress.toLowerCase(
-                        Locale.getDefault()
-                    )
-                }.toMap()
-            }
         }
     }
 
