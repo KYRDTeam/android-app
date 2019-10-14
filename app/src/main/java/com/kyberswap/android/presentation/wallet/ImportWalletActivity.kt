@@ -71,6 +71,7 @@ class ImportWalletActivity : BaseActivity(), KeystoreStorage {
 
         val adapter = ImportWalletPagerAdapter(supportFragmentManager, fromMain)
         binding.vpImportOption.adapter = adapter
+        binding.vpImportOption.offscreenPageLimit = 2
         binding.vpImportOption.addOnPageChangeListener(object : OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {}
             override fun onPageScrolled(

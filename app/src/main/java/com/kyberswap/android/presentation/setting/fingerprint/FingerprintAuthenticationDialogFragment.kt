@@ -67,13 +67,17 @@ class FingerprintAuthenticationDialogFragment : DialogFragment(),
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onResume() {
         super.onResume()
-        fingerprintUiHelper.startListening(cryptoObject)
+        if (::fingerprintUiHelper.isInitialized) {
+            fingerprintUiHelper.startListening(cryptoObject)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onPause() {
         super.onPause()
-        fingerprintUiHelper.stopListening()
+        if (::fingerprintUiHelper.isInitialized) {
+            fingerprintUiHelper.stopListening()
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -97,7 +101,9 @@ class FingerprintAuthenticationDialogFragment : DialogFragment(),
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onError() {
-        fingerprintUiHelper.stopListening()
+        if (::fingerprintUiHelper.isInitialized) {
+            fingerprintUiHelper.stopListening()
+        }
     }
 
     interface Callback {

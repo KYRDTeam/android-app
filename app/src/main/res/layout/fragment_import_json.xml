@@ -80,7 +80,7 @@
                     android:layout_marginTop="40dp"
                     android:layout_marginEnd="20dp"
                     android:backgroundTint="@color/edt_background_tint"
-                    android:hint="@string/name_of_your_wallet"
+                    android:hint="@string/name_your_wallet"
                     android:inputType="text"
                     android:letterSpacing="0.07"
                     android:singleLine="true"
@@ -91,7 +91,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
-                    tools:text="Name of your wallet" />
+                    tools:text="@string/name_your_wallet" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

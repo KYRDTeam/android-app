@@ -603,5 +603,8 @@
     <string name="description_fingerprint_icon">Fingerprint icon</string>
     <string name="fingerprint_description">Confirm fingerprint to continue</string>
     <string name="can_not_handle_amount">无法处理您的数量</string>
+    <string name="separate_words_with_a_space">*用空格分隔单词</string>
+    <string name="private_key_length_condition">*私钥必须是64个字符</string>
+    <string name="invalid_password">无效的密码</string>
 
 </resources>

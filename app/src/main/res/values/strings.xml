@@ -588,6 +588,9 @@
     <string name="description_fingerprint_icon">Fingerprint icon</string>
     <string name="fingerprint_description">Confirm fingerprint to continue</string>
     <string name="can_not_handle_amount">Can not handle your amount</string>
+    <string name="separate_words_with_a_space">*Separate words with a space</string>
+    <string name="private_key_length_condition">*Private key has to be 64 characters</string>
+    <string name="invalid_password">Invalid Password</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>

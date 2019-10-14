@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.kyberswap.android.data.api.limitorder.OrderEntity
 import com.kyberswap.android.util.ext.displayWalletAddress
+import com.kyberswap.android.util.ext.exactAmount
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toLongSafe
 import kotlinx.android.parcel.Parcelize
@@ -108,7 +109,7 @@ data class Order(
 
     val destDisplayFee: String
         get() = StringBuilder()
-            .append(fee.multiply(srcAmount).toDisplayNumber())
+            .append(fee.multiply(srcAmount).toDisplayNumber().exactAmount())
             .append(" ")
             .append(src)
             .toString()

@@ -602,5 +602,8 @@
     <string name="description_fingerprint_icon">Fingerprint icon</string>
     <string name="fingerprint_description">Confirm fingerprint to continue</string>
     <string name="can_not_handle_amount">금액을 처리 할 수 없음</string>
+    <string name="separate_words_with_a_space">*단어를 공백으로 분리하십시오.</string>
+    <string name="private_key_length_condition">*프라이빗 키는 64자 여야합니다.</string>
+    <string name="invalid_password">잘못된 비밀번호</string>
 
 </resources>

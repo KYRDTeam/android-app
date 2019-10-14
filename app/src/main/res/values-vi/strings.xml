@@ -602,5 +602,8 @@
     <string name="description_fingerprint_icon">Fingerprint icon</string>
     <string name="fingerprint_description">Confirm fingerprint to continue</string>
     <string name="can_not_handle_amount">Không thể xử lý số tiền của bạn</string>
+    <string name="separate_words_with_a_space">*Dấu cách giữa các từ</string>
+    <string name="private_key_length_condition">*Khóa riêng phải có 64 ký tự</string>
+    <string name="invalid_password">Mật khẩu không hợp lệ</string>
 
 </resources>
