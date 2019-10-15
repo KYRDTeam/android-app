@@ -591,6 +591,7 @@
     <string name="separate_words_with_a_space">*Separate words with a space</string>
     <string name="private_key_length_condition">*Private key has to be 64 characters</string>
     <string name="invalid_password">Invalid Password</string>
+    <string name="pin_confirm_unmatch">Your PIN and confirm PIN do not match</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>

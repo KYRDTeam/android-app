@@ -605,5 +605,6 @@
     <string name="separate_words_with_a_space">*Dấu cách giữa các từ</string>
     <string name="private_key_length_condition">*Khóa riêng phải có 64 ký tự</string>
     <string name="invalid_password">Mật khẩu không hợp lệ</string>
+    <string name="pin_confirm_unmatch">Mã PIN và xác nhận mã PIN không khớp</string>
 
 </resources>

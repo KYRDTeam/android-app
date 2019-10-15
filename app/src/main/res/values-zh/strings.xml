@@ -606,5 +606,6 @@
     <string name="separate_words_with_a_space">*用空格分隔单词</string>
     <string name="private_key_length_condition">*私钥必须是64个字符</string>
     <string name="invalid_password">无效的密码</string>
+    <string name="pin_confirm_unmatch">您的PIN码和确认PIN码不匹配</string>
 
 </resources>
