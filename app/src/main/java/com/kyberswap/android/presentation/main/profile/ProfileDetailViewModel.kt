@@ -180,7 +180,7 @@ class ProfileDetailViewModel @Inject constructor(
         super.onCleared()
     }
 
-    fun updatePushToken(userId: String, token: String) {
+    fun updatePushToken(userId: String, token: String?) {
         updatePushTokenUseCase.execute(
             Consumer {
 
