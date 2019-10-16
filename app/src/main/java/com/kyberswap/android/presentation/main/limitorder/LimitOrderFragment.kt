@@ -924,6 +924,14 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         message = getString(R.string.limit_order_amount_too_small)
                     )
                 }
+
+                binding.order?.amountTooBig(srcAmount) == true -> {
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_amount),
+                        message = getString(R.string.limit_order_amount_too_big)
+                    )
+                }
+
                 binding.edtRate.textToDouble() == 0.0 -> {
                     showAlertWithoutIcon(
                         title = getString(R.string.invalid_amount),
