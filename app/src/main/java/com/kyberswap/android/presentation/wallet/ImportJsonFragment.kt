@@ -110,6 +110,10 @@ class ImportJsonFragment : BaseFragment() {
                             Messages.MAC_UNMATCH -> {
                                 getString(R.string.invalid_password)
                             }
+
+                            Messages.WALLET_INVALID_KEYSTORE -> {
+                                getString(R.string.cant_get_data_from_file)
+                            }
                             else -> {
                                 state.message ?: getString(R.string.fail_import_json)
                             }

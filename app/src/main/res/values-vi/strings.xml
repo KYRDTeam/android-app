@@ -39,7 +39,7 @@
     <string name="word_2">Từ #2</string>
     <string name="word_6">Từ #6</string>
     <string name="kyberswap">KyberSwap</string>
-    <string name="backup_message">Chúng tôi sẽ cung cấp cho bạn một danh sách 12 từ ngẫu nhiên. Xin vui lòng viết chúng xuống giấy và giữ an toàn.    Khoá giấy này là cách duy nht để khôi phục Ví điện tử Kyber của bạn nếu bạn mất điện thoại hoặc quên mật khẩu.</string>
+    <string name="backup_message">Chúng tôi sẽ cung cấp cho bạn một danh sách 12 từ ngẫu nhiên. Xin vui lòng viết chúng xuống giấy và giữ an toàn.    Khoá giấy này là cách duy nhất để khôi phục Ví điện tử Kyber của bạn nếu bạn mất điện thoại hoặc quên mật khẩu.</string>
     <string name="verify_word_description">Để đảm bảo bạn đã viết ra tất cả các từ dự phòng của mình, vui lòng điền vào thông tin sau đây:</string>
     <string name="backup_json">JSON</string>
     <string name="backup_private_key">Khóa cá nhân</string>
@@ -604,7 +604,8 @@
     <string name="can_not_handle_amount">Không thể xử lý số tiền của bạn</string>
     <string name="separate_words_with_a_space">*Dấu cách giữa các từ</string>
     <string name="private_key_length_condition">*Khóa riêng phải có 64 ký tự</string>
-    <string name="invalid_password">Mật khẩu không hợp lệ</string>
+    <string name="invalid_password">Không thể nhập ví của bạn. Mật khẩu không hợp lệ</string>
     <string name="pin_confirm_unmatch">Mã PIN và xác nhận mã PIN không khớp</string>
+    <string name="cant_get_data_from_file">Không thể lấy dữ liệu từ tệp.</string>
 
 </resources>
