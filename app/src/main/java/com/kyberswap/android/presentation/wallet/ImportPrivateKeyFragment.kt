@@ -57,8 +57,13 @@ class ImportPrivateKeyFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
         binding.edtPrivateKey.addTextChangeListener {
             onTextChanged { s, _, _, _ ->
-                val count = s.toString().trim().split(" ").size
-                binding.btnImportWallet.isEnabled = count > 0
+                val isValidPrivateKey = s.toString().trim().length == 64
+                binding.btnImportWallet.isEnabled = isValidPrivateKey
+                if (isValidPrivateKey) {
+                    binding.textInputLayout.error = ""
+                } else {
+                    binding.textInputLayout.error = getString(R.string.private_key_length_condition)
+                }
             }
         }
 

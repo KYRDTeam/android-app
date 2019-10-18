@@ -64,6 +64,9 @@ data class LocalLimitOrder(
     val combineRate: String?
         get() = _rate.toBigDecimalOrDefaultZero().toDisplayNumber()
 
+    val sourceAmountWithoutRounding: String
+        get() = if (srcAmount == tokenSource.currentBalance.toDisplayNumber()) tokenSource.sourceAmountWithoutRounding else srcAmount
+
     fun swapToken(): LocalLimitOrder {
         return LocalLimitOrder(
             this.userAddr,
@@ -209,7 +212,7 @@ data class LocalLimitOrder(
         get() = minRate.multiply(BigDecimal.TEN.pow(18)).toBigInteger()
 
     val sourceAmountWithPrecision: BigInteger
-        get() = tokenSource.withTokenDecimal(srcAmount.toBigDecimalOrDefaultZero())
+        get() = tokenSource.withTokenDecimal(sourceAmountWithoutRounding.toBigDecimalOrDefaultZero())
 
     val displayTokenPair: String
         get() = StringBuilder()

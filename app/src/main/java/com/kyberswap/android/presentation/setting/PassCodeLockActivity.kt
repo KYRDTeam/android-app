@@ -98,6 +98,14 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
 
     private lateinit var keyGenerator: KeyGenerator
 
+    private var currentPin: String? = null
+
+    private val isVerifyAccess: Boolean
+        get() = binding.title == verifyAccess
+
+    private val isRepeatTitle: Boolean
+        get() = binding.title == repeatTitle
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         type = intent.getIntExtra(TYPE_PARAM, PASS_CODE_LOCK_TYPE_VERIFY)
@@ -105,10 +113,27 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
         binding.pinLockView.attachIndicatorDots(binding.indicatorDots)
         binding.pinLockView.setPinLockListener(object : PinLockListener {
             override fun onComplete(pin: String) {
-                if (binding.title == repeatTitle || binding.title == verifyAccess) {
+                if (isVerifyAccess) {
                     viewModel.verifyPin(pin, remainNum, System.currentTimeMillis())
+                } else if (isRepeatTitle) {
+                    if (pin == currentPin) {
+                        currentPin = pin
+                        viewModel.save(pin)
+                    } else {
+                        showAlertWithoutIcon(
+                            title = getString(R.string.title_error), message = getString(
+                                R.string.pin_confirm_unmatch
+                            )
+                        )
+                        binding.pinLockView.resetPinLockView()
+                        binding.title = newPinTitle
+                        binding.content = newPinContent
+                    }
                 } else {
-                    viewModel.save(pin)
+                    currentPin = pin
+                    binding.pinLockView.resetPinLockView()
+                    binding.title = repeatTitle
+                    binding.content = repeatContent
                 }
             }
 
@@ -126,9 +151,8 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
                 showProgress(state == SavePinState.Loading)
                 when (state) {
                     is SavePinState.Success -> {
-                        binding.pinLockView.resetPinLockView()
-                        binding.title = repeatTitle
-                        binding.content = repeatContent
+                        (applicationContext as KyberSwapApplication).startCounter()
+                        finish()
                     }
                     is SavePinState.ShowError -> {
                         showError(

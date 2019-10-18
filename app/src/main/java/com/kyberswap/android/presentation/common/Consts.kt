@@ -1,5 +1,6 @@
 package com.kyberswap.android.presentation.common
 
+import java.math.BigDecimal
 import java.math.BigInteger
 
 const val DEFAULT_ACCEPT_RATE_PERCENTAGE = 3
@@ -11,7 +12,6 @@ const val DEFAULT_NAME = "Untitled"
 const val MIN_SUPPORT_SWAP_SOURCE_AMOUNT = 0.001
 val KEEP_ETH_BALANCE_FOR_GAS = 600_000.toBigDecimal()
 
-
-enum class Stage { FINGERPRINT, NEW_FINGERPRINT_ENROLLED, PASSWORD }
-
 const val DEFAULT_KEY_NAME = "default_key"
+
+val MIN_SUPPORT_AMOUNT = BigDecimal(1E-10)

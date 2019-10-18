@@ -11,11 +11,11 @@
     </data>
 
     <FrameLayout
-        android:clickable="true"
-        android:focusable="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/screen_background">
+        android:background="@drawable/screen_background"
+        android:clickable="true"
+        android:focusable="true">
 
         <FrameLayout
             android:id="@+id/toolbar"
@@ -36,64 +36,71 @@
                 android:textSize="18sp" />
         </FrameLayout>
 
-        <LinearLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/toolbar_height"
             android:background="@android:color/white"
-            android:orientation="vertical">
+            android:fillViewport="true">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="16dp"
-                android:text="@string/export_at_your_own_risk"
-                android:textColor="#f96363"
-                android:textSize="14sp" />
-
-            <ImageView
-                android:id="@+id/imgAddress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="59dp"
-                android:scaleType="fitXY" />
-
-            <TextView
-                android:id="@+id/tvAddress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
-                android:layout_marginTop="32dp"
-                android:layout_marginEnd="25dp"
-                android:gravity="center_horizontal"
-                android:letterSpacing="0.07"
-                android:lineSpacingExtra="7sp"
-                android:text="@{info}"
-                android:textColor="#9ea1aa"
-                android:textSize="14sp"
-                tools:text="98i76yuin7uhy643xujhoui63huyhty6432fvbhyjnbvfe447uhyt8" />
-
-
-            <TextView
-                android:id="@+id/tvSave"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="75dp"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/default_button"
-                android:gravity="center"
-                android:minHeight="45dp"
-                android:text="@string/contact_save"
-                android:textAllCaps="false"
-                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-                android:textColor="#ffffff"
-                android:textSize="16sp" />
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingBottom="45dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/export_at_your_own_risk"
+                    android:textColor="#f96363"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/imgAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="59dp"
+                    android:scaleType="fitXY" />
+
+                <TextView
+                    android:id="@+id/tvAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginEnd="25dp"
+                    android:gravity="center_horizontal"
+                    android:letterSpacing="0.07"
+                    android:lineSpacingExtra="7sp"
+                    android:text="@{info}"
+                    android:textColor="#9ea1aa"
+                    android:textSize="14sp"
+                    tools:text="98i76yuin7uhy643xujhoui63huyhty6432fvbhyjnbvfe447uhyt8" />
 
 
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/tvSave"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="75dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/default_button"
+                    android:gravity="center"
+                    android:minHeight="45dp"
+                    android:text="@string/contact_save"
+                    android:textAllCaps="false"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#ffffff"
+                    android:textSize="16sp" />
+
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 
 
     </FrameLayout>

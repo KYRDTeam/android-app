@@ -24,7 +24,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         def versionMajor = 1
         def versionMinor = 0
-        def versionPatch = 8
+        def versionPatch = 9
         versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch * 1
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         vectorDrawables.useSupportLibrary = true
@@ -163,9 +163,9 @@ dependencies {
 
     implementation "com.afollestad.material-dialogs:core:$rootProject.materialDialogVersion"
 
-    implementation 'androidx.room:room-runtime:2.1.0'
-    kapt 'androidx.room:room-compiler:2.1.0'
-    implementation 'androidx.room:room-rxjava2:2.1.0'
+    implementation 'androidx.room:room-runtime:2.2.0'
+    kapt 'androidx.room:room-compiler:2.2.0'
+    implementation 'androidx.room:room-rxjava2:2.2.0'
 
 
     implementation "com.github.bumptech.glide:glide:$rootProject.glideVersion"

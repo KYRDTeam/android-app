@@ -538,6 +538,7 @@ class SendFragment : BaseFragment() {
         })
 
         binding.rbFast.isChecked = true
+        binding.rbFast.jumpDrawablesToCurrentState()
     }
 
     private fun saveSend() {

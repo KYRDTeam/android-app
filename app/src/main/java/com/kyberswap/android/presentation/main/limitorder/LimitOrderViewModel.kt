@@ -27,6 +27,7 @@ import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.common.MIN_SUPPORT_AMOUNT
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.GetExpectedRateState
@@ -456,7 +457,8 @@ class LimitOrderViewModel @Inject constructor(
             GetLimitOrderFeeUseCase.Param(
                 order.tokenSource,
                 order.tokenDest,
-                sourceAmount ?: 0.toString(),
+                (if (sourceAmount == order.tokenSource.currentBalance.toDisplayNumber()) order.tokenSource.sourceAmountWithoutRounding else sourceAmount)
+                    ?: 0.toString(),
                 destAmount ?: 0.toString(),
                 wallet.address
             )
@@ -570,7 +572,9 @@ class LimitOrderViewModel @Inject constructor(
             availableAmount = BigDecimal.ZERO
         }
 
-        return availableAmount.toDisplayNumber().exactAmount()
+        return if (availableAmount > MIN_SUPPORT_AMOUNT) {
+            availableAmount.toDisplayNumber().exactAmount()
+        } else BigDecimal.ZERO.toDisplayNumber()
     }
 
     fun cancelHigherRateOrder(rate: BigDecimal) {

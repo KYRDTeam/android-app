@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentImportJsonBinding
@@ -107,10 +108,14 @@ class ImportJsonFragment : BaseFragment() {
                             }
 
                             Messages.MAC_UNMATCH -> {
-                                getString(R.string.fail_import_json)
+                                getString(R.string.invalid_password)
+                            }
+
+                            Messages.WALLET_INVALID_KEYSTORE -> {
+                                getString(R.string.cant_get_data_from_file)
                             }
                             else -> {
-                                state.message ?: getString(R.string.something_wrong)
+                                state.message ?: getString(R.string.fail_import_json)
                             }
 
                         }
@@ -122,6 +127,12 @@ class ImportJsonFragment : BaseFragment() {
                 }
             }
         })
+
+        viewModel.compositeDisposable.add(binding.edtPassword.textChanges().skipInitialValue()
+            .subscribe {
+                binding.btnImportWallet.isEnabled =
+                    it.isNotEmpty() && binding.button.text.isNotEmpty()
+            })
 
         binding.btnImportWallet.setOnClickListener {
             uri?.let {
@@ -154,7 +165,6 @@ class ImportJsonFragment : BaseFragment() {
                 data?.data?.also { uri ->
                     this.uri = uri
                     binding.button.text = queryName(uri)
-                    binding.btnImportWallet.isEnabled = true
                 }
             }
         }
