@@ -79,8 +79,27 @@
                     android:layout_marginTop="8dp"
                     android:letterSpacing="0.07"
                     android:textColor="#9ea1aa"
-                    android:textSize="14sp"
+                    android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="@+id/edtSeed"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/tvInfo"
+                    app:layout_constraintTop_toBottomOf="@+id/edtSeed" />
+
+                <TextView
+                    android:id="@+id/tvInfo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:letterSpacing="0.07"
+                    android:singleLine="true"
+                    android:text="@string/separate_words_with_a_space"
+                    android:textColor="#9ea1aa"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@+id/txtWordCounter"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toStartOf="@+id/edtSeed"
                     app:layout_constraintTop_toBottomOf="@+id/edtSeed" />
 
 
@@ -92,7 +111,7 @@
                     android:layout_marginTop="17dp"
                     android:layout_marginEnd="23dp"
                     android:backgroundTint="@color/edt_background_tint"
-                    android:hint="@string/name_of_your_wallet"
+                    android:hint="@string/name_your_wallet"
                     android:inputType="text"
                     android:letterSpacing="0.07"
                     android:paddingStart="0dp"
@@ -106,7 +125,7 @@
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/txtWordCounter"
-                    tools:text="Name of your wallet" />
+                    tools:text="@string/name_your_wallet" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

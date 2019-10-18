@@ -774,11 +774,17 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
         }
 
-        rbFast.isChecked = true
-        rbDefaultRate.isChecked = true
+        setDefaultSelection()
     }
 
-    fun showDestValueInUsd(swap: Swap) {
+    private fun setDefaultSelection() {
+        rbFast.isChecked = true
+        rbFast.jumpDrawablesToCurrentState()
+        rbDefaultRate.isChecked = true
+        rbDefaultRate.jumpDrawablesToCurrentState()
+    }
+
+    private fun showDestValueInUsd(swap: Swap) {
         if (swap.tokenDest.rateEthNowOrDefaultValue > BigDecimal.ZERO && edtSource.text.isNotEmpty()) {
             binding.tvValueInUSD.text =
                 getString(

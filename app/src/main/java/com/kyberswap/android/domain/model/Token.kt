@@ -74,6 +74,8 @@ data class Token(
                 ?: BigDecimal.ZERO
         }
 
+    val sourceAmountWithoutRounding: String
+        get() = currentBalance.stripTrailingZeros().toPlainString()
 
     constructor(entity: TokenEntity) : this(
         entity.timestamp,

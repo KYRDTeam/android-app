@@ -37,6 +37,7 @@ object DateTimeHelper {
             this.timeZone = TimeZone.getTimeZone("UTC")
         }
 
+        if (date.isBlank()) return 0
         return fullFormat.parse(date).time
     }
 
