@@ -14,11 +14,10 @@ import com.kyberswap.android.databinding.ItemTransactionBinding
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.presentation.base.DataBoundListAdapter
 import com.kyberswap.android.presentation.base.DataBoundViewHolder
-import java.util.*
+import java.util.Locale
 
 class TransactionStatusAdapter(
     appExecutors: AppExecutors,
-    private val walletAddress: String?,
     private val onTransactionClick: ((Transaction) -> Unit)?
 
 ) : DataBoundListAdapter<TransactionItem, ViewDataBinding>(

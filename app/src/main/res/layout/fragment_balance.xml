@@ -10,6 +10,7 @@
             name="walletAddress"
             type="String" />
 
+
     </data>
 
     <FrameLayout
@@ -204,17 +205,36 @@
                     android:id="@+id/header"
                     layout="@layout/layout_token_header" />
 
-                <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                    android:id="@+id/swipeLayout"
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvToken"
+                    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                        android:id="@+id/swipeLayout"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@android:color/white" />
-                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                        android:layout_height="match_parent">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvToken"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@android:color/white" />
+                    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+                    <TextView
+                        android:id="@+id/tvEmpty"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginEnd="24dp"
+                        android:gravity="center"
+                        android:lineSpacingExtra="8sp"
+                        android:text="@string/no_matching_tokens"
+                        android:textColor="#5a5e67"
+                        android:textSize="14sp"
+                        android:visibility="gone" />
+                </FrameLayout>
 
 
             </LinearLayout>
