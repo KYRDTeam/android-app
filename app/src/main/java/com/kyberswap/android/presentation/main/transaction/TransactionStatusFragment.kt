@@ -154,7 +154,7 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
         )
 
         if (transactionStatusAdapter == null) {
-            transactionStatusAdapter = TransactionStatusAdapter(appExecutors, wallet?.address) {
+            transactionStatusAdapter = TransactionStatusAdapter(appExecutors) {
                 when (it.transactionType) {
                     Transaction.TransactionType.SWAP ->
                         navigator.navigateToSwapTransactionScreen(

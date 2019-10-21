@@ -345,8 +345,10 @@ class TransactionDataRepository @Inject constructor(
                     val blockNumber = tx.blockNumber.toLongSafe()
                     latestTransaction?.let {
                         if (blockNumber > latestBlock) {
-                            if (tx.to.toLowerCase(Locale.getDefault()) == param.wallet.address.toLowerCase(
-                                    Locale.getDefault()
+                            if (tx.isReceived(
+                                    param.wallet.address.toLowerCase(
+                                        Locale.getDefault()
+                                    )
                                 )
                             ) {
                                 sendNotification(tx)
@@ -691,7 +693,12 @@ class TransactionDataRepository @Inject constructor(
                                         val blockNumber = tx.blockNumber.toLongSafe()
                                         latestTransaction?.let {
                                             if (blockNumber > latestBlock) {
-                                                if (tx.type == Transaction.TransactionType.RECEIVED) {
+                                                if (tx.isReceived(
+                                                        wallet.address.toLowerCase(
+                                                            Locale.getDefault()
+                                                        )
+                                                    )
+                                                ) {
                                                     sendNotification(tx)
                                                 }
                                                 updateBalance(tx, wallet)
@@ -709,6 +716,7 @@ class TransactionDataRepository @Inject constructor(
                                     }
                                 }
                         }
+                            .onErrorReturn { listOf() }
 
                     ) { local, remote ->
 
@@ -745,7 +753,12 @@ class TransactionDataRepository @Inject constructor(
                                     val blockNumber = tx.blockNumber.toLongSafe()
                                     latestTransaction?.let {
                                         if (blockNumber > latestBlock) {
-                                            if (tx.type == Transaction.TransactionType.RECEIVED) {
+                                            if (tx.isReceived(
+                                                    wallet.address.toLowerCase(
+                                                        Locale.getDefault()
+                                                    )
+                                                )
+                                            ) {
                                                 sendNotification(tx)
                                             }
                                             updateBalance(tx, wallet)
