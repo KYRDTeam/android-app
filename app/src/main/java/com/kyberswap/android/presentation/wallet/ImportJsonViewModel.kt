@@ -1,7 +1,7 @@
 package com.kyberswap.android.presentation.wallet
 
 import android.net.Uri
-import com.kyberswap.android.domain.usecase.token.GetTokenBalanceUseCase
+import com.kyberswap.android.domain.usecase.token.GetTokensBalanceUseCase
 import com.kyberswap.android.domain.usecase.wallet.ImportWalletFromJsonUseCase
 import com.kyberswap.android.presentation.landing.ImportWalletState
 import io.reactivex.disposables.CompositeDisposable
@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 class ImportJsonViewModel @Inject constructor(
     private val importWalletFromJsonUseCase: ImportWalletFromJsonUseCase,
-    getTokenBalance: GetTokenBalanceUseCase
+    getTokenBalance: GetTokensBalanceUseCase
 ) : ImportWalletViewModel(getTokenBalance) {
 
     val compositeDisposable = CompositeDisposable()

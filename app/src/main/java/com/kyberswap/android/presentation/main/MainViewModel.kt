@@ -8,7 +8,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.balance.UpdateBalanceUseCase
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
-import com.kyberswap.android.domain.usecase.token.GetTokenBalanceUseCase
+import com.kyberswap.android.domain.usecase.token.GetTokensBalanceUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetPendingTransactionsUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionsPeriodicallyUseCase
 import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
@@ -37,7 +37,7 @@ class MainViewModel @Inject constructor(
     private val updateSelectedWalletUseCase: UpdateSelectedWalletUseCase,
     private val getLoginStatusUseCase: GetLoginStatusUseCase,
     private val getBalancePollingUseCase: GetBalancePollingUseCase,
-    private val getTokenBalanceUseCase: GetTokenBalanceUseCase,
+    private val getTokenBalanceUseCase: GetTokensBalanceUseCase,
     private val getTransactionsPeriodicallyUseCase: GetTransactionsPeriodicallyUseCase,
     private val updateBalanceUseCase: UpdateBalanceUseCase,
     private val errorHandler: ErrorHandler
@@ -195,28 +195,40 @@ class MainViewModel @Inject constructor(
         pair: Pair<Wallet, List<Token>>,
         isWalletChangedEvent: Boolean = false
     ) {
-        numberOfToken = 0
-        pair.second.forEach { token ->
-            getTokenBalanceUseCase.execute(
-                Action {
-                    numberOfToken++
-                    if (numberOfToken == pair.second.size) {
-                        _switchWalletCompleteCallback.value =
-                            Event(UpdateWalletState.Success(pair.first, isWalletChangedEvent))
-                        updateBalance(pair.first)
-                    }
-                },
-                Consumer {
-                    numberOfToken++
-                    if (numberOfToken == pair.second.size) {
-                        _switchWalletCompleteCallback.value =
-                            Event(UpdateWalletState.Success(pair.first, isWalletChangedEvent))
-                        updateBalance(pair.first)
-                    }
-                },
-                token
-            )
-        }
+        getTokenBalanceUseCase.dispose()
+        getTokenBalanceUseCase.execute(
+            Action {
+                _switchWalletCompleteCallback.value =
+                    Event(UpdateWalletState.Success(pair.first, isWalletChangedEvent))
+                updateBalance(pair.first)
+            },
+            Consumer {
+                it.printStackTrace()
+            },
+            GetTokensBalanceUseCase.Param(pair.first, pair.second)
+        )
+//        numberOfToken = 0
+//        pair.second.forEach { token ->
+//            getTokenBalanceUseCase.execute(
+//                Action {
+//                    numberOfToken++
+//                    if (numberOfToken == pair.second.size) {
+//                        _switchWalletCompleteCallback.value =
+//                            Event(UpdateWalletState.Success(pair.first, isWalletChangedEvent))
+//                        updateBalance(pair.first)
+//                    }
+//                },
+//                Consumer {
+//                    numberOfToken++
+//                    if (numberOfToken == pair.second.size) {
+//                        _switchWalletCompleteCallback.value =
+//                            Event(UpdateWalletState.Success(pair.first, isWalletChangedEvent))
+//                        updateBalance(pair.first)
+//                    }
+//                },
+//                token
+//            )
+//        }
     }
 
     private fun updateBalance(wallet: Wallet) {

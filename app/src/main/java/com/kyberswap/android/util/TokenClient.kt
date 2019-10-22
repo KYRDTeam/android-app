@@ -15,6 +15,7 @@ import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.FunctionReturnDecoder
 import org.web3j.abi.TypeReference
 import org.web3j.abi.datatypes.Address
+import org.web3j.abi.datatypes.DynamicArray
 import org.web3j.abi.datatypes.DynamicBytes
 import org.web3j.abi.datatypes.Function
 import org.web3j.abi.datatypes.generated.Uint256
@@ -118,6 +119,24 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     }
 
     @Throws(Exception::class)
+    private fun getBalances(
+        address: String,
+        tokens: List<String>
+    ): Function {
+
+        return Function(
+            "getBalances",
+            listOf(
+                Address(address),
+                DynamicArray(Address::class.java, tokens.map { Address(it) })
+            ),
+            listOf<TypeReference<*>>(
+                object : TypeReference<DynamicArray<Uint256>>() {
+                }
+            ))
+    }
+
+    @Throws(Exception::class)
     fun updateBalance(token: Token): Token {
         return token.updateBalance(
             if (token.isETH) {
@@ -130,6 +149,59 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                 )
             }
         )
+    }
+
+    @Throws(Exception::class)
+    fun updateBalances(
+        walletAddress: String,
+        contractAddress: String,
+        tokens: List<Token>
+    ): List<Token> {
+
+        try {
+            val ethPosition = tokens.indexOfFirst { it.isETH }
+            val ethToken = tokens[ethPosition]
+
+            val erc20Tokens = tokens.toMutableList()
+            erc20Tokens.remove(ethToken)
+
+            val eth = ethToken.updateBalance(
+                Convert.fromWei(
+                    BigDecimal(getEthBalance(walletAddress)),
+                    Convert.Unit.ETHER
+                )
+            )
+
+            val balances = getBalances(walletAddress, erc20Tokens.map { it.tokenAddress })
+            val responseValueBalances = callSmartContractFunction(
+                balances,
+                contractAddress,
+                walletAddress
+            )
+            val responseBalance = FunctionReturnDecoder.decode(
+                responseValueBalances, balances.outputParameters
+            )
+            val erc20List = if (responseBalance.size > 0) {
+                val tokenBalances = responseBalance[0].value as List<Uint256>
+                erc20Tokens.mapIndexed { index, token ->
+                    token.updateBalance(
+                        BigDecimal(tokenBalances[index].value).divide(
+                            BigDecimal(10).pow(
+                                token.tokenDecimal
+                            ), 18, RoundingMode.HALF_EVEN
+                        )
+                    )
+                }.toMutableList()
+            } else {
+                erc20Tokens
+            }
+
+            erc20List.add(ethPosition, eth)
+            return erc20List
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            return tokens
+        }
     }
 
     @Throws(Exception::class)

@@ -97,6 +97,7 @@ object DataModule {
     @Provides
     @JvmStatic
     fun provideBalanceRepository(
+        context: Context,
         api: TokenApi,
         currencyApi: CurrencyApi,
         tokenMapper: TokenMapper,
@@ -109,6 +110,7 @@ object DataModule {
 
     ): BalanceRepository =
         BalanceDataRepository(
+            context,
             api,
             currencyApi,
             tokenMapper,

@@ -1,5 +1,7 @@
 package com.kyberswap.android.data.repository
 
+import android.content.Context
+import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.CurrencyApi
 import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.db.LocalLimitOrderDao
@@ -13,6 +15,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.BalanceRepository
 import com.kyberswap.android.domain.usecase.balance.UpdateBalanceUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
+import com.kyberswap.android.domain.usecase.token.GetTokensBalanceUseCase
 import com.kyberswap.android.domain.usecase.token.PrepareBalanceUseCase
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.rx.operator.zipWithFlatMap
@@ -25,6 +28,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class BalanceDataRepository @Inject constructor(
+    private val context: Context,
     private val api: TokenApi,
     private val currencyApi: CurrencyApi,
     private val tokenMapper: TokenMapper,
@@ -36,6 +40,7 @@ class BalanceDataRepository @Inject constructor(
     private val localLimitOrderDao: LocalLimitOrderDao
 ) :
     BalanceRepository {
+
     override fun updateBalance(param: UpdateBalanceUseCase.Param): Completable {
         return Completable.fromCallable {
             val wallet = param.wallet
@@ -127,6 +132,18 @@ class BalanceDataRepository @Inject constructor(
             if (token.currentBalance != updatedToken.currentBalance) {
                 tokenDao.updateToken(updatedToken)
             }
+
+        }
+    }
+
+    override fun getTokenBalances(param: GetTokensBalanceUseCase.Param): Completable {
+        return Completable.fromCallable {
+            val updatedTokens = tokenClient.updateBalances(
+                param.wallet.address,
+                context.getString(R.string.wrapper_contract_address),
+                param.tokens
+            )
+            tokenDao.updateTokens(updatedTokens)
 
         }
     }
