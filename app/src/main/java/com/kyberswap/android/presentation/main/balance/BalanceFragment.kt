@@ -145,13 +145,17 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
+                        if (state.wallet.display() != binding.walletAddress) {
+                            binding.walletAddress = state.wallet.display()
+                        }
+
                         if (state.wallet.address != wallet?.address) {
                             // Wallet address change, need to reload the balance
                             refreshBalances()
-                            binding.walletAddress = state.wallet.display()
                             // Unit could be changed by user selection
                             binding.tvUnit.setTextIfChange(state.wallet.unit)
                             this.wallet = state.wallet
+                            tokenAdapter?.showEth(wallet?.unit == eth)
                         }
                     }
                     is GetWalletState.ShowError -> {
