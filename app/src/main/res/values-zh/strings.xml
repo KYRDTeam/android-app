@@ -608,5 +608,6 @@
     <string name="invalid_password">无法导入您的钱包. 无效的密码</string>
     <string name="pin_confirm_unmatch">您的PIN码和确认PIN码不匹配</string>
     <string name="cant_get_data_from_file">无法从您的文件中获取数据。</string>
+    <string name="no_matching_tokens">没有匹配代币</string>
 
 </resources>

@@ -1,11 +1,13 @@
 package com.kyberswap.android.util.ext
 
+import com.kyberswap.android.presentation.common.MIN_SUPPORT_AMOUNT
 import java.math.BigDecimal
 import java.math.RoundingMode
 
 fun BigDecimal.toDisplayNumber(): String {
-    return toDisplayNumberInternal().toBigDecimalOrDefaultZero().stripTrailingZeros()
-        .toPlainString()
+
+    val internalValue = toDisplayNumberInternal().toBigDecimalOrDefaultZero().stripTrailingZeros()
+    return if (internalValue.abs() > MIN_SUPPORT_AMOUNT) internalValue.toPlainString() else "0"
 }
 
 fun BigDecimal.toDisplayNumber(length: Int): String {

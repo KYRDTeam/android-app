@@ -145,13 +145,17 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
+                        if (state.wallet.display() != binding.walletAddress) {
+                            binding.walletAddress = state.wallet.display()
+                        }
+
                         if (state.wallet.address != wallet?.address) {
                             // Wallet address change, need to reload the balance
                             refreshBalances()
-                            binding.walletAddress = state.wallet.display()
                             // Unit could be changed by user selection
                             binding.tvUnit.setTextIfChange(state.wallet.unit)
                             this.wallet = state.wallet
+                            tokenAdapter?.showEth(wallet?.unit == eth)
                         }
                     }
                     is GetWalletState.ShowError -> {
@@ -176,10 +180,12 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             if (it.isSelected) return@setOnClickListener
             tokenAdapter?.setTokenType(TokenType.LISTED, getFilterTokenList(currentSearchString))
             setSelectedOption(it)
+            handleEmptyList()
         }
 
         binding.tvFavOther.setOnClickListener {
             toggleOtherFavDisplay(it as TextView)
+            handleEmptyList()
         }
 
         balanceAddress.forEach { view ->
@@ -285,7 +291,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                         })
                     }
                     is GetBalanceState.ShowError -> {
-
+                        binding.swipeLayout.isRefreshing = false
                     }
                 }
             }
@@ -434,13 +440,20 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         }
     }
 
+    private fun handleEmptyList() {
+        handler.post {
+            binding.tvEmpty.visibility =
+                if (tokenAdapter?.itemCount == 0) View.VISIBLE else View.GONE
+        }
+    }
+
     private fun displayWalletBalance(isHide: Boolean) {
         binding.tvBalance.text =
             if (isHide) "******" else walletBalance.toDisplayNumber().exactAmount()
     }
 
     override fun showNotification(showNotification: Boolean) {
-        if(::binding.isInitialized) {
+        if (::binding.isInitialized) {
             binding.vNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
         }
     }
@@ -523,7 +536,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     private fun getFilterTokenList(searchedString: String, tokens: List<Token>): List<Token> {
-        if(searchedString.isEmpty()) return tokens
+        if (searchedString.isEmpty()) return tokens
         return tokens.filter { token ->
             token.tokenSymbol.toLowerCase(Locale.getDefault()).contains(searchedString) or
                 token.tokenName.toLowerCase(Locale.getDefault()).contains(searchedString)

@@ -296,6 +296,9 @@ data class Token(
     val isETHWETH: Boolean
         get() = tokenSymbol.toLowerCase(Locale.getDefault()) == ETH_SYMBOL_STAR.toLowerCase(Locale.getDefault())
 
+    val isENJ: Boolean
+        get() = tokenSymbol.toLowerCase(Locale.getDefault()) == ENJ.toLowerCase(Locale.getDefault())
+
     fun areContentsTheSame(other: Token): Boolean {
         return this.tokenSymbol == other.tokenSymbol &&
             this.currentBalance.toDisplayNumber() == other.currentBalance.toDisplayNumber() &&
@@ -348,6 +351,8 @@ data class Token(
         const val MKR = "MKR"
         const val PRO = "PRO"
         const val PT = "PT"
+        const val ENJ = "ENJ"
+        const val ENJIN = "ENJIN"
 
         const val DIGIX_GAS_LIMIT_DEFAULT = 750_000
         const val EXCHANGE_TOKEN_GAS_LIMIT_DEFAULT = 760_000

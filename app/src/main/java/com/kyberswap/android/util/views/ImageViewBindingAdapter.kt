@@ -15,6 +15,7 @@ import com.kyberswap.android.presentation.main.profile.LoginType
 import com.kyberswap.android.util.ext.dpToPx
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import jdenticon.Jdenticon
+import java.util.Locale
 
 
 object ImageViewBindingAdapter {
@@ -72,22 +73,27 @@ object ImageViewBindingAdapter {
 
         val id = if (identifier == Token.ETH_SYMBOL_STAR) {
             Token.ETH
+        } else if (identifier == Token.ENJ) {
+            Token.ENJIN
         } else {
             identifier
         }
 
         val stringUrl =
-            "https://files.kyber.network/DesignAssets/tokens/iOS/${id.toLowerCase()}.png"
+            "https://files.kyber.network/DesignAssets/tokens/iOS/${id.toLowerCase(Locale.getDefault())}.png"
         var resourceIcon: Int?
         try {
 
             resourceIcon = view.context.resources.getIdentifier(
-                identifier.toLowerCase(),
+                identifier.toLowerCase(Locale.getDefault()),
                 "drawable",
                 view.context.packageName
             )
 
-            if (identifier.toLowerCase() == view.context.getString(R.string.token_eth_star).toLowerCase()) {
+            if (identifier.toLowerCase(Locale.getDefault()) == view.context.getString(R.string.token_eth_star).toLowerCase(
+                    Locale.getDefault()
+                )
+            ) {
                 resourceIcon = R.drawable.eth
             }
 
@@ -132,7 +138,12 @@ object ImageViewBindingAdapter {
     @BindingAdapter("app:tokenSymbol")
     @JvmStatic
     fun tokenSymbol(view: ImageView, tokenSymbol: String?) {
-        if (tokenSymbol != null && tokenSymbol.toLowerCase() == view.context.getString(R.string.token_eth_star).toLowerCase()) {
+        if (tokenSymbol != null && tokenSymbol.toLowerCase(Locale.getDefault()) == view.context.getString(
+                R.string.token_eth_star
+            ).toLowerCase(
+                Locale.getDefault()
+            )
+        ) {
             view.visibility = View.VISIBLE
         } else {
             view.visibility = View.GONE

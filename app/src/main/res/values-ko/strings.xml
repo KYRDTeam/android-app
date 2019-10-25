@@ -607,5 +607,6 @@
     <string name="invalid_password">지갑을 가져올 수 없습니다. 잘못된 비밀번호</string>
     <string name="pin_confirm_unmatch">PIN과 확인 PIN이 일치하지 않습니다.</string>
     <string name="cant_get_data_from_file">파일에서 데이터를 가져올 수 없습니다.</string>
+    <string name="no_matching_tokens">검색 결과 없음</string>
 
 </resources>

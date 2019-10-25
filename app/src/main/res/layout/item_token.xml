@@ -151,6 +151,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"
                 android:gravity="center|end"
+                android:singleLine="true"
                 android:text="@{showEth ? token.displayRateEthNow : token.displayRateUsdNow}"
                 android:textColor="#1d303a"
                 android:textSize="16sp"
