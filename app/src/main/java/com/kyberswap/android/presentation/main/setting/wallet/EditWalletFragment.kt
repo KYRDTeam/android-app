@@ -19,6 +19,7 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.hideKeyboard
 import java.io.OutputStream
 import javax.inject.Inject
 
@@ -99,6 +100,7 @@ class EditWalletFragment : BaseFragment() {
         }
 
         binding.imgDone.setOnClickListener {
+            hideKeyboard()
             val name = if (binding.edtWalletName.text.isNullOrBlank()) {
                 getString(R.string.default_wallet_name)
             } else {

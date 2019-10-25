@@ -26,7 +26,7 @@ class GetLimitOrdersUseCase @Inject constructor(
             OrdersWrapper(filterOrders(orders, filter), filter.oldest)
 
         }.repeatWhen {
-            it.delay(15, TimeUnit.SECONDS)
+            it.delay(10, TimeUnit.SECONDS)
         }
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())

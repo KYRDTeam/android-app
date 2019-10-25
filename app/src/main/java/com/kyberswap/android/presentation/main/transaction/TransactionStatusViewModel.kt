@@ -40,69 +40,88 @@ class TransactionStatusViewModel @Inject constructor(
         isForceRefresh: Boolean
     ) {
         if (type == Transaction.PENDING) {
-
-            if (currentFilter != transactionFilter || isForceRefresh) {
-                getPendingTransactionsUseCase.dispose()
-                _getTransactionCallback.postValue(Event(GetTransactionState.Loading))
-                getPendingTransactionsUseCase.execute(
-                    Consumer {
-                        _getTransactionCallback.value = Event(
-                            GetTransactionState.Success(
-                                filterTransaction(
-                                    it,
-                                    transactionFilter
-                                ),
-                                currentFilter != transactionFilter,
-                                true
-                            )
-                        )
-                        transactionList = it
-                        currentFilter = transactionFilter
-
-                    },
-                    Consumer {
-                        Timber.e(it.localizedMessage)
-                        _getTransactionCallback.value =
-                            Event(GetTransactionState.ShowError(errorHandler.getError(it)))
-                    },
-                    wallet.address
-                )
+            if (isFilterChanged(transactionFilter) || isForceRefresh) {
+                getPendingTransactions(wallet, transactionFilter)
+            } else {
+                _getTransactionCallback.value =
+                    Event(GetTransactionState.FilterNotChange(true))
             }
         } else {
-            if (currentFilter != transactionFilter || isForceRefresh) {
-                getTransactionsUseCase.dispose()
-                _getTransactionCallback.postValue(Event(GetTransactionState.Loading))
-                getTransactionsUseCase.execute(
-                    Consumer { response ->
-                        if (transactionList != response.transactionList) {
-                            _getTransactionCallback.value = Event(
-                                GetTransactionState.Success(
-                                    filterTransaction(
-                                        response.transactionList,
-                                        transactionFilter
-                                    ),
-                                    currentFilter != transactionFilter,
-                                    response.isLoaded
-
-                                )
-                            )
-                            transactionList = response.transactionList
-                            currentFilter = transactionFilter
-                        } else if (response.isLoaded) {
-                            _getTransactionCallback.value =
-                                Event(GetTransactionState.FilterNotChange(true))
-                        }
-
-                    },
-                    Consumer {
-                        Timber.e(it.localizedMessage)
-                        _getTransactionCallback.value =
-                            Event(GetTransactionState.ShowError(errorHandler.getError(it)))
-                    },
-                    GetTransactionsUseCase.Param(wallet, isForceRefresh)
-                )
+            if (isFilterChanged(transactionFilter) || isForceRefresh) {
+                getMinedTransactions(wallet, transactionFilter, isForceRefresh)
+            } else {
+                _getTransactionCallback.value =
+                    Event(GetTransactionState.FilterNotChange(true))
             }
         }
+    }
+
+    private fun isFilterChanged(transactionFilter: TransactionFilter): Boolean {
+        return currentFilter != transactionFilter
+    }
+
+    private fun getMinedTransactions(
+        wallet: Wallet,
+        transactionFilter: TransactionFilter,
+        isForceRefresh: Boolean
+    ) {
+        getTransactionsUseCase.dispose()
+        _getTransactionCallback.postValue(Event(GetTransactionState.Loading))
+        getTransactionsUseCase.execute(
+            Consumer { response ->
+                _getTransactionCallback.value = Event(
+                    GetTransactionState.Success(
+                        filterTransaction(
+                            response.transactionList,
+                            transactionFilter
+                        ),
+                        currentFilter != transactionFilter,
+                        response.isLoaded
+
+                    )
+                )
+                transactionList = response.transactionList
+                currentFilter = transactionFilter
+
+            },
+            Consumer {
+                Timber.e(it.localizedMessage)
+                _getTransactionCallback.value =
+                    Event(GetTransactionState.ShowError(errorHandler.getError(it)))
+            },
+            GetTransactionsUseCase.Param(wallet, isForceRefresh)
+        )
+    }
+
+    private fun getPendingTransactions(
+        wallet: Wallet,
+        transactionFilter: TransactionFilter
+    ) {
+        getPendingTransactionsUseCase.dispose()
+        _getTransactionCallback.postValue(Event(GetTransactionState.Loading))
+        getPendingTransactionsUseCase.execute(
+            Consumer {
+                _getTransactionCallback.value = Event(
+                    GetTransactionState.Success(
+                        filterTransaction(
+                            it,
+                            transactionFilter
+                        ),
+                        currentFilter != transactionFilter,
+                        true
+                    )
+                )
+                transactionList = it
+                currentFilter = transactionFilter
+
+            },
+            Consumer {
+                Timber.e(it.localizedMessage)
+                _getTransactionCallback.value =
+                    Event(GetTransactionState.ShowError(errorHandler.getError(it)))
+            },
+            wallet.address
+        )
     }
 
     private fun filterTransaction(
@@ -115,8 +134,8 @@ class TransactionStatusViewModel @Inject constructor(
             .filter {
                 val tokenList = transactionFilter.tokens.map { it.toLowerCase(Locale.getDefault()) }
                 (transactionFilter.from.isEmpty() || it.filterDateTimeFormat.toDate().time >= transactionFilter.from.toDate().time) &&
-                        (transactionFilter.to.isEmpty() || it.filterDateTimeFormat.toDate().time <= transactionFilter.to.toDate().time) &&
-                        transactionFilter.types.contains(it.type) &&
+                    (transactionFilter.to.isEmpty() || it.filterDateTimeFormat.toDate().time <= transactionFilter.to.toDate().time) &&
+                    transactionFilter.types.contains(it.type) &&
                     (tokenList.contains(it.tokenSymbol.toLowerCase(Locale.getDefault())) ||
                         tokenList.contains(it.tokenSource.toLowerCase(Locale.getDefault()))
                         || tokenList.contains(it.tokenDest.toLowerCase(Locale.getDefault()))
