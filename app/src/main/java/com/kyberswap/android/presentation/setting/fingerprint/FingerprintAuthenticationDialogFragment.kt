@@ -67,7 +67,7 @@ class FingerprintAuthenticationDialogFragment : DialogFragment(),
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onResume() {
         super.onResume()
-        if (::fingerprintUiHelper.isInitialized) {
+        if (::fingerprintUiHelper.isInitialized && ::cryptoObject.isInitialized) {
             fingerprintUiHelper.startListening(cryptoObject)
         }
     }
