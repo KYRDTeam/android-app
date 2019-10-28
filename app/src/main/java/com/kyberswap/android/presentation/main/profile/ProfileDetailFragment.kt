@@ -316,6 +316,11 @@ class ProfileDetailFragment : BaseFragment() {
         binding.tvPDPAUpdate.visibility = if (isFromSingapore) View.VISIBLE else View.GONE
     }
 
+    override fun onDestroyView() {
+        viewModel.cancelPolling()
+        super.onDestroyView()
+    }
+
     private fun navigateToKyc() {
         binding.user?.let {
             if (it.isKycReject) {

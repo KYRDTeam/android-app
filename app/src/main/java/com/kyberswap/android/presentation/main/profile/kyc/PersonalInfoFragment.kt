@@ -4,7 +4,6 @@ package com.kyberswap.android.presentation.main.profile.kyc
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,8 +12,10 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.google.gson.Gson
 import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.jakewharton.rxbinding3.widget.textChanges
@@ -40,7 +41,6 @@ import pl.aprilapps.easyphotopicker.DefaultCallback
 import pl.aprilapps.easyphotopicker.EasyImage
 import pl.aprilapps.easyphotopicker.MediaFile
 import pl.aprilapps.easyphotopicker.MediaSource
-import timber.log.Timber
 import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
@@ -106,6 +106,8 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
         resources.getStringArray(R.array.proof_address_key)
     }
 
+    private var currentByteArray: ByteArray? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -164,7 +166,6 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
             industrialCodes.putAll(kycOccupationCode.data)
         }
 
-        Timber.e("onActivityCreated")
         viewModel.fetchUserInfo()
 
         viewModel.getUserInfoCallback.observe(viewLifecycleOwner, Observer { event ->
@@ -234,7 +235,9 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
                                 }
                             }
 
-                            this.stringImage?.let { it1 -> displayImage(it1) }
+                            this.stringImage?.let { it1 ->
+                                displayImage(it1)
+                            }
                         }
                     }
                     is UserInfoState.ShowError -> {
@@ -665,6 +668,7 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
     override fun onDestroyView() {
         viewModel.compositeDisposable.clear()
         viewModel.onCleared()
+        currentByteArray = null
         super.onDestroyView()
     }
 
@@ -801,6 +805,10 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
     }
 
     private fun glideDisplayImage(byteArray: ByteArray) {
+        if (currentByteArray?.contentEquals(byteArray) == true) {
+            return
+        }
+        currentByteArray = byteArray
 //        Glide.with(binding.imgAddress)
 //            .asBitmap()
 //            .load(
@@ -820,47 +828,50 @@ class PersonalInfoFragment : BaseFragment(), DatePickerDialog.OnDateSetListener 
 //                    // clear it here as you can no longer have the bitmap
 //                }
 //            })
-        Glide.with(binding.imgAddress)
-            .asBitmap()
-            .load(byteArray)
-            .into(object : CustomTarget<Bitmap>() {
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    binding.progressBar.visibility = View.GONE
-                    binding.imgAddress.setImageBitmap(resource)
-                }
-
-                override fun onLoadCleared(placeholder: Drawable?) {
-                    binding.progressBar.visibility = View.GONE
-                    // this is called when imageView is cleared on lifecycle call or for
-                    // some other reason.
-                    // if you are referencing the bitmap somewhere else too other than this imageView
-                    // clear it here as you can no longer have the bitmap
-                }
-            })
-//            .addListener(object : RequestListener<Drawable> {
-//                override fun onLoadFailed(
-//                    e: GlideException?,
-//                    model: Any?,
-//                    target: Target<Drawable>?,
-//                    isFirstResource: Boolean
-//                ): Boolean {
+//        Glide.with(binding.imgAddress)
+//            .asBitmap()
+//            .load(byteArray)
+//            .into(object : CustomTarget<Bitmap>() {
+//                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
 //                    binding.progressBar.visibility = View.GONE
-//                    return false
+//                    binding.imgAddress.setImageBitmap(resource)
 //                }
 //
-//                override fun onResourceReady(
-//                    resource: Drawable?,
-//                    model: Any?,
-//                    target: Target<Drawable>?,
-//                    dataSource: DataSource?,
-//                    isFirstResource: Boolean
-//                ): Boolean {
+//                override fun onLoadCleared(placeholder: Drawable?) {
 //                    binding.progressBar.visibility = View.GONE
-//                    return false
+//                    // this is called when imageView is cleared on lifecycle call or for
+//                    // some other reason.
+//                    // if you are referencing the bitmap somewhere else too other than this imageView
+//                    // clear it here as you can no longer have the bitmap
 //                }
 //            })
 
-//            .into(binding.imgAddress)
+        Glide.with(binding.imgAddress)
+            .load(byteArray)
+            .addListener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    binding.progressBar.visibility = View.GONE
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    binding.progressBar.visibility = View.GONE
+                    return false
+                }
+            })
+
+            .into(binding.imgAddress)
     }
 
     companion object {
