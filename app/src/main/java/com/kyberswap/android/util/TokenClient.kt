@@ -153,15 +153,15 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
 
     @Throws(Exception::class)
     fun updateBalances(
-        walletAddress: String,
         contractAddress: String,
         tokens: List<Token>
     ): List<Token> {
 
         try {
+
             val ethPosition = tokens.indexOfFirst { it.isETH }
             val ethToken = tokens[ethPosition]
-
+            val walletAddress = ethToken.selectedWalletAddress
             val erc20Tokens = tokens.toMutableList()
             erc20Tokens.remove(ethToken)
 

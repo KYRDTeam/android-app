@@ -139,7 +139,6 @@ class BalanceDataRepository @Inject constructor(
     override fun getTokenBalances(param: GetTokensBalanceUseCase.Param): Completable {
         return Completable.fromCallable {
             val updatedTokens = tokenClient.updateBalances(
-                param.wallet.address,
                 context.getString(R.string.wrapper_contract_address),
                 param.tokens
             )

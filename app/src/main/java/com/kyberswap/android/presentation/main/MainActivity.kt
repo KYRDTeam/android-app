@@ -238,7 +238,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                                             state.wallets,
                                             it
                                         )
-                                    }, 2000
+                                    }, 250
 
                                 )
 
