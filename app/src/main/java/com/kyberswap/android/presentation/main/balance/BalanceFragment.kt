@@ -429,6 +429,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
             setCurrencyDisplay(wallet?.unit == eth)
             displayWalletBalance(it.hideBlance)
+            handleEmptyList()
         }
     }
 
