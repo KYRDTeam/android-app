@@ -29,6 +29,7 @@ import com.kyberswap.android.domain.model.KycInfo
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.tbruyelle.rxpermissions2.RxPermissions
@@ -621,9 +622,11 @@ class PassportFragment : BaseFragment(), DatePickerDialog.OnDateSetListener {
     }
 
     fun onBackPress() {
-        val fm = currentFragment.childFragmentManager
-        for (i in 0 until fm.backStackEntryCount) {
-            fm.popBackStack()
+        val fm = (activity as MainActivity).getCurrentFragment()?.childFragmentManager
+        if (fm != null) {
+            for (i in 0 until fm.backStackEntryCount) {
+                fm.popBackStack()
+            }
         }
         navigator.navigateToPersonalInfo(currentFragment)
     }

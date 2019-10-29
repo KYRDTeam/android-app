@@ -99,12 +99,28 @@ object ImageViewBindingAdapter {
 
             if (resourceIcon == 0) {
                 resourceIcon = R.drawable.token_default
+                Glide.with(view)
+                    .load(stringUrl)
+                    .apply(
+                        RequestOptions().override(
+                            32.dpToPx(view.context),
+                            32.dpToPx(view.context)
+                        )
+                    )
+                    .placeholder(resourceIcon)
+                    .error(resourceIcon).into(view)
+            } else {
+                Glide.with(view)
+                    .load(resourceIcon)
+                    .apply(
+                        RequestOptions().override(
+                            32.dpToPx(view.context),
+                            32.dpToPx(view.context)
+                        )
+                    )
+                    .placeholder(resourceIcon)
+                    .error(resourceIcon).into(view)
             }
-            Glide.with(view)
-                .load(stringUrl)
-                .apply(RequestOptions().override(32.dpToPx(view.context), 32.dpToPx(view.context)))
-                .placeholder(resourceIcon)
-                .error(resourceIcon).into(view)
         } catch (exception: Exception) {
             exception.printStackTrace()
         }

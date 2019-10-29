@@ -218,7 +218,7 @@ class BalanceDataRepository @Inject constructor(
     }
 
 
-    private fun updateBalance(
+    private fun updateTokenRate(
         remoteTokens: List<Token>,
         wallets: List<Wallet>
     ): List<Token> {
@@ -267,16 +267,16 @@ class BalanceDataRepository @Inject constructor(
             tokenDao.updateTokens(otherTokens.map {
                 it.copy(fav = currentFavs[it.tokenSymbol] ?: false)
             })
-            listedTokens
+            listedTokens.union(otherTokens).toList()
         } else {
-            updateBalance(remoteTokens, currentWallets)
+            updateTokenRate(remoteTokens, currentWallets)
         }
     }
 
     override fun getChange24hPolling(param: GetBalancePollingUseCase.Param): Flowable<List<Token>> {
         return fetchChange24h()
             .map { remoteTokens ->
-                updateBalance(remoteTokens, param.wallets)
+                updateTokenRate(remoteTokens, param.wallets)
             }
             .repeatWhen {
                 it.delay(15, TimeUnit.SECONDS)

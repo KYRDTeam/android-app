@@ -204,8 +204,11 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         binding.vpNavigation.post {
             listener?.onPageSelected(initial)
         }
-        bottomNavigation.currentItem = initial
-        binding.vpNavigation.currentItem = initial
+
+        if (initial != MainPagerAdapter.BALANCE) {
+            bottomNavigation.currentItem = initial
+            binding.vpNavigation.currentItem = initial
+        }
 
         binding.navView.rvWallet.layoutManager = LinearLayoutManager(
             this,
