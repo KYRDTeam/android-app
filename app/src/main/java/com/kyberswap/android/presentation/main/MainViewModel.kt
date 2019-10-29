@@ -8,6 +8,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.balance.UpdateBalanceUseCase
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
+import com.kyberswap.android.domain.usecase.token.GetOtherTokenBalancesUseCase
 import com.kyberswap.android.domain.usecase.token.GetTokensBalanceUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetPendingTransactionsUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionsPeriodicallyUseCase
@@ -38,6 +39,7 @@ class MainViewModel @Inject constructor(
     private val getLoginStatusUseCase: GetLoginStatusUseCase,
     private val getBalancePollingUseCase: GetBalancePollingUseCase,
     private val getTokenBalanceUseCase: GetTokensBalanceUseCase,
+    private val getOtherTokenBalancesUseCase: GetOtherTokenBalancesUseCase,
     private val getTransactionsPeriodicallyUseCase: GetTransactionsPeriodicallyUseCase,
     private val updateBalanceUseCase: UpdateBalanceUseCase,
     private val errorHandler: ErrorHandler
@@ -107,6 +109,11 @@ class MainViewModel @Inject constructor(
     }
 
     fun pollingTokenBalance(wallets: List<Wallet>, selectedWallet: Wallet) {
+        monitorListedTokenBalance(wallets, selectedWallet)
+        monitorOtherTokenBalance()
+    }
+
+    private fun monitorListedTokenBalance(wallets: List<Wallet>, selectedWallet: Wallet) {
         getBalancePollingUseCase.dispose()
         getBalancePollingUseCase.execute(
             Consumer {
@@ -117,6 +124,19 @@ class MainViewModel @Inject constructor(
             },
             GetBalancePollingUseCase.Param(wallets)
         )
+    }
+
+    private fun monitorOtherTokenBalance() {
+        getOtherTokenBalancesUseCase.dispose()
+        getOtherTokenBalancesUseCase.execute(
+            Consumer {
+
+            },
+            Consumer {
+                it.printStackTrace()
+                Timber.e(it.localizedMessage)
+            }
+            , null)
     }
 
     fun getTransactionPeriodically(wallet: Wallet) {
@@ -207,28 +227,6 @@ class MainViewModel @Inject constructor(
             },
             GetTokensBalanceUseCase.Param(pair.first, pair.second)
         )
-//        numberOfToken = 0
-//        pair.second.forEach { token ->
-//            getTokenBalanceUseCase.execute(
-//                Action {
-//                    numberOfToken++
-//                    if (numberOfToken == pair.second.size) {
-//                        _switchWalletCompleteCallback.value =
-//                            Event(UpdateWalletState.Success(pair.first, isWalletChangedEvent))
-//                        updateBalance(pair.first)
-//                    }
-//                },
-//                Consumer {
-//                    numberOfToken++
-//                    if (numberOfToken == pair.second.size) {
-//                        _switchWalletCompleteCallback.value =
-//                            Event(UpdateWalletState.Success(pair.first, isWalletChangedEvent))
-//                        updateBalance(pair.first)
-//                    }
-//                },
-//                token
-//            )
-//        }
     }
 
     private fun updateBalance(wallet: Wallet) {

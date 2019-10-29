@@ -136,6 +136,25 @@ class BalanceDataRepository @Inject constructor(
         }
     }
 
+    override fun getOtherTokenBalances(): Flowable<List<Token>> {
+        return tokenDao.others.map {
+            val otherList = it.map { token ->
+                val updatedToken = tokenClient.updateBalance(token)
+                if (token.currentBalance != updatedToken.currentBalance) {
+                    updatedToken
+                } else {
+                    token
+                }
+            }
+            tokenDao.updateTokens(otherList)
+            otherList
+        }.repeatWhen {
+            it.delay(30, TimeUnit.SECONDS)
+        }.retryWhen { throwable ->
+            throwable.compose(zipWithFlatMap())
+        }
+    }
+
     override fun getTokenBalances(param: GetTokensBalanceUseCase.Param): Completable {
         return Completable.fromCallable {
             val updatedTokens = tokenClient.updateBalances(
@@ -143,7 +162,6 @@ class BalanceDataRepository @Inject constructor(
                 param.tokens
             )
             tokenDao.updateTokens(updatedTokens)
-
         }
     }
 
@@ -267,7 +285,7 @@ class BalanceDataRepository @Inject constructor(
             tokenDao.updateTokens(otherTokens.map {
                 it.copy(fav = currentFavs[it.tokenSymbol] ?: false)
             })
-            listedTokens.union(otherTokens).toList()
+            listedTokens
         } else {
             updateTokenRate(remoteTokens, currentWallets)
         }

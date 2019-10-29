@@ -13,6 +13,7 @@ interface BalanceRepository {
     fun getChange24hPolling(param: GetBalancePollingUseCase.Param): Flowable<List<Token>>
     fun getChange24h(): Flowable<List<Token>>
     fun getTokenBalance(token: Token): Completable
+    fun getOtherTokenBalances(): Flowable<List<Token>>
     fun getTokenBalances(param: GetTokensBalanceUseCase.Param): Completable
     fun getBalance(param: PrepareBalanceUseCase.Param = PrepareBalanceUseCase.Param()): Single<List<Token>>
     fun updateBalance(param: UpdateBalanceUseCase.Param): Completable
