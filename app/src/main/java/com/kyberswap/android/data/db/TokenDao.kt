@@ -42,6 +42,9 @@ interface TokenDao {
     @get:Query("SELECT * FROM tokens where isOther = 1 ")
     val others: Flowable<List<Token>>
 
+    @get:Query("SELECT * FROM tokens where isOther = 1 ")
+    val otherTokens: List<Token>
+
     @get:Query("SELECT * FROM tokens")
     val allTokens: List<Token>
 }

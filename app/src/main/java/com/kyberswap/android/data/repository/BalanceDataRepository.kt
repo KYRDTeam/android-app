@@ -15,6 +15,8 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.BalanceRepository
 import com.kyberswap.android.domain.usecase.balance.UpdateBalanceUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
+import com.kyberswap.android.domain.usecase.token.GetOtherBalancePollingUseCase
+import com.kyberswap.android.domain.usecase.token.GetOtherTokenBalancesUseCase
 import com.kyberswap.android.domain.usecase.token.GetTokensBalanceUseCase
 import com.kyberswap.android.domain.usecase.token.PrepareBalanceUseCase
 import com.kyberswap.android.util.TokenClient
@@ -136,9 +138,9 @@ class BalanceDataRepository @Inject constructor(
         }
     }
 
-    override fun getOtherTokenBalances(): Flowable<List<Token>> {
-        return tokenDao.others.map {
-            val otherList = it.map { token ->
+    override fun getOtherTokenBalances(param: GetOtherTokenBalancesUseCase.Param): Completable {
+        return Completable.fromCallable {
+            val otherList = param.otherTokens.map { token ->
                 val updatedToken = tokenClient.updateBalance(token)
                 if (token.currentBalance != updatedToken.currentBalance) {
                     updatedToken
@@ -147,11 +149,6 @@ class BalanceDataRepository @Inject constructor(
                 }
             }
             tokenDao.updateTokens(otherList)
-            otherList
-        }.repeatWhen {
-            it.delay(30, TimeUnit.SECONDS)
-        }.retryWhen { throwable ->
-            throwable.compose(zipWithFlatMap())
         }
     }
 
@@ -302,6 +299,16 @@ class BalanceDataRepository @Inject constructor(
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
             }
+    }
+
+    override fun getOthersBalancePolling(param: GetOtherBalancePollingUseCase.Param): Flowable<List<Token>> {
+        return Single.fromCallable {
+            tokenDao.otherTokens
+        }.repeatWhen {
+            it.delay(30, TimeUnit.SECONDS)
+        }.retryWhen { throwable ->
+            throwable.compose(zipWithFlatMap())
+        }
     }
 
 

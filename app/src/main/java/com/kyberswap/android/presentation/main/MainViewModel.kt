@@ -8,6 +8,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.balance.UpdateBalanceUseCase
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
+import com.kyberswap.android.domain.usecase.token.GetOtherBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.GetOtherTokenBalancesUseCase
 import com.kyberswap.android.domain.usecase.token.GetTokensBalanceUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetPendingTransactionsUseCase
@@ -38,6 +39,7 @@ class MainViewModel @Inject constructor(
     private val updateSelectedWalletUseCase: UpdateSelectedWalletUseCase,
     private val getLoginStatusUseCase: GetLoginStatusUseCase,
     private val getBalancePollingUseCase: GetBalancePollingUseCase,
+    private val getOtherBalancePollingUseCase: GetOtherBalancePollingUseCase,
     private val getTokenBalanceUseCase: GetTokensBalanceUseCase,
     private val getOtherTokenBalancesUseCase: GetOtherTokenBalancesUseCase,
     private val getTransactionsPeriodicallyUseCase: GetTransactionsPeriodicallyUseCase,
@@ -109,6 +111,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun pollingTokenBalance(wallets: List<Wallet>, selectedWallet: Wallet) {
+        Timber.e("pollingTokenBalance")
         monitorListedTokenBalance(wallets, selectedWallet)
         monitorOtherTokenBalance()
     }
@@ -127,16 +130,33 @@ class MainViewModel @Inject constructor(
     }
 
     private fun monitorOtherTokenBalance() {
+        Timber.e("monitorOtherTokenBalance")
+
+        getOtherBalancePollingUseCase.dispose()
+        getOtherBalancePollingUseCase.execute(
+            Consumer {
+                loadOtherBalances(it)
+            },
+            Consumer {
+                it.printStackTrace()
+                Timber.e(it.localizedMessage)
+            },
+            GetOtherBalancePollingUseCase.Param()
+
+        )
+    }
+
+    private fun loadOtherBalances(others: List<Token>) {
         getOtherTokenBalancesUseCase.dispose()
         getOtherTokenBalancesUseCase.execute(
-            Consumer {
+            Action {
 
             },
             Consumer {
                 it.printStackTrace()
                 Timber.e(it.localizedMessage)
             }
-            , null)
+            , GetOtherTokenBalancesUseCase.Param(others))
     }
 
     fun getTransactionPeriodically(wallet: Wallet) {
@@ -247,6 +267,7 @@ class MainViewModel @Inject constructor(
         updateSelectedWalletUseCase.execute(
             Consumer { wl ->
                 loadBalances(wl, true)
+                monitorOtherTokenBalance()
 
             },
             Consumer {

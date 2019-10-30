@@ -9,6 +9,8 @@
         <variable
             name="token"
             type="com.kyberswap.android.domain.model.Token" />
+
+        <import type="android.view.View" />
     </data>
 
     <FrameLayout
@@ -122,6 +124,7 @@
                     android:text="@{token.displayCurrentBalanceInEth}"
                     android:textColor="#838894"
                     android:textSize="14sp"
+                    android:visibility="@{token.other ? View.GONE : View.VISIBLE}"
                     app:layout_constraintBaseline_toBaselineOf="@+id/tvTokenName"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
@@ -137,6 +140,7 @@
                     android:text="@{token.displayCurrentBalanceInUSD}"
                     android:textColor="#838894"
                     android:textSize="14sp"
+                    android:visibility="@{token.other ? View.GONE : View.VISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvTokenBalanceEth" />
 
@@ -150,6 +154,7 @@
                     android:text="@{token.displayRateEthNow + ` ETH`}"
                     android:textColor="#2e3957"
                     android:textSize="24sp"
+                    android:visibility="@{token.other ? View.GONE : View.VISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
@@ -169,6 +174,7 @@
                     android:paddingEnd="8dp"
                     android:textColor="#ffffff"
                     android:textSize="12sp"
+                    android:visibility="@{token.other ? View.GONE : View.VISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
@@ -209,46 +215,45 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:paddingStart="4dp"
-                    android:paddingEnd="4dp"
-                    android:layout_marginTop="28dp"
                     android:background="@drawable/rounded_corner_buy_sell_send_background"
                     android:gravity="center"
                     android:minWidth="110dp"
                     android:minHeight="45dp"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
                     android:text="@string/buy"
                     android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#5a5e67"
                     android:textSize="16sp"
+                    android:visibility="@{token.other ? View.GONE : View.VISIBLE}"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/tvSell"
                     app:layout_constraintEnd_toStartOf="@+id/tvSell"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintHorizontal_chainStyle="spread"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/vpChart" />
+                    app:layout_constraintStart_toStartOf="parent" />
 
                 <TextView
-                    android:paddingStart="4dp"
-                    android:paddingEnd="4dp"
                     android:id="@+id/tvSend"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="28dp"
                     android:layout_marginEnd="16dp"
                     android:background="@drawable/rounded_corner_buy_sell_send_background"
                     android:gravity="center"
                     android:minWidth="110dp"
                     android:minHeight="45dp"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
                     android:text="@string/send"
                     android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#5a5e67"
                     android:textSize="16sp"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/tvSell"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/tvSell" />
+                    app:layout_constraintStart_toEndOf="@+id/tvSell"
+                    app:layout_constraintTop_toBottomOf="@+id/vpChart" />
 
                 <TextView
-                    android:paddingStart="4dp"
-                    android:paddingEnd="4dp"
                     android:id="@+id/tvSell"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -258,11 +263,14 @@
                     android:gravity="center"
                     android:minWidth="110dp"
                     android:minHeight="45dp"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
                     android:text="@string/sell"
                     android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="#5a5e67"
                     android:textSize="16sp"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/tvBuy"
+                    android:visibility="@{token.other ? View.GONE : View.VISIBLE}"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/tvSend"
                     app:layout_constraintEnd_toStartOf="@+id/tvSend"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/tvBuy" />
