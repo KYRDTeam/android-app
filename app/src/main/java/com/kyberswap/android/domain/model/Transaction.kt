@@ -225,14 +225,14 @@ data class Transaction(
 
     val displaySource: String
         get() = StringBuilder()
-            .append(sourceAmount)
+            .append(sourceAmount.toBigDecimalOrDefaultZero().toDisplayNumber())
             .append(" ")
             .append(tokenSource)
             .toString()
 
     val displayDest: String
         get() = StringBuilder()
-            .append(destAmount)
+            .append(destAmount.toBigDecimalOrDefaultZero().toDisplayNumber())
             .append(" ")
             .append(tokenDest)
             .toString()

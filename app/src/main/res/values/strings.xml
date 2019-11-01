@@ -594,6 +594,7 @@
     <string name="pin_confirm_unmatch">Your PIN and confirm PIN do not match</string>
     <string name="cant_get_data_from_file">Can not get data from your file.</string>
     <string name="no_matching_tokens">No matching tokens</string>
+    <string name="unsupported_token">This token is not supported by Kyber Network</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>

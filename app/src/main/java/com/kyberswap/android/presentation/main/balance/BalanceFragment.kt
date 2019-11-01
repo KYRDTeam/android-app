@@ -429,6 +429,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
             setCurrencyDisplay(wallet?.unit == eth)
             displayWalletBalance(it.hideBlance)
+            handleEmptyList()
         }
     }
 
@@ -441,10 +442,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     private fun handleEmptyList() {
-        handler.post {
+        handler.postDelayed({
             binding.tvEmpty.visibility =
                 if (tokenAdapter?.itemCount == 0) View.VISIBLE else View.GONE
-        }
+        }, 250)
     }
 
     private fun displayWalletBalance(isHide: Boolean) {

@@ -35,6 +35,16 @@ open class ImportWalletViewModel @Inject constructor(
                 token
             )
         }
+//        getTokenBalanceUseCase.execute(
+//            Action {
+//                importWalletCallback.value = ImportWalletState.Success(pair.first)
+//            },
+//            Consumer {
+//                it.printStackTrace()
+//                importWalletCallback.value = ImportWalletState.Success(pair.first)
+//            },
+//            GetTokensBalanceUseCase.Param(pair.first, pair.second)
+//        )
     }
 
     override fun onCleared() {

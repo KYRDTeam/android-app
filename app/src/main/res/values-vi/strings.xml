@@ -608,5 +608,6 @@
     <string name="pin_confirm_unmatch">Mã PIN và xác nhận mã PIN không khớp</string>
     <string name="cant_get_data_from_file">Không thể lấy dữ liệu từ tệp.</string>
     <string name="no_matching_tokens">Không có kết quả</string>
+    <string name="unsupported_token">Token này không được hỗ trợ bởi Kyber Network</string>
 
 </resources>

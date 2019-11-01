@@ -62,6 +62,7 @@ class ProfileDetailViewModel @Inject constructor(
 
     fun getLoginStatus() {
         getLoginStatusUseCase.dispose()
+        pollingUserInfoUseCase.dispose()
         getLoginStatusUseCase.execute(
             Consumer {
                 pollingKycProfile()
@@ -96,6 +97,7 @@ class ProfileDetailViewModel @Inject constructor(
         refreshKycStatusUseCase.execute(
             Consumer {
                 _refreshKycStatus.value = Event(UserInfoState.Success(it))
+                pollingUserInfoUseCase.dispose()
             },
             Consumer {
                 it.printStackTrace()
@@ -177,6 +179,9 @@ class ProfileDetailViewModel @Inject constructor(
         deleteAlertsUseCase.dispose()
         getLoginStatusUseCase.dispose()
         pollingUserInfoUseCase.dispose()
+        updatePushTokenUseCase.dispose()
+        reSubmitUserInfoUseCase.dispose()
+        refreshKycStatusUseCase.dispose()
         super.onCleared()
     }
 
@@ -194,5 +199,10 @@ class ProfileDetailViewModel @Inject constructor(
                 token
             )
         )
+    }
+
+    fun cancelPolling() {
+        getLoginStatusUseCase.dispose()
+        pollingUserInfoUseCase.dispose()
     }
 }

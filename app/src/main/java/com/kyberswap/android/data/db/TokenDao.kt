@@ -1,6 +1,11 @@
 package com.kyberswap.android.data.db
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
 import com.kyberswap.android.domain.model.Token
 import io.reactivex.Flowable
 
@@ -12,6 +17,9 @@ interface TokenDao {
 
     @Query("SELECT * FROM tokens WHERE tokenSymbol = :tokenSymbol")
     fun getTokenBySymbol(tokenSymbol: String): Token?
+
+    @Query("SELECT * FROM tokens WHERE tokenAddress = :tokenAddress")
+    fun getTokenByAddress(tokenAddress: String): Token?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertToken(token: Token)
@@ -34,8 +42,13 @@ interface TokenDao {
     @get:Query("SELECT * FROM tokens")
     val all: Flowable<List<Token>>
 
+    @get:Query("SELECT * FROM tokens where isOther = 1 ")
+    val others: Flowable<List<Token>>
+
+    @get:Query("SELECT * FROM tokens where isOther = 1 ")
+    val otherTokens: List<Token>
+
     @get:Query("SELECT * FROM tokens")
     val allTokens: List<Token>
-
 }
 

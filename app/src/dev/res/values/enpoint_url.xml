@@ -14,4 +14,5 @@
     <string name="kyber_code_api_key" translatable="false">9872342987234234b</string>
     <string name="promo_source_token" translatable="false">OMG</string>
     <string name="chart_endpoint_url" formatted="false" translatable="false">https://dev-api.knstats.com/</string>
+    <string name="wrapper_contract_address" translatable="false">0x665d34f192f4940da4e859ff7768c0a80ed3ae10</string>
 </resources>
