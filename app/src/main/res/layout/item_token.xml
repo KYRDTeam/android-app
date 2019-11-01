@@ -35,7 +35,8 @@
                 android:background="#31cb9e"
                 android:gravity="center"
                 android:minWidth="72dp"
-                android:padding="4dp"
+                android:padding="8dp"
+                android:visibility="@{token.other ? View.GONE : View.VISIBLE}"
                 android:text="@string/buy"
                 android:textColor="#ffffff"
                 android:textSize="16sp" />
@@ -47,8 +48,9 @@
                 android:layout_height="match_parent"
                 android:background="#1e89c1"
                 android:gravity="center"
+                android:padding="8dp"
                 android:minWidth="72dp"
-                android:padding="4dp"
+                android:visibility="@{token.other ? View.GONE : View.VISIBLE}"
                 android:text="@string/sell"
                 android:textColor="#ffffff"
                 android:textSize="16sp" />
@@ -61,7 +63,7 @@
                 android:background="#edab2f"
                 android:gravity="center"
                 android:minWidth="72dp"
-                android:padding="4dp"
+                android:padding="8dp"
                 android:text="@string/send"
                 android:textColor="#ffffff"
                 android:textSize="16sp" />

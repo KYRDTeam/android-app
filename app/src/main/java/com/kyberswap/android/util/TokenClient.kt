@@ -90,7 +90,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     private fun callSmartContractFunction(
         function: Function,
         contractAddress: String,
-        fromAddress: String
+        fromAddress: String?
     ): String {
         val encodedFunction = FunctionEncoder.encode(function)
         val response = web3j.ethCall(
@@ -98,7 +98,6 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             DefaultBlockParameterName.LATEST
         )
             .send()
-
         return response.value
     }
 
@@ -106,11 +105,12 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     fun updateBalance(walletAddress: String?, tokenAddress: String?): BigDecimal? {
         if (walletAddress == null || tokenAddress == null) return BigDecimal.ZERO
         val function = balanceOf(walletAddress)
-        val responseValue = callSmartContractFunction(function, tokenAddress, walletAddress)
+        val responseValue = callSmartContractFunction(function, tokenAddress, null)
 
         val response = FunctionReturnDecoder.decode(
             responseValue, function.outputParameters
         )
+
         return if (response.size == 1) {
             BigDecimal((response[0] as Uint256).value)
         } else {

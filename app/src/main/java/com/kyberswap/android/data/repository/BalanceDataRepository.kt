@@ -25,6 +25,7 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
+import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -140,15 +141,21 @@ class BalanceDataRepository @Inject constructor(
 
     override fun getOtherTokenBalances(param: GetOtherTokenBalancesUseCase.Param): Completable {
         return Completable.fromCallable {
-            val otherList = param.otherTokens.map { token ->
-                val updatedToken = tokenClient.updateBalance(token)
-                if (token.currentBalance != updatedToken.currentBalance) {
-                    updatedToken
-                } else {
-                    token
+            try {
+                val otherList = param.otherTokens.map { token ->
+                    val updatedToken = tokenClient.updateBalance(token)
+                    if (token.currentBalance != updatedToken.currentBalance) {
+                        tokenDao.updateToken(updatedToken)
+                        updatedToken
+                    } else {
+                        token
+                    }
                 }
+                tokenDao.updateTokens(otherList)
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                Timber.e(ex.localizedMessage)
             }
-            tokenDao.updateTokens(otherList)
         }
     }
 
@@ -256,14 +263,13 @@ class BalanceDataRepository @Inject constructor(
                 tokenSymbol = remoteToken.tokenSymbol,
                 isOther = false
             ) ?: remoteToken
-
             updatedRateToken
 //            tokenClient.updateBalance(updatedRateToken)
         }
 
-        val listTokenSymbols = listedTokens.map { it.tokenSymbol }
+        val listTokenAddress = listedTokens.map { it.tokenAddress }
 
-        val otherTokens = localTokens.filterNot { listTokenSymbols.contains(it.tokenSymbol) }
+        val otherTokens = localTokens.filterNot { listTokenAddress.contains(it.tokenAddress) }
 //            .map {
 //            tokenClient.updateBalance(it)
 //        }
@@ -302,10 +308,10 @@ class BalanceDataRepository @Inject constructor(
     }
 
     override fun getOthersBalancePolling(param: GetOtherBalancePollingUseCase.Param): Flowable<List<Token>> {
-        return Single.fromCallable {
+        return Flowable.fromCallable {
             tokenDao.otherTokens
         }.repeatWhen {
-            it.delay(30, TimeUnit.SECONDS)
+            it.delay(60, TimeUnit.SECONDS)
         }.retryWhen { throwable ->
             throwable.compose(zipWithFlatMap())
         }

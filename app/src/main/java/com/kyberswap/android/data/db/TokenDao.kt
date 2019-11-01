@@ -18,6 +18,9 @@ interface TokenDao {
     @Query("SELECT * FROM tokens WHERE tokenSymbol = :tokenSymbol")
     fun getTokenBySymbol(tokenSymbol: String): Token?
 
+    @Query("SELECT * FROM tokens WHERE tokenAddress = :tokenAddress")
+    fun getTokenByAddress(tokenAddress: String): Token?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertToken(token: Token)
 

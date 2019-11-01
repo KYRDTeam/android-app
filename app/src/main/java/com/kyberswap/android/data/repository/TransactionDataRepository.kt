@@ -270,7 +270,8 @@ class TransactionDataRepository @Inject constructor(
                 }.map { tx ->
                     Token(tx).copy(isOther = true).updateSelectedWallet(wallet)
                 }.filter {
-                    it.tokenName.isNotEmpty()
+                    val localToken = tokenDao.getTokenByAddress(it.tokenAddress)
+                    it.tokenName.isNotEmpty() && localToken == null
                 }
                 tokenDao.insertTokens(otherTokenList)
             }
