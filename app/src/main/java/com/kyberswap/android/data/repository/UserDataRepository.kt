@@ -12,7 +12,6 @@ import com.kyberswap.android.data.mapper.UserMapper
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.AlertMethodsResponse
-import com.kyberswap.android.domain.model.KycInfo
 import com.kyberswap.android.domain.model.KycResponseStatus
 import com.kyberswap.android.domain.model.LoginUser
 import com.kyberswap.android.domain.model.ResponseStatus
@@ -123,9 +122,17 @@ class UserDataRepository @Inject constructor(
         return userApi.getUserInfo().map {
             userMapper.transform(it)
         }.doAfterSuccess {
-            if (it.kycInfo == KycInfo()) {
-                userDao.updateUser(it)
-            }
+            //            val localInfo = userDao.getUser()?.kycInfo
+//            val remoteInfo = it.kycInfo
+//            val kycInfo = remoteInfo.copy(
+//                expiryDateNonApplicable = localInfo?.expiryDateNonApplicable
+//                    ?: remoteInfo.expiryDateNonApplicable,
+//                issueDateNonApplicable = localInfo?.issueDateNonApplicable
+//                    ?: remoteInfo.issueDateNonApplicable
+//            )
+//            userDao.updateUser(it.copy(kycInfo = kycInfo))
+
+            userDao.updateUser(it)
         }
     }
 

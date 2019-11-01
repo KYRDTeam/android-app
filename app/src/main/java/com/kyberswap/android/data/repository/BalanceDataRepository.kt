@@ -1,5 +1,7 @@
 package com.kyberswap.android.data.repository
 
+import android.content.Context
+import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.CurrencyApi
 import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.db.LocalLimitOrderDao
@@ -13,6 +15,9 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.BalanceRepository
 import com.kyberswap.android.domain.usecase.balance.UpdateBalanceUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
+import com.kyberswap.android.domain.usecase.token.GetOtherBalancePollingUseCase
+import com.kyberswap.android.domain.usecase.token.GetOtherTokenBalancesUseCase
+import com.kyberswap.android.domain.usecase.token.GetTokensBalanceUseCase
 import com.kyberswap.android.domain.usecase.token.PrepareBalanceUseCase
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.rx.operator.zipWithFlatMap
@@ -20,11 +25,13 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
+import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class BalanceDataRepository @Inject constructor(
+    private val context: Context,
     private val api: TokenApi,
     private val currencyApi: CurrencyApi,
     private val tokenMapper: TokenMapper,
@@ -36,6 +43,7 @@ class BalanceDataRepository @Inject constructor(
     private val localLimitOrderDao: LocalLimitOrderDao
 ) :
     BalanceRepository {
+
     override fun updateBalance(param: UpdateBalanceUseCase.Param): Completable {
         return Completable.fromCallable {
             val wallet = param.wallet
@@ -131,6 +139,36 @@ class BalanceDataRepository @Inject constructor(
         }
     }
 
+    override fun getOtherTokenBalances(param: GetOtherTokenBalancesUseCase.Param): Completable {
+        return Completable.fromCallable {
+            try {
+                val otherList = param.otherTokens.map { token ->
+                    val updatedToken = tokenClient.updateBalance(token)
+                    if (token.currentBalance != updatedToken.currentBalance) {
+                        tokenDao.updateToken(updatedToken)
+                        updatedToken
+                    } else {
+                        token
+                    }
+                }
+                tokenDao.updateTokens(otherList)
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                Timber.e(ex.localizedMessage)
+            }
+        }
+    }
+
+    override fun getTokenBalances(param: GetTokensBalanceUseCase.Param): Completable {
+        return Completable.fromCallable {
+            val updatedTokens = tokenClient.updateBalances(
+                context.getString(R.string.wrapper_contract_address),
+                param.tokens
+            )
+            tokenDao.updateTokens(updatedTokens)
+        }
+    }
+
     override fun getChange24h(): Flowable<List<Token>> {
         return tokenDao.all
     }
@@ -202,7 +240,7 @@ class BalanceDataRepository @Inject constructor(
     }
 
 
-    private fun updateBalance(
+    private fun updateTokenRate(
         remoteTokens: List<Token>,
         wallets: List<Wallet>
     ): List<Token> {
@@ -225,14 +263,13 @@ class BalanceDataRepository @Inject constructor(
                 tokenSymbol = remoteToken.tokenSymbol,
                 isOther = false
             ) ?: remoteToken
-
             updatedRateToken
 //            tokenClient.updateBalance(updatedRateToken)
         }
 
-        val listTokenSymbols = listedTokens.map { it.tokenSymbol }
+        val listTokenAddress = listedTokens.map { it.tokenAddress }
 
-        val otherTokens = localTokens.filterNot { listTokenSymbols.contains(it.tokenSymbol) }
+        val otherTokens = localTokens.filterNot { listTokenAddress.contains(it.tokenAddress) }
 //            .map {
 //            tokenClient.updateBalance(it)
 //        }
@@ -253,14 +290,14 @@ class BalanceDataRepository @Inject constructor(
             })
             listedTokens
         } else {
-            updateBalance(remoteTokens, currentWallets)
+            updateTokenRate(remoteTokens, currentWallets)
         }
     }
 
     override fun getChange24hPolling(param: GetBalancePollingUseCase.Param): Flowable<List<Token>> {
         return fetchChange24h()
             .map { remoteTokens ->
-                updateBalance(remoteTokens, param.wallets)
+                updateTokenRate(remoteTokens, param.wallets)
             }
             .repeatWhen {
                 it.delay(15, TimeUnit.SECONDS)
@@ -268,6 +305,16 @@ class BalanceDataRepository @Inject constructor(
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
             }
+    }
+
+    override fun getOthersBalancePolling(param: GetOtherBalancePollingUseCase.Param): Flowable<List<Token>> {
+        return Flowable.fromCallable {
+            tokenDao.otherTokens
+        }.repeatWhen {
+            it.delay(60, TimeUnit.SECONDS)
+        }.retryWhen { throwable ->
+            throwable.compose(zipWithFlatMap())
+        }
     }
 
 

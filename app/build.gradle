@@ -23,8 +23,8 @@ android {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         def versionMajor = 1
-        def versionMinor = 0
-        def versionPatch = 10
+        def versionMinor = 1
+        def versionPatch = 0
         versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch * 1
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         vectorDrawables.useSupportLibrary = true

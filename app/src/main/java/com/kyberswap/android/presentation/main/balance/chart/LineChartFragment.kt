@@ -133,13 +133,13 @@ class LineChartFragment : BaseFragment() {
     }
 
     private fun setData(chart: Chart, lineChart: LineChart) {
-        if (chart.c.isEmpty()) {
-            lineChart.setNoDataText(getString(R.string.chart_no_token_data))
-            return
-        }
         val chartEntries = mutableListOf<Entry>()
         if (chart.c.isEmpty()) {
-            lineChart.setNoDataText(getString(R.string.chart_no_token_data))
+            if (token?.isOther == true) {
+                lineChart.setNoDataText(getString(R.string.unsupported_token))
+            } else {
+                lineChart.setNoDataText(getString(R.string.chart_no_token_data))
+            }
             return
         }
 

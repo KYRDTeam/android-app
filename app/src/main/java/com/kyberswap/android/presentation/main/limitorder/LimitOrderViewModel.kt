@@ -2,6 +2,7 @@ package com.kyberswap.android.presentation.main.limitorder
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.domain.model.Cancelled
 import com.kyberswap.android.domain.model.LocalLimitOrder
 import com.kyberswap.android.domain.model.Order
@@ -67,6 +68,7 @@ class LimitOrderViewModel @Inject constructor(
     private val pendingBalancesUseCase: GetPendingBalancesUseCase,
     private val elegibleAddressUseCase: CheckEligibleAddressUseCase,
     getSelectedWalletUseCase: GetSelectedWalletUseCase,
+    private val storageMediator: StorageMediator,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
 
@@ -163,7 +165,7 @@ class LimitOrderViewModel @Inject constructor(
     }
 
     fun getPendingBalances(wallet: Wallet?) {
-        if (wallet == null) return
+        if (wallet == null || storageMediator.getAccessToken().isNullOrEmpty()) return
         pendingBalancesUseCase.dispose()
         pendingBalancesUseCase.execute(
             Consumer {
@@ -237,6 +239,7 @@ class LimitOrderViewModel @Inject constructor(
     }
 
     fun getNonce(order: LocalLimitOrder, wallet: Wallet) {
+        if (storageMediator.getAccessToken().isNullOrEmpty()) return
         getNonceUseCase.dispose()
         getNonceUseCase.execute(
             Consumer {
@@ -296,6 +299,7 @@ class LimitOrderViewModel @Inject constructor(
 
 
     fun getRelatedOrders(order: LocalLimitOrder, wallet: Wallet) {
+        if (storageMediator.getAccessToken().isNullOrEmpty()) return
         getRelatedLimitOrdersUseCase.dispose()
         _getRelatedOrderCallback.postValue(Event(GetRelatedOrdersState.Loading))
         getRelatedLimitOrdersUseCase.execute(

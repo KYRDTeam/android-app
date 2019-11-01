@@ -28,40 +28,42 @@
             android:layout_height="match_parent">
 
             <Button
-                android:padding="4dp"
                 android:id="@+id/btnBuy"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
-                android:minWidth="72dp"
                 android:layout_height="match_parent"
                 android:background="#31cb9e"
                 android:gravity="center"
+                android:minWidth="72dp"
+                android:padding="8dp"
+                android:visibility="@{token.other ? View.GONE : View.VISIBLE}"
                 android:text="@string/buy"
                 android:textColor="#ffffff"
                 android:textSize="16sp" />
 
             <Button
-                android:padding="4dp"
                 android:id="@+id/btnSell"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
-                android:minWidth="72dp"
                 android:layout_height="match_parent"
                 android:background="#1e89c1"
                 android:gravity="center"
+                android:padding="8dp"
+                android:minWidth="72dp"
+                android:visibility="@{token.other ? View.GONE : View.VISIBLE}"
                 android:text="@string/sell"
                 android:textColor="#ffffff"
                 android:textSize="16sp" />
 
             <Button
-                android:padding="4dp"
                 android:id="@+id/btnSend"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
-                android:minWidth="72dp"
                 android:layout_height="match_parent"
                 android:background="#edab2f"
                 android:gravity="center"
+                android:minWidth="72dp"
+                android:padding="8dp"
                 android:text="@string/send"
                 android:textColor="#ffffff"
                 android:textSize="16sp" />
@@ -94,6 +96,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginBottom="2dp"
+                android:ellipsize="end"
+                android:maxEms="8"
+                android:singleLine="true"
                 android:text="@{token.tokenSymbol}"
                 android:textAllCaps="true"
                 android:textColor="#1d303a"
@@ -139,8 +144,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:barrierDirection="end"
-                app:constraint_referenced_ids="textView123,tvNew"
-                tools:layout_editor_absoluteX="411dp" />
+                app:constraint_referenced_ids="textView123,tvNew" />
 
             <TextView
                 android:id="@+id/textView124"
@@ -165,11 +169,12 @@
             <FrameLayout
                 android:id="@+id/flState"
                 android:layout_width="11dp"
+                android:layout_height="11dp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView124"
                 app:layout_constraintEnd_toStartOf="@+id/tvChange24h"
                 app:layout_constraintStart_toEndOf="@+id/textView124"
-                app:layout_constraintTop_toTopOf="@+id/textView124"
-                android:layout_height="11dp">
+                app:layout_constraintTop_toTopOf="@+id/textView124">
+
                 <ImageView
                     android:id="@+id/imgState"
                     android:layout_width="11dp"

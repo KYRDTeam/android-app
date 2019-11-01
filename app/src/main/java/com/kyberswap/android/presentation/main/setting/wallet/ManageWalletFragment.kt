@@ -189,7 +189,9 @@ class ManageWalletFragment : BaseFragment() {
                         EventBus.getDefault().post(WalletChangeEvent(state.wallet.address))
                     }
                     is UpdateWalletState.ShowError -> {
-
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
+                        )
                     }
                 }
             }

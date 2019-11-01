@@ -195,6 +195,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
         val initial = if (limitOrder != null) {
             MainPagerAdapter.LIMIT_ORDER
+        } else if (alert != null) {
+            MainPagerAdapter.SWAP
         } else {
             MainPagerAdapter.BALANCE
         }
@@ -202,8 +204,11 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         binding.vpNavigation.post {
             listener?.onPageSelected(initial)
         }
-//        bottomNavigation.currentItem = initial
-//        binding.vpNavigation.currentItem = initial
+
+        if (initial != MainPagerAdapter.BALANCE) {
+            bottomNavigation.currentItem = initial
+            binding.vpNavigation.currentItem = initial
+        }
 
         binding.navView.rvWallet.layoutManager = LinearLayoutManager(
             this,
@@ -238,7 +243,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                                             state.wallets,
                                             it
                                         )
-                                    }, 2000
+                                    }, 250
 
                                 )
 
