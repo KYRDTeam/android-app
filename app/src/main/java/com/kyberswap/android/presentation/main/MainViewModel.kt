@@ -42,6 +42,7 @@ class MainViewModel @Inject constructor(
     private val getBalancePollingUseCase: GetBalancePollingUseCase,
     private val getOtherBalancePollingUseCase: GetOtherBalancePollingUseCase,
     private val getBatchTokenBalanceUseCase: GetTokensBalanceUseCase,
+    private val forceBatchTokenBalanceUseCase: GetTokensBalanceUseCase,
     private val getTokenBalanceUseCase: GetTokenBalanceUseCase,
     private val getOtherTokenBalancesUseCase: GetOtherTokenBalancesUseCase,
     private val getTransactionsPeriodicallyUseCase: GetTransactionsPeriodicallyUseCase,
@@ -242,17 +243,17 @@ class MainViewModel @Inject constructor(
     }
 
     private fun loadBalances(
-        pair: Pair<Wallet, List<Token>>,
-        isWalletChangedEvent: Boolean = false
+        pair: Pair<Wallet, List<Token>>
     ) {
         getBatchTokenBalanceUseCase.dispose()
         getBatchTokenBalanceUseCase.execute(
             Action {
-                _switchWalletCompleteCallback.value =
-                    Event(UpdateWalletState.Success(pair.first, isWalletChangedEvent))
+                //                _switchWalletCompleteCallback.value =
+//                    Event(UpdateWalletState.Success(pair.first, isWalletChangedEvent))
                 updateBalance(pair.first)
             },
             Consumer {
+                Timber.e(it.localizedMessage)
                 it.printStackTrace()
             },
             GetTokensBalanceUseCase.Param(pair.first, pair.second)
@@ -271,13 +272,32 @@ class MainViewModel @Inject constructor(
         )
     }
 
+    private fun forceUpdateBalance(
+        pair: Pair<Wallet, List<Token>>
+    ) {
+        forceBatchTokenBalanceUseCase.dispose()
+        forceBatchTokenBalanceUseCase.execute(
+            Action {
+                _switchWalletCompleteCallback.value =
+                    Event(UpdateWalletState.Success(pair.first, true))
+                updateBalance(pair.first)
+            },
+            Consumer {
+                Timber.e(it.localizedMessage)
+                it.printStackTrace()
+                _switchWalletCompleteCallback.value =
+                    Event(UpdateWalletState.ShowError(errorHandler.getError(it)))
+            },
+            GetTokensBalanceUseCase.Param(pair.first, pair.second)
+        )
+    }
+
     fun updateSelectedWallet(wallet: Wallet) {
         updateSelectedWalletUseCase.dispose()
         _switchWalletCompleteCallback.postValue(Event(UpdateWalletState.Loading))
         updateSelectedWalletUseCase.execute(
             Consumer { wl ->
-                loadBalances(wl, true)
-                monitorOtherTokenBalance()
+                forceUpdateBalance(wl)
 
             },
             Consumer {
