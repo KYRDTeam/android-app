@@ -9,9 +9,7 @@ import com.kyberswap.android.domain.usecase.swap.EstimateGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
 import com.kyberswap.android.domain.usecase.swap.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
-import com.kyberswap.android.presentation.common.ADDITIONAL_SWAP_GAS_LIMIT
 import com.kyberswap.android.presentation.common.Event
-import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
 import com.kyberswap.android.presentation.common.specialGasLimitDefault
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
@@ -30,7 +28,6 @@ class SwapConfirmViewModel @Inject constructor(
     private val _getGetGasLimitCallback = MutableLiveData<Event<GetGasLimitState>>()
     val getGetGasLimitCallback: LiveData<Event<GetGasLimitState>>
         get() = _getGetGasLimitCallback
-
 
     private val _swapTokenTransactionCallback =
         MutableLiveData<Event<SwapTokenTransactionState>>()
@@ -92,23 +89,19 @@ class SwapConfirmViewModel @Inject constructor(
         estimateGasUseCase.dispose()
         estimateGasUseCase.execute(
             Consumer {
-                if (it.error == null) {
+                val gasLimit = it.toBigInteger()
 
-                    val gasLimit = calculateDefaultGasLimit(swap.tokenSource, swap.tokenDest)
-                        .min(it.amountUsed.multiply(120.toBigInteger()).divide(100.toBigInteger()) + ADDITIONAL_SWAP_GAS_LIMIT.toBigInteger())
+                val specialGasLimit = specialGasLimitDefault(swap.tokenSource, swap.tokenDest)
 
-                    val specialGasLimit = specialGasLimitDefault(swap.tokenSource, swap.tokenDest)
-
-                    _getGetGasLimitCallback.value = Event(
-                        GetGasLimitState.Success(
-                            if (specialGasLimit != null) {
-                                specialGasLimit.max(gasLimit)
-                            } else {
-                                gasLimit
-                            }
-                        )
+                _getGetGasLimitCallback.value = Event(
+                    GetGasLimitState.Success(
+                        if (specialGasLimit != null) {
+                            specialGasLimit.max(gasLimit)
+                        } else {
+                            gasLimit
+                        }
                     )
-                }
+                )
 
             },
             Consumer {
@@ -123,5 +116,4 @@ class SwapConfirmViewModel @Inject constructor(
             )
         )
     }
-
 }

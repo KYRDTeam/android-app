@@ -5,6 +5,7 @@ import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.ChartApi
 import com.kyberswap.android.data.api.home.CurrencyApi
+import com.kyberswap.android.data.api.home.GasLimitApi
 import com.kyberswap.android.data.api.home.LimitOrderApi
 import com.kyberswap.android.data.api.home.PromoApi
 import com.kyberswap.android.data.api.home.SwapApi
@@ -47,6 +48,7 @@ class NetworkModule {
 
                 )
             }
+            builder.addHeader("CLIENT", "com.kyberswap.android")
 
             val request = builder.method(original.method(), original.body())
                 .build()
@@ -66,6 +68,16 @@ class NetworkModule {
         return createApiClient(
             TokenApi::class.java,
             context.getString(R.string.token_endpoint_url),
+            client
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideGasLimitApi(context: Context, client: OkHttpClient): GasLimitApi {
+        return createApiClient(
+            GasLimitApi::class.java,
+            context.getString(R.string.gas_limit_endpoint_url),
             client
         )
     }

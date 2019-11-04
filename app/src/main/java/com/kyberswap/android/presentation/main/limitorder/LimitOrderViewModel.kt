@@ -29,6 +29,7 @@ import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.common.MIN_SUPPORT_AMOUNT
+import com.kyberswap.android.presentation.common.specialGasLimitDefault
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.GetExpectedRateState
@@ -509,22 +510,18 @@ class LimitOrderViewModel @Inject constructor(
         estimateGasUseCase.dispose()
         estimateGasUseCase.execute(
             Consumer {
-                if (it.error == null) {
-                    val gasLimit =
-                        if (order.tokenSource.isDAI ||
-                            order.tokenSource.isTUSD ||
-                            order.tokenDest.isDAI ||
-                            order.tokenDest.isTUSD
-                        ) {
-                            order.gasLimit.max(
-                                (it.amountUsed.toBigDecimal().multiply(1.2.toBigDecimal())).toBigInteger()
-                            )
-                        } else {
-                            (it.amountUsed.toBigDecimal().multiply(1.2.toBigDecimal())).toBigInteger()
-                        }
+                val gasLimit = it.toBigInteger()
+                val specialGasLimit = specialGasLimitDefault(order.tokenSource, order.tokenDest)
 
-                    _getGetGasLimitCallback.value = Event(GetGasLimitState.Success(gasLimit))
-                }
+                _getGetGasLimitCallback.value = Event(
+                    GetGasLimitState.Success(
+                        if (specialGasLimit != null) {
+                            specialGasLimit.max(gasLimit)
+                        } else {
+                            gasLimit
+                        }
+                    )
+                )
 
             },
             Consumer {

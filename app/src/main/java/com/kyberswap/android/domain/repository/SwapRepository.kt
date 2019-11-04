@@ -1,15 +1,29 @@
 package com.kyberswap.android.domain.repository
 
-import com.kyberswap.android.domain.model.*
+import com.kyberswap.android.domain.model.Cap
+import com.kyberswap.android.domain.model.EstimateAmount
+import com.kyberswap.android.domain.model.Gas
+import com.kyberswap.android.domain.model.ResponseStatus
+import com.kyberswap.android.domain.model.Send
+import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendUseCase
 import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
-import com.kyberswap.android.domain.usecase.swap.*
+import com.kyberswap.android.domain.usecase.swap.EstimateAmountUseCase
+import com.kyberswap.android.domain.usecase.swap.EstimateGasUseCase
+import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
+import com.kyberswap.android.domain.usecase.swap.GetCapUseCase
+import com.kyberswap.android.domain.usecase.swap.GetCombinedCapUseCase
+import com.kyberswap.android.domain.usecase.swap.GetSwapDataUseCase
+import com.kyberswap.android.domain.usecase.swap.SaveSwapDataTokenUseCase
+import com.kyberswap.android.domain.usecase.swap.SaveSwapUseCase
+import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import org.web3j.protocol.core.methods.response.EthEstimateGas
+import java.math.BigDecimal
 
 interface SwapRepository {
 
@@ -31,7 +45,7 @@ interface SwapRepository {
 
     fun estimateAmount(param: EstimateAmountUseCase.Param): Single<EstimateAmount>
 
-    fun estimateGas(param: EstimateGasUseCase.Param): Single<EthEstimateGas>
+    fun estimateGas(param: EstimateGasUseCase.Param): Single<BigDecimal>
 
     fun swapToken(param: SwapTokenUseCase.Param): Single<ResponseStatus>
 

@@ -7,16 +7,16 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.SwapRepository
 import com.kyberswap.android.domain.usecase.SequentialUseCase
 import io.reactivex.Single
-import org.web3j.protocol.core.methods.response.EthEstimateGas
+import java.math.BigDecimal
 import java.math.BigInteger
 import javax.inject.Inject
 
 class EstimateGasUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val swapRepository: SwapRepository
-) : SequentialUseCase<EstimateGasUseCase.Param, EthEstimateGas>(schedulerProvider) {
+) : SequentialUseCase<EstimateGasUseCase.Param, BigDecimal>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    override fun buildUseCaseSingle(param: Param): Single<EthEstimateGas> {
+    override fun buildUseCaseSingle(param: Param): Single<BigDecimal> {
         return swapRepository.estimateGas(param)
     }
 
