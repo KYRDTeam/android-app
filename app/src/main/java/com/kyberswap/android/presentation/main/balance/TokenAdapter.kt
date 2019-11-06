@@ -17,6 +17,7 @@ import com.kyberswap.android.databinding.ItemTokenBinding
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.presentation.base.DataBoundListSwipeAdapter
 import com.kyberswap.android.presentation.base.DataBoundViewHolder
+import timber.log.Timber
 import java.math.RoundingMode
 
 class TokenAdapter(
@@ -41,6 +42,9 @@ class TokenAdapter(
     }
 ) {
     private var isEth = false
+
+    val showEth: Boolean
+        get() = isEth
 
     private var orderType: OrderType = OrderType.BALANCE
 
@@ -115,6 +119,7 @@ class TokenAdapter(
         }
 
         submitList(filterList)
+        Timber.e("Finish")
     }
 
     fun toggleEth(): OrderType {
@@ -258,9 +263,9 @@ class TokenAdapter(
         )
 
 
-    fun setOrderBy(type: OrderType, tokenList: List<Token>) {
+    fun setOrderBy(type: OrderType, tokenList: List<Token>, forceUpdate: Boolean = true) {
         this.orderType = type
-        submitFilterList(tokenList, true)
+        submitFilterList(tokenList, forceUpdate)
     }
 
     fun setTokenType(tokenType: TokenType, tokenList: List<Token>) {

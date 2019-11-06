@@ -60,7 +60,7 @@ class SplashActivity : BaseActivity() {
         handler.postDelayed({
             viewModel.prepareData()
             frameAnimation.stop()
-        }, 1600)
+        }, 800)
     }
 
     override fun onStart() {
