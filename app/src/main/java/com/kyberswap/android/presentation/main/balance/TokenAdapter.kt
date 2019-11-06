@@ -17,7 +17,6 @@ import com.kyberswap.android.databinding.ItemTokenBinding
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.presentation.base.DataBoundListSwipeAdapter
 import com.kyberswap.android.presentation.base.DataBoundViewHolder
-import timber.log.Timber
 import java.math.RoundingMode
 
 class TokenAdapter(
@@ -119,7 +118,6 @@ class TokenAdapter(
         }
 
         submitList(filterList)
-        Timber.e("Finish")
     }
 
     fun toggleEth(): OrderType {

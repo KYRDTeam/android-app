@@ -35,7 +35,6 @@ import com.kyberswap.android.util.ext.showKeyboard
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_token_header.view.*
-import timber.log.Timber
 import java.math.BigDecimal
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -127,7 +126,6 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        Timber.e("onActivityCreated")
         viewModel.getSelectedWallet()
 
         tokenAdapter =
@@ -172,6 +170,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     is GetWalletState.Success -> {
                         if (state.wallet.address != wallet?.address) {
                             forceUpdate = true
+                            setNameBalanceSelectedOption(balanceIndex)
                             binding.tvUnit.setTextIfChange(state.wallet.unit)
                             this.wallet = state.wallet
                             tokenAdapter?.showEth(wallet?.unit == eth)
@@ -337,7 +336,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         }
 
         handler.postDelayed({
-            setNameBalanceSelectedOption(balanceIndex, false)
+            setNameBalanceSelectedOption(balanceIndex)
         }, 250)
 
 
@@ -408,6 +407,11 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     fun getSelectedWallet() {
         viewModel.getSelectedWallet()
+    }
+
+    fun scrollToTop() {
+        val layoutManager = binding.rvToken.layoutManager as LinearLayoutManager
+        layoutManager.scrollToPositionWithOffset(0, 0)
     }
 
     private fun updateTokenBalance(tokens: List<Token>) {
@@ -490,7 +494,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     private val walletBalance: BigDecimal
         get() {
-            return calcBalance(tokenAdapter?.getFullTokenList() ?: listOf(), tokenAdapter?.showEth == true)
+            return calcBalance(
+                tokenAdapter?.getFullTokenList() ?: listOf(),
+                tokenAdapter?.showEth == true
+            )
         }
 
     private fun refreshBalances() {
@@ -612,7 +619,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     }
 
 
-    private fun setNameBalanceSelectedOption(index: Int, forceUpdate: Boolean) {
+    private fun setNameBalanceSelectedOption(index: Int, forceUpdate: Boolean = false) {
         tokenAdapter?.let {
             toggleDisplay(false, nameAndBal[nameBalSelectedIndex])
             val selectedView = nameAndBal[index]

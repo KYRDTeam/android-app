@@ -53,7 +53,7 @@
     <string name="import_wallet_success">You have successfully imported a wallet</string>
     <string name="name_of_your_wallet">Name of your wallet</string>
     <string name="recover_with_seeds">Recover with seeds/mnemonic</string>
-<!--    <string name="please_use_seed">Please use seed, the 12 random words assigned when you create the wallet</string>-->
+    <!--    <string name="please_use_seed">Please use seed, the 12 random words assigned when you create the wallet</string>-->
     <string name="enter_private_key">Enter or scan private key</string>
     <string name="enter_seeds">Enter your seeds/mnemonic</string>
     <string name="permission_required">The permission is required to perform this action</string>
@@ -356,7 +356,7 @@
     <string name="kyber_code">KyberCode</string>
     <string name="your_kybercode">Your KyberCode</string>
     <string name="kyber_code_apply">Apply</string>
-    <string name="enter_your_kybercode">Enter your KyberCode</string>
+    <string name="enter_your_kybercode">Enter Kyber Code. Both capital or small letters work fine</string>
     <string name="name_your_wallet">Name of your wallet (optional)</string>
     <string name="promo_payment_confirm_title">You are swapping to receive a gift</string>
     <string name="promo_from">From</string>
@@ -583,7 +583,7 @@
     <string name="password_description">Enter your store password to continue</string>
     <string name="new_fingerprint_enrolled_description">A new fingerprint was added to this device, so your password is required.</string>
     <string name="use_fingerprint_in_future">Use fingerprint in the future</string>
-    <string name="use_fingerprint_to_authenticate_key" >use_fingerprint_to_authenticate_key</string>
+    <string name="use_fingerprint_to_authenticate_key">use_fingerprint_to_authenticate_key</string>
     <string name="use_password">Use password</string>
     <string name="description_fingerprint_icon">Fingerprint icon</string>
     <string name="fingerprint_description">Confirm fingerprint to continue</string>
