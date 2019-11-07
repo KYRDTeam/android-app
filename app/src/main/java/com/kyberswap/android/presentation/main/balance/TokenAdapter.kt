@@ -32,7 +32,7 @@ class TokenAdapter(
     appExecutors,
     diffCallback = object : DiffUtil.ItemCallback<Token>() {
         override fun areItemsTheSame(oldItem: Token, newItem: Token): Boolean {
-            return oldItem.tokenSymbol == newItem.tokenSymbol
+            return oldItem.tokenAddress == newItem.tokenAddress
         }
 
         override fun areContentsTheSame(oldItem: Token, newItem: Token): Boolean {
@@ -108,6 +108,10 @@ class TokenAdapter(
             }
             TokenType.OTHER -> orderList.filter {
                 it.isOther
+            }
+        }.mapIndexed { index, token ->
+            token.apply {
+                isEven = index % 2 == 0
             }
         }
 
@@ -241,16 +245,22 @@ class TokenAdapter(
         binding.tvChange24h.text = rate24h
 
         binding.executePendingBindings()
-    }
 
-
-    override fun onBindViewHolder(holder: DataBoundViewHolder<ItemTokenBinding>, position: Int) {
-        val binding = holder.binding
-        val background =
-            if (position % 2 == 0) R.drawable.item_even_background else R.drawable.item_odd_background
+        val background = if (item.isEven) {
+            R.drawable.item_even_background
+        } else {
+            R.drawable.item_odd_background
+        }
         binding.lnItem.setBackgroundResource(background)
-        super.onBindViewHolder(holder, position)
     }
+
+//    override fun onBindViewHolder(holder: DataBoundViewHolder<ItemTokenBinding>, position: Int) {
+//        val binding = holder.binding
+//        val background =
+//            if (position % 2 == 0) R.drawable.item_even_background else R.drawable.item_odd_background
+//        binding.lnItem.setBackgroundResource(background)
+//        super.onBindViewHolder(holder, position)
+//    }
 
     override fun createBinding(parent: ViewGroup, viewType: Int): ItemTokenBinding =
         DataBindingUtil.inflate(

@@ -11,6 +11,7 @@ import com.kyberswap.android.data.db.ContactDao
 import com.kyberswap.android.data.db.SendDao
 import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.db.TokenExtDao
 import com.kyberswap.android.data.db.TransactionDao
 import com.kyberswap.android.data.db.UserDao
 import com.kyberswap.android.data.mapper.CapMapper
@@ -78,7 +79,8 @@ class SwapDataRepository @Inject constructor(
     private val userDao: UserDao,
     private val userApi: UserApi,
     private val userMapper: UserMapper,
-    private val gasLimitApi: GasLimitApi
+    private val gasLimitApi: GasLimitApi,
+    private val tokenExtDao: TokenExtDao
 ) : SwapRepository {
     override fun getCap(param: GetCombinedCapUseCase.Param): Single<Cap> {
         return Single.fromCallable {
@@ -270,12 +272,20 @@ class SwapDataRepository @Inject constructor(
 
         ) { gasLimitEntity, ethEstimateGas ->
 
+            val srcTokenExt = tokenExtDao.getTokenExtByAddress(param.tokenSource.tokenAddress)
+            val destTokenExt = tokenExtDao.getTokenExtByAddress(param.tokenDest.tokenAddress)
+
             val defaultValue = calculateDefaultGasLimit(
                 param.tokenSource,
                 param.tokenDest
             ).toBigDecimal()
 
-            if (gasLimitEntity.error && ethEstimateGas?.error != null) {
+
+            if (srcTokenExt?.isGasFixed == true) {
+                srcTokenExt.gasLimit.toBigDecimalOrDefaultZero()
+            } else if (destTokenExt?.isGasFixed == true) {
+                destTokenExt.gasLimit.toBigDecimalOrDefaultZero()
+            } else if (gasLimitEntity.error && ethEstimateGas?.error != null) {
                 defaultValue
             } else if (gasLimitEntity.error) {
                 ((ethEstimateGas?.amountUsed
@@ -291,22 +301,6 @@ class SwapDataRepository @Inject constructor(
             }
 
         }
-
-//        return Single.fromCallable {
-//            tokenClient.estimateGas(
-//                param.wallet.address,
-//                context.getString(R.string.kyber_address),
-//                param.tokenSource.tokenAddress,
-//                param.tokenDest.tokenAddress,
-//                param.sourceAmount.toBigDecimalOrDefaultZero().times(
-//                    10.0.pow(param.tokenSource.tokenDecimal)
-//                        .toBigDecimal()
-//                ).toBigInteger(),
-//                param.minConversionRate,
-//                param.tokenSource.isETH
-//            )
-//
-//        }
     }
 
     override fun estimateGas(param: EstimateTransferGasUseCase.Param): Single<EthEstimateGas> {

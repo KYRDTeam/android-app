@@ -356,7 +356,7 @@
     <string name="kyber_code">KyberCode</string>
     <string name="your_kybercode">Your KyberCode</string>
     <string name="kyber_code_apply">Apply</string>
-    <string name="enter_your_kybercode">Enter Kyber Code. Both capital or small letters work fine</string>
+    <string name="enter_your_kybercode">Both capital or small letters work fine</string>
     <string name="name_your_wallet">Name of your wallet (optional)</string>
     <string name="promo_payment_confirm_title">You are swapping to receive a gift</string>
     <string name="promo_from">From</string>

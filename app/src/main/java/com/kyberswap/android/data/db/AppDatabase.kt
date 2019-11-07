@@ -19,6 +19,7 @@ import com.kyberswap.android.domain.model.Rate
 import com.kyberswap.android.domain.model.Send
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.TokenExt
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.TransactionFilter
 import com.kyberswap.android.domain.model.Unit
@@ -28,6 +29,7 @@ import com.kyberswap.android.domain.model.Wallet
 @Database(
     entities = [
         Token::class,
+        TokenExt::class,
         Wallet::class,
         Unit::class,
         Swap::class,
@@ -44,7 +46,7 @@ import com.kyberswap.android.domain.model.Wallet
         PendingBalances::class,
         TransactionFilter::class
     ],
-    version = 6
+    version = 7
 )
 @TypeConverters(
     DataTypeConverter::class,
@@ -58,7 +60,7 @@ import com.kyberswap.android.domain.model.Wallet
 )
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun customerDao(): TokenDao
+    abstract fun tokenDao(): TokenDao
     abstract fun walletDao(): WalletDao
     abstract fun unitDao(): UnitDao
     abstract fun swapDao(): SwapDao
@@ -74,6 +76,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun passCodeDao(): PassCodeDao
     abstract fun pendingBalancesDao(): PendingBalancesDao
     abstract fun transactionFilterDao(): TransactionFilterDao
+    abstract fun tokenExtDao(): TokenExtDao
 
     companion object {
         @Volatile
@@ -96,6 +99,32 @@ abstract class AppDatabase : RoomDatabase() {
         @VisibleForTesting
         internal val MIGRATION_2_3: Migration = object : Migration(2, 3) {
             override fun migrate(database: SupportSQLiteDatabase) {
+            }
+        }
+
+        @VisibleForTesting
+        internal val MIGRATION_3_4: Migration = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS new_transactions (`blockHash` TEXT NOT NULL, `blockNumber` TEXT NOT NULL, `confirmations` TEXT NOT NULL, `contractAddress` TEXT NOT NULL, `cumulativeGasUsed` TEXT NOT NULL, `from` TEXT NOT NULL, `gas` TEXT NOT NULL, `gasPrice` TEXT NOT NULL, `gasUsed` TEXT NOT NULL, `hash` TEXT NOT NULL, `input` TEXT NOT NULL, `isError` TEXT NOT NULL, `nonce` TEXT NOT NULL, `timeStamp` INTEGER NOT NULL, `to` TEXT NOT NULL, `transactionIndex` TEXT NOT NULL, `txreceiptStatus` TEXT NOT NULL, `value` TEXT NOT NULL, `tokenName` TEXT NOT NULL, `tokenSymbol` TEXT NOT NULL, `tokenDecimal` TEXT NOT NULL, `type` INTEGER NOT NULL, `txType` TEXT NOT NULL, `tokenSource` TEXT NOT NULL, `sourceAmount` TEXT NOT NULL, `tokenDest` TEXT NOT NULL, `destAmount` TEXT NOT NULL, `transactionStatus` TEXT NOT NULL, `walletAddress` TEXT NOT NULL, PRIMARY KEY(`hash`, `from`, `to`))
+                """.trimIndent()
+                )
+
+                database.execSQL(
+                    """
+                        CREATE  INDEX `index_transactions_transactionStatus_walletAddress` ON new_transactions (`hash`, `transactionStatus`, `walletAddress`)
+                    """.trimIndent()
+                )
+
+                database.execSQL(
+                    """
+                INSERT INTO new_transactions (blockHash, blockNumber, confirmations, contractAddress, cumulativeGasUsed, `from`, gas, gasPrice, gasUsed, hash, input, isError, nonce, timeStamp, `to`, transactionIndex, txreceiptStatus, value, tokenName, tokenSymbol, tokenDecimal, type, txType, tokenSource, sourceAmount, tokenDest, destAmount, transactionStatus, walletAddress)
+                SELECT blockHash, blockNumber, confirmations, contractAddress, cumulativeGasUsed, `from`, gas, gasPrice, gasUsed, hash, input, isError, nonce, timeStamp, `to`, transactionIndex, txreceiptStatus, value, tokenName, tokenSymbol, tokenDecimal, type, txType, tokenSource, sourceAmount, tokenDest, destAmount, transactionStatus, walletAddress FROM transactions
+                """.trimIndent()
+                )
+                database.execSQL("DROP TABLE transactions")
+                database.execSQL("ALTER TABLE new_transactions RENAME TO transactions")
             }
         }
 
@@ -126,30 +155,17 @@ abstract class AppDatabase : RoomDatabase() {
         }
 
         @VisibleForTesting
-        internal val MIGRATION_3_4: Migration = object : Migration(3, 4) {
+        internal val MIGRATION_6_7: Migration = object : Migration(6, 7) {
             override fun migrate(database: SupportSQLiteDatabase) {
+                // Add new TokenExtTable
                 database.execSQL(
                     """
-                    CREATE TABLE IF NOT EXISTS new_transactions (`blockHash` TEXT NOT NULL, `blockNumber` TEXT NOT NULL, `confirmations` TEXT NOT NULL, `contractAddress` TEXT NOT NULL, `cumulativeGasUsed` TEXT NOT NULL, `from` TEXT NOT NULL, `gas` TEXT NOT NULL, `gasPrice` TEXT NOT NULL, `gasUsed` TEXT NOT NULL, `hash` TEXT NOT NULL, `input` TEXT NOT NULL, `isError` TEXT NOT NULL, `nonce` TEXT NOT NULL, `timeStamp` INTEGER NOT NULL, `to` TEXT NOT NULL, `transactionIndex` TEXT NOT NULL, `txreceiptStatus` TEXT NOT NULL, `value` TEXT NOT NULL, `tokenName` TEXT NOT NULL, `tokenSymbol` TEXT NOT NULL, `tokenDecimal` TEXT NOT NULL, `type` INTEGER NOT NULL, `txType` TEXT NOT NULL, `tokenSource` TEXT NOT NULL, `sourceAmount` TEXT NOT NULL, `tokenDest` TEXT NOT NULL, `destAmount` TEXT NOT NULL, `transactionStatus` TEXT NOT NULL, `walletAddress` TEXT NOT NULL, PRIMARY KEY(`hash`, `from`, `to`))
+                    CREATE TABLE IF NOT EXISTS token_extras (`tokenSymbol` TEXT NOT NULL, `tokenName` TEXT NOT NULL, `tokenAddress` TEXT NOT NULL, `isGasFixed` INTEGER NOT NULL, `gasLimit` TEXT NOT NULL, `delistTime` INTEGER NOT NULL, PRIMARY KEY(`tokenAddress`))
                 """.trimIndent()
                 )
-
-                database.execSQL(
-                    """
-                        CREATE  INDEX `index_transactions_transactionStatus_walletAddress` ON new_transactions (`hash`, `transactionStatus`, `walletAddress`)
-                    """.trimIndent()
-                )
-
-                database.execSQL(
-                    """
-                INSERT INTO new_transactions (blockHash, blockNumber, confirmations, contractAddress, cumulativeGasUsed, `from`, gas, gasPrice, gasUsed, hash, input, isError, nonce, timeStamp, `to`, transactionIndex, txreceiptStatus, value, tokenName, tokenSymbol, tokenDecimal, type, txType, tokenSource, sourceAmount, tokenDest, destAmount, transactionStatus, walletAddress)
-                SELECT blockHash, blockNumber, confirmations, contractAddress, cumulativeGasUsed, `from`, gas, gasPrice, gasUsed, hash, input, isError, nonce, timeStamp, `to`, transactionIndex, txreceiptStatus, value, tokenName, tokenSymbol, tokenDecimal, type, txType, tokenSource, sourceAmount, tokenDest, destAmount, transactionStatus, walletAddress FROM transactions
-                """.trimIndent()
-                )
-                database.execSQL("DROP TABLE transactions")
-                database.execSQL("ALTER TABLE new_transactions RENAME TO transactions")
             }
         }
+
 
 
         private fun buildDatabase(context: Context) =
@@ -162,7 +178,8 @@ abstract class AppDatabase : RoomDatabase() {
                     MIGRATION_2_3,
                     MIGRATION_3_4,
                     MIGRATION_4_5,
-                    MIGRATION_5_6
+                    MIGRATION_5_6,
+                    MIGRATION_6_7
                 )
 //                .fallbackToDestructiveMigration()
 //                .allowMainThreadQueries()

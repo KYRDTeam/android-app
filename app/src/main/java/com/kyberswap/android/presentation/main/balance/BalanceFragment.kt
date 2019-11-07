@@ -160,7 +160,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     viewModel.saveFav(it)
                 }
             )
-        refreshBalances()
+        refresh()
         tokenAdapter?.mode = Attributes.Mode.Single
         binding.rvToken.adapter = tokenAdapter
 
@@ -290,6 +290,28 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             }
         })
 
+        viewModel.refreshBalanceStateCallback.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetBalanceState.Success -> {
+                        setNameBalanceSelectedOption(balanceIndex)
+                        updateTokenBalance(state.tokens.map {
+                            it.updateSelectedWallet(wallet)
+                        })
+                        if (binding.swipeLayout.isRefreshing) {
+                            binding.swipeLayout.isRefreshing = false
+                        }
+                        scrollToTop()
+                        getTokenBalances()
+                    }
+                    is GetBalanceState.ShowError -> {
+                        binding.swipeLayout.isRefreshing = false
+                        getTokenBalances()
+                    }
+                }
+            }
+        })
+
         viewModel.saveTokenCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -335,10 +357,9 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
         }
 
-        handler.postDelayed({
-            setNameBalanceSelectedOption(balanceIndex)
-        }, 250)
-
+//        handler.postDelayed({
+//            setNameBalanceSelectedOption(balanceIndex)
+//        }, 250)
 
         nameAndBal.forEachIndexed { index, view ->
             view.setOnClickListener {
@@ -353,7 +374,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         })
 
         binding.swipeLayout.setOnRefreshListener {
-            viewModel.refresh()
+            refresh()
         }
 
         viewModel.saveWalletCallback.observe(viewLifecycleOwner, Observer {
@@ -370,7 +391,6 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                 }
             }
         })
-
 
         viewModel.callback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -467,6 +487,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         currentSelectedView = view
     }
 
+    private fun refresh() {
+        viewModel.refresh()
+    }
+
     private fun orderByCurrency(isEth: Boolean, type: OrderType, view: TextView) {
         tokenAdapter?.let {
             it.setOrderBy(type, getFilterTokenList(currentSearchString))
@@ -500,9 +524,8 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             )
         }
 
-    private fun refreshBalances() {
+    private fun getTokenBalances() {
         viewModel.getTokenBalance()
-        forceUpdate = true
     }
 
     private fun orderByChange24h(type: OrderType, view: TextView) {

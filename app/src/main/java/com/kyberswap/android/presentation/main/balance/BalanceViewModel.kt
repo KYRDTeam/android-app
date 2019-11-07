@@ -36,6 +36,10 @@ class BalanceViewModel @Inject constructor(
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
 
+    private val _refreshBalanceStateCallback = MutableLiveData<Event<GetBalanceState>>()
+    val refreshBalanceStateCallback: LiveData<Event<GetBalanceState>>
+        get() = _refreshBalanceStateCallback
+
     private val _getBalanceStateCallback = MutableLiveData<Event<GetBalanceState>>()
     val getBalanceStateCallback: LiveData<Event<GetBalanceState>>
         get() = _getBalanceStateCallback
@@ -44,10 +48,8 @@ class BalanceViewModel @Inject constructor(
     val saveTokenCallback: LiveData<Event<SaveTokenState>>
         get() = _saveTokenCallback
 
-
     val visibilityCallback: LiveData<Event<Boolean>>
         get() = _visibility
-
 
     private val _visibility = MutableLiveData<Event<Boolean>>()
 
@@ -55,11 +57,9 @@ class BalanceViewModel @Inject constructor(
     val saveWalletCallback: LiveData<Event<SaveWalletState>>
         get() = _saveWalletCallback
 
-
     private val _callback = MutableLiveData<Event<SaveSwapDataState>>()
     val callback: LiveData<Event<SaveSwapDataState>>
         get() = _callback
-
 
     private val _callbackSaveSend = MutableLiveData<Event<SaveSendState>>()
     val callbackSaveSend: LiveData<Event<SaveSendState>>
@@ -150,7 +150,7 @@ class BalanceViewModel @Inject constructor(
     fun refresh() {
         prepareBalanceUseCase.execute(
             Consumer {
-                _getBalanceStateCallback.value = Event(
+                _refreshBalanceStateCallback.value = Event(
                     GetBalanceState.Success(
                         it
                     )
@@ -158,7 +158,7 @@ class BalanceViewModel @Inject constructor(
             },
             Consumer { error ->
                 error.printStackTrace()
-                _getBalanceStateCallback.value =
+                _refreshBalanceStateCallback.value =
                     Event(
                         GetBalanceState.ShowError(
                             errorHandler.getError(error)
@@ -186,5 +186,4 @@ class BalanceViewModel @Inject constructor(
             SaveTokenUseCase.Param(token)
         )
     }
-
 }

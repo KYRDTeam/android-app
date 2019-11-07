@@ -159,8 +159,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                 showPendingTransaction()
                 when (currentFragment) {
                     is BalanceFragment -> {
-                        if (wallet?.isPromo == true)
-                            (currentFragment as BalanceFragment).scrollToTop()
+                        (currentFragment as BalanceFragment).scrollToTop()
+
                     }
                     is LimitOrderFragment -> {
                         with((currentFragment as LimitOrderFragment)) {

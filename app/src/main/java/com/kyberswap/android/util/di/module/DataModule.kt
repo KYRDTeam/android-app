@@ -21,6 +21,7 @@ import com.kyberswap.android.data.db.RateDao
 import com.kyberswap.android.data.db.SendDao
 import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.db.TokenExtDao
 import com.kyberswap.android.data.db.TransactionDao
 import com.kyberswap.android.data.db.TransactionFilterDao
 import com.kyberswap.android.data.db.UnitDao
@@ -104,6 +105,7 @@ object DataModule {
         tokenMapper: TokenMapper,
         client: TokenClient,
         tokenDao: TokenDao,
+        tokenExtDao: TokenExtDao,
         walletDao: WalletDao,
         swapDao: SwapDao,
         sendDao: SendDao,
@@ -117,6 +119,7 @@ object DataModule {
             tokenMapper,
             client,
             tokenDao,
+            tokenExtDao,
             walletDao,
             swapDao,
             sendDao,
@@ -170,7 +173,8 @@ object DataModule {
         userDao: UserDao,
         userApi: UserApi,
         userMapper: UserMapper,
-        gasLimitApi: GasLimitApi
+        gasLimitApi: GasLimitApi,
+        tokenExtDao: TokenExtDao
     ): SwapRepository =
         SwapDataRepository(
             context,
@@ -186,7 +190,8 @@ object DataModule {
             userDao,
             userApi,
             userMapper,
-            gasLimitApi
+            gasLimitApi,
+            tokenExtDao
         )
 
     @Singleton

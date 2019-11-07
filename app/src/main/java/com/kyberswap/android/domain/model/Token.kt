@@ -57,6 +57,13 @@ data class Token(
     @IgnoredOnParcel
     @Ignore
     var delistTime: Long = 0
+    @IgnoredOnParcel
+    @Ignore
+    var isGasFixed: Boolean = false
+
+    @IgnoredOnParcel
+    @Ignore
+    var isEven: Boolean = false
 
     val isDelist: Boolean
         get() {
@@ -64,7 +71,7 @@ data class Token(
         }
 
     val rateEthNowOrDefaultValue: BigDecimal
-        get() = if(isETHWETH) BigDecimal.ONE else rateEthNow
+        get() = if (isETHWETH) BigDecimal.ONE else rateEthNow
 
     val currentBalance: BigDecimal
         get() {
@@ -110,6 +117,7 @@ data class Token(
         isQuote = entity.isQuote ?: false
     ) {
         delistTime = entity.delistTime ?: 0L
+        isGasFixed = entity.isGasFixed ?: false
     }
 
     val symbol: String
@@ -147,6 +155,7 @@ data class Token(
             isQuote = entity.isQuote ?: false
         ).apply {
             delistTime = entity.delistTime ?: 0L
+            isGasFixed = entity.isGasFixed ?: false
         }
     }
 
@@ -301,13 +310,15 @@ data class Token(
 
     fun areContentsTheSame(other: Token): Boolean {
         return this.tokenSymbol == other.tokenSymbol &&
+            this.tokenAddress == other.tokenAddress &&
             this.currentBalance.toDisplayNumber() == other.currentBalance.toDisplayNumber() &&
             this.rateEthNow.toDisplayNumber() == other.rateEthNow.toDisplayNumber() &&
             this.rateUsdNow.toDisplayNumber() == other.rateUsdNow.toDisplayNumber() &&
             this.changeUsd24h.toDisplayNumber() == other.changeUsd24h.toDisplayNumber() &&
             this.changeEth24h.toDisplayNumber() == other.changeEth24h.toDisplayNumber() &&
             this.fav == other.fav &&
-            this.shouldShowAsNew == other.shouldShowAsNew
+            this.shouldShowAsNew == other.shouldShowAsNew &&
+            this.isEven == other.isEven
     }
 
     fun change24hStatus(isEth: Boolean): Int {

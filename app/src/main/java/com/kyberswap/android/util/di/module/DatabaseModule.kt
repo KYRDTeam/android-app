@@ -13,6 +13,7 @@ import com.kyberswap.android.data.db.RateDao
 import com.kyberswap.android.data.db.SendDao
 import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.db.TokenExtDao
 import com.kyberswap.android.data.db.TransactionDao
 import com.kyberswap.android.data.db.TransactionFilterDao
 import com.kyberswap.android.data.db.UnitDao
@@ -31,7 +32,13 @@ class DatabaseModule {
     @Provides
     @Singleton
     fun provideTokenDao(appDatabase: AppDatabase): TokenDao {
-        return appDatabase.customerDao()
+        return appDatabase.tokenDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTokenExtDao(appDatabase: AppDatabase): TokenExtDao {
+        return appDatabase.tokenExtDao()
     }
 
     @Provides
@@ -124,5 +131,4 @@ class DatabaseModule {
     fun provideTransactionFilterDao(appDatabase: AppDatabase): TransactionFilterDao {
         return appDatabase.transactionFilterDao()
     }
-
 }

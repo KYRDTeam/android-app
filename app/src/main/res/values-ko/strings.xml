@@ -345,7 +345,7 @@
     <string name="kyber_code">KyberCode</string>
     <string name="your_kybercode">귀하의 KyberCode</string>
     <string name="kyber_code_apply">적용</string>
-    <string name="enter_your_kybercode">귀하의 KyberCode를 입력하십시오</string>
+    <string name="enter_your_kybercode">대문자와 소문자 구분은 필요하지 않습니다.</string>
     <string name="name_your_wallet">지갑 이름 (선택 사항)</string>
     <string name="promo_payment_confirm_title">You are swapping to receive a gift</string>
     <string name="promo_from">From</string>
