@@ -71,6 +71,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     private var limitOrder: NotificationLimitOrder? = null
 
+    private var isPromoCode: Boolean = false
+
     @Inject
     lateinit var dialogHelper: DialogHelper
 
@@ -106,6 +108,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
         alert = intent.getParcelableExtra(ALERT_PARAM)
         limitOrder = intent.getParcelableExtra(LIMIT_ORDER_PARAM)
+        isPromoCode = intent.getBooleanExtra(IS_PROMO_CODE_PARAM, false)
 
         binding.viewModel = mainViewModel
         val tabColors =
@@ -156,7 +159,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                 showPendingTransaction()
                 when (currentFragment) {
                     is BalanceFragment -> {
-//                        (currentFragment as BalanceFragment).getSelectedWallet()
+                        (currentFragment as BalanceFragment).scrollToTop()
+
                     }
                     is LimitOrderFragment -> {
                         with((currentFragment as LimitOrderFragment)) {
@@ -195,7 +199,7 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
         val initial = if (limitOrder != null) {
             MainPagerAdapter.LIMIT_ORDER
-        } else if (alert != null) {
+        } else if (alert != null || isPromoCode) {
             MainPagerAdapter.SWAP
         } else {
             MainPagerAdapter.BALANCE
@@ -533,14 +537,17 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     companion object {
         private const val ALERT_PARAM = "alert_param"
         private const val LIMIT_ORDER_PARAM = "limit_order_param"
+        private const val IS_PROMO_CODE_PARAM = "promo_code_param"
         fun newIntent(
             context: Context,
             alert: NotificationAlert? = null,
-            limitOrderNotification: NotificationLimitOrder? = null
+            limitOrderNotification: NotificationLimitOrder? = null,
+            isPromoCode: Boolean = false
         ) =
             Intent(context, MainActivity::class.java).apply {
                 putExtra(ALERT_PARAM, alert)
                 putExtra(LIMIT_ORDER_PARAM, limitOrderNotification)
+                putExtra(IS_PROMO_CODE_PARAM, isPromoCode)
             }
     }
 }

@@ -183,10 +183,10 @@
                         android:singleLine="true"
                         android:textColor="@color/amount_text_view_color"
                         android:textSize="24sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/imgTokenSource"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toEndOf="@+id/tvSource"
-                        app:layout_constraintBottom_toBottomOf="@+id/imgTokenSource"
                         app:layout_constraintTop_toTopOf="@+id/imgTokenSource" />
 
 
@@ -233,10 +233,10 @@
                         android:textColor="@color/amount_text_view_color"
                         android:textSize="24sp"
                         app:layout_constraintBottom_toBottomOf="@+id/imgTokenDest"
-                        app:layout_constraintTop_toTopOf="@+id/imgTokenDest"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toEndOf="@+id/tvDest" />
+                        app:layout_constraintStart_toEndOf="@+id/tvDest"
+                        app:layout_constraintTop_toTopOf="@+id/imgTokenDest" />
 
                     <androidx.constraintlayout.widget.Group
                         android:id="@+id/grSwapTokenSource"
@@ -274,19 +274,6 @@
                     android:paddingBottom="80dp">
 
                     <TextView
-                        android:id="@+id/tvRate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:layout_marginEnd="15dp"
-                        android:gravity="end"
-                        android:text="@{swap.hasSamePair ? `1` : swap.combineRate}"
-                        android:textColor="#141927"
-                        android:textSize="16sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView7" />
-
-                    <TextView
                         android:id="@+id/tvValueInUSD"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -298,31 +285,20 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
-                        android:id="@+id/textView7"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginEnd="15dp"
-                        android:gravity="end"
-                        android:text="@string/rate"
-                        android:textAllCaps="true"
-                        android:textColor="#9ea1aa"
-                        android:textSize="12sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvValueInUSD" />
 
                     <TextView
                         android:id="@+id/tvTokenBalance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="15dp"
+                        android:layout_marginTop="12dp"
                         android:text="@{TextUtils.isEmpty(swap.sourceSymbol) ? `` : String.format(@string/token_balance, swap.sourceSymbol)}"
                         android:textAllCaps="true"
                         android:textColor="#9ea1aa"
                         android:textSize="12sp"
-                        app:layout_constraintBaseline_toBaselineOf="@+id/textView7"
-                        app:layout_constraintStart_toStartOf="parent" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvValueInUSD"
+                        tools:text="KNC BALANCE" />
 
                     <TextView
                         android:id="@+id/tvTokenBalanceValue"
@@ -336,7 +312,106 @@
                         android:textColor="#141927"
                         android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvTokenBalance" />
+                        app:layout_constraintTop_toBottomOf="@+id/tvTokenBalance"
+                        tools:text="1000" />
+
+                    <androidx.constraintlayout.widget.Barrier
+                        android:id="@+id/barrier9"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:barrierDirection="right"
+                        app:constraint_referenced_ids="tvTokenBalance,tvTokenBalanceValue"
+                        tools:layout_editor_absoluteX="411dp" />
+
+                    <TextView
+                        android:id="@+id/tv25Percent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="61dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/rounded_corner_percent_background"
+                        android:gravity="center"
+                        android:minWidth="50dp"
+                        android:minHeight="36dp"
+                        android:text="@string/percent_25"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                        android:textColor="#8690ad"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvTokenBalanceValue"
+                        app:layout_constraintEnd_toStartOf="@+id/tv50Percent"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintHorizontal_chainStyle="packed"
+                        app:layout_constraintStart_toEndOf="@+id/barrier9"
+                        app:layout_constraintTop_toTopOf="@+id/tvTokenBalance" />
+
+                    <TextView
+                        android:id="@+id/tv50Percent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/rounded_corner_percent_background"
+                        android:gravity="center"
+                        android:minWidth="50dp"
+                        android:minHeight="36dp"
+                        android:text="@string/percent_50"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                        android:textColor="#8690ad"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/tv25Percent"
+                        app:layout_constraintEnd_toStartOf="@+id/tv100Percent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/tv25Percent"
+                        app:layout_constraintTop_toTopOf="@+id/tv25Percent" />
+
+                    <TextView
+                        android:id="@+id/tv100Percent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="15dp"
+                        android:background="@drawable/rounded_corner_percent_background"
+                        android:gravity="center"
+                        android:minWidth="50dp"
+                        android:minHeight="36dp"
+                        android:text="@string/percent_100"
+                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                        android:textColor="#8690ad"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/tv50Percent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/tv50Percent"
+                        app:layout_constraintTop_toTopOf="@+id/tv50Percent" />
+
+                    <!--                    <TextView-->
+                    <!--                        android:id="@+id/textView7"-->
+                    <!--                        android:layout_width="wrap_content"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:layout_marginTop="16dp"-->
+                    <!--                        android:layout_marginEnd="15dp"-->
+                    <!--                        android:gravity="end"-->
+                    <!--                        android:text="@string/rate"-->
+                    <!--                        android:textAllCaps="true"-->
+                    <!--                        android:textColor="#9ea1aa"-->
+                    <!--                        android:textSize="12sp"-->
+                    <!--                        app:layout_constraintEnd_toEndOf="parent"-->
+                    <!--                        app:layout_constraintTop_toBottomOf="@+id/tv100Percent" />-->
+
+                    <TextView
+                        android:id="@+id/tvRate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="15dp"
+                        android:gravity="end"
+                        android:text="@{swap.hasSamePair ? `` : swap.displayRate}"
+                        android:textColor="#141927"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tv100Percent"
+                        tools:text="1256" />
+
 
                     <ImageView
                         android:id="@+id/imgInfo"

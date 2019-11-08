@@ -275,7 +275,7 @@ class LimitOrderDataRepository @Inject constructor(
                 )
             }
             else -> {
-                val updatedBalanceToken = tokenDao.getTokenBySymbol(token.tokenSymbol) ?: token
+                val updatedBalanceToken = tokenDao.getTokenByAddress(token.tokenAddress) ?: token
                 when {
                     updatedBalanceToken.selectedWalletAddress != wallet.address -> updatedBalanceToken.updateSelectedWallet(
                         wallet

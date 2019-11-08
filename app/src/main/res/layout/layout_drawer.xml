@@ -141,12 +141,13 @@
             app:layout_constraintStart_toEndOf="@+id/textView11"
             app:layout_constraintTop_toBottomOf="@+id/view3" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvWallet"
+        <View
+            android:id="@+id/view4"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:nestedScrollingEnabled="false"
+            android:layout_height="0.1dp"
+            android:background="@color/drawer_divider_color"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView11" />
 
@@ -154,23 +155,42 @@
             android:id="@+id/tvSend"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="56dp"
             android:background="?selectableItemBackground"
             android:gravity="start|center"
-            android:minHeight="48dp"
+            android:minHeight="54dp"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:text="@string/send_token"
             android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
             android:textColor="@color/colorAccent"
             android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/textView11"
-            app:layout_constraintTop_toBottomOf="@+id/rvWallet"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toBottomOf="@+id/view4" />
+
+        <View
+            android:id="@+id/view5"
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:background="@color/drawer_divider_color"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvSend" />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvWallet"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="2dp"
+            android:nestedScrollingEnabled="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view5" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

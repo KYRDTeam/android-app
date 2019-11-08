@@ -48,7 +48,7 @@ class SplashActivity : BaseActivity() {
                 if (state != GetUserWalletState.Loading)
                     when (state) {
                         is GetUserWalletState.Success -> {
-                            navigator.navigateToHome()
+                            navigator.navigateToHome(isPromoCode = state.wallet.isPromo)
                         }
                         is GetUserWalletState.ShowError -> {
                             navigator.navigateToLandingPage()
@@ -60,7 +60,7 @@ class SplashActivity : BaseActivity() {
         handler.postDelayed({
             viewModel.prepareData()
             frameAnimation.stop()
-        }, 1600)
+        }, 800)
     }
 
     override fun onStart() {

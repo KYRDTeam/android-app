@@ -60,7 +60,8 @@
         <activity
             android:name=".presentation.main.MainActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden" />
+            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden"
+            />
         <activity
             android:name=".presentation.wallet.BackupWalletActivity"
             android:screenOrientation="portrait"

@@ -2,7 +2,6 @@ package com.kyberswap.android.presentation.main.limitorder
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.domain.model.Cancelled
 import com.kyberswap.android.domain.model.LocalLimitOrder
 import com.kyberswap.android.domain.model.Order
@@ -29,6 +28,7 @@ import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.common.MIN_SUPPORT_AMOUNT
+import com.kyberswap.android.presentation.common.specialGasLimitDefault
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.GetExpectedRateState
@@ -68,7 +68,6 @@ class LimitOrderViewModel @Inject constructor(
     private val pendingBalancesUseCase: GetPendingBalancesUseCase,
     private val elegibleAddressUseCase: CheckEligibleAddressUseCase,
     getSelectedWalletUseCase: GetSelectedWalletUseCase,
-    private val storageMediator: StorageMediator,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
 
@@ -165,7 +164,7 @@ class LimitOrderViewModel @Inject constructor(
     }
 
     fun getPendingBalances(wallet: Wallet?) {
-        if (wallet == null || storageMediator.getAccessToken().isNullOrEmpty()) return
+        if (wallet == null) return
         pendingBalancesUseCase.dispose()
         pendingBalancesUseCase.execute(
             Consumer {
@@ -239,7 +238,6 @@ class LimitOrderViewModel @Inject constructor(
     }
 
     fun getNonce(order: LocalLimitOrder, wallet: Wallet) {
-        if (storageMediator.getAccessToken().isNullOrEmpty()) return
         getNonceUseCase.dispose()
         getNonceUseCase.execute(
             Consumer {
@@ -299,7 +297,6 @@ class LimitOrderViewModel @Inject constructor(
 
 
     fun getRelatedOrders(order: LocalLimitOrder, wallet: Wallet) {
-        if (storageMediator.getAccessToken().isNullOrEmpty()) return
         getRelatedLimitOrdersUseCase.dispose()
         _getRelatedOrderCallback.postValue(Event(GetRelatedOrdersState.Loading))
         getRelatedLimitOrdersUseCase.execute(
@@ -509,22 +506,18 @@ class LimitOrderViewModel @Inject constructor(
         estimateGasUseCase.dispose()
         estimateGasUseCase.execute(
             Consumer {
-                if (it.error == null) {
-                    val gasLimit =
-                        if (order.tokenSource.isDAI ||
-                            order.tokenSource.isTUSD ||
-                            order.tokenDest.isDAI ||
-                            order.tokenDest.isTUSD
-                        ) {
-                            order.gasLimit.max(
-                                (it.amountUsed.toBigDecimal().multiply(1.2.toBigDecimal())).toBigInteger()
-                            )
-                        } else {
-                            (it.amountUsed.toBigDecimal().multiply(1.2.toBigDecimal())).toBigInteger()
-                        }
+                val gasLimit = it.toBigInteger()
+                val specialGasLimit = specialGasLimitDefault(order.tokenSource, order.tokenDest)
 
-                    _getGetGasLimitCallback.value = Event(GetGasLimitState.Success(gasLimit))
-                }
+                _getGetGasLimitCallback.value = Event(
+                    GetGasLimitState.Success(
+                        if (specialGasLimit != null) {
+                            specialGasLimit.max(gasLimit)
+                        } else {
+                            gasLimit
+                        }
+                    )
+                )
 
             },
             Consumer {

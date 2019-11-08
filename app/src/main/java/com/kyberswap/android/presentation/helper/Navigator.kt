@@ -5,18 +5,43 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.kyberswap.android.R
-import com.kyberswap.android.domain.model.*
+import com.kyberswap.android.domain.model.Alert
+import com.kyberswap.android.domain.model.Contact
+import com.kyberswap.android.domain.model.LocalLimitOrder
+import com.kyberswap.android.domain.model.SocialInfo
+import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.Transaction
+import com.kyberswap.android.domain.model.UserInfo
+import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.presentation.landing.LandingActivity
 import com.kyberswap.android.presentation.main.MainActivity
-import com.kyberswap.android.presentation.main.alert.*
+import com.kyberswap.android.presentation.main.alert.AlertMethodFragment
+import com.kyberswap.android.presentation.main.alert.LeaderBoardFragment
+import com.kyberswap.android.presentation.main.alert.ManageAlertFragment
+import com.kyberswap.android.presentation.main.alert.PriceAlertFragment
+import com.kyberswap.android.presentation.main.alert.PriceAlertTokenSearchFragment
 import com.kyberswap.android.presentation.main.balance.address.BalanceAddressFragment
 import com.kyberswap.android.presentation.main.balance.chart.ChartFragment
 import com.kyberswap.android.presentation.main.balance.send.SendConfirmActivity
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.kybercode.KyberCodeFragment
-import com.kyberswap.android.presentation.main.limitorder.*
-import com.kyberswap.android.presentation.main.profile.*
-import com.kyberswap.android.presentation.main.profile.kyc.*
+import com.kyberswap.android.presentation.main.limitorder.ConvertFragment
+import com.kyberswap.android.presentation.main.limitorder.FilterLimitOrderFragment
+import com.kyberswap.android.presentation.main.limitorder.LimitOrderTokenSearchFragment
+import com.kyberswap.android.presentation.main.limitorder.ManageOrderFragment
+import com.kyberswap.android.presentation.main.limitorder.OrderConfirmFragment
+import com.kyberswap.android.presentation.main.profile.ProfileDetailFragment
+import com.kyberswap.android.presentation.main.profile.ProfileFragment
+import com.kyberswap.android.presentation.main.profile.SignUpConfirmFragment
+import com.kyberswap.android.presentation.main.profile.SignUpFragment
+import com.kyberswap.android.presentation.main.profile.TermConditionActivity
+import com.kyberswap.android.presentation.main.profile.kyc.KycInfoSearchFragment
+import com.kyberswap.android.presentation.main.profile.kyc.KycInfoType
+import com.kyberswap.android.presentation.main.profile.kyc.PassportFragment
+import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
+import com.kyberswap.android.presentation.main.profile.kyc.SubmitFragment
+import com.kyberswap.android.presentation.main.profile.kyc.VerificationFragment
 import com.kyberswap.android.presentation.main.setting.AddContactFragment
 import com.kyberswap.android.presentation.main.setting.ContactFragment
 import com.kyberswap.android.presentation.main.setting.wallet.BackupWalletInfoFragment
@@ -26,7 +51,11 @@ import com.kyberswap.android.presentation.main.swap.PromoPaymentConfirmActivity
 import com.kyberswap.android.presentation.main.swap.PromoSwapConfirmActivity
 import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
 import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
-import com.kyberswap.android.presentation.main.transaction.*
+import com.kyberswap.android.presentation.main.transaction.TransactionDetailReceiveFragment
+import com.kyberswap.android.presentation.main.transaction.TransactionDetailSendFragment
+import com.kyberswap.android.presentation.main.transaction.TransactionDetailSwapFragment
+import com.kyberswap.android.presentation.main.transaction.TransactionFilterFragment
+import com.kyberswap.android.presentation.main.transaction.TransactionFragment
 import com.kyberswap.android.presentation.wallet.BackupWalletActivity
 import com.kyberswap.android.presentation.wallet.ImportWalletActivity
 import com.kyberswap.android.presentation.wallet.VerifyBackupWordActivity
@@ -60,9 +89,9 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         }
     }
 
-    fun navigateToHome() {
+    fun navigateToHome(isPromoCode: Boolean = false) {
         activity.startActivity(
-            MainActivity.newIntent(activity)
+            MainActivity.newIntent(activity, isPromoCode = isPromoCode)
             .apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             })
