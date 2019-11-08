@@ -47,120 +47,120 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <View
+        <androidx.cardview.widget.CardView
             android:id="@+id/view6"
             android:layout_width="match_parent"
-            android:layout_height="72dp"
+            android:layout_height="84dp"
             android:layout_marginStart="12dp"
             android:layout_marginTop="64dp"
             android:layout_marginEnd="12dp"
-            android:background="@drawable/rounded_corner_white_background"
+            app:cardBackgroundColor="#f5ffffff"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="4dp"
+            app:cardUseCompatPadding="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/imgTokenSource"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="85dp"
-            android:scaleType="fitCenter"
-            app:identifier="@{send.tokenSource.tokenSymbol}"
-            app:layout_constraintEnd_toStartOf="@+id/tvSource"
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/tvSource"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="9dp"
-            android:layout_marginEnd="12dp"
-            android:text="@{send.tokenSource.tokenSymbol}"
-            android:textAllCaps="true"
-            android:textColor="#141927"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="@+id/imgTokenSource"
-            app:layout_constraintEnd_toStartOf="@+id/edtSource"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/imgTokenSource"
-            app:layout_constraintTop_toTopOf="@+id/imgTokenSource" />
+                <ImageView
+                    android:id="@+id/imgTokenSource"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="18dp"
+                    android:scaleType="fitCenter"
+                    app:identifier="@{send.tokenSource.tokenSymbol}" />
 
-        <com.kyberswap.android.presentation.common.ClearableEditText
-            android:id="@+id/edtSource"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="30dp"
-            android:background="@android:color/transparent"
-            android:backgroundTint="#acb3c6"
-            android:ellipsize="start"
-            android:gravity="end"
-            android:hint="@string/default_swap_amount"
-            android:imeOptions="actionDone"
-            android:inputType="numberDecimal"
-            android:singleLine="true"
-            android:textColor="#fea34c"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="@+id/tvSource"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/tvSource"
-            app:layout_constraintTop_toTopOf="@+id/tvSource" />
+                <TextView
+                    android:id="@+id/tvSource"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="9dp"
+                    android:layout_marginEnd="12dp"
+                    android:text="@{send.tokenSource.tokenSymbol}"
+                    android:textAllCaps="true"
+                    android:textColor="#141927"
+                    android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/tvTokenBalance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="16dp"
-            android:text="@{send.tokenSource.tokenSymbol +` `+ @string/balance}"
-            android:textAllCaps="true"
-            android:textColor="#ffffff"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toStartOf="@+id/tvBalanceUsd"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view6"
-            tools:text="DAI Balance" />
+                <com.kyberswap.android.presentation.common.ClearableEditText
+                    android:id="@+id/edtSource"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="18dp"
+                    android:background="@android:color/transparent"
+                    android:backgroundTint="#acb3c6"
+                    android:ellipsize="start"
+                    android:gravity="end"
+                    android:hint="@string/default_swap_amount"
+                    android:imeOptions="actionDone"
+                    android:inputType="numberDecimal"
+                    android:singleLine="true"
+                    android:textColor="#fea34c"
+                    android:textSize="24sp" />
 
-        <TextView
-            android:id="@+id/tvBalanceDetail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:text="@{send.tokenSource.displayCurrentBalance}"
-            android:textColor="#ffffff"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvTokenBalance"
-            tools:text="63000" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-        <TextView
-            android:id="@+id/tvBalanceUsd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:gravity="end"
-            android:text="@{send.displaySourceAmountUsd}"
-            android:textColor="#ffffff"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="@+id/tvTokenBalance"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/tvTokenBalance"
-            app:layout_constraintTop_toTopOf="@+id/tvTokenBalance"
-            tools:text="≈ 30 USD" />
+        <!--        <ImageView-->
+        <!--            android:id="@+id/imgTokenSource"-->
+        <!--            android:layout_width="32dp"-->
+        <!--            android:layout_height="32dp"-->
+        <!--            android:layout_marginStart="30dp"-->
+        <!--            android:layout_marginTop="85dp"-->
+        <!--            android:scaleType="fitCenter"-->
+        <!--            app:identifier="@{send.tokenSource.tokenSymbol}"-->
+        <!--            app:layout_constraintEnd_toStartOf="@+id/tvSource"-->
+        <!--            app:layout_constraintHorizontal_chainStyle="spread_inside"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="parent" />-->
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/tvSource"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginStart="9dp"-->
+        <!--            android:layout_marginEnd="12dp"-->
+        <!--            android:text="@{send.tokenSource.tokenSymbol}"-->
+        <!--            android:textAllCaps="true"-->
+        <!--            android:textColor="#141927"-->
+        <!--            android:textSize="16sp"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@+id/imgTokenSource"-->
+        <!--            app:layout_constraintEnd_toStartOf="@+id/edtSource"-->
+        <!--            app:layout_constraintHorizontal_bias="0.5"-->
+        <!--            app:layout_constraintStart_toEndOf="@+id/imgTokenSource"-->
+        <!--            app:layout_constraintTop_toTopOf="@+id/imgTokenSource" />-->
+
+        <!--        <com.kyberswap.android.presentation.common.ClearableEditText-->
+        <!--            android:id="@+id/edtSource"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginEnd="30dp"-->
+        <!--            android:background="@android:color/transparent"-->
+        <!--            android:backgroundTint="#acb3c6"-->
+        <!--            android:ellipsize="start"-->
+        <!--            android:gravity="end"-->
+        <!--            android:hint="@string/default_swap_amount"-->
+        <!--            android:imeOptions="actionDone"-->
+        <!--            android:inputType="numberDecimal"-->
+        <!--            android:singleLine="true"-->
+        <!--            android:textColor="#fea34c"-->
+        <!--            android:textSize="24sp"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@+id/tvSource"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintHorizontal_bias="0.5"-->
+        <!--            app:layout_constraintStart_toEndOf="@+id/tvSource"-->
+        <!--            app:layout_constraintTop_toTopOf="@+id/tvSource" />-->
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="206dp"
+            android:layout_marginTop="105dp"
             android:fillViewport="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -172,6 +172,115 @@
                 android:layout_height="match_parent"
                 android:background="@color/color_bg_gray"
                 android:paddingBottom="80dp">
+
+
+                <TextView
+                    android:id="@+id/tvBalanceDetail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@{send.tokenSource.displayCurrentBalance}"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvTokenBalance"
+                    tools:text="63000" />
+
+                <TextView
+                    android:id="@+id/tvTokenBalance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@{send.tokenSource.tokenSymbol +` `+ @string/balance}"
+                    android:textAllCaps="true"
+                    android:textSize="12sp"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvBalanceUsd"
+                    tools:text="DAI Balance" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="right"
+                    app:constraint_referenced_ids="tvBalanceDetail,tvTokenBalance"
+                    tools:layout_editor_absoluteX="411dp" />
+
+                <TextView
+                    android:id="@+id/tv25Percent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="61dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/rounded_corner_percent_background"
+                    android:gravity="center"
+                    android:minWidth="50dp"
+                    android:minHeight="36dp"
+                    android:text="@string/percent_25"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#8690ad"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvBalanceDetail"
+                    app:layout_constraintEnd_toStartOf="@+id/tv50Percent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toEndOf="@+id/barrier10"
+                    app:layout_constraintTop_toTopOf="@+id/tvTokenBalance" />
+
+                <TextView
+                    android:id="@+id/tv50Percent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="@drawable/rounded_corner_percent_background"
+                    android:gravity="center"
+                    android:minWidth="50dp"
+                    android:minHeight="36dp"
+                    android:text="@string/percent_50"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#8690ad"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv25Percent"
+                    app:layout_constraintEnd_toStartOf="@+id/tv100Percent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/tv25Percent"
+                    app:layout_constraintTop_toTopOf="@+id/tv25Percent" />
+
+                <TextView
+                    android:id="@+id/tv100Percent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="24dp"
+                    android:background="@drawable/rounded_corner_percent_background"
+                    android:gravity="center"
+                    android:minWidth="50dp"
+                    android:minHeight="36dp"
+                    android:text="@string/percent_100"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#8690ad"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv50Percent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/tv50Percent"
+                    app:layout_constraintTop_toTopOf="@+id/tv50Percent" />
+
+                <TextView
+                    android:id="@+id/tvBalanceUsd"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="52dp"
+                    android:layout_marginEnd="24dp"
+                    android:gravity="end"
+                    android:text="@{send.displaySourceAmountUsd}"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="≈ 30 USD" />
 
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -187,7 +296,7 @@
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintHorizontal_chainStyle="spread_inside"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toBottomOf="@+id/tvTokenBalance">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edtAddress"
@@ -276,7 +385,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/textView25"
-                    app:layout_constraintTop_toBottomOf="@+id/tvAddContact" />
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvContact"
@@ -301,7 +410,7 @@
                     android:textColor="#9ea8b3"
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/rvContact" />
+                    app:layout_constraintTop_toBottomOf="@+id/tvAddContact" />
 
                 <LinearLayout
                     android:id="@+id/linearLayout3"
@@ -469,17 +578,17 @@
 
         </androidx.core.widget.NestedScrollView>
 
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/grBalance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:constraint_referenced_ids="tvTokenBalance,tvBalanceDetail" />
+        <!--        <androidx.constraintlayout.widget.Group-->
+        <!--            android:id="@+id/grBalance"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            app:constraint_referenced_ids="tvTokenBalance,tvBalanceDetail" />-->
 
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/grSendTokenSource"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:constraint_referenced_ids="tvSource,imgTokenSource" />
+        <!--        <androidx.constraintlayout.widget.Group-->
+        <!--            android:id="@+id/grSendTokenSource"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            app:constraint_referenced_ids="tvSource,imgTokenSource" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

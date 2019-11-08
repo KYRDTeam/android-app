@@ -38,6 +38,7 @@ import com.kyberswap.android.presentation.main.swap.SaveContactState
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isContact
 import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.kyberswap.android.util.ext.setAmount
@@ -539,6 +540,46 @@ class SendFragment : BaseFragment() {
                 }
             }
 
+        }
+
+        binding.tv25Percent.setOnClickListener {
+            hideKeyboard()
+            binding.edtSource.setAmount(
+                tvBalanceDetail.text.toString().toBigDecimalOrDefaultZero().multiply(
+                    0.25.toBigDecimal()
+                ).toDisplayNumber()
+            )
+        }
+
+        binding.tv50Percent.setOnClickListener {
+            hideKeyboard()
+            binding.edtSource.setAmount(
+                tvBalanceDetail.text.toString().toBigDecimalOrDefaultZero().multiply(
+                    0.5.toBigDecimal()
+                ).toDisplayNumber()
+            )
+        }
+
+        binding.tv100Percent.setOnClickListener {
+            hideKeyboard()
+            binding.send?.let {
+                if (it.tokenSource.isETH) {
+                    showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
+                    binding.edtSource.setAmount(
+                        it.availableAmountForTransfer(
+                            it.tokenSource.currentBalance,
+                            Token.TRANSFER_ETH_GAS_LIMIT_DEFAULT.toBigDecimal(),
+                            getSelectedGasPrice(
+                                it.gas,
+                                selectedGasFeeView?.id
+                            ).toBigDecimalOrDefaultZero()
+                        ).toDisplayNumber()
+                    )
+                } else {
+                    binding.edtSource.setText(it.tokenSource.currentBalance.toDisplayNumber())
+                }
+
+            }
         }
 
         viewModel.saveSendCallback.observe(viewLifecycleOwner, Observer {
