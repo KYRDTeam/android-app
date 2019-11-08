@@ -4,12 +4,14 @@ import android.content.Context
 import android.util.Base64
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
+import com.kyberswap.android.data.api.home.GasLimitApi
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.api.home.UserApi
 import com.kyberswap.android.data.db.ContactDao
 import com.kyberswap.android.data.db.SendDao
 import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.db.TokenExtDao
 import com.kyberswap.android.data.db.TransactionDao
 import com.kyberswap.android.data.db.UserDao
 import com.kyberswap.android.data.mapper.CapMapper
@@ -20,6 +22,7 @@ import com.kyberswap.android.domain.model.Cap
 import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.model.EstimateAmount
 import com.kyberswap.android.domain.model.Gas
+import com.kyberswap.android.domain.model.GasLimit
 import com.kyberswap.android.domain.model.ResponseStatus
 import com.kyberswap.android.domain.model.Send
 import com.kyberswap.android.domain.model.Swap
@@ -40,18 +43,22 @@ import com.kyberswap.android.domain.usecase.swap.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapDataTokenUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapUseCase
 import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
+import com.kyberswap.android.presentation.common.ADDITIONAL_SWAP_GAS_LIMIT
 import com.kyberswap.android.presentation.common.DEFAULT_NAME
+import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
+import io.reactivex.rxkotlin.Singles
 import org.consenlabs.tokencore.wallet.WalletManager
 import org.web3j.crypto.WalletUtils
 import org.web3j.protocol.core.methods.response.EthEstimateGas
 import org.web3j.utils.Convert
 import java.math.BigDecimal
+import java.math.BigInteger
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -71,7 +78,9 @@ class SwapDataRepository @Inject constructor(
     private val transactionDao: TransactionDao,
     private val userDao: UserDao,
     private val userApi: UserApi,
-    private val userMapper: UserMapper
+    private val userMapper: UserMapper,
+    private val gasLimitApi: GasLimitApi,
+    private val tokenExtDao: TokenExtDao
 ) : SwapRepository {
     override fun getCap(param: GetCombinedCapUseCase.Param): Single<Cap> {
         return Single.fromCallable {
@@ -230,20 +239,67 @@ class SwapDataRepository @Inject constructor(
             }
     }
 
-    override fun estimateGas(param: EstimateGasUseCase.Param): Single<EthEstimateGas> {
-        return Single.fromCallable {
-            tokenClient.estimateGas(
-                param.wallet.address,
-                context.getString(R.string.kyber_address),
+    override fun estimateGas(param: EstimateGasUseCase.Param): Single<BigDecimal> {
+        return Singles.zip(
+            gasLimitApi.estimateGas(
                 param.tokenSource.tokenAddress,
                 param.tokenDest.tokenAddress,
-                param.sourceAmount.toBigDecimalOrDefaultZero().times(
-                    10.0.pow(param.tokenSource.tokenDecimal)
-                        .toBigDecimal()
-                ).toBigInteger(),
-                param.minConversionRate,
-                param.tokenSource.isETH
-            )
+                param.sourceAmount
+            ).map {
+                mapper.transform(it)
+            }.onErrorReturnItem(
+                GasLimit(
+                    calculateDefaultGasLimit(
+                        param.tokenSource,
+                        param.tokenDest
+                    ).toBigDecimal(), false
+                )
+            ), Single.fromCallable {
+                tokenClient.estimateGas(
+                    param.wallet.address,
+                    context.getString(R.string.kyber_address),
+                    param.tokenSource.tokenAddress,
+                    param.tokenDest.tokenAddress,
+                    param.sourceAmount.toBigDecimalOrDefaultZero().times(
+                        10.0.pow(param.tokenSource.tokenDecimal)
+                            .toBigDecimal()
+                    ).toBigInteger(),
+                    param.minConversionRate,
+                    param.tokenSource.isETH
+                )
+
+            }
+
+        ) { gasLimitEntity, ethEstimateGas ->
+
+            val srcTokenExt = tokenExtDao.getTokenExtByAddress(param.tokenSource.tokenAddress)
+            val destTokenExt = tokenExtDao.getTokenExtByAddress(param.tokenDest.tokenAddress)
+
+            val defaultValue = calculateDefaultGasLimit(
+                param.tokenSource,
+                param.tokenDest
+            ).toBigDecimal()
+
+
+            if (srcTokenExt?.isGasFixed == true) {
+                srcTokenExt.gasLimit.toBigDecimalOrDefaultZero()
+            } else if (destTokenExt?.isGasFixed == true) {
+                destTokenExt.gasLimit.toBigDecimalOrDefaultZero()
+            } else if (gasLimitEntity.error && ethEstimateGas?.error != null) {
+                defaultValue
+            } else if (gasLimitEntity.error) {
+                ((ethEstimateGas?.amountUsed
+                    ?: BigInteger.ZERO).multiply(120.toBigInteger()).divide(100.toBigInteger()) + ADDITIONAL_SWAP_GAS_LIMIT.toBigInteger()).toBigDecimal()
+                    .min(defaultValue)
+            } else if (ethEstimateGas?.error != null) {
+                gasLimitEntity.data
+            } else {
+                (((ethEstimateGas?.amountUsed
+                    ?: BigInteger.ZERO).multiply(120.toBigInteger()).divide(100.toBigInteger()) + ADDITIONAL_SWAP_GAS_LIMIT.toBigInteger()).toBigDecimal()).min(
+                    gasLimitEntity.data
+                )
+            }
+
         }
     }
 
@@ -280,7 +336,7 @@ class SwapDataRepository @Inject constructor(
         return Completable.fromCallable {
             val swap = param.swap
             if (swap.gasLimit.isEmpty()) {
-                val sourceToken = tokenDao.getTokenBySymbol(swap.tokenSource.tokenSymbol)
+                val sourceToken = tokenDao.getTokenByAddress(swap.tokenSource.tokenAddress)
                 swap.gasLimit = sourceToken?.gasLimit ?: swap.gasLimit
             }
             swapDao.insertSwap(swap)
@@ -301,11 +357,11 @@ class SwapDataRepository @Inject constructor(
         return Completable.fromCallable {
             val swapByWalletAddress =
                 swapDao.findSwapByAddressFlowable(param.walletAddress).blockingFirst()
-            val tokenBySymbol = tokenDao.getTokenBySymbol(param.token.tokenSymbol)
+            val tokenByAddress = tokenDao.getTokenByAddress(param.token.tokenAddress)
             val swap = if (param.isSourceToken) {
-                swapByWalletAddress.copy(tokenSource = tokenBySymbol ?: Token())
+                swapByWalletAddress.copy(tokenSource = tokenByAddress ?: Token())
             } else {
-                swapByWalletAddress.copy(tokenDest = tokenBySymbol ?: Token())
+                swapByWalletAddress.copy(tokenDest = tokenByAddress ?: Token())
             }
             swapDao.updateSwap(swap)
         }
@@ -359,10 +415,10 @@ class SwapDataRepository @Inject constructor(
                     }
                     else -> {
                         val tokenSource =
-                            tokenDao.getTokenBySymbol(localSwap.tokenSource.tokenSymbol)
+                            tokenDao.getTokenByAddress(localSwap.tokenSource.tokenAddress)
                                 ?: Token()
                         val tokenDest =
-                            tokenDao.getTokenBySymbol(localSwap.tokenDest.tokenSymbol)
+                            tokenDao.getTokenByAddress(localSwap.tokenDest.tokenAddress)
                                 ?: Token()
 
                         val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
@@ -421,7 +477,7 @@ class SwapDataRepository @Inject constructor(
                 )
             } else {
                 val tokenSource =
-                    tokenDao.getTokenBySymbol(send.tokenSource.tokenSymbol)
+                    tokenDao.getTokenByAddress(send.tokenSource.tokenAddress)
                         ?: Token()
 
                 val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()

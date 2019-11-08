@@ -38,6 +38,7 @@ import com.kyberswap.android.presentation.main.alert.GetAlertState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.getAmountOrDefaultValue
+import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.kyberswap.android.util.ext.setAmount
 import com.kyberswap.android.util.ext.showDrawer
@@ -250,7 +251,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         } else {
                             edtDest.setAmount(
                                 swap.getExpectedAmount(
-                                    binding.tvRate.text.toString(),
+                                    swap.combineRate,
                                     text.toString()
                                 ).toDisplayNumber()
                             )
@@ -360,8 +361,45 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         }
 
-        viewModel.getExpectedRateCallback.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
+        binding.tv25Percent.setOnClickListener {
+            updateCurrentFocus(edtSource)
+            hideKeyboard()
+            binding.edtSource.setAmount(
+                tvTokenBalanceValue.text.toString().toBigDecimalOrDefaultZero().multiply(
+                    0.25.toBigDecimal()
+                ).toDisplayNumber()
+            )
+        }
+
+        binding.tv50Percent.setOnClickListener {
+            updateCurrentFocus(edtSource)
+            hideKeyboard()
+            binding.edtSource.setAmount(
+                tvTokenBalanceValue.text.toString().toBigDecimalOrDefaultZero().multiply(
+                    0.5.toBigDecimal()
+                ).toDisplayNumber()
+            )
+        }
+
+        binding.tv100Percent.setOnClickListener {
+            updateCurrentFocus(edtSource)
+            hideKeyboard()
+            binding.swap?.let {
+                if (it.tokenSource.isETH) {
+                    showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
+                    sourceAmount = availableAmount.toDisplayNumber()
+                    binding.edtSource.setText(sourceAmount)
+                } else {
+                    sourceAmount = it.tokenSource.currentBalance.toDisplayNumber()
+                    binding.edtSource.setText(sourceAmount)
+                    verifyAmount()
+                }
+
+            }
+        }
+
+        viewModel.getExpectedRateCallback.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetExpectedRateState.Success -> {
                         val swap =
@@ -393,12 +431,14 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                     displaySourceAmount
                                 )
                             } else {
-                                edtDest.setAmount(
-                                    binding.swap?.getExpectedAmount(
-                                        tvRate.text.toString(),
-                                        edtSource.text.toString()
-                                    )?.toDisplayNumber()
-                                )
+                                binding.swap?.let {
+                                    edtDest.setAmount(
+                                        it.getExpectedAmount(
+                                            it.combineRate,
+                                            edtSource.text.toString()
+                                        ).toDisplayNumber()
+                                    )
+                                }
                             }
 
                             showDestValueInUsd(swap)
@@ -778,6 +818,13 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         }
 
         setDefaultSelection()
+    }
+
+    private fun updateCurrentFocus(view: EditText?) {
+        currentFocus?.isSelected = false
+        currentFocus = view
+        currentFocus?.isSelected = true
+        destLock.set(view == binding.edtDest)
     }
 
     private fun setDefaultSelection() {

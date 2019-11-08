@@ -148,6 +148,13 @@ data class Swap(
             }
         }
 
+    val displayRate: String
+        get() = StringBuilder().append("1 ")
+            .append(tokenSource.tokenSymbol)
+            .append(" = ").append(combineRate).append(" ")
+            .append(tokenDest.tokenSymbol)
+            .toString()
+
     private val displaySourceToDestAmountETH: String
         get() = StringBuilder().append("1 ")
             .append(tokenSource.tokenSymbol)
@@ -204,6 +211,12 @@ data class Swap(
 
     val sourceSymbol: String
         get() = tokenSource.tokenSymbol
+
+    val sourceAddress: String
+        get() = tokenSource.tokenAddress
+
+    val destAddress: String
+        get() = tokenDest.tokenAddress
 
     val destSymbol: String
         get() = tokenDest.tokenSymbol

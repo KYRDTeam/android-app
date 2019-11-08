@@ -16,7 +16,6 @@ import com.kyberswap.android.domain.usecase.swap.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
-import com.kyberswap.android.presentation.common.ADDITIONAL_SWAP_GAS_LIMIT
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
 import com.kyberswap.android.presentation.common.specialGasLimitDefault
@@ -206,24 +205,17 @@ class SwapViewModel @Inject constructor(
         estimateGasUseCase.dispose()
         estimateGasUseCase.execute(
             Consumer {
-                if (it.error == null) {
-
-                    val gasLimit = calculateDefaultGasLimit(swap.tokenSource, swap.tokenDest)
-                        .min(it.amountUsed.multiply(120.toBigInteger()).divide(100.toBigInteger()) + ADDITIONAL_SWAP_GAS_LIMIT.toBigInteger())
-
-                    val specialGasLimit = specialGasLimitDefault(swap.tokenSource, swap.tokenDest)
-
-                    _getGetGasLimitCallback.value = Event(
-                        GetGasLimitState.Success(
-                            if (specialGasLimit != null) {
-                                specialGasLimit.max(gasLimit)
-                            } else {
-                                gasLimit
-                            }
-                        )
+                val gasLimit = it.toBigInteger()
+                val specialGasLimit = specialGasLimitDefault(swap.tokenSource, swap.tokenDest)
+                _getGetGasLimitCallback.value = Event(
+                    GetGasLimitState.Success(
+                        if (specialGasLimit != null) {
+                            specialGasLimit.max(gasLimit)
+                        } else {
+                            gasLimit
+                        }
                     )
-                }
-
+                )
             },
             Consumer {
                 it.printStackTrace()

@@ -38,6 +38,7 @@ import com.kyberswap.android.presentation.main.swap.SaveContactState
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isContact
 import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.kyberswap.android.util.ext.setAmount
@@ -48,6 +49,7 @@ import net.cachapa.expandablelayout.ExpandableLayout
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.math.BigDecimal
 import java.util.Locale
 import javax.inject.Inject
 
@@ -94,6 +96,17 @@ class SendFragment : BaseFragment() {
                 edtAddress.text.toString()
             ).toLowerCase(Locale.getDefault())
         } != null
+
+    private val availableAmount: BigDecimal
+        get() = binding.send?.let {
+            it.availableAmountForTransfer(
+                it.tokenSource.currentBalance,
+                Token.TRANSFER_ETH_GAS_LIMIT_DEFAULT.toBigDecimal(),
+                getSelectedGasPrice(
+                    it.gas, selectedGasFeeView?.id
+                ).toBigDecimalOrDefaultZero()
+            )
+        } ?: BigDecimal.ZERO
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
@@ -481,6 +494,14 @@ class SendFragment : BaseFragment() {
                         getString(R.string.not_enough_eth_blance)
                     )
 
+                    send.tokenSource.isETH &&
+                        availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
+                        showAlertWithoutIcon(
+                            getString(R.string.insufficient_eth),
+                            getString(R.string.not_enough_eth_blance)
+                        )
+                    }
+
                     hasPendingTransaction -> showAlertWithoutIcon(message = getString(R.string.pending_transaction))
                     else -> {
                         viewModel.saveSend(
@@ -519,6 +540,46 @@ class SendFragment : BaseFragment() {
                 }
             }
 
+        }
+
+        binding.tv25Percent.setOnClickListener {
+            hideKeyboard()
+            binding.edtSource.setAmount(
+                tvBalanceDetail.text.toString().toBigDecimalOrDefaultZero().multiply(
+                    0.25.toBigDecimal()
+                ).toDisplayNumber()
+            )
+        }
+
+        binding.tv50Percent.setOnClickListener {
+            hideKeyboard()
+            binding.edtSource.setAmount(
+                tvBalanceDetail.text.toString().toBigDecimalOrDefaultZero().multiply(
+                    0.5.toBigDecimal()
+                ).toDisplayNumber()
+            )
+        }
+
+        binding.tv100Percent.setOnClickListener {
+            hideKeyboard()
+            binding.send?.let {
+                if (it.tokenSource.isETH) {
+                    showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
+                    binding.edtSource.setAmount(
+                        it.availableAmountForTransfer(
+                            it.tokenSource.currentBalance,
+                            Token.TRANSFER_ETH_GAS_LIMIT_DEFAULT.toBigDecimal(),
+                            getSelectedGasPrice(
+                                it.gas,
+                                selectedGasFeeView?.id
+                            ).toBigDecimalOrDefaultZero()
+                        ).toDisplayNumber()
+                    )
+                } else {
+                    binding.edtSource.setText(it.tokenSource.currentBalance.toDisplayNumber())
+                }
+
+            }
         }
 
         viewModel.saveSendCallback.observe(viewLifecycleOwner, Observer {

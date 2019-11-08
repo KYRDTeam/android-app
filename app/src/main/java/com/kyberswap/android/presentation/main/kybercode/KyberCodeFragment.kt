@@ -14,6 +14,8 @@ import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.listener.addTextChangeListener
+import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.presentation.main.MainPagerAdapter
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.hideKeyboard
 import org.consenlabs.tokencore.wallet.model.Messages
@@ -126,8 +128,9 @@ class KyberCodeFragment : BaseFragment() {
 
     private fun onKyberCodeFinish() {
         if (fromLandingPage == true) {
-            navigator.navigateToHome()
+            navigator.navigateToHome(true)
         } else {
+            (activity as? MainActivity)?.moveToTab(MainPagerAdapter.SWAP)
             activity?.onBackPressed()
         }
     }

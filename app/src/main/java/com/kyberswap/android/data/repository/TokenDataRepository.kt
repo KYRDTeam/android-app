@@ -103,7 +103,7 @@ class TokenDataRepository @Inject constructor(
 
     override fun saveToken(param: SaveTokenUseCase.Param): Completable {
         return Completable.fromCallable {
-            val local = tokenDao.getTokenBySymbol(param.token.tokenSymbol)
+            val local = tokenDao.getTokenByAddress(param.token.tokenAddress)
             local?.let {
                 val favToken = local.copy(fav = param.token.fav)
                 tokenDao.updateToken(favToken)

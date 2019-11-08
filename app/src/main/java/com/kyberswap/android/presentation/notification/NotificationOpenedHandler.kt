@@ -17,8 +17,7 @@ class NotificationOpenedHandler : OneSignal.NotificationOpenedHandler {
         val data = result.notification.payload.additionalData
 
         try {
-            val type = data.getString(NOTIFICATION_TYPE)
-            when (type) {
+            when (data?.getString(NOTIFICATION_TYPE)) {
                 NOTIFICATION_TYPE_ALERT -> {
                     val alert = Gson().fromJson(data.toString(), NotificationAlert::class.java)
                     val intent =

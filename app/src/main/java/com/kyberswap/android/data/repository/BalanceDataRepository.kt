@@ -8,9 +8,11 @@ import com.kyberswap.android.data.db.LocalLimitOrderDao
 import com.kyberswap.android.data.db.SendDao
 import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.db.TokenExtDao
 import com.kyberswap.android.data.db.WalletDao
 import com.kyberswap.android.data.mapper.TokenMapper
 import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.TokenExt
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.BalanceRepository
 import com.kyberswap.android.domain.usecase.balance.UpdateBalanceUseCase
@@ -37,6 +39,7 @@ class BalanceDataRepository @Inject constructor(
     private val tokenMapper: TokenMapper,
     private val tokenClient: TokenClient,
     private val tokenDao: TokenDao,
+    private val tokenExtDao: TokenExtDao,
     private val walletDao: WalletDao,
     private val swapDao: SwapDao,
     private val sendDao: SendDao,
@@ -49,8 +52,8 @@ class BalanceDataRepository @Inject constructor(
             val wallet = param.wallet
             val localSwap = swapDao.findSwapByAddress(wallet.address)
             localSwap?.let {
-                val tokenSource = tokenDao.getTokenBySymbol(it.sourceSymbol) ?: Token()
-                val tokenDest = tokenDao.getTokenBySymbol(it.destSymbol) ?: Token()
+                val tokenSource = tokenDao.getTokenByAddress(it.sourceAddress) ?: Token()
+                val tokenDest = tokenDao.getTokenByAddress(it.destAddress) ?: Token()
                 val tokenEth = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
 
                 val updatedToken =
@@ -64,7 +67,7 @@ class BalanceDataRepository @Inject constructor(
             val send = sendDao.findSendByAddress(wallet.address)
             send?.let {
                 val tokenSource =
-                    tokenDao.getTokenBySymbol(send.tokenSource.tokenSymbol)
+                    tokenDao.getTokenByAddress(send.tokenSource.tokenAddress)
                         ?: Token()
 
                 val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
@@ -123,7 +126,7 @@ class BalanceDataRepository @Inject constructor(
                 )
             }
             else -> {
-                tokenDao.getTokenBySymbol(token.tokenSymbol) ?: token
+                tokenDao.getTokenByAddress(token.tokenAddress) ?: token
             }
         }
     }
@@ -185,9 +188,15 @@ class BalanceDataRepository @Inject constructor(
                             val tokenBySymbol = remoteTokenList.find {
                                 it.tokenSymbol == internalCurrency.symbol
                             }
+
                             tokenBySymbol?.with(internalCurrency) ?: Token(internalCurrency)
                         }
                         .toList()
+                        .doAfterSuccess { tokens ->
+                            tokenExtDao.insertTokenExtras(tokens.map {
+                                TokenExt(it)
+                            })
+                        }
                         .map { remoteTokens ->
                             val localTokenList = tokenDao.all.first(listOf()).blockingGet()
                             remoteTokens.map { remoteToken ->
@@ -208,8 +217,60 @@ class BalanceDataRepository @Inject constructor(
                         }
                 }
 
+                .doAfterSuccess { tokens ->
+                    tokenDao.insertTokens(tokens)
+                }
+        } else {
+            tokenDao.all.first(listOf())
+        }
+    }
+
+    override fun preloadTokenInfo(): Single<List<Token>> {
+        return if (tokenDao.all.blockingFirst().isEmpty()) {
+            fetchChange24h()
                 .doAfterSuccess {
                     tokenDao.insertTokens(it)
+                }
+                .flatMap { remoteTokenList ->
+                    currencyApi.internalCurrencies()
+                        .map { currencies -> currencies.data }
+                        .toFlowable()
+                        .flatMapIterable { tokenCurrency -> tokenCurrency }
+                        .map { internalCurrency ->
+                            val tokenBySymbol = remoteTokenList.find {
+                                it.tokenSymbol == internalCurrency.symbol
+                            }
+
+                            tokenBySymbol?.with(internalCurrency) ?: Token(internalCurrency)
+                        }
+                        .toList()
+                        .doAfterSuccess { tokens ->
+                            tokenExtDao.insertTokenExtras(tokens.map {
+                                TokenExt(it)
+                            })
+                        }
+                        .map { remoteTokens ->
+                            val localTokenList = tokenDao.all.first(listOf()).blockingGet()
+                            remoteTokens.map { remoteToken ->
+                                val localToken = localTokenList.find {
+                                    it.tokenAddress == remoteToken.tokenAddress
+                                }
+
+                                if (localToken != null) {
+                                    remoteToken.copy(
+                                        wallets = localToken.wallets,
+                                        fav = localToken.fav
+                                    )
+                                } else {
+                                    remoteToken
+                                }
+
+                            }
+                        }
+                }
+
+                .doAfterSuccess { tokens ->
+                    tokenDao.insertTokens(tokens)
                 }
         } else {
             tokenDao.all.first(listOf())
