@@ -212,6 +212,12 @@ data class Swap(
     val sourceSymbol: String
         get() = tokenSource.tokenSymbol
 
+    val sourceAddress: String
+        get() = tokenSource.tokenAddress
+
+    val destAddress: String
+        get() = tokenDest.tokenAddress
+
     val destSymbol: String
         get() = tokenDest.tokenSymbol
 

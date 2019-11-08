@@ -18,7 +18,7 @@ class PreloadUseCase @Inject constructor(
 ) : FlowableUseCase<String?, Wallet>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     override fun buildUseCaseFlowable(param: String?): Flowable<Wallet> {
-        return balanceRepository.getBalance().toFlowable().flatMap {
+        return balanceRepository.preloadTokenInfo().toFlowable().flatMap {
             walletRepository.getSelectedWallet()
         }
     }

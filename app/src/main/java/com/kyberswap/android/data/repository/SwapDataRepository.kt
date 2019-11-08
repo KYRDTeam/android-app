@@ -336,7 +336,7 @@ class SwapDataRepository @Inject constructor(
         return Completable.fromCallable {
             val swap = param.swap
             if (swap.gasLimit.isEmpty()) {
-                val sourceToken = tokenDao.getTokenBySymbol(swap.tokenSource.tokenSymbol)
+                val sourceToken = tokenDao.getTokenByAddress(swap.tokenSource.tokenAddress)
                 swap.gasLimit = sourceToken?.gasLimit ?: swap.gasLimit
             }
             swapDao.insertSwap(swap)
@@ -357,11 +357,11 @@ class SwapDataRepository @Inject constructor(
         return Completable.fromCallable {
             val swapByWalletAddress =
                 swapDao.findSwapByAddressFlowable(param.walletAddress).blockingFirst()
-            val tokenBySymbol = tokenDao.getTokenBySymbol(param.token.tokenSymbol)
+            val tokenByAddress = tokenDao.getTokenByAddress(param.token.tokenAddress)
             val swap = if (param.isSourceToken) {
-                swapByWalletAddress.copy(tokenSource = tokenBySymbol ?: Token())
+                swapByWalletAddress.copy(tokenSource = tokenByAddress ?: Token())
             } else {
-                swapByWalletAddress.copy(tokenDest = tokenBySymbol ?: Token())
+                swapByWalletAddress.copy(tokenDest = tokenByAddress ?: Token())
             }
             swapDao.updateSwap(swap)
         }
@@ -415,10 +415,10 @@ class SwapDataRepository @Inject constructor(
                     }
                     else -> {
                         val tokenSource =
-                            tokenDao.getTokenBySymbol(localSwap.tokenSource.tokenSymbol)
+                            tokenDao.getTokenByAddress(localSwap.tokenSource.tokenAddress)
                                 ?: Token()
                         val tokenDest =
-                            tokenDao.getTokenBySymbol(localSwap.tokenDest.tokenSymbol)
+                            tokenDao.getTokenByAddress(localSwap.tokenDest.tokenAddress)
                                 ?: Token()
 
                         val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
@@ -477,7 +477,7 @@ class SwapDataRepository @Inject constructor(
                 )
             } else {
                 val tokenSource =
-                    tokenDao.getTokenBySymbol(send.tokenSource.tokenSymbol)
+                    tokenDao.getTokenByAddress(send.tokenSource.tokenAddress)
                         ?: Token()
 
                 val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()

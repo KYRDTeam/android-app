@@ -19,5 +19,6 @@ interface BalanceRepository {
     fun getOtherTokenBalances(param: GetOtherTokenBalancesUseCase.Param): Completable
     fun getTokenBalances(param: GetTokensBalanceUseCase.Param): Completable
     fun getBalance(param: PrepareBalanceUseCase.Param = PrepareBalanceUseCase.Param()): Single<List<Token>>
+    fun preloadTokenInfo(): Single<List<Token>>
     fun updateBalance(param: UpdateBalanceUseCase.Param): Completable
 }

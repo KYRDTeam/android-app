@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="token_endpoint_url" formatted="false" translatable="false">https://dev-kovan-api.knstats.com/</string>
+    <string name="currency_endpoint_url" formatted="false" translatable="false">https://dev-kovan-api.knstats.com/</string>
+    <string name="base_rpc_url" translatable="false">https://kovan.infura.io/v3/7c000d80b38c40729e5677b42e9fd5e7</string>
+    <string name="rate_endpoint_url" formatted="false" translatable="false">https://ropsten-cache.knstats.com/</string>
+    <string name="transaction_etherscan_endpoint_url" formatted="false" translatable="false">https://kovan.etherscan.io/tx/</string>
+    <string name="transaction_endpoint_url" formatted="false" translatable="false">https://api-kovan.etherscan.io</string>
+    <string name="transaction_kyber_endpoint_url" formatted="false" translatable="false">https://kyber.enjinx.io/eth/transaction/</string>
+    <string name="user_endpoint_url" formatted="false" translatable="false">https://dev-userdashboard.knstats.com/</string>
+    <!--<string name="user_endpoint_url" formatted="false" translatable="false">http://192.168.2.139:3000/</string>-->
+    <string name="kyber_address" formatted="false" translatable="false">0x818E6FECD516Ecc3849DAf6845e3EC868087B755</string>
+    <string name="limit_order_contract" formatted="false" translatable="false">0xa33caaed059f0c574c07136a5da9f28dc2fa27c2</string>
+    <string name="kyber_code_api_key" translatable="false">9872342987234234b</string>
+    <string name="promo_source_token" translatable="false">OMG</string>
+    <string name="chart_endpoint_url" formatted="false" translatable="false">https://dev-api.knstats.com/</string>
+    <string name="wrapper_contract_address" translatable="false">0x665d34f192f4940da4e859ff7768c0a80ed3ae10</string>
+    <string name="gas_limit_endpoint_url" translatable="false">https://dev-api.knstats.com/</string>
+</resources>
