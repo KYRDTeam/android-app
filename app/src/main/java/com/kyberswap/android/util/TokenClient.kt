@@ -215,7 +215,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         val function =
             getExpectedRate(tokenSource.tokenAddress, tokenDest.tokenAddress, srcTokenAmount)
 
-        val responseValue = callSmartContractFunction(function, contractAddress, walletAddress)
+        val responseValue = callSmartContractFunction(function, contractAddress, null)
 
         val responses = FunctionReturnDecoder.decode(
             responseValue, function.outputParameters
