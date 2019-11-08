@@ -71,7 +71,6 @@ class TokenDataRepository @Inject constructor(
             .toBigDecimal().toBigInteger()
         return Flowable.fromCallable {
             val expectedRate = tokenClient.getExpectedRate(
-                param.walletAddress,
                 context.getString(R.string.kyber_address),
                 tokenSource,
                 param.tokenDest,
