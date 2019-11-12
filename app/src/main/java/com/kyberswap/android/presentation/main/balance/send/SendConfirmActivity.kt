@@ -9,8 +9,10 @@ import androidx.lifecycle.ViewModelProviders
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivitySendConfirmBinding
+import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
+import com.kyberswap.android.presentation.common.CustomAlertActivity
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
@@ -82,9 +84,11 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
                 showProgress(state == TransferTokenTransactionState.Loading)
                 when (state) {
                     is TransferTokenTransactionState.Success -> {
-                        showAlertWithoutIcon(
-                            getString(R.string.transaction_broadcasted), getString(
-                                R.string.transaction_broadcasted_message
+                        showBroadcastAlert(
+                            CustomAlertActivity.DIALOG_TYPE_BROADCASTED,
+                            Transaction(
+                                type = Transaction.TransactionType.SEND,
+                                hash = state.responseStatus.hash
                             )
                         )
                         onBackPressed()

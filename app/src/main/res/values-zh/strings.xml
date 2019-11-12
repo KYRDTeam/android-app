@@ -610,5 +610,16 @@
     <string name="cant_get_data_from_file">无法从您的文件中获取数据。</string>
     <string name="no_matching_tokens">没有匹配代币</string>
     <string name="unsupported_token">Kyber Network不支持此代币</string>
+    <string name="dialog_done">Done!</string>
+    <string name="new_transfer">New Transfer</string>
+    <string name="new_swap">New Swap</string>
+    <string name="dialog_swap">Swap</string>
+    <string name="dialog_transfer">Transfer</string>
+    <string name="successfully_swapped">Successfully swapped</string>
+    <string name="successfully_transferred">Successfully Transferred</string>
+    <string name="dialog_broadcasted">Broadcasted!</string>
+    <string name="your_transaction_has_been_broadcasted">Your transaction has been broadcasted!</string>
+    <string name="waiting_for_the_transaction_to_be_mined">Waiting for the transaction to be mined</string>
+    <string name="dialog_fail">Fail!</string>
 
 </resources>

@@ -9,8 +9,10 @@ import androidx.lifecycle.ViewModelProviders
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivitySwapConfirmBinding
+import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
+import com.kyberswap.android.presentation.common.CustomAlertActivity
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.isNetworkAvailable
@@ -71,9 +73,16 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
                 showProgress(state == SwapTokenTransactionState.Loading)
                 when (state) {
                     is SwapTokenTransactionState.Success -> {
-                        showAlertWithoutIcon(
-                            getString(R.string.transaction_broadcasted), getString(
-                                R.string.transaction_broadcasted_message
+//                        showAlertWithoutIcon(
+//                            getString(R.string.transaction_broadcasted), getString(
+//                                R.string.transaction_broadcasted_message
+//                            )
+//                        )
+                        showBroadcastAlert(
+                            CustomAlertActivity.DIALOG_TYPE_BROADCASTED,
+                            Transaction(
+                                type = Transaction.TransactionType.SWAP,
+                                hash = state.responseStatus?.hash ?: ""
                             )
                         )
                         onBackPressed()

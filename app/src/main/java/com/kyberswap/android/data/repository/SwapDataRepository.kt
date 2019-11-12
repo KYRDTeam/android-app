@@ -170,8 +170,10 @@ class SwapDataRepository @Inject constructor(
             }
 
             hash ?: ""
-        }.flatMap {
-            userApi.submitTx(it)
+        }.flatMap { hash ->
+            userApi.submitTx(hash).map {
+                it.copy(hash = hash)
+            }
         }.map {
             userMapper.transform(it)
         }
@@ -232,8 +234,10 @@ class SwapDataRepository @Inject constructor(
             hash ?: ""
 
         }
-            .flatMap {
-                userApi.submitTx(it)
+            .flatMap { hash ->
+                userApi.submitTx(hash).map {
+                    it.copy(hash = hash)
+                }
             }.map {
                 userMapper.transform(it)
             }

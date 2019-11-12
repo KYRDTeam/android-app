@@ -1,5 +1,6 @@
 package com.kyberswap.android
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -50,6 +51,16 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
     lateinit var aead: Aead
     private val disposable = CompositeDisposable()
     private var counter = THRESHOLD_VALUE
+
+    private var _currentActivity: Activity? = null
+
+    val currentActivity: Activity?
+        get() = _currentActivity
+
+
+    fun setCurrentActivity(activity: Activity) {
+        this._currentActivity = activity
+    }
 
 
     override fun onCreate() {
@@ -106,7 +117,6 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
             .setNotificationOpenedHandler(NotificationOpenedHandler())
             .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
             .init()
-
     }
 
     fun stopCounter() {
@@ -128,7 +138,6 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
                     it.printStackTrace()
                 })
         )
-
     }
 
     @Throws(IOException::class, GeneralSecurityException::class)
@@ -157,11 +166,11 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     fun onAppBackgrounded() {
-
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun onAppDestroy() {
+        _currentActivity = null
         disposable.clear()
     }
 

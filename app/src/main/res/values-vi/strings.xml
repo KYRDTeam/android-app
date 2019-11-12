@@ -609,5 +609,16 @@
     <string name="cant_get_data_from_file">Không thể lấy dữ liệu từ tệp.</string>
     <string name="no_matching_tokens">Không có kết quả</string>
     <string name="unsupported_token">Token này không được hỗ trợ bởi Kyber Network</string>
+    <string name="dialog_done">Done!</string>
+    <string name="new_transfer">New Transfer</string>
+    <string name="new_swap">New Swap</string>
+    <string name="dialog_swap">Swap</string>
+    <string name="dialog_transfer">Transfer</string>
+    <string name="successfully_swapped">Successfully swapped</string>
+    <string name="successfully_transferred">Successfully Transferred</string>
+    <string name="dialog_broadcasted">Broadcasted!</string>
+    <string name="your_transaction_has_been_broadcasted">Your transaction has been broadcasted!</string>
+    <string name="waiting_for_the_transaction_to_be_mined">Waiting for the transaction to be mined</string>
+    <string name="dialog_fail">Fail!</string>
 
 </resources>

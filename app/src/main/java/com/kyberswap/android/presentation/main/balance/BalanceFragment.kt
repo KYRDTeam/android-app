@@ -294,7 +294,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetBalanceState.Success -> {
-                        setNameBalanceSelectedOption(balanceIndex)
+//                        setNameBalanceSelectedOption(balanceIndex)
                         updateTokenBalance(state.tokens.map {
                             it.updateSelectedWallet(wallet)
                         })
@@ -616,7 +616,11 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     private fun toggleDisplay(isSelected: Boolean, view: TextView) {
-        view.isSelected = isSelected
+
+        if (view != binding.header.tvEth && view != binding.header.tvUsd) {
+            view.isSelected = isSelected
+        }
+
         val drawable = if (isSelected) R.drawable.ic_arrow_downward else 0
         view.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawable, 0)
     }
