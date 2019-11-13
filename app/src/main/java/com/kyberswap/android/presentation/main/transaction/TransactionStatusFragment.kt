@@ -155,7 +155,7 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                 when (state) {
 
                     is DeleteTransactionState.Success -> {
-                        showAlert("Delete transaction successfully")
+                        showAlert(getString(R.string.delete_transaction_success))
                     }
                     is DeleteTransactionState.ShowError -> {
                         showError(
@@ -200,7 +200,7 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
             }, {
                 dialogHelper.showConfirmation(
                     getString(R.string.title_delete),
-                    "Do you want to remove this pending transaction?",
+                    getString(R.string.delete_transaction_warning),
                     {
                         viewModel.deleteTransaction(it)
                     })
