@@ -1,5 +1,6 @@
 package com.kyberswap.android.presentation.main.transaction
 
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,20 +8,25 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
+import com.daimajia.swipe.SimpleSwipeListener
+import com.daimajia.swipe.SwipeLayout
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ItemHeaderBinding
 import com.kyberswap.android.databinding.ItemTransactionBinding
 import com.kyberswap.android.domain.model.Transaction
-import com.kyberswap.android.presentation.base.DataBoundListAdapter
+import com.kyberswap.android.presentation.base.DataBoundListSwipeAdapter
 import com.kyberswap.android.presentation.base.DataBoundViewHolder
 import java.util.Locale
 
 class TransactionStatusAdapter(
     appExecutors: AppExecutors,
-    private val onTransactionClick: ((Transaction) -> Unit)?
+    private var isPending: Boolean = false,
+    private val handler: Handler? = null,
+    private val onTransactionClick: ((Transaction) -> Unit)?,
+    private val onDeleteClick: ((Transaction) -> Unit)? = null
 
-) : DataBoundListAdapter<TransactionItem, ViewDataBinding>(
+) : DataBoundListSwipeAdapter<TransactionItem, ViewDataBinding>(
     appExecutors,
     diffCallback = object : DiffUtil.ItemCallback<TransactionItem>() {
         override fun areItemsTheSame(oldItem: TransactionItem, newItem: TransactionItem): Boolean {
@@ -66,6 +72,14 @@ class TransactionStatusAdapter(
     }
 ) {
 
+    override fun getSwipeLayoutResourceId(position: Int): Int {
+        return R.id.swipe
+    }
+
+    private fun setPendingTransaction(isPending: Boolean) {
+        this.isPending = isPending
+    }
+
     override fun bind(binding: ViewDataBinding, item: TransactionItem) {
         when (item) {
             is TransactionItem.Header -> {
@@ -90,7 +104,6 @@ class TransactionStatusAdapter(
         binding.tvRate.text = transaction.displayRate
         val context = binding.tvRate.context
 
-
         val transactionType = when (transaction.transactionType) {
             Transaction.TransactionType.SEND -> {
                 context.getString(R.string.filter_send)
@@ -106,9 +119,24 @@ class TransactionStatusAdapter(
         }
         binding.tvTransactionType.text = transactionType.toUpperCase(Locale.getDefault())
         binding.tvFail.visibility = if (transaction.isTransactionFail) View.VISIBLE else View.GONE
-        binding.root.setOnClickListener {
+        binding.clTransaction.setOnClickListener {
             onTransactionClick?.invoke(transaction)
         }
+
+        binding.btnDelete.setOnClickListener {
+            binding.swipe.close(true)
+            handler?.postDelayed({
+                onDeleteClick?.invoke(transaction)
+            }, 250)
+
+        }
+        binding.swipe.addSwipeListener(object : SimpleSwipeListener() {
+            override fun onStartOpen(layout: SwipeLayout?) {
+                mItemManger.closeAllExcept(layout)
+            }
+        })
+
+        binding.swipe.isSwipeEnabled = isPending
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -124,8 +152,11 @@ class TransactionStatusAdapter(
         holder: DataBoundViewHolder<ViewDataBinding>,
         position: Int
     ) {
-        super.onBindViewHolder(holder, position)
+        if (holder.binding is ItemTransactionBinding) {
+            mItemManger.bindView(holder.itemView, position)
+        }
 
+        super.onBindViewHolder(holder, position)
         val color = when (getData()[position]) {
             is TransactionItem.Header -> R.color.transaction_header_color
             is TransactionItem.ItemEven -> R.color.transaction_item_even_color

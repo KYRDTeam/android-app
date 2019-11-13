@@ -295,7 +295,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                         }
 
                         txList.forEach { transaction ->
-
                             showBroadcastAlert(
                                 CustomAlertActivity.DIALOG_TYPE_DONE,
                                 transaction

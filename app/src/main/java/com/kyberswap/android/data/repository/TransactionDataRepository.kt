@@ -24,6 +24,7 @@ import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.TransactionFilter
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.TransactionRepository
+import com.kyberswap.android.domain.usecase.transaction.DeleteTransactionUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionFilterUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionsPeriodicallyUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
@@ -135,16 +136,16 @@ class TransactionDataRepository @Inject constructor(
 
         val swapByAddress = swapDao.findSwapByAddress(wallet.address)
         swapByAddress?.let { swap ->
-            if (swap.tokenSource.tokenSymbol == updatedBalanceToken.tokenSymbol) {
+            if (swap.tokenSource.tokenAddress.equals(updatedBalanceToken.tokenAddress, true)) {
                 swapDao.updateSwap(swap.copy(tokenSource = updatedBalanceToken))
-            } else if (swap.tokenDest.tokenSymbol == updatedBalanceToken.tokenSymbol) {
+            } else if (swap.tokenDest.tokenAddress.equals(updatedBalanceToken.tokenAddress, true)) {
                 swapDao.updateSwap(swap.copy(tokenDest = updatedBalanceToken))
             }
         }
 
         val sendByAddress = sendDao.findSendByAddress(wallet.address)
         sendByAddress?.let { send ->
-            if (send.tokenSource.tokenSymbol == updatedBalanceToken.tokenSymbol) {
+            if (send.tokenSource.tokenAddress.equals(updatedBalanceToken.tokenAddress, true)) {
                 sendDao.updateSend(send.copy(tokenSource = updatedBalanceToken))
             }
 
@@ -154,7 +155,10 @@ class TransactionDataRepository @Inject constructor(
             limitOrderDao.findLocalLimitOrderByAddress(wallet.address)
         orderByAddress?.let { order ->
             when {
-                order.tokenSource.tokenSymbol == updatedBalanceToken.tokenSymbol -> limitOrderDao.updateOrder(
+                order.tokenSource.tokenAddress.equals(
+                    updatedBalanceToken.tokenAddress,
+                    true
+                ) -> limitOrderDao.updateOrder(
                     order.copy(
                         tokenSource = order.tokenSource.updateBalance(
                             updatedBalanceToken.currentBalance
@@ -162,7 +166,10 @@ class TransactionDataRepository @Inject constructor(
                     )
                 )
 
-                order.tokenDest.tokenSymbol == updatedBalanceToken.tokenSymbol -> limitOrderDao.updateOrder(
+                order.tokenDest.tokenAddress.equals(
+                    updatedBalanceToken.tokenAddress,
+                    true
+                ) -> limitOrderDao.updateOrder(
                     order.copy(
                         tokenDest = order.tokenDest.updateBalance(updatedBalanceToken.currentBalance)
                     )
@@ -786,6 +793,12 @@ class TransactionDataRepository @Inject constructor(
     override fun saveTransactionFilter(param: SaveTransactionFilterUseCase.Param): Completable {
         return Completable.fromCallable {
             transactionFilterDao.updateTrasactionFilter(param.transactionFilter)
+        }
+    }
+
+    override fun deleteTransaction(param: DeleteTransactionUseCase.Param): Completable {
+        return Completable.fromCallable {
+            transactionDao.delete(param.transaction)
         }
     }
 

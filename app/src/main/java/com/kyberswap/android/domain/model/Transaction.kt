@@ -287,7 +287,7 @@ data class Transaction(
         get() = type == TransactionType.SWAP
 
     val isTxSend: Boolean
-        get() = this.isTransfer && this.from.isNotEmpty() && this.from == currentAddress
+        get() = this.isTransfer && this.from.isNotEmpty()
 
     fun sameKey(other: Transaction): Boolean {
         return this.hash == other.hash &&

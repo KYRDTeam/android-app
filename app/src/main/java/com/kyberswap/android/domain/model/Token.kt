@@ -238,6 +238,9 @@ data class Token(
         return this.copy(tokenAddress = tokenAddress)
     }
 
+    val isMaintainance: Boolean
+        get() = rateEthNow == BigDecimal.ZERO && rateUsdNow == BigDecimal.ZERO
+
     val displayRateEthNow: String
         get() = rateEthNowOrDefaultValue.toDisplayNumber()
     val displayChangeEth24h: String

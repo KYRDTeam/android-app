@@ -49,8 +49,6 @@ class CustomAlertActivity : BaseActivity() {
         dialogType = intent.getIntExtra(DIALOG_TYPE_PARAM, DIALOG_TYPE_BROADCASTED)
         transaction = intent.getParcelableExtra(TRANSACTION_PARAM)
         binding.isDone = isDone
-        binding.transaction = transaction
-
         if (isDone) {
             transaction?.let { transaction ->
                 val message = when (transaction.transactionType) {
@@ -121,6 +119,9 @@ class CustomAlertActivity : BaseActivity() {
                 }
             }
         }
+        binding.transaction = transaction
+        binding.executePendingBindings()
+
 
         binding.flContainer.setOnClickListener {
             onBackPressed()
@@ -170,7 +171,6 @@ class CustomAlertActivity : BaseActivity() {
 
 
     companion object {
-        private const val DEFAULT_DISPLAY_TIME = 30
         const val DIALOG_TYPE_BROADCASTED = 0
         const val DIALOG_TYPE_DONE = 1
         const val ACTION_NEW_SWAP = 0

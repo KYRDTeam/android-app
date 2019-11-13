@@ -127,7 +127,6 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.getSelectedWallet()
-
         tokenAdapter =
             TokenAdapter(appExecutors, handler,
                 {

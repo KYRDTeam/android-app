@@ -606,6 +606,7 @@
     <string name="your_transaction_has_been_broadcasted">Your transaction has been broadcasted!</string>
     <string name="waiting_for_the_transaction_to_be_mined">Waiting for the transaction to be mined</string>
     <string name="dialog_fail">Fail!</string>
+    <string name="token_maintainance">Maintenance</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>

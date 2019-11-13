@@ -418,12 +418,30 @@ class SwapDataRepository @Inject constructor(
                         )
                     }
                     else -> {
-                        val tokenSource =
+                        var tokenSource =
                             tokenDao.getTokenByAddress(localSwap.tokenSource.tokenAddress)
                                 ?: Token()
-                        val tokenDest =
+                        var tokenDest =
                             tokenDao.getTokenByAddress(localSwap.tokenDest.tokenAddress)
                                 ?: Token()
+
+                        if (tokenSource.isOther) {
+                            val listedSource =
+                                tokenDao.getAllTokenBySymbol(tokenSource.tokenSymbol)
+                                    .firstOrNull { !it.isOther }
+                            if (listedSource != null) {
+                                tokenSource = listedSource
+                            }
+                        }
+
+                        if (tokenDest.isOther) {
+                            val listedDest =
+                                tokenDao.getAllTokenBySymbol(tokenDest.tokenSymbol)
+                                    .firstOrNull { !it.isOther }
+                            if (listedDest != null) {
+                                tokenDest = listedDest
+                            }
+                        }
 
                         val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
                         localSwap.copy(

@@ -17,6 +17,7 @@ import com.kyberswap.android.presentation.common.AlertWithoutIconActivity
 import com.kyberswap.android.presentation.common.CustomAlertActivity
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainPagerAdapter
+import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import dagger.android.support.DaggerAppCompatActivity
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
 
@@ -111,7 +112,12 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
                     if (this is MainActivity) {
                         val action = data.getIntExtra(CustomAlertActivity.DIALOG_ACTION_PARAM, -1)
                         if (action == CustomAlertActivity.ACTION_TRANSFER) {
-                            this.navigateToSendScreen()
+
+                            val lastAddedFragment =
+                                getCurrentFragment()?.childFragmentManager?.fragments?.lastOrNull()
+                            if (lastAddedFragment !is SendFragment) {
+                                this.navigateToSendScreen()
+                            }
                         } else if (action == CustomAlertActivity.ACTION_NEW_SWAP) {
                             this.moveToTab(MainPagerAdapter.SWAP)
                         }

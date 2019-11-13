@@ -11,12 +11,14 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.daimajia.swipe.util.Attributes
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentTransactionStatusBinding
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
@@ -56,6 +58,9 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
         ViewModelProviders.of(this, viewModelFactory)
             .get(TransactionStatusViewModel::class.java)
     }
+
+    @Inject
+    lateinit var dialogHelper: DialogHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -144,6 +149,22 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                 }
             }
         })
+
+        viewModel.deleteTransactionCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+
+                    is DeleteTransactionState.Success -> {
+                        showAlert("Delete transaction successfully")
+                    }
+                    is DeleteTransactionState.ShowError -> {
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
+                        )
+                    }
+                }
+            }
+        })
     }
 
     private fun setupTransactionList() {
@@ -154,7 +175,7 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
         )
 
         if (transactionStatusAdapter == null) {
-            transactionStatusAdapter = TransactionStatusAdapter(appExecutors) {
+            transactionStatusAdapter = TransactionStatusAdapter(appExecutors, isPending, handler, {
                 when (it.transactionType) {
                     Transaction.TransactionType.SWAP ->
                         navigator.navigateToSwapTransactionScreen(
@@ -176,8 +197,17 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                         )
                 }
 
-            }
+            }, {
+                dialogHelper.showConfirmation(
+                    getString(R.string.title_delete),
+                    "Do you want to remove this pending transaction?",
+                    {
+                        viewModel.deleteTransaction(it)
+                    })
+
+            })
         }
+        transactionStatusAdapter?.mode = Attributes.Mode.Single
         binding.rvTransaction.adapter = transactionStatusAdapter
     }
 
