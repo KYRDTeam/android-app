@@ -258,7 +258,7 @@ data class Token(
         get() = if (currentBalance - currentBalance.toBigInteger().toBigDecimal() > BigDecimal(1E-6)) currentBalance else currentBalance.toBigInteger().toBigDecimal()
 
     val displayLimitOrderBalance: String
-        get() = limitOrderBalance.max(BigDecimal.ZERO).toDisplayNumber().exactAmount()
+        get() = limitOrderBalance.rounding().max(BigDecimal.ZERO).toDisplayNumber().exactAmount()
 
     val displayCurrentBalanceInEth: String
         get() = StringBuilder()

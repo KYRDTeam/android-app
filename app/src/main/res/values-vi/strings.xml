@@ -456,7 +456,7 @@
     <string name="notification_success_sent"> %s đã được gửi đến %s</string>
     <string name="notification_fail_sent">Can not send %s to %s</string>
     <string name="notification_swap_token">Trao đổi</string>
-    <string name="notification_success_swap">%s chuyển thành công sang %s</string>
+    <string name="notification_success_swap">%s trao đổi thành công sang %s</string>
     <string name="notification_fail_swap">Không thể trao đổi từ %s sang %s</string>
     <string name="transaction_broadcasted">Đã gửi</string>
     <string name="transaction_broadcasted_message">Giao dịch đã được gửi!</string>
@@ -609,14 +609,14 @@
     <string name="cant_get_data_from_file">Không thể lấy dữ liệu từ tệp.</string>
     <string name="no_matching_tokens">Không có kết quả</string>
     <string name="unsupported_token">Token này không được hỗ trợ bởi Kyber Network</string>
-    <string name="dialog_done">Done!</string>
+    <string name="dialog_done">Xong</string>
     <string name="new_transfer">Chuyển khoản</string>
     <string name="new_swap">Trao đổi</string>
-    <string name="dialog_swap">Swap</string>
-    <string name="dialog_transfer">Transfer</string>
+    <string name="dialog_swap">Trao đổi</string>
+    <string name="dialog_transfer">Chuyển Khoản</string>
     <string name="successfully_swapped">Successfully swapped</string>
     <string name="successfully_transferred">Successfully Transferred</string>
-    <string name="dialog_broadcasted">Broadcasted!</string>
+    <string name="dialog_broadcasted">Đã gửi</string>
     <string name="your_transaction_has_been_broadcasted">Your transaction has been broadcasted!</string>
     <string name="waiting_for_the_transaction_to_be_mined">Giao dịch của bạn đang được xử lý</string>
     <string name="dialog_fail">Thất bại</string>

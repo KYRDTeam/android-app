@@ -46,6 +46,7 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.getAmountOrDefaultValue
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isNetworkAvailable
+import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.setAmount
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
@@ -232,6 +233,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
 
         imgSwap.setOnClickListener {
+            updateCurrentFocus(edtSource)
+            edtDest.clearFocus()
             resetAmount()
             val swap = binding.swap?.swapToken()
             swap?.let {
@@ -357,13 +360,15 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         }
 
         binding.tvTokenBalanceValue.setOnClickListener {
+            updateCurrentFocus(edtSource)
+            hideKeyboard()
             binding.swap?.let {
                 if (it.tokenSource.isETH) {
                     showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
                     sourceAmount = availableAmount.toDisplayNumber()
                     binding.edtSource.setText(sourceAmount)
                 } else {
-                    sourceAmount = it.tokenSource.currentBalance.toDisplayNumber()
+                    sourceAmount = it.tokenSource.currentBalance.rounding().toDisplayNumber()
                     binding.edtSource.setText(sourceAmount)
                     verifyAmount()
                 }
@@ -400,7 +405,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     sourceAmount = availableAmount.toDisplayNumber()
                     binding.edtSource.setText(sourceAmount)
                 } else {
-                    sourceAmount = it.tokenSource.currentBalance.toDisplayNumber()
+                    sourceAmount = it.tokenSource.currentBalance.rounding().toDisplayNumber()
                     binding.edtSource.setText(sourceAmount)
                     verifyAmount()
                 }
@@ -627,8 +632,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 }
             }
         })
-
-
 
 
         viewModel.getGetGasPriceCallback.observe(viewLifecycleOwner, Observer {

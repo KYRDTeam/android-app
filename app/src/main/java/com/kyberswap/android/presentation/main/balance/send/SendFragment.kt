@@ -44,6 +44,7 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isContact
 import com.kyberswap.android.util.ext.isNetworkAvailable
+import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.setAmount
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
@@ -537,7 +538,7 @@ class SendFragment : BaseFragment() {
                             ).toDisplayNumber()
                         )
                     } else {
-                        binding.edtSource.setText(it.tokenSource.currentBalance.toDisplayNumber())
+                        binding.edtSource.setText(it.tokenSource.currentBalance.rounding().toDisplayNumber())
                     }
 
                 }
