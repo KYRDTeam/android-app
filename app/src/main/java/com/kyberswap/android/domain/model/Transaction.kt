@@ -142,6 +142,10 @@ data class Transaction(
 
     )
 
+    val enableDeleteTransaction: Boolean
+        get() = (System.currentTimeMillis() / 1000 - timeStamp) / 60f / 60f > 1f
+
+
     fun with(tx: org.web3j.protocol.core.methods.response.Transaction): Transaction {
         return this.copy(
             blockHash = tx.blockHash ?: "",

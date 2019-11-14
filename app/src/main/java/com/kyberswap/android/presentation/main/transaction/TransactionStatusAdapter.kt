@@ -136,7 +136,7 @@ class TransactionStatusAdapter(
             }
         })
 
-        binding.swipe.isSwipeEnabled = isPending
+        binding.swipe.isSwipeEnabled = isPending && transaction.enableDeleteTransaction
     }
 
     override fun getItemViewType(position: Int): Int {

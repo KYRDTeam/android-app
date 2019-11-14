@@ -14,6 +14,7 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityCustomAlertBinding
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.presentation.base.BaseActivity
+import com.kyberswap.android.presentation.common.BetterImageSpan.ALIGN_CENTER
 import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.openUrl
 
@@ -23,6 +24,8 @@ class CustomAlertActivity : BaseActivity() {
     private var dialogType: Int = DIALOG_TYPE_BROADCASTED
     private var transaction: Transaction? = null
     private var action: Int = -1
+
+    private var isCounterStop: Boolean = false
 
     private val handler by lazy {
         Handler()
@@ -99,7 +102,7 @@ class CustomAlertActivity : BaseActivity() {
                                 drawableIcon.intrinsicWidth,
                                 drawableIcon.intrinsicHeight
                             )
-                            val spanImage = CenteredImageSpan(drawableIcon)
+                            val spanImage = BetterImageSpan(drawableIcon, ALIGN_CENTER)
 
 
                             try {
@@ -132,12 +135,16 @@ class CustomAlertActivity : BaseActivity() {
 
         binding.imgViewPendingTx.setOnClickListener {
             transaction?.let {
+                (applicationContext as KyberSwapApplication).stopCounter()
+                isCounterStop = true
                 openUrl(getString(R.string.transaction_etherscan_endpoint_url) + it.hash)
             }
         }
 
         binding.tvDetail.setOnClickListener {
             transaction?.let {
+                (applicationContext as KyberSwapApplication).stopCounter()
+                isCounterStop = true
                 openUrl(getString(R.string.transaction_etherscan_endpoint_url) + it.hash)
             }
         }
@@ -156,6 +163,14 @@ class CustomAlertActivity : BaseActivity() {
     override fun onDestroy() {
         handler.removeCallbacksAndMessages(null)
         super.onDestroy()
+    }
+
+    override fun onResume() {
+        if (isCounterStop) {
+            isCounterStop = false
+            (applicationContext as KyberSwapApplication).startCounter()
+        }
+        super.onResume()
     }
 
 

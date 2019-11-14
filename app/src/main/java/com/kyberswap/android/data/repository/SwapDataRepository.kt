@@ -40,6 +40,7 @@ import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetCapUseCase
 import com.kyberswap.android.domain.usecase.swap.GetCombinedCapUseCase
 import com.kyberswap.android.domain.usecase.swap.GetSwapDataUseCase
+import com.kyberswap.android.domain.usecase.swap.ResetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapDataTokenUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapUseCase
 import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
@@ -139,11 +140,11 @@ class SwapDataRepository @Inject constructor(
                 credentials,
                 context.getString(R.string.kyber_address)
             )
-            val resetSwap = swapDao.findSwapByAddress(param.wallet.address)
-            resetSwap?.let {
-                it.reset()
-                swapDao.updateSwap(it)
-            }
+//            val resetSwap = swapDao.findSwapByAddress(param.wallet.address)
+//            resetSwap?.let {
+//                it.reset()
+//                swapDao.updateSwap(it)
+//            }
             hash?.let {
                 val swap = param.swap
                 transactionDao.insertTransaction(
@@ -179,6 +180,14 @@ class SwapDataRepository @Inject constructor(
         }
     }
 
+    override fun resetSwapData(param: ResetSwapDataUseCase.Param): Completable {
+        return Completable.fromCallable {
+            val swap = param.swap
+            swap.reset()
+            swapDao.updateSwap(swap)
+        }
+    }
+
     override fun transferToken(param: TransferTokenUseCase.Param): Single<ResponseStatus> {
         return Single.fromCallable {
             var password = ""
@@ -198,14 +207,14 @@ class SwapDataRepository @Inject constructor(
                 param,
                 credentials
             )
-            val resetSend = param.send.copy()
-            resetSend.let {
-                sendTokenDao.updateSend(
-                    it.copy(
-                        sourceAmount = ""
-                    )
-                )
-            }
+//            val resetSend = param.send.copy()
+//            resetSend.let {
+//                sendTokenDao.updateSend(
+//                    it.copy(
+//                        sourceAmount = ""
+//                    )
+//                )
+//            }
 
             hash?.let {
                 val transfer = param.send

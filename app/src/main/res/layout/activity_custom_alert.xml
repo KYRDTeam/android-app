@@ -159,7 +159,7 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_marginStart="16dp"
-                        android:src="@{isFailed ? @drawable/ic_info_error : @drawable/ic_broadcasted_done}"
+                        android:src="@{isFailed ? @drawable/ic_tx_fail : @drawable/ic_broadcasted_done}"
                         app:layout_constraintEnd_toStartOf="@+id/tvDone"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintHorizontal_chainStyle="packed"

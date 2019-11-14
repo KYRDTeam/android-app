@@ -1,6 +1,7 @@
 package com.kyberswap.android.presentation.main.balance.send
 
 import android.animation.ObjectAnimator
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -23,9 +24,11 @@ import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.CustomAlertActivity
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
@@ -587,7 +590,14 @@ class SendFragment : BaseFragment() {
                 showProgress(state == SaveSendState.Loading)
                 when (state) {
                     is SaveSendState.Success -> {
-                        navigator.navigateToSendConfirmationScreen(wallet, isContactExist)
+
+                        startActivityForResult(activity?.let { it1 ->
+                            SendConfirmActivity.newIntent(
+                                it1,
+                                wallet,
+                                isContactExist
+                            )
+                        }, SEND_CONFIRM)
                     }
                     is SaveSendState.ShowError -> {
                         showError(
@@ -685,8 +695,29 @@ class SendFragment : BaseFragment() {
                     binding.ilAddress.error = error
                 }
             }
+        } else if (requestCode == SEND_CONFIRM && resultCode == Activity.RESULT_OK && data != null) {
+            showBroadcast(data.getStringExtra(HASH_PARAM) ?: "")
+            handler.postDelayed(
+                {
+                    edtSource.setText("")
+                    edtSource.clearFocus()
+                }, 500
+            )
         } else {
             super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
+    private fun showBroadcast(hash: String) {
+        val context = activity
+        if (context is MainActivity) {
+            context.showBroadcastAlert(
+                CustomAlertActivity.DIALOG_TYPE_BROADCASTED,
+                Transaction(
+                    type = Transaction.TransactionType.SEND,
+                    hash = hash
+                )
+            )
         }
     }
 

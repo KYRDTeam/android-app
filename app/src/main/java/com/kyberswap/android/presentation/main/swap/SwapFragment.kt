@@ -1,9 +1,12 @@
 package com.kyberswap.android.presentation.main.swap
 
 import android.animation.ObjectAnimator
+import android.app.Activity
+import android.content.Intent
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.os.Bundle
+import android.os.Handler
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -25,15 +28,18 @@ import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.NotificationAlert
 import com.kyberswap.android.domain.model.Swap
+import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.CustomAlertActivity
 import com.kyberswap.android.presentation.common.DEFAULT_ACCEPT_RATE_PERCENTAGE
 import com.kyberswap.android.presentation.common.KeyImeChange
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.common.WalletObserver
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.alert.GetAlertState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
@@ -112,6 +118,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
+
+    private val handler by lazy {
+        Handler()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -724,7 +734,12 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 showProgress(state == SaveSwapState.Loading)
                 when (state) {
                     is SaveSwapState.Success -> {
-                        navigator.navigateToSwapConfirmationScreen(wallet)
+//                        navigator.navigateToSwapConfirmationScreen(wallet)
+                        startActivityForResult(activity?.let { ctx ->
+                            SwapConfirmActivity.newIntent(
+                                ctx, wallet
+                            )
+                        }, SWAP_CONFIRM)
                     }
                 }
             }
@@ -899,6 +914,40 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         edtDest.setText("")
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == SWAP_CONFIRM) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (data != null) {
+                    showBroadcast(data.getStringExtra(HASH_PARAM) ?: "")
+                    resetInfo()
+                }
+            }
+        }
+    }
+
+    private fun resetInfo() {
+        handler.postDelayed(
+            {
+                resetAmount()
+                edtSource.clearFocus()
+            }, 500
+        )
+    }
+
+    private fun showBroadcast(hash: String) {
+        val context = activity
+        if (context is MainActivity) {
+            context.showBroadcastAlert(
+                CustomAlertActivity.DIALOG_TYPE_BROADCASTED,
+                Transaction(
+                    type = Transaction.TransactionType.SWAP,
+                    hash = hash
+                )
+            )
+        }
+    }
+
     private fun enableTokenSearch(isSourceToken: Boolean, isEnable: Boolean) {
         if (isSourceToken) {
             tokenSources.forEach {
@@ -970,6 +1019,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
     override fun onDestroyView() {
         viewModel.compositeDisposable.clear()
+        handler.removeCallbacksAndMessages(null)
         super.onDestroyView()
     }
 

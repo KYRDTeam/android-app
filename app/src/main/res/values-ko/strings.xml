@@ -610,18 +610,18 @@
     <string name="no_matching_tokens">검색 결과 없음</string>
     <string name="unsupported_token">이 토큰은 Kyber Network에서 지원하지 않습니다.</string>
     <string name="dialog_done">Done!</string>
-    <string name="new_transfer">New Transfer</string>
-    <string name="new_swap">New Swap</string>
+    <string name="new_transfer">새 전송</string>
+    <string name="new_swap">새 교환</string>
     <string name="dialog_swap">Swap</string>
     <string name="dialog_transfer">Transfer</string>
     <string name="successfully_swapped">Successfully swapped</string>
     <string name="successfully_transferred">Successfully Transferred</string>
     <string name="dialog_broadcasted">Broadcasted!</string>
     <string name="your_transaction_has_been_broadcasted">Your transaction has been broadcasted!</string>
-    <string name="waiting_for_the_transaction_to_be_mined">Waiting for the transaction to be mined</string>
-    <string name="dialog_fail">Fail!</string>
-    <string name="token_maintainance">Maintenance</string>
-    <string name="delete_transaction_success">Delete transaction successfully</string>
-    <string name="delete_transaction_warning">Do you want to remove this pending transaction?</string>
+    <string name="waiting_for_the_transaction_to_be_mined">거래가 채굴되기를 기다리는 중입니다.</string>
+    <string name="dialog_fail">"실패 "</string>
+    <string name="token_maintainance">유지보수</string>
+    <string name="delete_transaction_success">거래 완전히 삭제하기</string>
+    <string name="delete_transaction_warning">보류 중인 이 거래를 삭제하시겠습니까?</string>
 
 </resources>

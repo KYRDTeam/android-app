@@ -605,7 +605,7 @@
     <string name="dialog_broadcasted">Broadcasted!</string>
     <string name="your_transaction_has_been_broadcasted">Your transaction has been broadcasted!</string>
     <string name="waiting_for_the_transaction_to_be_mined">Waiting for the transaction to be mined</string>
-    <string name="dialog_fail">Fail!</string>
+    <string name="dialog_fail">Failed!</string>
     <string name="token_maintainance">Maintenance</string>
     <string name="delete_transaction_success">Delete transaction successfully</string>
     <string name="delete_transaction_warning">Do you want to remove this pending transaction?</string>

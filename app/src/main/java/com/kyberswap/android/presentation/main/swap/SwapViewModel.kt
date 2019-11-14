@@ -13,6 +13,7 @@ import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
 import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetSwapDataUseCase
+import com.kyberswap.android.domain.usecase.swap.ResetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
@@ -43,6 +44,7 @@ class SwapViewModel @Inject constructor(
     private val getAlertUseCase: GetAlertUseCase,
     private val estimateAmountUseCase: EstimateAmountUseCase,
     private val getCombinedCapUseCase: GetCombinedCapUseCase,
+    private val resetSwapUserCase: ResetSwapDataUseCase,
     getWalletUseCase: GetSelectedWalletUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getWalletUseCase, errorHandler) {
@@ -286,6 +288,15 @@ class SwapViewModel @Inject constructor(
                 _getCapCallback.value = Event(GetCapState.ShowError(errorHandler.getError(it)))
             },
             GetCombinedCapUseCase.Param(wallet)
+        )
+    }
+
+    fun reset(swap: Swap) {
+        resetSwapUserCase.dispose()
+        resetSwapUserCase.execute(
+            Action { },
+            Consumer { },
+            ResetSwapDataUseCase.Param(swap)
         )
     }
 }

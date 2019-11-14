@@ -159,7 +159,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     viewModel.saveFav(it)
                 }
             )
-        refresh()
+        refresh(false)
         tokenAdapter?.mode = Attributes.Mode.Single
         binding.rvToken.adapter = tokenAdapter
 
@@ -486,8 +486,8 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         currentSelectedView = view
     }
 
-    private fun refresh() {
-        viewModel.refresh()
+    private fun refresh(forceUpdate: Boolean = true) {
+        viewModel.refresh(forceUpdate)
     }
 
     private fun orderByCurrency(isEth: Boolean, type: OrderType, view: TextView) {

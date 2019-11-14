@@ -16,6 +16,7 @@ import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetCapUseCase
 import com.kyberswap.android.domain.usecase.swap.GetCombinedCapUseCase
 import com.kyberswap.android.domain.usecase.swap.GetSwapDataUseCase
+import com.kyberswap.android.domain.usecase.swap.ResetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapDataTokenUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapUseCase
 import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
@@ -28,6 +29,8 @@ import java.math.BigDecimal
 interface SwapRepository {
 
     fun getSwapData(param: GetSwapDataUseCase.Param): Flowable<Swap>
+
+    fun resetSwapData(param: ResetSwapDataUseCase.Param): Completable
 
     fun getSendData(param: GetSendTokenUseCase.Param): Flowable<Send>
 

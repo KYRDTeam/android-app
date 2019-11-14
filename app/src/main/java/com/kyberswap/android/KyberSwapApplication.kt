@@ -120,6 +120,7 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
     }
 
     fun stopCounter() {
+        counter = 0
         disposable.clear()
     }
 
