@@ -3,6 +3,7 @@ package com.kyberswap.android.presentation.common
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.text.SpannableString
@@ -39,6 +40,9 @@ class CustomAlertActivity : BaseActivity() {
 
     private val isDone: Boolean
         get() = DIALOG_TYPE_DONE == dialogType
+
+    private val isBroadcasted: Boolean
+        get() = DIALOG_TYPE_BROADCASTED == dialogType
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -122,6 +126,14 @@ class CustomAlertActivity : BaseActivity() {
                 }
             }
         }
+
+        if (isBroadcasted) {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
+                handler.postDelayed({
+                    onBackPressed()
+                }, 8 * 1000L)
+            }
+        }
         binding.transaction = transaction
         binding.executePendingBindings()
 
@@ -129,9 +141,7 @@ class CustomAlertActivity : BaseActivity() {
         binding.flContainer.setOnClickListener {
             onBackPressed()
         }
-//        handler.postDelayed({
-//            onBackPressed()
-//        }, 15 * 60 * 1000L)
+
 
         binding.imgViewPendingTx.setOnClickListener {
             transaction?.let {
