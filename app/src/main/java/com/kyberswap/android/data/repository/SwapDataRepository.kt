@@ -40,6 +40,7 @@ import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetCapUseCase
 import com.kyberswap.android.domain.usecase.swap.GetCombinedCapUseCase
 import com.kyberswap.android.domain.usecase.swap.GetSwapDataUseCase
+import com.kyberswap.android.domain.usecase.swap.ResetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapDataTokenUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapUseCase
 import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
@@ -139,11 +140,11 @@ class SwapDataRepository @Inject constructor(
                 credentials,
                 context.getString(R.string.kyber_address)
             )
-            val resetSwap = swapDao.findSwapByAddress(param.wallet.address)
-            resetSwap?.let {
-                it.reset()
-                swapDao.updateSwap(it)
-            }
+//            val resetSwap = swapDao.findSwapByAddress(param.wallet.address)
+//            resetSwap?.let {
+//                it.reset()
+//                swapDao.updateSwap(it)
+//            }
             hash?.let {
                 val swap = param.swap
                 transactionDao.insertTransaction(
@@ -170,10 +171,20 @@ class SwapDataRepository @Inject constructor(
             }
 
             hash ?: ""
-        }.flatMap {
-            userApi.submitTx(it)
+        }.flatMap { hash ->
+            userApi.submitTx(hash).map {
+                it.copy(hash = hash)
+            }
         }.map {
             userMapper.transform(it)
+        }
+    }
+
+    override fun resetSwapData(param: ResetSwapDataUseCase.Param): Completable {
+        return Completable.fromCallable {
+            val swap = param.swap
+            swap.reset()
+            swapDao.updateSwap(swap)
         }
     }
 
@@ -196,14 +207,14 @@ class SwapDataRepository @Inject constructor(
                 param,
                 credentials
             )
-            val resetSend = param.send.copy()
-            resetSend.let {
-                sendTokenDao.updateSend(
-                    it.copy(
-                        sourceAmount = ""
-                    )
-                )
-            }
+//            val resetSend = param.send.copy()
+//            resetSend.let {
+//                sendTokenDao.updateSend(
+//                    it.copy(
+//                        sourceAmount = ""
+//                    )
+//                )
+//            }
 
             hash?.let {
                 val transfer = param.send
@@ -232,8 +243,10 @@ class SwapDataRepository @Inject constructor(
             hash ?: ""
 
         }
-            .flatMap {
-                userApi.submitTx(it)
+            .flatMap { hash ->
+                userApi.submitTx(hash).map {
+                    it.copy(hash = hash)
+                }
             }.map {
                 userMapper.transform(it)
             }
@@ -414,12 +427,30 @@ class SwapDataRepository @Inject constructor(
                         )
                     }
                     else -> {
-                        val tokenSource =
+                        var tokenSource =
                             tokenDao.getTokenByAddress(localSwap.tokenSource.tokenAddress)
                                 ?: Token()
-                        val tokenDest =
+                        var tokenDest =
                             tokenDao.getTokenByAddress(localSwap.tokenDest.tokenAddress)
                                 ?: Token()
+
+                        if (tokenSource.isOther) {
+                            val listedSource =
+                                tokenDao.getAllTokenBySymbol(tokenSource.tokenSymbol)
+                                    .firstOrNull { !it.isOther }
+                            if (listedSource != null) {
+                                tokenSource = listedSource
+                            }
+                        }
+
+                        if (tokenDest.isOther) {
+                            val listedDest =
+                                tokenDao.getAllTokenBySymbol(tokenDest.tokenSymbol)
+                                    .firstOrNull { !it.isOther }
+                            if (listedDest != null) {
+                                tokenDest = listedDest
+                            }
+                        }
 
                         val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
                         localSwap.copy(

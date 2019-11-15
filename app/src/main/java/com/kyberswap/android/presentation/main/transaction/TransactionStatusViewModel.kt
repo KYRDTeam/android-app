@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.TransactionFilter
 import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.usecase.transaction.DeleteTransactionUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetPendingTransactionsUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionFilterUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
@@ -13,6 +14,7 @@ import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.util.ErrorHandler
 import com.kyberswap.android.util.ext.toDate
+import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import timber.log.Timber
 import java.util.Locale
@@ -22,6 +24,7 @@ class TransactionStatusViewModel @Inject constructor(
     private val getTransactionFilterUseCase: GetTransactionFilterUseCase,
     private val getPendingTransactionsUseCase: GetPendingTransactionsUseCase,
     private val getTransactionsUseCase: GetTransactionsUseCase,
+    private val deleteTransactionUseCase: DeleteTransactionUseCase,
     getSelectedWalletUseCase: GetSelectedWalletUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
@@ -29,6 +32,10 @@ class TransactionStatusViewModel @Inject constructor(
     private val _getTransactionCallback = MutableLiveData<Event<GetTransactionState>>()
     val getTransactionCallback: LiveData<Event<GetTransactionState>>
         get() = _getTransactionCallback
+
+    private val _deleteTransactionCallback = MutableLiveData<Event<DeleteTransactionState>>()
+    val deleteTransactionCallback: LiveData<Event<DeleteTransactionState>>
+        get() = _deleteTransactionCallback
 
     private var currentFilter: TransactionFilter? = null
     var transactionList = listOf<Transaction>()
@@ -178,5 +185,19 @@ class TransactionStatusViewModel @Inject constructor(
         getPendingTransactionsUseCase.dispose()
         getTransactionFilterUseCase.dispose()
         super.onCleared()
+    }
+
+    fun deleteTransaction(transaction: Transaction) {
+        deleteTransactionUseCase.dispose()
+        deleteTransactionUseCase.execute(
+            Action {
+                _deleteTransactionCallback.value = Event(DeleteTransactionState.Success(""))
+            },
+            Consumer {
+                _deleteTransactionCallback.value =
+                    Event(DeleteTransactionState.ShowError(it.localizedMessage))
+            },
+            DeleteTransactionUseCase.Param(transaction)
+        )
     }
 }

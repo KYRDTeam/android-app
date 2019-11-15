@@ -142,6 +142,10 @@ data class Transaction(
 
     )
 
+    val enableDeleteTransaction: Boolean
+        get() = (System.currentTimeMillis() / 1000 - timeStamp) / 60f / 60f > 1f
+
+
     fun with(tx: org.web3j.protocol.core.methods.response.Transaction): Transaction {
         return this.copy(
             blockHash = tx.blockHash ?: "",
@@ -282,6 +286,12 @@ data class Transaction(
             this.isTransfer && this.to == currentAddress -> TransactionType.RECEIVED
             else -> this.type
         }
+
+    val isSwap: Boolean
+        get() = type == TransactionType.SWAP
+
+    val isTxSend: Boolean
+        get() = this.isTransfer && this.from.isNotEmpty()
 
     fun sameKey(other: Transaction): Boolean {
         return this.hash == other.hash &&

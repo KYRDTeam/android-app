@@ -39,6 +39,7 @@ import com.kyberswap.android.presentation.main.swap.SwapTokenTransactionState
 import com.kyberswap.android.util.ErrorHandler
 import com.kyberswap.android.util.ext.display
 import com.kyberswap.android.util.ext.exactAmount
+import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
@@ -570,7 +571,7 @@ class LimitOrderViewModel @Inject constructor(
         }
 
         return if (availableAmount > MIN_SUPPORT_AMOUNT) {
-            availableAmount.toDisplayNumber().exactAmount()
+            availableAmount.rounding().toDisplayNumber().exactAmount()
         } else BigDecimal.ZERO.toDisplayNumber()
     }
 

@@ -10,6 +10,7 @@ import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
 import com.kyberswap.android.presentation.common.MIN_SUPPORT_SWAP_SOURCE_AMOUNT
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
 import com.kyberswap.android.util.ext.percentage
+import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
@@ -87,7 +88,7 @@ data class Swap(
     }
 
     val isSwapAll: Boolean
-        get() = sourceAmount == tokenSource.currentBalance.toDisplayNumber()
+        get() = sourceAmount == tokenSource.currentBalance.rounding().toDisplayNumber()
 
 
     fun availableAmountForSwap(

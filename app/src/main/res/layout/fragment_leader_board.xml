@@ -231,6 +231,7 @@
                                 android:layout_height="2dp"
                                 android:layout_marginTop="16dp"
                                 android:background="@drawable/dash_line"
+                                android:layerType="software"
                                 android:visibility="@{(campaign.id > 0 &amp;&amp; !isCampaignResult) ? View.VISIBLE : View.GONE}"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"

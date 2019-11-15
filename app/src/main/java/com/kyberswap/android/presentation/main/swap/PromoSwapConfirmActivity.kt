@@ -9,8 +9,10 @@ import androidx.lifecycle.ViewModelProviders
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityPromoSwapConfirmBinding
+import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
+import com.kyberswap.android.presentation.common.CustomAlertActivity
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
 import org.consenlabs.tokencore.wallet.KeystoreStorage
@@ -69,7 +71,14 @@ class PromoSwapConfirmActivity : BaseActivity(), KeystoreStorage {
                 showProgress(state == SwapTokenTransactionState.Loading)
                 when (state) {
                     is SwapTokenTransactionState.Success -> {
-                        showAlert(getString(R.string.transaction_broadcasted_message))
+//                        showAlert(getString(R.string.transaction_broadcasted_message))
+                        showBroadcastAlert(
+                            CustomAlertActivity.DIALOG_TYPE_BROADCASTED,
+                            Transaction(
+                                type = Transaction.TransactionType.SWAP,
+                                hash = state.responseStatus?.hash ?: ""
+                            )
+                        )
                         onBackPressed()
                     }
                     is SwapTokenTransactionState.ShowError -> {

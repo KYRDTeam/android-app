@@ -1,5 +1,6 @@
 package com.kyberswap.android.presentation.main.swap
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -11,6 +12,7 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivitySwapConfirmBinding
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
+import com.kyberswap.android.presentation.base.BaseFragment.Companion.HASH_PARAM
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.isNetworkAvailable
@@ -71,12 +73,16 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
                 showProgress(state == SwapTokenTransactionState.Loading)
                 when (state) {
                     is SwapTokenTransactionState.Success -> {
-                        showAlertWithoutIcon(
-                            getString(R.string.transaction_broadcasted), getString(
-                                R.string.transaction_broadcasted_message
-                            )
-                        )
-                        onBackPressed()
+//                        showAlertWithoutIcon(
+//                            getString(R.string.transaction_broadcasted), getString(
+//                                R.string.transaction_broadcasted_message
+//                            )
+//                        )
+
+                        val returnIntent = Intent()
+                        setResult(Activity.RESULT_OK, returnIntent)
+                        returnIntent.putExtra(HASH_PARAM, state.responseStatus?.hash)
+                        finish()
                     }
                     is SwapTokenTransactionState.ShowError -> {
                         showError(

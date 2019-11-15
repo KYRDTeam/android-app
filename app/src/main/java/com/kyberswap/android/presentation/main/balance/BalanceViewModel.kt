@@ -147,7 +147,7 @@ class BalanceViewModel @Inject constructor(
         )
     }
 
-    fun refresh() {
+    fun refresh(forceUpdated: Boolean) {
         prepareBalanceUseCase.execute(
             Consumer {
                 _refreshBalanceStateCallback.value = Event(
@@ -166,7 +166,7 @@ class BalanceViewModel @Inject constructor(
                     )
 
             },
-            PrepareBalanceUseCase.Param(true)
+            PrepareBalanceUseCase.Param(forceUpdated)
         )
     }
 

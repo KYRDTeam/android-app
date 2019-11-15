@@ -36,10 +36,10 @@
                 android:gravity="center"
                 android:minWidth="72dp"
                 android:padding="8dp"
-                android:visibility="@{token.other ? View.GONE : View.VISIBLE}"
                 android:text="@string/buy"
                 android:textColor="#ffffff"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:visibility="@{token.other ? View.GONE : View.VISIBLE}" />
 
             <Button
                 android:id="@+id/btnSell"
@@ -48,12 +48,12 @@
                 android:layout_height="match_parent"
                 android:background="#1e89c1"
                 android:gravity="center"
-                android:padding="8dp"
                 android:minWidth="72dp"
-                android:visibility="@{token.other ? View.GONE : View.VISIBLE}"
+                android:padding="8dp"
                 android:text="@string/sell"
                 android:textColor="#ffffff"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:visibility="@{token.other ? View.GONE : View.VISIBLE}" />
 
             <Button
                 android:id="@+id/btnSend"
@@ -156,7 +156,7 @@
                 android:layout_marginBottom="8dp"
                 android:gravity="center|end"
                 android:singleLine="true"
-                android:text="@{showEth ? token.displayRateEthNow : token.displayRateUsdNow}"
+                android:text="@{showEth ? (token.isMaintainance ? @string/token_maintainance : token.displayRateEthNow) : (token.isMaintainance ? @string/token_maintainance : token.displayRateUsdNow)}"
                 android:textColor="#1d303a"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView123"

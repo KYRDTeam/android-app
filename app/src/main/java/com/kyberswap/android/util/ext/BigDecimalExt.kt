@@ -46,3 +46,7 @@ fun BigDecimal.toDisplayNumberInternal(length: Int = 4): String {
         }
     }
 }
+
+fun BigDecimal.rounding(): BigDecimal {
+    return if (this - this.toBigInteger().toBigDecimal() > BigDecimal(1E-6)) this else this.toBigInteger().toBigDecimal()
+}

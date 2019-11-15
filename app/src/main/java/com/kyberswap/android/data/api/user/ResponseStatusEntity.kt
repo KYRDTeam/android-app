@@ -7,5 +7,6 @@ data class ResponseStatusEntity(
     @SerializedName("message")
     val message: String = "",
     @SerializedName("success")
-    val success: Boolean = false
+    val success: Boolean = false,
+    val hash: String = ""
 )

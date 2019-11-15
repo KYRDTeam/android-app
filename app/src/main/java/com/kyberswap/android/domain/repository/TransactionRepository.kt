@@ -3,6 +3,7 @@ package com.kyberswap.android.domain.repository
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.TransactionFilter
 import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.usecase.transaction.DeleteTransactionUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionFilterUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionsPeriodicallyUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
@@ -29,6 +30,8 @@ interface TransactionRepository {
     fun monitorPendingTransactionsPolling(param: MonitorPendingTransactionUseCase.Param): Flowable<List<Transaction>>
 
     fun saveTransactionFilter(param: SaveTransactionFilterUseCase.Param): Completable
+
+    fun deleteTransaction(param: DeleteTransactionUseCase.Param): Completable
 
     fun getTransactionFilter(param: GetTransactionFilterUseCase.Param): Flowable<TransactionFilter>
 
