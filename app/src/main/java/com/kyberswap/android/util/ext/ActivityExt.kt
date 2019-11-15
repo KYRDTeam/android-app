@@ -2,7 +2,9 @@ package com.kyberswap.android.util.ext
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.view.View
 
 fun Activity.setImmersiveFullScreen() {
@@ -35,4 +37,15 @@ fun Context.isNetworkAvailable(): Boolean {
 
 fun Activity.getStatusBar(): Int {
     return window.statusBarColor
+}
+
+fun Activity.openUrl(url: String?) {
+    if (url.isNullOrEmpty()) return
+    val intent = Intent(Intent.ACTION_VIEW)
+    intent.data = Uri.parse(url)
+
+    val packageManager = this.packageManager
+    if (packageManager != null && intent.resolveActivity(packageManager) != null) {
+        startActivity(intent)
+    }
 }

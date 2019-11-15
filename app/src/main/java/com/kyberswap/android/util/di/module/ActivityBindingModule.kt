@@ -2,6 +2,7 @@ package com.kyberswap.android.util.di.module
 
 import com.kyberswap.android.presentation.common.AlertActivity
 import com.kyberswap.android.presentation.common.AlertWithoutIconActivity
+import com.kyberswap.android.presentation.common.CustomAlertActivity
 import com.kyberswap.android.presentation.landing.LandingActivity
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.balance.send.SendConfirmActivity
@@ -75,6 +76,11 @@ interface ActivityBindingModule {
     @ActivityScoped
     @ContributesAndroidInjector()
     fun contributeInsufficientAlertActivity(): AlertWithoutIconActivity
+
+
+    @ActivityScoped
+    @ContributesAndroidInjector()
+    fun contributeCustomAlertActivity(): CustomAlertActivity
 
     @ActivityScoped
     @ContributesAndroidInjector(

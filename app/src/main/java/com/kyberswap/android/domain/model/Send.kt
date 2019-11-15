@@ -5,6 +5,7 @@ import androidx.annotation.NonNull
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
@@ -50,7 +51,7 @@ data class Send(
         get() = StringBuilder().append(sourceAmount).append(" ").append(tokenSource.tokenSymbol).toString()
 
     val isSendAll: Boolean
-        get() = sourceAmount == tokenSource.currentBalance.toDisplayNumber()
+        get() = sourceAmount == tokenSource.currentBalance.rounding().toDisplayNumber()
 
     val displaySourceAmountUsd: String
         get() = if (tokenSource.rateUsdNow == BigDecimal.ZERO) "" else

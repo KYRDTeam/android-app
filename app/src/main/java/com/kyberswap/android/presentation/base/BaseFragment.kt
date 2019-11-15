@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
@@ -16,6 +17,9 @@ import dagger.android.support.DaggerFragment
 
 abstract class BaseFragment : DaggerFragment() {
     var dialog: ProgressDialog? = null
+    private val handler by lazy {
+        Handler()
+    }
 
     var alertListener: () -> Unit = {}
 
@@ -127,9 +131,18 @@ abstract class BaseFragment : DaggerFragment() {
         snackbar.show()
     }
 
+    override fun onDestroyView() {
+        handler.removeCallbacksAndMessages(null)
+        super.onDestroyView()
+    }
+
     companion object {
+        const val HASH_PARAM = "hash_param"
         const val SHOW_ALERT = 0
         const val DEFAULT_ALERT_TIME_SECONDS = 3
+        const val SHOW_BROADCAST = 1
+        const val SWAP_CONFIRM = 1010
+        const val SEND_CONFIRM = 1011
     }
 
     fun stopCounter() {

@@ -133,6 +133,11 @@
             android:name=".presentation.common.AlertWithoutIconActivity"
             android:launchMode="singleTop"
             android:theme="@style/AlertStyle" />
+
+        <activity
+            android:name=".presentation.common.CustomAlertActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/AlertStyle" />
         <activity
             android:screenOrientation="portrait"
             android:name=".presentation.setting.PassCodeLockActivity"

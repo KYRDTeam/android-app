@@ -25,6 +25,7 @@ import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseActivity
+import com.kyberswap.android.presentation.common.CustomAlertActivity
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -160,7 +161,6 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                 when (currentFragment) {
                     is BalanceFragment -> {
                         (currentFragment as BalanceFragment).scrollToTop()
-
                     }
                     is LimitOrderFragment -> {
                         with((currentFragment as LimitOrderFragment)) {
@@ -294,55 +294,60 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                             it.blockNumber.isNotEmpty() && it.blockNumber.toLongSafe() != Transaction.DEFAULT_DROPPED_BLOCK_NUMBER
                         }
 
-
                         txList.forEach { transaction ->
-                            val title: String
-                            val message: String
+                            showBroadcastAlert(
+                                CustomAlertActivity.DIALOG_TYPE_DONE,
+                                transaction
+                            )
 
-                            when (transaction.transactionType) {
-                                Transaction.TransactionType.SEND -> {
-                                    if (transaction.isTransactionFail) {
-                                        title = getString(R.string.title_fail)
-                                        message = String.format(
-                                            getString(R.string.notification_fail_sent),
-                                            transaction.displayValue,
-                                            transaction.to
-                                        )
-                                    } else {
-                                        title = getString(R.string.title_success)
-                                        message = String.format(
-                                            getString(R.string.notification_success_sent),
-                                            transaction.displayValue,
-                                            transaction.to
-                                        )
-                                    }
-                                }
-                                Transaction.TransactionType.SWAP -> {
-                                    if (transaction.isTransactionFail) {
-                                        title = getString(R.string.title_fail)
-                                        message = String.format(
-                                            getString(R.string.notification_fail_swap),
-                                            transaction.displaySource, transaction.displayDest
-                                        )
-                                    } else {
-                                        title = getString(R.string.title_success)
-                                        message = String.format(
-                                            getString(R.string.notification_success_swap),
-                                            transaction.displaySource, transaction.displayDest
-                                        )
-                                    }
-                                }
-                                Transaction.TransactionType.RECEIVED -> {
-                                    title = ""
-                                    message = ""
-                                }
-                            }
-
-                            if (title.isNotEmpty() && message.isNotEmpty()) {
-                                showAlertWithoutIcon(
-                                    title = title, message = message
-                                )
-                            }
+//                            val title: String
+//                            val message: String
+//
+//                            when (transaction.transactionType) {
+//                                Transaction.TransactionType.SEND -> {
+//                                    if (transaction.isTransactionFail) {
+//                                        title = getString(R.string.title_fail)
+//                                        message = String.format(
+//                                            getString(R.string.notification_fail_sent),
+//                                            transaction.displayValue,
+//                                            transaction.to
+//                                        )
+//                                    } else {
+//                                        title = ""
+//                                        message = ""
+//                                        showBroadcastAlert(
+//                                            CustomAlertActivity.DIALOG_TYPE_DONE,
+//                                            transaction
+//                                        )
+//                                    }
+//                                }
+//                                Transaction.TransactionType.SWAP -> {
+//                                    if (transaction.isTransactionFail) {
+//                                        title = getString(R.string.title_fail)
+//                                        message = String.format(
+//                                            getString(R.string.notification_fail_swap),
+//                                            transaction.displaySource, transaction.displayDest
+//                                        )
+//                                    } else {
+//                                        title = ""
+//                                        message = ""
+//                                        showBroadcastAlert(
+//                                            CustomAlertActivity.DIALOG_TYPE_DONE,
+//                                            transaction
+//                                        )
+//                                    }
+//                                }
+//                                Transaction.TransactionType.RECEIVED -> {
+//                                    title = ""
+//                                    message = ""
+//                                }
+//                            }
+//
+//                            if (title.isNotEmpty() && message.isNotEmpty()) {
+//                                showAlertWithoutIcon(
+//                                    title = title, message = message
+//                                )
+//                            }
                         }
 
                         val pending = state.transactions.filter { it.blockNumber.isEmpty() }
@@ -441,6 +446,17 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         }
     }
 
+    fun navigateToSendScreen() {
+        handler.postDelayed(
+            {
+                wallet?.let {
+                    navigator.navigateToSendScreen(
+                        getCurrentFragment(), it
+                    )
+                }
+            }, 250
+        )
+    }
 
     private fun setPendingTransaction(numOfPendingTransaction: Int) {
         hasPendingTransaction = numOfPendingTransaction > 0
@@ -502,10 +518,22 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     fun moveToTab(tab: Int, fromLimitOrder: Boolean = false) {
         this.fromLimitOrder = fromLimitOrder
+        if (tab == MainPagerAdapter.SWAP) {
+            clearFragmentBackStack()
+        }
         handler.post {
             bottomNavigation.currentItem = tab
             listener?.onPageSelected(tab)
 
+        }
+    }
+
+    private fun clearFragmentBackStack() {
+        val fm = currentFragment?.childFragmentManager
+        if (fm != null) {
+            for (i in 0 until fm.backStackEntryCount) {
+                fm.popBackStack()
+            }
         }
     }
 

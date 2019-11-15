@@ -98,13 +98,13 @@
                     android:textSize="14sp" />
             </LinearLayout>
 
-            <androidx.viewpager.widget.ViewPager
+            <com.kyberswap.android.presentation.common.CustomViewPager
                 android:id="@+id/vpTransaction"
-                android:background="@color/white"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:background="@color/white">
 
-            </androidx.viewpager.widget.ViewPager>
+            </com.kyberswap.android.presentation.common.CustomViewPager>
 
         </LinearLayout>
 
