@@ -8,6 +8,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -25,7 +26,7 @@ import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseActivity
-import com.kyberswap.android.presentation.common.CustomAlertActivity
+import com.kyberswap.android.presentation.common.AlertDialogFragment
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -35,6 +36,7 @@ import com.kyberswap.android.presentation.main.balance.BalanceFragment
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
 import com.kyberswap.android.presentation.main.balance.WalletAdapter
+import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
 import com.kyberswap.android.presentation.main.limitorder.OrderConfirmFragment
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
@@ -57,7 +59,8 @@ import java.io.File
 import javax.inject.Inject
 
 
-class MainActivity : BaseActivity(), KeystoreStorage {
+class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callback {
+
     @Inject
     lateinit var navigator: Navigator
     @Inject
@@ -84,6 +87,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
     private var listener: ViewPager.OnPageChangeListener? = null
 
     var fromLimitOrder: Boolean = false
+
+    private var currentDialogFragment: DialogFragment? = null
 
     private val mainViewModel: MainViewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
@@ -295,8 +300,12 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                         }
 
                         txList.forEach { transaction ->
-                            showBroadcastAlert(
-                                CustomAlertActivity.DIALOG_TYPE_DONE,
+                            //                            showBroadcastAlert(
+//                                CustomAlertActivity.DIALOG_TYPE_DONE,
+//                                transaction
+//                            )
+                            showDialog(
+                                AlertDialogFragment.DIALOG_TYPE_DONE,
                                 transaction
                             )
 
@@ -458,6 +467,14 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         )
     }
 
+    fun showDialog(type: Int, transaction: Transaction) {
+        currentDialogFragment?.dismiss()
+        val fragment = AlertDialogFragment.newInstance(type, transaction)
+        fragment.setCallback(this)
+        fragment.show(supportFragmentManager, "dialog_broadcasted")
+        currentDialogFragment = fragment
+    }
+
     private fun setPendingTransaction(numOfPendingTransaction: Int) {
         hasPendingTransaction = numOfPendingTransaction > 0
         tvPendingTransaction.visibility =
@@ -471,6 +488,18 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             (currentFragment as PendingTransactionNotification).showNotification(
                 hasPendingTransaction == true
             )
+        }
+    }
+
+    override fun onSwap() {
+        this.moveToTab(MainPagerAdapter.SWAP)
+    }
+
+    override fun onTransfer() {
+        val lastAddedFragment =
+            getCurrentFragment()?.childFragmentManager?.fragments?.lastOrNull()
+        if (lastAddedFragment !is SendFragment) {
+            this.navigateToSendScreen()
         }
     }
 
