@@ -1,5 +1,6 @@
 package com.kyberswap.android.presentation.common
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -14,10 +15,19 @@ import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentAlertDialogBinding
 import com.kyberswap.android.domain.model.Transaction
+import com.kyberswap.android.util.OPEN_TX_FROM_ALERT_EVENT
+import com.kyberswap.android.util.OPEN_TX_MINED_ACTION
+import com.kyberswap.android.util.OPEN_TX_PENDING_ACTION
+import com.kyberswap.android.util.TRANSACTION_DETAIL_ACTION
+import com.kyberswap.android.util.TX_FAILED_ACTION
+import com.kyberswap.android.util.TX_FAILED_EVENT
+import com.kyberswap.android.util.TX_MINED_EVENT
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.openUrl
 
@@ -32,6 +42,8 @@ class AlertDialogFragment : DialogFragment() {
     private var transaction: Transaction? = null
 
     private var isCounterStop: Boolean = false
+
+    lateinit var analytics: FirebaseAnalytics
 
     private val handler by lazy {
         Handler()
@@ -53,20 +65,17 @@ class AlertDialogFragment : DialogFragment() {
         this.callback = callback
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        analytics = FirebaseAnalytics.getInstance(context)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
         setStyle(STYLE_NO_TITLE, R.style.AlertDialogStyle)
         dialogType = arguments?.getInt(DIALOG_TYPE_PARAM) ?: DIALOG_TYPE_BROADCASTED
         transaction = arguments?.getParcelable(TRANSACTION_PARAM)
-    }
-
-    fun setDialogInfo(
-        dialogType: Int,
-        transaction: Transaction?
-    ) {
-        this.dialogType = dialogType
-        this.transaction = transaction
     }
 
     private fun executeBinding() {
@@ -174,6 +183,7 @@ class AlertDialogFragment : DialogFragment() {
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
+        if (dialog == null) showsDialog = false
         super.onActivityCreated(savedInstanceState)
 //        binding.flContainer.setOnClickListener {
 //            activity?.onBackPressed()
@@ -181,7 +191,30 @@ class AlertDialogFragment : DialogFragment() {
 
         executeBinding()
 
+        if (isDone) {
+            analytics.logEvent(
+                TX_MINED_EVENT,
+                Bundle().createEvent(TRANSACTION_DETAIL_ACTION, transaction?.displayTransaction)
+            )
+            if (transaction?.isTransactionFail == true) {
+                analytics.logEvent(
+                    TX_FAILED_EVENT,
+                    Bundle().createEvent(
+                        TX_FAILED_ACTION,
+                        transaction?.gas + "|" + transaction?.gasUsed
+                    )
+                )
+            }
+        }
+
         binding.imgViewPendingTx.setOnClickListener {
+            analytics.logEvent(
+                OPEN_TX_FROM_ALERT_EVENT, Bundle().createEvent(
+                    if (isDone) OPEN_TX_MINED_ACTION else OPEN_TX_PENDING_ACTION,
+                    transaction?.displayTransaction
+                )
+            )
+
             transaction?.let {
                 (context?.applicationContext as KyberSwapApplication).stopCounter()
                 isCounterStop = true
@@ -190,6 +223,13 @@ class AlertDialogFragment : DialogFragment() {
         }
 
         binding.tvDetail.setOnClickListener {
+            analytics.logEvent(
+                OPEN_TX_FROM_ALERT_EVENT, Bundle().createEvent(
+                    if (isDone) OPEN_TX_MINED_ACTION else OPEN_TX_PENDING_ACTION,
+                    transaction?.displayTransaction
+                )
+            )
+
             transaction?.let {
                 (context?.applicationContext as KyberSwapApplication).stopCounter()
                 isCounterStop = true

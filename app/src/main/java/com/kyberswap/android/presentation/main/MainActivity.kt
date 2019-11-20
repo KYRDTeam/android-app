@@ -1,7 +1,9 @@
 package com.kyberswap.android.presentation.main
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
@@ -35,6 +37,7 @@ import com.kyberswap.android.presentation.landing.CreateWalletState
 import com.kyberswap.android.presentation.main.balance.BalanceFragment
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
+import com.kyberswap.android.presentation.main.balance.GetRatingInfoState
 import com.kyberswap.android.presentation.main.balance.WalletAdapter
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
@@ -59,7 +62,8 @@ import java.io.File
 import javax.inject.Inject
 
 
-class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callback {
+class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callback,
+    ForceUpdateChecker.OnUpdateNeededListener {
 
     @Inject
     lateinit var navigator: Navigator
@@ -111,6 +115,8 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
         WalletManager.storage = this
         WalletManager.scanWallets()
+
+        ForceUpdateChecker.with(this).onUpdateNeeded(this).check()
 
         alert = intent.getParcelableExtra(ALERT_PARAM)
         limitOrder = intent.getParcelableExtra(LIMIT_ORDER_PARAM)
@@ -441,6 +447,27 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             }
         })
 
+
+        mainViewModel.getRatingInfoCallback.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetRatingInfoState.Success -> {
+                        dialogHelper.showRatingDialog({
+                            showAlertWithoutIcon(message = getString(R.string.rating_thank_you))
+                        }, {
+                            mainViewModel.saveRatingFinish()
+                        },
+                            {
+                                mainViewModel.saveNotNow()
+                            })
+                    }
+                    is GetRatingInfoState.ShowError -> {
+
+                    }
+                }
+            }
+        })
+
         tvSend.setOnClickListener {
             showDrawer(false)
             handler.postDelayed(
@@ -452,6 +479,35 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                     }
                 }, 250
             )
+        }
+
+
+        handler.postDelayed({
+            mainViewModel.getRatingInfo()
+        }, 5000)
+    }
+
+
+    override fun onUpdateNeeded(title: String?, message: String, updateUrl: String?) {
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(
+                R.string.ok
+            ) { _, _ ->
+                redirectStore(updateUrl)
+
+            }.create()
+        dialog.show()
+    }
+
+
+    private fun redirectStore(updateUrl: String?) {
+        updateUrl?.let {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(updateUrl))
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
         }
     }
 

@@ -18,6 +18,7 @@ import com.kyberswap.android.data.db.OrderFilterDao
 import com.kyberswap.android.data.db.PassCodeDao
 import com.kyberswap.android.data.db.PendingBalancesDao
 import com.kyberswap.android.data.db.RateDao
+import com.kyberswap.android.data.db.RatingDao
 import com.kyberswap.android.data.db.SendDao
 import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.db.TokenDao
@@ -241,9 +242,10 @@ object DataModule {
         userDao: UserDao,
         storageMediator: StorageMediator,
         userMapper: UserMapper,
-        alertDao: AlertDao
+        alertDao: AlertDao,
+        ratingDao: RatingDao
     ): UserRepository =
-        UserDataRepository(api, userDao, storageMediator, userMapper, alertDao)
+        UserDataRepository(api, userDao, storageMediator, userMapper, alertDao, ratingDao)
 
 
     @Singleton

@@ -7,6 +7,7 @@ import androidx.exifinterface.media.ExifInterface
 import com.google.gson.Gson
 import com.kyberswap.android.data.api.home.UserApi
 import com.kyberswap.android.data.db.AlertDao
+import com.kyberswap.android.data.db.RatingDao
 import com.kyberswap.android.data.db.UserDao
 import com.kyberswap.android.data.mapper.UserMapper
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
@@ -14,6 +15,7 @@ import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.AlertMethodsResponse
 import com.kyberswap.android.domain.model.KycResponseStatus
 import com.kyberswap.android.domain.model.LoginUser
+import com.kyberswap.android.domain.model.RatingInfo
 import com.kyberswap.android.domain.model.ResponseStatus
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.repository.UserRepository
@@ -28,6 +30,7 @@ import com.kyberswap.android.domain.usecase.profile.SaveIdPassportUseCase
 import com.kyberswap.android.domain.usecase.profile.SaveKycInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.SaveLocalPersonalInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.SavePersonalInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.SaveRatingInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.SignUpUseCase
 import com.kyberswap.android.domain.usecase.profile.SubmitUserInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.UpdatePushTokenUseCase
@@ -52,7 +55,8 @@ class UserDataRepository @Inject constructor(
     private val userDao: UserDao,
     private val storageMediator: StorageMediator,
     private val userMapper: UserMapper,
-    private val alertDao: AlertDao
+    private val alertDao: AlertDao,
+    private val ratingDao: RatingDao
 ) : UserRepository {
 
     override fun logout(): Completable {
@@ -449,6 +453,24 @@ class UserDataRepository @Inject constructor(
             val user = userDao.getUser() ?: UserInfo()
             user.kycInfo = param.kycInfo
             userDao.updateUser(user)
+        }
+    }
+
+    override fun getRating(): Single<RatingInfo> {
+        return Single.fromCallable {
+            var rating = ratingDao.getRating()
+            if (rating == null) {
+                rating = RatingInfo(updatedAt = System.currentTimeMillis() / 1000L)
+                ratingDao.insertRatingInfo(rating)
+            }
+            rating
+
+        }
+    }
+
+    override fun saveRating(param: SaveRatingInfoUseCase.Param): Completable {
+        return Completable.fromCallable {
+            ratingDao.updateRatingInfo(param.ratingInfo)
         }
     }
 

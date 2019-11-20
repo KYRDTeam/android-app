@@ -2,11 +2,14 @@ package com.kyberswap.android.presentation.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.kyberswap.android.domain.model.RatingInfo
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.balance.UpdateBalanceUseCase
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
+import com.kyberswap.android.domain.usecase.profile.GetRatingUseCase
+import com.kyberswap.android.domain.usecase.profile.SaveRatingInfoUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.GetOtherBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.GetOtherTokenBalancesUseCase
@@ -23,6 +26,8 @@ import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.landing.CreateWalletState
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
+import com.kyberswap.android.presentation.main.balance.GetRatingInfoState
+import com.kyberswap.android.presentation.main.balance.SaveRatingInfoState
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.wallet.UpdateWalletState
 import com.kyberswap.android.util.ErrorHandler
@@ -47,12 +52,22 @@ class MainViewModel @Inject constructor(
     private val getOtherTokenBalancesUseCase: GetOtherTokenBalancesUseCase,
     private val getTransactionsPeriodicallyUseCase: GetTransactionsPeriodicallyUseCase,
     private val updateBalanceUseCase: UpdateBalanceUseCase,
+    private val getRatingInfoUseCase: GetRatingUseCase,
+    private val saveRatingInfoUseCase: SaveRatingInfoUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getWalletUseCase, errorHandler) {
 
     private val _getAllWalletStateCallback = MutableLiveData<Event<GetAllWalletState>>()
     val getAllWalletStateCallback: LiveData<Event<GetAllWalletState>>
         get() = _getAllWalletStateCallback
+
+    private val _getRatingInfoCallback = MutableLiveData<Event<GetRatingInfoState>>()
+    val getRatingInfoCallback: LiveData<Event<GetRatingInfoState>>
+        get() = _getRatingInfoCallback
+
+    private val _saveRatingInfoCallback = MutableLiveData<Event<SaveRatingInfoState>>()
+    val saveRatingInfoCallback: LiveData<Event<SaveRatingInfoState>>
+        get() = _saveRatingInfoCallback
 
     private val _getPendingTransactionStateCallback =
         MutableLiveData<Event<GetPendingTransactionState>>()
@@ -72,6 +87,13 @@ class MainViewModel @Inject constructor(
         get() = _getLoginStatusCallback
 
     private var currentPendingList: List<Transaction> = listOf()
+
+    private val hasTransaction: Boolean
+        get() = _hasTransaction
+
+    private var _hasTransaction: Boolean = false
+
+    private var ratingInfo: RatingInfo? = null
 
     fun getLoginStatus() {
         getLoginStatusUseCase.dispose()
@@ -144,6 +166,60 @@ class MainViewModel @Inject constructor(
         )
     }
 
+    fun getRatingInfo() {
+        getRatingInfoUseCase.execute(
+            Consumer {
+                ratingInfo = it
+                if ((it.isShowAlert || it.reShowAlert) && hasTransaction) {
+                    _getRatingInfoCallback.value = Event(
+                        GetRatingInfoState.Success(
+                            it
+                        )
+                    )
+                } else {
+                    saveRatingInfo(it.copy(count = it.count + 1))
+                }
+
+            },
+            Consumer {
+                it.printStackTrace()
+            },
+            null
+        )
+    }
+
+    private fun saveRatingInfo(ratingInfo: RatingInfo) {
+        saveRatingInfoUseCase.execute(
+            Action {
+
+            },
+            Consumer {
+                it.printStackTrace()
+            }, SaveRatingInfoUseCase.Param(ratingInfo)
+        )
+    }
+
+    fun saveNotNow() {
+        ratingInfo?.let {
+            saveRatingInfo(
+                it.copy(
+                    isNotNow = true,
+                    updatedAt = System.currentTimeMillis() / 1000L
+                )
+            )
+        }
+    }
+
+    fun saveRatingFinish() {
+        ratingInfo?.let {
+            saveRatingInfo(
+                it.copy(
+                    isFinished = true
+                )
+            )
+        }
+    }
+
     private fun loadOtherBalances(others: List<Token>) {
         others.sortedByDescending { it.currentBalance }.forEach { token ->
             getTokenBalanceUseCase.execute(
@@ -173,7 +249,9 @@ class MainViewModel @Inject constructor(
     fun getTransactionPeriodically(wallet: Wallet) {
         getTransactionsPeriodicallyUseCase.dispose()
         getTransactionsPeriodicallyUseCase.execute(
-            Consumer { },
+            Consumer {
+                _hasTransaction = it.isNotEmpty()
+            },
             Consumer {
                 it.printStackTrace()
             },

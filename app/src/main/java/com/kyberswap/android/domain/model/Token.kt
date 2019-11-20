@@ -297,6 +297,9 @@ data class Token(
     val isDAI: Boolean
         get() = tokenSymbol.toLowerCase(Locale.getDefault()) == DAI.toLowerCase(Locale.getDefault())
 
+    val isSAI: Boolean
+        get() = tokenSymbol.toLowerCase(Locale.getDefault()) == SAI.toLowerCase(Locale.getDefault())
+
     val isMKR: Boolean
         get() = tokenSymbol.toLowerCase(Locale.getDefault()) == MKR.toLowerCase(Locale.getDefault())
 
@@ -311,6 +314,7 @@ data class Token(
 
     val isETHWETH: Boolean
         get() = tokenSymbol.toLowerCase(Locale.getDefault()) == ETH_SYMBOL_STAR.toLowerCase(Locale.getDefault())
+
 
     val isENJ: Boolean
         get() = tokenSymbol.toLowerCase(Locale.getDefault()) == ENJ.toLowerCase(Locale.getDefault())
@@ -364,6 +368,7 @@ data class Token(
         const val ETH = "ETH"
         const val KNC = "KNC"
         const val DAI = "DAI"
+        const val SAI = "SAI"
         const val TUSD = "TUSD"
         const val DGX = "DGX"
         const val MKR = "MKR"

@@ -108,5 +108,10 @@
         <!--        <item name="windowMinWidthMinor">100%</item>-->
     </style>
 
+    <style name="RatingBar" parent="Widget.AppCompat.RatingBar">
+        <item name="colorControlNormal">#b9beca</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
+    </style>
+
 
 </resources>

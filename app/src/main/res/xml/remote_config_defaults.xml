@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<defaultsMap>
+    <entry>
+        <key>force_update_store_url</key>
+        <value>https://play.google.com/store/apps/details?id=com.kyberswap.android</value>
+    </entry>
+    <entry>
+        <key>force_update_base_version</key>
+        <value>1.1.0</value>
+    </entry>
+    <entry>
+        <key>force_update_required</key>
+        <value>false</value>
+    </entry>
+
+    <entry>
+        <key>force_update_title</key>
+        <value>New version available</value>
+    </entry>
+
+    <entry>
+        <key>force_update_message</key>
+        <value>Looks like you have an older version of the app. Please update to get the latest
+            feature and the best experiences
+        </value>
+    </entry>
+</defaultsMap>

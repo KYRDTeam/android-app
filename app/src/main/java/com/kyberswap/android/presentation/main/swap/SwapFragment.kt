@@ -437,11 +437,17 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             }
 
                             if (destLock.get() || currentFocus == binding.edtDest) {
-                                sourceAmount = edtDest.toBigDecimalOrDefaultZero().divide(
-                                    swap.expectedRate.toBigDecimalOrDefaultZero(),
-                                    18,
-                                    RoundingMode.UP
-                                ).stripTrailingZeros().toPlainString()
+                                sourceAmount =
+                                    if (swap.expectedRate.toDouble() == 0.0) {
+                                        BigDecimal.ZERO.toDisplayNumber()
+                                    } else {
+                                        edtDest.toBigDecimalOrDefaultZero().divide(
+                                            swap.expectedRate.toBigDecimalOrDefaultZero(),
+                                            18,
+                                            RoundingMode.UP
+                                        ).stripTrailingZeros().toPlainString()
+                                    }
+
                                 edtSource.setAmount(
                                     displaySourceAmount
                                 )

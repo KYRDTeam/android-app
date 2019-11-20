@@ -295,9 +295,17 @@ class SwapDataRepository @Inject constructor(
 
 
             if (srcTokenExt?.isGasFixed == true) {
-                srcTokenExt.gasLimit.toBigDecimalOrDefaultZero()
+                if (!gasLimitEntity.error) {
+                    gasLimitEntity.data
+                } else {
+                    srcTokenExt.gasLimit.toBigDecimalOrDefaultZero()
+                }
             } else if (destTokenExt?.isGasFixed == true) {
-                destTokenExt.gasLimit.toBigDecimalOrDefaultZero()
+                if (!gasLimitEntity.error) {
+                    gasLimitEntity.data
+                } else {
+                    destTokenExt.gasLimit.toBigDecimalOrDefaultZero()
+                }
             } else if (gasLimitEntity.error && ethEstimateGas?.error != null) {
                 defaultValue
             } else if (gasLimitEntity.error) {
