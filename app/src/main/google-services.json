@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "610869916768",
+    "firebase_url": "https://kyberswap-production-6a8b1.firebaseio.com",
+    "project_id": "kyberswap-production-6a8b1",
+    "storage_bucket": "kyberswap-production-6a8b1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:610869916768:android:dba2a26549a1f62e487f05",
+        "android_client_info": {
+          "package_name": "com.kyberswap.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "610869916768-g8vgg8vfe15kli4pb15i7nfuonfpbmi9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcRXu7uPRkcafdBUJ_VJ9mNeGxVpzAnkQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "610869916768-g8vgg8vfe15kli4pb15i7nfuonfpbmi9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

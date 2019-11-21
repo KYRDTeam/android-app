@@ -1,13 +1,16 @@
 package com.kyberswap.android.presentation.main
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -25,7 +28,7 @@ import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseActivity
-import com.kyberswap.android.presentation.common.CustomAlertActivity
+import com.kyberswap.android.presentation.common.AlertDialogFragment
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -34,7 +37,9 @@ import com.kyberswap.android.presentation.landing.CreateWalletState
 import com.kyberswap.android.presentation.main.balance.BalanceFragment
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
+import com.kyberswap.android.presentation.main.balance.GetRatingInfoState
 import com.kyberswap.android.presentation.main.balance.WalletAdapter
+import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
 import com.kyberswap.android.presentation.main.limitorder.OrderConfirmFragment
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
@@ -57,7 +62,9 @@ import java.io.File
 import javax.inject.Inject
 
 
-class MainActivity : BaseActivity(), KeystoreStorage {
+class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callback,
+    ForceUpdateChecker.OnUpdateNeededListener {
+
     @Inject
     lateinit var navigator: Navigator
     @Inject
@@ -85,6 +92,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
     var fromLimitOrder: Boolean = false
 
+    private var currentDialogFragment: DialogFragment? = null
+
     private val mainViewModel: MainViewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
     }
@@ -106,6 +115,8 @@ class MainActivity : BaseActivity(), KeystoreStorage {
 
         WalletManager.storage = this
         WalletManager.scanWallets()
+
+        ForceUpdateChecker.with(this).onUpdateNeeded(this).check()
 
         alert = intent.getParcelableExtra(ALERT_PARAM)
         limitOrder = intent.getParcelableExtra(LIMIT_ORDER_PARAM)
@@ -295,8 +306,12 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                         }
 
                         txList.forEach { transaction ->
-                            showBroadcastAlert(
-                                CustomAlertActivity.DIALOG_TYPE_DONE,
+                            //                            showBroadcastAlert(
+//                                CustomAlertActivity.DIALOG_TYPE_DONE,
+//                                transaction
+//                            )
+                            showDialog(
+                                AlertDialogFragment.DIALOG_TYPE_DONE,
                                 transaction
                             )
 
@@ -432,6 +447,27 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             }
         })
 
+
+        mainViewModel.getRatingInfoCallback.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetRatingInfoState.Success -> {
+                        dialogHelper.showRatingDialog({
+                            showAlertWithoutIcon(message = getString(R.string.rating_thank_you))
+                        }, {
+                            mainViewModel.saveRatingFinish()
+                        },
+                            {
+                                mainViewModel.saveNotNow()
+                            })
+                    }
+                    is GetRatingInfoState.ShowError -> {
+
+                    }
+                }
+            }
+        })
+
         tvSend.setOnClickListener {
             showDrawer(false)
             handler.postDelayed(
@@ -443,6 +479,35 @@ class MainActivity : BaseActivity(), KeystoreStorage {
                     }
                 }, 250
             )
+        }
+
+
+        handler.postDelayed({
+            mainViewModel.getRatingInfo()
+        }, 5000)
+    }
+
+
+    override fun onUpdateNeeded(title: String?, message: String, updateUrl: String?) {
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(
+                R.string.ok
+            ) { _, _ ->
+                redirectStore(updateUrl)
+
+            }.create()
+        dialog.show()
+    }
+
+
+    private fun redirectStore(updateUrl: String?) {
+        updateUrl?.let {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(updateUrl))
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
         }
     }
 
@@ -458,6 +523,14 @@ class MainActivity : BaseActivity(), KeystoreStorage {
         )
     }
 
+    fun showDialog(type: Int, transaction: Transaction) {
+        currentDialogFragment?.dismiss()
+        val fragment = AlertDialogFragment.newInstance(type, transaction)
+        fragment.setCallback(this)
+        fragment.show(supportFragmentManager, "dialog_broadcasted")
+        currentDialogFragment = fragment
+    }
+
     private fun setPendingTransaction(numOfPendingTransaction: Int) {
         hasPendingTransaction = numOfPendingTransaction > 0
         tvPendingTransaction.visibility =
@@ -471,6 +544,18 @@ class MainActivity : BaseActivity(), KeystoreStorage {
             (currentFragment as PendingTransactionNotification).showNotification(
                 hasPendingTransaction == true
             )
+        }
+    }
+
+    override fun onSwap() {
+        this.moveToTab(MainPagerAdapter.SWAP)
+    }
+
+    override fun onTransfer() {
+        val lastAddedFragment =
+            getCurrentFragment()?.childFragmentManager?.fragments?.lastOrNull()
+        if (lastAddedFragment !is SendFragment) {
+            this.navigateToSendScreen()
         }
     }
 

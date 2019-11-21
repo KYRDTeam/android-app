@@ -60,7 +60,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
-                    android:src="@drawable/dai"
+                    android:src="@drawable/sai"
                     app:identifier="@{token.tokenSymbol}"
                     app:layout_constraintBottom_toBottomOf="@+id/tvTokenName"
                     app:layout_constraintEnd_toStartOf="@+id/tvTokenSymbol"

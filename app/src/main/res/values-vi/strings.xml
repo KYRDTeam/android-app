@@ -623,5 +623,12 @@
     <string name="token_maintainance">Đang bảo trì</string>
     <string name="delete_transaction_success">Xóa giao dịch thành công</string>
     <string name="delete_transaction_warning">Bạn có muốn xóa giao dịch này không?</string>
+    <string name="rating_message">Would you mind rating us on the Play Store?</string>
+    <string name="rating_store_ok">OK, Sure</string>
+    <string name="rating_store_negative">No, Thanks</string>
+    <string name="rating_thank_you">Thank you for rating us</string>
+    <string name="enjoying_kyberswap">Enjoying KyberSwap?</string>
+    <string name="tab_a_star_to_rate_us">Tab a star to rate us.</string>
+    <string name="not_now">Not Now</string>
 
 </resources>

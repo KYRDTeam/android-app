@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.caverock.androidsvg.SVG
 import com.kyberswap.android.R
@@ -107,6 +108,7 @@ object ImageViewBindingAdapter {
                             32.dpToPx(view.context)
                         )
                     )
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .placeholder(resourceIcon)
                     .error(resourceIcon).into(view)
             } else {
@@ -118,6 +120,7 @@ object ImageViewBindingAdapter {
                             32.dpToPx(view.context)
                         )
                     )
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .placeholder(resourceIcon)
                     .error(resourceIcon).into(view)
             }

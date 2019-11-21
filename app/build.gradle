@@ -24,7 +24,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         def versionMajor = 1
         def versionMinor = 1
-        def versionPatch = 2
+        def versionPatch = 3
         versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch * 1
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         vectorDrawables.useSupportLibrary = true
@@ -129,6 +129,9 @@ dependencies {
     implementation "com.google.dagger:dagger-android:$rootProject.daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$rootProject.daggerVersion"
 
+    implementation 'com.google.firebase:firebase-config:19.0.3'
+    implementation 'com.google.firebase:firebase-core:17.2.1'
+    implementation 'com.google.firebase:firebase-analytics:17.2.1'
     kapt "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$rootProject.daggerVersion"
 
@@ -246,3 +249,5 @@ detekt {
 
     }
 }
+
+apply plugin: 'com.google.gms.google-services'

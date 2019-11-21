@@ -1,0 +1,107 @@
+{
+  "project_info": {
+    "project_number": "217227744484",
+    "firebase_url": "https://kyberswap-1559361262576.firebaseio.com",
+    "project_id": "kyberswap-1559361262576",
+    "storage_bucket": "kyberswap-1559361262576.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:217227744484:android:666072d5ea0f13f99508f1",
+        "android_client_info": {
+          "package_name": "com.kyberswap.android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxs1GjrtzXmal_8lwT4vu04fyuAN-ZCPE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "217227744484-6o4odh1h9lnj7smluptd6eadev83cf9t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:217227744484:android:897de1a0b6498bb69508f1",
+        "android_client_info": {
+          "package_name": "com.kyberswap.android.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxs1GjrtzXmal_8lwT4vu04fyuAN-ZCPE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "217227744484-6o4odh1h9lnj7smluptd6eadev83cf9t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:217227744484:android:95affe30ffbc114a9508f1",
+        "android_client_info": {
+          "package_name": "com.kyberswap.android.kovan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxs1GjrtzXmal_8lwT4vu04fyuAN-ZCPE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "217227744484-6o4odh1h9lnj7smluptd6eadev83cf9t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:217227744484:android:c2845d7e71a04ffe9508f1",
+        "android_client_info": {
+          "package_name": "com.kyberswap.android.stg"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxs1GjrtzXmal_8lwT4vu04fyuAN-ZCPE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "217227744484-6o4odh1h9lnj7smluptd6eadev83cf9t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

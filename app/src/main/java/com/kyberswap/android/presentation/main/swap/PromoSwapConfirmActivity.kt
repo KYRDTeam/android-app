@@ -1,5 +1,6 @@
 package com.kyberswap.android.presentation.main.swap
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -9,10 +10,9 @@ import androidx.lifecycle.ViewModelProviders
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityPromoSwapConfirmBinding
-import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
-import com.kyberswap.android.presentation.common.CustomAlertActivity
+import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
 import org.consenlabs.tokencore.wallet.KeystoreStorage
@@ -72,14 +72,19 @@ class PromoSwapConfirmActivity : BaseActivity(), KeystoreStorage {
                 when (state) {
                     is SwapTokenTransactionState.Success -> {
 //                        showAlert(getString(R.string.transaction_broadcasted_message))
-                        showBroadcastAlert(
-                            CustomAlertActivity.DIALOG_TYPE_BROADCASTED,
-                            Transaction(
-                                type = Transaction.TransactionType.SWAP,
-                                hash = state.responseStatus?.hash ?: ""
-                            )
-                        )
-                        onBackPressed()
+//                        showBroadcastAlert(
+//                            CustomAlertActivity.DIALOG_TYPE_BROADCASTED,
+//                            Transaction(
+//                                type = Transaction.TransactionType.SWAP,
+//                                hash = state.responseStatus?.hash ?: ""
+//                            )
+//                        )
+//                        onBackPressed()
+
+                        val returnIntent = Intent()
+                        setResult(Activity.RESULT_OK, returnIntent)
+                        returnIntent.putExtra(BaseFragment.HASH_PARAM, state.responseStatus?.hash)
+                        finish()
                     }
                     is SwapTokenTransactionState.ShowError -> {
                         showError(

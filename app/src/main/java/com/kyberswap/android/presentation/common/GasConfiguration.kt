@@ -20,7 +20,7 @@ fun calculateDefaultGasLimit(from: Token, to: Token): BigInteger {
             BigInteger.ZERO
         } else if (from.isDGX) {
             Token.DIGIX_GAS_LIMIT_DEFAULT.toBigInteger()
-        } else if (from.isDAI) {
+        } else if (from.isDAI || from.isSAI) {
             Token.DAI_GAS_LIMIT_DEFAULT.toBigInteger()
         } else if (from.isMKR) {
             Token.MAKER_GAS_LIMIT_DEFAULT.toBigInteger()
@@ -41,7 +41,7 @@ fun calculateDefaultGasLimit(from: Token, to: Token): BigInteger {
             BigInteger.ZERO
         } else if (to.isDGX) {
             Token.DIGIX_GAS_LIMIT_DEFAULT.toBigInteger()
-        } else if (to.isDAI) {
+        } else if (to.isDAI || to.isSAI) {
             Token.DAI_GAS_LIMIT_DEFAULT.toBigInteger()
         } else if (to.isMKR) {
             Token.MAKER_GAS_LIMIT_DEFAULT.toBigInteger()
@@ -60,7 +60,7 @@ fun calculateDefaultGasLimit(from: Token, to: Token): BigInteger {
 
 
 fun specialGasLimitDefault(from: Token, to: Token): BigInteger? {
-    if (from.isDAI || from.isTUSD || to.isDAI || to.isTUSD) {
+    if (from.isDAI || from.isTUSD || from.isSAI || to.isDAI || to.isTUSD || to.isSAI) {
         return calculateDefaultGasLimit(from, to)
     }
     return null
@@ -75,7 +75,7 @@ fun calculateDefaultGasLimitTransfer(token: Token): BigInteger {
             Token.TRANSFER_ETH_GAS_LIMIT_DEFAULT.toBigInteger()
         } else if (token.isDGX) {
             Token.DIGIX_GAS_LIMIT_DEFAULT.toBigInteger()
-        } else if (token.isDAI) {
+        } else if (token.isDAI || token.isSAI) {
             Token.DAI_GAS_LIMIT_DEFAULT.toBigInteger()
         } else if (token.isMKR) {
             Token.MAKER_GAS_LIMIT_DEFAULT.toBigInteger()
