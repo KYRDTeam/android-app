@@ -14,6 +14,7 @@ import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink.aead.AeadFactory
 import com.google.crypto.tink.aead.AeadKeyTemplates
 import com.google.crypto.tink.integration.android.AndroidKeysetManager
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.kyberswap.android.presentation.notification.NotificationOpenedHandler
 import com.kyberswap.android.presentation.setting.PassCodeLockActivity
 import com.kyberswap.android.util.di.AppComponent
@@ -117,6 +118,8 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
             .setNotificationOpenedHandler(NotificationOpenedHandler())
             .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
             .init()
+
+        setupRemoteConfig()
     }
 
     fun stopCounter() {
@@ -149,6 +152,17 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
             .withMasterKeyUri(MASTER_KEY_URI)
             .build()
             .keysetHandle
+    }
+
+    private fun setupRemoteConfig() {
+        val firebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
+        firebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults)
+        firebaseRemoteConfig.fetch(60) // fetch every minutes
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    firebaseRemoteConfig.activateFetched()
+                }
+            }
     }
 
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> {

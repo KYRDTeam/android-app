@@ -57,7 +57,7 @@ fun String.toDoubleSafe(): Double {
 
 fun String?.percentage(other: String?): BigDecimal {
     if (other.isNullOrEmpty() || this.isNullOrEmpty()) return BigDecimal.ZERO
-    if (other.toBigDecimal() == BigDecimal.ZERO) return BigDecimal.ZERO
+    if (other.toBigDecimal() == BigDecimal.ZERO || other.toDouble() == 0.0) return BigDecimal.ZERO
     return try {
         (this.toDouble() - other.toDouble()).div(other.toDouble())
             .times(100f)
@@ -77,7 +77,6 @@ fun String.toDate(): Date {
         ex.printStackTrace()
         Date()
     }
-
 }
 
 fun String?.toBigDecimalOrDefaultZero(): BigDecimal {

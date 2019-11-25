@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
@@ -15,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
@@ -41,6 +43,7 @@ import com.kyberswap.android.databinding.DialogOrderFilledBinding
 import com.kyberswap.android.databinding.DialogPassportBottomSheetBinding
 import com.kyberswap.android.databinding.DialogPasswordBackupWalletBinding
 import com.kyberswap.android.databinding.DialogPdpaUpdateBinding
+import com.kyberswap.android.databinding.DialogRateUsBinding
 import com.kyberswap.android.databinding.DialogSkipBackupPhraseBinding
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.NotificationLimitOrder
@@ -48,13 +51,23 @@ import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.presentation.main.alert.EligibleTokenAdapter
 import com.kyberswap.android.presentation.main.alert.Passport
 import com.kyberswap.android.presentation.main.alert.PassportAdapter
+import com.kyberswap.android.util.NOT_OPEN_STORE_EVENT
+import com.kyberswap.android.util.NO_THANK_ACTION
+import com.kyberswap.android.util.OPEN_PLAY_STORE_ACTION
+import com.kyberswap.android.util.OPEN_PLAY_STORE_EVENT
+import com.kyberswap.android.util.RATING_DIALOG_ACTION
+import com.kyberswap.android.util.RATING_DIALOG_EVENT
 import com.kyberswap.android.util.ext.colorize
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.underline
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
 
-class DialogHelper @Inject constructor(private val activity: AppCompatActivity) {
+class DialogHelper @Inject constructor(
+    private val activity: AppCompatActivity,
+    private val firebaseAnalytics: FirebaseAnalytics
+) {
 
     fun showConfirmation(positiveListener: () -> Unit) {
         val dialog = AlertDialog.Builder(activity).create()
@@ -777,6 +790,73 @@ class DialogHelper @Inject constructor(private val activity: AppCompatActivity) 
         binding.imgClose.setOnClickListener {
             dialog.dismiss()
         }
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    }
+
+    fun showRatingDialog(
+        listener: () -> Unit,
+        onFinishRatingListener: () -> Unit,
+        onNotNowListener: () -> Unit
+    ) {
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogRateUsBinding>(
+                LayoutInflater.from(activity), R.layout.dialog_rate_us, null, false
+            )
+
+        binding.tvNotNow.setOnClickListener {
+            dialog.dismiss()
+            onNotNowListener.invoke()
+        }
+        binding.rbFeedback.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+            dialog.dismiss()
+
+            firebaseAnalytics.logEvent(
+                RATING_DIALOG_EVENT,
+                Bundle().createEvent(RATING_DIALOG_ACTION, rating.toString())
+            )
+
+            if (rating >= 4) {
+                onFinishRatingListener.invoke()
+                val confirmedDialog = android.app.AlertDialog.Builder(activity)
+                    .setMessage(activity.getString(R.string.rating_message))
+                    .setPositiveButton(
+                        activity.getString(R.string.rating_store_ok)
+                    ) { _, _ ->
+                        try {
+                            firebaseAnalytics.logEvent(
+                                OPEN_PLAY_STORE_EVENT,
+                                Bundle().createEvent(OPEN_PLAY_STORE_ACTION, OPEN_PLAY_STORE_ACTION)
+                            )
+                            openUrl(activity.getString(R.string.setting_rate_my_app))
+                        } catch (ex: Exception) {
+                            ex.printStackTrace()
+                        }
+
+                    }
+                    .setNegativeButton(
+                        activity.getString(R.string.rating_store_negative)
+                    ) { itf, _ ->
+                        firebaseAnalytics.logEvent(
+                            NOT_OPEN_STORE_EVENT,
+                            Bundle().createEvent(NO_THANK_ACTION, NO_THANK_ACTION)
+                        )
+                        itf.dismiss()
+
+                    }
+                    .create()
+
+                confirmedDialog.show()
+            } else {
+                onFinishRatingListener.invoke()
+                listener.invoke()
+            }
+        }
+
         dialog.setView(binding.root)
         dialog.show()
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))

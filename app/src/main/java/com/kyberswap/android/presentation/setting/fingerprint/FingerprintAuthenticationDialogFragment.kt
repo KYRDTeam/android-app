@@ -50,6 +50,7 @@ class FingerprintAuthenticationDialogFragment : DialogFragment(),
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onActivityCreated(savedInstanceState: Bundle?) {
+        if (dialog == null) showsDialog = false
         super.onActivityCreated(savedInstanceState)
         dialog?.setTitle(getString(R.string.app_name))
         dialog?.window?.setBackgroundDrawableResource(R.drawable.rounded_corner_dialog_background)

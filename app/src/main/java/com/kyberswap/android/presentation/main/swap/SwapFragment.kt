@@ -32,7 +32,7 @@ import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseFragment
-import com.kyberswap.android.presentation.common.CustomAlertActivity
+import com.kyberswap.android.presentation.common.AlertDialogFragment
 import com.kyberswap.android.presentation.common.DEFAULT_ACCEPT_RATE_PERCENTAGE
 import com.kyberswap.android.presentation.common.KeyImeChange
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
@@ -437,11 +437,17 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             }
 
                             if (destLock.get() || currentFocus == binding.edtDest) {
-                                sourceAmount = edtDest.toBigDecimalOrDefaultZero().divide(
-                                    swap.expectedRate.toBigDecimalOrDefaultZero(),
-                                    18,
-                                    RoundingMode.UP
-                                ).stripTrailingZeros().toPlainString()
+                                sourceAmount =
+                                    if (swap.expectedRate.toDouble() == 0.0) {
+                                        BigDecimal.ZERO.toDisplayNumber()
+                                    } else {
+                                        edtDest.toBigDecimalOrDefaultZero().divide(
+                                            swap.expectedRate.toBigDecimalOrDefaultZero(),
+                                            18,
+                                            RoundingMode.UP
+                                        ).stripTrailingZeros().toPlainString()
+                                    }
+
                                 edtSource.setAmount(
                                     displaySourceAmount
                                 )
@@ -737,12 +743,24 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 showProgress(state == SaveSwapState.Loading)
                 when (state) {
                     is SaveSwapState.Success -> {
-//                        navigator.navigateToSwapConfirmationScreen(wallet)
-                        startActivityForResult(activity?.let { ctx ->
-                            SwapConfirmActivity.newIntent(
-                                ctx, wallet
-                            )
-                        }, SWAP_CONFIRM)
+                        val currentActivity = activity
+                        if (currentActivity != null) {
+                            val confirmedActivity = when {
+                                wallet?.isPromo == true -> when {
+                                    wallet?.isPromoPayment == true -> PromoPaymentConfirmActivity.newIntent(
+                                        currentActivity,
+                                        wallet
+                                    )
+                                    else -> PromoSwapConfirmActivity.newIntent(
+                                        currentActivity,
+                                        wallet
+                                    )
+                                }
+                                else -> SwapConfirmActivity.newIntent(currentActivity, wallet)
+                            }
+
+                            startActivityForResult(confirmedActivity, SWAP_CONFIRM)
+                        }
                     }
                 }
             }
@@ -941,8 +959,15 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     private fun showBroadcast(hash: String) {
         val context = activity
         if (context is MainActivity) {
-            context.showBroadcastAlert(
-                CustomAlertActivity.DIALOG_TYPE_BROADCASTED,
+//            context.showBroadcastAlert(
+//                CustomAlertActivity.DIALOG_TYPE_BROADCASTED,
+//                Transaction(
+//                    type = Transaction.TransactionType.SWAP,
+//                    hash = hash
+//                )
+//            )
+            context.showDialog(
+                AlertDialogFragment.DIALOG_TYPE_BROADCASTED,
                 Transaction(
                     type = Transaction.TransactionType.SWAP,
                     hash = hash

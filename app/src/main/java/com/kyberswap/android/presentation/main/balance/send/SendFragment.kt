@@ -712,7 +712,8 @@ class SendFragment : BaseFragment() {
     private fun showBroadcast(hash: String) {
         val context = activity
         if (context is MainActivity) {
-            context.showBroadcastAlert(
+
+            context.showDialog(
                 CustomAlertActivity.DIALOG_TYPE_BROADCASTED,
                 Transaction(
                     type = Transaction.TransactionType.SEND,

@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.TypeConverters
+import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.data.api.transaction.TransactionEntity
 import com.kyberswap.android.data.db.TransactionTypeConverter
 import com.kyberswap.android.util.ext.displayWalletAddress
@@ -143,7 +144,8 @@ data class Transaction(
     )
 
     val enableDeleteTransaction: Boolean
-        get() = (System.currentTimeMillis() / 1000 - timeStamp) / 60f / 60f > 1f
+        get() = if (BuildConfig.FLAVOR == "dev" || BuildConfig.FLAVOR == "stg") (System.currentTimeMillis() / 1000 - timeStamp) / 60f > 5f else
+            (System.currentTimeMillis() / 1000 - timeStamp) / 60f / 60f > 1f
 
 
     fun with(tx: org.web3j.protocol.core.methods.response.Transaction): Transaction {

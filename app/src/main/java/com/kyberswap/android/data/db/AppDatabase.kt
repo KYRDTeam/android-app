@@ -16,6 +16,7 @@ import com.kyberswap.android.domain.model.OrderFilter
 import com.kyberswap.android.domain.model.PassCode
 import com.kyberswap.android.domain.model.PendingBalances
 import com.kyberswap.android.domain.model.Rate
+import com.kyberswap.android.domain.model.RatingInfo
 import com.kyberswap.android.domain.model.Send
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Token
@@ -44,9 +45,10 @@ import com.kyberswap.android.domain.model.Wallet
         Alert::class,
         PassCode::class,
         PendingBalances::class,
-        TransactionFilter::class
+        TransactionFilter::class,
+        RatingInfo::class
     ],
-    version = 7
+    version = 8
 )
 @TypeConverters(
     DataTypeConverter::class,
@@ -77,6 +79,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun pendingBalancesDao(): PendingBalancesDao
     abstract fun transactionFilterDao(): TransactionFilterDao
     abstract fun tokenExtDao(): TokenExtDao
+    abstract fun ratingDao(): RatingDao
 
     companion object {
         @Volatile
@@ -166,6 +169,17 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        @VisibleForTesting
+        internal val MIGRATION_7_8: Migration = object : Migration(7, 8) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Add new TokenExtTable
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS ratings (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `updatedAt` INTEGER NOT NULL, `count` INTEGER NOT NULL, `isNotNow` INTEGER NOT NULL, `isFinished` INTEGER NOT NULL)
+                """.trimIndent()
+                )
+            }
+        }
 
 
         private fun buildDatabase(context: Context) =
@@ -179,7 +193,8 @@ abstract class AppDatabase : RoomDatabase() {
                     MIGRATION_3_4,
                     MIGRATION_4_5,
                     MIGRATION_5_6,
-                    MIGRATION_6_7
+                    MIGRATION_6_7,
+                    MIGRATION_7_8
                 )
 //                .fallbackToDestructiveMigration()
 //                .allowMainThreadQueries()
