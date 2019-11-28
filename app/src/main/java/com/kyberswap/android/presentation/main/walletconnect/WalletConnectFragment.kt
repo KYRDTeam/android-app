@@ -36,6 +36,7 @@ import com.kyberswap.android.util.SWITCH_WALLET_WHEN_WALLET_CONNECT_EVENT
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.isApproveTx
+import com.kyberswap.android.util.ext.isNetworkAvailable
 import javax.inject.Inject
 
 
@@ -418,16 +419,28 @@ class WalletConnectFragment : BaseFragment() {
                     }
 
                 }, {
-                    showProgress(false)
-                    if (requestCode == REQUEST_BACK) {
-                        handler.post { activity?.onBackPressed() }
-                    }
-                    showError(it.message ?: getString(R.string.something_wrong))
-                    it.message?.let {
-                        analytics.logEvent(
-                            FAIL_WALLET_CONNECT_EVENT,
-                            Bundle().createEvent(it)
-                        )
+                    isOnline = false
+                    if (isAdded) {
+                        handler.post {
+                            showProgress(false)
+                            if (requestCode == REQUEST_BACK) {
+                                activity?.onBackPressed()
+                            }
+
+                            showStatus(false)
+                            if (!isNetworkAvailable()) {
+                                showNetworkUnAvailable()
+                            } else {
+                                showError(it.message ?: getString(R.string.something_wrong))
+                            }
+
+                            it.message?.let {
+                                analytics.logEvent(
+                                    FAIL_WALLET_CONNECT_EVENT,
+                                    Bundle().createEvent(it)
+                                )
+                            }
+                        }
                     }
 
                 })

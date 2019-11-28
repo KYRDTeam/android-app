@@ -52,6 +52,8 @@
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/toolbar_height"
             android:background="@color/white"
+            android:clickable="true"
+            android:focusable="true"
             android:padding="24dp">
 
             <LinearLayout

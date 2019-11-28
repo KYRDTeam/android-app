@@ -240,6 +240,10 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         walletConnect.forEach {
             it.setOnClickListener {
                 showDrawer(false)
+                if (!isNetworkAvailable()) {
+                    showNetworkUnAvailable()
+                    return@setOnClickListener
+                }
                 firebaseAnalytics.logEvent(
                     CLICK_WALLET_CONNECT_EVENT, Bundle().createEvent("1")
                 )
