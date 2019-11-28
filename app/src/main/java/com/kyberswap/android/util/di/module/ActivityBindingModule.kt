@@ -99,6 +99,7 @@ interface ActivityBindingModule {
     )
     fun contributeSendConfirmActivity(): SendConfirmActivity
 
+
     @ActivityScoped
     @ContributesAndroidInjector(
         modules = [

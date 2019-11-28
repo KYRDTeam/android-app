@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.zxing.integration.android.IntentIntegrator
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityMainBinding
@@ -48,8 +50,11 @@ import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
 import com.kyberswap.android.presentation.main.profile.kyc.SubmitFragment
 import com.kyberswap.android.presentation.main.setting.SettingFragment
 import com.kyberswap.android.presentation.main.swap.SwapFragment
+import com.kyberswap.android.presentation.main.walletconnect.WalletConnectFragment
 import com.kyberswap.android.presentation.wallet.UpdateWalletState
+import com.kyberswap.android.util.CLICK_WALLET_CONNECT_EVENT
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.kyberswap.android.util.ext.toLongSafe
 import kotlinx.android.synthetic.main.activity_main.*
@@ -94,6 +99,9 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
     private var currentDialogFragment: DialogFragment? = null
 
+    @Inject
+    lateinit var firebaseAnalytics: FirebaseAnalytics
+
     private val mainViewModel: MainViewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
     }
@@ -104,6 +112,10 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
     private val binding by lazy {
         DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
+    }
+
+    private val walletConnect by lazy {
+        listOf(binding.drawerLayout.tvWalletConnect, binding.drawerLayout.imgWalletConnect)
     }
 
     val pendingTransactions = mutableListOf<Transaction>()
@@ -225,6 +237,21 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             binding.vpNavigation.currentItem = initial
         }
 
+        walletConnect.forEach {
+            it.setOnClickListener {
+                showDrawer(false)
+                firebaseAnalytics.logEvent(
+                    CLICK_WALLET_CONNECT_EVENT, Bundle().createEvent("1")
+                )
+                if (!isWalletConnectOpen) {
+                    IntentIntegrator(this)
+                        .setBeepEnabled(false)
+                        .initiateScan()
+                }
+
+            }
+        }
+
         binding.navView.rvWallet.layoutManager = LinearLayoutManager(
             this,
             RecyclerView.VERTICAL,
@@ -306,63 +333,10 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                         }
 
                         txList.forEach { transaction ->
-                            //                            showBroadcastAlert(
-//                                CustomAlertActivity.DIALOG_TYPE_DONE,
-//                                transaction
-//                            )
                             showDialog(
                                 AlertDialogFragment.DIALOG_TYPE_DONE,
                                 transaction
                             )
-
-//                            val title: String
-//                            val message: String
-//
-//                            when (transaction.transactionType) {
-//                                Transaction.TransactionType.SEND -> {
-//                                    if (transaction.isTransactionFail) {
-//                                        title = getString(R.string.title_fail)
-//                                        message = String.format(
-//                                            getString(R.string.notification_fail_sent),
-//                                            transaction.displayValue,
-//                                            transaction.to
-//                                        )
-//                                    } else {
-//                                        title = ""
-//                                        message = ""
-//                                        showBroadcastAlert(
-//                                            CustomAlertActivity.DIALOG_TYPE_DONE,
-//                                            transaction
-//                                        )
-//                                    }
-//                                }
-//                                Transaction.TransactionType.SWAP -> {
-//                                    if (transaction.isTransactionFail) {
-//                                        title = getString(R.string.title_fail)
-//                                        message = String.format(
-//                                            getString(R.string.notification_fail_swap),
-//                                            transaction.displaySource, transaction.displayDest
-//                                        )
-//                                    } else {
-//                                        title = ""
-//                                        message = ""
-//                                        showBroadcastAlert(
-//                                            CustomAlertActivity.DIALOG_TYPE_DONE,
-//                                            transaction
-//                                        )
-//                                    }
-//                                }
-//                                Transaction.TransactionType.RECEIVED -> {
-//                                    title = ""
-//                                    message = ""
-//                                }
-//                            }
-//
-//                            if (title.isNotEmpty() && message.isNotEmpty()) {
-//                                showAlertWithoutIcon(
-//                                    title = title, message = message
-//                                )
-//                            }
                         }
 
                         val pending = state.transactions.filter { it.blockNumber.isEmpty() }
@@ -547,6 +521,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         }
     }
 
+
     override fun onSwap() {
         this.moveToTab(MainPagerAdapter.SWAP)
     }
@@ -558,6 +533,14 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             this.navigateToSendScreen()
         }
     }
+
+    val isWalletConnectOpen: Boolean
+        get() {
+            val lastAddedFragment =
+                getCurrentFragment()?.childFragmentManager?.fragments?.lastOrNull()
+            return lastAddedFragment is WalletConnectFragment
+        }
+
 
     fun getCurrentFragment(): Fragment? {
         return currentFragment
@@ -585,6 +568,8 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                     it.onBackPress()
                     return
                 } else if (it is OrderConfirmFragment) {
+                    it.onBackPress()
+                } else if (it is WalletConnectFragment) {
                     it.onBackPress()
                 }
             }
@@ -634,6 +619,19 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         currentFragment?.childFragmentManager?.fragments?.forEach {
             if (it is PersonalInfoFragment || it is PassportFragment) {
                 it.onActivityResult(requestCode, resultCode, data)
+            }
+        }
+
+        val scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        if (scanResult != null && scanResult.contents != null) {
+            wallet?.address?.let {
+
+                navigator.navigateToWalletConnectScreen(
+                    currentFragment,
+                    wallet,
+                    scanResult.contents
+                )
+
             }
         }
     }

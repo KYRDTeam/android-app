@@ -1,6 +1,7 @@
 package com.kyberswap.android.util.di.module
 
 import android.content.Context
+import com.google.gson.GsonBuilder
 import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.ChartApi
@@ -15,6 +16,7 @@ import com.kyberswap.android.data.api.home.UserApi
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.util.ErrorHandler
 import com.kyberswap.android.util.TokenClient
+import com.trustwallet.walletconnect.WCClient
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -102,6 +104,19 @@ class NetworkModule {
                 false
             )
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideWCClient(gsonBuilder: GsonBuilder, client: OkHttpClient): WCClient {
+        return WCClient(gsonBuilder, client)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideGsonBuilder(): GsonBuilder {
+        return GsonBuilder()
     }
 
 

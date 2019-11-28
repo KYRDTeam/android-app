@@ -110,6 +110,78 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvKyberCode" />
 
+
+        <TextView
+            android:id="@+id/tvSend"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="?selectableItemBackground"
+            android:gravity="start|center"
+            android:minHeight="54dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:text="@string/send_token"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textColor="@color/colorAccent"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tvKyberCode"
+            app:layout_constraintTop_toBottomOf="@+id/view3" />
+
+        <View
+            android:id="@+id/view5"
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:background="@color/drawer_divider_color"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvSend" />
+
+
+        <TextView
+            android:id="@+id/tvWalletConnect"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minHeight="54dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:text="@string/menu_wallet_connect"
+            android:textAllCaps="true"
+            android:textColor="#2e3957"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/imgWalletConnect"
+            app:layout_constraintEnd_toStartOf="@+id/imgWalletConnect"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/imgWalletConnect" />
+
+        <ImageView
+            android:id="@+id/imgWalletConnect"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_scan_wallet"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tvWalletConnect"
+            app:layout_constraintTop_toBottomOf="@+id/view5" />
+
+
+        <View
+            android:id="@+id/view6"
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:background="@color/drawer_divider_color"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imgWalletConnect" />
+
         <TextView
             android:id="@+id/textView11"
             android:layout_width="0dp"
@@ -133,13 +205,12 @@
             android:id="@+id/imgAdd"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginStart="85dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_add_wallet"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/textView11"
-            app:layout_constraintTop_toBottomOf="@+id/view3" />
+            app:layout_constraintTop_toBottomOf="@+id/view6" />
 
         <View
             android:id="@+id/view4"
@@ -151,34 +222,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView11" />
 
-        <TextView
-            android:id="@+id/tvSend"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:background="?selectableItemBackground"
-            android:gravity="start|center"
-            android:minHeight="54dp"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:text="@string/send_token"
-            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-            android:textColor="@color/colorAccent"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/textView11"
-            app:layout_constraintTop_toBottomOf="@+id/view4" />
-
-        <View
-            android:id="@+id/view5"
-            android:layout_width="match_parent"
-            android:layout_height="0.1dp"
-            android:background="@color/drawer_divider_color"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvSend" />
-
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvWallet"
@@ -189,7 +232,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view5" />
+            app:layout_constraintTop_toBottomOf="@+id/view4" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -56,6 +56,7 @@ import com.kyberswap.android.presentation.main.transaction.TransactionDetailSend
 import com.kyberswap.android.presentation.main.transaction.TransactionDetailSwapFragment
 import com.kyberswap.android.presentation.main.transaction.TransactionFilterFragment
 import com.kyberswap.android.presentation.main.transaction.TransactionFragment
+import com.kyberswap.android.presentation.main.walletconnect.WalletConnectFragment
 import com.kyberswap.android.presentation.wallet.BackupWalletActivity
 import com.kyberswap.android.presentation.wallet.ImportWalletActivity
 import com.kyberswap.android.presentation.wallet.VerifyBackupWordActivity
@@ -187,6 +188,18 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
 
     fun navigateToSendConfirmationScreen(wallet: Wallet?, isContactExist: Boolean) {
         activity.startActivity(SendConfirmActivity.newIntent(activity, wallet, isContactExist))
+    }
+
+    fun navigateToWalletConnectScreen(
+        currentFragment: Fragment?,
+        wallet: Wallet?,
+        content: String
+    ) {
+//        activity.startActivity(WalletConnectActivity.newIntent(activity, wallet, content))
+        navigateByChildFragmentManager(
+            currentFragment,
+            WalletConnectFragment.newInstance(wallet, content)
+        )
     }
 
     fun navigateToSendScreen(

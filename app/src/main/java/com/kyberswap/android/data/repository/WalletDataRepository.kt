@@ -9,10 +9,12 @@ import com.kyberswap.android.data.db.LocalLimitOrderDao
 import com.kyberswap.android.data.db.SendDao
 import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.db.TransactionDao
 import com.kyberswap.android.data.db.UnitDao
 import com.kyberswap.android.data.db.WalletDao
 import com.kyberswap.android.data.mapper.PromoMapper
 import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Unit
 import com.kyberswap.android.domain.model.VerifyStatus
 import com.kyberswap.android.domain.model.Wallet
@@ -30,8 +32,28 @@ import com.kyberswap.android.domain.usecase.wallet.ImportWalletFromPrivateKeyUse
 import com.kyberswap.android.domain.usecase.wallet.ImportWalletFromSeedUseCase
 import com.kyberswap.android.domain.usecase.wallet.SaveWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.UpdateSelectedWalletUseCase
+import com.kyberswap.android.domain.usecase.walletconnect.DecodeTransactionUseCase
+import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectApproveSessionUseCase
+import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectKillSessionUseCase
+import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectRejectSessionUseCase
+import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectRejectTransactionUseCase
+import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectSendTransactionUseCase
+import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectSignedTransactionUseCase
+import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectUseCase
 import com.kyberswap.android.util.HMAC
+import com.kyberswap.android.util.TokenClient
+import com.kyberswap.android.util.ext.isApproveTx
+import com.kyberswap.android.util.ext.isFromKyberSwap
+import com.kyberswap.android.util.ext.isSwapTx
+import com.kyberswap.android.util.ext.isTransferETHTx
+import com.kyberswap.android.util.ext.isTransferTokenTx
+import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.toLongSafe
 import com.kyberswap.android.util.ext.toWalletAddress
+import com.trustwallet.walletconnect.WCClient
+import com.trustwallet.walletconnect.models.WCPeerMeta
+import com.trustwallet.walletconnect.models.ethereum.WCEthereumTransaction
+import com.trustwallet.walletconnect.models.session.WCSession
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -41,8 +63,13 @@ import org.consenlabs.tokencore.wallet.model.BIP44Util
 import org.consenlabs.tokencore.wallet.model.ChainType
 import org.consenlabs.tokencore.wallet.model.Metadata
 import org.consenlabs.tokencore.wallet.model.Network
+import org.web3j.crypto.WalletUtils
+import org.web3j.utils.Convert
 import java.io.File
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.security.SecureRandom
+import java.util.Locale
 import javax.inject.Inject
 
 
@@ -55,7 +82,10 @@ class WalletDataRepository @Inject constructor(
     private val promoMapper: PromoMapper,
     private val swapDao: SwapDao,
     private val sendDao: SendDao,
-    private val limitOrderDao: LocalLimitOrderDao
+    private val limitOrderDao: LocalLimitOrderDao,
+    private val wcClient: WCClient,
+    private val tokenClient: TokenClient,
+    private val transactionDao: TransactionDao
 ) : WalletRepository {
 
     override fun updatedSelectedWallet(param: UpdateSelectedWalletUseCase.Param): Single<Wallet> {
@@ -428,6 +458,227 @@ class WalletDataRepository @Inject constructor(
         }
     }
 
+    override fun walletConnect(param: WalletConnectUseCase.Param): Completable {
+        return Completable.fromCallable {
+            if (wcClient.isConnected) {
+                wcClient.killSession()
+            }
+            val session = WCSession.from(param.sessionInfo)
+            if (session != null) {
+                val peerMetadata =
+                    WCPeerMeta("Wallet Connect", "https://github.com/KyberSwap/android-app")
+                wcClient.connect(session, peerMetadata)
+                wcClient.onSessionRequest = param.onSessionRequest
+                wcClient.onEthSendTransaction = param.onEthSendTransaction
+                wcClient.onEthSign = param.onEthSign
+                wcClient.onDisconnect = param.onDisconnect
+                wcClient.onFailure = param.onFailure
+            }
+
+        }
+    }
+
+    override fun approveSession(param: WalletConnectApproveSessionUseCase.Param): Single<Boolean> {
+        return Single.fromCallable {
+            wcClient.approveSesssion(listOf(param.walletAddress), param.chainId)
+        }
+    }
+
+    override fun rejectSession(param: WalletConnectRejectSessionUseCase.Param): Single<Boolean> {
+        return Single.fromCallable {
+            wcClient.rejectSession()
+        }
+    }
+
+    override fun killSession(param: WalletConnectKillSessionUseCase.Param): Single<Boolean> {
+        return Single.fromCallable {
+            wcClient.killSession()
+        }
+    }
+
+    override fun sendTransaction(param: WalletConnectSendTransactionUseCase.Param): Completable {
+        return Completable.fromCallable {
+            var password = ""
+            if (context is KyberSwapApplication) {
+                password = String(
+                    context.aead.decrypt(
+                        Base64.decode(param.wallet.cipher, Base64.DEFAULT), ByteArray(0)
+                    ), Charsets.UTF_8
+                )
+            }
+            val credentials = WalletUtils.loadCredentials(
+                password,
+                WalletManager.storage.keystoreDir.toString() + "/wallets/" + param.wallet.walletId + ".json"
+            )
+
+            val hash = tokenClient.sendTransaction(param.transaction, credentials)
+
+            hash.let {
+                val tx = decodeData(param.transaction, it, param.wallet)
+                val currentTx = transactionDao.findTransaction(tx.hash, tx.transactionStatus)
+                if (currentTx != null) {
+                    transactionDao.updateTransaction(tx)
+                } else {
+                    transactionDao.insertTransaction(tx)
+                }
+
+            }
+            wcClient.approveRequest(param.id, hash)
+        }
+    }
+
+    override fun rejectTransaction(param: WalletConnectRejectTransactionUseCase.Param): Single<Boolean> {
+        return Single.fromCallable {
+            wcClient.rejectRequest(param.id)
+        }
+    }
+
+    override fun signTransaction(param: WalletConnectSignedTransactionUseCase.Param): Completable {
+        return Completable.fromCallable {
+            var password = ""
+            if (context is KyberSwapApplication) {
+                password = String(
+                    context.aead.decrypt(
+                        Base64.decode(param.wallet.cipher, Base64.DEFAULT), ByteArray(0)
+                    ), Charsets.UTF_8
+                )
+            }
+            val credentials = WalletUtils.loadCredentials(
+                password,
+                WalletManager.storage.keystoreDir.toString() + "/wallets/" + param.wallet.walletId + ".json"
+            )
+
+            val hash = tokenClient.signMessage(credentials, param.message)
+
+            hash.let {
+                wcClient.approveRequest(param.id, hash)
+            }
+        }
+    }
+
+    override fun decodeTransaction(param: DecodeTransactionUseCase.Param): Single<Transaction> {
+        return Single.fromCallable {
+            decodeData(param.message, "", param.wallet)
+        }
+    }
+
+    private fun decodeData(
+        wcEthereumTransaction: WCEthereumTransaction,
+        hash: String,
+        wallet: Wallet
+    ): Transaction {
+        val data = wcEthereumTransaction.data
+        val methodId = data.take(10)
+        val list = data.removePrefix(methodId).chunked(64)
+        return if (wcEthereumTransaction.isFromKyberSwap()) {
+            if (wcEthereumTransaction.isSwapTx()) {
+                val tokenSourceAddress =
+                    list[TRADE_WITH_HINT_SOURCE_POSITION].takeLast(40).toWalletAddress()
+                val srcToken = tokenDao.getTokenByAddress(tokenSourceAddress) ?: Token()
+
+                val sourceAmount = if (srcToken.tokenDecimal > 0) {
+                    list[TRADE_WITH_HINT_SOURCE_AMOUNT_POSITION].toLongSafe(radix = 16)
+                        .toBigDecimal().divide(
+                            BigDecimal(10).pow(
+                                srcToken.tokenDecimal
+                            ), 18, RoundingMode.HALF_EVEN
+                        )
+                } else {
+                    BigDecimal.ZERO
+                }
+
+                val tokenDestAddress =
+                    list[TRADE_WITH_HINT_DEST_POSITION].takeLast(40).toWalletAddress()
+                val destSymbol = tokenDao.getTokenByAddress(tokenDestAddress)?.symbol ?: ""
+                val minConvertionRate = Convert.fromWei(
+                    list[TRADE_WITH_HINT_MIN_CONVERSION_RATE_POSITION].toBigInteger(radix = 16).toString(),
+                    Convert.Unit.ETHER
+                )
+
+                Transaction(
+                    hash = hash.toLowerCase(Locale.getDefault()),
+                    transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
+                    timeStamp = System.currentTimeMillis() / 1000L,
+                    from = wcEthereumTransaction.from,
+                    gas = wcEthereumTransaction.gasLimit?.toLongSafe(radix = 16).toString(),
+                    gasUsed = wcEthereumTransaction.gasLimit?.toLongSafe(radix = 16).toString(),
+                    gasPrice = wcEthereumTransaction.gasPrice?.toLongSafe(radix = 16).toString(),
+                    to = wcEthereumTransaction.from,
+                    tokenSource = srcToken.tokenSymbol,
+                    tokenDest = destSymbol,
+                    sourceAmount = sourceAmount.toDisplayNumber(),
+                    destAmount = sourceAmount.multiply(minConvertionRate).toDisplayNumber(),
+                    walletAddress = wallet.address,
+                    type = Transaction.TransactionType.SWAP
+                )
+            } else if (wcEthereumTransaction.isApproveTx()) {
+                val token = tokenDao.getTokenByAddress(wcEthereumTransaction.to ?: "") ?: Token()
+                Transaction(
+                    hash = hash.toLowerCase(Locale.getDefault()),
+                    transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
+                    timeStamp = System.currentTimeMillis() / 1000L,
+                    from = wcEthereumTransaction.from,
+                    gas = wcEthereumTransaction.gasLimit?.toLongSafe(radix = 16).toString(),
+                    gasUsed = wcEthereumTransaction.gasLimit?.toLongSafe(radix = 16).toString(),
+                    gasPrice = wcEthereumTransaction.gasPrice?.toLongSafe(radix = 16).toString(),
+                    to = wcEthereumTransaction.to ?: "",
+                    value = wcEthereumTransaction.value?.toLongSafe(radix = 16).toString(),
+                    tokenDecimal = 18.toString(),
+                    tokenSymbol = Token.ETH_SYMBOL,
+                    tokenSource = token.tokenSymbol,
+                    walletAddress = wallet.address,
+                    type = Transaction.TransactionType.SEND
+                )
+            } else {
+                val token = if (wcEthereumTransaction.isTransferTokenTx()) {
+                    tokenDao.getTokenByAddress(wcEthereumTransaction.to ?: "") ?: Token()
+                } else {
+                    tokenDao.getTokenBySymbol(Token.ETH_SYMBOL) ?: Token()
+                }
+
+                Transaction(
+                    hash = hash.toLowerCase(Locale.getDefault()),
+                    transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
+                    timeStamp = System.currentTimeMillis() / 1000L,
+                    from = wcEthereumTransaction.from,
+                    gas = wcEthereumTransaction.gasLimit?.toLongSafe(radix = 16).toString(),
+                    gasUsed = wcEthereumTransaction.gasLimit?.toLongSafe(radix = 16).toString(),
+                    gasPrice = wcEthereumTransaction.gasPrice?.toLongSafe(radix = 16).toString(),
+                    to = if (wcEthereumTransaction.isTransferETHTx()) {
+                        wcEthereumTransaction.to
+                    } else {
+                        list[TRANFER_TOKEN_ADDRESS_POSITION].takeLast(40).toWalletAddress()
+                    } ?: "",
+                    value = if (wcEthereumTransaction.isTransferETHTx()) {
+                        wcEthereumTransaction.value?.toLongSafe(radix = 16).toString()
+                    } else {
+                        list[TRANFER_TOKEN_AMOUNT_POSITION].toLongSafe(radix = 16).toString()
+                    },
+                    tokenDecimal = token.tokenDecimal.toString(),
+                    tokenSymbol = token.tokenSymbol,
+                    walletAddress = wallet.address,
+                    type = Transaction.TransactionType.SEND
+                )
+            }
+        } else {
+            Transaction(
+                hash = hash.toLowerCase(Locale.getDefault()),
+                transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
+                timeStamp = System.currentTimeMillis() / 1000L,
+                from = wcEthereumTransaction.from,
+                gas = wcEthereumTransaction.gasLimit?.toLongSafe(radix = 16).toString(),
+                gasUsed = wcEthereumTransaction.gasLimit?.toLongSafe(radix = 16).toString(),
+                gasPrice = wcEthereumTransaction.gasPrice?.toLongSafe(radix = 16).toString(),
+                to = wcEthereumTransaction.to ?: "",
+                value = wcEthereumTransaction.value?.toLongSafe(radix = 16).toString(),
+                tokenDecimal = 18.toString(),
+                tokenSymbol = Token.ETH_SYMBOL,
+                walletAddress = wallet.address,
+                type = Transaction.TransactionType.SEND
+            )
+        }
+    }
+
     private fun deleteLocalInfo(wallet: Wallet) {
         val currentSwap = swapDao.findSwapByAddress(wallet.address)
         currentSwap?.let {
@@ -449,5 +700,25 @@ class WalletDataRepository @Inject constructor(
             val currentWallet = walletDao.findWalletByAddress(param.wallet.address)
             walletDao.updateWallet(currentWallet.copy(name = param.wallet.name))
         }
+    }
+
+    companion object {
+        /**
+         * Define position for tradeWithHintFunction
+         * Function: tradeWithHint(address src, uint256 srcAmount, address dest, address destAddress, uint256 maxDestAmount, uint256 minConversionRate, address walletId, bytes hint)
+         */
+
+        const val METHOD_ID_SWAP = "0x29589f61"
+        const val METHOD_ID_TRANSFER = "0xa9059cbb"
+        const val METHOD_ID_APPROVE = "0x095ea7b3"
+        const val TRADE_WITH_HINT_SOURCE_POSITION = 0
+        const val TRADE_WITH_HINT_SOURCE_AMOUNT_POSITION = 1
+        const val TRADE_WITH_HINT_DEST_POSITION = 2
+        const val TRADE_WITH_HINT_DEST_ADDRESS_POSITION = 3
+        const val TRADE_WITH_HINT_MAX_DEST_AMOUNT_POSITION = 4
+        const val TRADE_WITH_HINT_MIN_CONVERSION_RATE_POSITION = 5
+        const val TRADE_WITH_HINT_WALLET_ID_POSITION = 6
+        const val TRANFER_TOKEN_ADDRESS_POSITION = 0
+        const val TRANFER_TOKEN_AMOUNT_POSITION = 1
     }
 }

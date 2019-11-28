@@ -22,6 +22,10 @@ import com.kyberswap.android.domain.usecase.wallet.CreateWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetAllWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.UpdateSelectedWalletUseCase
+import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectApproveSessionUseCase
+import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectSendTransactionUseCase
+import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectSignedTransactionUseCase
+import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.landing.CreateWalletState
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
@@ -54,6 +58,10 @@ class MainViewModel @Inject constructor(
     private val updateBalanceUseCase: UpdateBalanceUseCase,
     private val getRatingInfoUseCase: GetRatingUseCase,
     private val saveRatingInfoUseCase: SaveRatingInfoUseCase,
+    private val walletConnectUseCase: WalletConnectUseCase,
+    private val walletConnectSendTransactionUseCase: WalletConnectSendTransactionUseCase,
+    private val walletConnectApproveSessionUseCase: WalletConnectApproveSessionUseCase,
+    private val walletConnectSignedTransactionUseCase: WalletConnectSignedTransactionUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getWalletUseCase, errorHandler) {
 
