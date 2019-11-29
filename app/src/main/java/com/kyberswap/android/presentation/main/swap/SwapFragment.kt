@@ -52,6 +52,7 @@ import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
+import com.kyberswap.android.util.ext.toDoubleSafe
 import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.android.synthetic.main.layout_expanable.*
 import net.cachapa.expandablelayout.ExpandableLayout
@@ -438,7 +439,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
                             if (destLock.get() || currentFocus == binding.edtDest) {
                                 sourceAmount =
-                                    if (swap.expectedRate.toDouble() == 0.0) {
+                                    if (swap.expectedRate.toDoubleSafe() == 0.0) {
                                         BigDecimal.ZERO.toDisplayNumber()
                                     } else {
                                         edtDest.toBigDecimalOrDefaultZero().divide(

@@ -263,6 +263,26 @@ data class Transaction(
                     )
                     .toString()
 
+    val displayWalletConnectTransaction: String
+        get() =
+            if (isTransfer) {
+                StringBuilder()
+                    .append(displayValue)
+                    .append(" to ")
+                    .append(to)
+                    .toString()
+            } else
+
+                StringBuilder()
+                    .append(
+                        displaySource
+                    )
+                    .append(" to ")
+                    .append(
+                        tokenDest
+                    )
+                    .toString()
+
     companion object {
         const val PENDING = 0
         const val MINED = 1

@@ -10,3 +10,8 @@ fun Bundle.createEvent(name: String, value: String?): Bundle {
     this.putString(ACTION_VALUE, value)
     return this
 }
+
+fun Bundle.createEvent(value: String?): Bundle {
+    this.putString(ACTION_VALUE, value)
+    return this
+}

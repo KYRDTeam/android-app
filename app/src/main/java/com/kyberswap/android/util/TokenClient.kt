@@ -10,7 +10,10 @@ import com.kyberswap.android.presentation.common.PERM
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfer
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toBigIntSafe
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
+import com.trustwallet.walletconnect.models.ethereum.WCEthereumSignMessage
+import com.trustwallet.walletconnect.models.ethereum.WCEthereumTransaction
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.FunctionReturnDecoder
 import org.web3j.abi.TypeReference
@@ -343,7 +346,8 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
 
     @Throws(IOException::class)
     fun doSwap(
-        param: SwapTokenUseCase.Param, credentials: Credentials,
+        param: SwapTokenUseCase.Param,
+        credentials: Credentials,
         contractAddress: String
     ): String? {
         val gasPrice = Convert.toWei(
@@ -405,6 +409,30 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                 txManager
             )
         }
+    }
+
+    @Throws(IOException::class)
+    fun sendTransaction(
+        wcTransaction: WCEthereumTransaction,
+        credentials: Credentials
+    ): String {
+
+        val txManager = RawTransactionManager(web3j, credentials)
+        val transactionResponse = txManager.sendTransaction(
+            wcTransaction.gasPrice.toBigIntSafe(),
+            wcTransaction.gasLimit.toBigIntSafe(),
+            wcTransaction.to,
+            wcTransaction.data,
+            wcTransaction.value.toBigIntSafe()
+        )
+
+        if (transactionResponse.hasError()) run {
+            throw RuntimeException(
+                "Error processing transaction request: " +
+                    transactionResponse.error.message
+            )
+        }
+        return transactionResponse.transactionHash
     }
 
 
@@ -713,6 +741,14 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         val hash = Hash.sha3(signValue)
         val data = Numeric.hexStringToByteArray(hash)
         val sign: Sign.SignatureData = Sign.signPrefixedMessage(data, credentials.ecKeyPair)
+        return Numeric.toHexString(sign.r.plus(sign.s).plus(sign.v))
+    }
+
+    fun signMessage(credentials: Credentials, message: WCEthereumSignMessage): String {
+        val sign: Sign.SignatureData = Sign.signPrefixedMessage(
+            Numeric.hexStringToByteArray(message.raw.first()),
+            credentials.ecKeyPair
+        )
         return Numeric.toHexString(sign.r.plus(sign.s).plus(sign.v))
     }
 }

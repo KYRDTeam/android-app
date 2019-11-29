@@ -4,7 +4,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainViewModel
-import com.kyberswap.android.presentation.main.alert.*
+import com.kyberswap.android.presentation.main.alert.AlertMethodFragment
+import com.kyberswap.android.presentation.main.alert.AlertMethodViewModel
+import com.kyberswap.android.presentation.main.alert.LeaderBoardFragment
+import com.kyberswap.android.presentation.main.alert.LeaderBoardViewModel
+import com.kyberswap.android.presentation.main.alert.ManageAlertFragment
+import com.kyberswap.android.presentation.main.alert.MangeAlertViewModel
+import com.kyberswap.android.presentation.main.alert.PriceAlertFragment
+import com.kyberswap.android.presentation.main.alert.PriceAlertTokenSearchFragment
+import com.kyberswap.android.presentation.main.alert.PriceAlertTokenSearchViewModel
+import com.kyberswap.android.presentation.main.alert.PriceAlertViewModel
 import com.kyberswap.android.presentation.main.balance.BalanceFragment
 import com.kyberswap.android.presentation.main.balance.BalanceViewModel
 import com.kyberswap.android.presentation.main.balance.address.BalanceAddressFragment
@@ -17,16 +26,60 @@ import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.balance.send.SendViewModel
 import com.kyberswap.android.presentation.main.kybercode.KyberCodeFragment
 import com.kyberswap.android.presentation.main.kybercode.KyberCodeViewModel
-import com.kyberswap.android.presentation.main.limitorder.*
-import com.kyberswap.android.presentation.main.profile.*
-import com.kyberswap.android.presentation.main.profile.kyc.*
-import com.kyberswap.android.presentation.main.setting.*
-import com.kyberswap.android.presentation.main.setting.wallet.*
+import com.kyberswap.android.presentation.main.limitorder.ConvertFragment
+import com.kyberswap.android.presentation.main.limitorder.FilterLimitOrderFragment
+import com.kyberswap.android.presentation.main.limitorder.FilterViewModel
+import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
+import com.kyberswap.android.presentation.main.limitorder.LimitOrderTokenSearchFragment
+import com.kyberswap.android.presentation.main.limitorder.LimitOrderTokenSearchViewModel
+import com.kyberswap.android.presentation.main.limitorder.LimitOrderViewModel
+import com.kyberswap.android.presentation.main.limitorder.ManageOrderFragment
+import com.kyberswap.android.presentation.main.limitorder.ManageOrderViewModel
+import com.kyberswap.android.presentation.main.limitorder.OrderConfirmFragment
+import com.kyberswap.android.presentation.main.profile.ProfileDetailFragment
+import com.kyberswap.android.presentation.main.profile.ProfileDetailViewModel
+import com.kyberswap.android.presentation.main.profile.ProfileFragment
+import com.kyberswap.android.presentation.main.profile.ProfileViewModel
+import com.kyberswap.android.presentation.main.profile.SignUpConfirmFragment
+import com.kyberswap.android.presentation.main.profile.SignUpFragment
+import com.kyberswap.android.presentation.main.profile.SignUpViewModel
+import com.kyberswap.android.presentation.main.profile.kyc.CountryViewModel
+import com.kyberswap.android.presentation.main.profile.kyc.KycInfoSearchFragment
+import com.kyberswap.android.presentation.main.profile.kyc.PassportFragment
+import com.kyberswap.android.presentation.main.profile.kyc.PassportViewModel
+import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
+import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoViewModel
+import com.kyberswap.android.presentation.main.profile.kyc.SubmitFragment
+import com.kyberswap.android.presentation.main.profile.kyc.SubmitViewModel
+import com.kyberswap.android.presentation.main.profile.kyc.VerificationFragment
+import com.kyberswap.android.presentation.main.setting.AddContactFragment
+import com.kyberswap.android.presentation.main.setting.AddContactViewModel
+import com.kyberswap.android.presentation.main.setting.ContactFragment
+import com.kyberswap.android.presentation.main.setting.ContactViewModel
+import com.kyberswap.android.presentation.main.setting.SettingFragment
+import com.kyberswap.android.presentation.main.setting.SettingViewModel
+import com.kyberswap.android.presentation.main.setting.wallet.BackupWalletInfoFragment
+import com.kyberswap.android.presentation.main.setting.wallet.BackupWalletInfoViewModel
+import com.kyberswap.android.presentation.main.setting.wallet.EditWalletFragment
+import com.kyberswap.android.presentation.main.setting.wallet.EditWalletViewModel
+import com.kyberswap.android.presentation.main.setting.wallet.ManageWalletFragment
+import com.kyberswap.android.presentation.main.setting.wallet.ManageWalletViewModel
 import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.main.swap.SwapViewModel
 import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
 import com.kyberswap.android.presentation.main.swap.TokenSearchViewModel
-import com.kyberswap.android.presentation.main.transaction.*
+import com.kyberswap.android.presentation.main.transaction.TransactionDetailReceiveFragment
+import com.kyberswap.android.presentation.main.transaction.TransactionDetailSendFragment
+import com.kyberswap.android.presentation.main.transaction.TransactionDetailSwapFragment
+import com.kyberswap.android.presentation.main.transaction.TransactionDetailViewModel
+import com.kyberswap.android.presentation.main.transaction.TransactionFilterFragment
+import com.kyberswap.android.presentation.main.transaction.TransactionFilterViewModel
+import com.kyberswap.android.presentation.main.transaction.TransactionFragment
+import com.kyberswap.android.presentation.main.transaction.TransactionStatusFragment
+import com.kyberswap.android.presentation.main.transaction.TransactionStatusViewModel
+import com.kyberswap.android.presentation.main.transaction.TransactionViewModel
+import com.kyberswap.android.presentation.main.walletconnect.WalletConnectFragment
+import com.kyberswap.android.presentation.main.walletconnect.WalletConnectViewModel
 import com.kyberswap.android.util.di.ViewModelKey
 import com.kyberswap.android.util.di.scope.FragmentScoped
 import dagger.Binds
@@ -203,6 +256,10 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeAlertMethodFragment(): AlertMethodFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeWalletConnectFragment(): WalletConnectFragment
 
     @Binds
     @IntoMap
@@ -450,5 +507,12 @@ interface MainActivityModule {
     @ViewModelKey(AlertMethodViewModel::class)
     fun bindAlertMethodViewModel(
         alertMethodViewModel: AlertMethodViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(WalletConnectViewModel::class)
+    fun bindWalletConnectViewModel(
+        walletConnectViewModel: WalletConnectViewModel
     ): ViewModel
 }

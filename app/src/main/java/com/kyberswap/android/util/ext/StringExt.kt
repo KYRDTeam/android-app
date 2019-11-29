@@ -44,6 +44,27 @@ fun String.toLongSafe(): Long {
     }
 }
 
+fun String.toLongSafe(radix: Int): Long {
+    if (isNullOrEmpty()) return 0
+    return try {
+        this.removePrefix("0x").toLong(radix = radix)
+    } catch (ex: NumberFormatException) {
+        ex.printStackTrace()
+        0L
+    }
+}
+
+
+fun String?.toBigIntSafe(): BigInteger {
+    if (isNullOrEmpty()) return BigInteger.ZERO
+    try {
+        return BigInteger(this?.removePrefix("0x"), 16)
+    } catch (ex: java.lang.NumberFormatException) {
+        ex.printStackTrace()
+        return BigInteger.ZERO
+    }
+}
+
 fun String.toDoubleSafe(): Double {
     if (isNullOrEmpty()) return 0.0
     return try {
