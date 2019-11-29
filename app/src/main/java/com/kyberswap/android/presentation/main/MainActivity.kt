@@ -534,6 +534,9 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         val lastAddedFragment =
             getCurrentFragment()?.childFragmentManager?.fragments?.lastOrNull()
         if (lastAddedFragment !is SendFragment) {
+            if (lastAddedFragment is WalletConnectFragment) {
+                getCurrentFragment()?.childFragmentManager?.popBackStack()
+            }
             this.navigateToSendScreen()
         }
     }
