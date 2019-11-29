@@ -54,7 +54,7 @@ class FingerprintAuthenticationDialogFragment : DialogFragment(),
         super.onActivityCreated(savedInstanceState)
         dialog?.setTitle(getString(R.string.app_name))
         dialog?.window?.setBackgroundDrawableResource(R.drawable.rounded_corner_dialog_background)
-        binding.cancelButton.setOnClickListener { dismiss() }
+        binding.cancelButton.setOnClickListener { dismissAllowingStateLoss() }
         activity?.let {
             fingerprintUiHelper = FingerprintUiHelper(
                 it.getSystemService(FingerprintManager::class.java),
@@ -97,7 +97,7 @@ class FingerprintAuthenticationDialogFragment : DialogFragment(),
 
     override fun onAuthenticated() {
         callback.onAuthSuccess()
-        dismiss()
+        dismissAllowingStateLoss()
     }
 
     @RequiresApi(Build.VERSION_CODES.M)

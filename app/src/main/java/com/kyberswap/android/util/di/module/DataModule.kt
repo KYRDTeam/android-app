@@ -63,6 +63,7 @@ import com.kyberswap.android.domain.repository.TransactionRepository
 import com.kyberswap.android.domain.repository.UserRepository
 import com.kyberswap.android.domain.repository.WalletRepository
 import com.kyberswap.android.util.TokenClient
+import com.trustwallet.walletconnect.WCClient
 import dagger.Module
 import dagger.Provides
 import org.bitcoinj.crypto.MnemonicCode
@@ -82,7 +83,10 @@ object DataModule {
         promoMapper: PromoMapper,
         swapDao: SwapDao,
         sendDao: SendDao,
-        limitOrderDao: LocalLimitOrderDao
+        limitOrderDao: LocalLimitOrderDao,
+        wcClient: WCClient,
+        tokenClient: TokenClient,
+        transactionDao: TransactionDao
     ): WalletRepository =
         WalletDataRepository(
             context,
@@ -93,7 +97,10 @@ object DataModule {
             promoMapper,
             swapDao,
             sendDao,
-            limitOrderDao
+            limitOrderDao,
+            wcClient,
+            tokenClient,
+            transactionDao
         )
 
     @Singleton

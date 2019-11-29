@@ -124,7 +124,8 @@ class AlertMethodFragment : BaseFragment(), LoginState {
         }
 
         binding.imgDone.setOnClickListener {
-            val selectedEmailItem = binding.spnEmail.selectedItem.toString()
+            val selectedEmailItem =
+                if (binding.spnEmail.selectedItem != null) binding.spnEmail.selectedItem.toString() else ""
             var updatedEmailList: List<Email>? = null
             var updatedTelegram: Telegram? = null
             alertMethods?.let { alerts ->
@@ -135,7 +136,8 @@ class AlertMethodFragment : BaseFragment(), LoginState {
             }
 
             if (binding.grTelegram.visibility == View.VISIBLE) {
-                val selectedTelegramItem = binding.spnTelegram.selectedItem.toString()
+                val selectedTelegramItem =
+                    if (binding.spnTelegram.selectedItem != null) binding.spnTelegram.selectedItem.toString() else ""
                 alertMethods?.let { alerts ->
                     updatedTelegram =
                         alerts.telegram.copy(active = alerts.telegram.name == selectedTelegramItem)

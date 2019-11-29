@@ -25,6 +25,7 @@ import com.kyberswap.android.databinding.DialogAlertTriggerBinding
 import com.kyberswap.android.databinding.DialogBackupMessageAgainBinding
 import com.kyberswap.android.databinding.DialogBackupMessageBinding
 import com.kyberswap.android.databinding.DialogBackupPhraseBottomSheetBinding
+import com.kyberswap.android.databinding.DialogBottomDisconnectWalletConnectBinding
 import com.kyberswap.android.databinding.DialogBottomSheetBinding
 import com.kyberswap.android.databinding.DialogCancelOrderConfirmationBinding
 import com.kyberswap.android.databinding.DialogConfirmDeleteAlertBinding
@@ -163,6 +164,39 @@ class DialogHelper @Inject constructor(
 
         binding.tvImportWallet.setOnClickListener {
             onClickImportWallet.invoke()
+            dialog.dismiss()
+        }
+
+        binding.tvCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    fun showDisconnectDialog(
+        onOpenQRCodeClick: () -> Unit,
+        onBackClick: () -> Unit
+    ) {
+
+        val binding = DataBindingUtil.inflate<DialogBottomDisconnectWalletConnectBinding>(
+            LayoutInflater.from(activity),
+            R.layout.dialog_bottom_disconnect_wallet_connect,
+            null,
+            false
+        )
+
+        val dialog = BottomSheetDialog(activity)
+        dialog.setContentView(binding.root)
+
+
+        binding.tvOpenQRCode.setOnClickListener {
+            onOpenQRCodeClick.invoke()
+            dialog.dismiss()
+        }
+
+        binding.tvBack.setOnClickListener {
+            onBackClick.invoke()
             dialog.dismiss()
         }
 
