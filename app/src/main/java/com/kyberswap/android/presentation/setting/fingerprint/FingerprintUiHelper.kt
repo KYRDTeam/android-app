@@ -72,7 +72,7 @@ internal constructor(
     }
 
     private fun showError(error: CharSequence) {
-        if(error.isNotEmpty()) {
+        if (error.isNotEmpty()) {
             icon.setImageResource(R.drawable.ic_fingerprint_error)
             errorTextView.run {
                 text = error

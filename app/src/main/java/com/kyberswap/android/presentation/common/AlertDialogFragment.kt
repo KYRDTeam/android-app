@@ -161,7 +161,7 @@ class AlertDialogFragment : DialogFragment() {
         }
     }
 
-    private lateinit var callback: Callback
+    private var callback: Callback? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -238,13 +238,13 @@ class AlertDialogFragment : DialogFragment() {
         }
 
         binding.tvSwap.setOnClickListener {
-            dismiss()
-            callback.onSwap()
+            dismissAllowingStateLoss()
+            callback?.onSwap()
         }
 
         binding.tvTransfer.setOnClickListener {
-            dismiss()
-            callback.onTransfer()
+            dismissAllowingStateLoss()
+            callback?.onTransfer()
         }
     }
 
