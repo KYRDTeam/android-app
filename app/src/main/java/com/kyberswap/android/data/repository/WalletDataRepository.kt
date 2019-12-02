@@ -47,8 +47,8 @@ import com.kyberswap.android.util.ext.isFromKyberSwap
 import com.kyberswap.android.util.ext.isSwapTx
 import com.kyberswap.android.util.ext.isTransferETHTx
 import com.kyberswap.android.util.ext.isTransferTokenTx
+import com.kyberswap.android.util.ext.toBigIntSafe
 import com.kyberswap.android.util.ext.toDisplayNumber
-import com.kyberswap.android.util.ext.toLongSafe
 import com.kyberswap.android.util.ext.toWalletAddress
 import com.trustwallet.walletconnect.WCClient
 import com.trustwallet.walletconnect.models.WCPeerMeta
@@ -577,7 +577,7 @@ class WalletDataRepository @Inject constructor(
                 val srcToken = tokenDao.getTokenByAddress(tokenSourceAddress) ?: Token()
 
                 val sourceAmount = if (srcToken.tokenDecimal > 0) {
-                    list[TRADE_WITH_HINT_SOURCE_AMOUNT_POSITION].toLongSafe(radix = 16)
+                    list[TRADE_WITH_HINT_SOURCE_AMOUNT_POSITION].toBigIntSafe()
                         .toBigDecimal().divide(
                             BigDecimal(10).pow(
                                 srcToken.tokenDecimal
@@ -591,7 +591,7 @@ class WalletDataRepository @Inject constructor(
                     list[TRADE_WITH_HINT_DEST_POSITION].takeLast(40).toWalletAddress()
                 val destSymbol = tokenDao.getTokenByAddress(tokenDestAddress)?.symbol ?: ""
                 val minConvertionRate = Convert.fromWei(
-                    list[TRADE_WITH_HINT_MIN_CONVERSION_RATE_POSITION].toBigInteger(radix = 16).toString(),
+                    list[TRADE_WITH_HINT_MIN_CONVERSION_RATE_POSITION].toBigIntSafe().toString(),
                     Convert.Unit.ETHER
                 )
 
@@ -600,9 +600,9 @@ class WalletDataRepository @Inject constructor(
                     transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
                     timeStamp = System.currentTimeMillis() / 1000L,
                     from = wcEthereumTransaction.from,
-                    gas = wcEthereumTransaction.gasLimit?.toLongSafe(radix = 16).toString(),
-                    gasUsed = wcEthereumTransaction.gasLimit?.toLongSafe(radix = 16).toString(),
-                    gasPrice = wcEthereumTransaction.gasPrice?.toLongSafe(radix = 16).toString(),
+                    gas = wcEthereumTransaction.gasLimit?.toBigIntSafe().toString(),
+                    gasUsed = wcEthereumTransaction.gasLimit?.toBigIntSafe().toString(),
+                    gasPrice = wcEthereumTransaction.gasPrice?.toBigIntSafe().toString(),
                     to = wcEthereumTransaction.from,
                     tokenSource = srcToken.tokenSymbol,
                     tokenDest = destSymbol,
@@ -618,11 +618,11 @@ class WalletDataRepository @Inject constructor(
                     transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
                     timeStamp = System.currentTimeMillis() / 1000L,
                     from = wcEthereumTransaction.from,
-                    gas = wcEthereumTransaction.gasLimit?.toLongSafe(radix = 16).toString(),
-                    gasUsed = wcEthereumTransaction.gasLimit?.toLongSafe(radix = 16).toString(),
-                    gasPrice = wcEthereumTransaction.gasPrice?.toLongSafe(radix = 16).toString(),
+                    gas = wcEthereumTransaction.gasLimit?.toBigIntSafe().toString(),
+                    gasUsed = wcEthereumTransaction.gasLimit?.toBigIntSafe().toString(),
+                    gasPrice = wcEthereumTransaction.gasPrice?.toBigIntSafe().toString(),
                     to = wcEthereumTransaction.to ?: "",
-                    value = wcEthereumTransaction.value?.toLongSafe(radix = 16).toString(),
+                    value = wcEthereumTransaction.value?.toBigIntSafe().toString(),
                     tokenDecimal = 18.toString(),
                     tokenSymbol = Token.ETH_SYMBOL,
                     tokenSource = token.tokenSymbol,
@@ -641,18 +641,18 @@ class WalletDataRepository @Inject constructor(
                     transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
                     timeStamp = System.currentTimeMillis() / 1000L,
                     from = wcEthereumTransaction.from,
-                    gas = wcEthereumTransaction.gasLimit?.toLongSafe(radix = 16).toString(),
-                    gasUsed = wcEthereumTransaction.gasLimit?.toLongSafe(radix = 16).toString(),
-                    gasPrice = wcEthereumTransaction.gasPrice?.toLongSafe(radix = 16).toString(),
+                    gas = wcEthereumTransaction.gasLimit?.toBigIntSafe().toString(),
+                    gasUsed = wcEthereumTransaction.gasLimit?.toBigIntSafe().toString(),
+                    gasPrice = wcEthereumTransaction.gasPrice?.toBigIntSafe().toString(),
                     to = if (wcEthereumTransaction.isTransferETHTx()) {
                         wcEthereumTransaction.to
                     } else {
                         list[TRANFER_TOKEN_ADDRESS_POSITION].takeLast(40).toWalletAddress()
                     } ?: "",
                     value = if (wcEthereumTransaction.isTransferETHTx()) {
-                        wcEthereumTransaction.value?.toLongSafe(radix = 16).toString()
+                        wcEthereumTransaction.value?.toBigIntSafe().toString()
                     } else {
-                        list[TRANFER_TOKEN_AMOUNT_POSITION].toLongSafe(radix = 16).toString()
+                        list[TRANFER_TOKEN_AMOUNT_POSITION].toBigIntSafe().toString()
                     },
                     tokenDecimal = token.tokenDecimal.toString(),
                     tokenSymbol = token.tokenSymbol,
@@ -666,11 +666,11 @@ class WalletDataRepository @Inject constructor(
                 transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
                 timeStamp = System.currentTimeMillis() / 1000L,
                 from = wcEthereumTransaction.from,
-                gas = wcEthereumTransaction.gasLimit?.toLongSafe(radix = 16).toString(),
-                gasUsed = wcEthereumTransaction.gasLimit?.toLongSafe(radix = 16).toString(),
-                gasPrice = wcEthereumTransaction.gasPrice?.toLongSafe(radix = 16).toString(),
+                gas = wcEthereumTransaction.gasLimit?.toBigIntSafe().toString(),
+                gasUsed = wcEthereumTransaction.gasLimit?.toBigIntSafe().toString(),
+                gasPrice = wcEthereumTransaction.gasPrice?.toBigIntSafe().toString(),
                 to = wcEthereumTransaction.to ?: "",
-                value = wcEthereumTransaction.value?.toLongSafe(radix = 16).toString(),
+                value = wcEthereumTransaction.value?.toBigIntSafe().toString(),
                 tokenDecimal = 18.toString(),
                 tokenSymbol = Token.ETH_SYMBOL,
                 walletAddress = wallet.address,
