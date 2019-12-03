@@ -652,5 +652,7 @@
     <string name="dialog_disconnect">Disconnect</string>
     <string name="disconnect_title">Disconnect session?</string>
     <string name="disconnect_message">Do you want to disconnect this session?</string>
+    <string name="enter_address_is_invalid">Entered address is invalid</string>
+    <string name="not_attach_address">You have not attached your address to this domain. Please set up your account properly at ENS</string>
 
 </resources>

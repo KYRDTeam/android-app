@@ -25,6 +25,7 @@ import org.web3j.abi.datatypes.generated.Uint256
 import org.web3j.crypto.Credentials
 import org.web3j.crypto.Hash
 import org.web3j.crypto.Sign
+import org.web3j.ens.EnsResolver
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.DefaultBlockParameterName
 import org.web3j.protocol.core.methods.request.Transaction
@@ -209,7 +210,6 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
 
     @Throws(Exception::class)
     fun getExpectedRate(
-        walletAddress: String,
         contractAddress: String,
         tokenSource: Token,
         tokenDest: Token,
@@ -750,5 +750,9 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             credentials.ecKeyPair
         )
         return Numeric.toHexString(sign.r.plus(sign.s).plus(sign.v))
+    }
+
+    fun resolve(name: String): String {
+        return EnsResolver(web3j).resolve(name)
     }
 }

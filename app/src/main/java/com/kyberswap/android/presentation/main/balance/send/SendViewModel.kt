@@ -8,6 +8,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.contact.DeleteContactUseCase
 import com.kyberswap.android.domain.usecase.contact.GetContactUseCase
 import com.kyberswap.android.domain.usecase.contact.SaveContactUseCase
+import com.kyberswap.android.domain.usecase.send.ENSResolveUseCase
 import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
@@ -20,6 +21,7 @@ import com.kyberswap.android.presentation.common.specialGasLimitDefault
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.swap.DeleteContactState
 import com.kyberswap.android.presentation.main.swap.GetContactState
+import com.kyberswap.android.presentation.main.swap.GetENSAddressState
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.main.swap.GetSendState
@@ -40,6 +42,7 @@ class SendViewModel @Inject constructor(
     private val getContactUseCase: GetContactUseCase,
     private val deleteContactUseCase: DeleteContactUseCase,
     private val estimateTransferGasUseCase: EstimateTransferGasUseCase,
+    private val ensResolveUseCase: ENSResolveUseCase,
     getSelectedWalletUseCase: GetSelectedWalletUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
@@ -63,6 +66,10 @@ class SendViewModel @Inject constructor(
     private val _getGetGasLimitCallback = MutableLiveData<Event<GetGasLimitState>>()
     val getGetGasLimitCallback: LiveData<Event<GetGasLimitState>>
         get() = _getGetGasLimitCallback
+
+    private val _getGetENSCallback = MutableLiveData<Event<GetENSAddressState>>()
+    val getGetENSCallback: LiveData<Event<GetENSAddressState>>
+        get() = _getGetENSCallback
 
     private val _saveContactCallback = MutableLiveData<Event<SaveContactState>>()
     val saveContactCallback: LiveData<Event<SaveContactState>>
@@ -184,9 +191,12 @@ class SendViewModel @Inject constructor(
         estimateTransferGasUseCase.dispose()
         estimateTransferGasUseCase.execute(
             Consumer {
-
-                val gasLimit = calculateDefaultGasLimitTransfer(send.tokenSource)
-                    .min(it.amountUsed.multiply(120.toBigInteger()).divide(100.toBigInteger()) + ADDITIONAL_SEND_GAS_LIMIT.toBigInteger())
+                val gasLimit = if (it.error != null) {
+                    calculateDefaultGasLimitTransfer(send.tokenSource)
+                } else {
+                    calculateDefaultGasLimitTransfer(send.tokenSource)
+                        .min(it.amountUsed.multiply(120.toBigInteger()).divide(100.toBigInteger()) + ADDITIONAL_SEND_GAS_LIMIT.toBigInteger())
+                }
 
                 val specialGasLimit = specialGasLimitDefault(send.tokenSource, send.tokenSource)
 
@@ -214,5 +224,22 @@ class SendViewModel @Inject constructor(
         getContactUseCase.dispose()
         estimateTransferGasUseCase.dispose()
         super.onCleared()
+    }
+
+    fun resolve(name: CharSequence, isFromContinue: Boolean = false) {
+        if (isFromContinue) {
+            _getGetENSCallback.postValue(Event(GetENSAddressState.Loading))
+        }
+        ensResolveUseCase.dispose()
+        ensResolveUseCase.execute(
+            Consumer {
+                _getGetENSCallback.value =
+                    Event(GetENSAddressState.Success(name.toString(), it, isFromContinue))
+            },
+            Consumer {
+                _getGetENSCallback.value = Event(GetENSAddressState.ShowError(it.message))
+            },
+            ENSResolveUseCase.Param(name.toString())
+        )
     }
 }

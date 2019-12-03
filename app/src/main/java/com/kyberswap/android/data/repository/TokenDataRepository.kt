@@ -17,11 +17,13 @@ import com.kyberswap.android.domain.usecase.token.GetChartDataForTokenUseCase
 import com.kyberswap.android.domain.usecase.token.SaveTokenUseCase
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toLongSafe
 import com.kyberswap.android.util.ext.updatePrecision
 import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
+import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.pow
@@ -55,14 +57,35 @@ class TokenDataRepository @Inject constructor(
 
                 val sourceTokenToEtherRate =
                     rates.firstOrNull { it.source == param.src && it.dest == Token.ETH }
+
+                val srcToEtherRateValue =
+                    if ((sourceTokenToEtherRate == null ||
+                            sourceTokenToEtherRate.rate.toLongSafe() == 0L)
+                        && (param.src == Token.ETH_SYMBOL || param.src == Token.WETH_SYMBOL)
+                    ) {
+                        BigDecimal.ONE
+                    } else {
+                        sourceTokenToEtherRate?.rate?.updatePrecision().toBigDecimalOrDefaultZero()
+                    }
+
                 val etherToDestTokenRate =
                     rates.firstOrNull { it.source == Token.ETH && it.dest == param.dest }
-                sourceTokenToEtherRate?.rate?.updatePrecision().toBigDecimalOrDefaultZero()
-                    .multiply(
+
+                val etherToDestRateValue =
+                    if ((etherToDestTokenRate == null ||
+                            etherToDestTokenRate.rate.toLongSafe() == 0L)
+                        && (param.dest == Token.ETH_SYMBOL || param.dest == Token.WETH_SYMBOL)
+                    ) {
+                        BigDecimal.ONE
+                    } else {
                         etherToDestTokenRate?.rate?.updatePrecision().toBigDecimalOrDefaultZero()
+                    }
+
+                srcToEtherRateValue
+                    .multiply(
+                        etherToDestRateValue
                     ).toPlainString()
             }
-
     }
 
     override fun getExpectedRate(param: GetExpectedRateUseCase.Param): Flowable<List<String>> {
@@ -71,7 +94,6 @@ class TokenDataRepository @Inject constructor(
             .toBigDecimal().toBigInteger()
         return Flowable.fromCallable {
             val expectedRate = tokenClient.getExpectedRate(
-                param.walletAddress,
                 context.getString(R.string.kyber_address),
                 tokenSource,
                 param.tokenDest,

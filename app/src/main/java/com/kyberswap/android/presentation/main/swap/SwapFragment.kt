@@ -292,9 +292,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     if (destLock.get()) {
                         binding.swap?.let { swap ->
 
-                            if ((dstAmount.toBigDecimalOrDefaultZero() * swap.tokenDest.rateEthNowOrDefaultValue) > 100.toBigDecimal()) {
+                            if ((dstAmount.toBigDecimalOrDefaultZero() * swap.tokenDest.rateEthNowOrDefaultValue) >= 100.toBigDecimal()) {
                                 viewModel.estimateAmount(
-                                    swap.sourceSymbol, swap.destSymbol, dstAmount.toString()
+                                    swap.sourceAddress, swap.destAddress, dstAmount.toString()
                                 )
                             } else {
                                 if (swap.rate.toDoubleOrDefaultZero() != 0.0) {
@@ -720,7 +720,14 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         }
                     }
                     is EstimateAmountState.ShowError -> {
-
+                        if (isNetworkAvailable()) {
+                            showError(
+                                message = state.message ?: getString(R.string.something_wrong),
+                                time = 10
+                            )
+                        } else {
+                            showNetworkUnAvailable()
+                        }
                     }
                 }
             }

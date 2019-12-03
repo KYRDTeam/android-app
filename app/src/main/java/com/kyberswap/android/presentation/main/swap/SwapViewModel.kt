@@ -187,7 +187,12 @@ class SwapViewModel @Inject constructor(
     fun estimateAmount(source: String, dest: String, destAmount: String) {
         estimateAmountUseCase.execute(
             Consumer {
-                _estimateAmountState.value = Event(EstimateAmountState.Success(it.value))
+                if (it.error) {
+                    _estimateAmountState.value =
+                        Event(EstimateAmountState.ShowError(it.additionalData))
+                } else {
+                    _estimateAmountState.value = Event(EstimateAmountState.Success(it.data))
+                }
             },
             Consumer {
                 it.printStackTrace()

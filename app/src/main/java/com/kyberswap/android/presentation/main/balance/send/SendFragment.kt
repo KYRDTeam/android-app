@@ -34,6 +34,7 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.swap.DeleteContactState
 import com.kyberswap.android.presentation.main.swap.GetContactState
+import com.kyberswap.android.presentation.main.swap.GetENSAddressState
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.main.swap.GetSendState
@@ -41,8 +42,10 @@ import com.kyberswap.android.presentation.main.swap.SaveContactState
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.ensAddress
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isContact
+import com.kyberswap.android.util.ext.isENSAddress
 import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.setAmount
@@ -55,6 +58,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.math.BigDecimal
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -90,15 +94,23 @@ class SendFragment : BaseFragment() {
 
     private val contacts = mutableListOf<Contact>()
 
+    private var helperText: String? = null
+
+    private val contactAddress: String
+        get() = if (ilAddress.helperText.toString().isContact()) ilAddress.helperText.toString() else onlyAddress(
+            edtAddress.text.toString()
+        )
+
+    private val isENSAddress: Boolean
+        get() = edtAddress.text.toString().isENSAddress() && !onlyAddress(
+            edtAddress.text.toString()
+        ).isContact()
+
     private val isContactExist: Boolean
         get() = contacts.find { ct ->
-            ct.address.toLowerCase(Locale.getDefault()) == currentSelection?.address?.toLowerCase(
-                Locale.getDefault()
-            ) || ct.address.toLowerCase(
-                Locale.getDefault()
-            ) == onlyAddress(
-                edtAddress.text.toString()
-            ).toLowerCase(Locale.getDefault())
+            ct.address.equals(currentSelection?.address, true)
+                || ct.address.equals(onlyAddress(edtAddress.text.toString()), true)
+                || ct.address.equals(ilAddress.helperText?.toString(), true)
         } != null
 
     private val availableAmount: BigDecimal
@@ -160,6 +172,7 @@ class SendFragment : BaseFragment() {
                             if (state.send.contact.address.isNotBlank()) {
                                 sendToContact(state.send.contact)
                             }
+                            ilAddress.helperText = helperText
                         }
                         viewModel.getGasPrice()
                         viewModel.getGasLimit(
@@ -221,18 +234,7 @@ class SendFragment : BaseFragment() {
                         selectedGasFeeView?.isChecked = false
                         rb.isSelected = true
                         selectedGasFeeView = rb
-                        binding.send?.let { send ->
-                            viewModel.saveSend(
-                                send.copy(
-                                    gasPrice = getSelectedGasPrice(
-                                        send.gas,
-                                        rb.id
-                                    ),
-                                    contact = send.contact.copy(address = onlyAddress(edtAddress.text.toString())),
-                                    sourceAmount = edtSource.text.toString()
-                                )
-                            )
-                        }
+                        saveSend()
                     }
                 }
 
@@ -244,7 +246,8 @@ class SendFragment : BaseFragment() {
             navigator.navigateToAddContactScreen(
                 currentFragment,
                 wallet,
-                onlyAddress(edtAddress.text.toString()),
+                if (ilAddress.helperText?.toString()?.isContact() == true) ilAddress.helperText.toString() else
+                    onlyAddress(edtAddress.text.toString()),
                 currentSelection
             )
         }
@@ -283,8 +286,10 @@ class SendFragment : BaseFragment() {
             .observeOn(schedulerProvider.ui())
             .subscribe { focused ->
                 if (focused) {
-                    currentSelection?.let {
-                        binding.edtAddress.setText(it.address)
+                    if (!binding.edtAddress.text.isENSAddress() && binding.edtAddress.text.isNotEmpty()) {
+                        currentSelection?.let {
+                            binding.edtAddress.setText(it.address)
+                        }
                     }
                 } else {
                     currentSelection?.let {
@@ -298,28 +303,35 @@ class SendFragment : BaseFragment() {
         viewModel.compositeDisposable.add(
             binding.edtAddress.textChanges()
                 .skipInitialValue()
+                .debounce(
+                    250,
+                    TimeUnit.MILLISECONDS
+                )
                 .observeOn(schedulerProvider.ui())
                 .subscribe {
                     ilAddress.error = null
-                    if (isContactExist) {
-                        tvAddContact.text = getString(R.string.edit_contact)
+                    ilAddress.helperText = null
+                    currentSelection = null
+                    if (it.isENSAddress()) {
+                        it.ensAddress()?.let { it1 -> viewModel.resolve(it1) }
                     } else {
-                        tvAddContact.text = getString(R.string.add_contact)
-                    }
+                        updateContactAction()
 
-                    if (onlyAddress(it.toString()).isContact()) {
-                        binding.send?.let { send ->
-                            viewModel.getGasLimit(
-                                send.copy(
-                                    contact = send.contact.copy(
-                                        address = onlyAddress(
-                                            it.toString()
+                        if (onlyAddress(it.toString()).isContact()) {
+                            binding.send?.let { send ->
+                                viewModel.getGasLimit(
+                                    send.copy(
+                                        contact = send.contact.copy(
+                                            address = onlyAddress(
+                                                it.toString()
+                                            )
                                         )
-                                    )
-                                ), wallet
-                            )
+                                    ), wallet
+                                )
+                            }
                         }
                     }
+
                 })
 
         val contactAdapter =
@@ -371,6 +383,7 @@ class SendFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is DeleteContactState.Success -> {
+                        currentSelection = null
                         showAlertWithoutIcon(message = getString(R.string.delete_contact_success))
                     }
                     is DeleteContactState.ShowError -> {
@@ -394,24 +407,24 @@ class SendFragment : BaseFragment() {
 
                         if (currentSelection == null) {
                             currentSelection = contacts.find { ct ->
-                                ct.address.toLowerCase(Locale.getDefault()) == onlyAddress(
-                                    edtAddress.text.toString()
-                                ).toLowerCase(
-                                    Locale.getDefault()
+                                ct.address.equals(
+                                    onlyAddress(
+                                        edtAddress.text.toString()
+                                    ), true
                                 )
                             }
                         }
 
                         currentSelection?.let {
                             currentSelection = contacts.find { ct ->
-                                ct.address.toLowerCase(Locale.getDefault()) == it.address.toLowerCase(
-                                    Locale.getDefault()
-                                )
+                                ct.address.equals(it.address, true)
                             }
 
                             currentSelection?.let { it1 -> sendToContact(it1) }
 
                         }
+
+                        updateContactAction()
 
                         contactAdapter.submitList(state.contacts.take(2))
                     }
@@ -444,6 +457,63 @@ class SendFragment : BaseFragment() {
                 }
             }
         })
+
+        viewModel.getGetENSCallback.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == GetENSAddressState.Loading)
+                when (state) {
+                    is GetENSAddressState.Success -> {
+                        if (DEFAULT_ENS_ADDRESS == state.address) {
+                            val error = getString(R.string.not_attach_address)
+                            ilAddress.error = error
+                            if (state.isFromContinue) {
+                                showError(error)
+                            }
+                        } else {
+                            helperText = state.address
+                            ilAddress.helperText = state.address
+                            binding.send?.let { send ->
+
+                                val updateSend = send.copy(
+                                    contact = send.contact.copy(
+                                        address = state.address,
+                                        name = state.ensName
+                                    )
+                                )
+                                viewModel.getGasLimit(updateSend, wallet)
+                                if (updateSend != send) {
+                                    binding.send = updateSend
+                                }
+                            }
+
+                            val contact = contacts.find {
+                                it.address.equals(state.address, true)
+                            }
+
+                            currentSelection =
+                                contact?.copy(name = if (contact.name.isNotEmpty()) contact.name else state.ensName)
+                                    ?: Contact(
+                                        name = state.ensName,
+                                        address = state.address
+                                    )
+
+                            updateContactAction()
+
+                            if (state.isFromContinue) {
+                                saveSend(
+                                    contactAddress
+                                )
+                            }
+                        }
+                    }
+                    is GetENSAddressState.ShowError -> {
+                        ilAddress.setErrorTextAppearance(R.style.error_appearance)
+                        ilAddress.error = getString(R.string.enter_address_is_invalid)
+                    }
+                }
+            }
+        })
+
 
         binding.imgQRCode.setOnClickListener {
             IntentIntegrator.forSupportFragment(this)
@@ -483,7 +553,9 @@ class SendFragment : BaseFragment() {
                             message = getString(R.string.exceed_balance)
                         )
                     }
-                    !onlyAddress(edtAddress.text.toString()).isContact() -> showAlertWithoutIcon(
+                    !(onlyAddress(edtAddress.text.toString()).isContact() ||
+                        ilAddress.helperText.toString().isContact() ||
+                        edtAddress.text.toString().isENSAddress()) -> showAlertWithoutIcon(
                         title = getString(R.string.invalid_contact_address_title),
                         message = getString(R.string.specify_contact_address)
                     )
@@ -508,22 +580,19 @@ class SendFragment : BaseFragment() {
 
                     hasPendingTransaction -> showAlertWithoutIcon(message = getString(R.string.pending_transaction))
                     else -> {
-                        viewModel.saveSend(
-                            send.copy(
-                                sourceAmount = edtSource.text.toString(),
-                                gasPrice = getSelectedGasPrice(send.gas, selectedGasFeeView?.id)
-                            ),
-
-                            onlyAddress(edtAddress.text.toString())
-                        )
+                        if (isENSAddress) {
+                            viewModel.resolve(edtAddress.text.toString(), true)
+                        } else {
+                            saveSend(contactAddress)
+                        }
                     }
                 }
             }
 
         }
 
-        listOf(binding.tvTokenBalance, binding.tvBalanceDetail).forEach {
-            it.setOnClickListener {
+        listOf(binding.tvTokenBalance, binding.tvBalanceDetail).forEach { tv ->
+            tv.setOnClickListener {
                 binding.send?.let {
                     if (it.tokenSource.isETH) {
                         showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
@@ -596,7 +665,7 @@ class SendFragment : BaseFragment() {
                             SendConfirmActivity.newIntent(
                                 it1,
                                 wallet,
-                                isContactExist
+                                isContactExist || ilAddress.helperText.toString().isContact()
                             )
                         }, SEND_CONFIRM)
                     }
@@ -613,7 +682,7 @@ class SendFragment : BaseFragment() {
         binding.rbFast.jumpDrawablesToCurrentState()
     }
 
-    private fun saveSend() {
+    private fun saveSend(address: String = "") {
         binding.send?.let { send ->
             viewModel.saveSend(
                 send.copy(
@@ -621,10 +690,26 @@ class SendFragment : BaseFragment() {
                         send.gas,
                         selectedGasFeeView?.id
                     ),
-                    contact = send.contact.copy(address = onlyAddress(edtAddress.text.toString())),
+                    contact = send.contact.copy(
+                        address = if (ilAddress.helperText.toString().isContact())
+                            ilAddress.helperText.toString()
+                        else onlyAddress(
+                            edtAddress.text.toString()
+                        ),
+                        name = if (send.contact.name.isNotEmpty()) send.contact.name
+                        else currentSelection?.name ?: ""
+                    ),
                     sourceAmount = edtSource.text.toString()
-                )
+                ), address
             )
+        }
+    }
+
+    private fun updateContactAction() {
+        if (isContactExist) {
+            tvAddContact.text = getString(R.string.edit_contact)
+        } else {
+            tvAddContact.text = getString(R.string.add_contact)
         }
     }
 
@@ -647,6 +732,8 @@ class SendFragment : BaseFragment() {
     }
 
     private fun sendToContact(contact: Contact) {
+        ilAddress.error = null
+        ilAddress.helperText = null
         val send = binding.send?.copy(contact = contact)
         binding.send = send
         currentSelection = contact
@@ -690,9 +777,10 @@ class SendFragment : BaseFragment() {
                     binding.edtAddress.setText(resultContent)
                 }
 
-                if (!resultContent.isContact()) {
+                if (!(resultContent.isContact() || resultContent.isENSAddress())) {
                     val error = getString(R.string.invalid_contact_address)
                     showAlertWithoutIcon(title = "Invalid Address", message = error)
+                    ilAddress.setErrorTextAppearance(R.style.error_appearance)
                     binding.ilAddress.error = error
                 }
             }
@@ -736,6 +824,7 @@ class SendFragment : BaseFragment() {
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"
+        private const val DEFAULT_ENS_ADDRESS = "0x0000000000000000000000000000000000000000"
         fun newInstance(wallet: Wallet?) =
             SendFragment().apply {
                 arguments = Bundle().apply {

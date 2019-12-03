@@ -503,7 +503,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
     fun showDialog(type: Int, transaction: Transaction) {
         currentDialogFragment?.dismiss()
-        val fragment = AlertDialogFragment.newInstance(type, transaction)
+        val fragment = AlertDialogFragment.newInstance(type, transaction, wallet?.address)
         fragment.setCallback(this)
         fragment.show(supportFragmentManager, "dialog_broadcasted")
         currentDialogFragment = fragment
