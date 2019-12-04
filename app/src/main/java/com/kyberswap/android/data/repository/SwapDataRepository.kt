@@ -4,9 +4,9 @@ import android.content.Context
 import android.util.Base64
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
-import com.kyberswap.android.data.api.home.GasLimitApi
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.api.home.UserApi
+import com.kyberswap.android.data.api.home.UtilitiesApi
 import com.kyberswap.android.data.db.ContactDao
 import com.kyberswap.android.data.db.SendDao
 import com.kyberswap.android.data.db.SwapDao
@@ -22,6 +22,7 @@ import com.kyberswap.android.domain.model.Cap
 import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.GasLimit
+import com.kyberswap.android.domain.model.KyberEnabled
 import com.kyberswap.android.domain.model.QuoteAmount
 import com.kyberswap.android.domain.model.ResponseStatus
 import com.kyberswap.android.domain.model.Send
@@ -81,7 +82,7 @@ class SwapDataRepository @Inject constructor(
     private val userDao: UserDao,
     private val userApi: UserApi,
     private val userMapper: UserMapper,
-    private val gasLimitApi: GasLimitApi,
+    private val utilitiesApi: UtilitiesApi,
     private val tokenExtDao: TokenExtDao
 ) : SwapRepository {
     override fun getCap(param: GetCombinedCapUseCase.Param): Single<Cap> {
@@ -97,7 +98,7 @@ class SwapDataRepository @Inject constructor(
     }
 
     override fun estimateAmount(param: EstimateAmountUseCase.Param): Single<QuoteAmount> {
-        return api.sourceAmount(
+        return utilitiesApi.sourceAmount(
             param.source,
             param.dest,
             param.destAmount,
@@ -262,7 +263,7 @@ class SwapDataRepository @Inject constructor(
 
     override fun estimateGas(param: EstimateGasUseCase.Param): Single<BigDecimal> {
         return Singles.zip(
-            gasLimitApi.estimateGas(
+            utilitiesApi.estimateGas(
                 param.tokenSource.tokenAddress,
                 param.tokenDest.tokenAddress,
                 param.sourceAmount
@@ -553,6 +554,12 @@ class SwapDataRepository @Inject constructor(
             ).map {
                 it.copy(ethToken = updatedSend.ethToken)
             }
+        }
+    }
+
+    override fun getKyberNetworkStatus(): Single<KyberEnabled> {
+        return api.getKyberEnabled().map {
+            userMapper.transform(it)
         }
     }
 

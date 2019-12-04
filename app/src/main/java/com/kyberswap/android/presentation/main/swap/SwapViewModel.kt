@@ -11,6 +11,7 @@ import com.kyberswap.android.domain.usecase.swap.EstimateGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetCombinedCapUseCase
 import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
+import com.kyberswap.android.domain.usecase.swap.GetKyberNetworkStatusCase
 import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.ResetSwapDataUseCase
@@ -45,6 +46,7 @@ class SwapViewModel @Inject constructor(
     private val estimateAmountUseCase: EstimateAmountUseCase,
     private val getCombinedCapUseCase: GetCombinedCapUseCase,
     private val resetSwapUserCase: ResetSwapDataUseCase,
+    private val kyberNetworkStatusCase: GetKyberNetworkStatusCase,
     getWalletUseCase: GetSelectedWalletUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getWalletUseCase, errorHandler) {
@@ -64,6 +66,10 @@ class SwapViewModel @Inject constructor(
     private val _getCapCallback = MutableLiveData<Event<GetCapState>>()
     val getCapCallback: LiveData<Event<GetCapState>>
         get() = _getCapCallback
+
+    private val _getKyberStatusback = MutableLiveData<Event<GetKyberStatusState>>()
+    val getKyberStatusback: LiveData<Event<GetKyberStatusState>>
+        get() = _getKyberStatusback
 
     private val _getAlertState = MutableLiveData<Event<GetAlertState>>()
     val getAlertState: LiveData<Event<GetAlertState>>
@@ -302,6 +308,20 @@ class SwapViewModel @Inject constructor(
             Action { },
             Consumer { },
             ResetSwapDataUseCase.Param(swap)
+        )
+    }
+
+    fun getKyberStatus() {
+        kyberNetworkStatusCase.dispose()
+        kyberNetworkStatusCase.execute(
+            Consumer {
+                _getKyberStatusback.value = Event(GetKyberStatusState.Success(it))
+            },
+            Consumer {
+                _getKyberStatusback.value =
+                    Event(GetKyberStatusState.ShowError(errorHandler.getError(it)))
+            },
+            null
         )
     }
 }

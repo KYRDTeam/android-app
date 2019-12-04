@@ -150,7 +150,6 @@
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:text="@string/menu_wallet_connect"
-            android:textAllCaps="true"
             android:textColor="#2e3957"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="@+id/imgWalletConnect"

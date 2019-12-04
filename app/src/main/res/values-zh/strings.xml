@@ -655,5 +655,6 @@
     <string name="disconnect_message">Do you want to disconnect this session?</string>
     <string name="enter_address_is_invalid">Entered address is invalid</string>
     <string name="not_attach_address">You have not attached your address to this domain. Please set up your account properly at ENS</string>
+    <string name="kyber_down">Kyber交易目前无法使用。请稍后回来！</string>
 
 </resources>

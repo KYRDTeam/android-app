@@ -311,8 +311,8 @@ class SendFragment : BaseFragment() {
                 .subscribe {
                     ilAddress.error = null
                     ilAddress.helperText = null
-                    currentSelection = null
-                    if (it.isENSAddress()) {
+                    if (isENSAddress) {
+                        currentSelection = null
                         it.ensAddress()?.let { it1 -> viewModel.resolve(it1) }
                     } else {
                         updateContactAction()

@@ -616,7 +616,7 @@
     <string name="enjoying_kyberswap">Enjoying KyberSwap?</string>
     <string name="tab_a_star_to_rate_us">Tab a star to rate us.</string>
     <string name="not_now">Not Now</string>
-    <string name="wallet_connect">Wallet Connect</string>
+    <string name="wallet_connect">WalletConnect</string>
     <string name="status">Status</string>
     <string name="online">Online</string>
     <string name="connected_to">Connected to</string>
@@ -625,7 +625,7 @@
     <string name="approve_transaction">Approve Transaction</string>
     <string name="request_approve_message">You need approve KyberSwap to use token</string>
     <string name="offline">Offline</string>
-    <string name="menu_wallet_connect">Wallet Connect</string>
+    <string name="menu_wallet_connect">WalletConnect</string>
     <string name="dialog_approve">Approve</string>
     <string name="dialog_reject">Reject</string>
     <string name="signature_request">Signature Request</string>
@@ -640,6 +640,7 @@
     <string name="disconnect_message">Do you want to disconnect this session?</string>
     <string name="enter_address_is_invalid">Entered address is invalid</string>
     <string name="not_attach_address">You have not attached your address to this domain. Please set up your account properly at ENS</string>
+    <string name="kyber_down">Kyber exchange is not enabled at the moment. Please come back later!</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>

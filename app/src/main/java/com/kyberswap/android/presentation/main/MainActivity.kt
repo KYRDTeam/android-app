@@ -57,6 +57,7 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.kyberswap.android.util.ext.toLongSafe
+import com.onesignal.OneSignal
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_drawer.*
 import kotlinx.android.synthetic.main.layout_drawer.view.*
@@ -202,6 +203,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                     is SwapFragment -> {
                         with((currentFragment as SwapFragment)) {
                             getSwap()
+                            getKyberEnable()
                         }
                     }
                     is SettingFragment -> {
@@ -463,6 +465,13 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         handler.postDelayed({
             mainViewModel.getRatingInfo()
         }, 5000)
+
+        OneSignal.idsAvailable { _, _ ->
+            mainViewModel.updatePushToken(
+                OneSignal.getPermissionSubscriptionState().subscriptionStatus.userId,
+                OneSignal.getPermissionSubscriptionState().subscriptionStatus.pushToken
+            )
+        }
     }
 
 

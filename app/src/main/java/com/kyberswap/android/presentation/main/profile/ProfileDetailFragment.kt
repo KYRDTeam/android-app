@@ -17,6 +17,7 @@ import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.KycInfo
 import com.kyberswap.android.domain.model.UserInfo
+import com.kyberswap.android.domain.model.UserInfo.Companion.KYC_STEP_PERSONAL_INFO
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
@@ -27,7 +28,6 @@ import com.kyberswap.android.presentation.main.profile.kyc.ReSubmitState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.kyberswap.android.util.ext.underline
-import com.onesignal.OneSignal
 import java.util.Locale
 import javax.inject.Inject
 
@@ -72,14 +72,6 @@ class ProfileDetailFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        OneSignal.idsAvailable { _, _ ->
-            viewModel.updatePushToken(
-                OneSignal.getPermissionSubscriptionState().subscriptionStatus.userId,
-                OneSignal.getPermissionSubscriptionState().subscriptionStatus.pushToken
-            )
-        }
-
         binding.tvPDPAUpdate.underline(getString(R.string.about_pdpa_update))
         viewModel.getLoginStatus()
         viewModel.getUserInfoCallback.observe(viewLifecycleOwner, Observer {
@@ -288,7 +280,7 @@ class ProfileDetailFragment : BaseFragment() {
                 when (state) {
                     is ReSubmitState.Success -> {
                         navigator.navigateToKYC(
-                            currentFragment, binding.user?.kycStep
+                            currentFragment, KYC_STEP_PERSONAL_INFO
                         )
                     }
                     is ReSubmitState.ShowError -> {
