@@ -51,7 +51,6 @@ import com.kyberswap.android.util.ext.setAmount
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
-import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
 import com.kyberswap.android.util.ext.toDoubleSafe
 import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.android.synthetic.main.layout_expanable.*
@@ -290,29 +289,33 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 .observeOn(schedulerProvider.ui())
                 .subscribe { dstAmount ->
                     if (destLock.get()) {
+                        if (dstAmount.isEmpty()) binding.edtSource.setText("")
                         binding.swap?.let { swap ->
 
-                            if ((dstAmount.toBigDecimalOrDefaultZero() * swap.tokenDest.rateEthNowOrDefaultValue) >= 100.toBigDecimal()) {
-                                viewModel.estimateAmount(
-                                    swap.sourceAddress, swap.destAddress, dstAmount.toString()
-                                )
-                            } else {
-                                if (swap.rate.toDoubleOrDefaultZero() != 0.0) {
-
-                                    val estSource = dstAmount.toBigDecimalOrDefaultZero()
-                                        .divide(
-                                            swap.rate.toBigDecimalOrDefaultZero(),
-                                            18,
-                                            RoundingMode.UP
-                                        )
-                                    sourceAmount = estSource.toPlainString()
-                                    edtSource.setAmount(displaySourceAmount)
-                                    viewModel.getExpectedRate(
-                                        swap,
-                                        estSource.toPlainString()
-                                    )
-                                }
-                            }
+                            //                            if ((dstAmount.toBigDecimalOrDefaultZero() * swap.tokenDest.rateEthNowOrDefaultValue) >= 100.toBigDecimal()) {
+//                                viewModel.estimateAmount(
+//                                    swap.sourceAddress, swap.destAddress, dstAmount.toString()
+//                                )
+//                            } else {
+//                                Timber.e("rate: " + swap.rate)
+//                                if (swap.rate.toDoubleOrDefaultZero() != 0.0) {
+//                                    val estSource = dstAmount.toBigDecimalOrDefaultZero()
+//                                        .divide(
+//                                            swap.rate.toBigDecimalOrDefaultZero(),
+//                                            18,
+//                                            RoundingMode.UP
+//                                        )
+//                                    sourceAmount = estSource.toPlainString()
+//                                    edtSource.setAmount(displaySourceAmount)
+//                                    viewModel.getExpectedRate(
+//                                        swap,
+//                                        estSource.toPlainString()
+//                                    )
+//                                }
+//                            }
+                            viewModel.estimateAmount(
+                                swap.sourceAddress, swap.destAddress, dstAmount.toString()
+                            )
                         }
                     }
                 }
@@ -746,14 +749,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         }
                     }
                     is EstimateAmountState.ShowError -> {
-                        if (isNetworkAvailable()) {
-                            showError(
-                                message = state.message ?: getString(R.string.something_wrong),
-                                time = 10
-                            )
-                        } else {
-                            showNetworkUnAvailable()
-                        }
+
                     }
                 }
             }
