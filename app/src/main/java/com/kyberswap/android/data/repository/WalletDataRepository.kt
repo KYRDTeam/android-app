@@ -5,6 +5,7 @@ import android.util.Base64
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.PromoApi
+import com.kyberswap.android.data.db.ContactDao
 import com.kyberswap.android.data.db.LocalLimitOrderDao
 import com.kyberswap.android.data.db.SendDao
 import com.kyberswap.android.data.db.SwapDao
@@ -13,6 +14,7 @@ import com.kyberswap.android.data.db.TransactionDao
 import com.kyberswap.android.data.db.UnitDao
 import com.kyberswap.android.data.db.WalletDao
 import com.kyberswap.android.data.mapper.PromoMapper
+import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Unit
@@ -85,7 +87,8 @@ class WalletDataRepository @Inject constructor(
     private val limitOrderDao: LocalLimitOrderDao,
     private val wcClient: WCClient,
     private val tokenClient: TokenClient,
-    private val transactionDao: TransactionDao
+    private val transactionDao: TransactionDao,
+    private val contactDao: ContactDao
 ) : WalletRepository {
 
     override fun updatedSelectedWallet(param: UpdateSelectedWalletUseCase.Param): Single<Wallet> {
@@ -159,8 +162,24 @@ class WalletDataRepository @Inject constructor(
                 isSelected = true,
                 mnemonicAvailable = true
             )
+
+            createContact(wallet)
             val tokens = updateWalletToMonitorBalance(updateSelectedWallet(wallet))
             Pair(wallet, tokens)
+        }
+    }
+
+    private fun createContact(wallet: Wallet) {
+        val contactByAddress =
+            contactDao.findContactByAddress(wallet.address.toLowerCase(Locale.getDefault()))
+        if (contactByAddress == null) {
+            val contact = Contact(
+                wallet.address,
+                wallet.address.toLowerCase(Locale.getDefault()),
+                wallet.name,
+                System.currentTimeMillis() / 1000
+            )
+            contactDao.insertContact(contact)
         }
     }
 
@@ -204,6 +223,7 @@ class WalletDataRepository @Inject constructor(
                 promo = param.promo
             )
             val tokens = updateWalletToMonitorBalance(updateSelectedWallet(wallet))
+            createContact(wallet)
             Pair(wallet, tokens)
 
         }
@@ -241,6 +261,7 @@ class WalletDataRepository @Inject constructor(
             )
 
             val tokens = updateWalletToMonitorBalance(updateSelectedWallet(wallet))
+            createContact(wallet)
             Pair(wallet, tokens)
         }
     }
@@ -347,7 +368,7 @@ class WalletDataRepository @Inject constructor(
             )
 
             val tokens = updateWalletToMonitorBalance(updateSelectedWallet(wallet))
-
+            createContact(wallet)
             val words = mutableListOf<Word>()
             WalletManager.exportMnemonic(
                 ethereumWallet.id,
@@ -458,8 +479,8 @@ class WalletDataRepository @Inject constructor(
         }
     }
 
-    override fun walletConnect(param: WalletConnectUseCase.Param): Completable {
-        return Completable.fromCallable {
+    override fun walletConnect(param: WalletConnectUseCase.Param): Single<Boolean> {
+        return Single.fromCallable {
             if (wcClient.isConnected) {
                 wcClient.killSession()
             }
@@ -474,7 +495,7 @@ class WalletDataRepository @Inject constructor(
                 wcClient.onDisconnect = param.onDisconnect
                 wcClient.onFailure = param.onFailure
             }
-
+            session != null
         }
     }
 

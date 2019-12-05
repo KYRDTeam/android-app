@@ -49,11 +49,15 @@ abstract class BaseFragment : DaggerFragment() {
         }
     }
 
-    fun showError(message: String, listener: () -> Unit = {}) {
+    fun showError(
+        message: String,
+        listener: () -> Unit = {},
+        time: Int = DEFAULT_ALERT_TIME_SECONDS
+    ) {
         showAlertWithoutIcon(
             getString(R.string.title_error),
             message,
-            DEFAULT_ALERT_TIME_SECONDS,
+            time,
             listener
         )
     }

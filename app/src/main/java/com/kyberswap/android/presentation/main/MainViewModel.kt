@@ -10,9 +10,9 @@ import com.kyberswap.android.domain.usecase.balance.UpdateBalanceUseCase
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.domain.usecase.profile.GetRatingUseCase
 import com.kyberswap.android.domain.usecase.profile.SaveRatingInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.UpdatePushTokenUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.GetOtherBalancePollingUseCase
-import com.kyberswap.android.domain.usecase.token.GetOtherTokenBalancesUseCase
 import com.kyberswap.android.domain.usecase.token.GetTokenBalanceUseCase
 import com.kyberswap.android.domain.usecase.token.GetTokensBalanceUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetPendingTransactionsUseCase
@@ -22,10 +22,6 @@ import com.kyberswap.android.domain.usecase.wallet.CreateWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetAllWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.UpdateSelectedWalletUseCase
-import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectApproveSessionUseCase
-import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectSendTransactionUseCase
-import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectSignedTransactionUseCase
-import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.landing.CreateWalletState
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
@@ -53,15 +49,11 @@ class MainViewModel @Inject constructor(
     private val getBatchTokenBalanceUseCase: GetTokensBalanceUseCase,
     private val forceBatchTokenBalanceUseCase: GetTokensBalanceUseCase,
     private val getTokenBalanceUseCase: GetTokenBalanceUseCase,
-    private val getOtherTokenBalancesUseCase: GetOtherTokenBalancesUseCase,
     private val getTransactionsPeriodicallyUseCase: GetTransactionsPeriodicallyUseCase,
     private val updateBalanceUseCase: UpdateBalanceUseCase,
     private val getRatingInfoUseCase: GetRatingUseCase,
     private val saveRatingInfoUseCase: SaveRatingInfoUseCase,
-    private val walletConnectUseCase: WalletConnectUseCase,
-    private val walletConnectSendTransactionUseCase: WalletConnectSendTransactionUseCase,
-    private val walletConnectApproveSessionUseCase: WalletConnectApproveSessionUseCase,
-    private val walletConnectSignedTransactionUseCase: WalletConnectSignedTransactionUseCase,
+    private val updatePushTokenUseCase: UpdatePushTokenUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getWalletUseCase, errorHandler) {
 
@@ -392,6 +384,22 @@ class MainViewModel @Inject constructor(
                     Event(UpdateWalletState.ShowError(errorHandler.getError(it)))
             },
             UpdateSelectedWalletUseCase.Param(wallet)
+        )
+    }
+
+    fun updatePushToken(userId: String, token: String?) {
+        updatePushTokenUseCase.execute(
+            Consumer {
+
+            },
+            Consumer {
+                it.printStackTrace()
+                Timber.e(it.localizedMessage)
+            },
+            UpdatePushTokenUseCase.Param(
+                userId,
+                token
+            )
         )
     }
 }
