@@ -20,7 +20,6 @@ import com.trustwallet.walletconnect.models.ethereum.WCEthereumSignMessage
 import com.trustwallet.walletconnect.models.ethereum.WCEthereumTransaction
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
-import timber.log.Timber
 import javax.inject.Inject
 
 class WalletConnectViewModel @Inject constructor(
@@ -65,11 +64,10 @@ class WalletConnectViewModel @Inject constructor(
         onDisconnect: (code: Int, reason: String) -> Unit,
         onFailure: (Throwable) -> Unit
     ) {
-        Timber.e("connect")
         _requestConnectCallback.postValue(Event(RequestState.Loading))
         walletConnectUseCase.execute(
-            Action {
-                _requestConnectCallback.value = Event(RequestState.Success(true))
+            Consumer {
+                _requestConnectCallback.value = Event(RequestState.Success(it))
             },
             Consumer {
                 _requestConnectCallback.value =

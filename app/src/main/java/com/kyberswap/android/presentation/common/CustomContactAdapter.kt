@@ -37,25 +37,39 @@ class CustomContactAdapter(
         parent: ViewGroup
     ): View {
 
-        if (convertView == null) {
-            val binding = DataBindingUtil.inflate<ItemContactAutocompleteBinding>(
+        var binding: ItemContactAutocompleteBinding? = null
+        val view = if (convertView == null) {
+            binding = DataBindingUtil.inflate<ItemContactAutocompleteBinding>(
                 LayoutInflater.from(parent.context),
                 R.layout.item_contact_autocomplete,
                 parent,
                 false
             )
-            binding.contact = getItem(position)
-            binding.executePendingBindings()
-            return binding.root
+            binding.root
+        } else {
+            val tag = convertView.tag
+            if (tag is ItemContactAutocompleteBinding) {
+                binding = tag
+            }
+            convertView
         }
 
-        return convertView
+        if (binding != null && binding.contact != getItem(position)) {
+            binding.contact = getItem(position)
+            binding.executePendingBindings()
+
+            view.tag = binding
+        }
+
+        return view
     }
 
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun convertResultToString(resultValue: Any): String {
-                return (resultValue as Contact).name
+                return if (resultValue is Contact) {
+                    resultValue.name
+                } else ""
             }
 
             override fun performFiltering(constraint: CharSequence?): FilterResults {
@@ -73,10 +87,10 @@ class CustomContactAdapter(
 
             override fun publishResults(
                 constraint: CharSequence?,
-                results: FilterResults
+                results: FilterResults?
             ) {
                 contacts.clear()
-                if (results.count > 0) { // avoids unchecked cast warning when using contacts.addAll((ArrayList<Contact>) results.values);
+                if (results != null && results.count > 0) { // avoids unchecked cast warning when using contacts.addAll((ArrayList<Contact>) results.values);
                     for (`object` in results.values as List<*>) {
                         if (`object` is Contact) {
                             contacts.add(`object`)

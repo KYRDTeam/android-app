@@ -479,8 +479,8 @@ class WalletDataRepository @Inject constructor(
         }
     }
 
-    override fun walletConnect(param: WalletConnectUseCase.Param): Completable {
-        return Completable.fromCallable {
+    override fun walletConnect(param: WalletConnectUseCase.Param): Single<Boolean> {
+        return Single.fromCallable {
             if (wcClient.isConnected) {
                 wcClient.killSession()
             }
@@ -495,7 +495,7 @@ class WalletDataRepository @Inject constructor(
                 wcClient.onDisconnect = param.onDisconnect
                 wcClient.onFailure = param.onFailure
             }
-
+            session != null
         }
     }
 
