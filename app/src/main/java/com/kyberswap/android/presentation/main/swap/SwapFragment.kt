@@ -709,7 +709,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetKyberStatusState.Success -> {
-                        if (!(state.kyberEnabled.success && state.kyberEnabled.data)) {
+                        if (state.kyberEnabled.success && !state.kyberEnabled.data) {
                             showError(getString(R.string.kyber_down), time = 15)
                             binding.tvContinue.isEnabled = false
                         } else {

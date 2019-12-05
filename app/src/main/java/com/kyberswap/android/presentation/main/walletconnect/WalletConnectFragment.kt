@@ -148,6 +148,10 @@ class WalletConnectFragment : BaseFragment() {
                         showStatus(state.status)
                         if (!state.status) {
                             showProgress(false)
+                            showError(
+                                getString(R.string.can_not_connect_wallet),
+                                time = 10
+                            )
                         }
                     }
                     is RequestState.ShowError -> {
@@ -329,11 +333,6 @@ class WalletConnectFragment : BaseFragment() {
         }
     }
 
-    private fun openQRScan() {
-        requestCode = REQUEST_SCAN
-        viewModel.killSession()
-    }
-
     private fun handleWalletConnect() {
         wallet?.address?.let { walletAddress ->
             connectionInfo?.let { info ->
@@ -463,6 +462,18 @@ class WalletConnectFragment : BaseFragment() {
             popBackStack()
         }
     }
+
+    private fun openQRScan() {
+        requestCode = REQUEST_SCAN
+        if (isOnline) {
+            viewModel.killSession()
+        } else {
+            IntentIntegrator.forSupportFragment(this)
+                .setBeepEnabled(false)
+                .initiateScan()
+        }
+    }
+
 
     private fun popBackStack() {
         (activity as MainActivity).getCurrentFragment()?.childFragmentManager?.popBackStack()

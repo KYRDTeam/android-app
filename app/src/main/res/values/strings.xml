@@ -641,6 +641,7 @@
     <string name="enter_address_is_invalid">Entered address is invalid</string>
     <string name="not_attach_address">You have not attached your address to this domain. Please set up your account properly at ENS</string>
     <string name="kyber_down">Kyber exchange is not enabled at the moment. Please come back later!</string>
+    <string name="can_not_connect_wallet">Can not connect to your wallet, please make sure the QR code is valid and try again</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>
