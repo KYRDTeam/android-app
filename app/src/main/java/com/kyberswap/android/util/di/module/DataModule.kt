@@ -86,7 +86,8 @@ object DataModule {
         limitOrderDao: LocalLimitOrderDao,
         wcClient: WCClient,
         tokenClient: TokenClient,
-        transactionDao: TransactionDao
+        transactionDao: TransactionDao,
+        contactDao: ContactDao
     ): WalletRepository =
         WalletDataRepository(
             context,
@@ -100,7 +101,8 @@ object DataModule {
             limitOrderDao,
             wcClient,
             tokenClient,
-            transactionDao
+            transactionDao,
+            contactDao
         )
 
     @Singleton

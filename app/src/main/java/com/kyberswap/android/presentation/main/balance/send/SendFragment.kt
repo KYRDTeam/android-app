@@ -9,11 +9,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
+import android.widget.AdapterView
 import android.widget.CompoundButton
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.zxing.integration.android.IntentIntegrator
 import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.textChanges
@@ -29,6 +31,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.CustomAlertActivity
+import com.kyberswap.android.presentation.common.CustomContactAdapter
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
@@ -41,7 +44,14 @@ import com.kyberswap.android.presentation.main.swap.GetSendState
 import com.kyberswap.android.presentation.main.swap.SaveContactState
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.USER_CLICK_ADD_CONTACT_EVENT
+import com.kyberswap.android.util.USER_CLICK_DELETE_CONTACT_EVENT
+import com.kyberswap.android.util.USER_CLICK_EDIT_CONTACT_EVENT
+import com.kyberswap.android.util.USER_CLICK_ITEM_SUGGESTION_EVENT
+import com.kyberswap.android.util.USER_CLICK_MORE_CONTACT_EVENT
+import com.kyberswap.android.util.USER_CLICK_RECENT_CONTACT_EVENT
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.ensAddress
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isContact
@@ -79,6 +89,9 @@ class SendFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(SendViewModel::class.java)
@@ -242,6 +255,11 @@ class SendFragment : BaseFragment() {
         }
 
         binding.tvAddContact.setOnClickListener {
+            analytics.logEvent(
+                if (isContactExist) USER_CLICK_EDIT_CONTACT_EVENT else USER_CLICK_ADD_CONTACT_EVENT,
+                Bundle().createEvent()
+            )
+
             saveSend()
             navigator.navigateToAddContactScreen(
                 currentFragment,
@@ -253,6 +271,7 @@ class SendFragment : BaseFragment() {
         }
 
         binding.tvMore.setOnClickListener {
+            analytics.logEvent(USER_CLICK_MORE_CONTACT_EVENT, Bundle().createEvent())
             saveSend()
             navigator.navigateToContactScreen(currentFragment)
         }
@@ -338,14 +357,17 @@ class SendFragment : BaseFragment() {
             ContactAdapter(
                 appExecutors, handler,
                 {
+                    analytics.logEvent(USER_CLICK_RECENT_CONTACT_EVENT, Bundle().createEvent())
                     sendToContact(it)
                 },
                 {
+                    analytics.logEvent(USER_CLICK_RECENT_CONTACT_EVENT, Bundle().createEvent("2"))
                     sendToContact(it)
                     wallet?.let { wallet ->
                         viewModel.saveSendContact(wallet.address, it)
                     }
                 }, {
+                    analytics.logEvent(USER_CLICK_EDIT_CONTACT_EVENT, Bundle().createEvent())
                     saveSend()
                     navigator.navigateToAddContactScreen(
                         currentFragment,
@@ -354,6 +376,7 @@ class SendFragment : BaseFragment() {
                         it
                     )
                 }, {
+                    analytics.logEvent(USER_CLICK_DELETE_CONTACT_EVENT, Bundle().createEvent())
                     dialogHelper.showConfirmation(
                         getString(R.string.title_delete),
                         getString(R.string.contact_confirm_delete),
@@ -396,7 +419,7 @@ class SendFragment : BaseFragment() {
         })
 
         binding.rvContact.adapter = contactAdapter
-
+        binding.edtAddress.threshold = 1
 
         viewModel.getContactCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -427,6 +450,14 @@ class SendFragment : BaseFragment() {
                         updateContactAction()
 
                         contactAdapter.submitList(state.contacts.take(2))
+                        if (context != null) {
+                            val adapter = CustomContactAdapter(
+                                context!!,
+                                R.layout.item_contact_autocomplete,
+                                state.contacts
+                            )
+                            binding.edtAddress.setAdapter(adapter)
+                        }
                     }
                     is GetContactState.ShowError -> {
                         showError(
@@ -680,6 +711,27 @@ class SendFragment : BaseFragment() {
 
         binding.rbFast.isChecked = true
         binding.rbFast.jumpDrawablesToCurrentState()
+
+        binding.edtAddress.onItemClickListener = object : AdapterView.OnItemClickListener {
+            override fun onItemClick(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val item = parent?.getItemAtPosition(position)
+                if (item is Contact) {
+                    analytics.logEvent(
+                        USER_CLICK_ITEM_SUGGESTION_EVENT, Bundle().createEvent(
+                            item.name
+                        )
+                    )
+                    binding.edtAddress.setText(item.nameAddressDisplay)
+                    binding.edtAddress.clearFocus()
+                    hideKeyboard()
+                }
+            }
+        }
     }
 
     private fun saveSend(address: String = "") {
@@ -765,7 +817,10 @@ class SendFragment : BaseFragment() {
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null) {
             if (result.contents != null) {
-                val resultContent = result.contents.toString()
+                val content =
+                    result.contents.toString()
+
+                val resultContent = if (content.isENSAddress()) content else onlyAddress(content)
                 val contact = contacts.find {
                     it.address.toLowerCase(Locale.getDefault()) == resultContent.toLowerCase(Locale.getDefault())
                 }
