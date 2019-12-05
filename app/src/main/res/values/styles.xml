@@ -113,5 +113,15 @@
         <item name="colorControlActivated">@color/colorAccent</item>
     </style>
 
+    <style name="error_appearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/warning_color</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="success_appearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/success_color</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
 
 </resources>

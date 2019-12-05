@@ -3,17 +3,17 @@ package com.kyberswap.android.domain.usecase.walletconnect
 import androidx.annotation.VisibleForTesting
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.repository.WalletRepository
-import com.kyberswap.android.domain.usecase.CompletableUseCase
+import com.kyberswap.android.domain.usecase.SequentialUseCase
 import com.trustwallet.walletconnect.models.WCPeerMeta
 import com.trustwallet.walletconnect.models.ethereum.WCEthereumSignMessage
 import com.trustwallet.walletconnect.models.ethereum.WCEthereumTransaction
-import io.reactivex.Completable
+import io.reactivex.Single
 import javax.inject.Inject
 
 class WalletConnectUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val walletRepository: WalletRepository
-) : CompletableUseCase<WalletConnectUseCase.Param, String>(schedulerProvider) {
+) : SequentialUseCase<WalletConnectUseCase.Param, Boolean>(schedulerProvider) {
 
     class Param(
         val sessionInfo: String,
@@ -25,9 +25,8 @@ class WalletConnectUseCase @Inject constructor(
         val onFailure: (Throwable) -> Unit
     )
 
-
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    override fun buildUseCaseCompletable(param: Param): Completable {
+    override fun buildUseCaseSingle(param: Param): Single<Boolean> {
         return walletRepository.walletConnect(param)
     }
 }

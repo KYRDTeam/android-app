@@ -1,11 +1,13 @@
 package com.kyberswap.android.domain.repository
 
 import com.kyberswap.android.domain.model.Cap
-import com.kyberswap.android.domain.model.EstimateAmount
 import com.kyberswap.android.domain.model.Gas
+import com.kyberswap.android.domain.model.KyberEnabled
+import com.kyberswap.android.domain.model.QuoteAmount
 import com.kyberswap.android.domain.model.ResponseStatus
 import com.kyberswap.android.domain.model.Send
 import com.kyberswap.android.domain.model.Swap
+import com.kyberswap.android.domain.usecase.send.ENSResolveUseCase
 import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendUseCase
@@ -46,7 +48,7 @@ interface SwapRepository {
 
     fun getCap(param: GetCapUseCase.Param): Single<Cap>
 
-    fun estimateAmount(param: EstimateAmountUseCase.Param): Single<EstimateAmount>
+    fun estimateAmount(param: EstimateAmountUseCase.Param): Single<QuoteAmount>
 
     fun estimateGas(param: EstimateGasUseCase.Param): Single<BigDecimal>
 
@@ -57,4 +59,8 @@ interface SwapRepository {
     fun estimateGas(param: EstimateTransferGasUseCase.Param): Single<EthEstimateGas>
 
     fun getCap(param: GetCombinedCapUseCase.Param): Single<Cap>
+
+    fun ensResolve(param: ENSResolveUseCase.Param): Single<String>
+
+    fun getKyberNetworkStatus(): Single<KyberEnabled>
 }
