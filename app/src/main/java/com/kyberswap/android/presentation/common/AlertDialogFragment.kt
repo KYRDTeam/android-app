@@ -43,8 +43,6 @@ class AlertDialogFragment : DialogFragment() {
 
     private var isCounterStop: Boolean = false
 
-    private var walletAddress: String? = null
-
     lateinit var analytics: FirebaseAnalytics
 
     private val handler by lazy {
@@ -78,10 +76,6 @@ class AlertDialogFragment : DialogFragment() {
         setStyle(STYLE_NO_TITLE, R.style.AlertDialogStyle)
         dialogType = arguments?.getInt(DIALOG_TYPE_PARAM) ?: DIALOG_TYPE_BROADCASTED
         transaction = arguments?.getParcelable(TRANSACTION_PARAM)
-        walletAddress = arguments?.getString(WALLET_ADDRESS_PARAM)
-        transaction = transaction?.apply {
-            currentAddress = walletAddress
-        }
     }
 
     private fun executeBinding() {
@@ -198,18 +192,17 @@ class AlertDialogFragment : DialogFragment() {
         executeBinding()
 
         if (isDone) {
+            analytics.logEvent(
+                TX_MINED_EVENT,
+                Bundle().createEvent(TRANSACTION_DETAIL_ACTION, transaction?.displayTransaction)
+            )
             if (transaction?.isTransactionFail == true) {
                 analytics.logEvent(
                     TX_FAILED_EVENT,
                     Bundle().createEvent(
                         TX_FAILED_ACTION,
-                        transaction?.displayTransaction + "|" + transaction?.gas + "|" + transaction?.gasUsed
+                        transaction?.gas + "|" + transaction?.gasUsed
                     )
-                )
-            } else {
-                analytics.logEvent(
-                    TX_MINED_EVENT,
-                    Bundle().createEvent(TRANSACTION_DETAIL_ACTION, transaction?.displayTransaction)
                 )
             }
         }
@@ -260,17 +253,14 @@ class AlertDialogFragment : DialogFragment() {
         const val DIALOG_TYPE_DONE = 1
         private const val DIALOG_TYPE_PARAM = "dialog_type_param"
         private const val TRANSACTION_PARAM = "transaction_param"
-        private const val WALLET_ADDRESS_PARAM = "walet_address_param"
 
         fun newInstance(
             dialogType: Int,
-            transaction: Transaction?,
-            walletAddress: String?
+            transaction: Transaction?
         ) = AlertDialogFragment().apply {
             arguments = Bundle().apply {
                 putInt(DIALOG_TYPE_PARAM, dialogType)
                 putParcelable(TRANSACTION_PARAM, transaction)
-                putString(WALLET_ADDRESS_PARAM, walletAddress)
             }
         }
     }

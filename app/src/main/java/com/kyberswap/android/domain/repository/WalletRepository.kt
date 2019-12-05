@@ -66,7 +66,7 @@ interface WalletRepository {
 
     fun saveWallet(param: SaveWalletUseCase.Param): Completable
 
-    fun walletConnect(param: WalletConnectUseCase.Param): Single<Boolean>
+    fun walletConnect(param: WalletConnectUseCase.Param): Completable
 
     fun approveSession(param: WalletConnectApproveSessionUseCase.Param): Single<Boolean>
 

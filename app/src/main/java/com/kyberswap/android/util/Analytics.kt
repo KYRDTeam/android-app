@@ -15,12 +15,6 @@ const val OPEN_WALLET_CONNECT_SCREEN_EVENT = "open_wallet_connect_screen_event"
 const val DISCONNECT_WALLET_CONNECT_EVENT = "disconnect_wallet_connect_event"
 const val FAIL_WALLET_CONNECT_EVENT = "fail_wallet_connect_event"
 const val SWITCH_WALLET_WHEN_WALLET_CONNECT_EVENT = "switch_wallet_when_wallet_connect_event"
-const val USER_CLICK_ITEM_SUGGESTION_EVENT = "user_click_item_suggestion_event"
-const val USER_CLICK_EDIT_CONTACT_EVENT = "user_click_edit_contact_event"
-const val USER_CLICK_ADD_CONTACT_EVENT = "user_click_add_contact_event"
-const val USER_CLICK_DELETE_CONTACT_EVENT = "user_click_delete_contact_event"
-const val USER_CLICK_MORE_CONTACT_EVENT = "user_click_more_contact_event"
-const val USER_CLICK_RECENT_CONTACT_EVENT = "user_click_recent_contact_event"
 
 
 const val RATING_DIALOG_ACTION = "rating_dialog_action"

@@ -3,13 +3,13 @@ package com.kyberswap.android.util.di.module
 import android.content.Context
 import com.kyberswap.android.data.api.home.ChartApi
 import com.kyberswap.android.data.api.home.CurrencyApi
+import com.kyberswap.android.data.api.home.GasLimitApi
 import com.kyberswap.android.data.api.home.LimitOrderApi
 import com.kyberswap.android.data.api.home.PromoApi
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.api.home.TransactionApi
 import com.kyberswap.android.data.api.home.UserApi
-import com.kyberswap.android.data.api.home.UtilitiesApi
 import com.kyberswap.android.data.db.AlertDao
 import com.kyberswap.android.data.db.ContactDao
 import com.kyberswap.android.data.db.LimitOrderDao
@@ -86,8 +86,7 @@ object DataModule {
         limitOrderDao: LocalLimitOrderDao,
         wcClient: WCClient,
         tokenClient: TokenClient,
-        transactionDao: TransactionDao,
-        contactDao: ContactDao
+        transactionDao: TransactionDao
     ): WalletRepository =
         WalletDataRepository(
             context,
@@ -101,8 +100,7 @@ object DataModule {
             limitOrderDao,
             wcClient,
             tokenClient,
-            transactionDao,
-            contactDao
+            transactionDao
         )
 
     @Singleton
@@ -183,7 +181,7 @@ object DataModule {
         userDao: UserDao,
         userApi: UserApi,
         userMapper: UserMapper,
-        utilitiesApi: UtilitiesApi,
+        gasLimitApi: GasLimitApi,
         tokenExtDao: TokenExtDao
     ): SwapRepository =
         SwapDataRepository(
@@ -200,7 +198,7 @@ object DataModule {
             userDao,
             userApi,
             userMapper,
-            utilitiesApi,
+            gasLimitApi,
             tokenExtDao
         )
 
