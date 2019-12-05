@@ -145,6 +145,7 @@ class WalletConnectFragment : BaseFragment() {
                         showProgress(true)
                     }
                     is RequestState.Success -> {
+                        isOnline = state.status
                         showStatus(state.status)
                         if (!state.status) {
                             showProgress(false)
