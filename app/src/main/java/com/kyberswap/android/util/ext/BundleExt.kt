@@ -11,7 +11,7 @@ fun Bundle.createEvent(name: String, value: String?): Bundle {
     return this
 }
 
-fun Bundle.createEvent(value: String? = "1"): Bundle {
+fun Bundle.createEvent(value: String?): Bundle {
     this.putString(ACTION_VALUE, value)
     return this
 }

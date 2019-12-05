@@ -49,14 +49,3 @@ fun Activity.openUrl(url: String?) {
         startActivity(intent)
     }
 }
-
-fun Context.openUrl(url: String?) {
-    if (url.isNullOrEmpty()) return
-    val intent = Intent(Intent.ACTION_VIEW)
-    intent.data = Uri.parse(url)
-
-    val packageManager = this.packageManager
-    if (packageManager != null && intent.resolveActivity(packageManager) != null) {
-        startActivity(intent)
-    }
-}

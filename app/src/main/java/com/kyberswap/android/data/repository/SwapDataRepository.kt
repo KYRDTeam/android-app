@@ -4,9 +4,9 @@ import android.content.Context
 import android.util.Base64
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
+import com.kyberswap.android.data.api.home.GasLimitApi
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.api.home.UserApi
-import com.kyberswap.android.data.api.home.UtilitiesApi
 import com.kyberswap.android.data.db.ContactDao
 import com.kyberswap.android.data.db.SendDao
 import com.kyberswap.android.data.db.SwapDao
@@ -20,10 +20,9 @@ import com.kyberswap.android.data.mapper.UserMapper
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.Cap
 import com.kyberswap.android.domain.model.Contact
+import com.kyberswap.android.domain.model.EstimateAmount
 import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.GasLimit
-import com.kyberswap.android.domain.model.KyberEnabled
-import com.kyberswap.android.domain.model.QuoteAmount
 import com.kyberswap.android.domain.model.ResponseStatus
 import com.kyberswap.android.domain.model.Send
 import com.kyberswap.android.domain.model.Swap
@@ -31,7 +30,6 @@ import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.repository.SwapRepository
-import com.kyberswap.android.domain.usecase.send.ENSResolveUseCase
 import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendUseCase
@@ -82,7 +80,7 @@ class SwapDataRepository @Inject constructor(
     private val userDao: UserDao,
     private val userApi: UserApi,
     private val userMapper: UserMapper,
-    private val utilitiesApi: UtilitiesApi,
+    private val gasLimitApi: GasLimitApi,
     private val tokenExtDao: TokenExtDao
 ) : SwapRepository {
     override fun getCap(param: GetCombinedCapUseCase.Param): Single<Cap> {
@@ -97,15 +95,12 @@ class SwapDataRepository @Inject constructor(
         }.map { capMapper.transform(it) }
     }
 
-    override fun estimateAmount(param: EstimateAmountUseCase.Param): Single<QuoteAmount> {
-        return utilitiesApi.sourceAmount(
+    override fun estimateAmount(param: EstimateAmountUseCase.Param): Single<EstimateAmount> {
+        return api.sourceAmount(
             param.source,
             param.dest,
-            param.destAmount,
-            BUY_TYPE
-        ).map {
-            userMapper.transform(it)
-        }
+            param.destAmount
+        )
     }
 
     override fun saveSend(param: SaveSendUseCase.Param): Completable {
@@ -115,11 +110,7 @@ class SwapDataRepository @Inject constructor(
                 val contact = findContactByAddress?.copy(
                     walletAddress = param.send.walletAddress,
                     address = param.address
-                ) ?: Contact(
-                    param.send.walletAddress,
-                    param.address,
-                    if (param.send.contact.name.isNotEmpty()) param.send.contact.name else DEFAULT_NAME
-                )
+                ) ?: Contact(param.send.walletAddress, param.address, DEFAULT_NAME)
                 param.send.copy(contact = contact)
             } else {
                 param.send
@@ -263,7 +254,7 @@ class SwapDataRepository @Inject constructor(
 
     override fun estimateGas(param: EstimateGasUseCase.Param): Single<BigDecimal> {
         return Singles.zip(
-            utilitiesApi.estimateGas(
+            gasLimitApi.estimateGas(
                 param.tokenSource.tokenAddress,
                 param.tokenDest.tokenAddress,
                 param.sourceAmount
@@ -555,22 +546,5 @@ class SwapDataRepository @Inject constructor(
                 it.copy(ethToken = updatedSend.ethToken)
             }
         }
-    }
-
-    override fun getKyberNetworkStatus(): Single<KyberEnabled> {
-        return api.getKyberEnabled().map {
-            userMapper.transform(it)
-        }
-    }
-
-    override fun ensResolve(param: ENSResolveUseCase.Param): Single<String> {
-        return Single.fromCallable {
-            tokenClient.resolve(param.name)
-
-        }
-    }
-
-    companion object {
-        const val BUY_TYPE = "buy"
     }
 }

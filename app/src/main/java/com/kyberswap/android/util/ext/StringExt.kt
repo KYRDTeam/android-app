@@ -75,24 +75,6 @@ fun String.toDoubleSafe(): Double {
     }
 }
 
-fun CharSequence?.isENSAddress(): Boolean {
-    return this?.contains(".") == true
-}
-
-fun CharSequence.ensAddress(): String? {
-    return if (this.indexOf("0x") > 0) {
-        val index = this.indexOf(".")
-        val lastIndexOf = this.lastIndexOf("-")
-        if (lastIndexOf > index) {
-            return this.take(lastIndexOf).trim().toString().toLowerCase(Locale.getDefault())
-        } else {
-            null
-        }
-    } else {
-        this.toString().toLowerCase(Locale.getDefault())
-    }
-}
-
 
 fun String?.percentage(other: String?): BigDecimal {
     if (other.isNullOrEmpty() || this.isNullOrEmpty()) return BigDecimal.ZERO

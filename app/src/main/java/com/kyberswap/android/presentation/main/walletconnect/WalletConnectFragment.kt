@@ -21,7 +21,6 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.APPROVE_WALLET_CONNECT_ACTION
 import com.kyberswap.android.util.APPROVE_WALLET_CONNECT_SESSION_ACTION
@@ -145,14 +144,7 @@ class WalletConnectFragment : BaseFragment() {
                         showProgress(true)
                     }
                     is RequestState.Success -> {
-                        showStatus(state.status)
-                        if (!state.status) {
-                            showProgress(false)
-                            showError(
-                                getString(R.string.can_not_connect_wallet),
-                                time = 10
-                            )
-                        }
+                        showStatus(true)
                     }
                     is RequestState.ShowError -> {
                         showStatus(false)
@@ -184,7 +176,7 @@ class WalletConnectFragment : BaseFragment() {
                 showProgress(state == SessionRequestState.Loading)
                 when (state) {
                     is SessionRequestState.Success -> {
-                        isOnline = state.status
+                        isOnline = true
                         binding.lnContent.visibility = View.VISIBLE
                         Glide.with(this).load(state.meta.icons.first())
                             .into(binding.imgConnectedTo)
@@ -265,16 +257,13 @@ class WalletConnectFragment : BaseFragment() {
                                 .setBeepEnabled(false)
                                 .initiateScan()
                         } else if (requestCode == REQUEST_WALLET_CHANGE || requestCode == REQUEST_BACK) {
-                            popBackStack()
+                            activity?.onBackPressed()
                         }
                     }
                     is RequestState.ShowError -> {
                         showError(
                             state.message ?: getString(R.string.something_wrong)
                         )
-                        if (requestCode == REQUEST_BACK) {
-                            popBackStack()
-                        }
                     }
                 }
             }
@@ -331,6 +320,11 @@ class WalletConnectFragment : BaseFragment() {
                 .create()
             disConnectSessionDialog?.show()
         }
+    }
+
+    private fun openQRScan() {
+        requestCode = REQUEST_SCAN
+        viewModel.killSession()
     }
 
     private fun handleWalletConnect() {
@@ -456,27 +450,7 @@ class WalletConnectFragment : BaseFragment() {
 
     private fun onBack(code: Int = REQUEST_BACK) {
         requestCode = code
-        if (isOnline) {
-            viewModel.killSession()
-        } else {
-            popBackStack()
-        }
-    }
-
-    private fun openQRScan() {
-        requestCode = REQUEST_SCAN
-        if (isOnline) {
-            viewModel.killSession()
-        } else {
-            IntentIntegrator.forSupportFragment(this)
-                .setBeepEnabled(false)
-                .initiateScan()
-        }
-    }
-
-
-    private fun popBackStack() {
-        (activity as MainActivity).getCurrentFragment()?.childFragmentManager?.popBackStack()
+        viewModel.killSession()
     }
 
     override fun onDestroyView() {
