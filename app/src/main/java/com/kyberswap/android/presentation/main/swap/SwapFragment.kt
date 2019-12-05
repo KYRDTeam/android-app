@@ -51,7 +51,6 @@ import com.kyberswap.android.util.ext.setAmount
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
-import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
 import com.kyberswap.android.util.ext.toDoubleSafe
 import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.android.synthetic.main.layout_expanable.*
@@ -290,29 +289,33 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 .observeOn(schedulerProvider.ui())
                 .subscribe { dstAmount ->
                     if (destLock.get()) {
+                        if (dstAmount.isEmpty()) binding.edtSource.setText("")
                         binding.swap?.let { swap ->
 
-                            if ((dstAmount.toBigDecimalOrDefaultZero() * swap.tokenDest.rateEthNowOrDefaultValue) > 100.toBigDecimal()) {
-                                viewModel.estimateAmount(
-                                    swap.sourceSymbol, swap.destSymbol, dstAmount.toString()
-                                )
-                            } else {
-                                if (swap.rate.toDoubleOrDefaultZero() != 0.0) {
-
-                                    val estSource = dstAmount.toBigDecimalOrDefaultZero()
-                                        .divide(
-                                            swap.rate.toBigDecimalOrDefaultZero(),
-                                            18,
-                                            RoundingMode.UP
-                                        )
-                                    sourceAmount = estSource.toPlainString()
-                                    edtSource.setAmount(displaySourceAmount)
-                                    viewModel.getExpectedRate(
-                                        swap,
-                                        estSource.toPlainString()
-                                    )
-                                }
-                            }
+                            //                            if ((dstAmount.toBigDecimalOrDefaultZero() * swap.tokenDest.rateEthNowOrDefaultValue) >= 100.toBigDecimal()) {
+//                                viewModel.estimateAmount(
+//                                    swap.sourceAddress, swap.destAddress, dstAmount.toString()
+//                                )
+//                            } else {
+//                                Timber.e("rate: " + swap.rate)
+//                                if (swap.rate.toDoubleOrDefaultZero() != 0.0) {
+//                                    val estSource = dstAmount.toBigDecimalOrDefaultZero()
+//                                        .divide(
+//                                            swap.rate.toBigDecimalOrDefaultZero(),
+//                                            18,
+//                                            RoundingMode.UP
+//                                        )
+//                                    sourceAmount = estSource.toPlainString()
+//                                    edtSource.setAmount(displaySourceAmount)
+//                                    viewModel.getExpectedRate(
+//                                        swap,
+//                                        estSource.toPlainString()
+//                                    )
+//                                }
+//                            }
+                            viewModel.estimateAmount(
+                                swap.sourceAddress, swap.destAddress, dstAmount.toString()
+                            )
                         }
                     }
                 }
@@ -631,6 +634,14 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             false
         }
 
+        binding.edtDest.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                verifyAmount()
+            }
+            false
+        }
+
+
 
         binding.edtSource.setKeyImeChangeListener(object : KeyImeChange {
             override fun onKeyIme(keyCode: Int, event: KeyEvent?) {
@@ -689,6 +700,24 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         showError(
                             state.message ?: getString(R.string.something_wrong)
                         )
+                    }
+                }
+            }
+        })
+
+        viewModel.getKyberStatusback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetKyberStatusState.Success -> {
+                        if (state.kyberEnabled.success && !state.kyberEnabled.data) {
+                            showError(getString(R.string.kyber_down), time = 15)
+                            binding.tvContinue.isEnabled = false
+                        } else {
+                            binding.tvContinue.isEnabled = true
+                        }
+                    }
+                    is GetKyberStatusState.ShowError -> {
+
                     }
                 }
             }
@@ -889,11 +918,15 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     fun verifyAmount() {
         binding.swap?.let {
             if (it.isExpectedRateZero && it.isMarketRateZero) {
-                showAlertWithoutIcon(message = getString(R.string.reserve_under_maintainance))
+                showAlertWithoutIcon(
+                    message = getString(R.string.reserve_under_maintainance),
+                    timeInSecond = 5
+                )
             } else if (it.isExpectedRateZero) {
                 showAlertWithoutIcon(
                     title = getString(R.string.title_amount_too_big),
-                    message = getString(R.string.can_not_handle_amount)
+                    message = getString(R.string.can_not_handle_amount),
+                    timeInSecond = 5
                 )
             }
         }
@@ -975,6 +1008,11 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 )
             )
         }
+    }
+
+
+    fun getKyberEnable() {
+        viewModel.getKyberStatus()
     }
 
     private fun enableTokenSearch(isSourceToken: Boolean, isEnable: Boolean) {

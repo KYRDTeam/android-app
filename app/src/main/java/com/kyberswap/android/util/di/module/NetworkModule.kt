@@ -6,13 +6,13 @@ import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.ChartApi
 import com.kyberswap.android.data.api.home.CurrencyApi
-import com.kyberswap.android.data.api.home.GasLimitApi
 import com.kyberswap.android.data.api.home.LimitOrderApi
 import com.kyberswap.android.data.api.home.PromoApi
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.api.home.TransactionApi
 import com.kyberswap.android.data.api.home.UserApi
+import com.kyberswap.android.data.api.home.UtilitiesApi
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.util.ErrorHandler
 import com.kyberswap.android.util.TokenClient
@@ -76,9 +76,9 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideGasLimitApi(context: Context, client: OkHttpClient): GasLimitApi {
+    fun provideGasLimitApi(context: Context, client: OkHttpClient): UtilitiesApi {
         return createApiClient(
-            GasLimitApi::class.java,
+            UtilitiesApi::class.java,
             context.getString(R.string.gas_limit_endpoint_url),
             client
         )

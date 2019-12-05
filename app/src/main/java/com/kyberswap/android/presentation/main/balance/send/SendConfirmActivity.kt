@@ -3,10 +3,14 @@ package com.kyberswap.android.presentation.main.balance.send
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.bumptech.glide.Glide
+import com.caverock.androidsvg.SVG
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivitySendConfirmBinding
@@ -20,6 +24,7 @@ import com.kyberswap.android.presentation.main.swap.GetSendState
 import com.kyberswap.android.presentation.main.swap.TransferTokenTransactionState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.isNetworkAvailable
+import jdenticon.Jdenticon
 import org.consenlabs.tokencore.wallet.KeystoreStorage
 import org.consenlabs.tokencore.wallet.WalletManager
 import java.io.File
@@ -66,6 +71,10 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSendState.Success -> {
+                        if (binding.send?.contact?.address != state.send.contact.address) {
+                            generateAdressImage(binding.imgContact, state.send.contact.address)
+                        }
+
                         if (binding.send != state.send) {
                             binding.send = state.send
                             viewModel.getGasLimit(binding.send, wallet)
@@ -164,6 +173,22 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
 
         binding.tvConfirm.setOnClickListener {
             viewModel.send(wallet, binding.send)
+        }
+    }
+
+    private fun generateAdressImage(view: ImageView, address: String?) {
+        if (address.isNullOrEmpty()) return
+        try {
+            val svg = SVG.getFromString(
+                Jdenticon.toSvg(
+                    address.removePrefix("0x"),
+                    view.layoutParams.width
+                )
+            )
+            val drawable = PictureDrawable(svg.renderToPicture())
+            Glide.with(view).load(drawable).into(view)
+        } catch (ex: Exception) {
+            ex.printStackTrace()
         }
     }
 

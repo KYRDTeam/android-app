@@ -487,7 +487,7 @@
                             android:layout_marginStart="15dp"
                             android:layout_marginTop="25dp"
                             android:layout_marginEnd="15dp"
-                            android:background="@drawable/default_button"
+                            android:background="@drawable/import_wallet_toggle_drawable"
                             android:gravity="center"
                             android:minHeight="45dp"
                             android:text="@string/swap_now"
