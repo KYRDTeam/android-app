@@ -346,14 +346,18 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                         }
 
                         val pending = state.transactions.filter { it.blockNumber.isEmpty() }
-
-                        if (pending.isEmpty()) {
-                            if (currentDialogFragment is AlertDialogFragment) {
-                                if (!(currentDialogFragment as AlertDialogFragment).isDone) {
-                                    currentDialogFragment?.dismissAllowingStateLoss()
+                        handler.postDelayed(
+                            {
+                                if (pending.isEmpty() && txList.isEmpty()) {
+                                    if (currentDialogFragment is AlertDialogFragment) {
+                                        if (!(currentDialogFragment as AlertDialogFragment).isDone) {
+                                            currentDialogFragment?.dismissAllowingStateLoss()
+                                        }
+                                    }
                                 }
-                            }
-                        }
+                            }, 500
+                        )
+
 
                         pendingTransactions.clear()
                         pendingTransactions.addAll(pending)
