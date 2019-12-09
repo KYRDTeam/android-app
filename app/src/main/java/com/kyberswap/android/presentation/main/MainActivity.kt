@@ -346,6 +346,15 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                         }
 
                         val pending = state.transactions.filter { it.blockNumber.isEmpty() }
+
+                        if (pending.isEmpty()) {
+                            if (currentDialogFragment is AlertDialogFragment) {
+                                if (!(currentDialogFragment as AlertDialogFragment).isDone) {
+                                    currentDialogFragment?.dismissAllowingStateLoss()
+                                }
+                            }
+                        }
+
                         pendingTransactions.clear()
                         pendingTransactions.addAll(pending)
                         setPendingTransaction(pending.size)
@@ -550,7 +559,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         }
     }
 
-    val isWalletConnectOpen: Boolean
+    private val isWalletConnectOpen: Boolean
         get() {
             val lastAddedFragment =
                 getCurrentFragment()?.childFragmentManager?.fragments?.lastOrNull()

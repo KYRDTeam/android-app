@@ -84,7 +84,6 @@ class AddContactViewModel @Inject constructor(
     }
 
     fun revertResolve(address: String) {
-
         ensRevertResolveUseCase.dispose()
         ensRevertResolveUseCase.execute(
             Consumer {

@@ -220,17 +220,13 @@ class AddContactFragment : BaseFragment() {
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetENSAddressState.Success -> {
-                        if (DEFAULT_ENS_ADDRESS == state.address) {
-                            val error = getString(R.string.not_attach_address)
-                            ilAddress.error = error
-                        } else {
+                        if (DEFAULT_ENS_ADDRESS != state.address) {
                             binding.edtName.setText(state.ensName)
                             binding.edtAddress.setText(state.address)
                         }
                     }
                     is GetENSAddressState.ShowError -> {
-                        ilAddress.setErrorTextAppearance(R.style.error_appearance)
-                        ilAddress.error = getString(R.string.enter_address_is_invalid)
+
                     }
                 }
             }
@@ -246,8 +242,6 @@ class AddContactFragment : BaseFragment() {
                         binding.edtAddress.setText(state.address)
                     }
                     is GetENSAddressState.ShowError -> {
-                        ilAddress.setErrorTextAppearance(R.style.error_appearance)
-                        ilAddress.error = getString(R.string.enter_address_is_invalid)
                     }
                 }
             }

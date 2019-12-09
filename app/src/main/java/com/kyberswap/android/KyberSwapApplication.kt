@@ -157,7 +157,7 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
     private fun setupRemoteConfig() {
         val firebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
         firebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults)
-        firebaseRemoteConfig.fetch(60) // fetch every minutes
+        firebaseRemoteConfig.fetch(3 * 60) // fetch every minutes
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     firebaseRemoteConfig.activateFetched()
