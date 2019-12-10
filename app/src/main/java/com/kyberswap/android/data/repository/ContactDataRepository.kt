@@ -28,9 +28,10 @@ class ContactDataRepository @Inject constructor(
                 context.getString(R.string.default_wallet_name)
             } else param.name
 
-            val findContactByAddress = contactDao.findContactByAddress(param.address)
+            val contactByAddress =
+                contactDao.findContactByAddress(param.address.toLowerCase(Locale.getDefault()))
             val updatedAt = System.currentTimeMillis() / 1000
-            val contact = findContactByAddress?.copy(
+            val contact = contactByAddress?.copy(
                 address = param.address.toLowerCase(Locale.getDefault()),
                 name = name,
                 updatedAt = updatedAt
@@ -40,7 +41,7 @@ class ContactDataRepository @Inject constructor(
                 name,
                 updatedAt
             )
-            contactDao.insertContact(contact)
+            contactDao.updateContactAndRemoveDuplicate(contact)
 
             if (param.isSend) {
                 val send = sendDao.findSendByAddress(param.walletAddress)
