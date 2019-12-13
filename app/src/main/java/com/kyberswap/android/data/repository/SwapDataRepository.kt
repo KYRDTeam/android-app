@@ -32,6 +32,7 @@ import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.repository.SwapRepository
 import com.kyberswap.android.domain.usecase.send.ENSResolveUseCase
+import com.kyberswap.android.domain.usecase.send.ENSRevertResolveUseCase
 import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendUseCase
@@ -567,6 +568,12 @@ class SwapDataRepository @Inject constructor(
         return Single.fromCallable {
             tokenClient.resolve(param.name)
 
+        }
+    }
+
+    override fun ensRevertResolve(param: ENSRevertResolveUseCase.Param): Single<String> {
+        return Single.fromCallable {
+            tokenClient.revertResolve(param.address)
         }
     }
 

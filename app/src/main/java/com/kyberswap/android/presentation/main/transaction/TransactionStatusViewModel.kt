@@ -142,7 +142,7 @@ class TransactionStatusViewModel @Inject constructor(
                 val tokenList = transactionFilter.tokens.map { it.toLowerCase(Locale.getDefault()) }
                 (transactionFilter.from.isEmpty() || it.filterDateTimeFormat.toDate().time >= transactionFilter.from.toDate().time) &&
                     (transactionFilter.to.isEmpty() || it.filterDateTimeFormat.toDate().time <= transactionFilter.to.toDate().time) &&
-                    transactionFilter.types.contains(it.type) &&
+                    transactionFilter.types.contains(it.transactionType) &&
                     (tokenList.contains(it.tokenSymbol.toLowerCase(Locale.getDefault())) ||
                         tokenList.contains(it.tokenSource.toLowerCase(Locale.getDefault()))
                         || tokenList.contains(it.tokenDest.toLowerCase(Locale.getDefault()))

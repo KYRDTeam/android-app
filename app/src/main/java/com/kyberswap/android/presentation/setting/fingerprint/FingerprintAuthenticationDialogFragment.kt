@@ -35,7 +35,6 @@ class FingerprintAuthenticationDialogFragment : DialogFragment(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        retainInstance = true
         setStyle(STYLE_NORMAL, android.R.style.Theme_Material_Light_Dialog)
     }
 

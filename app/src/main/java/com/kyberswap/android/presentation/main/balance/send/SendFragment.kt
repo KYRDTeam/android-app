@@ -32,6 +32,7 @@ import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.CustomAlertActivity
 import com.kyberswap.android.presentation.common.CustomContactAdapter
+import com.kyberswap.android.presentation.common.DEFAULT_ENS_ADDRESS
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
@@ -57,6 +58,7 @@ import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isContact
 import com.kyberswap.android.util.ext.isENSAddress
 import com.kyberswap.android.util.ext.isNetworkAvailable
+import com.kyberswap.android.util.ext.onlyAddress
 import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.setAmount
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
@@ -110,19 +112,15 @@ class SendFragment : BaseFragment() {
     private var helperText: String? = null
 
     private val contactAddress: String
-        get() = if (ilAddress.helperText.toString().isContact()) ilAddress.helperText.toString() else onlyAddress(
-            edtAddress.text.toString()
-        )
+        get() = if (ilAddress.helperText.toString().isContact()) ilAddress.helperText.toString() else edtAddress.text.toString().onlyAddress()
 
     private val isENSAddress: Boolean
-        get() = edtAddress.text.toString().isENSAddress() && !onlyAddress(
-            edtAddress.text.toString()
-        ).isContact()
+        get() = edtAddress.text.toString().isENSAddress() && !edtAddress.text.toString().onlyAddress().isContact()
 
     private val isContactExist: Boolean
         get() = contacts.find { ct ->
             ct.address.equals(currentSelection?.address, true)
-                || ct.address.equals(onlyAddress(edtAddress.text.toString()), true)
+                || ct.address.equals(edtAddress.text.toString().onlyAddress(), true)
                 || ct.address.equals(ilAddress.helperText?.toString(), true)
         } != null
 
@@ -265,7 +263,7 @@ class SendFragment : BaseFragment() {
                 currentFragment,
                 wallet,
                 if (ilAddress.helperText?.toString()?.isContact() == true) ilAddress.helperText.toString() else
-                    onlyAddress(edtAddress.text.toString()),
+                    edtAddress.text.toString().onlyAddress(),
                 currentSelection
             )
         }
@@ -336,14 +334,12 @@ class SendFragment : BaseFragment() {
                     } else {
                         updateContactAction()
 
-                        if (onlyAddress(it.toString()).isContact()) {
+                        if (it.toString().onlyAddress().isContact()) {
                             binding.send?.let { send ->
                                 viewModel.getGasLimit(
                                     send.copy(
                                         contact = send.contact.copy(
-                                            address = onlyAddress(
-                                                it.toString()
-                                            )
+                                            address = it.toString().onlyAddress()
                                         )
                                     ), wallet
                                 )
@@ -431,9 +427,7 @@ class SendFragment : BaseFragment() {
                         if (currentSelection == null) {
                             currentSelection = contacts.find { ct ->
                                 ct.address.equals(
-                                    onlyAddress(
-                                        edtAddress.text.toString()
-                                    ), true
+                                    edtAddress.text.toString().onlyAddress(), true
                                 )
                             }
                         }
@@ -584,7 +578,7 @@ class SendFragment : BaseFragment() {
                             message = getString(R.string.exceed_balance)
                         )
                     }
-                    !(onlyAddress(edtAddress.text.toString()).isContact() ||
+                    !(edtAddress.text.toString().onlyAddress().isContact() ||
                         ilAddress.helperText.toString().isContact() ||
                         edtAddress.text.toString().isENSAddress()) -> showAlertWithoutIcon(
                         title = getString(R.string.invalid_contact_address_title),
@@ -745,9 +739,7 @@ class SendFragment : BaseFragment() {
                     contact = send.contact.copy(
                         address = if (ilAddress.helperText.toString().isContact())
                             ilAddress.helperText.toString()
-                        else onlyAddress(
-                            edtAddress.text.toString()
-                        ),
+                        else edtAddress.text.toString().onlyAddress(),
                         name = if (send.contact.name.isNotEmpty()) send.contact.name
                         else currentSelection?.name ?: ""
                     ),
@@ -820,7 +812,7 @@ class SendFragment : BaseFragment() {
                 val content =
                     result.contents.toString()
 
-                val resultContent = if (content.isENSAddress()) content else onlyAddress(content)
+                val resultContent = if (content.isENSAddress()) content else content.onlyAddress()
                 val contact = contacts.find {
                     it.address.toLowerCase(Locale.getDefault()) == resultContent.toLowerCase(Locale.getDefault())
                 }
@@ -867,19 +859,8 @@ class SendFragment : BaseFragment() {
     }
 
 
-    private fun onlyAddress(fullAddress: String): String {
-        val index = fullAddress.indexOf("0x")
-        return if (index >= 0) {
-            val prefix = fullAddress.substring(0, fullAddress.indexOf("0x"))
-            fullAddress.removePrefix(prefix).trim()
-        } else {
-            fullAddress
-        }
-    }
-
     companion object {
         private const val WALLET_PARAM = "wallet_param"
-        private const val DEFAULT_ENS_ADDRESS = "0x0000000000000000000000000000000000000000"
         fun newInstance(wallet: Wallet?) =
             SendFragment().apply {
                 arguments = Bundle().apply {

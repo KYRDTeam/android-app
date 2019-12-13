@@ -51,7 +51,7 @@ class AlertDialogFragment : DialogFragment() {
         Handler()
     }
 
-    private val isDone: Boolean
+    val isDone: Boolean
         get() = DIALOG_TYPE_DONE == dialogType
 
     private val isBroadcasted: Boolean
@@ -191,9 +191,6 @@ class AlertDialogFragment : DialogFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         if (dialog == null) showsDialog = false
         super.onActivityCreated(savedInstanceState)
-//        binding.flContainer.setOnClickListener {
-//            activity?.onBackPressed()
-//        }
 
         executeBinding()
 

@@ -755,4 +755,8 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
     fun resolve(name: String): String {
         return EnsResolver(web3j).resolve(name)
     }
+
+    fun revertResolve(address: String): String {
+        return EnsResolver(web3j).reverseResolve(address)
+    }
 }

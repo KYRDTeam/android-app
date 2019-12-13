@@ -209,9 +209,10 @@ object DataModule {
     @JvmStatic
     fun provideContactRepository(
         contactDao: ContactDao,
-        sendDao: SendDao
+        sendDao: SendDao,
+        context: Context
     ): ContactRepository =
-        ContactDataRepository(contactDao, sendDao)
+        ContactDataRepository(contactDao, sendDao, context)
 
 
     @Singleton
