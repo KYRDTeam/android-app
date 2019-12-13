@@ -8,6 +8,7 @@ import com.kyberswap.android.domain.model.ResponseStatus
 import com.kyberswap.android.domain.model.Send
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.usecase.send.ENSResolveUseCase
+import com.kyberswap.android.domain.usecase.send.ENSRevertResolveUseCase
 import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendUseCase
@@ -61,6 +62,8 @@ interface SwapRepository {
     fun getCap(param: GetCombinedCapUseCase.Param): Single<Cap>
 
     fun ensResolve(param: ENSResolveUseCase.Param): Single<String>
+
+    fun ensRevertResolve(param: ENSRevertResolveUseCase.Param): Single<String>
 
     fun getKyberNetworkStatus(): Single<KyberEnabled>
 }

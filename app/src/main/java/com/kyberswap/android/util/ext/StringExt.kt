@@ -79,6 +79,16 @@ fun CharSequence?.isENSAddress(): Boolean {
     return this?.contains(".") == true
 }
 
+fun String.onlyAddress(): String {
+    val index = this.indexOf("0x")
+    return if (index >= 0) {
+        val prefix = this.substring(0, this.indexOf("0x"))
+        this.removePrefix(prefix).trim()
+    } else {
+        this
+    }
+}
+
 fun CharSequence.ensAddress(): String? {
     return if (this.indexOf("0x") > 0) {
         val index = this.indexOf(".")

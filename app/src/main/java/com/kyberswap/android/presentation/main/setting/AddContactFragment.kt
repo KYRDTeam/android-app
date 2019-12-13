@@ -16,13 +16,20 @@ import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.DEFAULT_ENS_ADDRESS
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.swap.DeleteContactState
+import com.kyberswap.android.presentation.main.swap.GetENSAddressState
 import com.kyberswap.android.presentation.main.swap.SaveContactState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.ensAddress
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isContact
+import com.kyberswap.android.util.ext.isENSAddress
+import com.kyberswap.android.util.ext.onlyAddress
+import kotlinx.android.synthetic.main.fragment_send.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -46,18 +53,23 @@ class AddContactFragment : BaseFragment() {
     private var address: String? = null
     private var contact: Contact? = null
 
-
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(AddContactViewModel::class.java)
     }
 
+    private val isEmptyOrDefaultName: Boolean
+        get() = binding.edtName.text.toString().isEmpty() || binding.edtName.text.toString().equals(
+            getString(R.string.default_wallet_name), true
+        )
+
+    private val isENSAddress: Boolean
+        get() = binding.edtAddress.text.toString().isENSAddress() && !binding.edtAddress.text.toString().onlyAddress().isContact()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         wallet = arguments?.getParcelable(WALLET_PARAM)
         address = arguments?.getString(ADDRESS_PARAM)
         contact = arguments?.getParcelable(CONTACT_PARAM)
-
     }
 
     override fun onCreateView(
@@ -93,9 +105,19 @@ class AddContactFragment : BaseFragment() {
 
         viewModel.compositeDisposable.add(binding.edtAddress.textChanges()
             .skipInitialValue()
+            .debounce(
+                250,
+                TimeUnit.MILLISECONDS
+            )
             .observeOn(schedulerProvider.ui())
             .subscribe {
                 binding.ilAddress.error = null
+                if (isENSAddress) {
+                    it.ensAddress()?.let { it1 -> viewModel.resolve(it1) }
+                } else if (isEmptyOrDefaultName) {
+                    viewModel.revertResolve(it.toString())
+                }
+
             })
 
 
@@ -125,7 +147,6 @@ class AddContactFragment : BaseFragment() {
                     }
                 }
             }
-
 
         }
 
@@ -194,6 +215,37 @@ class AddContactFragment : BaseFragment() {
                 }
             }
         })
+
+        viewModel.getGetENSCallback.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetENSAddressState.Success -> {
+                        if (DEFAULT_ENS_ADDRESS != state.address) {
+                            binding.edtName.setText(state.ensName)
+                            binding.edtAddress.setText(state.address)
+                        }
+                    }
+                    is GetENSAddressState.ShowError -> {
+
+                    }
+                }
+            }
+        })
+
+
+        viewModel.getGetRevertENSCallback.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == GetENSAddressState.Loading)
+                when (state) {
+                    is GetENSAddressState.Success -> {
+                        binding.edtName.setText(state.ensName)
+                        binding.edtAddress.setText(state.address)
+                    }
+                    is GetENSAddressState.ShowError -> {
+                    }
+                }
+            }
+        })
     }
 
     private fun onSuccess() {
@@ -206,9 +258,17 @@ class AddContactFragment : BaseFragment() {
             if (result.contents == null) {
                 showAlert(getString(R.string.message_cancelled))
             } else {
-                binding.edtAddress.setText(result.contents.toString())
-                if (!result.contents.toString().isContact()) {
-                    binding.ilAddress.error = getString(R.string.invalid_contact_address)
+
+                val content =
+                    result.contents.toString()
+
+                val resultContent = if (content.isENSAddress()) content else content.onlyAddress()
+                binding.edtAddress.setText(resultContent)
+                if (!(resultContent.isContact() || resultContent.isENSAddress())) {
+                    val error = getString(R.string.invalid_contact_address)
+                    showAlertWithoutIcon(title = "Invalid Address", message = error)
+                    ilAddress.setErrorTextAppearance(R.style.error_appearance)
+                    binding.ilAddress.error = error
                 }
             }
         } else {
@@ -234,6 +294,4 @@ class AddContactFragment : BaseFragment() {
                 }
             }
     }
-
-
 }

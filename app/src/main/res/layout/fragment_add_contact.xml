@@ -72,6 +72,7 @@
                 android:minHeight="48dp"
                 android:singleLine="true"
                 android:text="@{contact.name}"
+                android:imeOptions="actionDone"
                 android:textColor="#2e3957"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -93,14 +94,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/edtName">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <com.kyberswap.android.presentation.common.ClearableEditText
                     android:id="@+id/edtAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/edt_background_tint"
                     android:hint="@string/contact_address"
                     android:inputType="text"
+                    android:imeOptions="actionDone"
                     android:minHeight="48dp"
+                    android:maxLines="1"
                     android:paddingStart="0dp"
                     android:paddingEnd="24dp"
                     android:singleLine="true"
