@@ -84,4 +84,8 @@
     <color name="hint_color">#42000000</color>
     <color name="success_color">#009688</color>
     <color name="warning_color">#f4511e</color>
+
+    <color name="notification_unread">#e8efff</color>
+    <color name="notification_even">#ffffff</color>
+    <color name="notification_odd">#f6f7fa</color>
 </resources>

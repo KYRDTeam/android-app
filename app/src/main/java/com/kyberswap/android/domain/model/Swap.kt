@@ -60,6 +60,8 @@ data class Swap(
             return calculateDefaultGasLimit(tokenSource, tokenDest) + 10_000.toBigInteger()
         }
 
+    val isExpectedRateEmptyOrZero: Boolean
+        get() = expectedRate.isEmpty() || expectedRate.toDoubleSafe() == 0.0
     val currentExpectedDestAmount: BigDecimal
         get() = getExpectedDestAmount(sourceAmount.toBigDecimalOrDefaultZero())
 

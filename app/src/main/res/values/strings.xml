@@ -42,6 +42,7 @@
     <string name="kyberswap">KyberSwap</string>
     <string name="backup_message">We will give you a list of 12 random words. Please write down on paper and keep safe. This paper is the only way to restore your Kyber Wallet if you lose your phone or forget your password.</string>
     <string name="bold_font_path" translatable="false">fonts/Montserrat-Bold.ttf</string>
+    <string name="normal_font_path" translatable="false">fonts/Montserrat-Medium.ttf</string>
     <string name="semi_bold_font_path" translatable="false">fonts/Montserrat-Bold.ttf</string>
     <string name="semi_bold_italic_font_path" translatable="false">fonts/Montserrat-SemiBoldItalic.ttf</string>
     <string name="verify_word_description">To make sure you have written down all of your backup words. Please enter the following:</string>
@@ -642,6 +643,19 @@
     <string name="not_attach_address">You have not attached your address to this domain. Please set up your account properly at ENS</string>
     <string name="kyber_down">Kyber exchange is not enabled at the moment. Please come back later!</string>
     <string name="can_not_connect_wallet">Can not connect to your wallet, please make sure the QR code is valid and try again</string>
+    <string name="notifications">Notifications</string>
+    <string name="just_now">just now</string>
+    <string name="one_hour_ago">1 hour ago</string>
+    <string name="hours_ago">%s hours ago</string>
+    <string name="mins_ago">%s mins ago</string>
+    <string name="one_day_ago">1 day ago</string>
+    <string name="days_ago">%s days ago</string>
+    <string name="mark_all_read">Mark all read</string>
+    <string name="token_24h_vol">%s ETH</string>
+    <string name="action_open">Open</string>
+    <string name="title_notification">Notification</string>
+    <string name="eth_24h_vol">24h Vol:</string>
+    <string name="defaut_24h_eth">0 ETH</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>

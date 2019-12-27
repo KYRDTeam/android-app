@@ -3,6 +3,7 @@ package com.kyberswap.android.presentation.main.swap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.kyberswap.android.domain.model.NotificationAlert
+import com.kyberswap.android.domain.model.NotificationExt
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.alert.GetAlertUseCase
@@ -125,7 +126,15 @@ class SwapViewModel @Inject constructor(
         }
     }
 
-    fun getSwapData(wallet: Wallet, alert: NotificationAlert? = null) {
+    fun disposeCurrentSwap() {
+        getSwapDataUseCase.dispose()
+    }
+
+    fun getSwapData(
+        wallet: Wallet,
+        alert: NotificationAlert? = null,
+        notificationExt: NotificationExt? = null
+    ) {
         getSwapDataUseCase.dispose()
         getSwapDataUseCase.execute(
             Consumer {
@@ -136,7 +145,7 @@ class SwapViewModel @Inject constructor(
                 it.printStackTrace()
                 _getSwapCallback.value = Event(GetSwapState.ShowError(errorHandler.getError(it)))
             },
-            GetSwapDataUseCase.Param(wallet, alert)
+            GetSwapDataUseCase.Param(wallet, alert, notificationExt)
         )
     }
 

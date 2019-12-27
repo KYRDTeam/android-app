@@ -16,4 +16,5 @@
     <string name="chart_endpoint_url" formatted="false" translatable="false">https://dev-api.knstats.com/</string>
     <string name="wrapper_contract_address" translatable="false">0x7efa0d99f7c8eafeec72604b4a5e0d7155dafa9e</string>
     <string name="gas_limit_endpoint_url" translatable="false">https://dev-api.knstats.com/</string>
+    <string name="kyber_event_topic" translatable="false">0x1849bd6a030a1bca28b83437fd3de96f3d27a5d172fa7e9c78e7b61468928a39</string>
 </resources>

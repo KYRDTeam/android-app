@@ -10,6 +10,7 @@ import com.kyberswap.android.util.views.DateTimeHelper
 import kotlinx.android.parcel.Parcelize
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.util.Locale
 
 @Entity(tableName = "alerts")
 @Parcelize
@@ -77,19 +78,19 @@ data class Alert(
         get() = rank.toString()
 
     val baseInt: Int
-        get() = if (base.toLowerCase() == BASE_ETH.toLowerCase()) 0 else 1
+        get() = if (base.toLowerCase(Locale.getDefault()) == BASE_ETH.toLowerCase(Locale.getDefault())) 0 else 1
 
     val isNotLocal: Boolean
-        get() = state.toLowerCase() != STATE_LOCAL
+        get() = state.toLowerCase(Locale.getDefault()) != STATE_LOCAL
 
     val statusInt: Int
-        get() = if (status.toLowerCase() == STATUS_FILLED.toLowerCase()) 1 else 0
+        get() = if (status.toLowerCase(Locale.getDefault()) == STATUS_FILLED.toLowerCase(Locale.getDefault())) 1 else 0
 
     val isFilled: Boolean
-        get() = status.toLowerCase() == STATUS_FILLED.toLowerCase()
+        get() = status.toLowerCase(Locale.getDefault()) == STATUS_FILLED.toLowerCase(Locale.getDefault())
 
     val isEthBase: Boolean
-        get() = base.toLowerCase() == BASE_ETH.toLowerCase()
+        get() = base.toLowerCase(Locale.getDefault()) == BASE_ETH.toLowerCase(Locale.getDefault())
     val tokenSymbol: String
         get() = if (token.tokenSymbol.isNotEmpty()) token.tokenSymbol else symbol
 

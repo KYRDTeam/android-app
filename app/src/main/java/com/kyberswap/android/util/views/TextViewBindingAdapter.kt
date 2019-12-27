@@ -4,6 +4,8 @@ import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.text.style.RelativeSizeSpan
 import android.view.View
 import android.widget.RadioButton
 import android.widget.TextView
@@ -39,7 +41,7 @@ object TextViewBindingAdapter {
         )
 
         words.forEach {
-            if(spannableString.indexOf(it) >= 0 && (spannableString.indexOf(it) + it.length <= spannableString.length)) {
+            if (spannableString.indexOf(it) >= 0 && (spannableString.indexOf(it) + it.length <= spannableString.length)) {
                 val calligraphyTypeface = CalligraphyTypefaceSpan(
                     typeface
                 )
@@ -53,6 +55,75 @@ object TextViewBindingAdapter {
         }
 
         view.setText(spannableString, TextView.BufferType.SPANNABLE)
+    }
+
+    @BindingAdapter("app:time", "app:font")
+    @JvmStatic
+    fun styleTime(view: TextView, time: String?, font: String) {
+        if (time.isNullOrEmpty()) return
+        try {
+            val deta = (System.currentTimeMillis() - DateTimeHelper.toLong(time)) / 1000L
+            val minus = deta / 60.0
+            val hours = minus / 60
+            val days = hours / 24
+            val context = view.context
+            val displayText = if (deta / 60.0 < 2) {
+                context.getString(R.string.just_now)
+            } else if (minus >= 2 && minus < 60) {
+                String.format(context.getString(R.string.mins_ago), minus.toInt().toString())
+            } else if (hours < 2.0) {
+                context.getString(R.string.one_hour_ago)
+            } else if (hours >= 2 && hours < 24) {
+                String.format(context.getString(R.string.hours_ago), hours.toInt().toString())
+            } else if (days < 2.0) {
+                context.getString(R.string.one_day_ago)
+            } else if (days <= 3.0) {
+                String.format(context.getString(R.string.days_ago), days.toInt().toString())
+            } else {
+                DateTimeHelper.displayAlertDate(time)
+            }
+
+            val spannableString = SpannableString(view.text.toString() + " " + displayText)
+            val typeface = TypefaceUtils.load(
+                view.context.assets,
+                font
+            )
+
+            spannableString.setSpan(
+                RelativeSizeSpan(0.75f),
+                spannableString.indexOf(displayText),
+                spannableString.indexOf(displayText) + displayText.length,
+                0
+            )
+
+
+            spannableString.setSpan(
+                ForegroundColorSpan(
+                    ContextCompat.getColor(
+                        view.context,
+                        R.color.color_trigger_alert_price
+                    )
+                ),
+                spannableString.indexOf(displayText),
+                spannableString.indexOf(displayText) + displayText.length,
+                0
+            ) //
+
+            val calligraphyTypeface = CalligraphyTypefaceSpan(
+                typeface
+            )
+
+            spannableString.setSpan(
+                calligraphyTypeface,
+                spannableString.indexOf(displayText),
+                spannableString.indexOf(displayText) + displayText.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+
+            view.setText(spannableString, TextView.BufferType.SPANNABLE)
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
     }
 
 
@@ -178,6 +249,34 @@ object TextViewBindingAdapter {
     }
 
 
+    @BindingAdapter("app:time")
+    @JvmStatic
+    fun notificationTime(view: TextView, time: String) {
+        val deta = (System.currentTimeMillis() - DateTimeHelper.toLong(time)) / 1000L
+        val minus = deta / 60.0
+        val hours = minus / 60
+        val days = hours / 24
+        val context = view.context
+        val displayText = if (deta / 60.0 < 2) {
+            context.getString(R.string.just_now)
+        } else if (minus >= 2 && minus < 60) {
+            String.format(context.getString(R.string.mins_ago), minus.toInt().toString())
+        } else if (hours < 2.0) {
+            context.getString(R.string.one_hour_ago)
+        } else if (hours >= 2 && hours < 24) {
+            String.format(context.getString(R.string.hours_ago), hours.toInt().toString())
+        } else if (days < 2.0) {
+            context.getString(R.string.one_day_ago)
+        } else if (days <= 3.0) {
+            String.format(context.getString(R.string.days_ago), days.toInt().toString())
+        } else {
+            DateTimeHelper.displayAlertDate(time)
+        }
+
+        view.text = displayText
+    }
+
+
     @BindingAdapter("app:documentType")
     @JvmStatic
     fun documentType(view: TextView, documentType: String?) {
@@ -247,7 +346,6 @@ object TextViewBindingAdapter {
             val filter = ColorMatrixColorFilter(matrix)
 
             icon?.colorFilter = filter
-
         } else {
             view.setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0)
         }
@@ -267,13 +365,11 @@ object TextViewBindingAdapter {
 
         view.setTextColor(ContextCompat.getColor(view.context, color))
         view.text = StringBuilder().append(rate.abs().toDisplayNumber()).append(" %").toString()
-
     }
 
     @BindingAdapter("app:orderStatus")
     @JvmStatic
     fun orderStatus(view: TextView, orderStatus: String) {
-
 
         val background: Int
         val textColor: Int
@@ -285,7 +381,6 @@ object TextViewBindingAdapter {
             Order.Status.FILLED.value -> {
                 background = R.drawable.rounded_corner_order_filled_background
                 textColor = R.color.text_order_status_filled
-
             }
             Order.Status.IN_PROGRESS.value -> {
                 background = R.drawable.rounded_corner_order_in_progress_background
@@ -303,7 +398,6 @@ object TextViewBindingAdapter {
         view.text = orderStatus
         view.setTextColor(ContextCompat.getColor(view.context, textColor))
         view.setBackgroundResource(background)
-
     }
 
     @BindingAdapter("app:kycStatus")
@@ -329,6 +423,5 @@ object TextViewBindingAdapter {
 
         view.text = view.context.getString(stringResource)
         view.setBackgroundResource(background)
-
     }
 }

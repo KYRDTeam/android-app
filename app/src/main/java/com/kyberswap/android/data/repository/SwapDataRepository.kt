@@ -91,7 +91,7 @@ class SwapDataRepository @Inject constructor(
             userDao.getUser() ?: UserInfo()
         }.flatMap {
             if (it.uid > 0) {
-                userApi.getUserStats()
+                userApi.getUserStats(param.wallet.address)
             } else {
                 api.getCap(param.wallet.address)
             }
@@ -402,6 +402,7 @@ class SwapDataRepository @Inject constructor(
         return Flowable.fromCallable {
             val wallet = param.wallet
             val alert = param.alert
+            val notification = param.notificationExt
             val localSwap = swapDao.findSwapByAddress(wallet.address)
             val defaultSwap =
                 when {
@@ -419,6 +420,22 @@ class SwapDataRepository @Inject constructor(
                             ethToken = ethToken
                         )
                     }
+
+                    notification != null -> {
+                        val sourceToken = Token.ETH
+                        val destToken =
+                            if (notification.token.isEmpty()) Token.KNC else notification.token
+                        val defaultSourceToken = tokenDao.getTokenBySymbol(sourceToken) ?: Token()
+                        val defaultDestToken = tokenDao.getTokenBySymbol(destToken) ?: Token()
+                        val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
+                        Swap(
+                            wallet.address,
+                            defaultSourceToken,
+                            defaultDestToken,
+                            ethToken = ethToken
+                        )
+                    }
+
                     localSwap == null -> {
 
                         val promo = wallet.promo

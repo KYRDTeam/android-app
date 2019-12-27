@@ -6,6 +6,7 @@ import android.graphics.Matrix
 import androidx.exifinterface.media.ExifInterface
 import com.google.gson.Gson
 import com.kyberswap.android.data.api.home.UserApi
+import com.kyberswap.android.data.api.notification.NotificationEntity
 import com.kyberswap.android.data.db.AlertDao
 import com.kyberswap.android.data.db.RatingDao
 import com.kyberswap.android.data.db.UserDao
@@ -15,11 +16,14 @@ import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.AlertMethodsResponse
 import com.kyberswap.android.domain.model.KycResponseStatus
 import com.kyberswap.android.domain.model.LoginUser
+import com.kyberswap.android.domain.model.Notification
+import com.kyberswap.android.domain.model.NotificationRequestBody
 import com.kyberswap.android.domain.model.RatingInfo
 import com.kyberswap.android.domain.model.ResponseStatus
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.repository.UserRepository
 import com.kyberswap.android.domain.usecase.alert.UpdateAlertMethodsUseCase
+import com.kyberswap.android.domain.usecase.notification.ReadNotificationsUseCase
 import com.kyberswap.android.domain.usecase.profile.Base64DecodeUseCase
 import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
 import com.kyberswap.android.domain.usecase.profile.LoginUseCase
@@ -474,6 +478,53 @@ class UserDataRepository @Inject constructor(
         }
     }
 
+    override fun getNotifications(): Single<List<Notification>> {
+        return Flowable.range(1, Integer.MAX_VALUE)
+            .concatMap {
+                userApi.getNotifications(it, 50).toFlowable()
+            }
+
+            .takeUntil {
+                it.pagingInfo.pageIndex ?: 0 > it.pagingInfo.pageCount ?: 0
+            }.reduce(
+                mutableListOf<NotificationEntity>(),
+                { builder, response ->
+                    if (response.pagingInfo.pageIndex == 1) {
+                        builder.clear()
+                    }
+                    builder.addAll(response.data)
+                    builder
+                })
+            .toFlowable()
+            .flatMapIterable { tokenCurrency -> tokenCurrency }
+            .map {
+                userMapper.transform(it)
+            }.toList()
+    }
+
+    override fun getUnReadNotifications(): Flowable<Int> {
+        return userApi.getNotifications().map {
+            it.pagingInfo.unreadCount ?: 0
+        }.repeatWhen {
+            it.delay(15, TimeUnit.SECONDS)
+        }
+            .retryWhen { throwable ->
+                throwable.compose(zipWithFlatMap())
+            }
+    }
+
+    override fun readNotifications(param: ReadNotificationsUseCase.Param): Single<ResponseStatus> {
+        val body =
+            RequestBody.create(
+                MediaType.parse("text/plain"),
+                Gson().toJson(NotificationRequestBody(param.notifications.map {
+                    it.id
+                }))
+            )
+        return userApi.markAsRead(body).map {
+            userMapper.transform(it)
+        }
+    }
 
     companion object {
         private const val MAX_IMAGE_SIZE = 800 * 1024

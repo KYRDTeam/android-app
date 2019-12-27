@@ -16,8 +16,16 @@ data class NotificationAlert(
     @SerializedName("base")
     val base: String = "",
     @SerializedName("token")
-    val token: String = ""
+    val token: String = "",
+    @SerializedName("notification_id")
+    val notificationId: Long = 0
 ) : Parcelable {
+
+    constructor(notificationExt: NotificationExt) : this(
+        base = notificationExt.base,
+        token = if (notificationExt.base.isEmpty()) Token.ETH_SYMBOL else notificationExt.token,
+        alertId = notificationExt.alertId
+    )
 
     val pair: String
         get() = StringBuilder()

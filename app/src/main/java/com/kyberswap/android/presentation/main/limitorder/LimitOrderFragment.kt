@@ -222,7 +222,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
             }
         })
 
-
         viewModel.getLocalLimitOrderCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -1122,6 +1121,21 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 }
             }
         })
+    }
+
+    fun showFillOrder(notificationLimitOrder: NotificationLimitOrder) {
+
+        clearFragmentBackStack()
+        dialogHelper.showOrderFillDialog(notificationLimitOrder) { url ->
+            openUrl(getString(R.string.transaction_etherscan_endpoint_url) + url)
+        }
+    }
+
+    private fun clearFragmentBackStack() {
+        val fm = currentFragment.childFragmentManager
+        for (i in 0 until fm.backStackEntryCount) {
+            fm.popBackStack()
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
