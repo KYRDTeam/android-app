@@ -2,6 +2,7 @@ package com.kyberswap.android.data.repository
 
 import android.content.Context
 import com.kyberswap.android.R
+import com.kyberswap.android.data.api.chart.Data
 import com.kyberswap.android.data.api.home.ChartApi
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.db.RateDao
@@ -14,10 +15,12 @@ import com.kyberswap.android.domain.repository.TokenRepository
 import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
 import com.kyberswap.android.domain.usecase.token.GetChartDataForTokenUseCase
+import com.kyberswap.android.domain.usecase.token.GetToken24hVolUseCase
 import com.kyberswap.android.domain.usecase.token.SaveTokenUseCase
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntSafe
+import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.updatePrecision
 import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
@@ -122,6 +125,21 @@ class TokenDataRepository @Inject constructor(
             to
         )
             .map { chartMapper.transform(it) }
+    }
+
+    override fun get24hVol(param: GetToken24hVolUseCase.Param): Single<String> {
+        return chartApi.get24hVol().map {
+            it.data
+        }
+            .toFlowable()
+            .flatMapIterable { tokenCurrency -> tokenCurrency }
+            .filter {
+                it.baseSymbol == param.token.tokenSymbol
+            }
+            .first(Data())
+            .map {
+                it.eth24hVolume?.toDisplayNumber() ?: ""
+            }
     }
 
     override fun saveToken(param: SaveTokenUseCase.Param): Completable {

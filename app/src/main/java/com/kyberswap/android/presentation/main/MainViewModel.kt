@@ -2,13 +2,16 @@ package com.kyberswap.android.presentation.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.kyberswap.android.domain.model.Notification
 import com.kyberswap.android.domain.model.RatingInfo
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.balance.UpdateBalanceUseCase
-import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
+import com.kyberswap.android.domain.usecase.notification.GetUnReadNotificationUseCase
+import com.kyberswap.android.domain.usecase.notification.ReadNotificationsUseCase
 import com.kyberswap.android.domain.usecase.profile.GetRatingUseCase
+import com.kyberswap.android.domain.usecase.profile.GetUserInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.SaveRatingInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.UpdatePushTokenUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
@@ -28,6 +31,8 @@ import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
 import com.kyberswap.android.presentation.main.balance.GetRatingInfoState
 import com.kyberswap.android.presentation.main.balance.SaveRatingInfoState
+import com.kyberswap.android.presentation.main.notification.GetUnReadNotificationsState
+import com.kyberswap.android.presentation.main.notification.ReadNotificationsState
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.wallet.UpdateWalletState
 import com.kyberswap.android.util.ErrorHandler
@@ -43,7 +48,7 @@ class MainViewModel @Inject constructor(
     getWalletUseCase: GetSelectedWalletUseCase,
     private val createWalletUseCase: CreateWalletUseCase,
     private val updateSelectedWalletUseCase: UpdateSelectedWalletUseCase,
-    private val getLoginStatusUseCase: GetLoginStatusUseCase,
+    private val getLoginStatusUseCase: GetUserInfoUseCase,
     private val getBalancePollingUseCase: GetBalancePollingUseCase,
     private val getOtherBalancePollingUseCase: GetOtherBalancePollingUseCase,
     private val getBatchTokenBalanceUseCase: GetTokensBalanceUseCase,
@@ -53,7 +58,9 @@ class MainViewModel @Inject constructor(
     private val updateBalanceUseCase: UpdateBalanceUseCase,
     private val getRatingInfoUseCase: GetRatingUseCase,
     private val saveRatingInfoUseCase: SaveRatingInfoUseCase,
+    private val readNotificationsUseCase: ReadNotificationsUseCase,
     private val updatePushTokenUseCase: UpdatePushTokenUseCase,
+    private val notificationUseCase: GetUnReadNotificationUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getWalletUseCase, errorHandler) {
 
@@ -94,6 +101,14 @@ class MainViewModel @Inject constructor(
     private var _hasTransaction: Boolean = false
 
     private var ratingInfo: RatingInfo? = null
+
+    private val _readNotificationsCallback = MutableLiveData<Event<ReadNotificationsState>>()
+    val readNotificationsCallback: LiveData<Event<ReadNotificationsState>>
+        get() = _readNotificationsCallback
+
+    private val _getNotificationsCallback = MutableLiveData<Event<GetUnReadNotificationsState>>()
+    val getNotificationsCallback: LiveData<Event<GetUnReadNotificationsState>>
+        get() = _getNotificationsCallback
 
     fun getLoginStatus() {
         getLoginStatusUseCase.dispose()
@@ -233,17 +248,6 @@ class MainViewModel @Inject constructor(
                 token
             )
         }
-
-//        Timber.e("loadOtherBalances")
-//        getOtherTokenBalancesUseCase.dispose()
-//        getOtherTokenBalancesUseCase.execute(
-//            Action {
-//            },
-//            Consumer {
-//                it.printStackTrace()
-//                Timber.e(it.localizedMessage)
-//            }
-//            , GetOtherTokenBalancesUseCase.Param(others))
     }
 
     fun getTransactionPeriodically(wallet: Wallet) {
@@ -326,8 +330,6 @@ class MainViewModel @Inject constructor(
         getBatchTokenBalanceUseCase.dispose()
         getBatchTokenBalanceUseCase.execute(
             Action {
-                //                _switchWalletCompleteCallback.value =
-//                    Event(UpdateWalletState.Success(pair.first, isWalletChangedEvent))
                 updateBalance(pair.first)
             },
             Consumer {
@@ -400,6 +402,46 @@ class MainViewModel @Inject constructor(
                 userId,
                 token
             )
+        )
+    }
+
+    fun getNotifications() {
+        notificationUseCase.dispose()
+        _getNotificationsCallback.postValue(Event(GetUnReadNotificationsState.Loading))
+        notificationUseCase.execute(
+            Consumer {
+                _getNotificationsCallback.value =
+                    Event(GetUnReadNotificationsState.Success(it))
+            },
+            Consumer {
+                _getNotificationsCallback.value =
+                    Event(GetUnReadNotificationsState.ShowError(errorHandler.getError(it)))
+            },
+            null
+        )
+    }
+
+    fun readNotification(notification: Notification) {
+        readNotificationsUseCase.execute(
+            Consumer {
+                if (it.success) {
+                    _readNotificationsCallback.value =
+                        Event(
+                            ReadNotificationsState.Success(
+                                it.success,
+                                notification.copy(read = true)
+                            )
+                        )
+                } else {
+                    _readNotificationsCallback.value =
+                        Event(ReadNotificationsState.ShowError(it.message))
+                }
+            },
+            Consumer {
+                _readNotificationsCallback.value =
+                    Event(ReadNotificationsState.ShowError(errorHandler.getError(it)))
+            },
+            ReadNotificationsUseCase.Param(listOf(notification))
         )
     }
 }

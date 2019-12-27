@@ -26,7 +26,9 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentSwapBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Gas
+import com.kyberswap.android.domain.model.Notification
 import com.kyberswap.android.domain.model.NotificationAlert
+import com.kyberswap.android.domain.model.NotificationExt
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
@@ -82,6 +84,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
     private var alertNotification: NotificationAlert? = null
 
+    private var notification: Notification? = null
+
+    private var notificationExt: NotificationExt? = null
+
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -127,6 +133,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         alertNotification = arguments?.getParcelable(ALERT_PARAM)
+        notification = arguments?.getParcelable(NOTIFICATION_PARAM)
     }
 
     override fun onCreateView(
@@ -142,6 +149,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         super.onActivityCreated(savedInstanceState)
         viewModel.getSelectedWallet()
         alertNotification?.let { viewModel.getAlert(it) }
+        notification?.let { newSwap(it.data) }
 
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -291,28 +299,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     if (destLock.get()) {
                         if (dstAmount.isEmpty()) binding.edtSource.setText("")
                         binding.swap?.let { swap ->
-
-                            //                            if ((dstAmount.toBigDecimalOrDefaultZero() * swap.tokenDest.rateEthNowOrDefaultValue) >= 100.toBigDecimal()) {
-//                                viewModel.estimateAmount(
-//                                    swap.sourceAddress, swap.destAddress, dstAmount.toString()
-//                                )
-//                            } else {
-//                                Timber.e("rate: " + swap.rate)
-//                                if (swap.rate.toDoubleOrDefaultZero() != 0.0) {
-//                                    val estSource = dstAmount.toBigDecimalOrDefaultZero()
-//                                        .divide(
-//                                            swap.rate.toBigDecimalOrDefaultZero(),
-//                                            18,
-//                                            RoundingMode.UP
-//                                        )
-//                                    sourceAmount = estSource.toPlainString()
-//                                    edtSource.setAmount(displaySourceAmount)
-//                                    viewModel.getExpectedRate(
-//                                        swap,
-//                                        estSource.toPlainString()
-//                                    )
-//                                }
-//                            }
                             viewModel.estimateAmount(
                                 swap.sourceAddress, swap.destAddress, dstAmount.toString()
                             )
@@ -797,85 +783,81 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         })
 
         binding.tvContinue.setOnClickListener {
-            binding.swap?.let { swap ->
-                when {
-                    swap.isExpectedRateZero && swap.isMarketRateZero -> {
-                        showAlertWithoutIcon(message = getString(R.string.reserve_under_maintainance))
-                    }
-
-                    edtSource.text.isNullOrEmpty() -> {
-                        val errorAmount = getString(R.string.specify_amount)
-                        showAlertWithoutIcon(
-                            title = getString(R.string.invalid_input),
-                            message = errorAmount
+            val swap = binding.swap
+            when {
+                swap != null -> {
+                    when {
+                        swap.isExpectedRateZero && swap.isMarketRateZero -> {
+                            showAlertWithoutIcon(message = getString(R.string.reserve_under_maintainance))
+                        }
+                        edtSource.text.isNullOrEmpty() -> {
+                            val errorAmount = getString(R.string.specify_amount)
+                            showAlertWithoutIcon(
+                                title = getString(R.string.invalid_input),
+                                message = errorAmount
+                            )
+                        }
+                        edtSource.text.toString().toBigDecimalOrDefaultZero() > swap.tokenSource.currentBalance -> {
+                            val errorExceedBalance = getString(R.string.exceed_balance)
+                            showAlertWithoutIcon(
+                                title = getString(R.string.title_amount_too_big),
+                                message = errorExceedBalance
+                            )
+                        }
+                        swap.hasSamePair -> showAlertWithoutIcon(
+                            title = getString(R.string.title_unsupported),
+                            message = getString(R.string.can_not_swap_same_token)
                         )
-                    }
-
-                    edtSource.text.toString().toBigDecimalOrDefaultZero() > swap.tokenSource.currentBalance -> {
-                        val errorExceedBalance = getString(R.string.exceed_balance)
-                        showAlertWithoutIcon(
-                            title = getString(R.string.title_amount_too_big),
-                            message = errorExceedBalance
-                        )
-                    }
-                    swap.hasSamePair -> showAlertWithoutIcon(
-                        title = getString(R.string.title_unsupported),
-                        message = getString(R.string.can_not_swap_same_token)
-                    )
-                    swap.amountTooSmall(edtSource.text.toString()) -> {
-                        val amountError = getString(R.string.swap_amount_small)
-                        showAlertWithoutIcon(
-                            title = getString(R.string.invalid_amount),
-                            message = amountError
-                        )
-                    }
-
-                    swap.copy(
-                        gasPrice = getSelectedGasPrice(
-                            swap.gas,
-                            selectedGasFeeView?.id
-                        )
-                    ).insufficientEthBalance -> showAlertWithoutIcon(
-                        getString(R.string.insufficient_eth),
-                        getString(R.string.not_enough_eth_blance)
-                    )
-
-                    swap.tokenSource.isETH &&
-                        availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
-                        showAlertWithoutIcon(
+                        swap.amountTooSmall(edtSource.text.toString()) && !(swap.tokenSource.rateEthNowOrDefaultValue == BigDecimal.ZERO && !swap.isExpectedRateEmptyOrZero) -> {
+                            val amountError = getString(R.string.swap_amount_small)
+                            showAlertWithoutIcon(
+                                title = getString(R.string.invalid_amount),
+                                message = amountError
+                            )
+                        }
+                        swap.copy(
+                            gasPrice = getSelectedGasPrice(
+                                swap.gas,
+                                selectedGasFeeView?.id
+                            )
+                        ).insufficientEthBalance -> showAlertWithoutIcon(
                             getString(R.string.insufficient_eth),
                             getString(R.string.not_enough_eth_blance)
                         )
-                    }
-
-                    rbCustom.isChecked && edtCustom.text.isNullOrEmpty() -> {
-                        showAlertWithoutIcon(message = getString(R.string.custom_rate_empty))
-                    }
-
-                    swap.isExpectedRateZero -> {
-                        showAlertWithoutIcon(
-                            title = getString(R.string.title_amount_too_big),
-                            message = getString(R.string.can_not_handle_amount)
-                        )
-                    }
-
-                    else -> wallet?.let {
-
-                        val data = swap.copy(
-                            sourceAmount = (if (sourceAmount.toBigDecimalOrDefaultZero() > BigDecimal.ZERO) sourceAmount else edtSource.text.toString())
-                                ?: "",
-                            destAmount = edtDest.text.toString(),
-                            minAcceptedRatePercent =
-                            getMinAcceptedRatePercent(rgRate.checkedRadioButtonId),
-                            gasPrice = getSelectedGasPrice(swap.gas, selectedGasFeeView?.id)
-                        )
-
-                        if (!((data.tokenSource.isETH && data.tokenDest.isWETH) || (data.tokenSource.isWETH && data.tokenDest.isETH))) {
-                            viewModel.getCap(it, data)
-                        } else {
-                            viewModel.saveSwap(
-                                data, true
+                        swap.tokenSource.isETH &&
+                            availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
+                            showAlertWithoutIcon(
+                                getString(R.string.insufficient_eth),
+                                getString(R.string.not_enough_eth_blance)
                             )
+                        }
+                        rbCustom.isChecked && edtCustom.text.isNullOrEmpty() -> {
+                            showAlertWithoutIcon(message = getString(R.string.custom_rate_empty))
+                        }
+                        swap.isExpectedRateZero -> {
+                            showAlertWithoutIcon(
+                                title = getString(R.string.title_amount_too_big),
+                                message = getString(R.string.can_not_handle_amount)
+                            )
+                        }
+                        else -> wallet?.let {
+
+                            val data = swap.copy(
+                                sourceAmount = (if (sourceAmount.toBigDecimalOrDefaultZero() > BigDecimal.ZERO) sourceAmount else edtSource.text.toString())
+                                    ?: "",
+                                destAmount = edtDest.text.toString(),
+                                minAcceptedRatePercent =
+                                getMinAcceptedRatePercent(rgRate.checkedRadioButtonId),
+                                gasPrice = getSelectedGasPrice(swap.gas, selectedGasFeeView?.id)
+                            )
+
+                            if (!((data.tokenSource.isETH && data.tokenDest.isWETH) || (data.tokenSource.isWETH && data.tokenDest.isETH))) {
+                                viewModel.getCap(it, data)
+                            } else {
+                                viewModel.saveSwap(
+                                    data, true
+                                )
+                            }
                         }
                     }
                 }
@@ -884,6 +866,24 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         }
 
         setDefaultSelection()
+    }
+
+    fun newSwap(notificationExt: NotificationExt) {
+        if (this.notificationExt != notificationExt) {
+            this.notificationExt = notificationExt
+        }
+
+        if (notificationExt.alertId > 0) {
+            viewModel.getAlert(NotificationAlert(notificationExt))
+            wallet?.let { viewModel.getSwapData(it, NotificationAlert(notificationExt)) }
+        } else {
+            wallet?.let {
+                viewModel.getSwapData(
+                    it,
+                    notificationExt = notificationExt
+                )
+            }
+        }
     }
 
     private fun updateCurrentFocus(view: EditText?) {
@@ -953,6 +953,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     }
 
     fun getSwap() {
+        if (notificationExt != null) return
+
         wallet?.let {
             viewModel.getSwapData(it)
         }
@@ -993,13 +995,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     private fun showBroadcast(hash: String) {
         val context = activity
         if (context is MainActivity) {
-//            context.showBroadcastAlert(
-//                CustomAlertActivity.DIALOG_TYPE_BROADCASTED,
-//                Transaction(
-//                    type = Transaction.TransactionType.SWAP,
-//                    hash = hash
-//                )
-//            )
             context.showDialog(
                 AlertDialogFragment.DIALOG_TYPE_BROADCASTED,
                 Transaction(
@@ -1086,6 +1081,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
     override fun onDestroyView() {
         viewModel.compositeDisposable.clear()
+        notificationExt = null
         handler.removeCallbacksAndMessages(null)
         super.onDestroyView()
     }
@@ -1098,10 +1094,13 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
     companion object {
         private const val ALERT_PARAM = "alert_param"
-        fun newInstance(alert: NotificationAlert?) = SwapFragment().apply {
-            arguments = Bundle().apply {
-                putParcelable(ALERT_PARAM, alert)
+        private const val NOTIFICATION_PARAM = "notification_param"
+        fun newInstance(alert: NotificationAlert?, notification: Notification?) =
+            SwapFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable(ALERT_PARAM, alert)
+                    putParcelable(NOTIFICATION_PARAM, notification)
+                }
             }
-        }
     }
 }

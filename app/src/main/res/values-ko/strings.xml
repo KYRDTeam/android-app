@@ -656,5 +656,18 @@
     <string name="not_attach_address">You have not attached your address to this domain. Please set up your account properly at ENS</string>
     <string name="kyber_down">현재 Kyber 교환은 사용할 수 없습니다. 나중에 다시 오시기 바랍니다!</string>
     <string name="can_not_connect_wallet">Can not connect to your wallet, please make sure the QR code is valid and try again</string>
+    <string name="notifications">Notifications</string>
+    <string name="just_now">just now</string>
+    <string name="one_hour_ago">1 hour ago</string>
+    <string name="hours_ago">%s hours ago</string>
+    <string name="mins_ago">%s mins ago</string>
+    <string name="one_day_ago">1 day ago</string>
+    <string name="days_ago">%s days ago</string>
+    <string name="mark_all_read">Mark all read</string>
+    <string name="token_24h_vol">%s ETH</string>
+    <string name="action_open">Open</string>
+    <string name="title_notification">Notification</string>
+    <string name="eth_24h_vol">24h Vol:</string>
+    <string name="defaut_24h_eth">0 ETH</string>
 
 </resources>

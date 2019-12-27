@@ -40,6 +40,7 @@ import com.kyberswap.android.databinding.DialogInfoBinding
 import com.kyberswap.android.databinding.DialogInvalidatedBottomSheetBinding
 import com.kyberswap.android.databinding.DialogManageWalletBottomSheetBinding
 import com.kyberswap.android.databinding.DialogMaximumAlertBinding
+import com.kyberswap.android.databinding.DialogNotificationBinding
 import com.kyberswap.android.databinding.DialogOrderFilledBinding
 import com.kyberswap.android.databinding.DialogPassportBottomSheetBinding
 import com.kyberswap.android.databinding.DialogPasswordBackupWalletBinding
@@ -47,6 +48,7 @@ import com.kyberswap.android.databinding.DialogPdpaUpdateBinding
 import com.kyberswap.android.databinding.DialogRateUsBinding
 import com.kyberswap.android.databinding.DialogSkipBackupPhraseBinding
 import com.kyberswap.android.domain.model.Alert
+import com.kyberswap.android.domain.model.Notification
 import com.kyberswap.android.domain.model.NotificationLimitOrder
 import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.presentation.main.alert.EligibleTokenAdapter
@@ -890,6 +892,33 @@ class DialogHelper @Inject constructor(
                 listener.invoke()
             }
         }
+
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    }
+
+    fun showPromotionDialog(notification: Notification, function: (url: String) -> Unit) {
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogNotificationBinding>(
+                LayoutInflater.from(activity), R.layout.dialog_notification, null, false
+            )
+
+        binding.tvCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        binding.tvOk.setOnClickListener {
+            dialog.dismiss()
+            if (notification.hasLink) {
+                function.invoke(notification.link)
+            }
+        }
+
+        binding.notification = notification
 
         dialog.setView(binding.root)
         dialog.show()

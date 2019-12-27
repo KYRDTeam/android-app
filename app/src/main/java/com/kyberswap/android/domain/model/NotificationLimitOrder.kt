@@ -35,5 +35,23 @@ data class NotificationLimitOrder(
     @SerializedName("tx_hash")
     val txHash: String = "",
     @SerializedName("test_order_id")
-    val testOrderId: String = ""
-) : Parcelable
+    val testOrderId: String = "",
+    @SerializedName("notification_id")
+    val notificationId: Long = 0
+) : Parcelable {
+    constructor(notificationExt: NotificationExt) : this(
+        notificationExt.type,
+        notificationExt.orderId,
+        notificationExt.srcToken,
+        notificationExt.dstToken,
+        notificationExt.minRate,
+        notificationExt.srcAmount,
+        notificationExt.fee,
+        notificationExt.transferFee,
+        notificationExt.receive,
+        notificationExt.sender,
+        notificationExt.createdAt,
+        notificationExt.updatedAt,
+        notificationExt.txHash
+    )
+}

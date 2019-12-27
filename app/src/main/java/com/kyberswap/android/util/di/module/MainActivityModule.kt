@@ -36,6 +36,8 @@ import com.kyberswap.android.presentation.main.limitorder.LimitOrderViewModel
 import com.kyberswap.android.presentation.main.limitorder.ManageOrderFragment
 import com.kyberswap.android.presentation.main.limitorder.ManageOrderViewModel
 import com.kyberswap.android.presentation.main.limitorder.OrderConfirmFragment
+import com.kyberswap.android.presentation.main.notification.NotificationFragment
+import com.kyberswap.android.presentation.main.notification.NotificationViewModel
 import com.kyberswap.android.presentation.main.profile.ProfileDetailFragment
 import com.kyberswap.android.presentation.main.profile.ProfileDetailViewModel
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
@@ -260,6 +262,10 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeWalletConnectFragment(): WalletConnectFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeNotificationFragment(): NotificationFragment
 
     @Binds
     @IntoMap
@@ -514,5 +520,12 @@ interface MainActivityModule {
     @ViewModelKey(WalletConnectViewModel::class)
     fun bindWalletConnectViewModel(
         walletConnectViewModel: WalletConnectViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(NotificationViewModel::class)
+    fun bindNotificationViewModel(
+        notificationViewModel: NotificationViewModel
     ): ViewModel
 }
