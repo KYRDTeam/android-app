@@ -4,10 +4,12 @@ import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.AlertMethodsResponse
 import com.kyberswap.android.domain.model.KycResponseStatus
 import com.kyberswap.android.domain.model.LoginUser
+import com.kyberswap.android.domain.model.Notification
 import com.kyberswap.android.domain.model.RatingInfo
 import com.kyberswap.android.domain.model.ResponseStatus
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.usecase.alert.UpdateAlertMethodsUseCase
+import com.kyberswap.android.domain.usecase.notification.ReadNotificationsUseCase
 import com.kyberswap.android.domain.usecase.profile.Base64DecodeUseCase
 import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
 import com.kyberswap.android.domain.usecase.profile.LoginUseCase
@@ -78,4 +80,10 @@ interface UserRepository {
     fun getRating(): Single<RatingInfo>
 
     fun saveRating(param: SaveRatingInfoUseCase.Param): Completable
+
+    fun getNotifications(): Single<List<Notification>>
+
+    fun getUnReadNotifications(): Flowable<Int>
+
+    fun readNotifications(param: ReadNotificationsUseCase.Param): Single<ResponseStatus>
 }

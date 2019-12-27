@@ -11,6 +11,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.caverock.androidsvg.SVG
 import com.kyberswap.android.R
+import com.kyberswap.android.domain.model.Notification
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.presentation.main.profile.LoginType
 import com.kyberswap.android.util.ext.dpToPx
@@ -65,6 +66,33 @@ object ImageViewBindingAdapter {
     @JvmStatic
     fun loadResource(view: ImageView, resourceId: Int) {
         Glide.with(view).load("").error(resourceId).into(view)
+    }
+
+
+    @BindingAdapter("app:notificationType")
+    @JvmStatic
+    fun notificationType(view: ImageView, notificationType: String) {
+        val icon = when (notificationType) {
+            Notification.TYPE_ALERT -> {
+                R.drawable.ic_alert_triggered
+            }
+            Notification.TYPE_LIMIT_ORDER -> {
+                R.drawable.ic_limit_order_notification
+            }
+            Notification.TYPE_BIG_SWING -> {
+                R.drawable.ic_trending
+            }
+            Notification.TYPE_NEW_LISTING -> {
+                R.drawable.ic_token_listing
+            }
+            Notification.TYPE_PROMOTION -> {
+                R.drawable.ic_event
+            }
+            else -> {
+                R.drawable.ic_other
+            }
+        }
+        Glide.with(view).load(icon).error(R.drawable.ic_alert_triggered).into(view)
     }
 
     @BindingAdapter("app:identifier")

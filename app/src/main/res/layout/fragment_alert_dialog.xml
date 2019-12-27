@@ -181,51 +181,6 @@
                         app:layout_constraintStart_toEndOf="@+id/imgDone"
                         app:layout_constraintTop_toTopOf="@+id/imgDone" />
 
-                    <!--                    <TextView-->
-                    <!--                        android:id="@+id/tvMessage"-->
-                    <!--                        android:layout_width="wrap_content"-->
-                    <!--                        android:layout_height="wrap_content"-->
-                    <!--                        android:layout_marginTop="16dp"-->
-                    <!--                        android:gravity="center_horizontal"-->
-                    <!--                        android:lineSpacingExtra="8sp"-->
-                    <!--                        android:text="@{transaction.isSwap ? @string/successfully_swapped : @string/successfully_transferred}"-->
-                    <!--                        android:textColor="#141927"-->
-                    <!--                        android:textSize="14sp"-->
-                    <!--                        app:layout_constraintEnd_toEndOf="parent"-->
-                    <!--                        app:layout_constraintStart_toStartOf="parent"-->
-                    <!--                        app:layout_constraintTop_toBottomOf="@+id/imgDone" />-->
-
-
-                    <!--                    <ImageView-->
-                    <!--                        android:id="@+id/imgViewDoneTx"-->
-                    <!--                        android:layout_width="wrap_content"-->
-                    <!--                        android:layout_height="wrap_content"-->
-                    <!--                        android:layout_marginStart="4dp"-->
-                    <!--                        android:layout_marginTop="16dp"-->
-                    <!--                        android:layout_marginEnd="16dp"-->
-                    <!--                        android:background="?selectableItemBackground"-->
-                    <!--                        android:padding="4dp"-->
-                    <!--                        android:src="@drawable/ic_open_in_new"-->
-                    <!--                        app:layout_constraintEnd_toEndOf="parent"-->
-                    <!--                        app:layout_constraintHorizontal_bias="0.5"-->
-                    <!--                        app:layout_constraintStart_toEndOf="@+id/tvDetail"-->
-                    <!--                        app:layout_constraintTop_toBottomOf="@+id/imgDone" />-->
-
-                    <!--                    <TextView-->
-                    <!--                        android:id="@+id/tvSwapDone"-->
-                    <!--                        android:layout_width="wrap_content"-->
-                    <!--                        android:layout_height="wrap_content"-->
-                    <!--                        android:layout_marginStart="16dp"-->
-                    <!--                        android:layout_marginTop="16dp"-->
-                    <!--                        android:layout_marginEnd="16dp"-->
-                    <!--                        android:lineSpacingExtra="8sp"-->
-                    <!--                        android:text="Successfully swapped"-->
-                    <!--                        android:textColor="#141927"-->
-                    <!--                        android:textSize="14sp"-->
-                    <!--                        app:layout_constraintEnd_toEndOf="parent"-->
-                    <!--                        app:layout_constraintStart_toStartOf="parent"-->
-                    <!--                        app:layout_constraintTop_toBottomOf="@+id/imgDone" />-->
-
                     <TextView
                         android:id="@+id/tvDetail"
                         android:layout_width="0dp"
@@ -233,6 +188,7 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="16dp"
+                        android:gravity="center"
                         android:lineSpacingExtra="10sp"
                         android:textColor="#141927"
                         android:textSize="14sp"
@@ -241,43 +197,18 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/imgDone" />
 
-
-                    <!--                <TextView-->
-                    <!--                    android:id="@+id/tvTransfer"-->
-                    <!--                    android:layout_width="0dp"-->
-                    <!--                    android:layout_height="wrap_content"-->
-                    <!--                    android:layout_marginStart="16dp"-->
-                    <!--                    android:layout_marginTop="32dp"-->
-                    <!--                    android:layout_marginEnd="32dp"-->
-                    <!--                    android:background="@drawable/default_button"-->
-                    <!--                    android:gravity="center"-->
-                    <!--                    android:minHeight="45dp"-->
-                    <!--                    android:textColor="#ffffff"-->
-                    <!--                    android:textSize="14sp"-->
-                    <!--                    app:layout_constraintEnd_toEndOf="parent"-->
-                    <!--                    app:layout_constraintHorizontal_bias="0.5"-->
-                    <!--                    app:layout_constraintStart_toEndOf="@+id/tvSwap"-->
-                    <!--                    app:layout_constraintTop_toBottomOf="@+id/imgViewDoneTx"-->
-                    <!--                    android:text="Transfer" />-->
-
-                    <!--                <TextView-->
-                    <!--                    android:id="@+id/tvSwap"-->
-                    <!--                    android:layout_width="0dp"-->
-                    <!--                    android:layout_height="wrap_content"-->
-                    <!--                    android:layout_marginStart="32dp"-->
-                    <!--                    android:background="@drawable/default_button"-->
-                    <!--                    android:gravity="center"-->
-                    <!--                    android:minHeight="45dp"-->
-                    <!--                    android:textColor="#ffffff"-->
-                    <!--                    android:textSize="14sp"-->
-                    <!--                    app:layout_constraintBottom_toBottomOf="@+id/tvTransfer"-->
-                    <!--                    app:layout_constraintEnd_toStartOf="@+id/tvTransfer"-->
-                    <!--                    app:layout_constraintHorizontal_bias="0.5"-->
-                    <!--                    app:layout_constraintHorizontal_chainStyle="packed"-->
-                    <!--                    app:layout_constraintStart_toStartOf="parent"-->
-                    <!--                    app:layout_constraintTop_toTopOf="@+id/tvTransfer"-->
-                    <!--                    android:text="New Swap" />-->
-
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@{transaction.displaySwapRate}"
+                        android:textColor="#5a5e67"
+                        android:textSize="12sp"
+                        android:visibility="@{transaction.isSwap ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvDetail" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </FrameLayout>

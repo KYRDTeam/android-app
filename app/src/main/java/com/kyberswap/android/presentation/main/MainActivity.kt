@@ -24,9 +24,11 @@ import com.google.zxing.integration.android.IntentIntegrator
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityMainBinding
+import com.kyberswap.android.domain.model.Notification
 import com.kyberswap.android.domain.model.NotificationAlert
 import com.kyberswap.android.domain.model.NotificationLimitOrder
 import com.kyberswap.android.domain.model.Transaction
+import com.kyberswap.android.domain.model.UserStatusChangeEvent
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseActivity
@@ -44,7 +46,9 @@ import com.kyberswap.android.presentation.main.balance.WalletAdapter
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
 import com.kyberswap.android.presentation.main.limitorder.OrderConfirmFragment
+import com.kyberswap.android.presentation.main.notification.GetUnReadNotificationsState
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
+import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.profile.kyc.PassportFragment
 import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
 import com.kyberswap.android.presentation.main.profile.kyc.SubmitFragment
@@ -56,6 +60,7 @@ import com.kyberswap.android.util.CLICK_WALLET_CONNECT_EVENT
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.isNetworkAvailable
+import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.toLongSafe
 import com.onesignal.OneSignal
 import kotlinx.android.synthetic.main.activity_main.*
@@ -64,6 +69,8 @@ import kotlinx.android.synthetic.main.layout_drawer.view.*
 import org.consenlabs.tokencore.wallet.KeystoreStorage
 import org.consenlabs.tokencore.wallet.WalletManager
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 import javax.inject.Inject
 
@@ -85,6 +92,8 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
     private var limitOrder: NotificationLimitOrder? = null
 
+    private var notification: Notification? = null
+
     private var isPromoCode: Boolean = false
 
     @Inject
@@ -93,6 +102,11 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
     private var currentFragment: Fragment? = null
 
     private var hasPendingTransaction: Boolean? = false
+
+    private var hasPendingNotification: Boolean? = false
+
+    private val showPendingNotification: Boolean
+        get() = hasPendingNotification == true && isLoggedIn
 
     private var listener: ViewPager.OnPageChangeListener? = null
 
@@ -111,6 +125,11 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         Handler()
     }
 
+    private var _isLoggedIn = false
+
+    val isLoggedIn: Boolean
+        get() = _isLoggedIn
+
     private val binding by lazy {
         DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
     }
@@ -118,6 +137,24 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
     private val walletConnect by lazy {
         listOf(binding.drawerLayout.tvWalletConnect, binding.drawerLayout.imgWalletConnect)
     }
+
+    private val isBigSwing: Boolean
+        get() = notification?.isBigSwing == true
+
+    private val isNewListing: Boolean
+        get() = notification?.isNewListing == true
+
+    private val isAlert: Boolean
+        get() = alert != null
+
+    private val isLimitOrder: Boolean
+        get() = limitOrder != null
+
+    private val isPromotion: Boolean
+        get() = notification?.isPromotion == true
+
+    private val isOther: Boolean
+        get() = notification?.isOther == true
 
     val pendingTransactions = mutableListOf<Transaction>()
 
@@ -134,6 +171,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         alert = intent.getParcelableExtra(ALERT_PARAM)
         limitOrder = intent.getParcelableExtra(LIMIT_ORDER_PARAM)
         isPromoCode = intent.getBooleanExtra(IS_PROMO_CODE_PARAM, false)
+        notification = intent.getParcelableExtra(NOTIFICATION_PARAM)
 
         binding.viewModel = mainViewModel
         val tabColors =
@@ -158,7 +196,8 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         adapter = MainPagerAdapter(
             supportFragmentManager,
             alert,
-            limitOrder
+            limitOrder,
+            if (isBigSwing || isNewListing) notification else null
         )
 
         binding.vpNavigation.adapter = adapter
@@ -181,7 +220,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                         showNetworkUnAvailable()
                     }
                 }
-                showPendingTransaction()
+                showPendingIndicator()
                 when (currentFragment) {
                     is BalanceFragment -> {
                         (currentFragment as BalanceFragment).scrollToTop()
@@ -222,13 +261,14 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             binding.vpNavigation.addOnPageChangeListener(it)
         }
 
-        val initial = if (limitOrder != null) {
-            MainPagerAdapter.LIMIT_ORDER
-        } else if (alert != null || isPromoCode) {
-            MainPagerAdapter.SWAP
-        } else {
-            MainPagerAdapter.BALANCE
-        }
+        val initial =
+            if (isLimitOrder) {
+                MainPagerAdapter.LIMIT_ORDER
+            } else if (isAlert || isPromoCode || isBigSwing || isNewListing) {
+                MainPagerAdapter.SWAP
+            } else {
+                MainPagerAdapter.BALANCE
+            }
 
         binding.vpNavigation.post {
             listener?.onPageSelected(initial)
@@ -330,6 +370,25 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             }
         })
 
+        mainViewModel.getLoginStatus()
+        mainViewModel.getLoginStatusCallback.observe(this, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+
+                when (state) {
+                    is UserInfoState.Success -> {
+                        val userId = state.userInfo?.uid ?: 0
+                        if (_isLoggedIn != (userId > 0)) {
+                            _isLoggedIn = userId > 0
+                            mainViewModel.getNotifications()
+                        }
+                    }
+                    is UserInfoState.ShowError -> {
+                        _isLoggedIn = false
+                    }
+                }
+            }
+        })
+
         mainViewModel.getPendingTransactionStateCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -374,6 +433,14 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
         imgClose.setOnClickListener {
             showDrawer(false)
+        }
+
+        tvNotification.setOnClickListener {
+            showDrawer(false)
+            handler.postDelayed({
+                navigator.navigateToNotificationcreen(currentFragment)
+            }, 250)
+
         }
 
         tvTransaction.setOnClickListener {
@@ -440,6 +507,21 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             }
         })
 
+        mainViewModel.getNotificationsCallback.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetUnReadNotificationsState.Success -> {
+                        setPendingNotification(state.notifications)
+                    }
+                    is GetUnReadNotificationsState.ShowError -> {
+                        hasPendingNotification = false
+                        setPendingNotification(0)
+                    }
+                }
+            }
+        })
+
+
 
         mainViewModel.getRatingInfoCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -485,6 +567,32 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                 OneSignal.getPermissionSubscriptionState().subscriptionStatus.pushToken
             )
         }
+
+        if (isPromotion || isOther) {
+            notification?.let {
+                dialogHelper.showPromotionDialog(it) {
+                    openUrl(it)
+                }
+            }
+        }
+
+        notification?.let {
+            if (it.id > 0) {
+                mainViewModel.readNotification(it)
+            }
+        }
+
+        alert?.let {
+            if (it.notificationId > 0) {
+                mainViewModel.readNotification(Notification(it))
+            }
+        }
+
+        limitOrder?.let {
+            if (it.notificationId > 0) {
+                mainViewModel.readNotification(Notification(it))
+            }
+        }
     }
 
 
@@ -500,6 +608,23 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
             }.create()
         dialog.show()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: UserStatusChangeEvent) {
+        _isLoggedIn = false
+        mainViewModel.getNotifications()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
     }
 
 
@@ -536,13 +661,21 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         tvPendingTransaction.visibility =
             if (numOfPendingTransaction > 0) View.VISIBLE else View.INVISIBLE
         tvPendingTransaction.text = numOfPendingTransaction.toString()
-        showPendingTransaction()
+        showPendingIndicator()
     }
 
-    private fun showPendingTransaction() {
+    private fun setPendingNotification(numOfPendingNotification: Int) {
+        hasPendingNotification = numOfPendingNotification > 0
+        tvPendingNotification.visibility =
+            if (numOfPendingNotification > 0 && isLoggedIn) View.VISIBLE else View.INVISIBLE
+        tvPendingNotification.text = numOfPendingNotification.toString()
+        showPendingIndicator()
+    }
+
+    private fun showPendingIndicator() {
         if (currentFragment is PendingTransactionNotification) {
             (currentFragment as PendingTransactionNotification).showNotification(
-                hasPendingTransaction == true
+                hasPendingTransaction == true || showPendingNotification
             )
         }
     }
@@ -590,16 +723,21 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         if (currentFragment != null && currentFragment!!.childFragmentManager.backStackEntryCount > 0) {
 
             currentFragment?.childFragmentManager?.fragments?.forEach {
-                if (it is PassportFragment) {
-                    it.onBackPress()
-                    return
-                } else if (it is SubmitFragment) {
-                    it.onBackPress()
-                    return
-                } else if (it is OrderConfirmFragment) {
-                    it.onBackPress()
-                } else if (it is WalletConnectFragment) {
-                    it.onBackPress()
+                when (it) {
+                    is PassportFragment -> {
+                        it.onBackPress()
+                        return
+                    }
+                    is SubmitFragment -> {
+                        it.onBackPress()
+                        return
+                    }
+                    is OrderConfirmFragment -> {
+                        it.onBackPress()
+                    }
+                    is WalletConnectFragment -> {
+                        it.onBackPress()
+                    }
                 }
             }
 
@@ -678,16 +816,19 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         private const val ALERT_PARAM = "alert_param"
         private const val LIMIT_ORDER_PARAM = "limit_order_param"
         private const val IS_PROMO_CODE_PARAM = "promo_code_param"
+        private const val NOTIFICATION_PARAM = "notification_param"
         fun newIntent(
             context: Context,
             alert: NotificationAlert? = null,
             limitOrderNotification: NotificationLimitOrder? = null,
-            isPromoCode: Boolean = false
+            isPromoCode: Boolean = false,
+            notification: Notification? = null
         ) =
             Intent(context, MainActivity::class.java).apply {
                 putExtra(ALERT_PARAM, alert)
                 putExtra(LIMIT_ORDER_PARAM, limitOrderNotification)
                 putExtra(IS_PROMO_CODE_PARAM, isPromoCode)
+                putExtra(NOTIFICATION_PARAM, notification)
             }
     }
 }

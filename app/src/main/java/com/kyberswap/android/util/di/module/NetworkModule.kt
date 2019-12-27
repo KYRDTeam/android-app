@@ -13,6 +13,7 @@ import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.api.home.TransactionApi
 import com.kyberswap.android.data.api.home.UserApi
 import com.kyberswap.android.data.api.home.UtilitiesApi
+import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.util.ErrorHandler
 import com.kyberswap.android.util.TokenClient
@@ -188,8 +189,8 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideTokenClient(web3j: Web3j): TokenClient {
-        return TokenClient(web3j)
+    fun provideTokenClient(web3j: Web3j, tokenDao: TokenDao, context: Context): TokenClient {
+        return TokenClient(web3j, tokenDao, context)
     }
 
     private fun <T> createApiClient(clazz: Class<T>, baseUrl: String, client: OkHttpClient): T {

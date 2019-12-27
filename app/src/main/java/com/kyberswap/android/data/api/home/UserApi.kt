@@ -5,6 +5,7 @@ import com.kyberswap.android.data.api.alert.AlertMethodsResponseEntity
 import com.kyberswap.android.data.api.alert.AlertResponseEntity
 import com.kyberswap.android.data.api.alert.LeaderBoardEntity
 import com.kyberswap.android.data.api.cap.CapEntity
+import com.kyberswap.android.data.api.notification.NotificationsResponseEntity
 import com.kyberswap.android.data.api.user.KycResponseStatusEntity
 import com.kyberswap.android.data.api.user.LoginUserEntity
 import com.kyberswap.android.data.api.user.ResponseStatusEntity
@@ -22,6 +23,7 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 import java.math.BigDecimal
 
 interface UserApi {
@@ -157,7 +159,10 @@ interface UserApi {
     ): Single<ResponseStatusEntity>
 
     @GET("api/user_stats")
-    fun getUserStats(): Single<CapEntity>
+    fun getUserStats(
+        @Query("address")
+        address: String
+    ): Single<CapEntity>
 
     @GET("api/get_alert_methods")
     fun getAlertMethod(): Single<AlertMethodsResponseEntity>
@@ -172,4 +177,13 @@ interface UserApi {
         @Field("tx_hash") tx: String
     ): Single<ResponseStatusEntity>
 
+    @GET("api/notifications")
+    fun getNotifications(
+        @Query("page_index") pageIndex: Int = 1,
+        @Query("page_size") pageSize: Int = 10
+    ): Single<NotificationsResponseEntity>
+
+    @Headers("Content-Type: application/json")
+    @PUT("api/notifications/mark_as_read")
+    fun markAsRead(@Body rawJsonString: RequestBody): Single<ResponseStatusEntity>
 }

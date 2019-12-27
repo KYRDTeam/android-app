@@ -69,6 +69,8 @@ class ChartFragment : BaseFragment() {
             activity?.onBackPressed()
         }
 
+        viewModel.getVol24h(token)
+
         binding.token = token
 
         val chartPagerAdapter =
@@ -170,6 +172,20 @@ class ChartFragment : BaseFragment() {
             }
         })
 
+        viewModel.get24hCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetVol24hState.Success -> {
+                        binding.tv24hVol.text =
+                            String.format(getString(R.string.token_24h_vol), state.message)
+                    }
+                    is GetVol24hState.ShowError -> {
+
+                    }
+                }
+            }
+        })
+
         viewModel.callback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == SaveSwapDataState.Loading)
@@ -185,7 +201,6 @@ class ChartFragment : BaseFragment() {
                 }
             }
         })
-
     }
 
     private fun moveToSwapTab() {

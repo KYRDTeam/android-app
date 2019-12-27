@@ -1,5 +1,8 @@
 package com.kyberswap.android.util
 
+import android.content.Context
+import com.kyberswap.android.R
+import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.domain.model.LocalLimitOrder
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
@@ -12,6 +15,7 @@ import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfe
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntSafe
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
+import com.kyberswap.android.util.ext.toDisplayNumber
 import com.trustwallet.walletconnect.models.ethereum.WCEthereumSignMessage
 import com.trustwallet.walletconnect.models.ethereum.WCEthereumTransaction
 import org.web3j.abi.FunctionEncoder
@@ -20,6 +24,7 @@ import org.web3j.abi.TypeReference
 import org.web3j.abi.datatypes.Address
 import org.web3j.abi.datatypes.DynamicArray
 import org.web3j.abi.datatypes.DynamicBytes
+import org.web3j.abi.datatypes.Event
 import org.web3j.abi.datatypes.Function
 import org.web3j.abi.datatypes.generated.Uint256
 import org.web3j.crypto.Credentials
@@ -43,7 +48,24 @@ import javax.inject.Inject
 import kotlin.math.pow
 
 
-class TokenClient @Inject constructor(private val web3j: Web3j) {
+class TokenClient @Inject constructor(
+    private val web3j: Web3j,
+    private val tokenDao: TokenDao,
+    private val context: Context
+) {
+
+    private val event = Event(
+        "ExecuteTrade",
+        listOf<TypeReference<*>>(
+            object : TypeReference<Uint256>() {
+            },
+            object : TypeReference<Uint256>() {
+            },
+            object : TypeReference<Uint256>() {
+            },
+            object : TypeReference<Uint256>() {
+            }
+        ))
 
     private fun balanceOf(owner: String): Function {
         return Function(
@@ -52,6 +74,16 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
             listOf<TypeReference<*>>(object : TypeReference<Uint256>() {
             })
         )
+    }
+
+    private fun executeTrade(): Function {
+        return Function(
+            "executeTrade",
+            listOf(),
+            listOf<TypeReference<*>>(
+                object : TypeReference<DynamicArray<Uint256>>() {
+                }
+            ))
     }
 
     private fun getExpectedRate(
@@ -582,7 +614,7 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
         )
     }
 
-    fun getContractAllowanceAmount(
+    private fun getContractAllowanceAmount(
         walletAddress: String,
         tokenAddress: String,
         contractAddress: String, // Token address
@@ -677,7 +709,41 @@ class TokenClient @Inject constructor(private val web3j: Web3j) {
                         web3j.ethGetTransactionReceipt(tx.hash).send().transactionReceipt
                     if (transactionReceipt.isPresent) {
                         val txReceipt = transactionReceipt.get()
-                        transactionsList.add(s.with(txReceipt))
+
+                        val filter = txReceipt.logs.firstOrNull {
+                            it.address.equals(context.getString(R.string.kyber_address), true) &&
+                                it.topics.isNotEmpty() && it.topics.first().equals(
+                                context.getString(R.string.kyber_event_topic),
+                                true
+                            )
+                        }
+
+                        val txDetail = if (filter != null) {
+
+                            val values = FunctionReturnDecoder.decode(
+                                filter.data,
+                                event.nonIndexedParameters
+                            )
+                            val destAmount = if (values.size > 3) {
+                                val tokenBySymbol = tokenDao.getTokenBySymbol(s.tokenDest)
+                                if (tokenBySymbol != null) {
+                                    (values[3] as Uint256).value.toBigDecimal().divide(
+                                        BigDecimal.TEN
+                                            .pow(tokenBySymbol.tokenDecimal),
+                                        18,
+                                        RoundingMode.UP
+                                    ).toDisplayNumber()
+                                } else {
+                                    s.destAmount
+                                }
+                            } else {
+                                s.destAmount
+                            }
+                            s.copy(destAmount = destAmount)
+                        } else {
+                            s
+                        }
+                        transactionsList.add(txDetail.with(txReceipt))
                     } else {
                         transactionsList.add(s.with(tx))
                     }

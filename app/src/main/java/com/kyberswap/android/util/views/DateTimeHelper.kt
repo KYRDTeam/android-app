@@ -29,6 +29,28 @@ object DateTimeHelper {
         }
     }
 
+    fun displayAlertDate(
+        date: String?,
+        displayFormat: SimpleDateFormat = SimpleDateFormat(
+            "dd MMM yyyy",
+            Locale.US
+        ),
+        fullFormat: SimpleDateFormat = SimpleDateFormat(
+            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+            Locale.US
+        ).apply {
+            this.timeZone = TimeZone.getTimeZone("UTC")
+        }
+    ): String {
+        if (date.isNullOrEmpty()) return ""
+        return try {
+            displayFormat.format(fullFormat.parse(date))
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            date
+        }
+    }
+
     fun toLong(date: String): Long {
         val fullFormat: SimpleDateFormat = SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",

@@ -12,6 +12,7 @@ import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.safeToString
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.toDoubleSafe
 import com.kyberswap.android.util.ext.toLongSafe
 import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
@@ -310,7 +311,7 @@ data class Transaction(
         }
 
     val isSwap: Boolean
-        get() = type == TransactionType.SWAP
+        get() = transactionType == TransactionType.SWAP
 
     val isTxSend: Boolean
         get() = this.isTransfer && this.from.isNotEmpty()
@@ -357,18 +358,23 @@ data class Transaction(
                 StringBuilder()
                     .append(if (isSend) "To: ${to.displayWalletAddress()}" else "From: ${from.displayWalletAddress()}")
                     .toString()
-            } else
-                StringBuilder().append("1")
-                    .append(" ")
-                    .append(tokenSource)
-                    .append(" = ")
-                    .append(rate)
-                    .append(" ")
-                    .append(tokenDest)
-                    .toString()
+            } else {
+                displaySwapRate
+            }
+
+    val displaySwapRate: String
+        get() = if (isSwap) StringBuilder().append("1")
+            .append(" ")
+            .append(tokenSource)
+            .append(" = ")
+            .append(rate)
+            .append(" ")
+            .append(tokenDest)
+            .toString()
+        else ""
 
     val rate: String
-        get() = if (sourceAmount.toDouble() == 0.0) "0" else
+        get() = if (sourceAmount.toDoubleSafe() == 0.0) "0" else
             (destAmount.toBigDecimalOrDefaultZero()
                 .divide(sourceAmount.toBigDecimalOrDefaultZero(), 18, RoundingMode.CEILING))
                 .toDisplayNumber()

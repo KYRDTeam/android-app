@@ -93,14 +93,6 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
                 showProgress(state == TransferTokenTransactionState.Loading)
                 when (state) {
                     is TransferTokenTransactionState.Success -> {
-//                        showBroadcastAlert(
-//                            CustomAlertActivity.DIALOG_TYPE_BROADCASTED,
-//                            Transaction(
-//                                type = Transaction.TransactionType.SEND,
-//                                hash = state.responseStatus.hash
-//                            )
-//                        )
-//                        onBackPressed()
                         val returnIntent = Intent()
                         setResult(Activity.RESULT_OK, returnIntent)
                         returnIntent.putExtra(HASH_PARAM, state.responseStatus.hash)

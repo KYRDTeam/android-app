@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.usecase.send.SaveSendTokenUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapDataTokenUseCase
+import com.kyberswap.android.domain.usecase.token.GetToken24hVolUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
@@ -23,6 +24,7 @@ import javax.inject.Inject
 class ChartViewModel @Inject constructor(
     private val saveSwapDataTokenUseCase: SaveSwapDataTokenUseCase,
     private val saveSendTokenUseCase: SaveSendTokenUseCase,
+    private val getToken24hVolUseCase: GetToken24hVolUseCase,
     private val errorHandler: ErrorHandler
 ) : ViewModel() {
 
@@ -33,6 +35,10 @@ class ChartViewModel @Inject constructor(
     private val _callbackSaveSend = MutableLiveData<Event<SaveSendState>>()
     val callbackSaveSend: LiveData<Event<SaveSendState>>
         get() = _callbackSaveSend
+
+    private val _get24hCallback = MutableLiveData<Event<GetVol24hState>>()
+    val get24hCallback: LiveData<Event<GetVol24hState>>
+        get() = _get24hCallback
 
     fun save(walletAddress: String, token: Token, isSell: Boolean = false) {
         saveSwapDataTokenUseCase.execute(
@@ -58,6 +64,20 @@ class ChartViewModel @Inject constructor(
                 _callbackSaveSend.value = Event(SaveSendState.Success())
             },
             SaveSendTokenUseCase.Param(address, token)
+        )
+    }
+
+    fun getVol24h(token: Token?) {
+
+        if (token == null) return
+        getToken24hVolUseCase.execute(
+            Consumer {
+                _get24hCallback.value = Event(GetVol24hState.Success(it))
+            },
+            Consumer {
+                _get24hCallback.value = Event(GetVol24hState.ShowError(errorHandler.getError(it)))
+            },
+            GetToken24hVolUseCase.Param(token)
         )
     }
 }
