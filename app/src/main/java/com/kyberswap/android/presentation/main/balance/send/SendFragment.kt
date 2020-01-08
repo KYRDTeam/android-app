@@ -58,6 +58,7 @@ import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isContact
 import com.kyberswap.android.util.ext.isENSAddress
 import com.kyberswap.android.util.ext.isNetworkAvailable
+import com.kyberswap.android.util.ext.isSomethingWrongError
 import com.kyberswap.android.util.ext.onlyAddress
 import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.setAmount
@@ -210,10 +211,9 @@ class SendFragment : BaseFragment() {
                         binding.send = send
                     }
                     is GetGasPriceState.ShowError -> {
-                        if (isNetworkAvailable()) {
-                            showError(
-                                state.message ?: getString(R.string.something_wrong)
-                            )
+                        val err = state.message ?: getString(R.string.something_wrong)
+                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
+                            showError(err)
                         }
                     }
                 }
@@ -837,7 +837,8 @@ class SendFragment : BaseFragment() {
                 {
                     edtSource.setText("")
                     edtSource.clearFocus()
-                }, 500
+                    saveSend()
+                }, 250
             )
         } else {
             super.onActivityResult(requestCode, resultCode, data)

@@ -81,29 +81,6 @@ class NotificationFragment : BaseFragment() {
                 )
             )
         }
-
-        viewModel.getLoginStatus()
-        viewModel.getLoginStatusCallback.observe(this, Observer { event ->
-            event?.getContentIfNotHandled()?.let { state ->
-
-                when (state) {
-                    is UserInfoState.Success -> {
-                        val userId = state.userInfo?.uid ?: 0
-                        if (isLoggedIn != (userId > 0)) {
-                            isLoggedIn = userId > 0
-                            binding.isLoggedIn = isLoggedIn
-                            refresh()
-                        }
-                    }
-                    is UserInfoState.ShowError -> {
-                        isLoggedIn = false
-                    }
-                }
-            }
-        })
-
-        refresh()
-
         val notificationAdapter = NotificationAdapter(appExecutors) {
             if (!it.read) {
                 if (isLoggedIn) {
@@ -142,6 +119,30 @@ class NotificationFragment : BaseFragment() {
             }
 
         }
+
+        viewModel.getLoginStatus()
+        viewModel.getLoginStatusCallback.observe(this, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+
+                when (state) {
+                    is UserInfoState.Success -> {
+                        val userId = state.userInfo?.uid ?: 0
+                        if (isLoggedIn != (userId > 0)) {
+                            isLoggedIn = userId > 0
+                            binding.isLoggedIn = isLoggedIn && notificationAdapter.itemCount > 0
+                            refresh()
+                        }
+                    }
+                    is UserInfoState.ShowError -> {
+                        isLoggedIn = false
+                    }
+                }
+            }
+        })
+
+        refresh()
+
+
         binding.rvNotifications.layoutManager = LinearLayoutManager(
             activity,
             RecyclerView.VERTICAL,
@@ -167,7 +168,8 @@ class NotificationFragment : BaseFragment() {
                         if (!isLoggedIn) {
                             notificationAdapter.readAll()
                         }
-                        binding.isLoggedIn = isLoggedIn
+                        binding.isLoggedIn = isLoggedIn && state.notifications.isNotEmpty()
+                        binding.isNoData = state.notifications.isEmpty()
                     }
                     is GetNotificationsState.ShowError -> {
                         showError(

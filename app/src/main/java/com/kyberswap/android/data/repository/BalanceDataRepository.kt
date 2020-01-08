@@ -290,12 +290,17 @@ class BalanceDataRepository @Inject constructor(
             response.entries.associate { it.key to tokenMapper.transform(it.value) }
         }
 
+        val singleListedToken = currencyApi.internalCurrencies().map {
+            it.data.map { data -> data.address to false }.toMap()
+        }
+
         return Singles.zip(
             singleEthSource,
             singleUsdSource,
-            singleChange24hSource
-        ) { eth, usd, change24h ->
-            updateRate(eth, usd, change24h)
+            singleChange24hSource,
+            singleListedToken
+        ) { eth, usd, change24h, listedToken ->
+            updateTokenInfo(eth, usd, change24h, listedToken)
         }
             .map { it.values.toList() }
     }
@@ -322,7 +327,7 @@ class BalanceDataRepository @Inject constructor(
                 changeUsd24h = remoteToken.changeUsd24h,
                 tokenName = remoteToken.tokenName,
                 tokenSymbol = remoteToken.tokenSymbol,
-                isOther = false
+                isOther = remoteToken.isOther
             ) ?: remoteToken
             updatedRateToken
 //            tokenClient.updateBalance(updatedRateToken)
@@ -379,16 +384,18 @@ class BalanceDataRepository @Inject constructor(
     }
 
 
-    private fun updateRate(
+    private fun updateTokenInfo(
         eth: Map<String, BigDecimal>,
         usd: Map<String, BigDecimal>,
-        change24h: Map<String, Token>
+        change24h: Map<String, Token>,
+        listedToken: Map<String, Boolean>
     ): Map<String, Token> {
 
         return change24h.map { token ->
             token.key to token.value.copy(
                 rateEthNow = eth[token.value.tokenSymbol] ?: token.value.rateEthNow,
-                rateUsdNow = usd[token.value.tokenSymbol] ?: token.value.rateUsdNow
+                rateUsdNow = usd[token.value.tokenSymbol] ?: token.value.rateUsdNow,
+                isOther = listedToken[token.value.tokenAddress] ?: true
             )
 
         }.toMap()

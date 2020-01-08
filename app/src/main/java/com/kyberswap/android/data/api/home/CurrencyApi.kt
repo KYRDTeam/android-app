@@ -5,6 +5,6 @@ import io.reactivex.Single
 import retrofit2.http.GET
 
 interface CurrencyApi {
-    @GET("internal/currencies")
+    @GET("api/currencies")
     fun internalCurrencies(): Single<CurrencyEntity>
 }

@@ -10,6 +10,10 @@
             name="token"
             type="com.kyberswap.android.domain.model.Token" />
 
+        <variable
+            name="rate"
+            type="java.math.BigDecimal" />
+
         <import type="android.view.View" />
     </data>
 
@@ -102,7 +106,7 @@
                 <TextView
                     android:id="@+id/tvTokenName"
                     android:layout_width="wrap_content"
-                    android:layout_height="15dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="57dp"
                     android:layout_marginTop="4dp"
                     android:text="@{token.tokenName}"
@@ -177,11 +181,12 @@
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/textView27"
                     app:layout_constraintTop_toTopOf="@+id/textView27"
-                    app:rate="@{token.changeEth24h}"
+                    app:rate="@{rate}"
                     tools:text="25%" />
 
                 <TextView
-                    android:id="@+id/textView61"
+                    android:id="@+id/tv24hTitle"
+                    android:visibility="invisible"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -197,19 +202,21 @@
                     app:layout_constraintTop_toBottomOf="@+id/textView28" />
 
                 <TextView
+                    android:layout_marginStart="8dp"
                     android:id="@+id/tv24hVol"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:visibility="invisible"
                     android:layout_marginEnd="16dp"
                     android:text="@string/defaut_24h_eth"
                     android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView61"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv24hTitle"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/textView61"
-                    app:layout_constraintTop_toTopOf="@+id/textView61"
+                    app:layout_constraintStart_toEndOf="@+id/tv24hTitle"
+                    app:layout_constraintTop_toTopOf="@+id/tv24hTitle"
                     tools:text="12345.6" />
 
                 <com.google.android.material.tabs.TabLayout
@@ -219,7 +226,7 @@
                     android:layout_marginTop="32dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView61"
+                    app:layout_constraintTop_toBottomOf="@+id/tv24hTitle"
                     app:tabGravity="fill"
                     app:tabIndicatorColor="#31cb9e"
                     app:tabIndicatorHeight="2dp"
