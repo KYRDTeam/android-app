@@ -48,6 +48,7 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.getAmountOrDefaultValue
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isNetworkAvailable
+import com.kyberswap.android.util.ext.isSomethingWrongError
 import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.setAmount
 import com.kyberswap.android.util.ext.showDrawer
@@ -459,10 +460,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         }
                     }
                     is GetExpectedRateState.ShowError -> {
-                        if (isNetworkAvailable()) {
-                            showError(
-                                state.message ?: getString(R.string.something_wrong)
-                            )
+                        val err = state.message ?: getString(R.string.something_wrong)
+                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
+                            showError(err)
                         }
                     }
                 }
@@ -486,10 +486,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         }
                     }
                     is GetMarketRateState.ShowError -> {
-                        if (isNetworkAvailable()) {
-                            showError(
-                                state.message ?: getString(R.string.something_wrong)
-                            )
+                        val err = state.message ?: getString(R.string.something_wrong)
+                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
+                            showError(err)
                         }
                     }
                 }
@@ -513,10 +512,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         }
                     }
                     is GetGasLimitState.ShowError -> {
-                        if (isNetworkAvailable()) {
-                            showError(
-                                state.message ?: getString(R.string.something_wrong)
-                            )
+                        val err = state.message ?: getString(R.string.something_wrong)
+                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
+                            showError(err)
                         }
                     }
                 }

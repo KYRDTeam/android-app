@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.Uri
 import androidx.fragment.app.Fragment
+import com.kyberswap.android.R
 import com.kyberswap.android.presentation.main.MainActivity
 
 
@@ -31,6 +32,10 @@ fun Fragment.isNetworkAvailable(): Boolean {
         context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
     val activeNetworkInfo = connectivityManager?.activeNetworkInfo
     return activeNetworkInfo != null && activeNetworkInfo.isConnected
+}
+
+fun Fragment.isSomethingWrongError(err: String): Boolean {
+    return getString(R.string.something_wrong) == err
 }
 
 fun Fragment.shareUrl(text: String?) {

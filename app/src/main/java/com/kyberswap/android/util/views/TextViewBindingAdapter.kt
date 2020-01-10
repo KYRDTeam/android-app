@@ -356,7 +356,8 @@ object TextViewBindingAdapter {
 
     @BindingAdapter("app:rate")
     @JvmStatic
-    fun setPercentage(view: TextView, rate: BigDecimal) {
+    fun setPercentage(view: TextView, rate: BigDecimal?) {
+        if (rate == null) return
 
         val color = when {
             rate >= BigDecimal.ZERO -> R.color.rate_up_text_color
@@ -364,7 +365,13 @@ object TextViewBindingAdapter {
         }
 
         view.setTextColor(ContextCompat.getColor(view.context, color))
-        view.text = StringBuilder().append(rate.abs().toDisplayNumber()).append(" %").toString()
+
+        if (rate.abs() == BigDecimal.ZERO) {
+            view.text = ""
+        } else {
+            view.text =
+                StringBuilder().append(String.format("%.2f", rate.abs())).append(" %").toString()
+        }
     }
 
     @BindingAdapter("app:orderStatus")
