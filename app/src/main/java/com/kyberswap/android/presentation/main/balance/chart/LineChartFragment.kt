@@ -44,6 +44,8 @@ class LineChartFragment : BaseFragment() {
 
     private var chartType: ChartType? = null
 
+    var changedRate: BigDecimal = BigDecimal.ZERO
+
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -103,8 +105,6 @@ class LineChartFragment : BaseFragment() {
                 }
             }
         })
-
-
     }
 
     private fun configChart(chart: Chart) {
@@ -129,7 +129,14 @@ class LineChartFragment : BaseFragment() {
         markerView.chartView = lineChart
         lineChart.marker = markerView
         lineChart.invalidate()
+    }
 
+
+    private fun updateChangeRate() {
+        val parent = parentFragment
+        if (parent is ChartFragment) {
+            chartType?.let { parent.updateChangeRate(changedRate, it) }
+        }
     }
 
     private fun setData(chart: Chart, lineChart: LineChart) {
@@ -144,6 +151,14 @@ class LineChartFragment : BaseFragment() {
         }
 
         lineChart.setNoDataText("")
+        val last = chart.c.last()
+        val first = chart.c.first()
+
+        if (first > BigDecimal.ZERO) {
+            changedRate = (last - first) / first * BigDecimal(100)
+        }
+        updateChangeRate()
+
         chart.c.forEachIndexed { index, bigDecimal ->
             chartEntries.add(Entry(index.toFloat(), bigDecimal.toFloat()))
         }
@@ -194,14 +209,10 @@ class LineChartFragment : BaseFragment() {
             ll2.textColor = lineLimitTextColor
             lineChart.axisLeft.setDrawLimitLinesBehindData(true)
 
-
             // add limit lines
             lineChart.axisLeft.addLimitLine(ll1)
             lineChart.axisLeft.addLimitLine(ll2)
-
         }
-
-
     }
 
     companion object {
@@ -215,6 +226,4 @@ class LineChartFragment : BaseFragment() {
                 }
             }
     }
-
-
 }

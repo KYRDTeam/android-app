@@ -8,7 +8,12 @@ import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.LeaderBoard
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.repository.AlertRepository
-import com.kyberswap.android.domain.usecase.alert.*
+import com.kyberswap.android.domain.usecase.alert.CreateOrUpdateAlertUseCase
+import com.kyberswap.android.domain.usecase.alert.DeleteAlertsUseCase
+import com.kyberswap.android.domain.usecase.alert.GetAlertUseCase
+import com.kyberswap.android.domain.usecase.alert.GetCurrentAlertUseCase
+import com.kyberswap.android.domain.usecase.alert.SaveAlertTokenUseCase
+import com.kyberswap.android.domain.usecase.alert.UpdateCurrentAlertUseCase
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -80,16 +85,18 @@ class AlertDataRepository @Inject constructor(
 
             val currentAlert = alertDao.findAlertById(id)
             val alert = if (currentAlert == null) {
-                val defaultToken = tokenDao.getTokenBySymbol(Token.KNC)
+                val defaultToken =
+                    tokenDao.getAllTokenBySymbol(Token.KNC)
+                        .firstOrNull { !it.isOther }
                 Alert(
                     id = Alert.LOCAL_ID,
                     walletAddress = param.walletAddress,
                     token = defaultToken ?: Token(),
                     state = Alert.STATE_LOCAL
                 )
-
             } else {
-                val token = tokenDao.getTokenBySymbol(currentAlert.tokenSymbol) ?: Token()
+                val token = tokenDao.getAllTokenBySymbol(currentAlert.tokenSymbol)
+                    .firstOrNull { !it.isOther } ?: Token()
                 currentAlert.copy(token = token)
             }
 
@@ -125,7 +132,6 @@ class AlertDataRepository @Inject constructor(
             currentAlert?.let {
                 alertDao.updateAlert(currentAlert)
             }
-
 
         }
     }

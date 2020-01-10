@@ -651,7 +651,7 @@
     <string name="one_day_ago">1 day ago</string>
     <string name="days_ago">%s days ago</string>
     <string name="mark_all_read">Mark all read</string>
-    <string name="token_24h_vol">%s ETH</string>
+    <string name="token_24h_vol"> %s ETH</string>
     <string name="action_open">Open</string>
     <string name="title_notification">Notification</string>
     <string name="eth_24h_vol">24h Vol:</string>

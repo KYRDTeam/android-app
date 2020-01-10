@@ -2,7 +2,6 @@ package com.kyberswap.android.presentation.main.limitorder
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.kyberswap.android.domain.model.Cancelled
 import com.kyberswap.android.domain.model.LocalLimitOrder
 import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.domain.model.PendingBalances
@@ -573,34 +572,6 @@ class LimitOrderViewModel @Inject constructor(
         return if (availableAmount > MIN_SUPPORT_AMOUNT) {
             availableAmount.rounding().toDisplayNumber().exactAmount()
         } else BigDecimal.ZERO.toDisplayNumber()
-    }
-
-    fun cancelHigherRateOrder(rate: BigDecimal) {
-        val warningOrderList = warningOrderList(
-            rate,
-            relatedOrders
-        )
-
-        var numOfSuccess = 0
-
-        warningOrderList.forEach {
-            cancelOrderUseCase.execute(
-                Consumer {
-                    numOfSuccess++
-                    if (numOfSuccess == warningOrderList.size) {
-                        _cancelRelatedOrderCallback.value =
-                            Event(CancelOrdersState.Success(Cancelled(true)))
-                    }
-                },
-                Consumer {
-                    it.printStackTrace()
-                    _cancelRelatedOrderCallback.value =
-                        Event(CancelOrdersState.ShowError(errorHandler.getError(it)))
-                    cancelOrderUseCase.dispose()
-                },
-                CancelOrderUseCase.Param(it)
-            )
-        }
     }
 
     public override fun onCleared() {

@@ -48,6 +48,7 @@ import com.kyberswap.android.util.ext.exactAmount
 import com.kyberswap.android.util.ext.getAmountOrDefaultValue
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isNetworkAvailable
+import com.kyberswap.android.util.ext.isSomethingWrongError
 import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.percentage
 import com.kyberswap.android.util.ext.setAmount
@@ -422,6 +423,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         }
                     }, {
 
+                    }, {
+
+                    }, {
+                        dialogHelper.showInvalidatedDialog(it)
                     })
         }
         orderAdapter?.mode = Attributes.Mode.Single
@@ -440,10 +445,9 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         }
                     }
                     is GetRelatedOrdersState.ShowError -> {
-                        if (isNetworkAvailable()) {
-                            showError(
-                                state.message ?: getString(R.string.something_wrong)
-                            )
+                        val err = state.message ?: getString(R.string.something_wrong)
+                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
+                            showError(err)
                         }
                     }
                 }
@@ -567,10 +571,9 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         }
                     }
                     is GetMarketRateState.ShowError -> {
-                        if (isNetworkAvailable()) {
-                            showError(
-                                state.message ?: getString(R.string.something_wrong)
-                            )
+                        val err = state.message ?: getString(R.string.something_wrong)
+                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
+                            showError(err)
                         }
                     }
                 }
@@ -750,10 +753,9 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         }
                     }
                     is GetExpectedRateState.ShowError -> {
-                        if (isNetworkAvailable()) {
-                            showError(
-                                state.message ?: getString(R.string.something_wrong)
-                            )
+                        val err = state.message ?: getString(R.string.something_wrong)
+                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
+                            showError(err)
                         }
                     }
                 }
@@ -875,10 +877,9 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         }
                     }
                     is GetFeeState.ShowError -> {
-                        if (isNetworkAvailable()) {
-                            showError(
-                                state.message ?: getString(R.string.something_wrong)
-                            )
+                        val err = state.message ?: getString(R.string.something_wrong)
+                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
+                            showError(err)
                         }
                     }
                 }
@@ -1074,10 +1075,9 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         updateAvailableAmount(state.pendingBalances)
                     }
                     is GetPendingBalancesState.ShowError -> {
-                        if (isNetworkAvailable()) {
-                            showError(
-                                state.message ?: getString(R.string.something_wrong)
-                            )
+                        val err = state.message ?: getString(R.string.something_wrong)
+                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
+                            showError(err)
                         }
                     }
                 }

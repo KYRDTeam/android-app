@@ -171,7 +171,8 @@ data class Order(
             this.sourceDisplay == other.sourceDisplay &&
             this.destDisplay == other.destDisplay &&
             this.destDisplayFee == other.destDisplayFee &&
-            this.extraDisplay == other.extraDisplay
+            this.extraDisplay == other.extraDisplay &&
+            this.msg == other.msg
     }
 
     enum class Status {

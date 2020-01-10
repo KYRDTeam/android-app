@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.viewpager.widget.ViewPager
+import com.google.android.material.tabs.TabLayout
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentChartBinding
@@ -19,7 +21,9 @@ import com.kyberswap.android.presentation.main.MainPagerAdapter
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.toDoubleSafe
 import kotlinx.android.synthetic.main.activity_main.*
+import java.math.BigDecimal
 import javax.inject.Inject
 
 
@@ -36,6 +40,11 @@ class ChartFragment : BaseFragment() {
     private var token: Token? = null
 
     private var wallet: Wallet? = null
+
+    private val rateChange: BigDecimal
+        get() = token?.changeEth24h ?: BigDecimal.ZERO
+
+    private var currentSelection = 0
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -62,6 +71,7 @@ class ChartFragment : BaseFragment() {
         binding = FragmentChartBinding.inflate(inflater, container, false)
         return binding.root
     }
+
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -117,6 +127,36 @@ class ChartFragment : BaseFragment() {
         binding.vpChart.adapter = chartPagerAdapter
         binding.tabLayout.setupWithViewPager(binding.vpChart)
 
+        val listener = object : ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+            }
+
+            override fun onPageSelected(position: Int) {
+                currentSelection = position
+                val chart = chartPagerAdapter.getRegisteredFragment(position)
+                if (chart is LineChartFragment) {
+                    binding.rate = if (position == 0) {
+                        rateChange
+                    } else {
+                        chart.changedRate
+                    }
+                }
+            }
+        }
+
+        binding.vpChart.addOnPageChangeListener(listener)
+
+        binding.vpChart.post {
+            listener.onPageSelected(0)
+        }
+
         binding.tvBuy.setOnClickListener {
             wallet?.let { wallet ->
                 token?.let {
@@ -156,6 +196,21 @@ class ChartFragment : BaseFragment() {
             }
         }
 
+        binding.tabLayout.addOnTabSelectedListener(object :
+            TabLayout.OnTabSelectedListener {
+            override fun onTabReselected(p0: TabLayout.Tab?) {
+            }
+
+            override fun onTabUnselected(p0: TabLayout.Tab?) {
+            }
+
+            override fun onTabSelected(p0: TabLayout.Tab?) {
+                p0?.let {
+                    currentSelection = p0.position
+                }
+            }
+        })
+
         viewModel.callbackSaveSend.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == SaveSendState.Loading)
@@ -176,8 +231,15 @@ class ChartFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetVol24hState.Success -> {
-                        binding.tv24hVol.text =
-                            String.format(getString(R.string.token_24h_vol), state.message)
+                        if (state.message.toDoubleSafe() > 0) {
+                            binding.tv24hVol.visibility = View.VISIBLE
+                            binding.tv24hTitle.visibility = View.VISIBLE
+                            binding.tv24hVol.text =
+                                String.format(getString(R.string.token_24h_vol), state.message)
+                        } else {
+                            binding.tv24hVol.visibility = View.INVISIBLE
+                            binding.tv24hTitle.visibility = View.INVISIBLE
+                        }
                     }
                     is GetVol24hState.ShowError -> {
 
@@ -202,6 +264,40 @@ class ChartFragment : BaseFragment() {
             }
         })
     }
+
+
+    fun getIndexByChartType(chartType: ChartType): Int {
+        return when (chartType) {
+            ChartType.DAY -> {
+                0
+            }
+            ChartType.WEEK -> {
+                1
+            }
+            ChartType.MONTH -> {
+                2
+            }
+
+            ChartType.YEAR -> {
+                3
+            }
+
+            ChartType.ALL -> {
+                4
+            }
+        }
+    }
+
+    fun updateChangeRate(rate: BigDecimal, chartType: ChartType) {
+        if (getIndexByChartType(chartType) == currentSelection) {
+            binding.rate = if (binding.vpChart.currentItem == 0) {
+                rateChange
+            } else {
+                rate
+            }
+        }
+    }
+
 
     private fun moveToSwapTab() {
         if (activity is MainActivity) {
