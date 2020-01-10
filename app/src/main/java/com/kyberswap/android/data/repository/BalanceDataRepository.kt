@@ -291,7 +291,7 @@ class BalanceDataRepository @Inject constructor(
         }
 
         val singleListedToken = currencyApi.internalCurrencies().map {
-            it.data.map { data -> data.address to false }.toMap()
+            it.data.map { data -> data.address to Token(data) }.toMap()
         }
 
         return Singles.zip(
@@ -327,7 +327,11 @@ class BalanceDataRepository @Inject constructor(
                 changeUsd24h = remoteToken.changeUsd24h,
                 tokenName = remoteToken.tokenName,
                 tokenSymbol = remoteToken.tokenSymbol,
-                isOther = remoteToken.isOther
+                isOther = remoteToken.isOther,
+                gasLimit = remoteToken.gasLimit,
+                gasApprove = remoteToken.gasApprove,
+                spLimitOrder = remoteToken.spLimitOrder,
+                isQuote = remoteToken.isQuote
             ) ?: remoteToken
             updatedRateToken
 //            tokenClient.updateBalance(updatedRateToken)
@@ -388,14 +392,19 @@ class BalanceDataRepository @Inject constructor(
         eth: Map<String, BigDecimal>,
         usd: Map<String, BigDecimal>,
         change24h: Map<String, Token>,
-        listedToken: Map<String, Boolean>
+        listedToken: Map<String, Token>
     ): Map<String, Token> {
 
         return change24h.map { token ->
             token.key to token.value.copy(
                 rateEthNow = eth[token.value.tokenSymbol] ?: token.value.rateEthNow,
                 rateUsdNow = usd[token.value.tokenSymbol] ?: token.value.rateUsdNow,
-                isOther = listedToken[token.value.tokenAddress] ?: true
+                isOther = listedToken[token.value.tokenAddress] == null,
+                gasLimit = listedToken[token.value.tokenAddress]?.gasLimit ?: "",
+                gasApprove = listedToken[token.value.tokenAddress]?.gasApprove ?: BigDecimal.ZERO,
+                spLimitOrder = listedToken[token.value.tokenAddress]?.spLimitOrder ?: false,
+                isQuote = listedToken[token.value.tokenAddress]?.isQuote ?: false
+
             )
 
         }.toMap()
