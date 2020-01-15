@@ -413,7 +413,7 @@
     <string name="delete_contact_success">연락처 완전히 삭제하기</string>
     <string name="too_many_attempt">너무 많은 시도가 감지 되었습니다 %s초 후에 다시 시도해주세요.</string>
     <string name="number_of_attempt">%d 회 시도 하였습니다.</string>
-    <string name="setting_support_message">귀하의 요청을 support@kyber.network로 보내주시기 바랍니다.</string>
+    <string name="setting_support_message">귀하의 요청을 support@kyberswap.com로 보내주시기 바랍니다.</string>
     <string name="setting_share_info">최고의 암호화폐 지갑앱을 추천합니다. https://play.google.com/store/apps/details?id=com.kyberswap.android</string>
     <string name="item_token_header_bal">Bal</string>
     <string name="token_new">새로운</string>
@@ -547,7 +547,7 @@
     <string name="kyc_not_support">죄송합니다. 현재 %s의 신청서는 받을 수 없습니다.</string>
     <string name="landing_limit_order_description">목표가격에 토큰을 교환하고 자금을 완전히 통제할 수 있으며, 낮은 수수료와 세련된 UX를 제공합니다.</string>
     <string name="about_pdpa_update">About PDPA update</string>
-    <string name="pdpa_content"><![CDATA[We are aware of the revised Advisory Guidelines on the PDPA for NRIC and other National Identification Numbers that Personal Data Protection Commission (PDPA) issued on 31 August 2018.\n\nWe seek your understanding that we are continuing  with the collection and use of NRIC Numbers / Foreign Identification Numbers / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers to ensure that KyberSwap does not deal with assets or funds that are proceeds of drug dealing, criminal conduct or property relating to money laundering or terrorism financing offence.\n\nWe assure you that we will undertake proper safeguarding measures to protect your personal data (including NRIC Numbers / FIN / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers) under our care.\n\nContact us at support@kyber.network should you have any queries or concerns.]]></string>
+    <string name="pdpa_content"><![CDATA[We are aware of the revised Advisory Guidelines on the PDPA for NRIC and other National Identification Numbers that Personal Data Protection Commission (PDPA) issued on 31 August 2018.\n\nWe seek your understanding that we are continuing  with the collection and use of NRIC Numbers / Foreign Identification Numbers / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers to ensure that KyberSwap does not deal with assets or funds that are proceeds of drug dealing, criminal conduct or property relating to money laundering or terrorism financing offence.\n\nWe assure you that we will undertake proper safeguarding measures to protect your personal data (including NRIC Numbers / FIN / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers) under our care.\n\nContact us at support@kyberswap.com should you have any queries or concerns.]]></string>
     <string name="notification_dropped">Dropped</string>
     <string name="notification_dropped_message">Your transaction %s might be lost, please check Etherscan for more information</string>
     <string name="swap_now">지금 환전하기</string>
@@ -669,5 +669,13 @@
     <string name="title_notification">Notification</string>
     <string name="eth_24h_vol">24h Vol:</string>
     <string name="defaut_24h_eth">0 ETH</string>
+    <string name="transformation_data_content"><![CDATA[<div class="l-normal"><p>On Jan 24, 2020, KyberSwap.com and- related interfaces (the “Platform”) will no longer be operated by <strong class="text-black">Kyber Network International Limited </strong> (“Kyber Network”) and will be operated by <strong class="text-black">KYRD International Limited </strong> (“KYRD International”), a sister company incorporated and based in the <strong class="text-black">British Virgin Islands </strong>(“BVI”). There are no other changes apart from the new operating entity of KyberSwap.com being changed to KYRD International.</p><p><strong class="text-black">KYRD International </strong>is a company in BVI and as such, the country is not subject to an adequacy decision by the EU Commission on the processing of personal data. If you wish to continue using KyberSwap.com without providing personal data again, Kyber Network will transfer your current personal data to KYRD International upon your explicit consent. Please rest assured that KYRD International respects your privacy and is committed to protecting your personal data. For questions, please email <a href=mailto:support@kyberswap.com>support@kyberswap.com</a> or reach out to us at <a href="https://t.me/kyberswapofficial" target="_blank" class="text-orange">https://t.me/kyberswapofficial </a></p><p>Kindly select:</p><ul><li>\t<strong class="text-black">“Yes” </strong>if you wish to allow KyberSwap.com to copy your personal data to KYRD International; or</li><li>\t<strong class="text-black">“No”  </strong>if you do not wish to copy your personal data to KYRD International. Note that if you click “No”, your personal data shall be erased in accordance with the retention periods specified in Kyber Network’s Privacy Policy. You will have to create a new profile on KyberSwap.com in order to, but not limited to, access Limit Orders, price alerts, personalized notifications and other benefits. </li></ul></div>]]></string>
+    <string name="undecided_transfer_data">undecided</string>
+    <string name="transfer_no">No</string>
+    <string name="transfer_yes">Yes</string>
+    <string name="transfer_consent">KyberSwap is moving to BVI</string>
+    <string name="transfer_data_success">Thank you, your profile will be securely copied. No further action needed from you.</string>
+    <string name="transfer_data_action_no_confirm_message">Ahh, Your profile will not be copied. You would have to create a new profile to use some services like Limit order, alerts, notifications etc.   Do you want to continues?</string>
+    <string name="go_back">Go Back</string>
 
 </resources>

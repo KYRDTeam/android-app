@@ -2,6 +2,7 @@ package com.kyberswap.android.domain.repository
 
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.AlertMethodsResponse
+import com.kyberswap.android.domain.model.DataTransferStatus
 import com.kyberswap.android.domain.model.KycResponseStatus
 import com.kyberswap.android.domain.model.LoginUser
 import com.kyberswap.android.domain.model.Notification
@@ -11,6 +12,7 @@ import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.usecase.alert.UpdateAlertMethodsUseCase
 import com.kyberswap.android.domain.usecase.notification.ReadNotificationsUseCase
 import com.kyberswap.android.domain.usecase.profile.Base64DecodeUseCase
+import com.kyberswap.android.domain.usecase.profile.DataTransferUseCase
 import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
 import com.kyberswap.android.domain.usecase.profile.LoginUseCase
 import com.kyberswap.android.domain.usecase.profile.ReSubmitUserInfoUseCase
@@ -43,7 +45,7 @@ interface UserRepository {
 
     fun getUserInfo(): Flowable<UserInfo>
 
-    fun refreshKycStatus(): Single<UserInfo>
+    fun refreshUserInfo(): Single<UserInfo>
 
     fun fetchUserInfo(): Flowable<UserInfo>
 
@@ -86,4 +88,6 @@ interface UserRepository {
     fun getUnReadNotifications(): Flowable<Int>
 
     fun readNotifications(param: ReadNotificationsUseCase.Param): Single<ResponseStatus>
+
+    fun dataTransfer(param: DataTransferUseCase.Param): Single<DataTransferStatus>
 }

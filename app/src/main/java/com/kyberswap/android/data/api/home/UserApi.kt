@@ -6,6 +6,7 @@ import com.kyberswap.android.data.api.alert.AlertResponseEntity
 import com.kyberswap.android.data.api.alert.LeaderBoardEntity
 import com.kyberswap.android.data.api.cap.CapEntity
 import com.kyberswap.android.data.api.notification.NotificationsResponseEntity
+import com.kyberswap.android.data.api.user.DataTransferStatusEntity
 import com.kyberswap.android.data.api.user.KycResponseStatusEntity
 import com.kyberswap.android.data.api.user.LoginUserEntity
 import com.kyberswap.android.data.api.user.ResponseStatusEntity
@@ -186,4 +187,8 @@ interface UserApi {
     @Headers("Content-Type: application/json")
     @PUT("api/notifications/mark_as_read")
     fun markAsRead(@Body rawJsonString: RequestBody): Single<ResponseStatusEntity>
+
+    @POST("api/users/transfer_aggreement")
+    @FormUrlEncoded
+    fun transferAgreement(@Field("transfer_permission") action: String): Single<DataTransferStatusEntity>
 }

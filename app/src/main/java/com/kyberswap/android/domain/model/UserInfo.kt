@@ -26,7 +26,15 @@ data class UserInfo(
     var kycInfo: KycInfo = KycInfo(),
     var blockReason: String? = "",
     @Ignore
-    var isLoaded: Boolean = false
+    var isLoaded: Boolean = false,
+    @Ignore
+    val success: Boolean = true,
+    @Ignore
+    val message: String = "",
+    @Ignore
+    val transferPermission: String = "",
+    @Ignore
+    val forceLogout: Boolean = false
 ) : Parcelable {
     constructor(entity: UserInfoEntity) : this(
         entity.activeWallets,
@@ -38,7 +46,11 @@ data class UserInfo(
         entity.name ?: "",
         entity.uid,
         KycInfo(entity.kycInfo),
-        entity.blockReason ?: ""
+        entity.blockReason ?: "",
+        success = entity.success,
+        message = entity.message,
+        forceLogout = entity.forceLogout,
+        transferPermission = entity.transferPermission
     )
 
 

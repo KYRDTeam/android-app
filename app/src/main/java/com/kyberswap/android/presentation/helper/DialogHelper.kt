@@ -7,7 +7,10 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.text.Html
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
@@ -28,9 +31,11 @@ import com.kyberswap.android.databinding.DialogBackupPhraseBottomSheetBinding
 import com.kyberswap.android.databinding.DialogBottomDisconnectWalletConnectBinding
 import com.kyberswap.android.databinding.DialogBottomSheetBinding
 import com.kyberswap.android.databinding.DialogCancelOrderConfirmationBinding
+import com.kyberswap.android.databinding.DialogConfirmDataTransferBinding
 import com.kyberswap.android.databinding.DialogConfirmDeleteAlertBinding
 import com.kyberswap.android.databinding.DialogConfirmationBinding
 import com.kyberswap.android.databinding.DialogConfirmationWithNegativeOptionBinding
+import com.kyberswap.android.databinding.DialogDataTranformationBinding
 import com.kyberswap.android.databinding.DialogEligibleTokenBinding
 import com.kyberswap.android.databinding.DialogExtraBottomSheetBinding
 import com.kyberswap.android.databinding.DialogForgotPasswordBinding
@@ -60,6 +65,7 @@ import com.kyberswap.android.util.OPEN_PLAY_STORE_ACTION
 import com.kyberswap.android.util.OPEN_PLAY_STORE_EVENT
 import com.kyberswap.android.util.RATING_DIALOG_ACTION
 import com.kyberswap.android.util.RATING_DIALOG_EVENT
+import com.kyberswap.android.util.UlTagHandler
 import com.kyberswap.android.util.ext.colorize
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.underline
@@ -919,6 +925,92 @@ class DialogHelper @Inject constructor(
         }
 
         binding.notification = notification
+
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    }
+
+    fun showConfirmDataTransfer(
+        positiveListener: () -> Unit,
+        negativeListener: () -> Unit,
+        onCancelListener: () -> Unit
+    ) {
+
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogConfirmDataTransferBinding>(
+                LayoutInflater.from(activity), R.layout.dialog_confirm_data_transfer, null, false
+            )
+
+        binding.tvOk.setOnClickListener {
+            positiveListener.invoke()
+            dialog.dismiss()
+        }
+
+        binding.tvCancel.setOnClickListener {
+            negativeListener.invoke()
+            dialog.dismiss()
+        }
+
+        dialog.setOnCancelListener {
+            onCancelListener.invoke()
+        }
+
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    }
+
+    fun showDataTransformationDialog(
+        onYesClick: () -> Unit,
+        onNoClick: (AlertDialog) -> Unit,
+        onCancelClick: () -> Unit
+    ) {
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogDataTranformationBinding>(
+                LayoutInflater.from(activity), R.layout.dialog_data_tranformation, null, false
+            )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            binding.tvContent.text = Html.fromHtml(
+                activity.getString(R.string.transformation_data_content),
+                Html.FROM_HTML_MODE_COMPACT
+            )
+        } else {
+            binding.tvContent.text =
+                Html.fromHtml(
+                    activity.getString(R.string.transformation_data_content),
+                    null,
+                    UlTagHandler()
+                )
+        }
+
+        binding.tvContent.movementMethod = LinkMovementMethod.getInstance()
+
+        binding.tvYes.setOnClickListener {
+            dialog.dismiss()
+            onYesClick.invoke()
+        }
+
+        binding.tvNo.setOnClickListener {
+            dialog.dismiss()
+            onNoClick.invoke(dialog)
+        }
+
+        dialog.setOnCancelListener {
+            onCancelClick.invoke()
+        }
+
+        binding.imgClose.setOnClickListener {
+            dialog.dismiss()
+            onCancelClick.invoke()
+        }
 
         dialog.setView(binding.root)
         dialog.show()

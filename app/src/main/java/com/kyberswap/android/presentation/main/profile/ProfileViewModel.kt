@@ -5,13 +5,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.SocialInfo
+import com.kyberswap.android.domain.model.UserInfo
+import com.kyberswap.android.domain.usecase.profile.DataTransferUseCase
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
 import com.kyberswap.android.domain.usecase.profile.LoginUseCase
+import com.kyberswap.android.domain.usecase.profile.LogoutUseCase
 import com.kyberswap.android.domain.usecase.profile.ResetPasswordUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import kotlinx.android.parcel.Parcelize
 import javax.inject.Inject
@@ -21,6 +25,8 @@ class ProfileViewModel @Inject constructor(
     private val loginSocialUseCase: LoginSocialUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val getLoginStatusUseCase: GetLoginStatusUseCase,
+    private val logoutUseCase: LogoutUseCase,
+    private val dataTransferUseCase: DataTransferUseCase,
     private val errorHandler: ErrorHandler
 ) : ViewModel() {
     private val _loginCallback = MutableLiveData<Event<LoginState>>()
@@ -34,6 +40,14 @@ class ProfileViewModel @Inject constructor(
     private val _resetPasswordCallback = MutableLiveData<Event<ResetPasswordState>>()
     val resetPasswordCallback: LiveData<Event<ResetPasswordState>>
         get() = _resetPasswordCallback
+
+    private val _dataTransferCallback = MutableLiveData<Event<DataTransferState>>()
+    val dataTransferCallback: LiveData<Event<DataTransferState>>
+        get() = _dataTransferCallback
+
+    private val _logoutCallback = MutableLiveData<Event<LogoutState>>()
+    val logoutCallback: LiveData<Event<LogoutState>>
+        get() = _logoutCallback
 
     val compositeDisposable = CompositeDisposable()
 
@@ -106,9 +120,49 @@ class ProfileViewModel @Inject constructor(
         loginSocialUseCase.dispose()
         resetPasswordUseCase.dispose()
         getLoginStatusUseCase.dispose()
+        logoutUseCase.dispose()
         super.onCleared()
     }
 
+    fun logout() {
+        _logoutCallback.postValue(Event(LogoutState.Loading))
+        logoutUseCase.execute(
+            Action {
+                _logoutCallback.value = Event(LogoutState.Success(""))
+            },
+            Consumer {
+                it.printStackTrace()
+                _logoutCallback.value =
+                    Event(LogoutState.ShowError(errorHandler.getError(it)))
+            },
+            null
+        )
+    }
+
+    fun transfer(action: String, userInfo: UserInfo) {
+        dataTransferUseCase.execute(
+            Consumer {
+                _dataTransferCallback.value = Event(
+                    DataTransferState.Success(
+                        it, userInfo.copy(
+                            transferPermission = action
+                        )
+                    )
+                )
+            },
+            Consumer {
+                _dataTransferCallback.value =
+                    Event(
+                        DataTransferState.ShowError(
+                            errorHandler.getError(it),
+                            userInfo.copy(transferPermission = action)
+                        )
+                    )
+                it.printStackTrace()
+            },
+            DataTransferUseCase.Param(action)
+        )
+    }
 }
 
 @Parcelize

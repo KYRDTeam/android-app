@@ -28,6 +28,7 @@ import com.kyberswap.android.domain.model.Notification
 import com.kyberswap.android.domain.model.NotificationAlert
 import com.kyberswap.android.domain.model.NotificationLimitOrder
 import com.kyberswap.android.domain.model.Transaction
+import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.model.UserStatusChangeEvent
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.WalletChangeEvent
@@ -47,6 +48,7 @@ import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
 import com.kyberswap.android.presentation.main.limitorder.OrderConfirmFragment
 import com.kyberswap.android.presentation.main.notification.GetUnReadNotificationsState
+import com.kyberswap.android.presentation.main.profile.DataTransferState
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.profile.kyc.PassportFragment
@@ -57,6 +59,11 @@ import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.main.walletconnect.WalletConnectFragment
 import com.kyberswap.android.presentation.wallet.UpdateWalletState
 import com.kyberswap.android.util.CLICK_WALLET_CONNECT_EVENT
+import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_DISMISS
+import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_NO
+import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_NO_CONTINUE
+import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_YES
+import com.kyberswap.android.util.USER_TRANSFER_DATA_FORCE_LOGOUT
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.isNetworkAvailable
@@ -253,6 +260,15 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             }
                         }
                     }
+
+                    is ProfileFragment -> {
+                        currentFragment?.childFragmentManager?.fragments?.forEach {
+                            when (it) {
+                                is LoginState -> it.getLoginStatus()
+                            }
+                        }
+                    }
+
                 }
             }
         }
@@ -592,6 +608,123 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             if (it.notificationId > 0) {
                 mainViewModel.readNotification(Notification(it))
             }
+        }
+
+        mainViewModel.getDataTransferInfo()
+        mainViewModel.getDataTransferCallback.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is UserInfoState.Success -> {
+                        val userInfo = state.userInfo
+                        if (userInfo != null) {
+                            val userId = state.userInfo.uid
+                            if (userId > 0 && state.userInfo.transferPermission.equals(
+                                    getString(R.string.undecided_transfer_data),
+                                    true
+                                )
+                            ) {
+
+                                dialogHelper.showDataTransformationDialog(
+                                    {
+                                        mainViewModel.transfer(
+                                            getString(R.string.transfer_action_yes),
+                                            userInfo
+                                        )
+
+                                        firebaseAnalytics.logEvent(
+                                            USER_CLICK_DATA_TRANSFER_YES,
+                                            Bundle().createEvent(MainActivity::class.java.simpleName)
+                                        )
+
+                                    }, {
+
+                                        firebaseAnalytics.logEvent(
+                                            USER_CLICK_DATA_TRANSFER_NO,
+                                            Bundle().createEvent(MainActivity::class.java.simpleName)
+                                        )
+                                        dialogHelper.showConfirmDataTransfer({
+                                            firebaseAnalytics.logEvent(
+                                                USER_CLICK_DATA_TRANSFER_NO_CONTINUE,
+                                                Bundle().createEvent(MainActivity::class.java.simpleName)
+                                            )
+                                            mainViewModel.transfer(
+                                                getString(R.string.transfer_action_no),
+                                                userInfo
+                                            )
+                                        }, {
+                                            it.show()
+                                        }, {
+                                            it.show()
+                                        })
+
+                                    }, {
+
+                                        firebaseAnalytics.logEvent(
+                                            USER_CLICK_DATA_TRANSFER_DISMISS,
+                                            Bundle().createEvent(MainActivity::class.java.simpleName)
+                                        )
+                                        if (state.userInfo.forceLogout) {
+                                            firebaseAnalytics.logEvent(
+                                                USER_TRANSFER_DATA_FORCE_LOGOUT,
+                                                Bundle().createEvent(MainActivity::class.java.simpleName)
+                                            )
+                                            mainViewModel.logout()
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    is UserInfoState.ShowError -> {
+
+                    }
+                }
+            }
+        })
+
+        mainViewModel.dataTransferCallback.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+
+                    is DataTransferState.Success -> {
+                        if (state.userInfo != null) {
+                            onTransferDataCompleted(state.userInfo)
+                        }
+                    }
+                    is DataTransferState.ShowError -> {
+                        if (state.userInfo != null) {
+                            onTransferDataCompleted(state.userInfo)
+                        }
+                        if (isNetworkAvailable()) {
+                            showError(
+                                state.message ?: getString(R.string.something_wrong)
+                            )
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    private fun onTransferDataCompleted(userInfo: UserInfo) {
+        if (userInfo.transferPermission.equals(
+                getString(R.string.transfer_action_no),
+                true
+            )
+            && userInfo.forceLogout
+        ) {
+            firebaseAnalytics.logEvent(
+                USER_TRANSFER_DATA_FORCE_LOGOUT,
+                Bundle().createEvent(MainActivity::class.java.simpleName)
+            )
+            mainViewModel.logout()
+        }
+
+        if (userInfo.transferPermission.equals(getString(R.string.transfer_action_yes), true)) {
+            showAlert(
+                getString(R.string.transfer_data_success),
+                R.drawable.ic_check
+            )
         }
     }
 
