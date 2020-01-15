@@ -106,7 +106,7 @@ class SettingFragment : BaseFragment() {
 
         binding.lnSupport.setOnClickListener {
             val emailIntent =
-                Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:support@kyber.network"))
+                Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:support@kyberswap.com"))
 
             startActivity(Intent.createChooser(emailIntent, "Chooser Title"))
         }

@@ -22,6 +22,12 @@ const val USER_CLICK_DELETE_CONTACT_EVENT = "user_click_delete_contact_event"
 const val USER_CLICK_MORE_CONTACT_EVENT = "user_click_more_contact_event"
 const val USER_CLICK_RECENT_CONTACT_EVENT = "user_click_recent_contact_event"
 
+const val USER_CLICK_DATA_TRANSFER_YES = "user_click_data_transfer_yes"
+const val USER_CLICK_DATA_TRANSFER_NO = "user_click_data_transfer_no"
+const val USER_CLICK_DATA_TRANSFER_NO_CONTINUE = "user_click_data_transfer_no_continue"
+const val USER_CLICK_DATA_TRANSFER_DISMISS = "user_click_data_transfer_dismiss"
+const val USER_TRANSFER_DATA_FORCE_LOGOUT = "user_transfer_data_force_logout"
+const val USER_FORCE_LOGOUT = "user_force_logout"
 
 const val RATING_DIALOG_ACTION = "rating_dialog_action"
 const val OPEN_PLAY_STORE_ACTION = "open_play_store_action"

@@ -22,16 +22,26 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentSignupBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.SocialInfo
+import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_DISMISS
+import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_NO
+import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_NO_CONTINUE
+import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_YES
+import com.kyberswap.android.util.USER_TRANSFER_DATA_FORCE_LOGOUT
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
+import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.kyberswap.android.util.ext.validPassword
 import com.twitter.sdk.android.core.Callback
 import com.twitter.sdk.android.core.TwitterCore
@@ -60,6 +70,12 @@ class SignUpFragment : BaseFragment() {
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
+
+    @Inject
+    lateinit var dialogHelper: DialogHelper
+
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
 
     private val gso by lazy {
         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -102,7 +118,6 @@ class SignUpFragment : BaseFragment() {
                     )
 
                     binding.ilEmail.error = errorMessage
-
                 }
 
                 !Patterns.EMAIL_ADDRESS.matcher(binding.edtEmail.text).matches() -> {
@@ -132,7 +147,6 @@ class SignUpFragment : BaseFragment() {
                         title = getString(R.string.title_error), message = errorMessage
                     )
                     binding.ilPassword.error = errorMessage
-
                 }
 
                 !binding.edtPassword.text.toString().validPassword() -> {
@@ -185,14 +199,23 @@ class SignUpFragment : BaseFragment() {
                 showProgress(state == SignUpState.Loading)
                 when (state) {
                     is SignUpState.Success -> {
-                        showAlertWithoutIcon(
-                            title = getString(R.string.title_success),
-                            message = getString(R.string.active_your_account),
-                            timeInSecond = 10
-                        )
-                        navigator.navigateToSignInScreen(
-                            currentFragment
-                        )
+                        if (state.registerStatus.success) {
+                            showAlertWithoutIcon(
+                                title = getString(R.string.title_success),
+                                message = getString(R.string.active_your_account),
+                                timeInSecond = 10
+                            )
+
+                            navigator.navigateToSignInScreen(
+                                currentFragment
+                            )
+                        } else {
+                            showAlertWithoutIcon(
+                                title = getString(R.string.title_error),
+                                message = state.registerStatus.message,
+                                timeInSecond = 10
+                            )
+                        }
                     }
                     is SignUpState.ShowError -> {
                         showError(
@@ -275,7 +298,6 @@ class SignUpFragment : BaseFragment() {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-
             })
         }
 
@@ -295,7 +317,7 @@ class SignUpFragment : BaseFragment() {
                                     state.socialInfo
                                 )
                             } else {
-                                onLoginSuccess()
+                                showDataTransferDialog(state.login.userInfo)
                             }
                         } else {
                             showAlert(state.login.message)
@@ -309,17 +331,119 @@ class SignUpFragment : BaseFragment() {
                 }
             }
         })
+
+        viewModel.dataTransferCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+
+                    is DataTransferState.Success -> {
+                        if (state.userInfo != null) {
+                            onTransferDataCompleted(state.userInfo)
+                        }
+                    }
+                    is DataTransferState.ShowError -> {
+                        if (state.userInfo != null) {
+                            onTransferDataCompleted(state.userInfo)
+                        }
+                        if (isNetworkAvailable()) {
+                            showError(
+                                state.message ?: getString(R.string.something_wrong)
+                            )
+                        }
+                    }
+                }
+            }
+        })
     }
 
-    private fun onLoginSuccess() {
+
+    private fun onTransferDataCompleted(userInfo: UserInfo) {
+        if (userInfo.transferPermission.equals(
+                getString(R.string.transfer_action_no),
+                true
+            )
+            && userInfo.forceLogout
+        ) {
+            analytics.logEvent(
+                USER_TRANSFER_DATA_FORCE_LOGOUT,
+                Bundle().createEvent(SignUpFragment::class.java.simpleName)
+            )
+            viewModel.logout()
+        } else {
+            onLoginSuccess(userInfo)
+            if (userInfo.transferPermission.equals(getString(R.string.transfer_action_yes), true)) {
+                showAlert(
+                    getString(R.string.transfer_data_success),
+                    R.drawable.ic_check
+                )
+            }
+        }
+    }
+
+    private fun onLoginSuccess(userInfo: UserInfo) {
         val fm = (activity as MainActivity).getCurrentFragment()?.childFragmentManager
         if (fm != null)
             for (i in 0 until fm.backStackEntryCount) {
                 fm.popBackStack()
             }
+        navigateToProfileDetail()
+    }
+
+    private fun navigateToProfileDetail() {
         navigator.navigateToProfileDetail(
             (activity as MainActivity).getCurrentFragment()
         )
+    }
+
+
+    private fun showDataTransferDialog(userInfo: UserInfo) {
+        if (userInfo.transferPermission.equals(
+                getString(R.string.undecided_transfer_data),
+                true
+            )
+        ) {
+            dialogHelper.showDataTransformationDialog(
+                {
+                    analytics.logEvent(
+                        USER_CLICK_DATA_TRANSFER_YES,
+                        Bundle().createEvent(SignUpFragment::class.java.simpleName)
+                    )
+                    viewModel.transfer(getString(R.string.transfer_action_yes), userInfo)
+                }, {
+                    analytics.logEvent(
+                        USER_CLICK_DATA_TRANSFER_NO,
+                        Bundle().createEvent(SignUpFragment::class.java.simpleName)
+                    )
+                    dialogHelper.showConfirmDataTransfer({
+                        viewModel.transfer(getString(R.string.transfer_action_no), userInfo)
+                        analytics.logEvent(
+                            USER_CLICK_DATA_TRANSFER_NO_CONTINUE,
+                            Bundle().createEvent(SignUpFragment::class.java.simpleName)
+                        )
+                    }, {
+                        it.show()
+                    }, {
+                        it.show()
+                    })
+                }, {
+                    analytics.logEvent(
+                        USER_CLICK_DATA_TRANSFER_DISMISS,
+                        Bundle().createEvent(SignUpFragment::class.java.simpleName)
+                    )
+                    if (userInfo.forceLogout) {
+                        viewModel.logout()
+                        analytics.logEvent(
+                            USER_TRANSFER_DATA_FORCE_LOGOUT,
+                            Bundle().createEvent(SignUpFragment::class.java.simpleName)
+                        )
+                    } else {
+                        onLoginSuccess(userInfo)
+                    }
+                }
+            )
+        } else {
+            onLoginSuccess(userInfo)
+        }
     }
 
     private fun getTwitterUserProfileWthTwitterCoreApi(
@@ -409,12 +533,10 @@ class SignUpFragment : BaseFragment() {
                 )
                 viewModel.login(socialInfo)
             }
-
         } catch (e: ApiException) {
             e.printStackTrace()
             Timber.e(e.localizedMessage)
         }
-
     }
 
     override fun onDestroyView() {
@@ -427,6 +549,4 @@ class SignUpFragment : BaseFragment() {
         private const val RC_SIGN_IN = 1000
         fun newInstance() = SignUpFragment()
     }
-
-
 }

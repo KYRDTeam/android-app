@@ -23,5 +23,14 @@ data class UserInfoEntity(
     @SerializedName("kyc_info")
     val kycInfo: KycInfoEntity = KycInfoEntity(),
     @SerializedName("block_reason")
-    val blockReason: String? = ""
+    val blockReason: String? = "",
+    @SerializedName("success")
+    val success: Boolean = true,
+    @SerializedName("message")
+    val message: String = "",
+    @SerializedName("transfer_permission")
+    val transferPermission: String = "",
+    @SerializedName("force_logout")
+    val forceLogout: Boolean = false
+
 )

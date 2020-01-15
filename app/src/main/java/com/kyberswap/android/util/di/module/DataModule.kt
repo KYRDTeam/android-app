@@ -253,9 +253,10 @@ object DataModule {
         storageMediator: StorageMediator,
         userMapper: UserMapper,
         alertDao: AlertDao,
-        ratingDao: RatingDao
+        ratingDao: RatingDao,
+        context: Context
     ): UserRepository =
-        UserDataRepository(api, userDao, storageMediator, userMapper, alertDao, ratingDao)
+        UserDataRepository(api, userDao, storageMediator, userMapper, alertDao, ratingDao, context)
 
 
     @Singleton

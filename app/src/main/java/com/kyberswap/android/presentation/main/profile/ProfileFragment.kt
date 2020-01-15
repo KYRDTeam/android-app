@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.facebook.AccessToken
@@ -25,18 +26,26 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentProfileBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.SocialInfo
+import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainPagerAdapter
+import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_DISMISS
+import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_NO
+import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_NO_CONTINUE
+import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_YES
+import com.kyberswap.android.util.USER_TRANSFER_DATA_FORCE_LOGOUT
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.twitter.sdk.android.core.Callback
 import com.twitter.sdk.android.core.TwitterCore
@@ -96,6 +105,9 @@ class ProfileFragment : BaseFragment() {
     }
 
     private var twoFADialog: AlertDialog? = null
+
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -175,18 +187,27 @@ class ProfileFragment : BaseFragment() {
 
                                 }
                             } else {
-                                twoFADialog = null
-                                showAlertWithoutIcon(
-                                    message = String.format(
-                                        getString(R.string.wellcome_back),
-                                        state.login.userInfo.name
-                                    )
-                                )
 
-                                if (fromLimitOrder) {
-                                    moveToLimitOrder()
-                                }
-                                navigateToProfileDetail()
+//                                if (state.login.userInfo.transferPermission.equals(
+//                                        getString(R.string.undecided_transfer_data),
+//                                        false
+//                                    )
+//                                ) {
+//                                    dialogHelper.showDataTransformationDialog(
+//                                        {
+//
+//                                        }, {
+//
+//                                        }, {
+//                                            onLoginSuccess(state.login.userInfo)
+//                                        }
+//                                    )
+//                                } else {
+//
+//                                    onLoginSuccess(state.login.userInfo)
+//                                }
+
+                                showDataTransferDialog(state.login.userInfo)
                             }
                         } else {
                             twoFADialog?.show()
@@ -233,9 +254,29 @@ class ProfileFragment : BaseFragment() {
                 when (state) {
                     is UserInfoState.Success -> {
                         if (state.userInfo != null && state.userInfo.uid > 0) {
-                            navigator.navigateToProfileDetail(
-                                profileFragment
-                            )
+
+//                            if (state.userInfo.transferPermission.equals(
+//                                    getString(R.string.undecided_transfer_data),
+//                                    false
+//                                )
+//                            ) {
+//                                dialogHelper.showDataTransformationDialog(
+//                                    {
+//
+//                                    }, {
+//
+//                                    }, {
+//                                        navigator.navigateToProfileDetail(
+//                                            profileFragment
+//                                        )
+//                                    }
+//                                )
+//                            } else {
+//                                navigator.navigateToProfileDetail(
+//                                    profileFragment
+//                                )
+//                            }
+                            navigateToProfileDetail(profileFragment)
                         }
                     }
                     is UserInfoState.ShowError -> {
@@ -351,6 +392,29 @@ class ProfileFragment : BaseFragment() {
 
         }
 
+        viewModel.dataTransferCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+
+                    is DataTransferState.Success -> {
+                        if (state.userInfo != null) {
+                            onTransferDataCompleted(state.userInfo)
+                        }
+                    }
+                    is DataTransferState.ShowError -> {
+                        if (state.userInfo != null) {
+                            onTransferDataCompleted(state.userInfo)
+                        }
+                        if (isNetworkAvailable()) {
+                            showError(
+                                state.message ?: getString(R.string.something_wrong)
+                            )
+                        }
+                    }
+                }
+            }
+        })
+
         viewModel.compositeDisposable.add(
             binding.edtEmail.textChanges()
                 .skipInitialValue()
@@ -366,6 +430,91 @@ class ProfileFragment : BaseFragment() {
                 })
     }
 
+    private fun onTransferDataCompleted(userInfo: UserInfo) {
+        if (userInfo.transferPermission.equals(
+                getString(R.string.transfer_action_no),
+                true
+            )
+            && userInfo.forceLogout
+        ) {
+            viewModel.logout()
+        } else {
+            onLoginSuccess(userInfo)
+            if (userInfo.transferPermission.equals(getString(R.string.transfer_action_yes), true)) {
+                showAlert(
+                    getString(R.string.transfer_data_success),
+                    R.drawable.ic_check
+                )
+            }
+        }
+    }
+
+    private fun showDataTransferDialog(userInfo: UserInfo) {
+        if (userInfo.transferPermission.equals(
+                getString(R.string.undecided_transfer_data),
+                true
+            )
+        ) {
+            dialogHelper.showDataTransformationDialog(
+                {
+                    viewModel.transfer(getString(R.string.transfer_action_yes), userInfo)
+                    analytics.logEvent(
+                        USER_CLICK_DATA_TRANSFER_YES,
+                        Bundle().createEvent(ProfileFragment::class.java.simpleName)
+                    )
+                }, {
+                    analytics.logEvent(
+                        USER_CLICK_DATA_TRANSFER_NO,
+                        Bundle().createEvent(ProfileFragment::class.java.simpleName)
+                    )
+                    dialogHelper.showConfirmDataTransfer({
+                        viewModel.transfer(getString(R.string.transfer_action_no), userInfo)
+                        analytics.logEvent(
+                            USER_CLICK_DATA_TRANSFER_NO_CONTINUE,
+                            Bundle().createEvent(ProfileFragment::class.java.simpleName)
+                        )
+                    }, {
+                        it.show()
+                    }, {
+                        it.show()
+                    })
+                }, {
+                    analytics.logEvent(
+                        USER_CLICK_DATA_TRANSFER_DISMISS,
+                        Bundle().createEvent(ProfileFragment::class.java.simpleName)
+                    )
+                    if (userInfo.forceLogout) {
+                        viewModel.logout()
+                        analytics.logEvent(
+                            USER_TRANSFER_DATA_FORCE_LOGOUT,
+                            Bundle().createEvent(ProfileFragment::class.java.simpleName)
+                        )
+                    } else {
+                        onLoginSuccess(userInfo)
+                    }
+                }
+            )
+        } else {
+            onLoginSuccess(userInfo)
+        }
+    }
+
+    private fun onLoginSuccess(userInfo: UserInfo) {
+        twoFADialog = null
+        showAlertWithoutIcon(
+            message = String.format(
+                getString(R.string.wellcome_back),
+                userInfo.name
+            )
+        )
+
+        if (fromLimitOrder) {
+            moveToLimitOrder()
+        }
+
+        navigateToProfileDetail(currentFragment)
+    }
+
     private fun loginWithReadPermission() {
         LoginManager.getInstance()
             .logInWithReadPermissions(
@@ -378,7 +527,7 @@ class ProfileFragment : BaseFragment() {
         (activity as? MainActivity)?.moveToTab(MainPagerAdapter.LIMIT_ORDER)
     }
 
-    private fun navigateToProfileDetail() {
+    private fun navigateToProfileDetail(currentFragment: Fragment?) {
         navigator.navigateToProfileDetail(
             currentFragment
         )

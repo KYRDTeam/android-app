@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentProfileDetailBinding
@@ -20,13 +21,16 @@ import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.model.UserInfo.Companion.KYC_STEP_PERSONAL_INFO
 import com.kyberswap.android.domain.model.UserStatusChangeEvent
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.alert.ManageAlertAdapter
 import com.kyberswap.android.presentation.main.profile.alert.DeleteAlertsState
 import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
 import com.kyberswap.android.presentation.main.profile.kyc.ReSubmitState
+import com.kyberswap.android.util.USER_TRANSFER_DATA_FORCE_LOGOUT
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.kyberswap.android.util.ext.underline
 import org.greenrobot.eventbus.EventBus
@@ -34,7 +38,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 
-class ProfileDetailFragment : BaseFragment() {
+class ProfileDetailFragment : BaseFragment(), LoginState {
 
     private lateinit var binding: FragmentProfileDetailBinding
 
@@ -58,6 +62,9 @@ class ProfileDetailFragment : BaseFragment() {
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
+
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(ProfileDetailViewModel::class.java)
@@ -111,6 +118,16 @@ class ProfileDetailFragment : BaseFragment() {
                         }
                     }
                     is UserInfoState.ShowError -> {
+                        if (currentFragment is ProfileFragment && state.message.equals(
+                                getString(R.string.not_authenticated_message), true
+                            )
+                        ) {
+                            analytics.logEvent(
+                                USER_TRANSFER_DATA_FORCE_LOGOUT,
+                                Bundle().createEvent(ProfileDetailFragment::class.java.simpleName)
+                            )
+                            viewModel.logout()
+                        }
                         if (isNetworkAvailable()) {
                             showError(
                                 state.message ?: getString(R.string.something_wrong)
@@ -196,29 +213,15 @@ class ProfileDetailFragment : BaseFragment() {
             }
         })
 
-//        viewModel.getAlertsCallback.observe(viewLifecycleOwner, Observer {
-//            it?.getContentIfNotHandled()?.let { state ->
-//                when (state) {
-//                    is GetAlertsState.Success -> {
-//                        alertAdapter.submitAlerts(state.alerts.take(2))
-//                    }
-//                    is GetAlertsState.ShowError -> {
-//                        showAlert(
-//                            state.message ?: getString(R.string.something_wrong),
-//                            R.drawable.ic_info_error
-//                        )
-//                    }
-//                }
-//            }
-//        })
-
         viewModel.logoutCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == LogoutState.Loading)
                 when (state) {
                     is LogoutState.Success -> {
                         EventBus.getDefault().post(UserStatusChangeEvent())
-                        navigator.navigateToSignInScreen(currentFragment)
+                        if (currentFragment is ProfileFragment) {
+                            navigator.navigateToSignInScreen(currentFragment)
+                        }
                     }
                     is LogoutState.ShowError -> {
                         showError(
@@ -331,5 +334,9 @@ class ProfileDetailFragment : BaseFragment() {
     companion object {
         fun newInstance() =
             ProfileDetailFragment()
+    }
+
+    override fun getLoginStatus() {
+        viewModel.getLoginStatus()
     }
 }

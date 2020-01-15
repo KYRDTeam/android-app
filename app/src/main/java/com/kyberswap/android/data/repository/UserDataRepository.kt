@@ -1,10 +1,12 @@
 package com.kyberswap.android.data.repository
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import androidx.exifinterface.media.ExifInterface
 import com.google.gson.Gson
+import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.UserApi
 import com.kyberswap.android.data.api.notification.NotificationEntity
 import com.kyberswap.android.data.db.AlertDao
@@ -14,6 +16,7 @@ import com.kyberswap.android.data.mapper.UserMapper
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.AlertMethodsResponse
+import com.kyberswap.android.domain.model.DataTransferStatus
 import com.kyberswap.android.domain.model.KycResponseStatus
 import com.kyberswap.android.domain.model.LoginUser
 import com.kyberswap.android.domain.model.Notification
@@ -25,6 +28,7 @@ import com.kyberswap.android.domain.repository.UserRepository
 import com.kyberswap.android.domain.usecase.alert.UpdateAlertMethodsUseCase
 import com.kyberswap.android.domain.usecase.notification.ReadNotificationsUseCase
 import com.kyberswap.android.domain.usecase.profile.Base64DecodeUseCase
+import com.kyberswap.android.domain.usecase.profile.DataTransferUseCase
 import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
 import com.kyberswap.android.domain.usecase.profile.LoginUseCase
 import com.kyberswap.android.domain.usecase.profile.ReSubmitUserInfoUseCase
@@ -60,7 +64,8 @@ class UserDataRepository @Inject constructor(
     private val storageMediator: StorageMediator,
     private val userMapper: UserMapper,
     private val alertDao: AlertDao,
-    private val ratingDao: RatingDao
+    private val ratingDao: RatingDao,
+    private val context: Context
 ) : UserRepository {
 
     override fun logout(): Completable {
@@ -111,12 +116,19 @@ class UserDataRepository @Inject constructor(
             userMapper.transform(it)
         }
             .doAfterSuccess {
-                val currentUser = userDao.getUser() ?: UserInfo()
-                userDao.updateUser(
-                    it.copy(
-                        kycInfo = currentUser.kycInfo
+                if (!it.success && it.message.equals(
+                        context.getString(R.string.not_authenticated_message), true
                     )
-                )
+                ) {
+                    userDao.deleteAllUsers()
+                } else {
+                    val currentUser = userDao.getUser() ?: UserInfo()
+                    userDao.updateUser(
+                        it.copy(
+                            kycInfo = currentUser.kycInfo
+                        )
+                    )
+                }
             }
             .repeatWhen {
                 it.delay(60, TimeUnit.SECONDS)
@@ -126,20 +138,10 @@ class UserDataRepository @Inject constructor(
             }
     }
 
-    override fun refreshKycStatus(): Single<UserInfo> {
+    override fun refreshUserInfo(): Single<UserInfo> {
         return userApi.getUserInfo().map {
             userMapper.transform(it)
         }.doAfterSuccess {
-            //            val localInfo = userDao.getUser()?.kycInfo
-//            val remoteInfo = it.kycInfo
-//            val kycInfo = remoteInfo.copy(
-//                expiryDateNonApplicable = localInfo?.expiryDateNonApplicable
-//                    ?: remoteInfo.expiryDateNonApplicable,
-//                issueDateNonApplicable = localInfo?.issueDateNonApplicable
-//                    ?: remoteInfo.issueDateNonApplicable
-//            )
-//            userDao.updateUser(it.copy(kycInfo = kycInfo))
-
             userDao.updateUser(it)
         }
     }
@@ -166,29 +168,7 @@ class UserDataRepository @Inject constructor(
                 }.toFlowable()
             ) { local, remote ->
                 val remoteInfo = remote.kycInfo
-                val localInfo = local.kycInfo
                 val kycInfo = local.kycInfo.copy(
-//                    firstName = if (localInfo.firstName.isNotEmpty()) localInfo.firstName else remoteInfo.firstName,
-//                    lastName = if (localInfo.lastName.isNotEmpty()) localInfo.lastName else remoteInfo.lastName,
-//                    nationality = if (localInfo.nationality.isNotEmpty()) localInfo.nationality else remoteInfo.nationality,
-//                    country = if (localInfo.country.isNotEmpty()) localInfo.country else remoteInfo.country,
-//                    dob = if (localInfo.dob.isNotEmpty()) localInfo.dob else remoteInfo.dob,
-//                    documentId = if (localInfo.documentId.isNotEmpty()) localInfo.documentId else remoteInfo.documentId,
-//                    documentType = if (localInfo.documentType.isNotEmpty()) localInfo.documentType else remoteInfo.documentType,
-//                    residentialAddress = if (localInfo.residentialAddress.isNotEmpty()) localInfo.residentialAddress else remoteInfo.residentialAddress,
-//                    city = if (localInfo.city.isNotEmpty()) localInfo.city else remoteInfo.city,
-//                    zipCode = if (localInfo.zipCode.isNotEmpty()) localInfo.zipCode else remoteInfo.zipCode,
-//                    documentProofAddress = if (localInfo.documentProofAddress.isNotEmpty()) localInfo.documentProofAddress else remoteInfo.documentProofAddress,
-//                    sourceFund = if (localInfo.sourceFund.isNotEmpty()) localInfo.sourceFund else remoteInfo.sourceFund,
-//                    occupationCode = if (localInfo.occupationCode.isNotEmpty()) localInfo.occupationCode else remoteInfo.occupationCode,
-//                    industryCode = if (localInfo.industryCode.isNotEmpty()) localInfo.industryCode else remoteInfo.industryCode,
-//                    taxResidencyCountry = if (localInfo.taxResidencyCountry.isNotEmpty()) localInfo.taxResidencyCountry else remoteInfo.taxResidencyCountry,
-//                    haveTaxIdentification = if (localInfo.haveTaxIdentification != null) localInfo.haveTaxIdentification else remoteInfo.haveTaxIdentification,
-//                    taxIdentificationNumber = if (localInfo.taxIdentificationNumber.isNotEmpty()) localInfo.taxIdentificationNumber else remoteInfo.taxIdentificationNumber,
-//                    documentIssueDate = if (localInfo.documentIssueDate.isNotEmpty()) localInfo.documentIssueDate else remoteInfo.documentIssueDate,
-//                    documentExpiryDate = if (localInfo.documentExpiryDate.isNotEmpty()) localInfo.documentExpiryDate else remoteInfo.documentExpiryDate,
-//                    middleName = if (localInfo.middleName.isNotEmpty()) localInfo.middleName else remoteInfo.middleName,
-//                    nativeFullName = if (localInfo.nativeFullName.isNotEmpty()) localInfo.nativeFullName else remoteInfo.nativeFullName,
                     photoSelfie = remoteInfo.photoSelfie,
                     photoIdentityBackSide = remoteInfo.photoIdentityBackSide,
                     photoIdentityFrontSide = remoteInfo.photoIdentityFrontSide,
@@ -288,7 +268,7 @@ class UserDataRepository @Inject constructor(
             info.nationality,
             info.country,
             info.dob,
-            if (info.gender == true) 1 else 0,
+            if (info.gender) 1 else 0,
             info.residentialAddress,
             info.city,
             info.zipCode,
@@ -524,6 +504,10 @@ class UserDataRepository @Inject constructor(
         return userApi.markAsRead(body).map {
             userMapper.transform(it)
         }
+    }
+
+    override fun dataTransfer(param: DataTransferUseCase.Param): Single<DataTransferStatus> {
+        return userApi.transferAgreement(param.action).map { userMapper.transform(it) }
     }
 
     companion object {

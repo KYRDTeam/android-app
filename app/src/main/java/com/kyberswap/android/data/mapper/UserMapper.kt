@@ -5,12 +5,14 @@ import com.kyberswap.android.data.api.alert.AlertMethodsResponseEntity
 import com.kyberswap.android.data.api.notification.NotificationEntity
 import com.kyberswap.android.data.api.token.KyberEnabledEntity
 import com.kyberswap.android.data.api.token.QuoteAmountEntity
+import com.kyberswap.android.data.api.user.DataTransferStatusEntity
 import com.kyberswap.android.data.api.user.KycResponseStatusEntity
 import com.kyberswap.android.data.api.user.LoginUserEntity
 import com.kyberswap.android.data.api.user.ResponseStatusEntity
 import com.kyberswap.android.data.api.user.UserInfoEntity
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.AlertMethodsResponse
+import com.kyberswap.android.domain.model.DataTransferStatus
 import com.kyberswap.android.domain.model.KyberEnabled
 import com.kyberswap.android.domain.model.KycResponseStatus
 import com.kyberswap.android.domain.model.LoginUser
@@ -23,6 +25,10 @@ import javax.inject.Inject
 class UserMapper @Inject constructor() {
     fun transform(entity: ResponseStatusEntity): ResponseStatus {
         return ResponseStatus(entity)
+    }
+
+    fun transform(entity: DataTransferStatusEntity): DataTransferStatus {
+        return DataTransferStatus(entity)
     }
 
     fun transform(entity: LoginUserEntity): LoginUser {

@@ -6,12 +6,16 @@ import com.kyberswap.android.domain.model.Notification
 import com.kyberswap.android.domain.model.RatingInfo
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Transaction
+import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.balance.UpdateBalanceUseCase
 import com.kyberswap.android.domain.usecase.notification.GetUnReadNotificationUseCase
 import com.kyberswap.android.domain.usecase.notification.ReadNotificationsUseCase
+import com.kyberswap.android.domain.usecase.profile.DataTransferUseCase
 import com.kyberswap.android.domain.usecase.profile.GetRatingUseCase
 import com.kyberswap.android.domain.usecase.profile.GetUserInfoUseCase
+import com.kyberswap.android.domain.usecase.profile.LogoutUseCase
+import com.kyberswap.android.domain.usecase.profile.RefreshUserInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.SaveRatingInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.UpdatePushTokenUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
@@ -33,6 +37,8 @@ import com.kyberswap.android.presentation.main.balance.GetRatingInfoState
 import com.kyberswap.android.presentation.main.balance.SaveRatingInfoState
 import com.kyberswap.android.presentation.main.notification.GetUnReadNotificationsState
 import com.kyberswap.android.presentation.main.notification.ReadNotificationsState
+import com.kyberswap.android.presentation.main.profile.DataTransferState
+import com.kyberswap.android.presentation.main.profile.LogoutState
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.wallet.UpdateWalletState
 import com.kyberswap.android.util.ErrorHandler
@@ -61,6 +67,9 @@ class MainViewModel @Inject constructor(
     private val readNotificationsUseCase: ReadNotificationsUseCase,
     private val updatePushTokenUseCase: UpdatePushTokenUseCase,
     private val notificationUseCase: GetUnReadNotificationUseCase,
+    private val getUserDataPermissionUseCase: RefreshUserInfoUseCase,
+    private val logoutUseCase: LogoutUseCase,
+    private val dataTransferUseCase: DataTransferUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getWalletUseCase, errorHandler) {
 
@@ -93,6 +102,14 @@ class MainViewModel @Inject constructor(
     val getLoginStatusCallback: LiveData<Event<UserInfoState>>
         get() = _getLoginStatusCallback
 
+    private val _getDataTransferCallback = MutableLiveData<Event<UserInfoState>>()
+    val getDataTransferCallback: LiveData<Event<UserInfoState>>
+        get() = _getDataTransferCallback
+
+    private val _logoutCallback = MutableLiveData<Event<LogoutState>>()
+    val logoutCallback: LiveData<Event<LogoutState>>
+        get() = _logoutCallback
+
     private var currentPendingList: List<Transaction> = listOf()
 
     private val hasTransaction: Boolean
@@ -105,6 +122,10 @@ class MainViewModel @Inject constructor(
     private val _readNotificationsCallback = MutableLiveData<Event<ReadNotificationsState>>()
     val readNotificationsCallback: LiveData<Event<ReadNotificationsState>>
         get() = _readNotificationsCallback
+
+    private val _dataTransferCallback = MutableLiveData<Event<DataTransferState>>()
+    val dataTransferCallback: LiveData<Event<DataTransferState>>
+        get() = _dataTransferCallback
 
     private val _getNotificationsCallback = MutableLiveData<Event<GetUnReadNotificationsState>>()
     val getNotificationsCallback: LiveData<Event<GetUnReadNotificationsState>>
@@ -442,6 +463,80 @@ class MainViewModel @Inject constructor(
                     Event(ReadNotificationsState.ShowError(errorHandler.getError(it)))
             },
             ReadNotificationsUseCase.Param(listOf(notification))
+        )
+    }
+
+    fun getDataTransferInfo() {
+        getUserDataPermissionUseCase.dispose()
+        getUserDataPermissionUseCase.execute(
+            Consumer {
+                _getDataTransferCallback.value = Event(UserInfoState.Success(it))
+            },
+            Consumer {
+                it.printStackTrace()
+                _getDataTransferCallback.value =
+                    Event(UserInfoState.ShowError(errorHandler.getError(it)))
+            },
+            null
+        )
+    }
+
+    fun logout() {
+        _logoutCallback.postValue(Event(LogoutState.Loading))
+        logoutUseCase.execute(
+            Action {
+                _logoutCallback.value = Event(LogoutState.Success(""))
+            },
+            Consumer {
+                it.printStackTrace()
+                _logoutCallback.value =
+                    Event(LogoutState.ShowError(errorHandler.getError(it)))
+            },
+            null
+        )
+    }
+
+    override fun onCleared() {
+        updateSelectedWalletUseCase.dispose()
+        updateBalanceUseCase.dispose()
+        getTokenBalanceUseCase.dispose()
+        createWalletUseCase.dispose()
+        forceBatchTokenBalanceUseCase.dispose()
+        getAllWalletUseCase.dispose()
+        getBalancePollingUseCase.dispose()
+        getBatchTokenBalanceUseCase.dispose()
+        getLoginStatusUseCase.dispose()
+        getOtherBalancePollingUseCase.dispose()
+        getRatingInfoUseCase.dispose()
+        logoutUseCase.dispose()
+        getTransactionsPeriodicallyUseCase.dispose()
+        getUserDataPermissionUseCase.dispose()
+        notificationUseCase.dispose()
+        readNotificationsUseCase.dispose()
+        monitorPendingTransactionsUseCase.dispose()
+        saveRatingInfoUseCase.dispose()
+        getPendingTransactionsUseCase.dispose()
+        updatePushTokenUseCase.dispose()
+        super.onCleared()
+    }
+
+    fun transfer(action: String, userInfo: UserInfo) {
+        dataTransferUseCase.execute(
+            Consumer {
+                _dataTransferCallback.value =
+                    Event(DataTransferState.Success(it, userInfo.copy(transferPermission = action)))
+            },
+            Consumer {
+                _dataTransferCallback.value =
+                    Event(
+                        DataTransferState.ShowError(
+                            errorHandler.getError(it),
+                            userInfo.copy(transferPermission = action)
+                        )
+                    )
+                it.printStackTrace()
+            },
+            DataTransferUseCase.Param(action)
         )
     }
 }

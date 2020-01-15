@@ -11,7 +11,7 @@ import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.domain.usecase.profile.LogoutUseCase
 import com.kyberswap.android.domain.usecase.profile.PollingUserInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.ReSubmitUserInfoUseCase
-import com.kyberswap.android.domain.usecase.profile.RefreshKycStatusUseCase
+import com.kyberswap.android.domain.usecase.profile.RefreshUserInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.UpdatePushTokenUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.profile.alert.DeleteAlertsState
@@ -30,7 +30,8 @@ class ProfileDetailViewModel @Inject constructor(
     private val deleteAlertsUseCase: DeleteAlertsUseCase,
     private val getLoginStatusUseCase: GetLoginStatusUseCase,
     private val pollingUserInfoUseCase: PollingUserInfoUseCase,
-    private val refreshKycStatusUseCase: RefreshKycStatusUseCase,
+    private val refreshUserInfoUseCase: RefreshUserInfoUseCase,
+    private val getUserDataPermission: RefreshUserInfoUseCase,
     private val reSubmitUserInfoUseCase: ReSubmitUserInfoUseCase,
     private val updatePushTokenUseCase: UpdatePushTokenUseCase,
     private val errorHandler: ErrorHandler
@@ -56,9 +57,28 @@ class ProfileDetailViewModel @Inject constructor(
     val refreshKycStatus: LiveData<Event<UserInfoState>>
         get() = _refreshKycStatus
 
+    private val _getDataTransferCallback = MutableLiveData<Event<UserInfoState>>()
+    val getDataTransferCallback: LiveData<Event<UserInfoState>>
+        get() = _getDataTransferCallback
+
     private val _reSubmitKycCallback = MutableLiveData<Event<ReSubmitState>>()
     val reSubmitKycCallback: LiveData<Event<ReSubmitState>>
         get() = _reSubmitKycCallback
+
+    fun getDataTransferInfo() {
+        getUserDataPermission.dispose()
+        getUserDataPermission.execute(
+            Consumer {
+                _getDataTransferCallback.value = Event(UserInfoState.Success(it))
+            },
+            Consumer {
+                it.printStackTrace()
+                _getDataTransferCallback.value =
+                    Event(UserInfoState.ShowError(errorHandler.getError(it)))
+            },
+            null
+        )
+    }
 
     fun getLoginStatus() {
         getLoginStatusUseCase.dispose()
@@ -81,7 +101,12 @@ class ProfileDetailViewModel @Inject constructor(
         pollingUserInfoUseCase.dispose()
         pollingUserInfoUseCase.execute(
             Consumer {
-                _getUserInfoCallback.value = Event(UserInfoState.Success(it))
+                if (it?.success == true) {
+                    _getUserInfoCallback.value = Event(UserInfoState.Success(it))
+                } else {
+                    _getUserInfoCallback.value = Event(UserInfoState.ShowError(it.message))
+                }
+
             },
             Consumer {
                 it.printStackTrace()
@@ -94,7 +119,7 @@ class ProfileDetailViewModel @Inject constructor(
 
     fun refreshKycStatus() {
         _refreshKycStatus.postValue(Event(UserInfoState.Loading))
-        refreshKycStatusUseCase.execute(
+        refreshUserInfoUseCase.execute(
             Consumer {
                 _refreshKycStatus.value = Event(UserInfoState.Success(it))
                 pollingUserInfoUseCase.dispose()
@@ -181,7 +206,7 @@ class ProfileDetailViewModel @Inject constructor(
         pollingUserInfoUseCase.dispose()
         updatePushTokenUseCase.dispose()
         reSubmitUserInfoUseCase.dispose()
-        refreshKycStatusUseCase.dispose()
+        refreshUserInfoUseCase.dispose()
         super.onCleared()
     }
 

@@ -8,12 +8,12 @@ import com.kyberswap.android.domain.usecase.SequentialUseCase
 import io.reactivex.Single
 import javax.inject.Inject
 
-class RefreshKycStatusUseCase @Inject constructor(
+class RefreshUserInfoUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val userRepository: UserRepository
 ) : SequentialUseCase<String?, UserInfo>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     override fun buildUseCaseSingle(param: String?): Single<UserInfo> {
-        return userRepository.refreshKycStatus()
+        return userRepository.refreshUserInfo()
     }
 }

@@ -17,5 +17,4 @@ data class LoginUserEntity(
     @SerializedName("2fa_required")
     val twoFaRequired: Boolean = false
 
-
 )
