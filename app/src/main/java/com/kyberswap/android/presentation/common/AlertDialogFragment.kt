@@ -74,7 +74,6 @@ class AlertDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        retainInstance = true
         setStyle(STYLE_NO_TITLE, R.style.AlertDialogStyle)
         dialogType = arguments?.getInt(DIALOG_TYPE_PARAM) ?: DIALOG_TYPE_BROADCASTED
         transaction = arguments?.getParcelable(TRANSACTION_PARAM)

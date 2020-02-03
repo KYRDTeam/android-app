@@ -107,7 +107,7 @@ data class Token(
     constructor(entity: TokenCurrencyEntity) : this(
         tokenSymbol = entity.symbol,
         tokenName = entity.name,
-        tokenAddress = entity.address,
+        tokenAddress = entity.address.toLowerCase(Locale.getDefault()),
         tokenDecimal = entity.decimals,
         cgId = entity.cgId,
         gasApprove = entity.gasApprove,

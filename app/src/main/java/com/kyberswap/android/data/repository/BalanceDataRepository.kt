@@ -29,6 +29,7 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import timber.log.Timber
 import java.math.BigDecimal
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -173,7 +174,9 @@ class BalanceDataRepository @Inject constructor(
     }
 
     override fun getChange24h(): Flowable<List<Token>> {
-        return tokenDao.all
+        return tokenDao.all.map {
+            it.distinctBy { token -> token.tokenAddress.toLowerCase(Locale.getDefault()) }
+        }
     }
 
     override fun getBalance(param: PrepareBalanceUseCase.Param): Single<List<Token>> {
@@ -186,7 +189,7 @@ class BalanceDataRepository @Inject constructor(
                         .flatMapIterable { tokenCurrency -> tokenCurrency }
                         .map { internalCurrency ->
                             val tokenBySymbol = remoteTokenList.find {
-                                it.tokenSymbol == internalCurrency.symbol
+                                it.tokenSymbol.equals(internalCurrency.symbol, true)
                             }
 
                             tokenBySymbol?.with(internalCurrency) ?: Token(internalCurrency)
@@ -201,7 +204,7 @@ class BalanceDataRepository @Inject constructor(
                             val localTokenList = tokenDao.all.first(listOf()).blockingGet()
                             remoteTokens.map { remoteToken ->
                                 val localToken = localTokenList.find {
-                                    it.tokenAddress == remoteToken.tokenAddress
+                                    it.tokenAddress.equals(remoteToken.tokenAddress, true)
                                 }
 
                                 if (localToken != null) {
@@ -238,7 +241,7 @@ class BalanceDataRepository @Inject constructor(
                         .flatMapIterable { tokenCurrency -> tokenCurrency }
                         .map { internalCurrency ->
                             val tokenBySymbol = remoteTokenList.find {
-                                it.tokenSymbol == internalCurrency.symbol
+                                it.tokenSymbol.equals(internalCurrency.symbol, true)
                             }
 
                             tokenBySymbol?.with(internalCurrency) ?: Token(internalCurrency)
@@ -253,7 +256,7 @@ class BalanceDataRepository @Inject constructor(
                             val localTokenList = tokenDao.all.first(listOf()).blockingGet()
                             remoteTokens.map { remoteToken ->
                                 val localToken = localTokenList.find {
-                                    it.tokenAddress == remoteToken.tokenAddress
+                                    it.tokenAddress.equals(remoteToken.tokenAddress, true)
                                 }
 
                                 if (localToken != null) {
@@ -291,7 +294,8 @@ class BalanceDataRepository @Inject constructor(
         }
 
         val singleListedToken = currencyApi.internalCurrencies().map {
-            it.data.map { data -> data.address to Token(data) }.toMap()
+            it.data.map { data -> data.address.toLowerCase(Locale.getDefault()) to Token(data) }
+                .toMap()
         }
 
         return Singles.zip(
@@ -317,7 +321,7 @@ class BalanceDataRepository @Inject constructor(
 
         val listedTokens = remoteTokens.map { remoteToken ->
             val localToken = localTokens.find {
-                it.tokenAddress == remoteToken.tokenAddress
+                it.tokenAddress.equals(remoteToken.tokenAddress, true)
             }
 
             val updatedRateToken = localToken?.copy(
@@ -337,9 +341,15 @@ class BalanceDataRepository @Inject constructor(
 //            tokenClient.updateBalance(updatedRateToken)
         }
 
-        val listTokenAddress = listedTokens.map { it.tokenAddress }
+        val listTokenAddress = listedTokens.map { it.tokenAddress.toLowerCase(Locale.getDefault()) }
 
-        val otherTokens = localTokens.filterNot { listTokenAddress.contains(it.tokenAddress) }
+        val otherTokens = localTokens.filterNot {
+            listTokenAddress.contains(
+                it.tokenAddress.toLowerCase(
+                    Locale.getDefault()
+                )
+            )
+        }
 //            .map {
 //            tokenClient.updateBalance(it)
 //        }
@@ -348,7 +358,7 @@ class BalanceDataRepository @Inject constructor(
         val localSelected = currentWallets.find { it.isSelected }
         val selectedWallet = wallets.find { it.isSelected }
 
-        return if (selectedWallet?.address == localSelected?.address) {
+        return if (selectedWallet?.address.equals(localSelected?.address, true)) {
             val currentFavs = tokenDao.allTokens.map {
                 it.tokenSymbol to it.fav
             }.toMap()
@@ -399,11 +409,15 @@ class BalanceDataRepository @Inject constructor(
             token.key to token.value.copy(
                 rateEthNow = eth[token.value.tokenSymbol] ?: token.value.rateEthNow,
                 rateUsdNow = usd[token.value.tokenSymbol] ?: token.value.rateUsdNow,
-                isOther = listedToken[token.value.tokenAddress] == null,
-                gasLimit = listedToken[token.value.tokenAddress]?.gasLimit ?: "",
-                gasApprove = listedToken[token.value.tokenAddress]?.gasApprove ?: BigDecimal.ZERO,
-                spLimitOrder = listedToken[token.value.tokenAddress]?.spLimitOrder ?: false,
-                isQuote = listedToken[token.value.tokenAddress]?.isQuote ?: false
+                isOther = listedToken[token.value.tokenAddress.toLowerCase(Locale.getDefault())] == null,
+                gasLimit = listedToken[token.value.tokenAddress.toLowerCase(Locale.getDefault())]?.gasLimit
+                    ?: "",
+                gasApprove = listedToken[token.value.tokenAddress.toLowerCase(Locale.getDefault())]?.gasApprove
+                    ?: BigDecimal.ZERO,
+                spLimitOrder = listedToken[token.value.tokenAddress.toLowerCase(Locale.getDefault())]?.spLimitOrder
+                    ?: false,
+                isQuote = listedToken[token.value.tokenAddress.toLowerCase(Locale.getDefault())]?.isQuote
+                    ?: false
 
             )
 
