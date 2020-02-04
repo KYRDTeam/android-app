@@ -101,8 +101,9 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
                     is TransferTokenTransactionState.ShowError -> {
                         showError(
                             state.message ?: getString(R.string.something_wrong)
-                        )
-                        onBackPressed()
+                        ) {
+                            finish()
+                        }
                     }
                 }
             }

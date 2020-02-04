@@ -236,7 +236,7 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !isChangePinCode) {
             val keyguardManager = getSystemService(KeyguardManager::class.java)
             val fingerprintManager = getSystemService(FingerprintManager::class.java)
-            if (keyguardManager.isKeyguardSecure && fingerprintManager.hasEnrolledFingerprints()) {
+            if (keyguardManager.isKeyguardSecure && fingerprintManager.isHardwareDetected && fingerprintManager.hasEnrolledFingerprints()) {
                 setupKeyStoreAndKeyGenerator()
                 createKey(DEFAULT_KEY_NAME)
                 val cipher = setupCiphers()

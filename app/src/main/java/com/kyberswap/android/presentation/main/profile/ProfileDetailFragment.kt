@@ -186,7 +186,11 @@ class ProfileDetailFragment : BaseFragment(), LoginState {
                         binding.isEmpty = state.alerts.isEmpty()
                         this.alerts.clear()
                         this.alerts.addAll(state.alerts)
-                        alertAdapter.submitAlerts(state.alerts.take(2).sortedByDescending { it.status })
+                        alertAdapter.submitAlerts(
+                            state.alerts.filter { !it.isFilled }.take(
+                                2
+                            )
+                        )
                     }
                     is GetAlertsState.ShowError -> {
                         if (isNetworkAvailable()) {

@@ -124,6 +124,8 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
     @Inject
     lateinit var firebaseAnalytics: FirebaseAnalytics
 
+    private var hasDone = false
+
     private val mainViewModel: MainViewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
     }
@@ -414,6 +416,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                         }
 
                         txList.forEach { transaction ->
+                            hasDone = true
                             showDialog(
                                 AlertDialogFragment.DIALOG_TYPE_DONE,
                                 transaction
@@ -421,18 +424,22 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                         }
 
                         val pending = state.transactions.filter { it.blockNumber.isEmpty() }
-                        handler.postDelayed(
-                            {
-                                if (pending.isEmpty() && txList.isEmpty()) {
-                                    if (currentDialogFragment is AlertDialogFragment) {
-                                        if (!(currentDialogFragment as AlertDialogFragment).isDone) {
-                                            currentDialogFragment?.dismissAllowingStateLoss()
+
+                        if (currentDialogFragment != null) {
+                            handler.postDelayed(
+                                {
+                                    if (pending.isEmpty() && txList.isEmpty() && hasDone) {
+                                        if (currentDialogFragment is AlertDialogFragment) {
+                                            if (!(currentDialogFragment as AlertDialogFragment).isDone) {
+                                                currentDialogFragment?.dismissAllowingStateLoss()
+                                                hasDone = false
+                                                currentDialogFragment = null
+                                            }
                                         }
                                     }
-                                }
-                            }, 500
-                        )
-
+                                }, 500
+                            )
+                        }
 
                         pendingTransactions.clear()
                         pendingTransactions.addAll(pending)
