@@ -39,7 +39,7 @@ public class ForceUpdateChecker {
             String updateUrl = remoteConfig.getString(KEY_UPDATE_URL);
             String title = remoteConfig.getString(KEY_UPDATE_TITLE);
             String message = remoteConfig.getString(KEY_UPDATE_MESSAGE);
-            if (appVersion.compareTo(currentVersion) < 0 && onUpdateNeededListener != null) {
+            if (convertVersionNameToVersionCode(appVersion) < convertVersionNameToVersionCode(currentVersion) && onUpdateNeededListener != null) {
                 onUpdateNeededListener.onUpdateNeeded(title, message, updateUrl);
             }
         }
@@ -59,6 +59,29 @@ public class ForceUpdateChecker {
         }
 
         return result;
+    }
+
+    private int convertVersionNameToVersionCode(String appVersion) {
+        int versionMajor = 0;
+        int versionMiner = 0;
+        int versionPatch = 0;
+
+        try {
+            String[] results = appVersion.split("\\.");
+            if (results[0] != null) {
+                versionMajor = Integer.parseInt(results[0]);
+            }
+            if (results[1] != null) {
+                versionMiner = Integer.parseInt(results[1]);
+            }
+
+            if (results[2] != null) {
+                versionPatch = Integer.parseInt(results[2]);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return versionMajor * 10000 + versionMiner * 100 + versionPatch;
     }
 
     public interface OnUpdateNeededListener {
