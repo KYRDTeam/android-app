@@ -677,5 +677,14 @@
     <string name="transfer_data_success">Tài khoản của bạn sẽ được copy. Bạn không cần thực hiện thủ tục nào khác.</string>
     <string name="transfer_data_action_no_confirm_message">Tài khoản của bạn sẽ không được copy. Bạn sẽ phải tạo một tài khoản mới để sử dụng các dịch vụ như Limit Order, Price Alerts, v.v.. Bạn có muốn tiếp tục?</string>
     <string name="go_back">Quay lại</string>
+    <string name="speed_up">Speed Up</string>
+    <string name="speed_up_gas_price_hint">Your gas price must be 10% higher than the current gas price</string>
+    <string name="can_not_speed_up_transaction">Can not speed up the transaction</string>
+    <string name="can_not_cancel_transaction">Can not cancel the transaction</string>
+    <string name="current_fee">Current fee</string>
+    <string name="new_fee">New fee</string>
+    <string name="cancel_transaction_warning">Submitting this attempt does not guarantee your original transaction will be cancelled. If the cancellation attempt is successful, you will be charged the transaction fee above.</string>
+    <string name="cancellation_gas_fee">Cancellation Gas Fee</string>
+    <string name="attempt_to_cancel">Attempt to Cancel?</string>
 
 </resources>

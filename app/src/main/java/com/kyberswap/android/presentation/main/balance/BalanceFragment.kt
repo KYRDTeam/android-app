@@ -201,6 +201,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             )
         }
 
+        binding.imgFlag.setOnClickListener {
+            navigator.navigateToNotificationcreen(currentFragment)
+        }
+
         binding.tvKyberList.isSelected = true
         currentSelectedView = binding.tvKyberList
 
@@ -473,11 +477,19 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             if (isHide) "******" else walletBalance.toDisplayNumber().exactAmount()
     }
 
-    override fun showNotification(showNotification: Boolean) {
+    override fun showPendingTxNotification(showNotification: Boolean) {
         if (::binding.isInitialized) {
             binding.vNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
         }
     }
+
+    override fun showUnReadNotification(showNotification: Boolean) {
+        if (::binding.isInitialized) {
+            binding.vFlagNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
+        }
+    }
+
+
 
     private fun setSelectedOption(view: View) {
         if (view == currentSelectedView) return

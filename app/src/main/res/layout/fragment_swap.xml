@@ -9,7 +9,6 @@
             name="walletName"
             type="String" />
 
-
         <variable
             name="swap"
             type="com.kyberswap.android.domain.model.Swap" />
@@ -58,6 +57,29 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <View
+                android:id="@+id/vFlagNotification"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginTop="@dimen/notification_margin_top"
+                android:layout_marginEnd="52dp"
+                android:background="@drawable/circle_new_active_bg"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imgFlag"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end"
+                android:layout_marginTop="@dimen/toolbar_margin_top"
+                android:layout_marginEnd="12dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_shape_notification"
+                app:layout_constraintEnd_toStartOf="@+id/imgMenu"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
@@ -90,7 +112,7 @@
                 android:id="@+id/tvName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="56dp"
+                android:layout_marginEnd="92dp"
                 android:gravity="center_vertical"
                 android:singleLine="true"
                 android:text="@{walletName}"

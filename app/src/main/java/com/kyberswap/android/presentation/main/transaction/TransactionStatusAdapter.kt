@@ -17,6 +17,7 @@ import com.kyberswap.android.databinding.ItemTransactionBinding
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.presentation.base.DataBoundListSwipeAdapter
 import com.kyberswap.android.presentation.base.DataBoundViewHolder
+import kotlinx.android.synthetic.main.item_transaction.view.*
 import java.util.Locale
 
 class TransactionStatusAdapter(
@@ -24,7 +25,9 @@ class TransactionStatusAdapter(
     private var isPending: Boolean = false,
     private val handler: Handler? = null,
     private val onTransactionClick: ((Transaction) -> Unit)?,
-    private val onDeleteClick: ((Transaction) -> Unit)? = null
+    private val onDeleteClick: ((Transaction) -> Unit)? = null,
+    private val onSpeedUpClick: ((Transaction) -> Unit)? = null,
+    private val onCancelClick: ((Transaction) -> Unit)? = null
 
 ) : DataBoundListSwipeAdapter<TransactionItem, ViewDataBinding>(
     appExecutors,
@@ -80,6 +83,8 @@ class TransactionStatusAdapter(
         this.isPending = isPending
     }
 
+    var smallestNonceHash: String = 0.toString()
+
     override fun bind(binding: ViewDataBinding, item: TransactionItem) {
         when (item) {
             is TransactionItem.Header -> {
@@ -130,13 +135,35 @@ class TransactionStatusAdapter(
             }, 250)
 
         }
+
+
+        binding.btnSpeedUp.setOnClickListener {
+            binding.swipe.close(true)
+            handler?.postDelayed({
+                onSpeedUpClick?.invoke(transaction)
+            }, 250)
+        }
+
+        binding.btnCancel.setOnClickListener {
+            binding.swipe.close(true)
+            handler?.postDelayed({
+                onCancelClick?.invoke(transaction)
+            }, 250)
+        }
+
         binding.swipe.addSwipeListener(object : SimpleSwipeListener() {
             override fun onStartOpen(layout: SwipeLayout?) {
                 mItemManger.closeAllExcept(layout)
             }
         })
 
-        binding.swipe.isSwipeEnabled = isPending && transaction.enableDeleteTransaction
+
+        binding.swipe.btnDelete.visibility =
+            if (transaction.enableDeleteTransaction) View.VISIBLE else View.GONE
+
+        binding.swipe.btnSpeedUp.visibility =
+            if (transaction.hash == smallestNonceHash) View.VISIBLE else View.GONE
+        binding.swipe.isSwipeEnabled = isPending
     }
 
     override fun getItemViewType(position: Int): Int {

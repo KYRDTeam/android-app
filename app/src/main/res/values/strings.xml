@@ -667,6 +667,15 @@
     <string name="transfer_data_success">Thank you, your profile will be securely copied. No further action needed from you.</string>
     <string name="transfer_data_action_no_confirm_message">Ahh, Your profile will not be copied. You would have to create a new profile to use some services like Limit order, alerts, notifications etc.   Do you want to continues?</string>
     <string name="go_back">Go Back</string>
+    <string name="speed_up">Speed Up</string>
+    <string name="speed_up_gas_price_hint">Your gas price must be 10% higher than the current gas price</string>
+    <string name="can_not_speed_up_transaction">Can not speed up the transaction</string>
+    <string name="can_not_cancel_transaction">Can not cancel the transaction</string>
+    <string name="current_fee">Current fee</string>
+    <string name="new_fee">New fee</string>
+    <string name="cancel_transaction_warning">Submitting this attempt does not guarantee your original transaction will be cancelled. If the cancellation attempt is successful, you will be charged the transaction fee above.</string>
+    <string name="cancellation_gas_fee">Cancellation Gas Fee</string>
+    <string name="attempt_to_cancel">Attempt to Cancel?</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>

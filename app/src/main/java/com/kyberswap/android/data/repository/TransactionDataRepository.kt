@@ -30,6 +30,7 @@ import com.kyberswap.android.domain.usecase.transaction.GetTransactionsPeriodica
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
 import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
 import com.kyberswap.android.domain.usecase.transaction.SaveTransactionFilterUseCase
+import com.kyberswap.android.domain.usecase.transaction.SpeedUpOrCancelTransactionUseCase
 import com.kyberswap.android.domain.usecase.transaction.TransactionsData
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.displayWalletAddress
@@ -66,7 +67,7 @@ class TransactionDataRepository @Inject constructor(
 
     override fun monitorPendingTransactionsPolling(param: MonitorPendingTransactionUseCase.Param): Flowable<List<Transaction>> {
         return Flowable.fromCallable {
-            tokenClient.monitorPendingTransactions(param.transactions)
+            tokenClient.monitorPendingTransactions(param.transactions, param.wallet)
         }
             .doAfterNext { pendingTransactions ->
                 pendingTransactions.forEach { tx ->
@@ -830,6 +831,14 @@ class TransactionDataRepository @Inject constructor(
         }.flatMap {
             transactionFilterDao.findTransactionFilterByAddressFlowable(param.walletAddress)
                 .defaultIfEmpty(it)
+        }
+    }
+
+    override fun speedUpOrCancel(param: SpeedUpOrCancelTransactionUseCase.Param): Single<Boolean> {
+        return Single.fromCallable {
+            val newTx =
+                tokenClient.speedUpOrCancelTx(param.wallet, param.transaction, param.isCancel)
+            newTx.hash != param.transaction.hash
         }
     }
 

@@ -288,6 +288,7 @@ class MainViewModel @Inject constructor(
         getPendingTransactionsUseCase.dispose()
         getPendingTransactionsUseCase.execute(
             Consumer {
+
                 if (it.isNotEmpty() && it != currentPendingList) {
                     currentPendingList = it
                     monitorPendingTransactionsUseCase.dispose()
@@ -308,6 +309,7 @@ class MainViewModel @Inject constructor(
                         MonitorPendingTransactionUseCase.Param(it, wallet)
                     )
                 } else {
+                    if (it.isEmpty()) monitorPendingTransactionsUseCase.dispose()
                     _getPendingTransactionStateCallback.value = Event(
                         GetPendingTransactionState.Success(
                             it

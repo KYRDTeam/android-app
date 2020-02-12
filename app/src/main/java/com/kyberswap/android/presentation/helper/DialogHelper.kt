@@ -31,6 +31,7 @@ import com.kyberswap.android.databinding.DialogBackupPhraseBottomSheetBinding
 import com.kyberswap.android.databinding.DialogBottomDisconnectWalletConnectBinding
 import com.kyberswap.android.databinding.DialogBottomSheetBinding
 import com.kyberswap.android.databinding.DialogCancelOrderConfirmationBinding
+import com.kyberswap.android.databinding.DialogCancelTransactionBinding
 import com.kyberswap.android.databinding.DialogConfirmDataTransferBinding
 import com.kyberswap.android.databinding.DialogConfirmDeleteAlertBinding
 import com.kyberswap.android.databinding.DialogConfirmationBinding
@@ -1012,6 +1013,33 @@ class DialogHelper @Inject constructor(
             onCancelClick.invoke()
         }
 
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    }
+
+    fun showCancelTransactionDialog(
+        fee: String,
+        onYesClick: () -> Unit
+    ) {
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogCancelTransactionBinding>(
+                LayoutInflater.from(activity), R.layout.dialog_cancel_transaction, null, false
+            )
+        binding.fee = fee
+
+
+        binding.tvYes.setOnClickListener {
+            dialog.dismiss()
+            onYesClick.invoke()
+        }
+
+        binding.tvNo.setOnClickListener {
+            dialog.dismiss()
+        }
         dialog.setView(binding.root)
         dialog.show()
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))

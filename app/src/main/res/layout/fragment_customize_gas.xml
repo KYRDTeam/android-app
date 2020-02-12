@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presentation.main.MainActivity">
+
+    <data>
+
+        <variable
+            name="gas"
+            type="com.kyberswap.android.domain.model.Gas" />
+
+        <variable
+            name="transaction"
+            type="com.kyberswap.android.domain.model.Transaction" />
+
+        <variable
+            name="percentage"
+            type="String" />
+
+        <variable
+            name="fee"
+            type="String" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/screen_background"
+        android:fitsSystemWindows="true">
+
+        <FrameLayout
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/toolbar_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/imgBack"
+                style="@style/BackImage" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:text="Customize Gas"
+                android:textColor="#ffffff"
+                android:textSize="18sp" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/toolbar_height"
+            android:background="#f6f7fa"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="24dp">
+
+            <LinearLayout
+                android:id="@+id/lnContent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="8sp"
+                    android:text="Select a higher gas fee to accelerate the processing of your transaction"
+                    android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                    android:textColor="#000000"
+                    android:textSize="14sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="13dp"
+                    android:background="@drawable/rounded_corner_background"
+                    android:orientation="vertical"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="14dp">
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:lineSpacingExtra="8sp"
+                        android:text="@string/gas_fee_gwei"
+                        android:textColor="#5a5e67"
+                        android:textSize="12sp" />
+
+                    <RadioGroup
+                        android:id="@+id/rgGas"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="20dp"
+                        android:orientation="vertical"
+                        android:weightSum="2">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/rbSuperFast"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:backgroundTint="#fea34c"
+                                android:paddingStart="4dp"
+                                android:paddingEnd="0dp"
+                                android:text="@{ gas != null ? String.format(@string/gas_super_fast, gas.superFast) : ``}"
+                                android:textSize="12sp"
+                                android:theme="@style/CustomRadioTheme"
+                                app:font="@{@string/semi_bold_font_path}"
+                                app:styleBold="@{gas.superFast}" />
+
+                            <RadioButton
+                                android:id="@+id/rbFast"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:backgroundTint="#fea34c"
+                                android:paddingStart="4dp"
+                                android:paddingEnd="0dp"
+                                android:text="@{gas != null ? String.format(@string/gas_fast, gas.fast): ``}"
+                                android:textSize="12sp"
+                                android:theme="@style/CustomRadioTheme"
+                                app:font="@{@string/semi_bold_font_path}"
+                                app:styleBold="@{gas.fast}" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/rbRegular"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:backgroundTint="#fea34c"
+                                android:paddingStart="4dp"
+                                android:paddingEnd="0dp"
+                                android:text="@{gas != null ? String.format(@string/gas_regular, gas.standard) : ``}"
+                                android:textSize="12sp"
+                                android:theme="@style/CustomRadioTheme"
+                                app:font="@{@string/semi_bold_font_path}"
+                                app:styleBold="@{gas.standard}" />
+
+                            <RadioButton
+                                android:id="@+id/rbSlow"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:backgroundTint="#fea34c"
+                                android:paddingStart="4dp"
+                                android:paddingEnd="0dp"
+                                android:text="@{gas != null ? String.format(@string/gas_slow, gas.low) : ``}"
+                                android:textSize="12sp"
+                                android:theme="@style/CustomRadioTheme"
+                                app:font="@{@string/semi_bold_font_path}"
+                                app:styleBold="@{gas.low}" />
+                        </LinearLayout>
+
+                    </RadioGroup>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="23dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="11dp"
+                        android:background="#e1e4eb" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:lineSpacingExtra="6sp"
+                        android:text="@string/speed_up_gas_price_hint"
+                        android:textColor="#5a5e67"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:lineSpacingExtra="14sp"
+                        android:text="@string/current_fee"
+                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textColor="#5a5e67"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:gravity="end"
+                        android:lineSpacingExtra="12sp"
+                        android:text="@{transaction.fee + ` ETH`}"
+                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:lineSpacingExtra="14sp"
+                        android:text="@string/new_fee"
+                        android:textAppearance="@style/TextAppearance.Montserrat.Bold"
+                        android:textColor="#5a5e67"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:gravity="end"
+                        android:lineSpacingExtra="12sp"
+                        android:text="@{fee != null ? fee + ` ETH` : ``}"
+                        android:textAppearance="@style/TextAppearance.Montserrat.Bold"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <!--                <TextView-->
+                <!--                    android:id="@+id/tvPercentage"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:gravity="end"-->
+                <!--                    android:lineSpacingExtra="14sp"-->
+                <!--                    android:text="@{percentage != null ? percentage + `%` : ``}"-->
+                <!--                    android:textColor="#5a5e67"-->
+                <!--                    android:textSize="12sp" />-->
+
+                <TextView
+                    android:id="@+id/tvDone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="45dp"
+                    android:layout_marginEnd="15dp"
+                    android:background="@drawable/import_wallet_toggle_drawable"
+                    android:gravity="center"
+                    android:minHeight="45dp"
+                    android:text="@string/password_done"
+                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textColor="#ffffff"
+                    android:textSize="16sp" />
+
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+
+    </FrameLayout>
+
+
+</layout>

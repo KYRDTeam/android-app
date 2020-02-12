@@ -70,6 +70,8 @@ import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.main.swap.SwapViewModel
 import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
 import com.kyberswap.android.presentation.main.swap.TokenSearchViewModel
+import com.kyberswap.android.presentation.main.transaction.CustomizeGasFragment
+import com.kyberswap.android.presentation.main.transaction.CustomizeGasViewModel
 import com.kyberswap.android.presentation.main.transaction.TransactionDetailReceiveFragment
 import com.kyberswap.android.presentation.main.transaction.TransactionDetailSendFragment
 import com.kyberswap.android.presentation.main.transaction.TransactionDetailSwapFragment
@@ -266,6 +268,11 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeNotificationFragment(): NotificationFragment
+
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeCustomizeGasFragment(): CustomizeGasFragment
 
     @Binds
     @IntoMap
@@ -527,5 +534,12 @@ interface MainActivityModule {
     @ViewModelKey(NotificationViewModel::class)
     fun bindNotificationViewModel(
         notificationViewModel: NotificationViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CustomizeGasViewModel::class)
+    fun bindCustomizeGasViewModel(
+        customizeGasViewModel: CustomizeGasViewModel
     ): ViewModel
 }

@@ -814,9 +814,12 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
     private fun showPendingIndicator() {
         if (currentFragment is PendingTransactionNotification) {
-            (currentFragment as PendingTransactionNotification).showNotification(
-                hasPendingTransaction == true || showPendingNotification
-            )
+            (currentFragment as PendingTransactionNotification).apply {
+                showPendingTxNotification(
+                    hasPendingTransaction == true
+                )
+                showUnReadNotification(showPendingNotification)
+            }
         }
     }
 

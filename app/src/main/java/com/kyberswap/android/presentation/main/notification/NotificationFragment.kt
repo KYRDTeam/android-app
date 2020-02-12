@@ -117,7 +117,6 @@ class NotificationFragment : BaseFragment() {
                     }
                 }
             }
-
         }
 
         viewModel.getLoginStatus()
@@ -129,7 +128,8 @@ class NotificationFragment : BaseFragment() {
                         val userId = state.userInfo?.uid ?: 0
                         if (isLoggedIn != (userId > 0)) {
                             isLoggedIn = userId > 0
-                            binding.isLoggedIn = isLoggedIn && notificationAdapter.itemCount > 0
+                            binding.isLoggedIn =
+                                isLoggedIn && notificationAdapter.getData().any { !it.read }
                             refresh()
                         }
                     }
@@ -168,7 +168,7 @@ class NotificationFragment : BaseFragment() {
                         if (!isLoggedIn) {
                             notificationAdapter.readAll()
                         }
-                        binding.isLoggedIn = isLoggedIn && state.notifications.isNotEmpty()
+                        binding.isLoggedIn = isLoggedIn && state.notifications.any { !it.read }
                         binding.isNoData = state.notifications.isEmpty()
                     }
                     is GetNotificationsState.ShowError -> {
