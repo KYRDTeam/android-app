@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.daimajia.swipe.util.Attributes
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentTransactionStatusBinding
@@ -22,7 +23,12 @@ import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.FAIL_CANCEL_TX_EVENT
+import com.kyberswap.android.util.USER_CLICK_CANCEL_TX_EVENT
+import com.kyberswap.android.util.USER_CLICK_SPEED_UP_TX_EVENT
+import com.kyberswap.android.util.USER_CLICK_SUBMIT_CANCEL_TX_EVENT
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import org.web3j.utils.Convert
@@ -45,6 +51,9 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
     lateinit var viewModelFactory: ViewModelFactory
 
     private var transactionStatusAdapter: TransactionStatusAdapter? = null
+
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
 
     private val handler by lazy {
         Handler()
@@ -216,9 +225,17 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                     })
 
             }, {
+                analytics.logEvent(
+                    USER_CLICK_SPEED_UP_TX_EVENT,
+                    Bundle().createEvent()
+                )
                 navigator.navigateToCustomGas(currentFragment, it)
             }, {
 
+                analytics.logEvent(
+                    USER_CLICK_CANCEL_TX_EVENT,
+                    Bundle().createEvent()
+                )
                 val cancelGasPrice =
                     Convert.toWei(defaultGasPrice.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
                         .max(
@@ -227,6 +244,11 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
 
                 dialogHelper.showCancelTransactionDialog(it.getFeeFromWei(cancelGasPrice.toDisplayNumber())) {
                     wallet?.let { it1 ->
+
+                        analytics.logEvent(
+                            USER_CLICK_SUBMIT_CANCEL_TX_EVENT,
+                            Bundle().createEvent(it.displayTransaction)
+                        )
                         viewModel.cancelTransaction(
                             it1,
                             it.copy(gasPrice = cancelGasPrice.toDisplayNumber())
@@ -242,11 +264,17 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                 when (state) {
                     is SpeedUpTransactionState.Success -> {
                         if (!state.status) {
+                            analytics.logEvent(FAIL_CANCEL_TX_EVENT, Bundle().createEvent())
                             showError(getString(R.string.can_not_cancel_transaction))
                         }
                     }
                     is SpeedUpTransactionState.ShowError -> {
-                        showError(state.message ?: getString(R.string.something_wrong))
+                        val error = state.message ?: getString(R.string.something_wrong)
+                        analytics.logEvent(
+                            FAIL_CANCEL_TX_EVENT,
+                            Bundle().createEvent(state.message)
+                        )
+                        showError(error)
                     }
                 }
             }

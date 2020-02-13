@@ -18,12 +18,14 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.FAIL_SPEED_UP_TX_EVENT
+import com.kyberswap.android.util.USER_CLICK_SUBMIT_SPEED_UP_TX_EVENT
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.synthetic.main.layout_expanable.*
 import org.web3j.utils.Convert
-import timber.log.Timber
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -127,7 +129,12 @@ class CustomizeGasFragment : BaseFragment() {
                         }
                     }
                     is SpeedUpTransactionState.ShowError -> {
-                        showError(state.message ?: getString(R.string.something_wrong))
+                        val error = state.message ?: getString(R.string.something_wrong)
+                        analytics.logEvent(
+                            FAIL_SPEED_UP_TX_EVENT,
+                            Bundle().createEvent(error)
+                        )
+                        showError(error)
                     }
                 }
             }
@@ -178,14 +185,14 @@ class CustomizeGasFragment : BaseFragment() {
                             } else {
                                 (selectedGasPrice - currentGasPrice) / currentGasPrice
                             }
-                        Timber.e("currentGasPrice: " + currentGasPrice)
-                        Timber.e("selectedGasPrice: " + selectedGasPrice)
 
-                        Timber.e("percentage: " + percentage)
                         if (percentage < 0.1.toBigDecimal()) {
                             showError(getString(R.string.speed_up_gas_price_hint))
                         } else {
-                            Timber.e("gasPrice: " + selectedGasPrice.toDisplayNumber())
+                            analytics.logEvent(
+                                USER_CLICK_SUBMIT_SPEED_UP_TX_EVENT,
+                                Bundle().createEvent(tx.displayTransaction)
+                            )
                             viewModel.speedUp(
                                 wallet,
                                 tx.copy(gasPrice = selectedGasPrice.toDisplayNumber())

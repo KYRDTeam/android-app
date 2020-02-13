@@ -1040,6 +1040,10 @@ class DialogHelper @Inject constructor(
         binding.tvNo.setOnClickListener {
             dialog.dismiss()
         }
+
+        binding.imgClose.setOnClickListener {
+            dialog.dismiss()
+        }
         dialog.setView(binding.root)
         dialog.show()
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))

@@ -1,7 +1,9 @@
 package com.kyberswap.android.util
 
 import android.content.Context
+import android.os.Bundle
 import android.util.Base64
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.db.TokenDao
@@ -16,6 +18,7 @@ import com.kyberswap.android.presentation.common.DEFAULT_WALLET_ID
 import com.kyberswap.android.presentation.common.PERM
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfer
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.fromAddress
 import com.kyberswap.android.util.ext.isFromKyberSwap
 import com.kyberswap.android.util.ext.isSwapTx
@@ -69,7 +72,8 @@ class TokenClient @Inject constructor(
     private val web3j: Web3j,
     private val tokenDao: TokenDao,
     private val transactionDao: TransactionDao,
-    private val context: Context
+    private val context: Context,
+    private val analytics: FirebaseAnalytics
 ) {
 
     private val event = Event(
@@ -924,6 +928,10 @@ class TokenClient @Inject constructor(
                 } else {
                     val latestTx = transactionDao.getLatestTransaction(wallet.address)
                     if (latestTx?.nonce.toBigDecimalOrDefaultZero() >= s.nonce.toBigDecimalOrDefaultZero()) {
+                        analytics.logEvent(
+                            TX_SPEED_UP_CANCEL_DROPPED_EVENT,
+                            Bundle().createEvent(s.displayTransaction)
+                        )
                         transactionDao.delete(s)
                     } else {
                         transactionsList.add(s)
@@ -945,13 +953,13 @@ class TokenClient @Inject constructor(
         val optionalResponse = web3j.ethGetTransactionByHash(tx.hash).send().transaction
         val txResponse = optionalResponse.get()
 
-        Timber.e("hash: " + tx.hash)
+//        Timber.e("hash: " + tx.hash)
         val newHash = if (isCancel) cancel(
             wallet,
             txResponse,
             tx.gasPrice.toBigIntegerOrDefaultZero()
         ) else speedUp(wallet, txResponse, tx.gasPrice.toBigIntegerOrDefaultZero())
-        Timber.e("newHash: " + newHash)
+//        Timber.e("newHash: " + newHash)
         val newTx =
             web3j.ethGetTransactionByHash(newHash).send().transaction.get()
 

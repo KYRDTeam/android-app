@@ -1,6 +1,7 @@
 package com.kyberswap.android.util.di.module
 
 import android.content.Context
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.GsonBuilder
 import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.R
@@ -194,9 +195,10 @@ class NetworkModule {
         web3j: Web3j,
         tokenDao: TokenDao,
         transactionDao: TransactionDao,
-        context: Context
+        context: Context,
+        analytics: FirebaseAnalytics
     ): TokenClient {
-        return TokenClient(web3j, tokenDao, transactionDao, context)
+        return TokenClient(web3j, tokenDao, transactionDao, context, analytics)
     }
 
     private fun <T> createApiClient(clazz: Class<T>, baseUrl: String, client: OkHttpClient): T {
