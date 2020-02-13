@@ -677,14 +677,14 @@
     <string name="transfer_data_success">Thank you, your profile will be securely copied. No further action needed from you.</string>
     <string name="transfer_data_action_no_confirm_message">Ahh, Your profile will not be copied. You would have to create a new profile to use some services like Limit order, alerts, notifications etc.   Do you want to continues?</string>
     <string name="go_back">Go Back</string>
-    <string name="speed_up">Speed Up</string>
-    <string name="speed_up_gas_price_hint">Your gas price must be 10% higher than the current gas price</string>
-    <string name="can_not_speed_up_transaction">Can not speed up the transaction</string>
-    <string name="can_not_cancel_transaction">Can not cancel the transaction</string>
-    <string name="current_fee">Current fee</string>
-    <string name="new_fee">New fee</string>
-    <string name="cancel_transaction_warning">Submitting this attempt does not guarantee your original transaction will be cancelled. If the cancellation attempt is successful, you will be charged the transaction fee above.</string>
-    <string name="cancellation_gas_fee">Cancellation Gas Fee</string>
-    <string name="attempt_to_cancel">Attempt to Cancel?</string>
+    <string name="speed_up">속도 올리기</string>
+    <string name="speed_up_gas_price_hint">가스비는 현재 가스비보다 10%이상 높아야합니다.</string>
+    <string name="can_not_speed_up_transaction">해당 거래의 속도를 올릴 수 없습니다.</string>
+    <string name="can_not_cancel_transaction">거래를 취소할 수 없습니다.</string>
+    <string name="current_fee">현재 수수료</string>
+    <string name="new_fee">새로운 수수료</string>
+    <string name="cancel_transaction_warning">거래 취소 시도가 기존 거래의 취소를 보장하지는 않습니다. 취소 시도가 성공하였을 경우 위에 적힌 금액만큼의 거래 수수료가 부과됩니다.</string>
+    <string name="cancellation_gas_fee">취소 가스비</string>
+    <string name="attempt_to_cancel">취소를 시도하시겠습니까?</string>
 
 </resources>

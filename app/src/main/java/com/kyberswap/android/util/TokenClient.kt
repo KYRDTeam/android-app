@@ -869,74 +869,84 @@ class TokenClient @Inject constructor(
     ): List<com.kyberswap.android.domain.model.Transaction> {
         val transactionsList = mutableListOf<com.kyberswap.android.domain.model.Transaction>()
         for (s in transactions) {
-            val transaction = web3j.ethGetTransactionByHash(s.hash).send().transaction
-            if (transaction.isPresent) {
-                val tx = transaction.get()
-                if (tx.hash.isNotEmpty()) {
-                    val transactionReceipt =
-                        web3j.ethGetTransactionReceipt(tx.hash).send().transactionReceipt
-                    if (transactionReceipt.isPresent) {
-                        val txReceipt = transactionReceipt.get()
+            try {
+                val transaction = web3j.ethGetTransactionByHash(s.hash).send().transaction
+                if (transaction.isPresent) {
+                    val tx = transaction.get()
+                    if (tx.hash.isNotEmpty()) {
+                        val transactionReceipt =
+                            web3j.ethGetTransactionReceipt(tx.hash).send().transactionReceipt
+                        if (transactionReceipt.isPresent) {
+                            val txReceipt = transactionReceipt.get()
 
-                        val filter = txReceipt.logs.firstOrNull {
-                            it.address.equals(context.getString(R.string.kyber_address), true) &&
-                                it.topics.isNotEmpty() && it.topics.first().equals(
-                                context.getString(R.string.kyber_event_topic),
-                                true
-                            )
-                        }
+                            val filter = txReceipt.logs.firstOrNull {
+                                it.address.equals(
+                                    context.getString(R.string.kyber_address),
+                                    true
+                                ) &&
+                                    it.topics.isNotEmpty() && it.topics.first().equals(
+                                    context.getString(R.string.kyber_event_topic),
+                                    true
+                                )
+                            }
 
-                        val txDetail = if (filter != null) {
+                            val txDetail = if (filter != null) {
 
-                            val values = FunctionReturnDecoder.decode(
-                                filter.data,
-                                event.nonIndexedParameters
-                            )
-                            val destAmount = if (values.size > 3) {
-                                val tokenBySymbol = tokenDao.getTokenBySymbol(s.tokenDest)
-                                if (tokenBySymbol != null) {
-                                    (values[3] as Uint256).value.toBigDecimal().divide(
-                                        BigDecimal.TEN
-                                            .pow(tokenBySymbol.tokenDecimal),
-                                        18,
-                                        RoundingMode.UP
-                                    ).toDisplayNumber()
+                                val values = FunctionReturnDecoder.decode(
+                                    filter.data,
+                                    event.nonIndexedParameters
+                                )
+                                val destAmount = if (values.size > 3) {
+                                    val tokenBySymbol = tokenDao.getTokenBySymbol(s.tokenDest)
+                                    if (tokenBySymbol != null) {
+                                        (values[3] as Uint256).value.toBigDecimal().divide(
+                                            BigDecimal.TEN
+                                                .pow(tokenBySymbol.tokenDecimal),
+                                            18,
+                                            RoundingMode.UP
+                                        ).toDisplayNumber()
+                                    } else {
+                                        s.destAmount
+                                    }
                                 } else {
                                     s.destAmount
                                 }
+                                s.copy(destAmount = destAmount)
                             } else {
-                                s.destAmount
+                                s
                             }
-                            s.copy(destAmount = destAmount)
+                            transactionsList.add(txDetail.with(txReceipt))
                         } else {
-                            s
+                            transactionsList.add(s.with(tx))
                         }
-                        transactionsList.add(txDetail.with(txReceipt))
                     } else {
-                        transactionsList.add(s.with(tx))
+                        transactionsList.add(
+                            com.kyberswap.android.domain.model.Transaction(tx).copy(
+                                hash = s.hash
+                            )
+                        )
                     }
                 } else {
-                    transactionsList.add(
-                        com.kyberswap.android.domain.model.Transaction(tx).copy(
-                            hash = s.hash
-                        )
-                    )
-                }
-            } else {
-                if ((System.currentTimeMillis() / 1000 - s.timeStamp) / 60f > 10f) {
-                    transactionsList.add(s.copy(blockNumber = com.kyberswap.android.domain.model.Transaction.DEFAULT_DROPPED_BLOCK_NUMBER.toString()))
-                } else {
-                    val latestTx = transactionDao.getLatestTransaction(wallet.address)
-                    if (latestTx?.nonce.toBigDecimalOrDefaultZero() >= s.nonce.toBigDecimalOrDefaultZero()) {
-                        analytics.logEvent(
-                            TX_SPEED_UP_CANCEL_DROPPED_EVENT,
-                            Bundle().createEvent(s.displayTransaction)
-                        )
-                        transactionDao.delete(s)
+                    if ((System.currentTimeMillis() / 1000 - s.timeStamp) / 60f > 10f) {
+                        transactionsList.add(s.copy(blockNumber = com.kyberswap.android.domain.model.Transaction.DEFAULT_DROPPED_BLOCK_NUMBER.toString()))
                     } else {
-                        transactionsList.add(s)
+                        val latestTx = transactionDao.getLatestTransaction(wallet.address)
+                        if (s.nonce.toBigDecimalOrDefaultZero() > BigDecimal.ZERO &&
+                            latestTx?.nonce.toBigDecimalOrDefaultZero() >= s.nonce.toBigDecimalOrDefaultZero() &&
+                            System.currentTimeMillis() / 1000 - s.timeStamp > 30
+                        ) {
+                            analytics.logEvent(
+                                TX_SPEED_UP_CANCEL_DROPPED_EVENT,
+                                Bundle().createEvent(s.displayTransaction)
+                            )
+                            transactionDao.delete(s)
+                        } else {
+                            transactionsList.add(s)
+                        }
                     }
                 }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
             }
         }
         if (transactionsList.isEmpty()) return transactions
@@ -966,7 +976,13 @@ class TokenClient @Inject constructor(
 
         return if (newHash.isNotEmpty() && !web3j.ethGetTransactionReceipt(tx.hash).send().transactionReceipt.isPresent) {
             val t = tx.with(newTx)
-            transactionDao.delete(tx)
+            transactionDao.updateTransaction(
+                tx.copy(
+                    isCancel = true,
+                    nonce = txResponse.nonce.toString()
+                )
+            )
+
             val pendingTx = if (isCancel) {
                 com.kyberswap.android.domain.model.Transaction(
                     hash = t.hash,
@@ -981,12 +997,12 @@ class TokenClient @Inject constructor(
                     tokenDecimal = Token.ETH_DECIMAL.toString(),
                     tokenSymbol = Token.ETH,
                     walletAddress = wallet.address,
+                    nonce = newTx.nonce.toString(),
                     type = com.kyberswap.android.domain.model.Transaction.TransactionType.SEND
                 )
             } else {
                 t.copy(value = tx.value)
             }
-
             transactionDao.insertTransaction(pendingTx)
             pendingTx
         } else {

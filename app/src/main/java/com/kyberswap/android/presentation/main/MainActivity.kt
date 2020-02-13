@@ -423,7 +423,8 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             )
                         }
 
-                        val pending = state.transactions.filter { it.blockNumber.isEmpty() }
+                        val pending =
+                            state.transactions.filter { it.blockNumber.isEmpty() && !it.isCancel }
 
                         if (currentDialogFragment != null) {
                             handler.postDelayed(

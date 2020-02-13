@@ -61,7 +61,8 @@ data class Transaction(
     val tokenDest: String = "",
     val destAmount: String = "",
     val transactionStatus: String = "",
-    val walletAddress: String = ""
+    val walletAddress: String = "",
+    val isCancel: Boolean = false
 
 ) : Parcelable {
     @IgnoredOnParcel

@@ -667,7 +667,7 @@
     <string name="transfer_data_success">Thank you, your profile will be securely copied. No further action needed from you.</string>
     <string name="transfer_data_action_no_confirm_message">Ahh, Your profile will not be copied. You would have to create a new profile to use some services like Limit order, alerts, notifications etc.   Do you want to continues?</string>
     <string name="go_back">Go Back</string>
-    <string name="speed_up">Speed Up</string>
+    <string name="speed_up">속도 올리기</string>
     <string name="speed_up_gas_price_hint">Your gas price must be 10% higher than the current gas price</string>
     <string name="can_not_speed_up_transaction">Can not speed up the transaction</string>
     <string name="can_not_cancel_transaction">Can not cancel the transaction</string>

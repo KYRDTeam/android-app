@@ -125,7 +125,7 @@ class TransactionStatusViewModel @Inject constructor(
         _getTransactionCallback.postValue(Event(GetTransactionState.Loading))
         getPendingTransactionsUseCase.execute(
             Consumer {
-                val smallestNonceTx = it.minBy {
+                val smallestNonceTx = it.filter { !it.isCancel }.minBy {
                     it.timeStamp
                 }
 
@@ -136,7 +136,7 @@ class TransactionStatusViewModel @Inject constructor(
                 _getTransactionCallback.value = Event(
                     GetTransactionState.Success(
                         filterTransaction(
-                            it,
+                            it.filter { tx -> !tx.isCancel },
                             transactionFilter
                         ),
                         currentFilter != transactionFilter,
