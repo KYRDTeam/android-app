@@ -191,9 +191,17 @@ abstract class AppDatabase : RoomDatabase() {
                 """.trimIndent()
                 )
 
+
                 database.execSQL(
                     """
-                        CREATE  INDEX `index_transactions_transactionStatus_walletAddress` ON new_transactions (`hash`, `transactionStatus`, `walletAddress`)
+                        DROP INDEX IF EXISTS index_transactions_transactionStatus_walletAddress;
+
+                    """.trimIndent()
+                )
+
+                database.execSQL(
+                    """
+                        CREATE  INDEX  `index_transactions_transactionStatus_walletAddress` ON new_transactions (`hash`, `transactionStatus`, `walletAddress`)
                     """.trimIndent()
                 )
 

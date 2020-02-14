@@ -975,14 +975,15 @@ class TokenClient @Inject constructor(
 
 
         return if (newHash.isNotEmpty() && !web3j.ethGetTransactionReceipt(tx.hash).send().transactionReceipt.isPresent) {
-            val t = tx.with(newTx)
+            val nonce = if (newTx.nonce != null) newTx.nonce else txResponse.nonce
             transactionDao.updateTransaction(
                 tx.copy(
                     isCancel = true,
-                    nonce = txResponse.nonce.toString()
+                    nonce = nonce.toString()
                 )
             )
 
+            val t = tx.with(newTx)
             val pendingTx = if (isCancel) {
                 com.kyberswap.android.domain.model.Transaction(
                     hash = t.hash,
@@ -997,7 +998,7 @@ class TokenClient @Inject constructor(
                     tokenDecimal = Token.ETH_DECIMAL.toString(),
                     tokenSymbol = Token.ETH,
                     walletAddress = wallet.address,
-                    nonce = newTx.nonce.toString(),
+                    nonce = nonce.toString(),
                     type = com.kyberswap.android.domain.model.Transaction.TransactionType.SEND
                 )
             } else {

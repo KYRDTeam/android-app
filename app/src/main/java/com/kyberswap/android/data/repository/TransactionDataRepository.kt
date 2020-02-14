@@ -489,6 +489,7 @@ class TransactionDataRepository @Inject constructor(
     private fun findTransactionPair(transactions: List<Transaction>): Pair<Transaction?, Transaction?> {
         val send = transactions.find {
             it.type == Transaction.TransactionType.SEND
+//                && it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO
         }
 
         val received = transactions.find {
@@ -600,6 +601,19 @@ class TransactionDataRepository @Inject constructor(
                                             ?: transactions.first().tokenSymbol
                                     )
                                 )
+
+//                                transactionList.addAll(
+//                                    transactions
+//                                        .filter {
+//                                        it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO
+//                                    }
+//                                        .map {
+//                                            it.copy(
+//                                                walletAddress = wallet.address,
+//                                                tokenSymbol = addressToSymbolMap[it.contractAddress]
+//                                                    ?: it.tokenSymbol
+//                                            )
+//                                        })
                             }
                         }
                     } else if (transactions.size > 2) {
@@ -630,16 +644,18 @@ class TransactionDataRepository @Inject constructor(
                             remainingTransactions.remove(send)
                             remainingTransactions.remove(received)
                             if (remainingTransactions.size > 0) {
-                                transactionList.addAll(remainingTransactions.map { tx ->
-                                    tx.copy(
-                                        walletAddress = wallet.address,
-                                        type = if (tx.isTransfer)
-                                            tx.type
-                                        else Transaction.TransactionType.SWAP,
-                                        tokenSymbol = addressToSymbolMap[tx.contractAddress]
-                                            ?: tx.tokenSymbol
-                                    )
-                                })
+                                transactionList.addAll(remainingTransactions
+//                                    .filter { it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO }
+                                    .map { tx ->
+                                        tx.copy(
+                                            walletAddress = wallet.address,
+                                            type = if (tx.isTransfer)
+                                                tx.type
+                                            else Transaction.TransactionType.SWAP,
+                                            tokenSymbol = addressToSymbolMap[tx.contractAddress]
+                                                ?: tx.tokenSymbol
+                                        )
+                                    })
                             }
                         } else {
                             transactionList.addAll(transactions.map { tx ->
