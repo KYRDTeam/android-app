@@ -61,7 +61,8 @@ data class Transaction(
     val tokenDest: String = "",
     val destAmount: String = "",
     val transactionStatus: String = "",
-    val walletAddress: String = ""
+    val walletAddress: String = "",
+    val isCancel: Boolean = false
 
 ) : Parcelable {
     @IgnoredOnParcel
@@ -384,6 +385,20 @@ data class Transaction(
             gasPrice.toBigDecimalOrDefaultZero().multiply(gasUsed.toBigDecimalOrDefaultZero())
             , Convert.Unit.ETHER
         ).toDisplayNumber()
+
+    fun getFeeFromGwei(gasPrice: String): String {
+        return Convert.fromWei(
+            Convert.toWei(gasPrice, Convert.Unit.GWEI).multiply(gas.toBigDecimalOrDefaultZero())
+            , Convert.Unit.ETHER
+        ).toDisplayNumber()
+    }
+
+    fun getFeeFromWei(gasPrice: String): String {
+        return Convert.fromWei(
+            gasPrice.toBigDecimalOrDefaultZero().multiply(gas.toBigDecimalOrDefaultZero())
+            , Convert.Unit.ETHER
+        ).toDisplayNumber()
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -1121,6 +1121,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 }
             }
         })
+
+        binding.imgFlag.setOnClickListener {
+            navigator.navigateToNotificationcreen(currentFragment)
+        }
     }
 
     fun showFillOrder(notificationLimitOrder: NotificationLimitOrder) {
@@ -1303,9 +1307,15 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         binding.order?.let { wallet?.let { it1 -> viewModel.getRelatedOrders(it, it1) } }
     }
 
-    override fun showNotification(showNotification: Boolean) {
+    override fun showPendingTxNotification(showNotification: Boolean) {
         if (::binding.isInitialized) {
             binding.vNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
+        }
+    }
+
+    override fun showUnReadNotification(showNotification: Boolean) {
+        if (::binding.isInitialized) {
+            binding.vFlagNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
         }
     }
 

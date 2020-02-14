@@ -677,5 +677,14 @@
     <string name="transfer_data_success">Tài khoản của bạn sẽ được copy. Bạn không cần thực hiện thủ tục nào khác.</string>
     <string name="transfer_data_action_no_confirm_message">Tài khoản của bạn sẽ không được copy. Bạn sẽ phải tạo một tài khoản mới để sử dụng các dịch vụ như Limit Order, Price Alerts, v.v.. Bạn có muốn tiếp tục?</string>
     <string name="go_back">Quay lại</string>
+    <string name="speed_up">Tăng tốc</string>
+    <string name="speed_up_gas_price_hint">Phí gas phải lớn hơn 10% so với phí gas hiện tại</string>
+    <string name="can_not_speed_up_transaction">Không thể tăng tốc giao dịch này</string>
+    <string name="can_not_cancel_transaction">Không thể hủy giảo dịch này</string>
+    <string name="current_fee">Phí hiện tại</string>
+    <string name="new_fee">Phí mới</string>
+    <string name="cancel_transaction_warning">Thực hiện lệnh này không đảm bảo giao dịch ban đầu của bạn sẽ được hủy. Nếu việc hủy giao dịch thành công, bạn sẽ phải trả phí gas nêu trên.</string>
+    <string name="cancellation_gas_fee">Phí gas hủy bỏ</string>
+    <string name="attempt_to_cancel">Quyết định hủy bỏ?</string>
 
 </resources>

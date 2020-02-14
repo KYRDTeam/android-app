@@ -5,13 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.TransactionFilter
 import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
 import com.kyberswap.android.domain.usecase.transaction.DeleteTransactionUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetPendingTransactionsUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionFilterUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
+import com.kyberswap.android.domain.usecase.transaction.SpeedUpOrCancelTransactionUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
+import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.util.ErrorHandler
 import com.kyberswap.android.util.ext.toDate
 import io.reactivex.functions.Action
@@ -25,7 +28,9 @@ class TransactionStatusViewModel @Inject constructor(
     private val getPendingTransactionsUseCase: GetPendingTransactionsUseCase,
     private val getTransactionsUseCase: GetTransactionsUseCase,
     private val deleteTransactionUseCase: DeleteTransactionUseCase,
+    private val speedUpOrCancelOrCancelTransactionUseCase: SpeedUpOrCancelTransactionUseCase,
     getSelectedWalletUseCase: GetSelectedWalletUseCase,
+    private val getGasPriceUseCase: GetGasPriceUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
 
@@ -37,8 +42,20 @@ class TransactionStatusViewModel @Inject constructor(
     val deleteTransactionCallback: LiveData<Event<DeleteTransactionState>>
         get() = _deleteTransactionCallback
 
+    private val _getGetGasPriceCallback = MutableLiveData<Event<GetGasPriceState>>()
+    val getGetGasPriceCallback: LiveData<Event<GetGasPriceState>>
+        get() = _getGetGasPriceCallback
+
+    private val _nonceObserver = MutableLiveData<Event<String>>()
+    val nonceObserver: LiveData<Event<String>>
+        get() = _nonceObserver
+
     private var currentFilter: TransactionFilter? = null
     var transactionList = listOf<Transaction>()
+
+    private val _cancelTransactionCallback = MutableLiveData<Event<SpeedUpTransactionState>>()
+    val cancelTransactionCallback: LiveData<Event<SpeedUpTransactionState>>
+        get() = _cancelTransactionCallback
 
     private fun getTransaction(
         type: Int,
@@ -108,10 +125,18 @@ class TransactionStatusViewModel @Inject constructor(
         _getTransactionCallback.postValue(Event(GetTransactionState.Loading))
         getPendingTransactionsUseCase.execute(
             Consumer {
+                val smallestNonceTx = it.filter { !it.isCancel }.minBy {
+                    it.timeStamp
+                }
+
+                smallestNonceTx?.let { tx ->
+                    _nonceObserver.value = Event(tx.hash)
+                }
+
                 _getTransactionCallback.value = Event(
                     GetTransactionState.Success(
                         filterTransaction(
-                            it,
+                            it.filter { tx -> !tx.isCancel },
                             transactionFilter
                         ),
                         currentFilter != transactionFilter,
@@ -198,6 +223,37 @@ class TransactionStatusViewModel @Inject constructor(
                     Event(DeleteTransactionState.ShowError(it.localizedMessage))
             },
             DeleteTransactionUseCase.Param(transaction)
+        )
+    }
+
+    fun getGasPrice() {
+        getGasPriceUseCase.dispose()
+        getGasPriceUseCase.execute(
+            Consumer {
+                _getGetGasPriceCallback.value = Event(GetGasPriceState.Success(it))
+            },
+            Consumer {
+                it.printStackTrace()
+                _getGetGasPriceCallback.value =
+                    Event(GetGasPriceState.ShowError(errorHandler.getError(it)))
+            },
+            null
+        )
+    }
+
+    fun cancelTransaction(wallet: Wallet, transaction: Transaction) {
+        speedUpOrCancelOrCancelTransactionUseCase.dispose()
+        _cancelTransactionCallback.postValue(Event(SpeedUpTransactionState.Loading))
+        speedUpOrCancelOrCancelTransactionUseCase.execute(
+            Consumer {
+                _cancelTransactionCallback.value = Event(SpeedUpTransactionState.Success(it))
+            },
+            Consumer {
+                it.printStackTrace()
+                _cancelTransactionCallback.value =
+                    Event(SpeedUpTransactionState.ShowError(it.localizedMessage))
+            },
+            SpeedUpOrCancelTransactionUseCase.Param(transaction, wallet, true)
         )
     }
 }

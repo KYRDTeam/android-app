@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.daimajia.swipe.util.Attributes
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentTransactionStatusBinding
@@ -20,8 +21,17 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.FAIL_CANCEL_TX_EVENT
+import com.kyberswap.android.util.USER_CLICK_CANCEL_TX_EVENT
+import com.kyberswap.android.util.USER_CLICK_SPEED_UP_TX_EVENT
+import com.kyberswap.android.util.USER_CLICK_SUBMIT_CANCEL_TX_EVENT
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toDisplayNumber
+import org.web3j.utils.Convert
 import javax.inject.Inject
 
 class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -42,6 +52,9 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
 
     private var transactionStatusAdapter: TransactionStatusAdapter? = null
 
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
+
     private val handler by lazy {
         Handler()
     }
@@ -58,6 +71,8 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
         ViewModelProviders.of(this, viewModelFactory)
             .get(TransactionStatusViewModel::class.java)
     }
+
+    private var defaultGasPrice: String = 1.toString()
 
     @Inject
     lateinit var dialogHelper: DialogHelper
@@ -115,6 +130,10 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
             )
         }
         binding.swipeLayout.setOnRefreshListener(this)
+
+        if (isPending) {
+            viewModel.getGasPrice()
+        }
 
         viewModel.getTransactionCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -205,8 +224,83 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                         viewModel.deleteTransaction(it)
                     })
 
+            }, {
+                analytics.logEvent(
+                    USER_CLICK_SPEED_UP_TX_EVENT,
+                    Bundle().createEvent()
+                )
+                navigator.navigateToCustomGas(currentFragment, it)
+            }, {
+
+                analytics.logEvent(
+                    USER_CLICK_CANCEL_TX_EVENT,
+                    Bundle().createEvent()
+                )
+                val cancelGasPrice =
+                    Convert.toWei(defaultGasPrice.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
+                        .max(
+                            it.gasPrice.toBigDecimalOrDefaultZero() * 1.2.toBigDecimal()
+                        )
+
+                dialogHelper.showCancelTransactionDialog(it.getFeeFromWei(cancelGasPrice.toDisplayNumber())) {
+                    wallet?.let { it1 ->
+
+                        analytics.logEvent(
+                            USER_CLICK_SUBMIT_CANCEL_TX_EVENT,
+                            Bundle().createEvent(it.displayTransaction)
+                        )
+                        viewModel.cancelTransaction(
+                            it1,
+                            it.copy(gasPrice = cancelGasPrice.toDisplayNumber())
+                        )
+                    }
+                }
             })
         }
+
+        viewModel.cancelTransactionCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == SpeedUpTransactionState.Loading)
+                when (state) {
+                    is SpeedUpTransactionState.Success -> {
+                        if (!state.status) {
+                            analytics.logEvent(FAIL_CANCEL_TX_EVENT, Bundle().createEvent())
+                            showError(getString(R.string.can_not_cancel_transaction))
+                        }
+                    }
+                    is SpeedUpTransactionState.ShowError -> {
+                        val error = state.message ?: getString(R.string.something_wrong)
+                        analytics.logEvent(
+                            FAIL_CANCEL_TX_EVENT,
+                            Bundle().createEvent(state.message)
+                        )
+                        showError(error)
+                    }
+                }
+            }
+        })
+
+        viewModel.getGetGasPriceCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetGasPriceState.Success -> {
+                        defaultGasPrice = state.gas.fast
+                    }
+                    is GetGasPriceState.ShowError -> {
+
+                    }
+                }
+            }
+        })
+
+        viewModel.nonceObserver.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { nonce ->
+                transactionStatusAdapter?.smallestNonceHash = nonce
+                transactionStatusAdapter?.notifyDataSetChanged()
+
+            }
+        })
+
         transactionStatusAdapter?.mode = Attributes.Mode.Single
         binding.rvTransaction.adapter = transactionStatusAdapter
     }

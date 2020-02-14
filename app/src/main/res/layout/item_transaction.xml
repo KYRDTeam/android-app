@@ -5,6 +5,7 @@
 
     <data>
 
+
     </data>
 
     <com.daimajia.swipe.SwipeLayout
@@ -19,6 +20,38 @@
             android:layout_height="match_parent">
 
             <Button
+                android:id="@+id/btnSpeedUp"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="#ff9008"
+                android:gravity="center"
+                android:minWidth="84dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/speed_up"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#ffffff"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/btnCancel"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="#949394"
+                android:gravity="center"
+                android:minWidth="84dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/cancel"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textColor="#ffffff"
+                android:textSize="16sp" />
+
+            <Button
                 android:id="@+id/btnDelete"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
@@ -26,6 +59,8 @@
                 android:background="#f96363"
                 android:gravity="center"
                 android:minWidth="84dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
                 android:text="@string/wallet_delete"
                 android:textAllCaps="false"
                 android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"

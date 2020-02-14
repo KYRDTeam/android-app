@@ -30,6 +30,7 @@ import com.kyberswap.android.domain.usecase.transaction.GetTransactionsPeriodica
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
 import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
 import com.kyberswap.android.domain.usecase.transaction.SaveTransactionFilterUseCase
+import com.kyberswap.android.domain.usecase.transaction.SpeedUpOrCancelTransactionUseCase
 import com.kyberswap.android.domain.usecase.transaction.TransactionsData
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.displayWalletAddress
@@ -66,7 +67,7 @@ class TransactionDataRepository @Inject constructor(
 
     override fun monitorPendingTransactionsPolling(param: MonitorPendingTransactionUseCase.Param): Flowable<List<Transaction>> {
         return Flowable.fromCallable {
-            tokenClient.monitorPendingTransactions(param.transactions)
+            tokenClient.monitorPendingTransactions(param.transactions, param.wallet)
         }
             .doAfterNext { pendingTransactions ->
                 pendingTransactions.forEach { tx ->
@@ -488,6 +489,7 @@ class TransactionDataRepository @Inject constructor(
     private fun findTransactionPair(transactions: List<Transaction>): Pair<Transaction?, Transaction?> {
         val send = transactions.find {
             it.type == Transaction.TransactionType.SEND
+//                && it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO
         }
 
         val received = transactions.find {
@@ -599,6 +601,19 @@ class TransactionDataRepository @Inject constructor(
                                             ?: transactions.first().tokenSymbol
                                     )
                                 )
+
+//                                transactionList.addAll(
+//                                    transactions
+//                                        .filter {
+//                                        it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO
+//                                    }
+//                                        .map {
+//                                            it.copy(
+//                                                walletAddress = wallet.address,
+//                                                tokenSymbol = addressToSymbolMap[it.contractAddress]
+//                                                    ?: it.tokenSymbol
+//                                            )
+//                                        })
                             }
                         }
                     } else if (transactions.size > 2) {
@@ -629,16 +644,18 @@ class TransactionDataRepository @Inject constructor(
                             remainingTransactions.remove(send)
                             remainingTransactions.remove(received)
                             if (remainingTransactions.size > 0) {
-                                transactionList.addAll(remainingTransactions.map { tx ->
-                                    tx.copy(
-                                        walletAddress = wallet.address,
-                                        type = if (tx.isTransfer)
-                                            tx.type
-                                        else Transaction.TransactionType.SWAP,
-                                        tokenSymbol = addressToSymbolMap[tx.contractAddress]
-                                            ?: tx.tokenSymbol
-                                    )
-                                })
+                                transactionList.addAll(remainingTransactions
+//                                    .filter { it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO }
+                                    .map { tx ->
+                                        tx.copy(
+                                            walletAddress = wallet.address,
+                                            type = if (tx.isTransfer)
+                                                tx.type
+                                            else Transaction.TransactionType.SWAP,
+                                            tokenSymbol = addressToSymbolMap[tx.contractAddress]
+                                                ?: tx.tokenSymbol
+                                        )
+                                    })
                             }
                         } else {
                             transactionList.addAll(transactions.map { tx ->
@@ -830,6 +847,14 @@ class TransactionDataRepository @Inject constructor(
         }.flatMap {
             transactionFilterDao.findTransactionFilterByAddressFlowable(param.walletAddress)
                 .defaultIfEmpty(it)
+        }
+    }
+
+    override fun speedUpOrCancel(param: SpeedUpOrCancelTransactionUseCase.Param): Single<Boolean> {
+        return Single.fromCallable {
+            val newTx =
+                tokenClient.speedUpOrCancelTx(param.wallet, param.transaction, param.isCancel)
+            newTx.hash != param.transaction.hash
         }
     }
 

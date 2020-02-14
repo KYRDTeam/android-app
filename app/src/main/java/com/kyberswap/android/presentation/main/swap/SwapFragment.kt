@@ -150,18 +150,24 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         super.onActivityCreated(savedInstanceState)
         viewModel.getSelectedWallet()
         alertNotification?.let { viewModel.getAlert(it) }
-        notification?.let { newSwap(it.data) }
+        swap(notification)
 
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
+
                         if (state.wallet.display() != binding.walletName) {
                             binding.walletName = state.wallet.display()
                         }
 
                         if (!state.wallet.isSameWallet(wallet)) {
-                            this.wallet = state.wallet
+                            if (wallet == null) {
+                                this.wallet = state.wallet
+                                swap(notification)
+                            } else {
+                                this.wallet = state.wallet
+                            }
                             val promo = wallet?.promo
                             if (wallet?.isPromo == true) {
                                 enableTokenSearch(isSourceToken = true, isEnable = false)
@@ -863,7 +869,17 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
         }
 
+        binding.imgFlag.setOnClickListener {
+            navigator.navigateToNotificationcreen(currentFragment)
+        }
+
         setDefaultSelection()
+    }
+
+    fun swap(notification: Notification?) {
+        if (notification != null) {
+            newSwap(notification.data)
+        }
     }
 
     fun newSwap(notificationExt: NotificationExt) {
@@ -1084,9 +1100,15 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         super.onDestroyView()
     }
 
-    override fun showNotification(showNotification: Boolean) {
+    override fun showPendingTxNotification(showNotification: Boolean) {
         if (::binding.isInitialized) {
             binding.vNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
+        }
+    }
+
+    override fun showUnReadNotification(showNotification: Boolean) {
+        if (::binding.isInitialized) {
+            binding.vFlagNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
         }
     }
 

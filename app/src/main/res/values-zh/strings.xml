@@ -678,5 +678,14 @@
     <string name="transfer_data_success">谢谢，您的个人资料会被复制和转移。 您无需采取进一步的操作。</string>
     <string name="transfer_data_action_no_confirm_message">您的个人资料不会被复制和转移。 您必须创建一个新的配置文件才能使用某些服务，例如限价订单，价格警报，通知服务等。你是否要继续操作？</string>
     <string name="go_back">" 回到上一步。"</string>
+    <string name="speed_up">加快速度</string>
+    <string name="speed_up_gas_price_hint">您的燃料价格必须比当前燃料价格高10％</string>
+    <string name="can_not_speed_up_transaction">无法加快交易</string>
+    <string name="can_not_cancel_transaction">无法取消交易</string>
+    <string name="current_fee">当前费用</string>
+    <string name="new_fee">新的费用</string>
+    <string name="cancel_transaction_warning">提交取消交易的请求并不能保证您的原始交易将被取消。如果请求成功，您将被收取上述交易费用。</string>
+    <string name="cancellation_gas_fee">取消燃料费用</string>
+    <string name="attempt_to_cancel">你想要取消吗?</string>
 
 </resources>

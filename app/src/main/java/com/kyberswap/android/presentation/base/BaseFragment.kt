@@ -143,7 +143,7 @@ abstract class BaseFragment : DaggerFragment() {
     companion object {
         const val HASH_PARAM = "hash_param"
         const val SHOW_ALERT = 0
-        const val DEFAULT_ALERT_TIME_SECONDS = 3
+        const val DEFAULT_ALERT_TIME_SECONDS = 5
         const val SHOW_BROADCAST = 1
         const val SWAP_CONFIRM = 1010
         const val SEND_CONFIRM = 1011

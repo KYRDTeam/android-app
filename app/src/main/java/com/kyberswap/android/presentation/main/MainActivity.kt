@@ -423,7 +423,8 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             )
                         }
 
-                        val pending = state.transactions.filter { it.blockNumber.isEmpty() }
+                        val pending =
+                            state.transactions.filter { it.blockNumber.isEmpty() && !it.isCancel }
 
                         if (currentDialogFragment != null) {
                             handler.postDelayed(
@@ -814,9 +815,12 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
     private fun showPendingIndicator() {
         if (currentFragment is PendingTransactionNotification) {
-            (currentFragment as PendingTransactionNotification).showNotification(
-                hasPendingTransaction == true || showPendingNotification
-            )
+            (currentFragment as PendingTransactionNotification).apply {
+                showPendingTxNotification(
+                    hasPendingTransaction == true
+                )
+                showUnReadNotification(showPendingNotification)
+            }
         }
     }
 

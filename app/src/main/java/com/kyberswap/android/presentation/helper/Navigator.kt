@@ -52,6 +52,7 @@ import com.kyberswap.android.presentation.main.swap.PromoPaymentConfirmActivity
 import com.kyberswap.android.presentation.main.swap.PromoSwapConfirmActivity
 import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
 import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
+import com.kyberswap.android.presentation.main.transaction.CustomizeGasFragment
 import com.kyberswap.android.presentation.main.transaction.TransactionDetailReceiveFragment
 import com.kyberswap.android.presentation.main.transaction.TransactionDetailSendFragment
 import com.kyberswap.android.presentation.main.transaction.TransactionDetailSwapFragment
@@ -94,9 +95,9 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
     fun navigateToHome(isPromoCode: Boolean = false) {
         activity.startActivity(
             MainActivity.newIntent(activity, isPromoCode = isPromoCode)
-            .apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            })
+                .apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                })
     }
 
     @JvmOverloads
@@ -267,8 +268,6 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
             currentFragment,
             TransactionDetailSwapFragment.newInstance(wallet, transaction)
         )
-
-
     }
 
     fun navigateToSendTransactionScreen(
@@ -281,7 +280,6 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
             currentFragment,
             TransactionDetailSendFragment.newInstance(wallet, transaction)
         )
-
     }
 
     fun navigateToReceivedTransactionScreen(
@@ -352,7 +350,6 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
             currentFragment,
             SignUpConfirmFragment.newInstance(socialInfo)
         )
-
     }
 
     fun navigateToProfileDetail(
@@ -363,7 +360,6 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
             ProfileDetailFragment.newInstance(),
             false
         )
-
     }
 
     private fun replaceFragment(
@@ -546,6 +542,14 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         navigateByChildFragmentManager(
             currentFragment,
             BackupWalletInfoFragment.newInstance(value)
+        )
+    }
+
+    fun navigateToCustomGas(currentFragment: Fragment, transaction: Transaction) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            CustomizeGasFragment.newInstance(transaction)
+
         )
     }
 

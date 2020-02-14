@@ -11,6 +11,7 @@ import com.kyberswap.android.util.ext.toWalletAddress
 import com.kyberswap.android.util.views.DateTimeHelper
 import kotlinx.android.parcel.Parcelize
 import org.consenlabs.tokencore.wallet.Wallet
+import org.consenlabs.tokencore.wallet.WalletManager
 import org.jetbrains.annotations.NotNull
 import java.math.BigDecimal
 
@@ -37,8 +38,17 @@ data class Wallet(
         wallet.id,
         wallet.metadata.name
     )
+
     val displayWalletAddress: String
         get() = address.displayWalletAddress()
+
+    val walletPath: String
+        get() = WalletManager.storage.keystoreDir.toString() + "/wallets/" + walletId + ".json"
+
+    val walletAddress: String
+        get() = if (isPromoPayment) promo?.receiveAddress
+            ?: address else
+            address
 
     fun isSameWallet(other: com.kyberswap.android.domain.model.Wallet?): Boolean {
         return this.address == other?.address &&
@@ -75,5 +85,4 @@ data class Wallet(
 
     val expiredDatePromoCode: String
         get() = DateTimeHelper.displayDate(promo?.expiredDate)
-
 }

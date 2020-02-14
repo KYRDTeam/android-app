@@ -9,6 +9,7 @@ import com.kyberswap.android.domain.usecase.transaction.GetTransactionsPeriodica
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionsUseCase
 import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
 import com.kyberswap.android.domain.usecase.transaction.SaveTransactionFilterUseCase
+import com.kyberswap.android.domain.usecase.transaction.SpeedUpOrCancelTransactionUseCase
 import com.kyberswap.android.domain.usecase.transaction.TransactionsData
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -35,5 +36,5 @@ interface TransactionRepository {
 
     fun getTransactionFilter(param: GetTransactionFilterUseCase.Param): Flowable<TransactionFilter>
 
-
+    fun speedUpOrCancel(param: SpeedUpOrCancelTransactionUseCase.Param): Single<Boolean>
 }

@@ -1,10 +1,16 @@
 package com.kyberswap.android.util
 
 import android.content.Context
+import android.os.Bundle
+import android.util.Base64
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.db.TransactionDao
 import com.kyberswap.android.domain.model.LocalLimitOrder
 import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
 import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
 import com.kyberswap.android.presentation.common.DEFAULT_MAX_AMOUNT
@@ -12,10 +18,21 @@ import com.kyberswap.android.presentation.common.DEFAULT_WALLET_ID
 import com.kyberswap.android.presentation.common.PERM
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfer
+import com.kyberswap.android.util.ext.createEvent
+import com.kyberswap.android.util.ext.fromAddress
+import com.kyberswap.android.util.ext.isFromKyberSwap
+import com.kyberswap.android.util.ext.isSwapTx
+import com.kyberswap.android.util.ext.isTransferETHTx
+import com.kyberswap.android.util.ext.minConversionRate
+import com.kyberswap.android.util.ext.params
+import com.kyberswap.android.util.ext.toAddress
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntSafe
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.transferAmount
+import com.kyberswap.android.util.ext.transferToAddress
+import com.kyberswap.android.util.ext.txValue
 import com.trustwallet.walletconnect.models.ethereum.WCEthereumSignMessage
 import com.trustwallet.walletconnect.models.ethereum.WCEthereumTransaction
 import org.web3j.abi.FunctionEncoder
@@ -29,7 +46,9 @@ import org.web3j.abi.datatypes.Function
 import org.web3j.abi.datatypes.generated.Uint256
 import org.web3j.crypto.Credentials
 import org.web3j.crypto.Hash
+import org.web3j.crypto.RawTransaction
 import org.web3j.crypto.Sign
+import org.web3j.crypto.WalletUtils
 import org.web3j.ens.EnsResolver
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.DefaultBlockParameterName
@@ -39,6 +58,7 @@ import org.web3j.tx.RawTransactionManager
 import org.web3j.tx.TransactionManager
 import org.web3j.utils.Convert
 import org.web3j.utils.Numeric
+import timber.log.Timber
 import java.io.IOException
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -51,7 +71,9 @@ import kotlin.math.pow
 class TokenClient @Inject constructor(
     private val web3j: Web3j,
     private val tokenDao: TokenDao,
-    private val context: Context
+    private val transactionDao: TransactionDao,
+    private val context: Context,
+    private val analytics: FirebaseAnalytics
 ) {
 
     private val event = Event(
@@ -698,73 +720,297 @@ class TokenClient @Inject constructor(
         }
     }
 
-    fun monitorPendingTransactions(transactions: List<com.kyberswap.android.domain.model.Transaction>): List<com.kyberswap.android.domain.model.Transaction> {
+    @Throws(Exception::class)
+    private fun cancel(
+        wallet: Wallet,
+        tx: org.web3j.protocol.core.methods.response.Transaction,
+        gasPrice: BigInteger
+    ): String {
+        if (context is KyberSwapApplication) {
+            val password = String(
+                context.aead.decrypt(
+                    Base64.decode(wallet.cipher, Base64.DEFAULT), ByteArray(0)
+                ), Charsets.UTF_8
+            )
+            val credentials = WalletUtils.loadCredentials(
+                password,
+                wallet.walletPath
+            )
+
+            val rawTransaction =
+                RawTransaction.createTransaction(
+                    tx.nonce,
+                    gasPrice,
+                    tx.gas,
+                    wallet.walletAddress,
+                    BigInteger.ZERO,
+                    ""
+                )
+
+            val transactionResponse =
+                RawTransactionManager(web3j, credentials).signAndSend(rawTransaction)
+
+            if (transactionResponse.hasError()) run {
+                throw RuntimeException(
+                    "Error processing transaction request: " +
+                        transactionResponse.error.message
+                )
+            }
+            return transactionResponse.transactionHash
+        }
+
+        return ""
+    }
+
+    @Throws(Exception::class)
+    private fun speedUp(
+        wallet: Wallet,
+        tx: org.web3j.protocol.core.methods.response.Transaction,
+        gasPrice: BigInteger
+    ): String {
+        if (context is KyberSwapApplication) {
+            val password = String(
+                context.aead.decrypt(
+                    Base64.decode(wallet.cipher, Base64.DEFAULT), ByteArray(0)
+                ), Charsets.UTF_8
+            )
+            val credentials = WalletUtils.loadCredentials(
+                password,
+                wallet.walletPath
+            )
+
+            if (tx.isFromKyberSwap()) {
+                val params = tx.params()
+
+                if (tx.isSwapTx()) {
+
+                    val input = FunctionEncoder.encode(
+                        tradeWithHint(
+                            tx.fromAddress(params),
+                            tx.toAddress(params),
+                            tx.txValue(params),
+                            tx.minConversionRate(params),
+                            wallet.walletAddress
+                        )
+                    )
+
+                    val rawTransaction =
+                        RawTransaction.createTransaction(
+                            tx.nonce,
+                            gasPrice,
+                            tx.gas,
+                            tx.to,
+                            tx.value,
+                            input
+                        )
+
+                    val transactionResponse =
+                        RawTransactionManager(web3j, credentials).signAndSend(rawTransaction)
+
+
+                    if (transactionResponse.hasError()) run {
+                        throw RuntimeException(
+                            "Error processing transaction request: " +
+                                transactionResponse.error.message
+                        )
+                    }
+
+                    return transactionResponse.transactionHash
+                } else {
+
+                    val to = if (tx.isTransferETHTx()) {
+                        tx.to
+                    } else {
+                        tx.transferToAddress(params)
+                    }
+
+                    val input = if (tx.isTransferETHTx()) "" else
+                        FunctionEncoder.encode(
+                            transfer(
+                                to,
+                                tx.transferAmount(params).toString()
+                            )
+                        )
+
+                    val rawTransaction =
+                        RawTransaction.createTransaction(
+                            tx.nonce,
+                            gasPrice,
+                            tx.gas,
+                            tx.to,
+                            tx.value,
+                            input
+                        )
+
+                    val transactionResponse =
+                        RawTransactionManager(web3j, credentials).signAndSend(rawTransaction)
+
+
+                    if (transactionResponse.hasError()) run {
+                        Timber.e(transactionResponse.error.message)
+                        throw RuntimeException(
+                            "Error processing transaction request: " +
+                                transactionResponse.error.message
+                        )
+                    }
+
+                    return transactionResponse.transactionHash
+                }
+            }
+        }
+
+        return ""
+    }
+
+
+    fun monitorPendingTransactions(
+        transactions: List<com.kyberswap.android.domain.model.Transaction>,
+        wallet: Wallet
+    ): List<com.kyberswap.android.domain.model.Transaction> {
         val transactionsList = mutableListOf<com.kyberswap.android.domain.model.Transaction>()
         for (s in transactions) {
-            val transaction = web3j.ethGetTransactionByHash(s.hash).send().transaction
-            if (transaction.isPresent) {
-                val tx = transaction.get()
-                if (tx.hash.isNotEmpty()) {
-                    val transactionReceipt =
-                        web3j.ethGetTransactionReceipt(tx.hash).send().transactionReceipt
-                    if (transactionReceipt.isPresent) {
-                        val txReceipt = transactionReceipt.get()
+            try {
+                val transaction = web3j.ethGetTransactionByHash(s.hash).send().transaction
+                if (transaction.isPresent) {
+                    val tx = transaction.get()
+                    if (tx.hash.isNotEmpty()) {
+                        val transactionReceipt =
+                            web3j.ethGetTransactionReceipt(tx.hash).send().transactionReceipt
+                        if (transactionReceipt.isPresent) {
+                            val txReceipt = transactionReceipt.get()
 
-                        val filter = txReceipt.logs.firstOrNull {
-                            it.address.equals(context.getString(R.string.kyber_address), true) &&
-                                it.topics.isNotEmpty() && it.topics.first().equals(
-                                context.getString(R.string.kyber_event_topic),
-                                true
-                            )
-                        }
+                            val filter = txReceipt.logs.firstOrNull {
+                                it.address.equals(
+                                    context.getString(R.string.kyber_address),
+                                    true
+                                ) &&
+                                    it.topics.isNotEmpty() && it.topics.first().equals(
+                                    context.getString(R.string.kyber_event_topic),
+                                    true
+                                )
+                            }
 
-                        val txDetail = if (filter != null) {
+                            val txDetail = if (filter != null) {
 
-                            val values = FunctionReturnDecoder.decode(
-                                filter.data,
-                                event.nonIndexedParameters
-                            )
-                            val destAmount = if (values.size > 3) {
-                                val tokenBySymbol = tokenDao.getTokenBySymbol(s.tokenDest)
-                                if (tokenBySymbol != null) {
-                                    (values[3] as Uint256).value.toBigDecimal().divide(
-                                        BigDecimal.TEN
-                                            .pow(tokenBySymbol.tokenDecimal),
-                                        18,
-                                        RoundingMode.UP
-                                    ).toDisplayNumber()
+                                val values = FunctionReturnDecoder.decode(
+                                    filter.data,
+                                    event.nonIndexedParameters
+                                )
+                                val destAmount = if (values.size > 3) {
+                                    val tokenBySymbol = tokenDao.getTokenBySymbol(s.tokenDest)
+                                    if (tokenBySymbol != null) {
+                                        (values[3] as Uint256).value.toBigDecimal().divide(
+                                            BigDecimal.TEN
+                                                .pow(tokenBySymbol.tokenDecimal),
+                                            18,
+                                            RoundingMode.UP
+                                        ).toDisplayNumber()
+                                    } else {
+                                        s.destAmount
+                                    }
                                 } else {
                                     s.destAmount
                                 }
+                                s.copy(destAmount = destAmount)
                             } else {
-                                s.destAmount
+                                s
                             }
-                            s.copy(destAmount = destAmount)
+                            transactionsList.add(txDetail.with(txReceipt))
                         } else {
-                            s
+                            transactionsList.add(s.with(tx))
                         }
-                        transactionsList.add(txDetail.with(txReceipt))
                     } else {
-                        transactionsList.add(s.with(tx))
+                        transactionsList.add(
+                            com.kyberswap.android.domain.model.Transaction(tx).copy(
+                                hash = s.hash
+                            )
+                        )
                     }
                 } else {
-                    transactionsList.add(
-                        com.kyberswap.android.domain.model.Transaction(tx).copy(
-                            hash = s.hash
-                        )
-                    )
+                    if ((System.currentTimeMillis() / 1000 - s.timeStamp) / 60f > 10f) {
+                        transactionsList.add(s.copy(blockNumber = com.kyberswap.android.domain.model.Transaction.DEFAULT_DROPPED_BLOCK_NUMBER.toString()))
+                    } else {
+                        val latestTx = transactionDao.getLatestTransaction(wallet.address)
+                        if (s.nonce.toBigDecimalOrDefaultZero() > BigDecimal.ZERO &&
+                            latestTx?.nonce.toBigDecimalOrDefaultZero() >= s.nonce.toBigDecimalOrDefaultZero() &&
+                            System.currentTimeMillis() / 1000 - s.timeStamp > 30
+                        ) {
+                            analytics.logEvent(
+                                TX_SPEED_UP_CANCEL_DROPPED_EVENT,
+                                Bundle().createEvent(s.displayTransaction)
+                            )
+                            transactionDao.delete(s)
+                        } else {
+                            transactionsList.add(s)
+                        }
+                    }
                 }
-            } else {
-                if ((System.currentTimeMillis() / 1000 - s.timeStamp) / 60f > 10f) {
-                    transactionsList.add(s.copy(blockNumber = com.kyberswap.android.domain.model.Transaction.DEFAULT_DROPPED_BLOCK_NUMBER.toString()))
-                } else {
-                    transactionsList.add(s)
-                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
             }
         }
         if (transactionsList.isEmpty()) return transactions
         return transactionsList.toList()
     }
+
+    @Throws(Exception::class)
+    fun speedUpOrCancelTx(
+        wallet: Wallet,
+        tx: com.kyberswap.android.domain.model.Transaction,
+        isCancel: Boolean
+    ): com.kyberswap.android.domain.model.Transaction {
+
+        val optionalResponse = web3j.ethGetTransactionByHash(tx.hash).send().transaction
+        val txResponse = optionalResponse.get()
+
+//        Timber.e("hash: " + tx.hash)
+        val newHash = if (isCancel) cancel(
+            wallet,
+            txResponse,
+            tx.gasPrice.toBigIntegerOrDefaultZero()
+        ) else speedUp(wallet, txResponse, tx.gasPrice.toBigIntegerOrDefaultZero())
+//        Timber.e("newHash: " + newHash)
+        val newTx =
+            web3j.ethGetTransactionByHash(newHash).send().transaction.get()
+
+
+        return if (newHash.isNotEmpty() && !web3j.ethGetTransactionReceipt(tx.hash).send().transactionReceipt.isPresent) {
+            val nonce = if (newTx.nonce != null) newTx.nonce else txResponse.nonce
+            transactionDao.updateTransaction(
+                tx.copy(
+                    isCancel = true,
+                    nonce = nonce.toString()
+                )
+            )
+
+            val t = tx.with(newTx)
+            val pendingTx = if (isCancel) {
+                com.kyberswap.android.domain.model.Transaction(
+                    hash = t.hash,
+                    transactionStatus = com.kyberswap.android.domain.model.Transaction.PENDING_TRANSACTION_STATUS,
+                    timeStamp = System.currentTimeMillis() / 1000L,
+                    from = wallet.address,
+                    gas = t.gas,
+                    gasUsed = t.gasUsed,
+                    gasPrice = t.gasPrice,
+                    to = wallet.address,
+                    value = 0.toString(),
+                    tokenDecimal = Token.ETH_DECIMAL.toString(),
+                    tokenSymbol = Token.ETH,
+                    walletAddress = wallet.address,
+                    nonce = nonce.toString(),
+                    type = com.kyberswap.android.domain.model.Transaction.TransactionType.SEND
+                )
+            } else {
+                t.copy(value = tx.value)
+            }
+            transactionDao.insertTransaction(pendingTx)
+            pendingTx
+        } else {
+            tx.with(txResponse)
+        }
+    }
+
 
     fun signOrder(
         order: LocalLimitOrder,
