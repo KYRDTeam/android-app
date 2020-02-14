@@ -211,7 +211,7 @@ class ProfileFragment : BaseFragment() {
                             }
                         } else {
                             twoFADialog?.show()
-                            showAlert(state.login.message)
+                            showError(state.login.message)
                         }
                     }
                     is LoginState.ShowError -> {

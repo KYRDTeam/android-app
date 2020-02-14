@@ -59,10 +59,8 @@ class NotificationAdapter(
         if (indexOfItem >= 0) {
             val color = if (!item.read) {
                 R.color.notification_unread
-            } else if (indexOfItem % 2 == 0) {
-                R.color.notification_even
             } else {
-                R.color.notification_odd
+                R.color.notification_even
             }
             binding.root.setBackgroundColor(ContextCompat.getColor(binding.root.context, color))
         }
