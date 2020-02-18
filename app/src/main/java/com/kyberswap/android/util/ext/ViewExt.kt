@@ -70,6 +70,11 @@ fun TextView.setTextIfChange(text: CharSequence) {
     }
 }
 
+fun TextView.setViewEnable(isEnable: Boolean) {
+    this.isSelected = isEnable
+    this.isClickable = isEnable
+}
+
 fun TextView.toBigDecimalOrDefaultZero(): BigDecimal {
     return text.toString().toBigDecimalOrDefaultZero()
 }

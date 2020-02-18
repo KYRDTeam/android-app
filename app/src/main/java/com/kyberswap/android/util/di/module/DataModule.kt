@@ -87,7 +87,8 @@ object DataModule {
         wcClient: WCClient,
         tokenClient: TokenClient,
         transactionDao: TransactionDao,
-        contactDao: ContactDao
+        contactDao: ContactDao,
+        userApi: UserApi
     ): WalletRepository =
         WalletDataRepository(
             context,
@@ -102,7 +103,8 @@ object DataModule {
             wcClient,
             tokenClient,
             transactionDao,
-            contactDao
+            contactDao,
+            userApi
         )
 
     @Singleton

@@ -618,7 +618,6 @@
     <string name="successfully_swapped">Successfully swapped</string>
     <string name="successfully_transferred">Successfully Transferred</string>
     <string name="dialog_broadcasted">已广播</string>
-    <string name="your_transaction_has_been_broadcasted">Your transaction has been broadcasted!</string>
     <string name="waiting_for_the_transaction_to_be_mined">您的交易正在处理中</string>
     <string name="dialog_fail">已失败</string>
     <string name="token_maintainance">维护中</string>
@@ -687,5 +686,6 @@
     <string name="cancel_transaction_warning">提交取消交易的请求并不能保证您的原始交易将被取消。如果请求成功，您将被收取上述交易费用。</string>
     <string name="cancellation_gas_fee">取消燃料费用</string>
     <string name="attempt_to_cancel">你想要取消吗?</string>
+    <string name="transaction_cancel_successfully">Your transaction has been cancelled successfully</string>
 
 </resources>

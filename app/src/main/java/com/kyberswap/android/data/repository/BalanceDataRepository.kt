@@ -338,7 +338,6 @@ class BalanceDataRepository @Inject constructor(
                 isQuote = remoteToken.isQuote
             ) ?: remoteToken
             updatedRateToken
-//            tokenClient.updateBalance(updatedRateToken)
         }
 
         val listTokenAddress = listedTokens.map { it.tokenAddress.toLowerCase(Locale.getDefault()) }
@@ -350,9 +349,6 @@ class BalanceDataRepository @Inject constructor(
                 )
             )
         }
-//            .map {
-//            tokenClient.updateBalance(it)
-//        }
 
         val currentWallets = walletDao.all
         val localSelected = currentWallets.find { it.isSelected }

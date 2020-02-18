@@ -64,9 +64,9 @@ class SwapViewModel @Inject constructor(
     val getGetGasPriceCallback: LiveData<Event<GetGasPriceState>>
         get() = _getGetGasPriceCallback
 
-    private val _getCapCallback = MutableLiveData<Event<GetCapState>>()
-    val getCapCallback: LiveData<Event<GetCapState>>
-        get() = _getCapCallback
+//    private val _getCapCallback = MutableLiveData<Event<GetCapState>>()
+//    val getCapCallback: LiveData<Event<GetCapState>>
+//        get() = _getCapCallback
 
     private val _getKyberStatusback = MutableLiveData<Event<GetKyberStatusState>>()
     val getKyberStatusback: LiveData<Event<GetKyberStatusState>>
@@ -297,19 +297,19 @@ class SwapViewModel @Inject constructor(
         super.onCleared()
     }
 
-    fun getCap(wallet: Wallet, swap: Swap) {
-        _getCapCallback.postValue(Event(GetCapState.Loading))
-        getCombinedCapUseCase.execute(
-            Consumer {
-                _getCapCallback.value = Event(GetCapState.Success(it, swap))
-            },
-            Consumer {
-                it.printStackTrace()
-                _getCapCallback.value = Event(GetCapState.ShowError(errorHandler.getError(it)))
-            },
-            GetCombinedCapUseCase.Param(wallet)
-        )
-    }
+//    fun getCap(wallet: Wallet, swap: Swap) {
+//        _getCapCallback.postValue(Event(GetCapState.Loading))
+//        getCombinedCapUseCase.execute(
+//            Consumer {
+//                _getCapCallback.value = Event(GetCapState.Success(it, swap))
+//            },
+//            Consumer {
+//                it.printStackTrace()
+//                _getCapCallback.value = Event(GetCapState.ShowError(errorHandler.getError(it)))
+//            },
+//            GetCombinedCapUseCase.Param(wallet)
+//        )
+//    }
 
     fun reset(swap: Swap) {
         resetSwapUserCase.dispose()

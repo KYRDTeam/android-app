@@ -464,7 +464,7 @@
     <string name="notification_success_swap">%s에서 %s로 변환 성공</string>
     <string name="notification_fail_swap">변환 할 수 없습니다%s%s</string>
     <string name="transaction_broadcasted">중개된</string>
-    <string name="transaction_broadcasted_message">거래가 방송되었습니다!</string>
+    <string name="transaction_broadcasted_message">거래가 생성되었습니다.</string>
     <string name="learn_more">더 알아보기</string>
     <string name="order_fee">수수료:</string>
     <string name="cancel_order_why">왜 인가요?</string>
@@ -616,9 +616,8 @@
     <string name="dialog_transfer">송금</string>
     <string name="successfully_swapped">Successfully swapped</string>
     <string name="successfully_transferred">Successfully Transferred</string>
-    <string name="dialog_broadcasted">중개된</string>
-    <string name="your_transaction_has_been_broadcasted">Your transaction has been broadcasted!</string>
-    <string name="waiting_for_the_transaction_to_be_mined">거래가 채굴되기를 기다리는 중입니다.</string>
+    <string name="dialog_broadcasted">진행 중!</string>
+    <string name="waiting_for_the_transaction_to_be_mined">거래 승인 중에 있습니다.</string>
     <string name="dialog_fail">"실패 "</string>
     <string name="token_maintainance">유지보수</string>
     <string name="delete_transaction_success">거래 완전히 삭제하기</string>
@@ -686,5 +685,6 @@
     <string name="cancel_transaction_warning">거래 취소 시도가 기존 거래의 취소를 보장하지는 않습니다. 취소 시도가 성공하였을 경우 위에 적힌 금액만큼의 거래 수수료가 부과됩니다.</string>
     <string name="cancellation_gas_fee">취소 가스비</string>
     <string name="attempt_to_cancel">취소를 시도하시겠습니까?</string>
+    <string name="transaction_cancel_successfully">Your transaction has been cancelled successfully</string>
 
 </resources>

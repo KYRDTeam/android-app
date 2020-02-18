@@ -11,6 +11,7 @@ import com.kyberswap.android.data.api.user.KycResponseStatusEntity
 import com.kyberswap.android.data.api.user.LoginUserEntity
 import com.kyberswap.android.data.api.user.ResponseStatusEntity
 import com.kyberswap.android.data.api.user.UserInfoEntity
+import com.kyberswap.android.data.api.wallet.EligibleWalletStatusEntity
 import io.reactivex.Single
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -183,6 +184,11 @@ interface UserApi {
         @Query("page_index") pageIndex: Int = 1,
         @Query("page_size") pageSize: Int = 10
     ): Single<NotificationsResponseEntity>
+
+    @GET("api/wallet/screening")
+    fun checkEligibleWallet(
+        @Query("wallet") walletAddress: String
+    ): Single<EligibleWalletStatusEntity>
 
     @Headers("Content-Type: application/json")
     @PUT("api/notifications/mark_as_read")

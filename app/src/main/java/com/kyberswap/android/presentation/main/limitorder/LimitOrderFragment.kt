@@ -35,6 +35,7 @@ import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainPagerAdapter
+import com.kyberswap.android.presentation.main.balance.CheckEligibleWalletState
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.GetExpectedRateState
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
@@ -52,6 +53,7 @@ import com.kyberswap.android.util.ext.isSomethingWrongError
 import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.percentage
 import com.kyberswap.android.util.ext.setAmount
+import com.kyberswap.android.util.ext.setViewEnable
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.textToDouble
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
@@ -92,6 +94,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(LimitOrderViewModel::class.java)
+    }
+
+    private val currentActivity by lazy {
+        activity as MainActivity
     }
 
     private val handler by lazy { Handler() }
@@ -761,6 +767,26 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 }
             }
         })
+
+        currentActivity.mainViewModel.checkEligibleWalletCallback.observe(
+            currentActivity,
+            Observer { event ->
+                event?.peekContent()?.let { state ->
+                    when (state) {
+                        is CheckEligibleWalletState.Success -> {
+                            if (state.eligibleWalletStatus.success && !state.eligibleWalletStatus.eligible) {
+                                binding.tvSubmitOrder.setViewEnable(false)
+                                showError(state.eligibleWalletStatus.message)
+                            } else {
+                                binding.tvSubmitOrder.setViewEnable(true)
+                            }
+                        }
+                        is CheckEligibleWalletState.ShowError -> {
+
+                        }
+                    }
+                }
+            })
 
         viewModel.getGetGasLimitCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->

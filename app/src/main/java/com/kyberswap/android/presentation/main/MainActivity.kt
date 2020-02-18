@@ -126,7 +126,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
     private var hasDone = false
 
-    private val mainViewModel: MainViewModel by lazy {
+    val mainViewModel: MainViewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
     }
 
@@ -358,6 +358,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             wallet?.let {
                                 mainViewModel.getPendingTransaction(it)
                                 mainViewModel.getTransactionPeriodically(it)
+                                mainViewModel.checkEligibleWallet(it)
 
                             }
                         }
@@ -415,21 +416,26 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             it.blockNumber.isNotEmpty() && it.blockNumber.toLongSafe() != Transaction.DEFAULT_DROPPED_BLOCK_NUMBER
                         }
 
+
+
                         txList.forEach { transaction ->
                             hasDone = true
+
+
                             showDialog(
                                 AlertDialogFragment.DIALOG_TYPE_DONE,
-                                transaction
+                                transaction.copy(isCancel = state.transactions.filter { it.blockNumber.isEmpty() }.any { tx -> transaction.nonce == tx.nonce })
                             )
                         }
 
-                        val pending =
+                        val pendingList =
                             state.transactions.filter { it.blockNumber.isEmpty() && !it.isCancel }
+
 
                         if (currentDialogFragment != null) {
                             handler.postDelayed(
                                 {
-                                    if (pending.isEmpty() && txList.isEmpty() && hasDone) {
+                                    if (pendingList.isEmpty() && txList.isEmpty() && hasDone) {
                                         if (currentDialogFragment is AlertDialogFragment) {
                                             if (!(currentDialogFragment as AlertDialogFragment).isDone) {
                                                 currentDialogFragment?.dismissAllowingStateLoss()
@@ -443,8 +449,8 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                         }
 
                         pendingTransactions.clear()
-                        pendingTransactions.addAll(pending)
-                        setPendingTransaction(pending.size)
+                        pendingTransactions.addAll(pendingList)
+                        setPendingTransaction(pendingList.size)
                     }
                     is GetPendingTransactionState.ShowError -> {
                         showError(

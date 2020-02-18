@@ -36,6 +36,7 @@ import com.kyberswap.android.presentation.common.DEFAULT_ENS_ADDRESS
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.presentation.main.balance.CheckEligibleWalletState
 import com.kyberswap.android.presentation.main.swap.DeleteContactState
 import com.kyberswap.android.presentation.main.swap.GetContactState
 import com.kyberswap.android.presentation.main.swap.GetENSAddressState
@@ -62,6 +63,7 @@ import com.kyberswap.android.util.ext.isSomethingWrongError
 import com.kyberswap.android.util.ext.onlyAddress
 import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.setAmount
+import com.kyberswap.android.util.ext.setViewEnable
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.synthetic.main.fragment_send.*
@@ -138,6 +140,11 @@ class SendFragment : BaseFragment() {
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
+
+    private val currentActivity by lazy {
+        activity as MainActivity
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -219,6 +226,26 @@ class SendFragment : BaseFragment() {
                 }
             }
         })
+
+        currentActivity.mainViewModel.checkEligibleWalletCallback.observe(
+            currentActivity,
+            Observer { event ->
+                event?.peekContent()?.let { state ->
+                    when (state) {
+                        is CheckEligibleWalletState.Success -> {
+                            if (state.eligibleWalletStatus.success && !state.eligibleWalletStatus.eligible) {
+                                binding.tvContinue.setViewEnable(false)
+                                showError(state.eligibleWalletStatus.message)
+                            } else {
+                                binding.tvContinue.setViewEnable(true)
+                            }
+                        }
+                        is CheckEligibleWalletState.ShowError -> {
+
+                        }
+                    }
+                }
+            })
 
         binding.tvAdvanceOption.setOnClickListener {
             binding.expandableLayout.expand()
