@@ -197,4 +197,7 @@ interface UserApi {
     @POST("api/users/transfer_aggreement")
     @FormUrlEncoded
     fun transferAgreement(@Field("transfer_permission") action: String): Single<DataTransferStatusEntity>
+
+    @DELETE("api/alerts/delete_triggered")
+    fun deleteAllTriggerAlerts(): Single<ResponseStatusEntity>
 }

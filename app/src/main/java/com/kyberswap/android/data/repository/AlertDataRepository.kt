@@ -6,10 +6,12 @@ import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.data.mapper.AlertMapper
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.LeaderBoard
+import com.kyberswap.android.domain.model.ResponseStatus
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.repository.AlertRepository
 import com.kyberswap.android.domain.usecase.alert.CreateOrUpdateAlertUseCase
 import com.kyberswap.android.domain.usecase.alert.DeleteAlertsUseCase
+import com.kyberswap.android.domain.usecase.alert.DeleteAllAlertsUseCase
 import com.kyberswap.android.domain.usecase.alert.GetAlertUseCase
 import com.kyberswap.android.domain.usecase.alert.GetCurrentAlertUseCase
 import com.kyberswap.android.domain.usecase.alert.SaveAlertTokenUseCase
@@ -42,6 +44,15 @@ class AlertDataRepository @Inject constructor(
     override fun deleteAlert(param: DeleteAlertsUseCase.Param): Single<Response<Void>> {
         return userApi.deleteAlert(param.alert.id).doAfterSuccess {
             alertDao.deleteById(param.alert.id)
+        }
+    }
+
+
+    override fun deleteAllTriggerAlerts(param: DeleteAllAlertsUseCase.Param): Single<ResponseStatus> {
+        return userApi.deleteAllTriggerAlerts().map {
+            ResponseStatus(it)
+        }.doAfterSuccess {
+            alertDao.deleteAlerts(alertDao.allAlerts().filter { it.isFilled })
         }
     }
 

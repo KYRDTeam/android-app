@@ -21,6 +21,7 @@ import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.profile.alert.DeleteAlertsState
+import com.kyberswap.android.presentation.main.profile.alert.DeleteAllTriggeredAlertsState
 import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
 import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
@@ -122,7 +123,6 @@ class ManageAlertFragment : BaseFragment(), LoginState {
             false
         )
 
-
         val triggerAlertAdapter = ManageTriggerAlertAdapter(appExecutors, handler) {
             dialogHelper.showConfirmDeleteAlert(
                 {
@@ -139,6 +139,22 @@ class ManageAlertFragment : BaseFragment(), LoginState {
                         showAlert(getString(R.string.delete_alert_success))
                     }
                     is DeleteAlertsState.ShowError -> {
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
+                        )
+                    }
+                }
+            }
+        })
+
+        viewModel.deleteAllTriggeredAlertsCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == DeleteAllTriggeredAlertsState.Loading)
+                when (state) {
+                    is DeleteAllTriggeredAlertsState.Success -> {
+                        showAlert(getString(R.string.delete_all_trigger_alert_success))
+                    }
+                    is DeleteAllTriggeredAlertsState.ShowError -> {
                         showError(
                             state.message ?: getString(R.string.something_wrong)
                         )
@@ -220,7 +236,14 @@ class ManageAlertFragment : BaseFragment(), LoginState {
             navigator.navigateToAlertMethod(currentFragment)
         }
 
+        binding.tvDeleteAll.setOnClickListener {
+            dialogHelper.showConfirmDeleteAllTrigeredAlert(
+                {
+                    viewModel.deleteAlertAllTriggerAlerts()
+                }
+            )
 
+        }
     }
 
     override fun onDestroyView() {
@@ -232,6 +255,4 @@ class ManageAlertFragment : BaseFragment(), LoginState {
         fun newInstance() =
             ManageAlertFragment()
     }
-
-
 }

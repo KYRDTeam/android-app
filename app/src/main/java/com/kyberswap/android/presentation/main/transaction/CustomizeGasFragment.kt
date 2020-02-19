@@ -129,12 +129,17 @@ class CustomizeGasFragment : BaseFragment() {
                         }
                     }
                     is SpeedUpTransactionState.ShowError -> {
+
                         val error = state.message ?: getString(R.string.something_wrong)
+                        if (error.contains(getString(R.string.nonce_too_low), true)) {
+                            showError(getString(R.string.can_not_speed_up_transaction))
+                        } else {
+                            showError(error)
+                        }
                         analytics.logEvent(
                             FAIL_SPEED_UP_TX_EVENT,
                             Bundle().createEvent(error)
                         )
-                        showError(error)
                     }
                 }
             }

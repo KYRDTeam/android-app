@@ -163,6 +163,10 @@ class TransactionStatusAdapter(
 
         binding.swipe.btnSpeedUp.visibility =
             if (transaction.hash == smallestNonceHash) View.VISIBLE else View.GONE
+
+        binding.swipe.btnCancel.visibility =
+            if (!transaction.isCancelTransaction) View.VISIBLE else View.GONE
+
         binding.swipe.isSwipeEnabled = isPending
     }
 

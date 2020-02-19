@@ -270,11 +270,15 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                     }
                     is SpeedUpTransactionState.ShowError -> {
                         val error = state.message ?: getString(R.string.something_wrong)
+                        if (error.contains(getString(R.string.nonce_too_low), true)) {
+                            showError(getString(R.string.can_not_speed_up_transaction))
+                        } else {
+                            showError(error)
+                        }
                         analytics.logEvent(
                             FAIL_CANCEL_TX_EVENT,
                             Bundle().createEvent(state.message)
                         )
-                        showError(error)
                     }
                 }
             }

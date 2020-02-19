@@ -50,7 +50,6 @@ class ProfileDetailFragment : BaseFragment(), LoginState {
 
     private val alerts = mutableListOf<Alert>()
 
-    private val openAlerts = alerts.filter { !it.isFilled }
 
     private val handler by lazy {
         Handler()
@@ -133,9 +132,9 @@ class ProfileDetailFragment : BaseFragment(), LoginState {
                     is GetAlertsState.Success -> {
                         this.alerts.clear()
                         this.alerts.addAll(state.alerts)
-                        binding.isEmpty = openAlerts.isEmpty()
+                        binding.isEmpty = state.alerts.isEmpty()
                         alertAdapter.submitAlerts(
-                            openAlerts.take(
+                            state.alerts.filter { !it.isFilled }.take(
                                 2
                             )
                         )

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.usecase.alert.DeleteAlertsUseCase
+import com.kyberswap.android.domain.usecase.alert.DeleteAllAlertsUseCase
 import com.kyberswap.android.domain.usecase.alert.GetAlertsUseCase
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
@@ -11,6 +12,7 @@ import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.profile.alert.DeleteAlertsState
+import com.kyberswap.android.presentation.main.profile.alert.DeleteAllTriggeredAlertsState
 import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
 import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Consumer
@@ -21,6 +23,7 @@ class MangeAlertViewModel @Inject constructor(
     getSelectedWalletUseCase: GetSelectedWalletUseCase,
     private val deleteAlertsUseCase: DeleteAlertsUseCase,
     private val getLoginStatusUseCase: GetLoginStatusUseCase,
+    private val deleteAllAlertsUseCase: DeleteAllAlertsUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
 
@@ -31,6 +34,11 @@ class MangeAlertViewModel @Inject constructor(
     private val _deleteAlertsCallback = MutableLiveData<Event<DeleteAlertsState>>()
     val deleteAlertsCallback: LiveData<Event<DeleteAlertsState>>
         get() = _deleteAlertsCallback
+
+    private val _deleteAllTriggerAlertsCallback =
+        MutableLiveData<Event<DeleteAllTriggeredAlertsState>>()
+    val deleteAllTriggeredAlertsCallback: LiveData<Event<DeleteAllTriggeredAlertsState>>
+        get() = _deleteAllTriggerAlertsCallback
 
     private val _getLoginStatusCallback = MutableLiveData<Event<UserInfoState>>()
     val getLoginStatusCallback: LiveData<Event<UserInfoState>>
@@ -88,4 +96,19 @@ class MangeAlertViewModel @Inject constructor(
         )
     }
 
+    fun deleteAlertAllTriggerAlerts() {
+        _deleteAllTriggerAlertsCallback.postValue(Event(DeleteAllTriggeredAlertsState.Loading))
+        deleteAllAlertsUseCase.execute(
+            Consumer {
+                _deleteAllTriggerAlertsCallback.value =
+                    Event(DeleteAllTriggeredAlertsState.Success(it))
+            },
+            Consumer {
+                it.printStackTrace()
+                _deleteAllTriggerAlertsCallback.value =
+                    Event(DeleteAllTriggeredAlertsState.ShowError(errorHandler.getError(it)))
+            },
+            DeleteAllAlertsUseCase.Param()
+        )
+    }
 }

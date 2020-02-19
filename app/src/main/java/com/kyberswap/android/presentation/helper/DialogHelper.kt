@@ -34,6 +34,7 @@ import com.kyberswap.android.databinding.DialogCancelOrderConfirmationBinding
 import com.kyberswap.android.databinding.DialogCancelTransactionBinding
 import com.kyberswap.android.databinding.DialogConfirmDataTransferBinding
 import com.kyberswap.android.databinding.DialogConfirmDeleteAlertBinding
+import com.kyberswap.android.databinding.DialogConfirmDeleteAllTriggeredAlertBinding
 import com.kyberswap.android.databinding.DialogConfirmationBinding
 import com.kyberswap.android.databinding.DialogConfirmationWithNegativeOptionBinding
 import com.kyberswap.android.databinding.DialogDataTranformationBinding
@@ -655,6 +656,39 @@ class DialogHelper @Inject constructor(
         val binding =
             DataBindingUtil.inflate<DialogConfirmDeleteAlertBinding>(
                 LayoutInflater.from(activity), R.layout.dialog_confirm_delete_alert, null, false
+            )
+
+        binding.tvOk.setOnClickListener {
+            positiveListener.invoke()
+            dialog.dismiss()
+        }
+
+        binding.tvCancel.setOnClickListener {
+            negativeListener.invoke()
+            dialog.dismiss()
+        }
+
+
+
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    }
+
+    fun showConfirmDeleteAllTrigeredAlert(
+        positiveListener: () -> Unit,
+        negativeListener: () -> Unit = {}
+    ) {
+
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogConfirmDeleteAllTriggeredAlertBinding>(
+                LayoutInflater.from(activity),
+                R.layout.dialog_confirm_delete_all_triggered_alert,
+                null,
+                false
             )
 
         binding.tvOk.setOnClickListener {

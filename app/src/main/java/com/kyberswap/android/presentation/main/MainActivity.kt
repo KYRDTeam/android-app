@@ -165,6 +165,9 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
     private val isOther: Boolean
         get() = notification?.isOther == true
 
+    private val isGeneralNotification: Boolean
+        get() = notification?.id == 0L
+
     val pendingTransactions = mutableListOf<Transaction>()
 
     private var adapter: MainPagerAdapter? = null
@@ -598,7 +601,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             )
         }
 
-        if (isPromotion || isOther) {
+        if (isPromotion || isOther || isGeneralNotification) {
             notification?.let {
                 dialogHelper.showPromotionDialog(it) {
                     openUrl(it)
