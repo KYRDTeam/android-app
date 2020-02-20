@@ -1,7 +1,10 @@
 package com.kyberswap.android.presentation.main.alert
 
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.os.Handler
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
@@ -48,7 +51,6 @@ class ManageAlertAdapter(
     ) {
         mItemManger.bindView(holder.itemView, position)
         super.onBindViewHolder(holder, position, payloads)
-
     }
 
     fun submitAlerts(tokens: List<Alert>) {
@@ -71,6 +73,8 @@ class ManageAlertAdapter(
             }
         })
 
+        binding.btnEdit.visibility = if (item.isFilled) View.GONE else View.VISIBLE
+
         binding.btnEdit.setOnClickListener {
 
             binding.swipe.close(true)
@@ -86,6 +90,12 @@ class ManageAlertAdapter(
             }, 250)
         }
 
+        val colorMatrix = ColorMatrix()
+        colorMatrix.setSaturation(if (item.isFilled) 0f else 1f)
+        val filter = ColorMatrixColorFilter(colorMatrix)
+        binding.imgAlert.colorFilter = filter
+
+
     }
 
 
@@ -97,7 +107,6 @@ class ManageAlertAdapter(
         val background =
             if (position % 2 == 0) R.drawable.item_alert_even_background else R.drawable.item_alert_odd_background
         holder.binding.root.setBackgroundResource(background)
-
     }
 
     override fun createBinding(parent: ViewGroup, viewType: Int): ItemManageAlertBinding =

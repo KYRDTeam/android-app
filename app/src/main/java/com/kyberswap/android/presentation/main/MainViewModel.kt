@@ -210,6 +210,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun checkEligibleWallet(wallet: Wallet) {
+        checkEligibleWalletUseCase.dispose()
         checkEligibleWalletUseCase.execute(
             Consumer {
 

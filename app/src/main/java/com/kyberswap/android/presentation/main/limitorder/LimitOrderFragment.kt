@@ -1001,11 +1001,30 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 }
 
                 else -> binding.order?.let {
+                    viewModel.checkEligibleWallet(wallet)
 
-                    saveLimitOrder()
                 }
             }
         }
+
+        viewModel.checkEligibleWalletCallback.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == CheckEligibleWalletState.Loading)
+                when (state) {
+                    is CheckEligibleWalletState.Success -> {
+                        if (state.eligibleWalletStatus.success && !state.eligibleWalletStatus.eligible) {
+                            binding.tvSubmitOrder.setViewEnable(false)
+                            showError(state.eligibleWalletStatus.message)
+                        } else {
+                            onVerifyWalletComplete()
+                        }
+                    }
+                    is CheckEligibleWalletState.ShowError -> {
+                        onVerifyWalletComplete()
+                    }
+                }
+            }
+        })
 
         viewModel.saveOrderCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -1222,6 +1241,11 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
     fun getPendingBalance() {
         viewModel.getPendingBalances(wallet)
+    }
+
+    private fun onVerifyWalletComplete() {
+        binding.tvSubmitOrder.setViewEnable(true)
+        saveLimitOrder()
     }
 
     fun onRefresh() {

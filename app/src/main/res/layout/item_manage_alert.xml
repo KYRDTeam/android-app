@@ -59,7 +59,7 @@
             android:minHeight="56dp">
 
             <ImageView
-                android:id="@+id/imageView15"
+                android:id="@+id/imgAlert"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_marginStart="16dp"
@@ -80,44 +80,46 @@
                 android:textColor="#1d303a"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/textView97"
+                app:layout_constraintEnd_toStartOf="@+id/tvAlertPrice"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/imageView15"
+                app:layout_constraintStart_toEndOf="@+id/imgAlert"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Dai/USD" />
 
             <TextView
-                android:id="@+id/textView97"
+                android:id="@+id/tvAlertPrice"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:gravity="end"
                 android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-                android:textColor="#31cb9e"
+                android:textColor="@color/color_active_alert_price"
                 android:textSize="14sp"
                 app:alertPrice="@{alert.alertPrice}"
                 app:isAbove="@{alert.isAbove}"
+                app:isFilled="@{alert.isFilled}"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/textView98"
+                app:layout_constraintEnd_toStartOf="@+id/tvPercentChange"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/textView95"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="≥ 36000" />
 
             <TextView
-                android:id="@+id/textView98"
+                android:id="@+id/tvPercentChange"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:lineSpacingExtra="4sp"
-                android:textColor="#5a5e67"
+                android:textColor="@color/color_active_percent_change"
                 android:textSize="12sp"
                 app:isAbove="@{alert.isAbove}"
+                app:isFilled="@{alert.isFilled}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/textView97"
+                app:layout_constraintStart_toEndOf="@+id/tvAlertPrice"
                 app:layout_constraintTop_toTopOf="parent"
                 app:percentChange="@{alert.percentChange}"
                 tools:text="0.32%" />

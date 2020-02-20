@@ -10,17 +10,15 @@ import com.kyberswap.android.domain.model.NotificationLimitOrder
 import com.kyberswap.android.presentation.main.MainActivity
 import com.onesignal.OSNotificationOpenResult
 import com.onesignal.OneSignal
-import timber.log.Timber
 
 
 class NotificationOpenedHandler : OneSignal.NotificationOpenedHandler {
 
     // This fires when a notification is opened by tapping on it.
     override fun notificationOpened(result: OSNotificationOpenResult) {
-        Timber.e("Open: " + Gson().toJson(result))
 
         val data = result.notification.payload.additionalData
-        Timber.e("payload: " + Gson().toJson(data))
+
         try {
             when (data?.getString(NOTIFICATION_TYPE)) {
                 NOTIFICATION_TYPE_ALERT -> {
@@ -60,7 +58,8 @@ class NotificationOpenedHandler : OneSignal.NotificationOpenedHandler {
                             title = result.notification.payload?.title ?: "",
                             content = result.notification.payload?.body ?: "",
                             label = notificationExt.type,
-                            link = if (notificationExt.link.isNotEmpty()) notificationExt.link else result.notification.payload.launchURL,
+                            link = if (notificationExt.link.isNotEmpty()) notificationExt.link else result.notification.payload.launchURL
+                                ?: "",
                             data = notificationExt
                         )
                     )

@@ -300,6 +300,27 @@ object TextViewBindingAdapter {
             .append(alertPrice?.toDisplayNumber())
     }
 
+    @BindingAdapter("app:isAbove", "app:alertPrice", "app:isFilled")
+    @JvmStatic
+    fun filledAlertPrice(
+        view: TextView,
+        isAbove: Boolean?,
+        alertPrice: BigDecimal?,
+        isFilled: Boolean?
+    ) {
+        val color = when {
+            isFilled == true -> R.color.color_trigger_alert_price
+            true == isAbove -> {
+                R.color.rate_up_text_color
+            }
+            else -> R.color.rate_down_text_color
+        }
+
+        view.setTextColor(ContextCompat.getColor(view.context, color))
+        view.text = StringBuilder().append(if (true == isAbove) "≥ " else "≤ ")
+            .append(alertPrice?.toDisplayNumber())
+    }
+
     @BindingAdapter("app:isAbove", "app:percentChange")
     @JvmStatic
     fun percentChange(
@@ -324,21 +345,25 @@ object TextViewBindingAdapter {
 
     @BindingAdapter("app:isAbove", "app:percentChange", "app:isFilled")
     @JvmStatic
-    fun fillAlertPercentChange(
+    fun filledAlertPercentChange(
         view: TextView,
         isAbove: Boolean?,
         percentChange: BigDecimal?,
-        isFilled: Boolean
+        isFilled: Boolean?
     ) {
-        val color = if (true == isAbove) {
-            R.color.rate_up_text_color
-        } else R.color.rate_down_text_color
+        val color = when {
+            isFilled == true -> R.color.color_trigger_alert_price
+            true == isAbove -> {
+                R.color.rate_up_text_color
+            }
+            else -> R.color.rate_down_text_color
+        }
 
         val drawable = when (isAbove) {
             true -> R.drawable.ic_arrow_up
             else -> R.drawable.ic_arrow_down
         }
-        if (isFilled) {
+        if (isFilled == true) {
             val icon = view.context.getDrawable(drawable)
             val matrix = ColorMatrix()
             matrix.setSaturation(0f)

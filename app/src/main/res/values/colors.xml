@@ -88,4 +88,6 @@
     <color name="notification_unread">#e8efff</color>
     <color name="notification_even">#ffffff</color>
     <color name="notification_odd">#f6f7fa</color>
+    <color name="color_active_alert_price">#31cb9e</color>
+    <color name="color_active_percent_change">#5a5e67</color>
 </resources>

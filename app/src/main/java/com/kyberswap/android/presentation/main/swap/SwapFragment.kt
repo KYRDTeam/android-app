@@ -868,15 +868,33 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 //                                    data, true
 //                                )
 //                            }
-                            viewModel.saveSwap(
-                                data, true
-                            )
+
+                            viewModel.checkEligibleWallet(it, data)
                         }
                     }
                 }
             }
 
         }
+
+        viewModel.checkEligibleWalletCallback.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == CheckEligibleWalletState.Loading)
+                when (state) {
+                    is CheckEligibleWalletState.Success -> {
+                        if (state.eligibleWalletStatus.success && !state.eligibleWalletStatus.eligible) {
+                            binding.tvContinue.setViewEnable(false)
+                            showError(state.eligibleWalletStatus.message)
+                        } else {
+                            onVerifyWalletComplete(state.swap)
+                        }
+                    }
+                    is CheckEligibleWalletState.ShowError -> {
+                        onVerifyWalletComplete(state.swap)
+                    }
+                }
+            }
+        })
 
         currentActivity.mainViewModel.checkEligibleWalletCallback.observe(
             currentActivity,
@@ -1102,6 +1120,13 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
             else -> DEFAULT_ACCEPT_RATE_PERCENTAGE.toString()
         }
+    }
+
+    private fun onVerifyWalletComplete(swap: Swap?) {
+        binding.tvContinue.setViewEnable(true)
+        viewModel.saveSwap(
+            swap, true
+        )
     }
 
     private fun getSelectedGasPrice(gas: Gas, id: Int?): String {
