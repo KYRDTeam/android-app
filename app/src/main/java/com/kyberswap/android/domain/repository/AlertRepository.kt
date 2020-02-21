@@ -2,7 +2,14 @@ package com.kyberswap.android.domain.repository
 
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.LeaderBoard
-import com.kyberswap.android.domain.usecase.alert.*
+import com.kyberswap.android.domain.model.ResponseStatus
+import com.kyberswap.android.domain.usecase.alert.CreateOrUpdateAlertUseCase
+import com.kyberswap.android.domain.usecase.alert.DeleteAlertsUseCase
+import com.kyberswap.android.domain.usecase.alert.DeleteAllAlertsUseCase
+import com.kyberswap.android.domain.usecase.alert.GetAlertUseCase
+import com.kyberswap.android.domain.usecase.alert.GetCurrentAlertUseCase
+import com.kyberswap.android.domain.usecase.alert.SaveAlertTokenUseCase
+import com.kyberswap.android.domain.usecase.alert.UpdateCurrentAlertUseCase
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -25,4 +32,6 @@ interface AlertRepository {
     fun getAlert(param: GetAlertUseCase.Param): Single<Alert>
 
     fun updateCurrentAlert(param: UpdateCurrentAlertUseCase.Param): Completable
+
+    fun deleteAllTriggerAlerts(param: DeleteAllAlertsUseCase.Param): Single<ResponseStatus>
 }

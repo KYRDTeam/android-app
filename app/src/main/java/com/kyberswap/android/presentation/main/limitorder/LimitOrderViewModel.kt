@@ -23,12 +23,14 @@ import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
 import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
 import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
+import com.kyberswap.android.domain.usecase.wallet.CheckEligibleWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.common.MIN_SUPPORT_AMOUNT
 import com.kyberswap.android.presentation.common.specialGasLimitDefault
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
+import com.kyberswap.android.presentation.main.balance.CheckEligibleWalletState
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.GetExpectedRateState
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
@@ -67,6 +69,7 @@ class LimitOrderViewModel @Inject constructor(
     private val getLoginStatusUseCase: GetLoginStatusUseCase,
     private val pendingBalancesUseCase: GetPendingBalancesUseCase,
     private val elegibleAddressUseCase: CheckEligibleAddressUseCase,
+    private val checkEligibleWalletUseCase: CheckEligibleWalletUseCase,
     getSelectedWalletUseCase: GetSelectedWalletUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
@@ -146,6 +149,10 @@ class LimitOrderViewModel @Inject constructor(
     var relatedOrders = mutableListOf<Order>()
 
     private var currentLimitOrder: LocalLimitOrder? = null
+
+    private val _checkEligibleWalletCallback = MutableLiveData<Event<CheckEligibleWalletState>>()
+    val checkEligibleWalletCallback: LiveData<Event<CheckEligibleWalletState>>
+        get() = _checkEligibleWalletCallback
 
 
     fun getLoginStatus() {
@@ -407,6 +414,23 @@ class LimitOrderViewModel @Inject constructor(
         )
     }
 
+    fun checkEligibleWallet(wallet: Wallet?) {
+        if (wallet == null) return
+        checkEligibleWalletUseCase.dispose()
+        _checkEligibleWalletCallback.postValue(Event(CheckEligibleWalletState.Loading))
+        checkEligibleWalletUseCase.execute(
+            Consumer {
+                _checkEligibleWalletCallback.value =
+                    Event(CheckEligibleWalletState.Success(it))
+            },
+            Consumer {
+                _checkEligibleWalletCallback.value =
+                    Event(CheckEligibleWalletState.ShowError(errorHandler.getError(it)))
+            },
+            CheckEligibleWalletUseCase.Param(wallet)
+        )
+    }
+
     fun saveLimitOrder(
         order: LocalLimitOrder,
         fromContinue: Boolean = false,
@@ -590,6 +614,9 @@ class LimitOrderViewModel @Inject constructor(
         swapTokenUseCase.dispose()
         getLoginStatusUseCase.dispose()
         compositeDisposable.dispose()
+        checkEligibleWalletUseCase.dispose()
+        pendingBalancesUseCase.dispose()
+        elegibleAddressUseCase.dispose()
         super.onCleared()
     }
 }

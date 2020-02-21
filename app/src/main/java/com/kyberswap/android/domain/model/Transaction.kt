@@ -95,6 +95,9 @@ data class Transaction(
         txType
     )
 
+    val isCancelTransaction: Boolean
+        get() = transactionType == TransactionType.SEND
+            && value.toBigDecimalOrDefaultZero() == BigDecimal.ZERO
 
     constructor(entity: TransactionEntity, address: String, txType: String) : this(
         entity.blockHash ?: "",

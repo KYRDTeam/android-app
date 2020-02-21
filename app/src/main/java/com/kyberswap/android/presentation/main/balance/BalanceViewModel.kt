@@ -6,7 +6,6 @@ import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.send.SaveSendTokenUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapDataTokenUseCase
-import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalanceUseCase
 import com.kyberswap.android.domain.usecase.token.PrepareBalanceUseCase
 import com.kyberswap.android.domain.usecase.token.SaveTokenUseCase
@@ -25,7 +24,6 @@ import javax.inject.Inject
 
 class BalanceViewModel @Inject constructor(
     private val getBalanceUseCase: GetBalanceUseCase,
-    private val getBalancePollingUseCase: GetBalancePollingUseCase,
     private val updateWalletUseCase: UpdateWalletUseCase,
     private val getWalletByAddressUseCase: GetWalletByAddressUseCase,
     private val saveSwapDataTokenUseCase: SaveSwapDataTokenUseCase,
@@ -109,7 +107,6 @@ class BalanceViewModel @Inject constructor(
 
     override fun onCleared() {
         compositeDisposable.dispose()
-        getBalancePollingUseCase.dispose()
         getWalletByAddressUseCase.dispose()
         getBalanceUseCase.dispose()
         updateWalletUseCase.dispose()

@@ -13,12 +13,14 @@ import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
+import com.kyberswap.android.domain.usecase.wallet.CheckEligibleWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.presentation.common.ADDITIONAL_SEND_GAS_LIMIT
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfer
 import com.kyberswap.android.presentation.common.specialGasLimitDefault
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
+import com.kyberswap.android.presentation.main.balance.CheckEligibleWalletState
 import com.kyberswap.android.presentation.main.swap.DeleteContactState
 import com.kyberswap.android.presentation.main.swap.GetContactState
 import com.kyberswap.android.presentation.main.swap.GetENSAddressState
@@ -43,6 +45,7 @@ class SendViewModel @Inject constructor(
     private val deleteContactUseCase: DeleteContactUseCase,
     private val estimateTransferGasUseCase: EstimateTransferGasUseCase,
     private val ensResolveUseCase: ENSResolveUseCase,
+    private val checkEligibleWalletUseCase: CheckEligibleWalletUseCase,
     getSelectedWalletUseCase: GetSelectedWalletUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
@@ -83,6 +86,10 @@ class SendViewModel @Inject constructor(
         get() = _currentSelection
 
     private val _currentSelection = MutableLiveData<Event<Contact>>()
+
+    private val _checkEligibleWalletCallback = MutableLiveData<Event<CheckEligibleWalletState>>()
+    val checkEligibleWalletCallback: LiveData<Event<CheckEligibleWalletState>>
+        get() = _checkEligibleWalletCallback
 
     fun updateCurrentContact(contact: Contact) {
         _currentSelection.value = Event(contact)
@@ -151,6 +158,22 @@ class SendViewModel @Inject constructor(
                     Event(GetGasPriceState.ShowError(errorHandler.getError(it)))
             },
             null
+        )
+    }
+
+    fun checkEligibleWallet(wallet: Wallet) {
+        checkEligibleWalletUseCase.dispose()
+        _checkEligibleWalletCallback.postValue(Event(CheckEligibleWalletState.Loading))
+        checkEligibleWalletUseCase.execute(
+            Consumer {
+                _checkEligibleWalletCallback.value =
+                    Event(CheckEligibleWalletState.Success(it))
+            },
+            Consumer {
+                _checkEligibleWalletCallback.value =
+                    Event(CheckEligibleWalletState.ShowError(errorHandler.getError(it)))
+            },
+            CheckEligibleWalletUseCase.Param(wallet)
         )
     }
 
@@ -223,13 +246,17 @@ class SendViewModel @Inject constructor(
         saveSendUseCase.dispose()
         getContactUseCase.dispose()
         estimateTransferGasUseCase.dispose()
+        checkEligibleWalletUseCase.dispose()
+        saveContactUseCase.dispose()
+        deleteContactUseCase.dispose()
+        ensResolveUseCase.dispose()
         super.onCleared()
     }
 
     fun resolve(name: CharSequence, isFromContinue: Boolean = false) {
-        if (isFromContinue) {
-            _getGetENSCallback.postValue(Event(GetENSAddressState.Loading))
-        }
+//        if (isFromContinue) {
+//            _getGetENSCallback.postValue(Event(GetENSAddressState.Loading))
+//        }
         ensResolveUseCase.dispose()
         ensResolveUseCase.execute(
             Consumer {

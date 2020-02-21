@@ -36,6 +36,7 @@ import com.kyberswap.android.presentation.common.DEFAULT_ENS_ADDRESS
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.presentation.main.balance.CheckEligibleWalletState
 import com.kyberswap.android.presentation.main.swap.DeleteContactState
 import com.kyberswap.android.presentation.main.swap.GetContactState
 import com.kyberswap.android.presentation.main.swap.GetENSAddressState
@@ -62,6 +63,7 @@ import com.kyberswap.android.util.ext.isSomethingWrongError
 import com.kyberswap.android.util.ext.onlyAddress
 import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.setAmount
+import com.kyberswap.android.util.ext.setViewEnable
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.synthetic.main.fragment_send.*
@@ -139,6 +141,11 @@ class SendFragment : BaseFragment() {
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
+    private val currentActivity by lazy {
+        activity as MainActivity
+    }
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -153,7 +160,7 @@ class SendFragment : BaseFragment() {
 
         viewModel.getSelectedWallet()
         viewModel.getContact()
-
+        binding.tvContinue.setViewEnable(true)
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -172,7 +179,7 @@ class SendFragment : BaseFragment() {
         })
 
 
-        viewModel.getSendCallback.observe(this, Observer {
+        viewModel.getSendCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSendState.Success -> {
@@ -219,6 +226,7 @@ class SendFragment : BaseFragment() {
                 }
             }
         })
+
 
         binding.tvAdvanceOption.setOnClickListener {
             binding.expandableLayout.expand()
@@ -485,7 +493,6 @@ class SendFragment : BaseFragment() {
 
         viewModel.getGetENSCallback.observe(viewLifecycleOwner, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
-                showProgress(state == GetENSAddressState.Loading)
                 when (state) {
                     is GetENSAddressState.Success -> {
                         if (DEFAULT_ENS_ADDRESS == state.address) {
@@ -530,8 +537,10 @@ class SendFragment : BaseFragment() {
                                 )
                             }
                         }
+                        showProgress(false)
                     }
                     is GetENSAddressState.ShowError -> {
+                        showProgress(false)
                         ilAddress.setErrorTextAppearance(R.style.error_appearance)
                         ilAddress.error = getString(R.string.enter_address_is_invalid)
                     }
@@ -605,16 +614,34 @@ class SendFragment : BaseFragment() {
 
                     hasPendingTransaction -> showAlertWithoutIcon(message = getString(R.string.pending_transaction))
                     else -> {
-                        if (isENSAddress) {
-                            viewModel.resolve(edtAddress.text.toString(), true)
-                        } else {
-                            saveSend(contactAddress)
+                        wallet?.let {
+                            showProgress(true)
+                            viewModel.checkEligibleWallet(it)
                         }
                     }
                 }
             }
 
         }
+
+        viewModel.checkEligibleWalletCallback.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is CheckEligibleWalletState.Success -> {
+                        if (state.eligibleWalletStatus.success && !state.eligibleWalletStatus.eligible) {
+                            showProgress(false)
+                            binding.tvContinue.setViewEnable(false)
+                            showError(state.eligibleWalletStatus.message)
+                        } else {
+                            onVerifyWalletComplete()
+                        }
+                    }
+                    is CheckEligibleWalletState.ShowError -> {
+                        onVerifyWalletComplete()
+                    }
+                }
+            }
+        })
 
         listOf(binding.tvTokenBalance, binding.tvBalanceDetail).forEach { tv ->
             tv.setOnClickListener {
@@ -725,6 +752,39 @@ class SendFragment : BaseFragment() {
                     hideKeyboard()
                 }
             }
+        }
+
+        currentActivity.mainViewModel.checkEligibleWalletCallback.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                event?.peekContent()?.let { state ->
+                    when (state) {
+                        is CheckEligibleWalletState.Success -> {
+                            if (state.eligibleWalletStatus.success && !state.eligibleWalletStatus.eligible) {
+                                if (isAdded)
+                                    binding.tvContinue.setViewEnable(false)
+                                showError(state.eligibleWalletStatus.message)
+                            } else {
+                                binding.tvContinue.setViewEnable(true)
+                            }
+                        }
+                        is CheckEligibleWalletState.ShowError -> {
+
+                        }
+                    }
+                }
+            })
+    }
+
+
+
+    private fun onVerifyWalletComplete() {
+        binding.tvContinue.setViewEnable(true)
+        if (isENSAddress) {
+            viewModel.resolve(edtAddress.text.toString(), true)
+        } else {
+            showProgress(false)
+            saveSend(contactAddress)
         }
     }
 

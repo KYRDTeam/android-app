@@ -84,7 +84,7 @@
                     android:layout_width="58dp"
                     android:layout_height="58dp"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="24dp"
                     android:src="@drawable/ic_default_avartar"
                     app:imageUrl="@{user.avatarUrl}"
                     app:layout_constraintStart_toStartOf="parent"
@@ -120,134 +120,135 @@
                     app:layout_constraintTop_toBottomOf="@+id/tvName"
                     tools:text="johnsmith@gmail.com" />
 
-                <View
-                    android:id="@+id/view13"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_marginTop="16dp"
-                    android:background="#e4e7fd"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/imgProfile" />
+                <!--                <View-->
+                <!--                    android:id="@+id/view13"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="60dp"-->
+                <!--                    android:layout_marginTop="16dp"-->
+                <!--                    android:background="#e4e7fd"-->
+                <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+                <!--                    app:layout_constraintStart_toStartOf="parent"-->
+                <!--                    app:layout_constraintTop_toBottomOf="@+id/imgProfile" />-->
 
-                <TextView
-                    android:id="@+id/textView59"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:text="@string/my_profile"
-                    android:textAllCaps="true"
-                    android:textColor="#2e3957"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/view13"
-                    app:layout_constraintEnd_toStartOf="@+id/tvKycStatus"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintHorizontal_chainStyle="spread_inside"
-                    app:layout_constraintStart_toStartOf="@+id/view13"
-                    app:layout_constraintTop_toTopOf="@+id/view13" />
+                <!--                <TextView-->
+                <!--                    android:id="@+id/textView59"-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginStart="24dp"-->
+                <!--                    android:text="@string/my_profile"-->
+                <!--                    android:textAllCaps="true"-->
+                <!--                    android:textColor="#2e3957"-->
+                <!--                    android:textSize="14sp"-->
+                <!--                    app:layout_constraintBottom_toBottomOf="@+id/view13"-->
+                <!--                    app:layout_constraintEnd_toStartOf="@+id/tvKycStatus"-->
+                <!--                    app:layout_constraintHorizontal_bias="0.5"-->
+                <!--                    app:layout_constraintHorizontal_chainStyle="spread_inside"-->
+                <!--                    app:layout_constraintStart_toStartOf="@+id/view13"-->
+                <!--                    app:layout_constraintTop_toTopOf="@+id/view13" />-->
 
-                <TextView
-                    android:id="@+id/tvKycStatus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="24dp"
-                    android:background="@drawable/rounded_corner_status_unverified"
-                    android:gravity="center_horizontal"
-                    android:paddingStart="4dp"
-                    android:paddingTop="2dp"
-                    android:paddingEnd="4dp"
-                    android:paddingBottom="2dp"
-                    android:textColor="#e4e7fd"
-                    android:textSize="10sp"
-                    app:kycStatus="@{user.kycStatus}"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView59"
-                    app:layout_constraintEnd_toEndOf="@+id/view13"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/textView59"
-                    app:layout_constraintTop_toTopOf="@+id/textView59"
-                    tools:ignore="SmallSp" />
+                <!--                <TextView-->
+                <!--                    android:id="@+id/tvKycStatus"-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginEnd="24dp"-->
+                <!--                    android:background="@drawable/rounded_corner_status_unverified"-->
+                <!--                    android:gravity="center_horizontal"-->
+                <!--                    android:paddingStart="4dp"-->
+                <!--                    android:paddingTop="2dp"-->
+                <!--                    android:paddingEnd="4dp"-->
+                <!--                    android:paddingBottom="2dp"-->
+                <!--                    android:textColor="#e4e7fd"-->
+                <!--                    android:textSize="10sp"-->
+                <!--                    app:kycStatus="@{user.kycStatus}"-->
+                <!--                    app:layout_constraintBottom_toBottomOf="@+id/textView59"-->
+                <!--                    app:layout_constraintEnd_toEndOf="@+id/view13"-->
+                <!--                    app:layout_constraintHorizontal_bias="0.5"-->
+                <!--                    app:layout_constraintStart_toEndOf="@+id/textView59"-->
+                <!--                    app:layout_constraintTop_toTopOf="@+id/textView59"-->
+                <!--                    tools:ignore="SmallSp" />-->
 
-                <LinearLayout
-                    android:id="@+id/lnInfo"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintEnd_toEndOf="@+id/tvName"
-                    app:layout_constraintStart_toStartOf="@+id/imgProfile"
-                    app:layout_constraintTop_toBottomOf="@+id/view13">
+                <!--                <LinearLayout-->
+                <!--                    android:id="@+id/lnInfo"-->
+                <!--                    android:layout_width="0dp"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:orientation="vertical"-->
+                <!--                    app:layout_constraintEnd_toEndOf="@+id/tvName"-->
+                <!--                    app:layout_constraintStart_toStartOf="@+id/imgProfile"-->
+                <!--                    app:layout_constraintTop_toBottomOf="@+id/view13">-->
 
-                    <LinearLayout
-                        android:layout_marginBottom="24dp"
-                        android:id="@+id/lnVerify"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                <!--                    <LinearLayout-->
+                <!--                        android:layout_marginBottom="24dp"-->
+                <!--                        android:id="@+id/lnVerify"-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:orientation="vertical">-->
 
-                        <TextView
-                            android:id="@+id/tvKycTitle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="24dp"
-                            android:lineSpacingExtra="8sp"
-                            android:text="@string/complete_profile_verification"
-                            android:textColor="#141927"
-                            android:textSize="14sp" />
+                <!--                        <TextView-->
+                <!--                            android:id="@+id/tvKycTitle"-->
+                <!--                            android:layout_width="wrap_content"-->
+                <!--                            android:layout_height="wrap_content"-->
+                <!--                            android:layout_marginTop="24dp"-->
+                <!--                            android:lineSpacingExtra="8sp"-->
+                <!--                            android:text="@string/complete_profile_verification"-->
+                <!--                            android:textColor="#141927"-->
+                <!--                            android:textSize="14sp" />-->
 
-                        <TextView
-                            android:id="@+id/tvKycVerification"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:lineSpacingExtra="8sp"
-                            android:text="@string/profile_verification_notification"
-                            android:textColor="#5a5e67"
-                            android:textSize="14sp" />
+                <!--                        <TextView-->
+                <!--                            android:id="@+id/tvKycVerification"-->
+                <!--                            android:layout_width="wrap_content"-->
+                <!--                            android:layout_height="wrap_content"-->
+                <!--                            android:layout_marginTop="8dp"-->
+                <!--                            android:lineSpacingExtra="8sp"-->
+                <!--                            android:text="@string/profile_verification_notification"-->
+                <!--                            android:textColor="#5a5e67"-->
+                <!--                            android:textSize="14sp" />-->
 
 
-                        <TextView
-                            android:id="@+id/tvAction"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="24dp"
-                            android:background="@drawable/border_button"
-                            android:gravity="center"
-                            android:minWidth="126dp"
-                            android:minHeight="45dp"
-                            android:text="@string/profile_verify"
-                            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
-                            android:textColor="#141927"
-                            android:textSize="16sp" />
-                    </LinearLayout>
+                <!--                        <TextView-->
+                <!--                            android:id="@+id/tvAction"-->
+                <!--                            android:layout_width="wrap_content"-->
+                <!--                            android:layout_height="wrap_content"-->
+                <!--                            android:layout_gravity="center"-->
+                <!--                            android:layout_marginTop="24dp"-->
+                <!--                            android:background="@drawable/border_button"-->
+                <!--                            android:gravity="center"-->
+                <!--                            android:minWidth="126dp"-->
+                <!--                            android:minHeight="45dp"-->
+                <!--                            android:text="@string/profile_verify"-->
+                <!--                            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"-->
+                <!--                            android:textColor="#141927"-->
+                <!--                            android:textSize="16sp" />-->
+                <!--                    </LinearLayout>-->
 
-                    <TextView
-                        android:id="@+id/tvPDPAUpdate"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:minHeight="48dp"
-                        android:gravity="center_vertical"
-                        android:lineSpacingExtra="10sp"
-                        android:text="@string/about_pdpa_update"
-                        android:textColor="#141927"
-                        android:textSize="12sp"
-                        />
-                </LinearLayout>
+                <!--                    <TextView-->
+                <!--                        android:id="@+id/tvPDPAUpdate"-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:minHeight="48dp"-->
+                <!--                        android:gravity="center_vertical"-->
+                <!--                        android:lineSpacingExtra="10sp"-->
+                <!--                        android:text="@string/about_pdpa_update"-->
+                <!--                        android:textColor="#141927"-->
+                <!--                        android:textSize="12sp"-->
+                <!--                        />-->
+                <!--                </LinearLayout>-->
 
                 <View
                     android:id="@+id/view19"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
-                    android:layout_marginTop="1dp"
+                    android:layout_marginTop="24dp"
                     android:background="#e4e7fd"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lnInfo" />
+                    app:layout_constraintTop_toBottomOf="@+id/imgProfile" />
 
 
                 <TextView
                     android:id="@+id/textView10"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:text="@string/alerts"
@@ -258,7 +259,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/imgLeaderBoard"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintHorizontal_chainStyle="spread_inside"
-                    app:layout_constraintStart_toStartOf="@+id/textView59"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/view19" />
 
                 <ImageView
@@ -278,10 +279,11 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_marginStart="8dp"
+                    android:layout_marginEnd="24dp"
                     android:padding="6dp"
                     android:src="@drawable/ic_add_alert"
                     app:layout_constraintBottom_toBottomOf="@+id/imgLeaderBoard"
-                    app:layout_constraintEnd_toEndOf="@+id/tvKycStatus"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/imgLeaderBoard"
                     app:layout_constraintTop_toTopOf="@+id/imgLeaderBoard" />

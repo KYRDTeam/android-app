@@ -17,6 +17,7 @@ import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.ResetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapUseCase
+import com.kyberswap.android.domain.usecase.wallet.CheckEligibleWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
@@ -24,6 +25,7 @@ import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
 import com.kyberswap.android.presentation.common.specialGasLimitDefault
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.alert.GetAlertState
+import com.kyberswap.android.presentation.main.balance.CheckEligibleWalletState
 import com.kyberswap.android.util.ErrorHandler
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toLongSafe
@@ -48,6 +50,7 @@ class SwapViewModel @Inject constructor(
     private val getCombinedCapUseCase: GetCombinedCapUseCase,
     private val resetSwapUserCase: ResetSwapDataUseCase,
     private val kyberNetworkStatusCase: GetKyberNetworkStatusCase,
+    private val checkEligibleWalletUseCase: CheckEligibleWalletUseCase,
     getWalletUseCase: GetSelectedWalletUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getWalletUseCase, errorHandler) {
@@ -64,9 +67,9 @@ class SwapViewModel @Inject constructor(
     val getGetGasPriceCallback: LiveData<Event<GetGasPriceState>>
         get() = _getGetGasPriceCallback
 
-    private val _getCapCallback = MutableLiveData<Event<GetCapState>>()
-    val getCapCallback: LiveData<Event<GetCapState>>
-        get() = _getCapCallback
+//    private val _getCapCallback = MutableLiveData<Event<GetCapState>>()
+//    val getCapCallback: LiveData<Event<GetCapState>>
+//        get() = _getCapCallback
 
     private val _getKyberStatusback = MutableLiveData<Event<GetKyberStatusState>>()
     val getKyberStatusback: LiveData<Event<GetKyberStatusState>>
@@ -95,6 +98,10 @@ class SwapViewModel @Inject constructor(
     private val _saveSwapCallback = MutableLiveData<Event<SaveSwapState>>()
     val saveSwapDataCallback: LiveData<Event<SaveSwapState>>
         get() = _saveSwapCallback
+
+    private val _checkEligibleWalletCallback = MutableLiveData<Event<CheckEligibleWalletState>>()
+    val checkEligibleWalletCallback: LiveData<Event<CheckEligibleWalletState>>
+        get() = _checkEligibleWalletCallback
 
     fun getMarketRate(swap: Swap) {
 
@@ -253,7 +260,9 @@ class SwapViewModel @Inject constructor(
         )
     }
 
-    fun saveSwap(swap: Swap, fromContinue: Boolean = false) {
+    fun saveSwap(swap: Swap?, fromContinue: Boolean = false) {
+        if (swap == null) return
+        saveSwapUseCase.dispose()
         saveSwapUseCase.execute(
             Action {
                 if (fromContinue) {
@@ -294,29 +303,41 @@ class SwapViewModel @Inject constructor(
         estimateGasUseCase.dispose()
         getAlertUseCase.dispose()
         compositeDisposable.dispose()
+        estimateAmountUseCase.dispose()
+        getCombinedCapUseCase.dispose()
+        resetSwapUserCase.dispose()
+        kyberNetworkStatusCase.dispose()
+        checkEligibleWalletUseCase.dispose()
         super.onCleared()
     }
 
-    fun getCap(wallet: Wallet, swap: Swap) {
-        _getCapCallback.postValue(Event(GetCapState.Loading))
-        getCombinedCapUseCase.execute(
-            Consumer {
-                _getCapCallback.value = Event(GetCapState.Success(it, swap))
-            },
-            Consumer {
-                it.printStackTrace()
-                _getCapCallback.value = Event(GetCapState.ShowError(errorHandler.getError(it)))
-            },
-            GetCombinedCapUseCase.Param(wallet)
-        )
-    }
+//    fun getCap(wallet: Wallet, swap: Swap) {
+//        _getCapCallback.postValue(Event(GetCapState.Loading))
+//        getCombinedCapUseCase.execute(
+//            Consumer {
+//                _getCapCallback.value = Event(GetCapState.Success(it, swap))
+//            },
+//            Consumer {
+//                it.printStackTrace()
+//                _getCapCallback.value = Event(GetCapState.ShowError(errorHandler.getError(it)))
+//            },
+//            GetCombinedCapUseCase.Param(wallet)
+//        )
+//    }
 
-    fun reset(swap: Swap) {
-        resetSwapUserCase.dispose()
-        resetSwapUserCase.execute(
-            Action { },
-            Consumer { },
-            ResetSwapDataUseCase.Param(swap)
+    fun checkEligibleWallet(wallet: Wallet, swap: Swap) {
+        checkEligibleWalletUseCase.dispose()
+        _checkEligibleWalletCallback.postValue(Event(CheckEligibleWalletState.Loading))
+        checkEligibleWalletUseCase.execute(
+            Consumer {
+                _checkEligibleWalletCallback.value =
+                    Event(CheckEligibleWalletState.Success(it, swap))
+            },
+            Consumer {
+                _checkEligibleWalletCallback.value =
+                    Event(CheckEligibleWalletState.ShowError(errorHandler.getError(it), swap))
+            },
+            CheckEligibleWalletUseCase.Param(wallet)
         )
     }
 

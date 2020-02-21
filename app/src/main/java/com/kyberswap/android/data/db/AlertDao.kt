@@ -1,6 +1,12 @@
 package com.kyberswap.android.data.db
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
+import androidx.room.Update
 import com.kyberswap.android.domain.model.Alert
 import io.reactivex.Flowable
 
@@ -47,11 +53,15 @@ interface AlertDao {
     @Query("DELETE FROM alerts")
     fun deleteAllAlerts()
 
+
     @Query("DELETE FROM alerts WHERE id = :id")
     fun deleteById(id: Long)
 
     @Delete
     fun delete(model: Alert)
+
+    @Delete
+    fun deleteAlerts(alerts: List<Alert>)
 
     @get:Query("SELECT * FROM alerts")
     val all: Flowable<List<Alert>>

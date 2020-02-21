@@ -5,6 +5,7 @@ import android.util.Base64
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.PromoApi
+import com.kyberswap.android.data.api.home.UserApi
 import com.kyberswap.android.data.db.ContactDao
 import com.kyberswap.android.data.db.LocalLimitOrderDao
 import com.kyberswap.android.data.db.SendDao
@@ -15,6 +16,7 @@ import com.kyberswap.android.data.db.UnitDao
 import com.kyberswap.android.data.db.WalletDao
 import com.kyberswap.android.data.mapper.PromoMapper
 import com.kyberswap.android.domain.model.Contact
+import com.kyberswap.android.domain.model.EligibleWalletStatus
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Unit
@@ -23,6 +25,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.domain.repository.WalletRepository
 import com.kyberswap.android.domain.usecase.wallet.ApplyKyberCodeUseCase
+import com.kyberswap.android.domain.usecase.wallet.CheckEligibleWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.CreateWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.DeleteWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.ExportKeystoreWalletUseCase
@@ -88,7 +91,8 @@ class WalletDataRepository @Inject constructor(
     private val wcClient: WCClient,
     private val tokenClient: TokenClient,
     private val transactionDao: TransactionDao,
-    private val contactDao: ContactDao
+    private val contactDao: ContactDao,
+    private val userApi: UserApi
 ) : WalletRepository {
 
     override fun updatedSelectedWallet(param: UpdateSelectedWalletUseCase.Param): Single<Wallet> {
@@ -456,7 +460,7 @@ class WalletDataRepository @Inject constructor(
         return Single.fromCallable {
             val wallet = param.wallet
             val file =
-                File(WalletManager.storage.keystoreDir.toString() + "/wallets/" + param.wallet.walletId + ".json")
+                File(param.wallet.walletPath)
             if (file.delete()) {
                 val status = VerifyStatus(true)
                 val wallets = walletDao.all.toMutableList()
@@ -529,7 +533,7 @@ class WalletDataRepository @Inject constructor(
             }
             val credentials = WalletUtils.loadCredentials(
                 password,
-                WalletManager.storage.keystoreDir.toString() + "/wallets/" + param.wallet.walletId + ".json"
+                param.wallet.walletPath
             )
 
             val hash = tokenClient.sendTransaction(param.transaction, credentials)
@@ -566,7 +570,7 @@ class WalletDataRepository @Inject constructor(
             }
             val credentials = WalletUtils.loadCredentials(
                 password,
-                WalletManager.storage.keystoreDir.toString() + "/wallets/" + param.wallet.walletId + ".json"
+                param.wallet.walletPath
             )
 
             val hash = tokenClient.signMessage(credentials, param.message)
@@ -580,6 +584,12 @@ class WalletDataRepository @Inject constructor(
     override fun decodeTransaction(param: DecodeTransactionUseCase.Param): Single<Transaction> {
         return Single.fromCallable {
             decodeData(param.message, "", param.wallet)
+        }
+    }
+
+    override fun checkEligible(param: CheckEligibleWalletUseCase.Param): Single<EligibleWalletStatus> {
+        return userApi.checkEligibleWallet(param.wallet.address).map {
+            EligibleWalletStatus(it)
         }
     }
 

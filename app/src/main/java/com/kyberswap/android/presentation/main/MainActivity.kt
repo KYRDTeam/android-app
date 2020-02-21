@@ -126,7 +126,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
     private var hasDone = false
 
-    private val mainViewModel: MainViewModel by lazy {
+    val mainViewModel: MainViewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
     }
 
@@ -165,9 +165,13 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
     private val isOther: Boolean
         get() = notification?.isOther == true
 
+    private val isGeneralNotification: Boolean
+        get() = notification?.id == 0L
+
     val pendingTransactions = mutableListOf<Transaction>()
 
     private var adapter: MainPagerAdapter? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -239,6 +243,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             getLimitOrder()
                             getLoginStatus()
                             checkEligibleAddress()
+                            verifyEligibleWallet()
                         }
 
                         currentFragment?.childFragmentManager?.fragments?.forEach {
@@ -252,6 +257,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                         with((currentFragment as SwapFragment)) {
                             getSwap()
                             getKyberEnable()
+                            verifyEligibleWallet()
                         }
                     }
                     is SettingFragment -> {
@@ -358,6 +364,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             wallet?.let {
                                 mainViewModel.getPendingTransaction(it)
                                 mainViewModel.getTransactionPeriodically(it)
+                                mainViewModel.checkEligibleWallet(it)
 
                             }
                         }
@@ -415,21 +422,26 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             it.blockNumber.isNotEmpty() && it.blockNumber.toLongSafe() != Transaction.DEFAULT_DROPPED_BLOCK_NUMBER
                         }
 
+
+
                         txList.forEach { transaction ->
                             hasDone = true
+
+
                             showDialog(
                                 AlertDialogFragment.DIALOG_TYPE_DONE,
-                                transaction
+                                transaction.copy(isCancel = state.transactions.filter { it.blockNumber.isEmpty() }.any { tx -> transaction.nonce == tx.nonce })
                             )
                         }
 
-                        val pending =
+                        val pendingList =
                             state.transactions.filter { it.blockNumber.isEmpty() && !it.isCancel }
+
 
                         if (currentDialogFragment != null) {
                             handler.postDelayed(
                                 {
-                                    if (pending.isEmpty() && txList.isEmpty() && hasDone) {
+                                    if (pendingList.isEmpty() && txList.isEmpty() && hasDone) {
                                         if (currentDialogFragment is AlertDialogFragment) {
                                             if (!(currentDialogFragment as AlertDialogFragment).isDone) {
                                                 currentDialogFragment?.dismissAllowingStateLoss()
@@ -443,8 +455,8 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                         }
 
                         pendingTransactions.clear()
-                        pendingTransactions.addAll(pending)
-                        setPendingTransaction(pending.size)
+                        pendingTransactions.addAll(pendingList)
+                        setPendingTransaction(pendingList.size)
                     }
                     is GetPendingTransactionState.ShowError -> {
                         showError(
@@ -592,7 +604,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             )
         }
 
-        if (isPromotion || isOther) {
+        if (isPromotion || isOther || isGeneralNotification) {
             notification?.let {
                 dialogHelper.showPromotionDialog(it) {
                     openUrl(it)

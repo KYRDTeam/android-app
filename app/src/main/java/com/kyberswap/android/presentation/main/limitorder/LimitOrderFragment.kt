@@ -22,6 +22,7 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentLimitOrderBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.EligibleAddress
+import com.kyberswap.android.domain.model.EligibleWalletStatus
 import com.kyberswap.android.domain.model.LocalLimitOrder
 import com.kyberswap.android.domain.model.NotificationLimitOrder
 import com.kyberswap.android.domain.model.PendingBalances
@@ -35,6 +36,7 @@ import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainPagerAdapter
+import com.kyberswap.android.presentation.main.balance.CheckEligibleWalletState
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.GetExpectedRateState
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
@@ -52,6 +54,7 @@ import com.kyberswap.android.util.ext.isSomethingWrongError
 import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.percentage
 import com.kyberswap.android.util.ext.setAmount
+import com.kyberswap.android.util.ext.setViewEnable
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.textToDouble
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
@@ -92,6 +95,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(LimitOrderViewModel::class.java)
+    }
+
+    private val currentActivity by lazy {
+        activity as MainActivity
     }
 
     private val handler by lazy { Handler() }
@@ -185,6 +192,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
     private val isSourceFocus: Boolean
         get() = currentFocus == binding.edtSource
 
+    private var eligibleWalletStatus: EligibleWalletStatus? = null
+
     private var eleigibleAddress: EligibleAddress? = null
 
     override fun onCreateView(
@@ -199,6 +208,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.getSelectedWallet()
+        binding.tvSubmitOrder.setViewEnable(true)
         notification?.let {
             dialogHelper.showOrderFillDialog(it) { url ->
                 openUrl(getString(R.string.transaction_etherscan_endpoint_url) + url)
@@ -762,6 +772,22 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
             }
         })
 
+        currentActivity.mainViewModel.checkEligibleWalletCallback.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                event?.peekContent()?.let { state ->
+                    when (state) {
+                        is CheckEligibleWalletState.Success -> {
+                            eligibleWalletStatus = state.eligibleWalletStatus
+                            verifyEligibleWallet(true)
+                        }
+                        is CheckEligibleWalletState.ShowError -> {
+
+                        }
+                    }
+                }
+            })
+
         viewModel.getGetGasLimitCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -975,11 +1001,30 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 }
 
                 else -> binding.order?.let {
+                    viewModel.checkEligibleWallet(wallet)
 
-                    saveLimitOrder()
                 }
             }
         }
+
+        viewModel.checkEligibleWalletCallback.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == CheckEligibleWalletState.Loading)
+                when (state) {
+                    is CheckEligibleWalletState.Success -> {
+                        eligibleWalletStatus = state.eligibleWalletStatus
+                        if (state.eligibleWalletStatus.success && !state.eligibleWalletStatus.eligible) {
+                            binding.tvSubmitOrder.setViewEnable(false)
+                        } else {
+                            onVerifyWalletComplete()
+                        }
+                    }
+                    is CheckEligibleWalletState.ShowError -> {
+                        onVerifyWalletComplete()
+                    }
+                }
+            }
+        })
 
         viewModel.saveOrderCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -1127,6 +1172,21 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         }
     }
 
+    fun verifyEligibleWallet(isDisablePopup: Boolean = false) {
+        eligibleWalletStatus?.let {
+            if (it.success && !it.eligible) {
+                if (!isDisablePopup) {
+                    binding.tvSubmitOrder.setViewEnable(false)
+                }
+                binding.tvSubmitOrder.setViewEnable(false)
+
+                showError(it.message)
+            } else {
+                binding.tvSubmitOrder.setViewEnable(true)
+            }
+        }
+    }
+
     fun showFillOrder(notificationLimitOrder: NotificationLimitOrder) {
 
         clearFragmentBackStack()
@@ -1196,6 +1256,11 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
     fun getPendingBalance() {
         viewModel.getPendingBalances(wallet)
+    }
+
+    private fun onVerifyWalletComplete() {
+        binding.tvSubmitOrder.setViewEnable(true)
+        saveLimitOrder()
     }
 
     fun onRefresh() {

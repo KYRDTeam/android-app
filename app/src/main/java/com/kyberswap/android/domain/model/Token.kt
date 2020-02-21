@@ -72,7 +72,7 @@ data class Token(
         }
 
     val rateEthNowOrDefaultValue: BigDecimal
-        get() = if (isETH || isWETH) BigDecimal.ONE else rateEthNow
+        get() = if (isETH || isWETH || isETHWETH) BigDecimal.ONE else rateEthNow
 
     val currentBalance: BigDecimal
         get() {

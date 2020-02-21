@@ -604,7 +604,6 @@
     <string name="successfully_swapped">Successfully swapped</string>
     <string name="successfully_transferred">Successfully Transferred</string>
     <string name="dialog_broadcasted">Broadcasted!</string>
-    <string name="your_transaction_has_been_broadcasted">Your transaction has been broadcasted!</string>
     <string name="waiting_for_the_transaction_to_be_mined">Waiting for the transaction to be mined</string>
     <string name="dialog_fail">Failed!</string>
     <string name="token_maintainance">Maintenance</string>
@@ -676,6 +675,11 @@
     <string name="cancel_transaction_warning">Submitting this attempt does not guarantee your original transaction will be cancelled. If the cancellation attempt is successful, you will be charged the transaction fee above.</string>
     <string name="cancellation_gas_fee">Cancellation Gas Fee</string>
     <string name="attempt_to_cancel">Attempt to Cancel?</string>
+    <string name="transaction_cancel_successfully">Your transaction has been cancelled successfully</string>
+    <string name="delete_all">DELETE ALL</string>
+    <string name="delete_all_trigger_alert_success">Delete all triggered alerts successfully.</string>
+    <string name="do_you_want_to_delete_all_triggered_alerts">Do you want to delete all triggered alerts?</string>
+    <string name="nonce_too_low">nonce too low</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>

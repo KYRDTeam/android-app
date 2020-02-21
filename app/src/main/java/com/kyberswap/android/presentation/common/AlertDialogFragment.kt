@@ -98,11 +98,15 @@ class AlertDialogFragment : DialogFragment() {
                                 transaction.to.displayWalletAddress()
                             )
                         } else {
-                            String.format(
-                                getString(R.string.notification_success_sent),
-                                transaction.displayValue,
-                                transaction.to.displayWalletAddress()
-                            )
+                            if(transaction.isCancel) {
+                                getString(R.string.transaction_cancel_successfully)
+                            } else {
+                                String.format(
+                                    getString(R.string.notification_success_sent),
+                                    transaction.displayValue,
+                                    transaction.to.displayWalletAddress()
+                                )
+                            }
                         }
                     }
                     Transaction.TransactionType.SWAP -> {

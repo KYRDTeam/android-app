@@ -617,7 +617,6 @@
     <string name="successfully_swapped">Successfully swapped</string>
     <string name="successfully_transferred">Successfully Transferred</string>
     <string name="dialog_broadcasted">Đã gửi</string>
-    <string name="your_transaction_has_been_broadcasted">Your transaction has been broadcasted!</string>
     <string name="waiting_for_the_transaction_to_be_mined">Giao dịch của bạn đang được xử lý</string>
     <string name="dialog_fail">Thất bại</string>
     <string name="token_maintainance">Đang bảo trì</string>
@@ -680,11 +679,16 @@
     <string name="speed_up">Tăng tốc</string>
     <string name="speed_up_gas_price_hint">Phí gas phải lớn hơn 10% so với phí gas hiện tại</string>
     <string name="can_not_speed_up_transaction">Không thể tăng tốc giao dịch này</string>
-    <string name="can_not_cancel_transaction">Không thể hủy giảo dịch này</string>
+    <string name="can_not_cancel_transaction">Không thể hủy giao dịch này</string>
     <string name="current_fee">Phí hiện tại</string>
     <string name="new_fee">Phí mới</string>
     <string name="cancel_transaction_warning">Thực hiện lệnh này không đảm bảo giao dịch ban đầu của bạn sẽ được hủy. Nếu việc hủy giao dịch thành công, bạn sẽ phải trả phí gas nêu trên.</string>
     <string name="cancellation_gas_fee">Phí gas hủy bỏ</string>
     <string name="attempt_to_cancel">Quyết định hủy bỏ?</string>
+    <string name="transaction_cancel_successfully">Your transaction has been cancelled successfully</string>
+    <string name="delete_all">DELETE ALL</string>
+    <string name="delete_all_trigger_alert_success">Delete all triggered alerts successfully</string>
+    <string name="do_you_want_to_delete_all_triggered_alerts">Do you want to delete all triggered alerts?</string>
+    <string name="nonce_too_low">nonce too low</string>
 
 </resources>

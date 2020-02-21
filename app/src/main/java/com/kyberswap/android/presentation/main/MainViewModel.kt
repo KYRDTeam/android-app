@@ -25,12 +25,14 @@ import com.kyberswap.android.domain.usecase.token.GetTokensBalanceUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetPendingTransactionsUseCase
 import com.kyberswap.android.domain.usecase.transaction.GetTransactionsPeriodicallyUseCase
 import com.kyberswap.android.domain.usecase.transaction.MonitorPendingTransactionUseCase
+import com.kyberswap.android.domain.usecase.wallet.CheckEligibleWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.CreateWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetAllWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.UpdateSelectedWalletUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.landing.CreateWalletState
+import com.kyberswap.android.presentation.main.balance.CheckEligibleWalletState
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
 import com.kyberswap.android.presentation.main.balance.GetRatingInfoState
@@ -70,6 +72,7 @@ class MainViewModel @Inject constructor(
     private val getUserDataPermissionUseCase: RefreshUserInfoUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val dataTransferUseCase: DataTransferUseCase,
+    private val checkEligibleWalletUseCase: CheckEligibleWalletUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getWalletUseCase, errorHandler) {
 
@@ -80,6 +83,10 @@ class MainViewModel @Inject constructor(
     private val _getRatingInfoCallback = MutableLiveData<Event<GetRatingInfoState>>()
     val getRatingInfoCallback: LiveData<Event<GetRatingInfoState>>
         get() = _getRatingInfoCallback
+
+    private val _checkEligibleWalletCallback = MutableLiveData<Event<CheckEligibleWalletState>>()
+    val checkEligibleWalletCallback: LiveData<Event<CheckEligibleWalletState>>
+        get() = _checkEligibleWalletCallback
 
     private val _saveRatingInfoCallback = MutableLiveData<Event<SaveRatingInfoState>>()
     val saveRatingInfoCallback: LiveData<Event<SaveRatingInfoState>>
@@ -199,6 +206,21 @@ class MainViewModel @Inject constructor(
             },
             GetOtherBalancePollingUseCase.Param()
 
+        )
+    }
+
+    fun checkEligibleWallet(wallet: Wallet) {
+        checkEligibleWalletUseCase.dispose()
+        checkEligibleWalletUseCase.execute(
+            Consumer {
+
+                _checkEligibleWalletCallback.value = Event(CheckEligibleWalletState.Success(it))
+            },
+            Consumer {
+                _checkEligibleWalletCallback.value =
+                    Event(CheckEligibleWalletState.ShowError(errorHandler.getError(it)))
+            },
+            CheckEligibleWalletUseCase.Param(wallet)
         )
     }
 
@@ -519,6 +541,7 @@ class MainViewModel @Inject constructor(
         saveRatingInfoUseCase.dispose()
         getPendingTransactionsUseCase.dispose()
         updatePushTokenUseCase.dispose()
+        checkEligibleWalletUseCase.dispose()
         super.onCleared()
     }
 

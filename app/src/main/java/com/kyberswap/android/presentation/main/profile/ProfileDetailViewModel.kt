@@ -4,24 +4,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Alert
-import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.usecase.alert.DeleteAlertsUseCase
 import com.kyberswap.android.domain.usecase.alert.GetAlertsUseCase
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.domain.usecase.profile.LogoutUseCase
-import com.kyberswap.android.domain.usecase.profile.PollingUserInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.ReSubmitUserInfoUseCase
-import com.kyberswap.android.domain.usecase.profile.RefreshUserInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.UpdatePushTokenUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.profile.alert.DeleteAlertsState
 import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
-import com.kyberswap.android.presentation.main.profile.kyc.ReSubmitState
 import com.kyberswap.android.util.ErrorHandler
-import com.kyberswap.android.util.ext.display
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
-import timber.log.Timber
 import javax.inject.Inject
 
 class ProfileDetailViewModel @Inject constructor(
@@ -29,9 +23,6 @@ class ProfileDetailViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
     private val deleteAlertsUseCase: DeleteAlertsUseCase,
     private val getLoginStatusUseCase: GetLoginStatusUseCase,
-    private val pollingUserInfoUseCase: PollingUserInfoUseCase,
-    private val refreshUserInfoUseCase: RefreshUserInfoUseCase,
-    private val getUserDataPermission: RefreshUserInfoUseCase,
     private val reSubmitUserInfoUseCase: ReSubmitUserInfoUseCase,
     private val updatePushTokenUseCase: UpdatePushTokenUseCase,
     private val errorHandler: ErrorHandler
@@ -53,39 +44,10 @@ class ProfileDetailViewModel @Inject constructor(
     val getUserInfoCallback: LiveData<Event<UserInfoState>>
         get() = _getUserInfoCallback
 
-    private val _refreshKycStatus = MutableLiveData<Event<UserInfoState>>()
-    val refreshKycStatus: LiveData<Event<UserInfoState>>
-        get() = _refreshKycStatus
-
-    private val _getDataTransferCallback = MutableLiveData<Event<UserInfoState>>()
-    val getDataTransferCallback: LiveData<Event<UserInfoState>>
-        get() = _getDataTransferCallback
-
-    private val _reSubmitKycCallback = MutableLiveData<Event<ReSubmitState>>()
-    val reSubmitKycCallback: LiveData<Event<ReSubmitState>>
-        get() = _reSubmitKycCallback
-
-    fun getDataTransferInfo() {
-        getUserDataPermission.dispose()
-        getUserDataPermission.execute(
-            Consumer {
-                _getDataTransferCallback.value = Event(UserInfoState.Success(it))
-            },
-            Consumer {
-                it.printStackTrace()
-                _getDataTransferCallback.value =
-                    Event(UserInfoState.ShowError(errorHandler.getError(it)))
-            },
-            null
-        )
-    }
-
     fun getLoginStatus() {
         getLoginStatusUseCase.dispose()
-        pollingUserInfoUseCase.dispose()
         getLoginStatusUseCase.execute(
             Consumer {
-                pollingKycProfile()
                 _getUserInfoCallback.value = Event(UserInfoState.Success(it))
             },
             Consumer {
@@ -96,64 +58,6 @@ class ProfileDetailViewModel @Inject constructor(
             null
         )
     }
-
-    private fun pollingKycProfile() {
-        pollingUserInfoUseCase.dispose()
-        pollingUserInfoUseCase.execute(
-            Consumer {
-                if (it?.success == true) {
-                    _getUserInfoCallback.value = Event(UserInfoState.Success(it))
-                } else {
-                    _getUserInfoCallback.value = Event(UserInfoState.ShowError(it.message))
-                }
-
-            },
-            Consumer {
-                it.printStackTrace()
-                _getUserInfoCallback.value =
-                    Event(UserInfoState.ShowError(errorHandler.getError(it)))
-            },
-            null
-        )
-    }
-
-    fun refreshKycStatus() {
-        _refreshKycStatus.postValue(Event(UserInfoState.Loading))
-        refreshUserInfoUseCase.execute(
-            Consumer {
-                _refreshKycStatus.value = Event(UserInfoState.Success(it))
-                pollingUserInfoUseCase.dispose()
-            },
-            Consumer {
-                it.printStackTrace()
-                _refreshKycStatus.value =
-                    Event(UserInfoState.ShowError(errorHandler.getError(it)))
-            },
-            null
-        )
-    }
-
-    fun reSubmit(user: UserInfo) {
-        _reSubmitKycCallback.postValue(Event(ReSubmitState.Loading))
-        reSubmitUserInfoUseCase.execute(
-            Consumer {
-                if (it.success) {
-                    _reSubmitKycCallback.value = Event(ReSubmitState.Success(it))
-                } else {
-                    _reSubmitKycCallback.value =
-                        Event(ReSubmitState.ShowError(it.reason.display()))
-                }
-
-            },
-            Consumer {
-                it.printStackTrace()
-                _reSubmitKycCallback.value =
-                    Event(ReSubmitState.ShowError(errorHandler.getError(it)))
-            },
-            ReSubmitUserInfoUseCase.Param(user)
-        )
-    }
-
 
     fun getAlert() {
         getAlertsUseCase.execute(
@@ -203,31 +107,9 @@ class ProfileDetailViewModel @Inject constructor(
         logoutUseCase.dispose()
         deleteAlertsUseCase.dispose()
         getLoginStatusUseCase.dispose()
-        pollingUserInfoUseCase.dispose()
         updatePushTokenUseCase.dispose()
-        reSubmitUserInfoUseCase.dispose()
-        refreshUserInfoUseCase.dispose()
+        reSubmitUserInfoUseCase.dispose() //        refreshUserInfoUseCase.dispose()
         super.onCleared()
     }
 
-    fun updatePushToken(userId: String, token: String?) {
-        updatePushTokenUseCase.execute(
-            Consumer {
-
-            },
-            Consumer {
-                it.printStackTrace()
-                Timber.e(it.localizedMessage)
-            },
-            UpdatePushTokenUseCase.Param(
-                userId,
-                token
-            )
-        )
-    }
-
-    fun cancelPolling() {
-        getLoginStatusUseCase.dispose()
-        pollingUserInfoUseCase.dispose()
-    }
 }

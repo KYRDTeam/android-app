@@ -25,6 +25,7 @@ import com.kyberswap.android.BR
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentSwapBinding
 import com.kyberswap.android.domain.SchedulerProvider
+import com.kyberswap.android.domain.model.EligibleWalletStatus
 import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.Notification
 import com.kyberswap.android.domain.model.NotificationAlert
@@ -43,6 +44,7 @@ import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.alert.GetAlertState
+import com.kyberswap.android.presentation.main.balance.CheckEligibleWalletState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.getAmountOrDefaultValue
@@ -51,6 +53,7 @@ import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.kyberswap.android.util.ext.isSomethingWrongError
 import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.setAmount
+import com.kyberswap.android.util.ext.setViewEnable
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
@@ -61,7 +64,6 @@ import net.cachapa.expandablelayout.ExpandableLayout
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.web3j.utils.Convert
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.concurrent.atomic.AtomicBoolean
@@ -115,6 +117,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
     private val destLock = AtomicBoolean()
 
+    private var eligibleWalletStatus: EligibleWalletStatus? = null
+
     private val availableAmount: BigDecimal
         get() = binding.swap?.let {
             it.availableAmountForSwap(
@@ -130,6 +134,11 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     private val handler by lazy {
         Handler()
     }
+
+    private val currentActivity by lazy {
+        activity as MainActivity
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,6 +160,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         viewModel.getSelectedWallet()
         alertNotification?.let { viewModel.getAlert(it) }
         swap(notification)
+        binding.tvContinue.setViewEnable(true)
 
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -661,39 +671,39 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
-        viewModel.getCapCallback.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let { state ->
-                showProgress(state == GetCapState.Loading)
-                when (state) {
-                    is GetCapState.Success -> {
-
-                        if (state.cap.rich) {
-                            showAlertWithoutIcon(
-                                message =
-                                getString(R.string.cap_rich)
-                            )
-                        } else if (state.swap.equivalentETHWithPrecision > state.cap.cap) {
-                            val amount = Convert.fromWei(state.cap.cap, Convert.Unit.ETHER)
-                            showAlertWithoutIcon(
-                                message = String.format(
-                                    getString(R.string.cap_reduce_amount),
-                                    amount.toDisplayNumber()
-                                )
-                            )
-                        } else {
-                            viewModel.saveSwap(
-                                state.swap, true
-                            )
-                        }
-                    }
-                    is GetCapState.ShowError -> {
-                        showError(
-                            state.message ?: getString(R.string.something_wrong)
-                        )
-                    }
-                }
-            }
-        })
+//        viewModel.getCapCallback.observe(viewLifecycleOwner, Observer {
+//            it?.getContentIfNotHandled()?.let { state ->
+//                showProgress(state == GetCapState.Loading)
+//                when (state) {
+//                    is GetCapState.Success -> {
+//
+//                        if (state.cap.rich) {
+//                            showAlertWithoutIcon(
+//                                message =
+//                                getString(R.string.cap_rich)
+//                            )
+//                        } else if (state.swap.equivalentETHWithPrecision > state.cap.cap) {
+//                            val amount = Convert.fromWei(state.cap.cap, Convert.Unit.ETHER)
+//                            showAlertWithoutIcon(
+//                                message = String.format(
+//                                    getString(R.string.cap_reduce_amount),
+//                                    amount.toDisplayNumber()
+//                                )
+//                            )
+//                        } else {
+//                            viewModel.saveSwap(
+//                                state.swap, true
+//                            )
+//                        }
+//                    }
+//                    is GetCapState.ShowError -> {
+//                        showError(
+//                            state.message ?: getString(R.string.something_wrong)
+//                        )
+//                    }
+//                }
+//            }
+//        })
 
         viewModel.getKyberStatusback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -855,13 +865,15 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 gasPrice = getSelectedGasPrice(swap.gas, selectedGasFeeView?.id)
                             )
 
-                            if (!((data.tokenSource.isETH && data.tokenDest.isWETH) || (data.tokenSource.isWETH && data.tokenDest.isETH))) {
-                                viewModel.getCap(it, data)
-                            } else {
-                                viewModel.saveSwap(
-                                    data, true
-                                )
-                            }
+//                            if (!((data.tokenSource.isETH && data.tokenDest.isWETH) || (data.tokenSource.isWETH && data.tokenDest.isETH))) {
+//                                viewModel.getCap(it, data)
+//                            } else {
+//                                viewModel.saveSwap(
+//                                    data, true
+//                                )
+//                            }
+
+                            viewModel.checkEligibleWallet(it, data)
                         }
                     }
                 }
@@ -869,11 +881,61 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
         }
 
+        viewModel.checkEligibleWalletCallback.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == CheckEligibleWalletState.Loading)
+                when (state) {
+                    is CheckEligibleWalletState.Success -> {
+                        eligibleWalletStatus = state.eligibleWalletStatus
+                        if (state.eligibleWalletStatus.success && !state.eligibleWalletStatus.eligible) {
+                            binding.tvContinue.setViewEnable(false)
+                            showError(state.eligibleWalletStatus.message)
+                        } else {
+                            onVerifyWalletComplete(state.swap)
+                        }
+                    }
+                    is CheckEligibleWalletState.ShowError -> {
+                        onVerifyWalletComplete(state.swap)
+                    }
+                }
+            }
+        })
+
+        currentActivity.mainViewModel.checkEligibleWalletCallback.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                event?.peekContent()?.let { state ->
+                    when (state) {
+                        is CheckEligibleWalletState.Success -> {
+                            eligibleWalletStatus = state.eligibleWalletStatus
+                            verifyEligibleWallet(true)
+                        }
+                        is CheckEligibleWalletState.ShowError -> {
+
+                        }
+                    }
+                }
+            })
+
         binding.imgFlag.setOnClickListener {
             navigator.navigateToNotificationcreen(currentFragment)
         }
 
         setDefaultSelection()
+    }
+
+    fun verifyEligibleWallet(isDisablePopup: Boolean = false) {
+        eligibleWalletStatus?.let {
+            if (it.success && !it.eligible) {
+                if (!isDisablePopup) {
+                    binding.tvContinue.setViewEnable(false)
+                }
+                binding.tvContinue.setViewEnable(false)
+                showError(it.message)
+            } else {
+                binding.tvContinue.setViewEnable(true)
+            }
+        }
     }
 
     fun swap(notification: Notification?) {
@@ -1073,6 +1135,13 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
             else -> DEFAULT_ACCEPT_RATE_PERCENTAGE.toString()
         }
+    }
+
+    private fun onVerifyWalletComplete(swap: Swap?) {
+        binding.tvContinue.setViewEnable(true)
+        viewModel.saveSwap(
+            swap, true
+        )
     }
 
     private fun getSelectedGasPrice(gas: Gas, id: Int?): String {

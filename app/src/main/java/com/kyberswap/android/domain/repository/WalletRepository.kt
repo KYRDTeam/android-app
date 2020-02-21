@@ -1,11 +1,13 @@
 package com.kyberswap.android.domain.repository
 
+import com.kyberswap.android.domain.model.EligibleWalletStatus
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.VerifyStatus
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.domain.usecase.wallet.ApplyKyberCodeUseCase
+import com.kyberswap.android.domain.usecase.wallet.CheckEligibleWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.CreateWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.DeleteWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.ExportKeystoreWalletUseCase
@@ -81,4 +83,6 @@ interface WalletRepository {
     fun signTransaction(param: WalletConnectSignedTransactionUseCase.Param): Completable
 
     fun decodeTransaction(param: DecodeTransactionUseCase.Param): Single<Transaction>
+
+    fun checkEligible(param: CheckEligibleWalletUseCase.Param): Single<EligibleWalletStatus>
 }

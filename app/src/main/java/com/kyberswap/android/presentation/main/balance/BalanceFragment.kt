@@ -159,7 +159,8 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     viewModel.saveFav(it)
                 }
             )
-        refresh(true)
+//        refresh(true)
+        getTokenBalances()
         tokenAdapter?.mode = Attributes.Mode.Single
         binding.rvToken.adapter = tokenAdapter
 
@@ -297,7 +298,6 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetBalanceState.Success -> {
-//                        setNameBalanceSelectedOption(balanceIndex)
                         updateTokenBalance(state.tokens.map {
                             it.updateSelectedWallet(wallet)
                         })

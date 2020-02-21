@@ -16,7 +16,9 @@ class NotificationOpenedHandler : OneSignal.NotificationOpenedHandler {
 
     // This fires when a notification is opened by tapping on it.
     override fun notificationOpened(result: OSNotificationOpenResult) {
+
         val data = result.notification.payload.additionalData
+
         try {
             when (data?.getString(NOTIFICATION_TYPE)) {
                 NOTIFICATION_TYPE_ALERT -> {
@@ -56,7 +58,8 @@ class NotificationOpenedHandler : OneSignal.NotificationOpenedHandler {
                             title = result.notification.payload?.title ?: "",
                             content = result.notification.payload?.body ?: "",
                             label = notificationExt.type,
-                            link = notificationExt.link,
+                            link = if (notificationExt.link.isNotEmpty()) notificationExt.link else result.notification.payload.launchURL
+                                ?: "",
                             data = notificationExt
                         )
                     )
