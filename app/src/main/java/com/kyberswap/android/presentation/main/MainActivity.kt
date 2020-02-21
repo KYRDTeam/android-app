@@ -172,6 +172,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
     private var adapter: MainPagerAdapter? = null
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -242,6 +243,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             getLimitOrder()
                             getLoginStatus()
                             checkEligibleAddress()
+                            verifyEligibleWallet()
                         }
 
                         currentFragment?.childFragmentManager?.fragments?.forEach {
@@ -255,6 +257,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                         with((currentFragment as SwapFragment)) {
                             getSwap()
                             getKyberEnable()
+                            verifyEligibleWallet()
                         }
                     }
                     is SettingFragment -> {

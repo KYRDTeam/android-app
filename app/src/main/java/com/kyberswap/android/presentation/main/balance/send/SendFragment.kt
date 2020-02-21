@@ -160,7 +160,7 @@ class SendFragment : BaseFragment() {
 
         viewModel.getSelectedWallet()
         viewModel.getContact()
-
+        binding.tvContinue.setViewEnable(true)
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -226,26 +226,6 @@ class SendFragment : BaseFragment() {
                 }
             }
         })
-
-        currentActivity.mainViewModel.checkEligibleWalletCallback.observe(
-            currentActivity,
-            Observer { event ->
-                event?.peekContent()?.let { state ->
-                    when (state) {
-                        is CheckEligibleWalletState.Success -> {
-                            if (state.eligibleWalletStatus.success && !state.eligibleWalletStatus.eligible) {
-                                binding.tvContinue.setViewEnable(false)
-                                showError(state.eligibleWalletStatus.message)
-                            } else {
-                                binding.tvContinue.setViewEnable(true)
-                            }
-                        }
-                        is CheckEligibleWalletState.ShowError -> {
-
-                        }
-                    }
-                }
-            })
 
 
         binding.tvAdvanceOption.setOnClickListener {
@@ -773,7 +753,29 @@ class SendFragment : BaseFragment() {
                 }
             }
         }
+
+        currentActivity.mainViewModel.checkEligibleWalletCallback.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                event?.peekContent()?.let { state ->
+                    when (state) {
+                        is CheckEligibleWalletState.Success -> {
+                            if (state.eligibleWalletStatus.success && !state.eligibleWalletStatus.eligible) {
+                                if (isAdded)
+                                    binding.tvContinue.setViewEnable(false)
+                                showError(state.eligibleWalletStatus.message)
+                            } else {
+                                binding.tvContinue.setViewEnable(true)
+                            }
+                        }
+                        is CheckEligibleWalletState.ShowError -> {
+
+                        }
+                    }
+                }
+            })
     }
+
 
 
     private fun onVerifyWalletComplete() {

@@ -679,7 +679,7 @@
     <string name="speed_up">Tăng tốc</string>
     <string name="speed_up_gas_price_hint">Phí gas phải lớn hơn 10% so với phí gas hiện tại</string>
     <string name="can_not_speed_up_transaction">Không thể tăng tốc giao dịch này</string>
-    <string name="can_not_cancel_transaction">Không thể hủy giảo dịch này</string>
+    <string name="can_not_cancel_transaction">Không thể hủy giao dịch này</string>
     <string name="current_fee">Phí hiện tại</string>
     <string name="new_fee">Phí mới</string>
     <string name="cancel_transaction_warning">Thực hiện lệnh này không đảm bảo giao dịch ban đầu của bạn sẽ được hủy. Nếu việc hủy giao dịch thành công, bạn sẽ phải trả phí gas nêu trên.</string>

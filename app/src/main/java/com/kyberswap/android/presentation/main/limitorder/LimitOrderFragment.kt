@@ -22,6 +22,7 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentLimitOrderBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.EligibleAddress
+import com.kyberswap.android.domain.model.EligibleWalletStatus
 import com.kyberswap.android.domain.model.LocalLimitOrder
 import com.kyberswap.android.domain.model.NotificationLimitOrder
 import com.kyberswap.android.domain.model.PendingBalances
@@ -191,6 +192,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
     private val isSourceFocus: Boolean
         get() = currentFocus == binding.edtSource
 
+    private var eligibleWalletStatus: EligibleWalletStatus? = null
+
     private var eleigibleAddress: EligibleAddress? = null
 
     override fun onCreateView(
@@ -205,6 +208,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.getSelectedWallet()
+        binding.tvSubmitOrder.setViewEnable(true)
         notification?.let {
             dialogHelper.showOrderFillDialog(it) { url ->
                 openUrl(getString(R.string.transaction_etherscan_endpoint_url) + url)
@@ -769,17 +773,13 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         })
 
         currentActivity.mainViewModel.checkEligibleWalletCallback.observe(
-            currentActivity,
+            viewLifecycleOwner,
             Observer { event ->
                 event?.peekContent()?.let { state ->
                     when (state) {
                         is CheckEligibleWalletState.Success -> {
-                            if (state.eligibleWalletStatus.success && !state.eligibleWalletStatus.eligible) {
-                                binding.tvSubmitOrder.setViewEnable(false)
-                                showError(state.eligibleWalletStatus.message)
-                            } else {
-                                binding.tvSubmitOrder.setViewEnable(true)
-                            }
+                            eligibleWalletStatus = state.eligibleWalletStatus
+                            verifyEligibleWallet(true)
                         }
                         is CheckEligibleWalletState.ShowError -> {
 
@@ -1012,9 +1012,9 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 showProgress(state == CheckEligibleWalletState.Loading)
                 when (state) {
                     is CheckEligibleWalletState.Success -> {
+                        eligibleWalletStatus = state.eligibleWalletStatus
                         if (state.eligibleWalletStatus.success && !state.eligibleWalletStatus.eligible) {
                             binding.tvSubmitOrder.setViewEnable(false)
-                            showError(state.eligibleWalletStatus.message)
                         } else {
                             onVerifyWalletComplete()
                         }
@@ -1169,6 +1169,21 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
         binding.imgFlag.setOnClickListener {
             navigator.navigateToNotificationcreen(currentFragment)
+        }
+    }
+
+    fun verifyEligibleWallet(isDisablePopup: Boolean = false) {
+        eligibleWalletStatus?.let {
+            if (it.success && !it.eligible) {
+                if (!isDisablePopup) {
+                    binding.tvSubmitOrder.setViewEnable(false)
+                }
+                binding.tvSubmitOrder.setViewEnable(false)
+
+                showError(it.message)
+            } else {
+                binding.tvSubmitOrder.setViewEnable(true)
+            }
         }
     }
 

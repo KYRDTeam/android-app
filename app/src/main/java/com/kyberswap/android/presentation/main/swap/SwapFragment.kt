@@ -25,6 +25,7 @@ import com.kyberswap.android.BR
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentSwapBinding
 import com.kyberswap.android.domain.SchedulerProvider
+import com.kyberswap.android.domain.model.EligibleWalletStatus
 import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.Notification
 import com.kyberswap.android.domain.model.NotificationAlert
@@ -116,6 +117,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
     private val destLock = AtomicBoolean()
 
+    private var eligibleWalletStatus: EligibleWalletStatus? = null
+
     private val availableAmount: BigDecimal
         get() = binding.swap?.let {
             it.availableAmountForSwap(
@@ -157,6 +160,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         viewModel.getSelectedWallet()
         alertNotification?.let { viewModel.getAlert(it) }
         swap(notification)
+        binding.tvContinue.setViewEnable(true)
 
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -882,6 +886,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 showProgress(state == CheckEligibleWalletState.Loading)
                 when (state) {
                     is CheckEligibleWalletState.Success -> {
+                        eligibleWalletStatus = state.eligibleWalletStatus
                         if (state.eligibleWalletStatus.success && !state.eligibleWalletStatus.eligible) {
                             binding.tvContinue.setViewEnable(false)
                             showError(state.eligibleWalletStatus.message)
@@ -897,17 +902,13 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         })
 
         currentActivity.mainViewModel.checkEligibleWalletCallback.observe(
-            currentActivity,
+            viewLifecycleOwner,
             Observer { event ->
                 event?.peekContent()?.let { state ->
                     when (state) {
                         is CheckEligibleWalletState.Success -> {
-                            if (state.eligibleWalletStatus.success && !state.eligibleWalletStatus.eligible) {
-                                binding.tvContinue.setViewEnable(false)
-                                showError(state.eligibleWalletStatus.message)
-                            } else {
-                                binding.tvContinue.setViewEnable(true)
-                            }
+                            eligibleWalletStatus = state.eligibleWalletStatus
+                            verifyEligibleWallet(true)
                         }
                         is CheckEligibleWalletState.ShowError -> {
 
@@ -921,6 +922,20 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         }
 
         setDefaultSelection()
+    }
+
+    fun verifyEligibleWallet(isDisablePopup: Boolean = false) {
+        eligibleWalletStatus?.let {
+            if (it.success && !it.eligible) {
+                if (!isDisablePopup) {
+                    binding.tvContinue.setViewEnable(false)
+                }
+                binding.tvContinue.setViewEnable(false)
+                showError(it.message)
+            } else {
+                binding.tvContinue.setViewEnable(true)
+            }
+        }
     }
 
     fun swap(notification: Notification?) {
