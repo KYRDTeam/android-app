@@ -14,6 +14,10 @@
             name="rate"
             type="java.math.BigDecimal" />
 
+        <variable
+            name="isEth"
+            type="Boolean" />
+
         <import type="android.view.View" />
     </data>
 
@@ -154,7 +158,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="32dp"
-                    android:text="@{token.displayRateEthNow + ` ETH`}"
+                    android:text="@{isEth ? token.displayRateEthNow + ` ETH` :  token.displayRateUsdNow +` USD`}"
                     android:textColor="#2e3957"
                     android:textSize="24sp"
                     android:visibility="@{token.other ? View.GONE : View.VISIBLE}"
@@ -186,7 +190,6 @@
 
                 <TextView
                     android:id="@+id/tv24hTitle"
-                    android:visibility="invisible"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -194,6 +197,7 @@
                     android:text="@string/eth_24h_vol"
                     android:textColor="#8b8e93"
                     android:textSize="12sp"
+                    android:visibility="invisible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/tv24hVol"
                     app:layout_constraintHorizontal_bias="0.5"
@@ -202,16 +206,16 @@
                     app:layout_constraintTop_toBottomOf="@+id/textView28" />
 
                 <TextView
-                    android:layout_marginStart="8dp"
                     android:id="@+id/tv24hVol"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="invisible"
+                    android:layout_marginStart="8dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/defaut_24h_eth"
                     android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
+                    android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="@+id/tv24hTitle"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"

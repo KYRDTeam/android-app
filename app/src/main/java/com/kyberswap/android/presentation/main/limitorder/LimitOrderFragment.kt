@@ -60,6 +60,7 @@ import com.kyberswap.android.util.ext.textToDouble
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
+import com.kyberswap.android.util.ext.toDoubleSafe
 import com.kyberswap.android.util.ext.underline
 import kotlinx.android.synthetic.main.fragment_limit_order.*
 import kotlinx.android.synthetic.main.fragment_swap.edtDest
@@ -718,8 +719,22 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                             }
                         }
                     }
+
                     if (text.isNullOrEmpty()) {
                         binding.edtDest.setText("")
+                        binding.tvInputtedRateRevert.text = ""
+                    } else {
+                        if (text.toString().toDoubleSafe() == 0.0) {
+                            binding.tvInputtedRateRevert.text = ""
+                        } else {
+                            binding.tvInputtedRateRevert.text =
+                                String.format(
+                                    "1 %s = %s %s",
+                                    tokenDestSymbol,
+                                    (1.0 / text.toString().toDoubleSafe()).toBigDecimal().toDisplayNumber(),
+                                    tokenSourceSymbol
+                                )
+                        }
                     }
 
                 })

@@ -3,12 +3,13 @@ package com.kyberswap.android.presentation.main.balance.chart
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.usecase.send.SaveSendTokenUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapDataTokenUseCase
 import com.kyberswap.android.domain.usecase.token.GetToken24hVolUseCase
+import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.util.ErrorHandler
@@ -25,8 +26,9 @@ class ChartViewModel @Inject constructor(
     private val saveSwapDataTokenUseCase: SaveSwapDataTokenUseCase,
     private val saveSendTokenUseCase: SaveSendTokenUseCase,
     private val getToken24hVolUseCase: GetToken24hVolUseCase,
+    getSelectedWalletUseCase: GetSelectedWalletUseCase,
     private val errorHandler: ErrorHandler
-) : ViewModel() {
+) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
 
     private val _callback = MutableLiveData<Event<SaveSwapDataState>>()
     val callback: LiveData<Event<SaveSwapDataState>>

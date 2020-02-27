@@ -1,5 +1,6 @@
 package com.kyberswap.android.domain.repository
 
+import com.kyberswap.android.data.api.chart.Data
 import com.kyberswap.android.domain.model.Chart
 import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
@@ -17,7 +18,7 @@ interface TokenRepository {
 
     fun getChartData(param: GetChartDataForTokenUseCase.Param): Single<Chart>
 
-    fun get24hVol(param: GetToken24hVolUseCase.Param): Single<String>
+    fun get24hVol(param: GetToken24hVolUseCase.Param): Single<Data>
 
     fun saveToken(param: SaveTokenUseCase.Param): Completable
 

@@ -21,8 +21,10 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentLineChartBinding
 import com.kyberswap.android.domain.model.Chart
 import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.synthetic.main.fragment_line_chart.*
@@ -68,6 +70,8 @@ class LineChartFragment : BaseFragment() {
     private val lineLimitTextColor by lazy {
         ContextCompat.getColor(context!!, R.color.limit_line_text_color)
     }
+    private var wallet: Wallet? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,7 +90,23 @@ class LineChartFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.lineChart.setNoDataText(getString(R.string.chart_updating_data))
-        viewModel.getChartData(token, chartType)
+        viewModel.getSelectedWallet()
+        viewModel.getSelectedWalletCallback.observe(parentFragment!!.viewLifecycleOwner, Observer {
+            it?.peekContent()?.let { state ->
+                when (state) {
+                    is GetWalletState.Success -> {
+                        viewModel.getChartData(
+                            if (state.wallet.unit == getString(R.string.unit_usd)) token?.symbol + "_USDC" else token?.symbol + "_ETH",
+                            chartType
+                        )
+                    }
+                    is GetWalletState.ShowError -> {
+
+                    }
+                }
+            }
+        })
+
         viewModel.getChartCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -140,8 +160,15 @@ class LineChartFragment : BaseFragment() {
     }
 
     private fun setData(chart: Chart, lineChart: LineChart) {
+        val chartData = if (chart.c.isEmpty() &&
+            (token?.isETH == true || token?.isWETH == true || token?.isETHWETH == true)
+        ) {
+            listOf(BigDecimal.ONE, BigDecimal.ONE)
+        } else {
+            chart.c
+        }
         val chartEntries = mutableListOf<Entry>()
-        if (chart.c.isEmpty()) {
+        if (chartData.isEmpty()) {
             if (token?.isOther == true) {
                 lineChart.setNoDataText(getString(R.string.unsupported_token))
             } else {
@@ -151,15 +178,15 @@ class LineChartFragment : BaseFragment() {
         }
 
         lineChart.setNoDataText("")
-        val last = chart.c.last()
-        val first = chart.c.first()
+        val last = chartData.last()
+        val first = chartData.first()
 
         if (first > BigDecimal.ZERO) {
             changedRate = (last - first) / first * BigDecimal(100)
         }
         updateChangeRate()
 
-        chart.c.forEachIndexed { index, bigDecimal ->
+        chartData.forEachIndexed { index, bigDecimal ->
             chartEntries.add(Entry(index.toFloat(), bigDecimal.toFloat()))
         }
 
@@ -191,8 +218,8 @@ class LineChartFragment : BaseFragment() {
             val l = lineChart.legend
             l.isEnabled = false
 
-            val max = chart.c.max() ?: BigDecimal.ZERO
-            val min = chart.c.min() ?: BigDecimal.ZERO
+            val max = chartData.max() ?: BigDecimal.ZERO
+            val min = chartData.min() ?: BigDecimal.ZERO
 
             val ll1 = LimitLine(max.toFloat(), max.toDisplayNumber())
             ll1.lineWidth = lineWidth

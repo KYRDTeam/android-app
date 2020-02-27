@@ -59,6 +59,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     private var currentSelectedView: View? = null
 
+    private val isCurrencySelected: Boolean
+        get() = binding.header.tvEth == orderByOptions[orderBySelectedIndex] && binding.header.tvEth.compoundDrawables.isNotEmpty()
+            || binding.header.tvUsd == orderByOptions[orderBySelectedIndex] && binding.header.tvUsd.compoundDrawables.isNotEmpty()
+
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(BalanceViewModel::class.java)
     }
@@ -490,7 +494,6 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     }
 
 
-
     private fun setSelectedOption(view: View) {
         if (view == currentSelectedView) return
         currentSelectedView?.isSelected = false
@@ -503,15 +506,24 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     private fun orderByCurrency(isEth: Boolean, type: OrderType, view: TextView) {
-        tokenAdapter?.let {
-            it.setOrderBy(type, getFilterTokenList(currentSearchString))
-            it.showEth(isEth)
-            updateOrderDrawable(it.isAsc, view)
-            displayWalletBalance(it.hideBlance)
+        if (view.isSelected || isCurrencySelected) {
+            tokenAdapter?.let {
+                it.setOrderBy(type, getFilterTokenList(currentSearchString))
+                it.showEth(isEth)
+                updateOrderDrawable(it.isAsc, view)
+                displayWalletBalance(it.hideBlance)
+            }
+            updateWalletBalanceUnit(isEth)
+            setCurrencyDisplay(isEth)
+            updateOrderOption(orderByOptions.indexOf(view), view)
+        } else {
+            updateWalletBalanceUnit(isEth)
+            setCurrencyDisplay(isEth)
+            tokenAdapter?.let {
+                it.showEth(isEth)
+                displayWalletBalance(it.hideBlance)
+            }
         }
-        updateWalletBalanceUnit(isEth)
-        setCurrencyDisplay(isEth)
-        updateOrderOption(orderByOptions.indexOf(view), view)
     }
 
     private fun updateWalletBalanceUnit(isEth: Boolean) {

@@ -3,7 +3,6 @@ package com.kyberswap.android.domain.usecase.token
 import androidx.annotation.VisibleForTesting
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Chart
-import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.repository.TokenRepository
 import com.kyberswap.android.domain.usecase.SequentialUseCase
 import com.kyberswap.android.presentation.main.balance.chart.ChartType
@@ -19,7 +18,7 @@ class GetChartDataForTokenUseCase @Inject constructor(
         return tokenRepository.getChartData(param)
     }
 
-    class Param(val token: Token, val charType: ChartType, val rateType: String = "mid")
+    class Param(val symbol: String, val charType: ChartType, val rateType: String = "mid")
 
 
 }
