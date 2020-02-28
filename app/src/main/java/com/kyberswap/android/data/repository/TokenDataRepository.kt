@@ -20,7 +20,6 @@ import com.kyberswap.android.domain.usecase.token.SaveTokenUseCase
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntSafe
-import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.updatePrecision
 import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
@@ -118,7 +117,7 @@ class TokenDataRepository @Inject constructor(
         val from = param.charType.fromTime(to)
 
         return chartApi.getChartHistory(
-            param.token.tokenSymbol,
+            param.symbol,
             param.charType.resolution,
             param.rateType,
             from,
@@ -127,7 +126,7 @@ class TokenDataRepository @Inject constructor(
             .map { chartMapper.transform(it) }
     }
 
-    override fun get24hVol(param: GetToken24hVolUseCase.Param): Single<String> {
+    override fun get24hVol(param: GetToken24hVolUseCase.Param): Single<Data> {
         return chartApi.get24hVol().map {
             it.data
         }
@@ -137,9 +136,9 @@ class TokenDataRepository @Inject constructor(
                 it.baseSymbol == param.token.tokenSymbol
             }
             .first(Data())
-            .map {
-                it.eth24hVolume?.toDisplayNumber() ?: ""
-            }
+//            .map {
+//                it.eth24hVolume?.toDisplayNumber() ?: ""
+//            }
     }
 
     override fun saveToken(param: SaveTokenUseCase.Param): Completable {

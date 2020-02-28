@@ -680,6 +680,7 @@
     <string name="delete_all_trigger_alert_success">Delete all triggered alerts successfully.</string>
     <string name="do_you_want_to_delete_all_triggered_alerts">Do you want to delete all triggered alerts?</string>
     <string name="nonce_too_low">nonce too low</string>
+    <string name="token_24h_vol_usd">%s USD</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>

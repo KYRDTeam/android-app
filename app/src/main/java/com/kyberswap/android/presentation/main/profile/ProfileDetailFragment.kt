@@ -137,7 +137,11 @@ class ProfileDetailFragment : BaseFragment(), LoginState {
                         )
 
                         val list = if (pendingList.size < 2) {
-                            state.alerts.take(2)
+                            pendingList.union(
+                                state.alerts.filter { it.isFilled }.take(
+                                    2 - pendingList.size
+                                )
+                            ).toList()
                         } else {
                             pendingList
                         }

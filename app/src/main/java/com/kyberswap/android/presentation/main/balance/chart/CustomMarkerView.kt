@@ -30,15 +30,17 @@ class CustomMarkerView(context: Context, private val xAxisValueFormatter: ValueF
     }
 
     override fun refreshContent(e: Entry?, highlight: Highlight?) {
-        e?.let {
-            tvTime.text = String.format(xAxisValueFormatter.getFormattedValue(e.x), makerTime)
-            tvPrice.text = String.format(
-                makerPrice,
-                e.y.toString().toBigDecimalOrDefaultZero().toDisplayNumber()
-            )
+        try {
+            e?.let {
+                tvTime.text = String.format(xAxisValueFormatter.getFormattedValue(e.x), makerTime)
+                tvPrice.text = String.format(
+                    makerPrice,
+                    e.y.toString().toBigDecimalOrDefaultZero().toDisplayNumber()
+                )
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
         }
-
-
         super.refreshContent(e, highlight)
     }
 

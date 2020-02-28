@@ -59,6 +59,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     private var currentSelectedView: View? = null
 
+    private val isCurrencySelected: Boolean
+        get() = binding.header.tvEth == orderByOptions[orderBySelectedIndex] && binding.header.tvEth.compoundDrawables.isNotEmpty()
+            || binding.header.tvUsd == orderByOptions[orderBySelectedIndex] && binding.header.tvUsd.compoundDrawables.isNotEmpty()
+
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(BalanceViewModel::class.java)
     }
@@ -159,8 +163,8 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     viewModel.saveFav(it)
                 }
             )
-//        refresh(true)
-        getTokenBalances()
+        refresh(true)
+//        getTokenBalances()
         tokenAdapter?.mode = Attributes.Mode.Single
         binding.rvToken.adapter = tokenAdapter
 
@@ -170,7 +174,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     is GetWalletState.Success -> {
                         if (state.wallet.address != wallet?.address) {
                             forceUpdate = true
-                            setNameBalanceSelectedOption(balanceIndex)
+//                            setNameBalanceSelectedOption(balanceIndex)
                             binding.tvUnit.setTextIfChange(state.wallet.unit)
                             this.wallet = state.wallet
                             tokenAdapter?.showEth(wallet?.unit == eth)
@@ -452,7 +456,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             )
 
             setCurrencyDisplay(wallet?.unit == eth)
-            displayWalletBalance(it.hideBlance)
+            displayWalletBalance(it.hideBalance)
             handleEmptyList()
         }
     }
@@ -490,7 +494,6 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     }
 
 
-
     private fun setSelectedOption(view: View) {
         if (view == currentSelectedView) return
         currentSelectedView?.isSelected = false
@@ -503,15 +506,24 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     private fun orderByCurrency(isEth: Boolean, type: OrderType, view: TextView) {
-        tokenAdapter?.let {
-            it.setOrderBy(type, getFilterTokenList(currentSearchString))
-            it.showEth(isEth)
-            updateOrderDrawable(it.isAsc, view)
-            displayWalletBalance(it.hideBlance)
+        if (view.isSelected || isCurrencySelected) {
+            tokenAdapter?.let {
+                it.setOrderBy(type, getFilterTokenList(currentSearchString))
+                it.showEth(isEth)
+                updateOrderDrawable(it.isAsc, view)
+                displayWalletBalance(it.hideBalance)
+            }
+            updateWalletBalanceUnit(isEth)
+            setCurrencyDisplay(isEth)
+            updateOrderOption(orderByOptions.indexOf(view), view)
+        } else {
+            updateWalletBalanceUnit(isEth)
+            setCurrencyDisplay(isEth)
+            tokenAdapter?.let {
+                it.showEth(isEth)
+                displayWalletBalance(it.hideBalance)
+            }
         }
-        updateWalletBalanceUnit(isEth)
-        setCurrencyDisplay(isEth)
-        updateOrderOption(orderByOptions.indexOf(view), view)
     }
 
     private fun updateWalletBalanceUnit(isEth: Boolean) {

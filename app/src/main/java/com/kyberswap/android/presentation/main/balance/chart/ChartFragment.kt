@@ -20,7 +20,9 @@ import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainPagerAdapter
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
+import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleSafe
 import kotlinx.android.synthetic.main.activity_main.*
 import java.math.BigDecimal
@@ -42,7 +44,8 @@ class ChartFragment : BaseFragment() {
     private var wallet: Wallet? = null
 
     private val rateChange: BigDecimal
-        get() = token?.changeEth24h ?: BigDecimal.ZERO
+        get() = if (isEth) token?.changeEth24h ?: BigDecimal.ZERO else token?.changeUsd24h
+            ?: BigDecimal.ZERO
 
     private var currentSelection = 0
 
@@ -53,9 +56,23 @@ class ChartFragment : BaseFragment() {
         ViewModelProviders.of(this, viewModelFactory).get(ChartViewModel::class.java)
     }
 
+//    private var vol24hData = Data()
+
+//    private val message: String
+//        get() {
+//            return if (isEth) {
+//                vol24hData.eth24hVolume?.toDisplayNumber() ?: ""
+//            } else {
+//                vol24hData.usd24hVolume?.toDisplayNumber() ?: ""
+//            }
+//        }
+
     private val handler by lazy {
         Handler()
     }
+
+    private val isEth: Boolean
+        get() = wallet?.unit == getString(R.string.unit_eth)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,8 +95,21 @@ class ChartFragment : BaseFragment() {
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
         }
+        viewModel.getSelectedWallet()
+        viewModel.getSelectedWalletCallback.observe(parentFragment!!.viewLifecycleOwner, Observer {
+            it?.peekContent()?.let { state ->
+                when (state) {
+                    is GetWalletState.Success -> {
+                        wallet = state.wallet
+                        binding.isEth = isEth
+                        viewModel.getVol24h(token)
+                    }
+                    is GetWalletState.ShowError -> {
 
-        viewModel.getVol24h(token)
+                    }
+                }
+            }
+        })
 
         binding.token = token
 
@@ -231,11 +261,21 @@ class ChartFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetVol24hState.Success -> {
-                        if (state.message.toDoubleSafe() > 0) {
+
+                        val message = if (isEth) {
+                            state.data.eth24hVolume?.toDisplayNumber() ?: ""
+                        } else {
+                            state.data.usd24hVolume?.toDisplayNumber() ?: ""
+                        }
+                        if (message.toDoubleSafe() > 0) {
                             binding.tv24hVol.visibility = View.VISIBLE
                             binding.tv24hTitle.visibility = View.VISIBLE
                             binding.tv24hVol.text =
-                                String.format(getString(R.string.token_24h_vol), state.message)
+                                String.format(
+                                    if (isEth) getString(R.string.token_24h_vol) else getString(
+                                        R.string.token_24h_vol_usd
+                                    ), message
+                                )
                         } else {
                             binding.tv24hVol.visibility = View.INVISIBLE
                             binding.tv24hTitle.visibility = View.INVISIBLE
