@@ -163,8 +163,8 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     viewModel.saveFav(it)
                 }
             )
-//        refresh(true)
-        getTokenBalances()
+        refresh(true)
+//        getTokenBalances()
         tokenAdapter?.mode = Attributes.Mode.Single
         binding.rvToken.adapter = tokenAdapter
 
@@ -174,7 +174,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     is GetWalletState.Success -> {
                         if (state.wallet.address != wallet?.address) {
                             forceUpdate = true
-                            setNameBalanceSelectedOption(balanceIndex)
+//                            setNameBalanceSelectedOption(balanceIndex)
                             binding.tvUnit.setTextIfChange(state.wallet.unit)
                             this.wallet = state.wallet
                             tokenAdapter?.showEth(wallet?.unit == eth)
@@ -456,7 +456,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             )
 
             setCurrencyDisplay(wallet?.unit == eth)
-            displayWalletBalance(it.hideBlance)
+            displayWalletBalance(it.hideBalance)
             handleEmptyList()
         }
     }
@@ -511,7 +511,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                 it.setOrderBy(type, getFilterTokenList(currentSearchString))
                 it.showEth(isEth)
                 updateOrderDrawable(it.isAsc, view)
-                displayWalletBalance(it.hideBlance)
+                displayWalletBalance(it.hideBalance)
             }
             updateWalletBalanceUnit(isEth)
             setCurrencyDisplay(isEth)
@@ -521,7 +521,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             setCurrencyDisplay(isEth)
             tokenAdapter?.let {
                 it.showEth(isEth)
-                displayWalletBalance(it.hideBlance)
+                displayWalletBalance(it.hideBalance)
             }
         }
     }

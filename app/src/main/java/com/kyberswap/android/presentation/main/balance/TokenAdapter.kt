@@ -45,11 +45,11 @@ class TokenAdapter(
     val showEth: Boolean
         get() = isEth
 
-    private var orderType: OrderType = OrderType.BALANCE
+    private var orderType: OrderType = OrderType.DEFAULT
 
     private var isHide = false
 
-    val hideBlance: Boolean
+    val hideBalance: Boolean
         get() = isHide
 
     private var tokenType: TokenType = TokenType.LISTED
@@ -98,6 +98,16 @@ class TokenAdapter(
             }
             OrderType.CHANGE24H_DESC -> tokens.sortedByDescending {
                 it.change24hValue(isEth)
+            }
+            OrderType.DEFAULT -> {
+                val newTokens = tokens.filter { it.shouldShowAsNew }
+                val mutableTokens = tokens.toMutableList()
+                if (newTokens.isNotEmpty()) {
+                    mutableTokens.removeAll(newTokens)
+                    newTokens.union(mutableTokens.sortedByDescending { it.currentBalance })
+                } else {
+                    mutableTokens.sortedByDescending { it.currentBalance }
+                }
             }
         }
 
@@ -283,7 +293,7 @@ class TokenAdapter(
 }
 
 enum class OrderType {
-    NAME, BALANCE, ETH_ASC, ETH_DESC, USD_ASC, USD_DESC, CHANGE_24H_ASC, CHANGE24H_DESC
+    NAME, BALANCE, ETH_ASC, ETH_DESC, USD_ASC, USD_DESC, CHANGE_24H_ASC, CHANGE24H_DESC, DEFAULT
 }
 
 enum class TokenType {
