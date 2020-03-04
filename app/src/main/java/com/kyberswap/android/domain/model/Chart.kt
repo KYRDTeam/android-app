@@ -9,6 +9,7 @@ data class Chart(
     val h: List<BigDecimal> = listOf(),
     val l: List<BigDecimal> = listOf(),
     val c: List<BigDecimal> = listOf(),
+    val v: List<BigDecimal> = listOf(),
     val s: String = ""
 
 ) {
@@ -19,6 +20,7 @@ data class Chart(
             chartResponseEntity.h ?: listOf(),
             chartResponseEntity.l ?: listOf(),
             chartResponseEntity.c ?: listOf(),
+            chartResponseEntity.v ?: listOf(),
             chartResponseEntity.s
         )
 }

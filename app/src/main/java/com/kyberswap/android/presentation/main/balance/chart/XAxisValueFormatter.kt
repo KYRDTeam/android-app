@@ -16,7 +16,7 @@ class XAxisValueFormatter(private val chart: Chart) : ValueFormatter() {
         val time = chart.t[value.toInt()]
         val cal = Calendar.getInstance()
         cal.timeInMillis = time.toLong() * 1000L
-        return SimpleDateFormat("HH:mm dd MMM yyyy", Locale.US).format(cal.time)
+        return SimpleDateFormat("HH:mm dd MMM yyyy", Locale.getDefault()).format(cal.time)
 
     }
 

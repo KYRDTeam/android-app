@@ -94,7 +94,7 @@ class TokenSearchFragment : BaseFragment() {
             }
 
         binding.rvToken.adapter = tokenAdapter
-        viewModel.getTokenList(wallet!!.address)
+        viewModel.getTokenList(wallet!!.address, isSend == true)
 
         viewModel.getTokenListCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->

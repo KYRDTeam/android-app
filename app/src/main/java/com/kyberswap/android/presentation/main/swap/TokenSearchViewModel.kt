@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.usecase.send.SaveSendTokenUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapDataTokenUseCase
-import com.kyberswap.android.domain.usecase.token.GetTokenUseCase
+import com.kyberswap.android.domain.usecase.token.GetTokenTransferUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.balance.GetBalanceState
@@ -17,7 +17,7 @@ import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class TokenSearchViewModel @Inject constructor(
-    private val getTokenListUseCase: GetTokenUseCase,
+    private val getTokenListUseCase: GetTokenTransferUseCase,
     private val getWalletByAddressUseCase: GetWalletByAddressUseCase,
     private val saveSwapDataTokenUseCase: SaveSwapDataTokenUseCase,
     private val saveSendTokenUseCase: SaveSendTokenUseCase,
@@ -40,12 +40,13 @@ class TokenSearchViewModel @Inject constructor(
         CompositeDisposable()
     }
 
-    fun getTokenList(address: String) {
+    fun getTokenList(address: String, isSend: Boolean = false) {
         getTokenListUseCase.execute(
             Consumer {
                 _getTokenListCallback.value = Event(
                     GetBalanceState.Success(
-                        it.sortedByDescending { it.currentBalance }
+                        it.filter { if (!isSend) it.isListed && !it.isOther else isSend }
+                            .sortedByDescending { it.currentBalance }.sortedByDescending { it.currentBalance * it.rateEthNow }
                     )
                 )
             },
@@ -97,6 +98,4 @@ class TokenSearchViewModel @Inject constructor(
             SaveSendTokenUseCase.Param(address, token)
         )
     }
-
-
 }

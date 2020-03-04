@@ -114,7 +114,7 @@
     <string name="swap_to">Đến:</string>
     <string name="gas_fee_eth">Phí giao dịch (ETH)</string>
     <string name="swap_gas_fee_eth">Phí giao dịch (Gwei)</string>
-    <string name="maker_time">Thời gian: %s</string>
+    <string name="marker_time">Thời gian: %s</string>
     <string name="maker_price">Tỷ giá: %s</string>
     <string name="change_24h">24h%</string>
     <string name="recipient_address">Địa chỉ nhận</string>
@@ -691,5 +691,13 @@
     <string name="do_you_want_to_delete_all_triggered_alerts">Do you want to delete all triggered alerts?</string>
     <string name="nonce_too_low">nonce too low</string>
     <string name="token_24h_vol_usd">%s USD</string>
+    <string name="marker_open">Open: %s</string>
+    <string name="marker_high">High: %s</string>
+    <string name="marker_low">Low: %s</string>
+    <string name="marker_close">Close: %s</string>
+    <string name="marker_change">%s</string>
+    <string name="marker_change_percent">%.2f %%</string>
+    <string name="marker_change_title">Change:</string>
+    <string name="marker_change_percent_title">Change%:</string>
 
 </resources>
