@@ -5,6 +5,7 @@ import android.graphics.Paint
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -17,6 +18,8 @@ import com.github.mikephil.charting.components.YAxis.AxisDependency
 import com.github.mikephil.charting.data.CandleData
 import com.github.mikephil.charting.data.CandleDataSet
 import com.github.mikephil.charting.data.CandleEntry
+import com.github.mikephil.charting.listener.ChartTouchListener
+import com.github.mikephil.charting.listener.OnChartGestureListener
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentCandleStickChartBinding
@@ -29,6 +32,7 @@ import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.synthetic.main.fragment_candle_stick_chart.*
+import timber.log.Timber
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -47,6 +51,8 @@ class CandleStickChartFragment : BaseFragment() {
     private var chartType: ChartType? = null
 
     var changedRate: BigDecimal = BigDecimal.ZERO
+
+    private var isLongPressEnable = false
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -169,7 +175,8 @@ class CandleStickChartFragment : BaseFragment() {
         candleStickChart.axisRight.setDrawAxisLine(false)
         candleStickChart.axisRight.setDrawGridLines(false)
         candleStickChart.fitScreen()
-        candleStickChart.xAxis.valueFormatter = CandleStickXAxisValueFormatter(chart, chartType)
+        candleStickChart.xAxis.setLabelCount(3, false)
+        candleStickChart.xAxis.valueFormatter = CandleStickXAxisValueFormatter(chart, resolution)
         val markerView = context?.let {
             CustomMarkerView(
                 it,
@@ -178,6 +185,64 @@ class CandleStickChartFragment : BaseFragment() {
         }
         markerView?.chartView = candleStickChart
         candleStickChart.marker = markerView
+        candleStickChart.isHighlightPerTapEnabled = false
+        candleStickChart.isHighlightPerDragEnabled = true
+//        candleStickChart.isHighlightPerTapEnabled = true
+        candleStickChart.onChartGestureListener = object : OnChartGestureListener {
+            override fun onChartGestureEnd(
+                me: MotionEvent?,
+                lastPerformedGesture: ChartTouchListener.ChartGesture?
+            ) {
+                candleStickChart.isDragEnabled = true
+                isLongPressEnable = false
+            }
+
+            override fun onChartFling(
+                me1: MotionEvent?,
+                me2: MotionEvent?,
+                velocityX: Float,
+                velocityY: Float
+            ) {
+            }
+
+            override fun onChartSingleTapped(me: MotionEvent?) {
+                candleStickChart.highlightValue(null)
+            }
+
+            override fun onChartGestureStart(
+                me: MotionEvent?,
+                lastPerformedGesture: ChartTouchListener.ChartGesture?
+            ) {
+                isLongPressEnable = false
+            }
+
+            override fun onChartScale(me: MotionEvent?, scaleX: Float, scaleY: Float) {
+                candleStickChart.highlightValue(null)
+            }
+
+            override fun onChartLongPressed(me: MotionEvent?) {
+                Timber.e("onChartLongPress")
+                candleStickChart.isDragEnabled = false
+                if (me != null) {
+                    isLongPressEnable = true
+                    val highlightByTouchPoint =
+                        candleStickChart.getHighlightByTouchPoint(me.x, me.y)
+                    candleStickChart.highlightValue(highlightByTouchPoint)
+                }
+            }
+
+            override fun onChartDoubleTapped(me: MotionEvent?) {
+            }
+
+            override fun onChartTranslate(me: MotionEvent?, dX: Float, dY: Float) {
+                Timber.e("isEnable: " + candleStickChart.isDragEnabled)
+                if (me != null && !candleStickChart.isDragEnabled) {
+                    val highlightByTouchPoint =
+                        candleStickChart.getHighlightByTouchPoint(me.x, me.y)
+                    candleStickChart.highlightValue(highlightByTouchPoint)
+                }
+            }
+        }
     }
 
 
@@ -233,7 +298,10 @@ class CandleStickChartFragment : BaseFragment() {
         candleDataSet.decreasingPaintStyle = Paint.Style.FILL
         candleDataSet.increasingPaintStyle = Paint.Style.FILL
         candleDataSet.shadowColorSameAsCandle = true
-        candleDataSet.setDrawHighlightIndicators(false)
+
+        candleDataSet.setDrawHighlightIndicators(true)
+        candleDataSet.highlightLineWidth = lineWidth
+        candleDataSet.enableDashedHighlightLine(10f, 10f, 0f)
         candleDataSet.setDrawValues(false)
 
         val candleData = CandleData(candleDataSet)
@@ -268,13 +336,13 @@ class CandleStickChartFragment : BaseFragment() {
         val entry = entries[entries.size - 1]
 
         candleStickChart.zoom(zoomLevel.toFloat(), 1f, 0f, 0f)
-
         candleStickChart.moveViewToAnimated(
             entry.x,
             entry.y,
             candleDataSet.axisDependency,
             1500
         )
+
         candleStickChart.invalidate()
     }
 

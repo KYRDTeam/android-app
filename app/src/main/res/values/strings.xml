@@ -685,8 +685,8 @@
     <string name="marker_high">High: %s</string>
     <string name="marker_low">Low: %s</string>
     <string name="marker_close">Close: %s</string>
-    <string name="marker_change">%s</string>
-    <string name="marker_change_percent">%.2f%%</string>
+    <string name="marker_change"> %s</string>
+    <string name="marker_change_percent"> %.2f%%</string>
     <string name="marker_change_title">Change:</string>
     <string name="marker_change_percent_title">Change%:</string>
     <string-array name="proof_address">

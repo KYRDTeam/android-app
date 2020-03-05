@@ -6,8 +6,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="#bfffffff"
-        android:clipChildren="false"
-        android:clipToPadding="false"
         android:gravity="center_vertical"
         android:orientation="vertical"
         android:padding="8dp">
@@ -24,6 +22,7 @@
             tools:text="Time:" />
 
         <TextView
+            android:layout_marginStart="4dp"
             android:id="@+id/tvOpen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -32,6 +31,7 @@
             tools:text="Open:" />
 
         <TextView
+            android:layout_marginStart="4dp"
             android:id="@+id/tvHigh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -40,6 +40,7 @@
             tools:text="High:" />
 
         <TextView
+            android:layout_marginStart="4dp"
             android:id="@+id/tvLow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -48,6 +49,7 @@
             tools:text="Low:" />
 
         <TextView
+            android:layout_marginStart="4dp"
             android:id="@+id/tvClose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -56,6 +58,7 @@
             tools:text="Close:" />
 
         <LinearLayout
+            android:layout_marginStart="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -77,6 +80,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:layout_marginStart="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 

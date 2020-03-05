@@ -179,7 +179,7 @@ class CombinedChartFragment : BaseFragment() {
         val formatter =
             XAxisValueFormatter(chart)
 
-        candleStickChart.xAxis.valueFormatter = CandleStickXAxisValueFormatter(chart, chartType)
+        candleStickChart.xAxis.valueFormatter = CandleStickXAxisValueFormatter(chart, 10)
         candleStickChart.drawOrder = arrayOf(
             DrawOrder.BAR,
             DrawOrder.CANDLE
