@@ -687,8 +687,8 @@
     <string name="marker_close">Close: %s</string>
     <string name="marker_change"> %s</string>
     <string name="marker_change_percent"> %.2f%%</string>
-    <string name="marker_change_title">Change:</string>
-    <string name="marker_change_percent_title">Change%:</string>
+    <string name="marker_change_title">"Change: "</string>
+    <string name="marker_change_percent_title">"Change%: "</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>

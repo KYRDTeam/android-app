@@ -32,7 +32,6 @@ import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.synthetic.main.fragment_candle_stick_chart.*
-import timber.log.Timber
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -51,8 +50,6 @@ class CandleStickChartFragment : BaseFragment() {
     private var chartType: ChartType? = null
 
     var changedRate: BigDecimal = BigDecimal.ZERO
-
-    private var isLongPressEnable = false
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -175,7 +172,11 @@ class CandleStickChartFragment : BaseFragment() {
         candleStickChart.axisRight.setDrawAxisLine(false)
         candleStickChart.axisRight.setDrawGridLines(false)
         candleStickChart.fitScreen()
-        candleStickChart.xAxis.setLabelCount(3, false)
+        candleStickChart.xAxis.granularity = 1f
+        candleStickChart.xAxis.setLabelCount(
+            if (chartType == ChartType.YEAR || chartType == ChartType.ALL) 2 else 3,
+            false
+        )
         candleStickChart.xAxis.valueFormatter = CandleStickXAxisValueFormatter(chart, resolution)
         val markerView = context?.let {
             CustomMarkerView(
@@ -187,14 +188,12 @@ class CandleStickChartFragment : BaseFragment() {
         candleStickChart.marker = markerView
         candleStickChart.isHighlightPerTapEnabled = false
         candleStickChart.isHighlightPerDragEnabled = true
-//        candleStickChart.isHighlightPerTapEnabled = true
         candleStickChart.onChartGestureListener = object : OnChartGestureListener {
             override fun onChartGestureEnd(
                 me: MotionEvent?,
                 lastPerformedGesture: ChartTouchListener.ChartGesture?
             ) {
                 candleStickChart.isDragEnabled = true
-                isLongPressEnable = false
             }
 
             override fun onChartFling(
@@ -213,7 +212,6 @@ class CandleStickChartFragment : BaseFragment() {
                 me: MotionEvent?,
                 lastPerformedGesture: ChartTouchListener.ChartGesture?
             ) {
-                isLongPressEnable = false
             }
 
             override fun onChartScale(me: MotionEvent?, scaleX: Float, scaleY: Float) {
@@ -221,10 +219,7 @@ class CandleStickChartFragment : BaseFragment() {
             }
 
             override fun onChartLongPressed(me: MotionEvent?) {
-                Timber.e("onChartLongPress")
-                candleStickChart.isDragEnabled = false
                 if (me != null) {
-                    isLongPressEnable = true
                     val highlightByTouchPoint =
                         candleStickChart.getHighlightByTouchPoint(me.x, me.y)
                     candleStickChart.highlightValue(highlightByTouchPoint)
@@ -235,8 +230,7 @@ class CandleStickChartFragment : BaseFragment() {
             }
 
             override fun onChartTranslate(me: MotionEvent?, dX: Float, dY: Float) {
-                Timber.e("isEnable: " + candleStickChart.isDragEnabled)
-                if (me != null && !candleStickChart.isDragEnabled) {
+                if (me != null) {
                     val highlightByTouchPoint =
                         candleStickChart.getHighlightByTouchPoint(me.x, me.y)
                     candleStickChart.highlightValue(highlightByTouchPoint)
@@ -275,7 +269,7 @@ class CandleStickChartFragment : BaseFragment() {
         chart.t.forEachIndexed { index, time ->
             entries.add(
                 CandleEntry(
-                    (time.toFloat() - chart.t[0].toFloat()) / 60 / resolution,
+                    (chart.t[index] - chart.t[0]).toFloat() / 60f / resolution,
                     chart.h[index].toFloat(),
                     chart.l[index].toFloat(),
                     chart.o[index].toFloat(),
@@ -306,10 +300,6 @@ class CandleStickChartFragment : BaseFragment() {
 
         val candleData = CandleData(candleDataSet)
         candleStickChart.data = candleData
-        if (entries.size > 1) {
-            candleStickChart.xAxis.axisMaximum =
-                candleData.xMax + 4 * (entries.last().x - entries.first().x) / (entries.size - 1)
-        }
 
         val max = chart.h.max() ?: BigDecimal.ZERO
         val min = chart.l.min() ?: BigDecimal.ZERO
