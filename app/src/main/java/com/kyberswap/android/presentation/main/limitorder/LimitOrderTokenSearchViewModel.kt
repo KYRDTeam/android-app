@@ -50,7 +50,7 @@ class LimitOrderTokenSearchViewModel @Inject constructor(
             Consumer { tokens ->
                 _getTokenListCallback.value = Event(
                     GetBalanceState.Success(
-                        tokens.sortedByDescending { it.currentBalance }
+                        tokens.sortedByDescending { it.currentBalance * it.rateEthNow }
                             .filter { it.spLimitOrder }.map {
                                 val pendingAmount =
                                     pendingBalances.data[it.tokenSymbol] ?: BigDecimal.ZERO

@@ -15,5 +15,7 @@ data class ChartResponseEntity(
     @SerializedName("s")
     val s: String = "",
     @SerializedName("t")
-    val t: List<BigDecimal>? = listOf()
+    val t: List<BigDecimal>? = listOf(),
+    @SerializedName("v")
+    val v: List<BigDecimal>? = listOf()
 )

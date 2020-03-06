@@ -119,35 +119,35 @@ class ChartFragment : BaseFragment() {
             )
 
         chartPagerAdapter.addFragment(
-            LineChartFragment.newInstance(
+            CandleStickChartFragment.newInstance(
                 token,
                 ChartType.DAY
             ),
             getString(R.string.tab_day)
         )
         chartPagerAdapter.addFragment(
-            LineChartFragment.newInstance(
+            CandleStickChartFragment.newInstance(
                 token,
                 ChartType.WEEK
             ),
             getString(R.string.tab_week)
         )
         chartPagerAdapter.addFragment(
-            LineChartFragment.newInstance(
+            CandleStickChartFragment.newInstance(
                 token,
                 ChartType.MONTH
             ),
             getString(R.string.tab_month)
         )
         chartPagerAdapter.addFragment(
-            LineChartFragment.newInstance(
+            CandleStickChartFragment.newInstance(
                 token,
                 ChartType.YEAR
             ),
             getString(R.string.tab_year)
         )
         chartPagerAdapter.addFragment(
-            LineChartFragment.newInstance(
+            CandleStickChartFragment.newInstance(
                 token,
                 ChartType.ALL
             ),
@@ -171,7 +171,7 @@ class ChartFragment : BaseFragment() {
             override fun onPageSelected(position: Int) {
                 currentSelection = position
                 val chart = chartPagerAdapter.getRegisteredFragment(position)
-                if (chart is LineChartFragment) {
+                if (chart is CandleStickChartFragment) {
                     binding.rate = if (position == 0) {
                         rateChange
                     } else {

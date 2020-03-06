@@ -90,4 +90,6 @@
     <color name="notification_odd">#f6f7fa</color>
     <color name="color_active_alert_price">#31cb9e</color>
     <color name="color_active_percent_change">#5a5e67</color>
+    <color name="desc_color">#FA6566</color>
+    <color name="inc_color">#31CB9E</color>
 </resources>

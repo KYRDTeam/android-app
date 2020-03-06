@@ -18,6 +18,8 @@ import com.kyberswap.android.presentation.main.balance.BalanceFragment
 import com.kyberswap.android.presentation.main.balance.BalanceViewModel
 import com.kyberswap.android.presentation.main.balance.address.BalanceAddressFragment
 import com.kyberswap.android.presentation.main.balance.address.BalanceAddressViewModel
+import com.kyberswap.android.presentation.main.balance.chart.CandleStickChartFragment
+import com.kyberswap.android.presentation.main.balance.chart.CandleStickChartViewModel
 import com.kyberswap.android.presentation.main.balance.chart.ChartFragment
 import com.kyberswap.android.presentation.main.balance.chart.ChartViewModel
 import com.kyberswap.android.presentation.main.balance.chart.LineChartFragment
@@ -153,6 +155,10 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeLineChartFragment(): LineChartFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeCandleStickChartFragment(): CandleStickChartFragment
 
 
     @FragmentScoped
@@ -336,6 +342,13 @@ interface MainActivityModule {
     @ViewModelKey(LineChartViewModel::class)
     fun bindLineChartViewModel(
         chartViewModel: LineChartViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CandleStickChartViewModel::class)
+    fun bindCandleStickChartViewModel(
+        chartViewModel: CandleStickChartViewModel
     ): ViewModel
 
     @Binds

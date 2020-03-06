@@ -4,30 +4,102 @@
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/marker_height"
-        android:background="@drawable/group_5"
+        android:layout_height="wrap_content"
+        android:background="#bfffffff"
         android:gravity="center_vertical"
         android:orientation="vertical"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp">
+        android:padding="8dp">
 
 
         <TextView
+            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
             android:id="@+id/tvTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:lineSpacingExtra="12sp"
             android:textColor="#141927"
             android:textSize="12sp"
-            tools:text="Price:" />
+            tools:text="Time:" />
 
         <TextView
-            android:id="@+id/tvPrice"
+            android:layout_marginStart="4dp"
+            android:id="@+id/tvOpen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#141927"
             android:textSize="12sp"
-            tools:text="Time:" />
+            tools:text="Open:" />
+
+        <TextView
+            android:layout_marginStart="4dp"
+            android:id="@+id/tvHigh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#141927"
+            android:textSize="12sp"
+            tools:text="High:" />
+
+        <TextView
+            android:layout_marginStart="4dp"
+            android:id="@+id/tvLow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#141927"
+            android:textSize="12sp"
+            tools:text="Low:" />
+
+        <TextView
+            android:layout_marginStart="4dp"
+            android:id="@+id/tvClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#141927"
+            android:textSize="12sp"
+            tools:text="Close:" />
+
+        <LinearLayout
+            android:layout_marginStart="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/marker_change_title"
+                android:textColor="#141927"
+                android:textSize="12sp"
+                tools:text="Change:" />
+
+            <TextView
+                android:id="@+id/tvChange"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#141927"
+                android:textSize="12sp"
+                tools:text="Change:" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginStart="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/marker_change_percent_title"
+                android:textColor="#141927"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvChangePercent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#141927"
+                android:textSize="12sp"
+                tools:text="Change%:" />
+        </LinearLayout>
+
 
     </LinearLayout>
 

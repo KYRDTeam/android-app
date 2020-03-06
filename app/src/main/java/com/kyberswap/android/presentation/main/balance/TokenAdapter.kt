@@ -82,7 +82,7 @@ class TokenAdapter(
     fun submitFilterList(tokens: List<Token>, forceUpdate: Boolean = false) {
         val orderList = when (orderType) {
             OrderType.NAME -> tokens.sortedBy { it.tokenSymbol }
-            OrderType.BALANCE -> tokens.sortedByDescending { it.currentBalance }
+            OrderType.BALANCE -> tokens.sortedByDescending { it.currentBalance }.sortedByDescending { it.currentBalance * it.rateEthNow }
             OrderType.ETH_ASC -> tokens.sortedBy {
                 it.rateEthNowOrDefaultValue
             }
@@ -104,7 +104,7 @@ class TokenAdapter(
                 val mutableTokens = tokens.toMutableList()
                 if (newTokens.isNotEmpty()) {
                     mutableTokens.removeAll(newTokens)
-                    newTokens.union(mutableTokens.sortedByDescending { it.currentBalance })
+                    newTokens.union(mutableTokens.sortedByDescending { it.currentBalance }.sortedByDescending { it.currentBalance * it.rateEthNow })
                 } else {
                     mutableTokens.sortedByDescending { it.currentBalance }
                 }
