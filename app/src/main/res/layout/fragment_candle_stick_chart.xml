@@ -15,7 +15,7 @@
         <!--            android:layout_width="match_parent"-->
         <!--            android:layout_height="match_parent" />-->
 
-        <com.github.mikephil.charting.charts.CandleStickChart
+        <com.kyberswap.android.presentation.main.balance.chart.CustomCandleChart
             android:id="@+id/candleStickChart"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

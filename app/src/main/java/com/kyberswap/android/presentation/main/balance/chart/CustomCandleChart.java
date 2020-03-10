@@ -7,9 +7,6 @@ import com.github.mikephil.charting.charts.CandleStickChart;
 
 public class CustomCandleChart extends CandleStickChart {
 
-    private static final int MAX_CLICK_DURATION = 500;
-    private long startClickTime;
-
     public CustomCandleChart(Context context) {
         super(context);
     }
@@ -22,27 +19,15 @@ public class CustomCandleChart extends CandleStickChart {
         super(context, attrs, defStyle);
     }
 
+    @Override
+    protected void init() {
+        super.init();
+        setOnTouchListener(new CandleStickChartTouchListener(this, mViewPortHandler.getMatrixTouch(), 3f));
+    }
 
-
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//        switch (event.getAction()) {
-//            case MotionEvent.ACTION_DOWN: {
-//                startClickTime = Calendar.getInstance().getTimeInMillis();
-//                break;
-//            }
-//            case MotionEvent.ACTION_UP: {
-//                long clickDuration = Calendar.getInstance().getTimeInMillis() - startClickTime;
-//                if (clickDuration > MAX_CLICK_DURATION) {
-//                    return super.onTouchEvent(event);
-//                }
-//            }
-//        }
-//        return false;
-//
-//    }
-
-    private boolean isShowingMarker() {
-        return mMarker != null && isDrawMarkersEnabled() && valuesToHighlight();
+    @Override
+    public void computeScroll() {
+        if (mChartTouchListener instanceof CandleStickChartTouchListener)
+            ((CandleStickChartTouchListener) mChartTouchListener).computeScroll();
     }
 }

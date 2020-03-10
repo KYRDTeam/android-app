@@ -1,6 +1,7 @@
 package com.kyberswap.android.presentation.main.balance.chart
 
 import android.content.Context
+import android.graphics.Canvas
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.components.MarkerView
@@ -8,11 +9,9 @@ import com.github.mikephil.charting.data.CandleEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
-import com.github.mikephil.charting.utils.MPPointF
 import com.kyberswap.android.R
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
-
 
 class CustomMarkerView(context: Context, private val xAxisValueFormatter: ValueFormatter) :
     MarkerView(context, R.layout.custom_marker_view) {
@@ -109,7 +108,20 @@ class CustomMarkerView(context: Context, private val xAxisValueFormatter: ValueF
         super.refreshContent(e, highlight)
     }
 
-    override fun getOffset(): MPPointF {
-        return MPPointF(-width / 2f, -chartView.height.toFloat())
+    override fun draw(canvas: Canvas?, posX: Float, posY: Float) {
+        val viewPortHandler = chartView.viewPortHandler
+        val saveId = canvas?.save()
+        // translate to the correct position and draw
+        // translate to the correct position and draw
+        if (posX > viewPortHandler.chartWidth / 2) {
+            canvas?.translate(viewPortHandler.contentLeft(), viewPortHandler.contentTop())
+        } else {
+            canvas?.translate(
+                chartView.viewPortHandler.contentRight() - width,
+                viewPortHandler.contentTop()
+            )
+        }
+        draw(canvas)
+        saveId?.let { canvas.restoreToCount(it) }
     }
 }
