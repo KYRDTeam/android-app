@@ -175,6 +175,7 @@ class CandleStickChartFragment : BaseFragment() {
         candleStickChart.xAxis.setDrawAxisLine(false)
         candleStickChart.axisRight.setDrawAxisLine(false)
         candleStickChart.axisRight.setDrawGridLines(false)
+        candleStickChart.xAxis.setAvoidFirstLastClipping(true)
         candleStickChart.fitScreen()
         candleStickChart.xAxis.granularity = 1f
         candleStickChart.xAxis.setLabelCount(
@@ -320,6 +321,9 @@ class CandleStickChartFragment : BaseFragment() {
 
         val candleData = CandleData(candleDataSet)
         candleStickChart.data = candleData
+        if (entries.size < 10) {
+            candleStickChart.xAxis.axisMaximum = candleData.xMax * 10
+        }
 
         val max = chart.h.max() ?: BigDecimal.ZERO
         val min = chart.l.min() ?: BigDecimal.ZERO
