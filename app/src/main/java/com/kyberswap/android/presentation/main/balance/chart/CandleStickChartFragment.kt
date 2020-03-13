@@ -81,13 +81,13 @@ class CandleStickChartFragment : BaseFragment() {
         }
     }
 
-    private val zoomLevel by lazy {
-        if (chartType == ChartType.DAY || chartType == ChartType.WEEK) {
-            2
-        } else {
-            1
-        }
-    }
+//    private val zoomLevel by lazy {
+//        if (chartType == ChartType.DAY || chartType == ChartType.WEEK) {
+//            2
+//        } else {
+//            1
+//        }
+//    }
 
     private val decreasingColor by lazy {
         context?.let { ContextCompat.getColor(it, R.color.desc_color) }
@@ -321,8 +321,8 @@ class CandleStickChartFragment : BaseFragment() {
 
         val candleData = CandleData(candleDataSet)
         candleStickChart.data = candleData
-        if (entries.size < 10) {
-            candleStickChart.xAxis.axisMaximum = candleData.xMax * 10
+        if (entries.size < 60) {
+            candleStickChart.xAxis.axisMaximum = 60f
         }
 
         val max = chart.h.max() ?: BigDecimal.ZERO
@@ -347,15 +347,17 @@ class CandleStickChartFragment : BaseFragment() {
         candleStickChart.axisRight.addLimitLine(ll1)
         candleStickChart.axisRight.addLimitLine(ll2)
 
-        val entry = entries[entries.size - 1]
 
-        candleStickChart.zoom(zoomLevel.toFloat(), 1f, 0f, 0f)
-        candleStickChart.moveViewToAnimated(
-            entry.x,
-            entry.y,
-            candleDataSet.axisDependency,
-            1500
-        )
+        if (chartType == ChartType.DAY || chartType == ChartType.WEEK) {
+            val entry = entries[entries.size - 1]
+            candleStickChart.zoom(entries.size / 60f, 1f, 0f, 0f)
+            candleStickChart.moveViewToAnimated(
+                entry.x,
+                entry.y,
+                candleDataSet.axisDependency,
+                1500
+            )
+        }
 
         candleStickChart.invalidate()
     }
