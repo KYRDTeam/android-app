@@ -14,23 +14,19 @@ class CandleStickXAxisValueFormatter(private val chart: Chart, private val resol
 
     override fun getFormattedValue(value: Float): String {
         if (chart.t.isEmpty()) return ""
-//        if (value.toInt().toFloat() == value && (value.toInt() % 8 == 0)) {
-//            val time = chart.t[0].toFloat() + value * 60.0 * resolution
-//            val cal = Calendar.getInstance()
-//            cal.timeInMillis = time.toLong() * 1000L
-//            return SimpleDateFormat(
-//                if (resolution == 15) "HH:mm dd/MM" else "dd/MM/yyyy",
-//                Locale.getDefault()
-//            ).format(cal.time)
-//        } else {
-//            return ""
-//        }
-        val time = chart.t[0].toFloat() + value * 60.0 * resolution
-        val cal = Calendar.getInstance()
-        cal.timeInMillis = time.toLong() * 1000L
-        return SimpleDateFormat(
-            if (resolution == 60 * 24) "HH:mm dd/MM/yyyy" else "HH:mm dd/MM",
-            Locale.getDefault()
-        ).format(cal.time)
+        if (chart.t.last().toFloat() < chart.t[0].toFloat() + value * 60.0 * resolution) {
+            return ""
+        }
+        if (value.toInt().toFloat() == value && value < chart.t.size) {
+            val time = chart.t[value.toInt()]
+            val cal = Calendar.getInstance()
+            cal.timeInMillis = time.toLong() * 1000L
+            return SimpleDateFormat(
+                if (resolution == 60 * 24) "HH:mm dd/MM/yyyy" else "HH:mm dd/MM",
+                Locale.getDefault()
+            ).format(cal.time)
+        } else {
+            return ""
+        }
     }
 }

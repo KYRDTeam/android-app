@@ -1,6 +1,5 @@
 package com.kyberswap.android.presentation.main.balance.chart
 
-
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.os.Bundle
@@ -51,6 +50,14 @@ class CandleStickChartFragment : BaseFragment() {
 
     var changedRate: BigDecimal = BigDecimal.ZERO
 
+    private var isShowMarker: Boolean = false
+
+//    private var currentX: Float = 0f
+//
+//    private val deltaX by lazy {
+//        max((candleStickChart.viewPortHandler.chartWidth - currentX).absoluteValue, currentX.absoluteValue)
+//    }
+
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -74,15 +81,13 @@ class CandleStickChartFragment : BaseFragment() {
         }
     }
 
-    private val zoomLevel by lazy {
-        if (chartType == ChartType.DAY || chartType == ChartType.WEEK) {
-            2
-        } else if (chartType == ChartType.MONTH) {
-            8
-        } else {
-            6
-        }
-    }
+//    private val zoomLevel by lazy {
+//        if (chartType == ChartType.DAY || chartType == ChartType.WEEK) {
+//            2
+//        } else {
+//            1
+//        }
+//    }
 
     private val decreasingColor by lazy {
         context?.let { ContextCompat.getColor(it, R.color.desc_color) }
@@ -104,7 +109,6 @@ class CandleStickChartFragment : BaseFragment() {
         ContextCompat.getColor(context!!, R.color.limit_line_text_color)
     }
     private var wallet: Wallet? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -171,6 +175,7 @@ class CandleStickChartFragment : BaseFragment() {
         candleStickChart.xAxis.setDrawAxisLine(false)
         candleStickChart.axisRight.setDrawAxisLine(false)
         candleStickChart.axisRight.setDrawGridLines(false)
+        candleStickChart.xAxis.setAvoidFirstLastClipping(true)
         candleStickChart.fitScreen()
         candleStickChart.xAxis.granularity = 1f
         candleStickChart.xAxis.setLabelCount(
@@ -202,9 +207,12 @@ class CandleStickChartFragment : BaseFragment() {
                 velocityX: Float,
                 velocityY: Float
             ) {
+                isShowMarker = false
+                candleStickChart.highlightValue(null)
             }
 
             override fun onChartSingleTapped(me: MotionEvent?) {
+                isShowMarker = false
                 candleStickChart.highlightValue(null)
             }
 
@@ -212,6 +220,7 @@ class CandleStickChartFragment : BaseFragment() {
                 me: MotionEvent?,
                 lastPerformedGesture: ChartTouchListener.ChartGesture?
             ) {
+                candleStickChart.isDragEnabled = true
             }
 
             override fun onChartScale(me: MotionEvent?, scaleX: Float, scaleY: Float) {
@@ -219,10 +228,19 @@ class CandleStickChartFragment : BaseFragment() {
             }
 
             override fun onChartLongPressed(me: MotionEvent?) {
+                isShowMarker = true
+                candleStickChart.isDragEnabled = false
                 if (me != null) {
+
                     val highlightByTouchPoint =
                         candleStickChart.getHighlightByTouchPoint(me.x, me.y)
                     candleStickChart.highlightValue(highlightByTouchPoint)
+                    val listener = candleStickChart.onTouchListener
+                    if (listener is CandleStickChartTouchListener) {
+                        if (listener.touchMode == 0) {
+                            listener.touchMode = 1
+                        }
+                    }
                 }
             }
 
@@ -230,7 +248,11 @@ class CandleStickChartFragment : BaseFragment() {
             }
 
             override fun onChartTranslate(me: MotionEvent?, dX: Float, dY: Float) {
-                if (me != null) {
+
+                if (candleStickChart.isDragEnabled && isShowMarker) {
+                    candleStickChart.isDragEnabled = false
+                }
+                if (me != null && isShowMarker && isShowMarker) {
                     val highlightByTouchPoint =
                         candleStickChart.getHighlightByTouchPoint(me.x, me.y)
                     candleStickChart.highlightValue(highlightByTouchPoint)
@@ -238,7 +260,6 @@ class CandleStickChartFragment : BaseFragment() {
             }
         }
     }
-
 
     private fun updateChangeRate() {
         val parent = parentFragment
@@ -300,6 +321,9 @@ class CandleStickChartFragment : BaseFragment() {
 
         val candleData = CandleData(candleDataSet)
         candleStickChart.data = candleData
+        if (entries.size < 60) {
+            candleStickChart.xAxis.axisMaximum = 60f
+        }
 
         val max = chart.h.max() ?: BigDecimal.ZERO
         val min = chart.l.min() ?: BigDecimal.ZERO
@@ -323,19 +347,20 @@ class CandleStickChartFragment : BaseFragment() {
         candleStickChart.axisRight.addLimitLine(ll1)
         candleStickChart.axisRight.addLimitLine(ll2)
 
-        val entry = entries[entries.size - 1]
 
-        candleStickChart.zoom(zoomLevel.toFloat(), 1f, 0f, 0f)
-        candleStickChart.moveViewToAnimated(
-            entry.x,
-            entry.y,
-            candleDataSet.axisDependency,
-            1500
-        )
+        if (chartType == ChartType.DAY || chartType == ChartType.WEEK) {
+            val entry = entries[entries.size - 1]
+            candleStickChart.zoom(entries.size / 60f, 1f, 0f, 0f)
+            candleStickChart.moveViewToAnimated(
+                entry.x,
+                entry.y,
+                candleDataSet.axisDependency,
+                1500
+            )
+        }
 
         candleStickChart.invalidate()
     }
-
 
     companion object {
         private const val TOKEN_PARAM = "token_param"
