@@ -16,7 +16,9 @@ import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
+import com.kyberswap.android.presentation.main.swap.GetMaxPriceState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.FAIL_SPEED_UP_TX_EVENT
 import com.kyberswap.android.util.USER_CLICK_SUBMIT_SPEED_UP_TX_EVENT
@@ -50,6 +52,8 @@ class CustomizeGasFragment : BaseFragment() {
 
     private var wallet: Wallet? = null
 
+    private var maxGasPrice: String = ""
+
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(CustomizeGasViewModel::class.java)
     }
@@ -68,6 +72,10 @@ class CustomizeGasFragment : BaseFragment() {
             binding.gas,
             selectedGasFeeView?.id
         )
+
+    private val currentActivity by lazy {
+        activity as MainActivity
+    }
 
     private val selectedGasPrice: BigDecimal
         get() = Convert.toWei(selectedGasPriceGwei, Convert.Unit.GWEI)
@@ -98,7 +106,7 @@ class CustomizeGasFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetGasPriceState.Success -> {
-                        binding.gas = state.gas
+                        binding.gas = state.gas.copy(maxGasPrice = maxGasPrice)
 
                         binding.fee = transaction?.getFeeFromGwei(
                             getSelectedGasPrice(
@@ -179,6 +187,33 @@ class CustomizeGasFragment : BaseFragment() {
                 }
             }
         })
+
+        currentActivity.mainViewModel.getMaxPriceCallback.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                event?.peekContent()?.let { state ->
+                    when (state) {
+                        is GetMaxPriceState.Success -> {
+                            maxGasPrice = Convert.fromWei(
+                                state.data,
+                                Convert.Unit.GWEI
+                            ).toDisplayNumber()
+                            val currentGas = binding.gas
+                            if (currentGas != null) {
+                                val gas = currentGas.copy(
+                                    maxGasPrice = maxGasPrice
+                                )
+
+                                binding.gas = gas
+                                binding.executePendingBindings()
+                            }
+                        }
+                        is GetMaxPriceState.ShowError -> {
+
+                        }
+                    }
+                }
+            })
 
         binding.tvDone.setOnClickListener {
             selectedGasPrice.let {

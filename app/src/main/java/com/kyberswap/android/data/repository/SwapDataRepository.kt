@@ -23,6 +23,7 @@ import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.GasLimit
 import com.kyberswap.android.domain.model.KyberEnabled
+import com.kyberswap.android.domain.model.MaxGasPrice
 import com.kyberswap.android.domain.model.QuoteAmount
 import com.kyberswap.android.domain.model.ResponseStatus
 import com.kyberswap.android.domain.model.Send
@@ -67,7 +68,6 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.pow
-
 
 class SwapDataRepository @Inject constructor(
     private val context: Context,
@@ -200,23 +200,23 @@ class SwapDataRepository @Inject constructor(
 
     override fun transferToken(param: TransferTokenUseCase.Param): Single<ResponseStatus> {
         return Single.fromCallable {
-            var password = ""
-            if (context is KyberSwapApplication) {
-                password = String(
-                    context.aead.decrypt(
-                        Base64.decode(param.wallet.cipher, Base64.DEFAULT), ByteArray(0)
-                    ), Charsets.UTF_8
+                var password = ""
+                if (context is KyberSwapApplication) {
+                    password = String(
+                        context.aead.decrypt(
+                            Base64.decode(param.wallet.cipher, Base64.DEFAULT), ByteArray(0)
+                        ), Charsets.UTF_8
+                    )
+                }
+                val credentials = WalletUtils.loadCredentials(
+                    password,
+                    WalletManager.storage.keystoreDir.toString() + "/wallets/" + param.wallet.walletId + ".json"
                 )
-            }
-            val credentials = WalletUtils.loadCredentials(
-                password,
-                WalletManager.storage.keystoreDir.toString() + "/wallets/" + param.wallet.walletId + ".json"
-            )
 
-            val hash = tokenClient.doTransferTransaction(
-                param,
-                credentials
-            )
+                val hash = tokenClient.doTransferTransaction(
+                    param,
+                    credentials
+                )
 //            val resetSend = param.send.copy()
 //            resetSend.let {
 //                sendTokenDao.updateSend(
@@ -226,33 +226,33 @@ class SwapDataRepository @Inject constructor(
 //                )
 //            }
 
-            hash?.let {
-                val transfer = param.send
-                transactionDao.insertTransaction(
-                    Transaction(
-                        hash = it.toLowerCase(Locale.getDefault()),
-                        transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
-                        timeStamp = System.currentTimeMillis() / 1000L,
-                        from = param.wallet.address,
-                        gas = transfer.gasLimit,
-                        gasUsed = transfer.gasLimit,
-                        gasPrice = Convert.toWei(
-                            transfer.gasPrice.toBigDecimalOrDefaultZero(),
-                            Convert.Unit.GWEI
-                        ).toString(),
-                        to = transfer.contact.address,
-                        value = transfer.amountUnit.toString(),
-                        tokenDecimal = transfer.tokenSource.tokenDecimal.toString(),
-                        tokenSymbol = transfer.tokenSource.tokenSymbol,
-                        walletAddress = param.send.walletAddress,
-                        type = Transaction.TransactionType.SEND
+                hash?.let {
+                    val transfer = param.send
+                    transactionDao.insertTransaction(
+                        Transaction(
+                            hash = it.toLowerCase(Locale.getDefault()),
+                            transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
+                            timeStamp = System.currentTimeMillis() / 1000L,
+                            from = param.wallet.address,
+                            gas = transfer.gasLimit,
+                            gasUsed = transfer.gasLimit,
+                            gasPrice = Convert.toWei(
+                                transfer.gasPrice.toBigDecimalOrDefaultZero(),
+                                Convert.Unit.GWEI
+                            ).toString(),
+                            to = transfer.contact.address,
+                            value = transfer.amountUnit.toString(),
+                            tokenDecimal = transfer.tokenSource.tokenDecimal.toString(),
+                            tokenSymbol = transfer.tokenSource.tokenSymbol,
+                            walletAddress = param.send.walletAddress,
+                            type = Transaction.TransactionType.SEND
+                        )
                     )
-                )
+                }
+
+                hash ?: ""
+
             }
-
-            hash ?: ""
-
-        }
             .flatMap { hash ->
                 userApi.submitTx(hash).map {
                     it.copy(hash = hash)
@@ -320,13 +320,15 @@ class SwapDataRepository @Inject constructor(
                 defaultValue
             } else if (gasLimitEntity.error) {
                 ((ethEstimateGas?.amountUsed
-                    ?: BigInteger.ZERO).multiply(120.toBigInteger()).divide(100.toBigInteger()) + ADDITIONAL_SWAP_GAS_LIMIT.toBigInteger()).toBigDecimal()
+                    ?: BigInteger.ZERO).multiply(120.toBigInteger())
+                    .divide(100.toBigInteger()) + ADDITIONAL_SWAP_GAS_LIMIT.toBigInteger()).toBigDecimal()
                     .min(defaultValue)
             } else if (ethEstimateGas?.error != null) {
                 gasLimitEntity.data
             } else {
                 (((ethEstimateGas?.amountUsed
-                    ?: BigInteger.ZERO).multiply(120.toBigInteger()).divide(100.toBigInteger()) + ADDITIONAL_SWAP_GAS_LIMIT.toBigInteger()).toBigDecimal()).min(
+                    ?: BigInteger.ZERO).multiply(120.toBigInteger())
+                    .divide(100.toBigInteger()) + ADDITIONAL_SWAP_GAS_LIMIT.toBigInteger()).toBigDecimal()).min(
                     gasLimitEntity.data
                 )
             }
@@ -373,7 +375,6 @@ class SwapDataRepository @Inject constructor(
             swapDao.insertSwap(swap)
         }
     }
-
 
     override fun saveSend(param: SaveSendTokenUseCase.Param): Completable {
         return Completable.fromCallable {
@@ -578,6 +579,12 @@ class SwapDataRepository @Inject constructor(
     override fun getKyberNetworkStatus(): Single<KyberEnabled> {
         return api.getKyberEnabled().map {
             userMapper.transform(it)
+        }
+    }
+
+    override fun getMaxGasPrice(): Single<MaxGasPrice> {
+        return api.getMaxGasPrice().map {
+            MaxGasPrice(it)
         }
     }
 

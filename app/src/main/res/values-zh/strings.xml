@@ -700,5 +700,10 @@
     <string name="marker_change_percent">%.2f %%</string>
     <string name="marker_change_title">“变动: "</string>
     <string name="marker_change_percent_title">"变动%%: "</string>
+    <string name="horizontal_divider">|</string>
+    <string name="kyber_code_invalid_date_time">KyberCode requires correct time to verify. Please go to setting menu on your mobile device and switch Date and Time to Automatic mode</string>
+    <string name="kyber_code_invalid_nonce">Invalid nonce</string>
+    <string name="notification_setting">Notification Setting</string>
+    <string name="price_trending_notification">Price Trending Notification</string>
 
 </resources>

@@ -45,6 +45,7 @@ import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectRejectTra
 import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectSendTransactionUseCase
 import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectSignedTransactionUseCase
 import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectUseCase
+import com.kyberswap.android.presentation.main.kybercode.KyberCodeException
 import com.kyberswap.android.util.HMAC
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.isApproveTx
@@ -76,7 +77,6 @@ import java.math.RoundingMode
 import java.security.SecureRandom
 import java.util.Locale
 import javax.inject.Inject
-
 
 class WalletDataRepository @Inject constructor(
     val context: Context,
@@ -232,7 +232,6 @@ class WalletDataRepository @Inject constructor(
 
         }
     }
-
 
     override fun importWallet(param: ImportWalletFromJsonUseCase.Param): Single<Pair<Wallet, List<Token>>> {
         return Single.fromCallable {
@@ -396,7 +395,11 @@ class WalletDataRepository @Inject constructor(
             param.kyberCode,
             nonce
         ).map {
-            promoMapper.transform(it)
+            if (!it.error.isNullOrBlank()) {
+                throw KyberCodeException(it.error)
+            } else {
+                promoMapper.transform(it)
+            }
         }.flatMap {
             importWallet(
                 ImportWalletFromPrivateKeyUseCase.Param(

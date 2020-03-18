@@ -1,6 +1,5 @@
 package com.kyberswap.android.presentation.main.kybercode
 
-
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +20,6 @@ import com.kyberswap.android.util.ext.hideKeyboard
 import org.consenlabs.tokencore.wallet.model.Messages
 import javax.inject.Inject
 
-
 class KyberCodeFragment : BaseFragment() {
 
     private lateinit var binding: FragmentKyberCodeBinding
@@ -38,7 +36,6 @@ class KyberCodeFragment : BaseFragment() {
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
     private var fromLandingPage: Boolean? = null
-
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(KyberCodeViewModel::class.java)
@@ -111,8 +108,17 @@ class KyberCodeFragment : BaseFragment() {
                             Messages.MAC_UNMATCH -> {
                                 getString(R.string.fail_import_json)
                             }
+
                             else -> {
-                                state.message ?: getString(R.string.something_wrong)
+                                if (state.message.equals(
+                                        getString(R.string.kyber_code_invalid_nonce),
+                                        true
+                                    )
+                                ) {
+                                    getString(R.string.kyber_code_invalid_date_time)
+                                } else {
+                                    state.message ?: getString(R.string.something_wrong)
+                                }
                             }
 
                         }
@@ -123,7 +129,6 @@ class KyberCodeFragment : BaseFragment() {
                 }
             }
         })
-
     }
 
     private fun onKyberCodeFinish() {
@@ -135,7 +140,6 @@ class KyberCodeFragment : BaseFragment() {
         }
     }
 
-
     companion object {
         private const val FROM_LANDING_PAGE_EXTRA = "from_landing_page_extra"
         fun newInstance(fromLandingPage: Boolean = false) = KyberCodeFragment()
@@ -145,6 +149,4 @@ class KyberCodeFragment : BaseFragment() {
                 }
             }
     }
-
-
 }

@@ -32,7 +32,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
 
-
 class NotificationFragment : BaseFragment() {
 
     private lateinit var binding: FragmentNotificationsBinding
@@ -120,12 +119,13 @@ class NotificationFragment : BaseFragment() {
         }
 
         viewModel.getLoginStatus()
-        viewModel.getLoginStatusCallback.observe(this, Observer { event ->
+        viewModel.getLoginStatusCallback.observe(viewLifecycleOwner, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
 
                 when (state) {
                     is UserInfoState.Success -> {
                         val userId = state.userInfo?.uid ?: 0
+                        setUpNotificationSetting(state.userInfo?.priceNoti == true)
                         if (isLoggedIn != (userId > 0)) {
                             isLoggedIn = userId > 0
                             binding.isLoggedIn =
@@ -168,8 +168,9 @@ class NotificationFragment : BaseFragment() {
                         if (!isLoggedIn) {
                             notificationAdapter.readAll()
                         }
-                        binding.isLoggedIn = isLoggedIn && state.notifications.any { !it.read }
+                        binding.isLoggedIn = isLoggedIn
                         binding.isNoData = state.notifications.isEmpty()
+                        updateReadAllView(state.notifications.any { !it.read })
                     }
                     is GetNotificationsState.ShowError -> {
                         showError(
@@ -185,6 +186,9 @@ class NotificationFragment : BaseFragment() {
                 when (state) {
                     is ReadNotificationsState.Success -> {
                         notificationAdapter.updateReadItem(state.notification)
+                        if (state.isReadAll) {
+                            updateReadAllView(false)
+                        }
                     }
                     is ReadNotificationsState.ShowError -> {
                         showError(
@@ -197,6 +201,25 @@ class NotificationFragment : BaseFragment() {
 
         binding.swipeLayout.setOnRefreshListener {
             refresh()
+        }
+    }
+
+    private fun updateReadAllView(isShowReadAll: Boolean) {
+        if (isShowReadAll) {
+            binding.tvReadAll.visibility = View.VISIBLE
+            binding.tvHorizontalDevider.visibility = View.VISIBLE
+        } else {
+            binding.tvReadAll.visibility = View.GONE
+            binding.tvHorizontalDevider.visibility = View.GONE
+        }
+    }
+
+    private fun setUpNotificationSetting(isPriceNotificationEnable: Boolean) {
+        binding.tvSetting.setOnClickListener {
+            navigator.navigateToNotificationSettingScreen(
+                currentFragment,
+                isPriceNotificationEnable
+            )
         }
     }
 

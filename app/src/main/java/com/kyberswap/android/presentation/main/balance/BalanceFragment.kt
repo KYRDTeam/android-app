@@ -207,7 +207,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         }
 
         binding.imgFlag.setOnClickListener {
-            navigator.navigateToNotificationcreen(currentFragment)
+            navigator.navigateToNotificationScreen(currentFragment)
         }
 
         binding.tvKyberList.isSelected = true

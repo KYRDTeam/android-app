@@ -8,9 +8,11 @@ import com.kyberswap.android.domain.model.LoginUser
 import com.kyberswap.android.domain.model.Notification
 import com.kyberswap.android.domain.model.RatingInfo
 import com.kyberswap.android.domain.model.ResponseStatus
+import com.kyberswap.android.domain.model.SubscriptionNotification
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.usecase.alert.UpdateAlertMethodsUseCase
 import com.kyberswap.android.domain.usecase.notification.ReadNotificationsUseCase
+import com.kyberswap.android.domain.usecase.notification.UpdateSubscribedTokenNotificationUseCase
 import com.kyberswap.android.domain.usecase.profile.Base64DecodeUseCase
 import com.kyberswap.android.domain.usecase.profile.DataTransferUseCase
 import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
@@ -90,4 +92,10 @@ interface UserRepository {
     fun readNotifications(param: ReadNotificationsUseCase.Param): Single<ResponseStatus>
 
     fun dataTransfer(param: DataTransferUseCase.Param): Single<DataTransferStatus>
+
+    fun getSubscriptionNotifications(): Single<SubscriptionNotification>
+
+    fun togglePriceNoti(param: Boolean): Single<ResponseStatus>
+
+    fun updateSubscribedTokensNotification(param: UpdateSubscribedTokenNotificationUseCase.Param): Single<ResponseStatus>
 }

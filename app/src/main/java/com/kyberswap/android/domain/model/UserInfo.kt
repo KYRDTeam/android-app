@@ -8,7 +8,6 @@ import androidx.room.PrimaryKey
 import com.kyberswap.android.data.api.user.UserInfoEntity
 import kotlinx.android.parcel.Parcelize
 
-
 @Entity(tableName = "users")
 @Parcelize
 data class UserInfo(
@@ -34,7 +33,8 @@ data class UserInfo(
     @Ignore
     val transferPermission: String = "",
     @Ignore
-    val forceLogout: Boolean = false
+    val forceLogout: Boolean = false,
+    var priceNoti: Boolean = false
 ) : Parcelable {
     constructor(entity: UserInfoEntity) : this(
         entity.activeWallets,
@@ -50,7 +50,8 @@ data class UserInfo(
         success = entity.success,
         message = entity.message,
         forceLogout = entity.forceLogout,
-        transferPermission = entity.transferPermission
+        transferPermission = entity.transferPermission,
+        priceNoti = entity.priceNoti
     )
 
 

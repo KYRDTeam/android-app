@@ -32,6 +32,7 @@ import com.kyberswap.android.presentation.main.limitorder.LimitOrderTokenSearchF
 import com.kyberswap.android.presentation.main.limitorder.ManageOrderFragment
 import com.kyberswap.android.presentation.main.limitorder.OrderConfirmFragment
 import com.kyberswap.android.presentation.main.notification.NotificationFragment
+import com.kyberswap.android.presentation.main.notification.NotificationSettingFragment
 import com.kyberswap.android.presentation.main.profile.ProfileDetailFragment
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.profile.SignUpConfirmFragment
@@ -211,10 +212,16 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         navigateByChildFragmentManager(currentFragment, SendFragment.newInstance(wallet))
     }
 
-    fun navigateToNotificationcreen(
+    fun navigateToNotificationScreen(
         currentFragment: Fragment?
     ) {
         navigateByChildFragmentManager(currentFragment, NotificationFragment.newInstance())
+    }
+
+    fun navigateToNotificationSettingScreen(
+        currentFragment: Fragment?, isPriceNotificationEnable: Boolean
+    ) {
+        navigateByChildFragmentManager(currentFragment, NotificationSettingFragment.newInstance(isPriceNotificationEnable))
     }
 
     fun navigateToAddContactScreen(

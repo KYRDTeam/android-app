@@ -64,11 +64,11 @@ import net.cachapa.expandablelayout.ExpandableLayout
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.web3j.utils.Convert
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
-
 
 class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObserver {
 
@@ -90,6 +90,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     private var notification: Notification? = null
 
     private var notificationExt: NotificationExt? = null
+
+    private var maxGasPrice: String = ""
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -138,7 +140,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     private val currentActivity by lazy {
         activity as MainActivity
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -559,7 +560,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 .subscribe {
                     edtCustom.isSelected = it.isNullOrEmpty() && rbCustom.isChecked
 
-                    if (it.isNotEmpty() && it.toString().toInt() > 0 && it.toString().toInt() <= 100) {
+                    if (it.isNotEmpty() && it.toString().toInt() > 0 && it.toString()
+                            .toInt() <= 100
+                    ) {
                         tvRevertNotification.text =
                             getRevertNotification(R.id.rbCustom)
                     } else if (it.isNotEmpty() && it.toString().toInt() > 100) {
@@ -657,7 +660,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 when (state) {
                     is GetGasPriceState.Success -> {
                         val swap = binding.swap?.copy(
-                            gas = if (wallet?.isPromo == true) state.gas.toPromoGas() else state.gas
+                            gas = if (wallet?.isPromo == true) state.gas.toPromoGas()
+                                .copy(maxGasPrice = maxGasPrice) else state.gas.copy(maxGasPrice = maxGasPrice)
                         )
                         if (swap != binding.swap) {
                             binding.swap = swap
@@ -670,40 +674,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 }
             }
         })
-
-//        viewModel.getCapCallback.observe(viewLifecycleOwner, Observer {
-//            it?.getContentIfNotHandled()?.let { state ->
-//                showProgress(state == GetCapState.Loading)
-//                when (state) {
-//                    is GetCapState.Success -> {
-//
-//                        if (state.cap.rich) {
-//                            showAlertWithoutIcon(
-//                                message =
-//                                getString(R.string.cap_rich)
-//                            )
-//                        } else if (state.swap.equivalentETHWithPrecision > state.cap.cap) {
-//                            val amount = Convert.fromWei(state.cap.cap, Convert.Unit.ETHER)
-//                            showAlertWithoutIcon(
-//                                message = String.format(
-//                                    getString(R.string.cap_reduce_amount),
-//                                    amount.toDisplayNumber()
-//                                )
-//                            )
-//                        } else {
-//                            viewModel.saveSwap(
-//                                state.swap, true
-//                            )
-//                        }
-//                    }
-//                    is GetCapState.ShowError -> {
-//                        showError(
-//                            state.message ?: getString(R.string.something_wrong)
-//                        )
-//                    }
-//                }
-//            }
-//        })
 
         viewModel.getKyberStatusback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -811,7 +781,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 message = errorAmount
                             )
                         }
-                        edtSource.text.toString().toBigDecimalOrDefaultZero() > swap.tokenSource.currentBalance -> {
+                        edtSource.text.toString()
+                            .toBigDecimalOrDefaultZero() > swap.tokenSource.currentBalance -> {
                             val errorExceedBalance = getString(R.string.exceed_balance)
                             showAlertWithoutIcon(
                                 title = getString(R.string.title_amount_too_big),
@@ -839,7 +810,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             getString(R.string.not_enough_eth_blance)
                         )
                         swap.tokenSource.isETH &&
-                            availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
+                                availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
                             showAlertWithoutIcon(
                                 getString(R.string.insufficient_eth),
                                 getString(R.string.not_enough_eth_blance)
@@ -917,8 +888,35 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 }
             })
 
+        currentActivity.mainViewModel.getMaxPriceCallback.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                event?.peekContent()?.let { state ->
+                    when (state) {
+                        is GetMaxPriceState.Success -> {
+                            maxGasPrice = Convert.fromWei(
+                                state.data,
+                                Convert.Unit.GWEI
+                            ).toDisplayNumber()
+                            val currentSwap = binding.swap
+                            if (currentSwap != null) {
+                                val swap = currentSwap.copy(
+                                    gas = currentSwap.gas.copy(maxGasPrice = maxGasPrice)
+                                )
+
+                                binding.swap = swap
+                                binding.executePendingBindings()
+                            }
+                        }
+                        is GetMaxPriceState.ShowError -> {
+
+                        }
+                    }
+                }
+            })
+
         binding.imgFlag.setOnClickListener {
-            navigator.navigateToNotificationcreen(currentFragment)
+            navigator.navigateToNotificationScreen(currentFragment)
         }
 
         setDefaultSelection()
@@ -1018,7 +1016,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         EventBus.getDefault().register(this)
     }
 
-
     override fun onStop() {
         super.onStop()
         EventBus.getDefault().unregister(this)
@@ -1039,7 +1036,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     override fun refresh() {
         getSwap()
     }
-
 
     private fun resetAmount() {
         edtSource.setText("")
@@ -1081,7 +1077,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         }
     }
 
-
     fun getKyberEnable() {
         viewModel.getKyberStatus()
     }
@@ -1116,7 +1111,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
         binding.imgSwap.isEnabled = isEnable
     }
-
 
     private fun getRevertNotification(id: Int): String {
         return String.format(

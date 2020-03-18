@@ -81,12 +81,12 @@ import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 import javax.inject.Inject
 
-
 class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callback,
     ForceUpdateChecker.OnUpdateNeededListener {
 
     @Inject
     lateinit var navigator: Navigator
+
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -172,7 +172,6 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
     private var adapter: MainPagerAdapter? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -237,6 +236,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                 when (currentFragment) {
                     is BalanceFragment -> {
                         (currentFragment as BalanceFragment).scrollToTop()
+                        updateLoginStatus()
                     }
                     is LimitOrderFragment -> {
                         with((currentFragment as LimitOrderFragment)) {
@@ -246,11 +246,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             verifyEligibleWallet()
                         }
 
-                        currentFragment?.childFragmentManager?.fragments?.forEach {
-                            when (it) {
-                                is LoginState -> it.getLoginStatus()
-                            }
-                        }
+                        updateLoginStatus()
                     }
 
                     is SwapFragment -> {
@@ -259,22 +255,15 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             getKyberEnable()
                             verifyEligibleWallet()
                         }
+                        updateLoginStatus()
                     }
                     is SettingFragment -> {
                         (currentFragment as SettingFragment).getLoginStatus()
-                        currentFragment?.childFragmentManager?.fragments?.forEach {
-                            when (it) {
-                                is LoginState -> it.getLoginStatus()
-                            }
-                        }
+                        updateLoginStatus()
                     }
 
                     is ProfileFragment -> {
-                        currentFragment?.childFragmentManager?.fragments?.forEach {
-                            when (it) {
-                                is LoginState -> it.getLoginStatus()
-                            }
-                        }
+                        updateLoginStatus()
                     }
 
                 }
@@ -378,6 +367,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             }
         })
 
+        mainViewModel.getMaxGasPrice()
 
         mainViewModel.switchWalletCompleteCallback.observe(this, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
@@ -422,21 +412,17 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             it.blockNumber.isNotEmpty() && it.blockNumber.toLongSafe() != Transaction.DEFAULT_DROPPED_BLOCK_NUMBER
                         }
 
-
-
                         txList.forEach { transaction ->
                             hasDone = true
-
-
                             showDialog(
                                 AlertDialogFragment.DIALOG_TYPE_DONE,
-                                transaction.copy(isCancel = state.transactions.filter { it.blockNumber.isEmpty() }.any { tx -> transaction.nonce == tx.nonce })
+                                transaction.copy(isCancel = state.transactions.filter { it.blockNumber.isEmpty() }
+                                    .any { tx -> transaction.nonce == tx.nonce })
                             )
                         }
 
                         val pendingList =
                             state.transactions.filter { it.blockNumber.isEmpty() && !it.isCancel }
-
 
                         if (currentDialogFragment != null) {
                             handler.postDelayed(
@@ -474,7 +460,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         tvNotification.setOnClickListener {
             showDrawer(false)
             handler.postDelayed({
-                navigator.navigateToNotificationcreen(currentFragment)
+                navigator.navigateToNotificationScreen(currentFragment)
             }, 250)
 
         }
@@ -726,6 +712,14 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         })
     }
 
+    private fun updateLoginStatus() {
+        currentFragment?.childFragmentManager?.fragments?.forEach {
+            when (it) {
+                is LoginState -> it.getLoginStatus()
+            }
+        }
+    }
+
     private fun onTransferDataCompleted(userInfo: UserInfo) {
         if (userInfo.transferPermission.equals(
                 getString(R.string.transfer_action_no),
@@ -747,7 +741,6 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             )
         }
     }
-
 
     override fun onUpdateNeeded(title: String?, message: String, updateUrl: String?) {
 
@@ -774,12 +767,10 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         EventBus.getDefault().register(this)
     }
 
-
     override fun onStop() {
         super.onStop()
         EventBus.getDefault().unregister(this)
     }
-
 
     private fun redirectStore(updateUrl: String?) {
         updateUrl?.let {
@@ -836,7 +827,6 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         }
     }
 
-
     override fun onSwap() {
         this.moveToTab(MainPagerAdapter.SWAP)
     }
@@ -858,7 +848,6 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                 getCurrentFragment()?.childFragmentManager?.fragments?.lastOrNull()
             return lastAddedFragment is WalletConnectFragment
         }
-
 
     fun getCurrentFragment(): Fragment? {
         return currentFragment

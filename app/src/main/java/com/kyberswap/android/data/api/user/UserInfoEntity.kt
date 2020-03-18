@@ -31,6 +31,8 @@ data class UserInfoEntity(
     @SerializedName("transfer_permission")
     val transferPermission: String = "",
     @SerializedName("force_logout")
-    val forceLogout: Boolean = false
+    val forceLogout: Boolean = false,
+    @SerializedName("price_noti")
+    val priceNoti: Boolean = false
 
 )
