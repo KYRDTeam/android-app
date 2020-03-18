@@ -12,17 +12,12 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentNotificationSettingBinding
-import com.kyberswap.android.domain.model.UserStatusChangeEvent
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.di.ViewModelFactory
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
 
 class NotificationSettingFragment : BaseFragment(), LoginState {
@@ -130,7 +125,7 @@ class NotificationSettingFragment : BaseFragment(), LoginState {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is UpdateSubscribedTokensNotificationState.Success -> {
-                        if(activity != null) {
+                        if (activity != null) {
                             activity?.onBackPressed()
                         }
                     }
@@ -157,9 +152,12 @@ class NotificationSettingFragment : BaseFragment(), LoginState {
         }
 
         binding.tvReset.setOnClickListener {
-            viewModel.updateSubscribedTokens(adapter.getData().map {
-                it.symbol
+            adapter.submitFilterList(adapter.getData().map {
+                it.copy(subscribed = true)
             })
+            binding.tvSelectAll.text =
+                getString(R.string.filter_deselect_all)
+
         }
 
         binding.tvApply.setOnClickListener {
