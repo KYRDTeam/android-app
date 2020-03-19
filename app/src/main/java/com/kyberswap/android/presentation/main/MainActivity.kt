@@ -583,12 +583,12 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             mainViewModel.getRatingInfo()
         }, 5000)
 
-        OneSignal.idsAvailable { _, _ ->
-            mainViewModel.updatePushToken(
-                OneSignal.getPermissionSubscriptionState().subscriptionStatus.userId,
-                OneSignal.getPermissionSubscriptionState().subscriptionStatus.pushToken
-            )
-        }
+//        OneSignal.idsAvailable { _, _ ->
+//            mainViewModel.updatePushToken(
+//                OneSignal.getPermissionSubscriptionState().subscriptionStatus.userId,
+//                OneSignal.getPermissionSubscriptionState().subscriptionStatus.pushToken
+//            )
+//        }
 
         if (isPromotion || isOther || isGeneralNotification) {
             notification?.let {
