@@ -46,7 +46,7 @@ class NotificationSettingViewModel @Inject constructor(
             Consumer {
                 if (it.success) {
                     _getSubscribedNotificationsCallback.value =
-                        Event(GetSubscriptionNotificationState.Success(it.data))
+                        Event(GetSubscriptionNotificationState.Success(it.data, it.priceNoti))
                 } else {
                     _getSubscribedNotificationsCallback.value =
                         Event(GetSubscriptionNotificationState.ShowError(it.message))

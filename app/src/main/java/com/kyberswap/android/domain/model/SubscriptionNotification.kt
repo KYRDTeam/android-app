@@ -9,13 +9,16 @@ data class SubscriptionNotification(
     @SerializedName("success")
     val success: Boolean = false,
     @SerializedName("message")
-    val message: String = ""
+    val message: String = "",
+    @SerializedName("price_noti")
+    val priceNoti: Boolean = false
 ) {
     constructor(entity: SubscriptionNotificationEntity) : this(
         entity.data.map {
             SubscriptionNotificationData(it)
         },
         entity.success,
-        entity.message
+        entity.message,
+        entity.priceNoti
     )
 }

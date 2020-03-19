@@ -9,5 +9,7 @@ data class SubscriptionNotificationEntity(
     @SerializedName("success")
     val success: Boolean = false,
     @SerializedName("message")
-    val message: String = ""
+    val message: String = "",
+    @SerializedName("price_noti")
+    val priceNoti: Boolean = false
 )

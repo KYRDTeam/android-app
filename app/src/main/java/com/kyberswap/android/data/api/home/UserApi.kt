@@ -153,7 +153,7 @@ interface UserApi {
     @POST("api/kyc_profile/resubmit_kyc")
     fun resubmit(): Single<KycResponseStatusEntity>
 
-    @PATCH("api/update_push_token")
+    @POST("api/users/player_id")
     @FormUrlEncoded
     fun updatePushToken(
         @Field("player_id") playerId: String

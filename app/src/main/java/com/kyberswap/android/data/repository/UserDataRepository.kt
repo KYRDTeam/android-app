@@ -484,6 +484,11 @@ class UserDataRepository @Inject constructor(
     override fun getSubscriptionNotifications(): Single<SubscriptionNotification> {
         return userApi.getSubscriptionNotifications().map {
             SubscriptionNotification(it)
+        }.doAfterSuccess {
+            val user = userDao.getUser()
+            if (user != null && user.priceNoti != it.priceNoti) {
+                userDao.updateUser(user.copy(priceNoti = it.priceNoti))
+            }
         }
     }
 

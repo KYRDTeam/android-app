@@ -83,6 +83,9 @@ class NotificationSettingFragment : BaseFragment(), LoginState {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSubscriptionNotificationState.Success -> {
+                        isPriceNotificationEnable = state.priceNoti
+                        binding.swOnOff.isChecked = isPriceNotificationEnable
+                        binding.isPriceNotificationEnable = isPriceNotificationEnable
                         adapter.submitFilterList(state.notifications)
                         if (state.notifications.filter { it.subscribed }.size > state.notifications.size / 2) {
                             binding.tvSelectAll.text =
@@ -105,7 +108,7 @@ class NotificationSettingFragment : BaseFragment(), LoginState {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is TogglePriceNotificationState.Success -> {
-
+                        isPriceNotificationEnable = true
                     }
 
                     is TogglePriceNotificationState.ShowError -> {
@@ -142,8 +145,10 @@ class NotificationSettingFragment : BaseFragment(), LoginState {
         binding.swOnOff.isChecked = isPriceNotificationEnable
 
         binding.swOnOff.setOnCheckedChangeListener { buttonView, isChecked ->
-            viewModel.togglePriceNoti(isChecked)
-            binding.isPriceNotificationEnable = isChecked
+            if(isChecked != isPriceNotificationEnable) {
+                viewModel.togglePriceNoti(isChecked)
+                binding.isPriceNotificationEnable = isChecked
+            }
         }
 
         binding.tvSelectAll.setOnClickListener {
