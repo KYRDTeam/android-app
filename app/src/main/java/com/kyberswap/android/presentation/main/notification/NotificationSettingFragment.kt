@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentNotificationSettingBinding
@@ -18,6 +19,7 @@ import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.di.ViewModelFactory
+import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
 class NotificationSettingFragment : BaseFragment(), LoginState {
@@ -38,6 +40,10 @@ class NotificationSettingFragment : BaseFragment(), LoginState {
 
     private val handler by lazy {
         Handler()
+    }
+
+    private val compositeDisposable by lazy {
+        CompositeDisposable()
     }
 
     private var isPriceNotificationEnable: Boolean = false
@@ -108,7 +114,9 @@ class NotificationSettingFragment : BaseFragment(), LoginState {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is TogglePriceNotificationState.Success -> {
-                        isPriceNotificationEnable = true
+                        isPriceNotificationEnable = state.state
+                        binding.isPriceNotificationEnable = isPriceNotificationEnable
+                        binding.executePendingBindings()
                     }
 
                     is TogglePriceNotificationState.ShowError -> {
@@ -126,6 +134,7 @@ class NotificationSettingFragment : BaseFragment(), LoginState {
 
         viewModel.updateSubscribedTokensNotificationsCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == UpdateSubscribedTokensNotificationState.Loading)
                 when (state) {
                     is UpdateSubscribedTokensNotificationState.Success -> {
                         if (activity != null) {
@@ -144,12 +153,18 @@ class NotificationSettingFragment : BaseFragment(), LoginState {
 
         binding.swOnOff.isChecked = isPriceNotificationEnable
 
-        binding.swOnOff.setOnCheckedChangeListener { buttonView, isChecked ->
-            if(isChecked != isPriceNotificationEnable) {
-                viewModel.togglePriceNoti(isChecked)
-                binding.isPriceNotificationEnable = isChecked
-            }
-        }
+        compositeDisposable.add(binding.swOnOff.checkedChanges().skipInitialValue()
+            .subscribe {
+                if (it != isPriceNotificationEnable) {
+                    viewModel.togglePriceNoti(it)
+                    binding.isPriceNotificationEnable = it
+                }
+            })
+
+//        binding.swOnOff.setOnCheckedChangeListener { buttonView, isChecked ->
+//            viewModel.togglePriceNoti(isChecked)
+//            binding.isPriceNotificationEnable = isChecked
+//        }
 
         binding.tvSelectAll.setOnClickListener {
             adapter.reset(isSelectAll)
@@ -197,6 +212,11 @@ class NotificationSettingFragment : BaseFragment(), LoginState {
         } else {
             binding.tvSelectAll.text = getString(R.string.filter_select_all)
         }
+    }
+
+    override fun onDestroyView() {
+        compositeDisposable.dispose()
+        super.onDestroyView()
     }
 
     companion object {

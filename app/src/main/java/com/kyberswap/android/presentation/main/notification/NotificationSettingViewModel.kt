@@ -10,6 +10,7 @@ import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.ErrorHandler
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
@@ -63,6 +64,9 @@ class NotificationSettingViewModel @Inject constructor(
 
     override fun onCleared() {
         getSubscriptionNotification.dispose()
+        togglePriceNotificationUseCase.dispose()
+        getLoginStatusUseCase.dispose()
+        updateSubscribedTokenNotification.dispose()
         super.onCleared()
     }
 
@@ -72,7 +76,7 @@ class NotificationSettingViewModel @Inject constructor(
             Consumer {
                 if (it.success) {
                     _togglePriceNotificationsCallback.value =
-                        Event(TogglePriceNotificationState.Success())
+                        Event(TogglePriceNotificationState.Success(checked))
                 } else {
                     _togglePriceNotificationsCallback.value =
                         Event(TogglePriceNotificationState.ShowError(it.message))
@@ -89,6 +93,11 @@ class NotificationSettingViewModel @Inject constructor(
 
     fun updateSubscribedTokens(tokens: List<String>) {
         updateSubscribedTokenNotification.dispose()
+        _updateSubscribedTokensNotificationsCallback.postValue(
+            Event(
+                UpdateSubscribedTokensNotificationState.Loading
+            )
+        )
         updateSubscribedTokenNotification.execute(
             Consumer {
                 if (it.success) {
