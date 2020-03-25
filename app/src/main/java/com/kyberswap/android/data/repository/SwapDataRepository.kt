@@ -424,8 +424,11 @@ class SwapDataRepository @Inject constructor(
 
                     notification != null -> {
                         val sourceToken = Token.ETH
-                        val destToken =
+                        var destToken =
                             if (notification.token.isEmpty()) Token.KNC else notification.token
+                        if(destToken == sourceToken) {
+                            destToken = Token.DAI
+                        }
                         val defaultSourceToken = tokenDao.getTokenBySymbol(sourceToken) ?: Token()
                         val defaultDestToken = tokenDao.getTokenBySymbol(destToken) ?: Token()
                         val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
