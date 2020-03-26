@@ -11,8 +11,8 @@ import kotlinx.android.parcel.Parcelize
 @Entity(tableName = "users")
 @Parcelize
 data class UserInfo(
-    @Ignore
-    val activeWallets: List<String> = listOf(),
+//    @Ignore
+//    val activeWallets: List<String> = listOf(),
     var avatarUrl: String = "",
     var contactId: String = "",
     var contactType: String = "",
@@ -37,7 +37,7 @@ data class UserInfo(
     var priceNoti: Boolean = false
 ) : Parcelable {
     constructor(entity: UserInfoEntity) : this(
-        entity.activeWallets,
+//        entity.activeWallets,
         entity.avatarUrl ?: "",
         entity.contactId ?: "",
         entity.contactType ?: "",

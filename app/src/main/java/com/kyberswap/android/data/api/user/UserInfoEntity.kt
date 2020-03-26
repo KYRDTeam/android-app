@@ -4,8 +4,8 @@ package com.kyberswap.android.data.api.user
 import com.google.gson.annotations.SerializedName
 
 data class UserInfoEntity(
-    @SerializedName("active_wallets")
-    val activeWallets: List<String> = listOf(),
+//    @SerializedName("active_wallets")
+//    val activeWallets: List<String> = listOf(),
     @SerializedName("avatar_url")
     val avatarUrl: String? = "",
     @SerializedName("contact_id")
