@@ -72,6 +72,7 @@ class NotificationSettingViewModel @Inject constructor(
 
     fun togglePriceNoti(checked: Boolean) {
         togglePriceNotificationUseCase.dispose()
+        _togglePriceNotificationsCallback.postValue(Event(TogglePriceNotificationState.Loading))
         togglePriceNotificationUseCase.execute(
             Consumer {
                 if (it.success) {

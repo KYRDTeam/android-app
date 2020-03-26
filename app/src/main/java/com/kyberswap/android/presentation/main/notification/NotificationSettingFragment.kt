@@ -112,6 +112,7 @@ class NotificationSettingFragment : BaseFragment(), LoginState {
 
         viewModel.togglePriceNotificationsCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == TogglePriceNotificationState.Loading)
                 when (state) {
                     is TogglePriceNotificationState.Success -> {
                         isPriceNotificationEnable = state.state
