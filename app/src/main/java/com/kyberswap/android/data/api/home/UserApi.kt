@@ -6,12 +6,14 @@ import com.kyberswap.android.data.api.alert.AlertResponseEntity
 import com.kyberswap.android.data.api.alert.LeaderBoardEntity
 import com.kyberswap.android.data.api.cap.CapEntity
 import com.kyberswap.android.data.api.notification.NotificationsResponseEntity
+import com.kyberswap.android.data.api.notification.SubscriptionNotificationEntity
 import com.kyberswap.android.data.api.user.DataTransferStatusEntity
 import com.kyberswap.android.data.api.user.KycResponseStatusEntity
 import com.kyberswap.android.data.api.user.LoginUserEntity
 import com.kyberswap.android.data.api.user.ResponseStatusEntity
 import com.kyberswap.android.data.api.user.UserInfoEntity
 import com.kyberswap.android.data.api.wallet.EligibleWalletStatusEntity
+import com.kyberswap.android.domain.model.ResponseStatus
 import io.reactivex.Single
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -39,13 +41,11 @@ interface UserApi {
         @Field("subscription") subscription: Boolean
     ): Single<ResponseStatusEntity>
 
-
     @FormUrlEncoded
     @POST("api/users/reset_password")
     fun resetPassword(
         @Field("email") email: String
     ): Single<ResponseStatusEntity>
-
 
     @FormUrlEncoded
     @POST("api/users/login")
@@ -55,7 +55,6 @@ interface UserApi {
         @Field("two_factor_code") twoFactorCode: String?
 
     ): Single<LoginUserEntity>
-
 
     @FormUrlEncoded
     @POST("api/users/social_login")
@@ -154,7 +153,7 @@ interface UserApi {
     @POST("api/kyc_profile/resubmit_kyc")
     fun resubmit(): Single<KycResponseStatusEntity>
 
-    @PATCH("api/update_push_token")
+    @POST("api/users/player_id")
     @FormUrlEncoded
     fun updatePushToken(
         @Field("player_id") playerId: String
@@ -200,4 +199,17 @@ interface UserApi {
 
     @DELETE("api/alerts/delete_triggered")
     fun deleteAllTriggerAlerts(): Single<ResponseStatusEntity>
+
+    @GET("api/users/subscription_tokens")
+    fun getSubscriptionNotifications(): Single<SubscriptionNotificationEntity>
+
+    @PATCH("api/users/toggle_price_noti")
+    @FormUrlEncoded
+    fun togglePriceNoti(
+        @Field("price_noti") param: Boolean
+    ): Single<ResponseStatus>
+
+    @Headers("Content-Type: application/json")
+    @POST("api/users/subscription_tokens")
+    fun updateSubscribedTokens(@Body rawJsonString: RequestBody): Single<ResponseStatusEntity>
 }

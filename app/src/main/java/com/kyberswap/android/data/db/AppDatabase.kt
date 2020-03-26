@@ -48,7 +48,7 @@ import com.kyberswap.android.domain.model.Wallet
         TransactionFilter::class,
         RatingInfo::class
     ],
-    version = 9
+    version = 10
 )
 @TypeConverters(
     DataTypeConverter::class,
@@ -216,6 +216,13 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        @VisibleForTesting
+        internal val MIGRATION_9_10: Migration = object : Migration(9, 10) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE users " + " ADD COLUMN priceNoti INTEGER NOT NULL default 0 ")
+            }
+        }
+
 
         private fun buildDatabase(context: Context) =
             Room.databaseBuilder(
@@ -230,7 +237,8 @@ abstract class AppDatabase : RoomDatabase() {
                     MIGRATION_5_6,
                     MIGRATION_6_7,
                     MIGRATION_7_8,
-                    MIGRATION_8_9
+                    MIGRATION_8_9,
+                    MIGRATION_9_10
                 )
 //                .fallbackToDestructiveMigration()
 //                .allowMainThreadQueries()

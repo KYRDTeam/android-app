@@ -4,8 +4,8 @@ package com.kyberswap.android.data.api.user
 import com.google.gson.annotations.SerializedName
 
 data class UserInfoEntity(
-    @SerializedName("active_wallets")
-    val activeWallets: List<String> = listOf(),
+//    @SerializedName("active_wallets")
+//    val activeWallets: List<String> = listOf(),
     @SerializedName("avatar_url")
     val avatarUrl: String? = "",
     @SerializedName("contact_id")
@@ -31,6 +31,8 @@ data class UserInfoEntity(
     @SerializedName("transfer_permission")
     val transferPermission: String = "",
     @SerializedName("force_logout")
-    val forceLogout: Boolean = false
+    val forceLogout: Boolean = false,
+    @SerializedName("price_noti")
+    val priceNoti: Boolean = false
 
 )

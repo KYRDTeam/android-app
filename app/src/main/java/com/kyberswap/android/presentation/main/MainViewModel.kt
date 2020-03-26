@@ -18,6 +18,7 @@ import com.kyberswap.android.domain.usecase.profile.LogoutUseCase
 import com.kyberswap.android.domain.usecase.profile.RefreshUserInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.SaveRatingInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.UpdatePushTokenUseCase
+import com.kyberswap.android.domain.usecase.swap.GetMaxGasPriceUseCase
 import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.GetOtherBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.GetTokenBalanceUseCase
@@ -42,6 +43,7 @@ import com.kyberswap.android.presentation.main.notification.ReadNotificationsSta
 import com.kyberswap.android.presentation.main.profile.DataTransferState
 import com.kyberswap.android.presentation.main.profile.LogoutState
 import com.kyberswap.android.presentation.main.profile.UserInfoState
+import com.kyberswap.android.presentation.main.swap.GetMaxPriceState
 import com.kyberswap.android.presentation.wallet.UpdateWalletState
 import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Action
@@ -72,6 +74,7 @@ class MainViewModel @Inject constructor(
     private val getUserDataPermissionUseCase: RefreshUserInfoUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val dataTransferUseCase: DataTransferUseCase,
+    private val getMaxGasPriceUseCase: GetMaxGasPriceUseCase,
     private val checkEligibleWalletUseCase: CheckEligibleWalletUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getWalletUseCase, errorHandler) {
@@ -91,6 +94,10 @@ class MainViewModel @Inject constructor(
     private val _saveRatingInfoCallback = MutableLiveData<Event<SaveRatingInfoState>>()
     val saveRatingInfoCallback: LiveData<Event<SaveRatingInfoState>>
         get() = _saveRatingInfoCallback
+
+    private val _getMaxPriceCallback = MutableLiveData<Event<GetMaxPriceState>>()
+    val getMaxPriceCallback: LiveData<Event<GetMaxPriceState>>
+        get() = _getMaxPriceCallback
 
     private val _getPendingTransactionStateCallback =
         MutableLiveData<Event<GetPendingTransactionState>>()
@@ -152,7 +159,6 @@ class MainViewModel @Inject constructor(
             null
         )
     }
-
 
     fun getWallets() {
         getAllWalletUseCase.execute(
@@ -487,6 +493,23 @@ class MainViewModel @Inject constructor(
                     Event(ReadNotificationsState.ShowError(errorHandler.getError(it)))
             },
             ReadNotificationsUseCase.Param(listOf(notification))
+        )
+    }
+
+    fun getMaxGasPrice() {
+        getMaxGasPriceUseCase.dispose()
+        getMaxGasPriceUseCase.execute(
+            Consumer {
+                if (it.success) {
+                    _getMaxPriceCallback.value = Event(GetMaxPriceState.Success(it.data))
+                }
+            },
+            Consumer {
+                it.printStackTrace()
+                _getMaxPriceCallback.value =
+                    Event(GetMaxPriceState.ShowError(errorHandler.getError(it)))
+            },
+            null
         )
     }
 

@@ -2,6 +2,7 @@ package com.kyberswap.android.data.api.home
 
 import com.kyberswap.android.data.api.cap.CapEntity
 import com.kyberswap.android.data.api.gas.GasPriceEntity
+import com.kyberswap.android.data.api.gas.MaxGasPriceEntity
 import com.kyberswap.android.data.api.rate.MarketRateEntity
 import com.kyberswap.android.data.api.token.KyberEnabledEntity
 import io.reactivex.Single
@@ -14,6 +15,9 @@ interface SwapApi {
 
     @GET("gasPrice")
     fun getGasPrice(): Single<GasPriceEntity>
+
+    @GET("maxGasPrice")
+    fun getMaxGasPrice(): Single<MaxGasPriceEntity>
 
     @GET("users")
     fun getCap(

@@ -23,10 +23,13 @@ import com.kyberswap.android.domain.model.Notification
 import com.kyberswap.android.domain.model.NotificationRequestBody
 import com.kyberswap.android.domain.model.RatingInfo
 import com.kyberswap.android.domain.model.ResponseStatus
+import com.kyberswap.android.domain.model.SubscriptionNotification
+import com.kyberswap.android.domain.model.UpdateSubscribedNotificationRequestBody
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.repository.UserRepository
 import com.kyberswap.android.domain.usecase.alert.UpdateAlertMethodsUseCase
 import com.kyberswap.android.domain.usecase.notification.ReadNotificationsUseCase
+import com.kyberswap.android.domain.usecase.notification.UpdateSubscribedTokenNotificationUseCase
 import com.kyberswap.android.domain.usecase.profile.Base64DecodeUseCase
 import com.kyberswap.android.domain.usecase.profile.DataTransferUseCase
 import com.kyberswap.android.domain.usecase.profile.LoginSocialUseCase
@@ -57,7 +60,6 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.ceil
 
-
 class UserDataRepository @Inject constructor(
     private val userApi: UserApi,
     private val userDao: UserDao,
@@ -82,8 +84,8 @@ class UserDataRepository @Inject constructor(
                 alerts.filter { it.isNotLocal }
             },
             userApi.getAlert().map {
-                userMapper.transform(it.alerts)
-            }
+                    userMapper.transform(it.alerts)
+                }
                 .doAfterSuccess {
                     alertDao.updateAlerts(it)
                 }.toFlowable()
@@ -113,8 +115,8 @@ class UserDataRepository @Inject constructor(
 
     override fun pollingUserInfo(): Flowable<UserInfo> {
         return userApi.getUserInfo().map {
-            userMapper.transform(it)
-        }
+                userMapper.transform(it)
+            }
             .doAfterSuccess {
                 if (!it.success && it.message.equals(
                         context.getString(R.string.not_authenticated_message), true
@@ -145,7 +147,6 @@ class UserDataRepository @Inject constructor(
             userDao.updateUser(it)
         }
     }
-
 
     override fun fetchUserInfo(): Flowable<UserInfo> {
         return Flowable.mergeDelayError(
@@ -196,17 +197,17 @@ class UserDataRepository @Inject constructor(
 
     override fun loginSocial(param: LoginSocialUseCase.Param): Single<LoginUser> {
         return userApi.socialLogin(
-            param.socialInfo.type.value,
-            param.socialInfo.accessToken,
-            param.socialInfo.subscription,
-            param.socialInfo.photoUrl,
-            param.socialInfo.twoFa,
-            param.socialInfo.displayName,
-            param.socialInfo.oAuthToken,
-            param.socialInfo.oAuthTokenSecret,
-            param.confirmSignUp,
-            param.socialInfo.twoFa
-        )
+                param.socialInfo.type.value,
+                param.socialInfo.accessToken,
+                param.socialInfo.subscription,
+                param.socialInfo.photoUrl,
+                param.socialInfo.twoFa,
+                param.socialInfo.displayName,
+                param.socialInfo.oAuthToken,
+                param.socialInfo.oAuthTokenSecret,
+                param.confirmSignUp,
+                param.socialInfo.twoFa
+            )
             .map { userMapper.transform(it) }
             .doAfterSuccess {
                 userDao.updateUser(it.userInfo)
@@ -216,10 +217,10 @@ class UserDataRepository @Inject constructor(
 
     override fun login(param: LoginUseCase.Param): Single<LoginUser> {
         return userApi.login(
-            param.email.toLowerCase(Locale.getDefault()),
-            param.password,
-            param.twoFa
-        )
+                param.email.toLowerCase(Locale.getDefault()),
+                param.password,
+                param.twoFa
+            )
             .map { userMapper.transform(it) }
             .doAfterSuccess {
                 userDao.updateUser(it.userInfo)
@@ -349,7 +350,6 @@ class UserDataRepository @Inject constructor(
         }
     }
 
-
     override fun submit(param: SubmitUserInfoUseCase.Param): Single<KycResponseStatus> {
         return userApi.submit()
             .map {
@@ -369,7 +369,6 @@ class UserDataRepository @Inject constructor(
             userDao.updateUser(user.copy(kycStatus = UserInfo.DRAFT))
         }
     }
-
 
     @Throws(IOException::class)
     fun modifyOrientation(bitmap: Bitmap, imageAbsolutePath: String): Bitmap {
@@ -482,12 +481,32 @@ class UserDataRepository @Inject constructor(
             }.toList()
     }
 
+    override fun getSubscriptionNotifications(): Single<SubscriptionNotification> {
+        return userApi.getSubscriptionNotifications().map {
+            SubscriptionNotification(it)
+        }.doAfterSuccess {
+            val user = userDao.getUser()
+            if (user != null && user.priceNoti != it.priceNoti) {
+                userDao.updateUser(user.copy(priceNoti = it.priceNoti))
+            }
+        }
+    }
+
+    override fun togglePriceNoti(param: Boolean): Single<ResponseStatus> {
+        return userApi.togglePriceNoti(param).doAfterSuccess {
+            val user = userDao.getUser()?.copy(priceNoti = param)
+            if (user != null) {
+                userDao.updateUser(user)
+            }
+        }
+    }
+
     override fun getUnReadNotifications(): Flowable<Int> {
         return userApi.getNotifications().map {
-            it.pagingInfo.unreadCount ?: 0
-        }.repeatWhen {
-            it.delay(15, TimeUnit.SECONDS)
-        }
+                it.pagingInfo.unreadCount ?: 0
+            }.repeatWhen {
+                it.delay(15, TimeUnit.SECONDS)
+            }
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
             }
@@ -502,6 +521,17 @@ class UserDataRepository @Inject constructor(
                 }))
             )
         return userApi.markAsRead(body).map {
+            userMapper.transform(it)
+        }
+    }
+
+    override fun updateSubscribedTokensNotification(param: UpdateSubscribedTokenNotificationUseCase.Param): Single<ResponseStatus> {
+        val body =
+            RequestBody.create(
+                MediaType.parse("text/plain"),
+                Gson().toJson(UpdateSubscribedNotificationRequestBody(param.notifications))
+            )
+        return userApi.updateSubscribedTokens(body).map {
             userMapper.transform(it)
         }
     }

@@ -5,6 +5,6 @@ import com.kyberswap.android.domain.model.Notification
 sealed class ReadNotificationsState {
     object Loading : ReadNotificationsState()
     class ShowError(val message: String?) : ReadNotificationsState()
-    class Success(val success: Boolean, val notification: Notification? = null) :
+    class Success(val success: Boolean, val notification: Notification? = null, val isReadAll: Boolean = false) :
         ReadNotificationsState()
 }

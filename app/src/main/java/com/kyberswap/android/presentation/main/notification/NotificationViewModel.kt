@@ -82,7 +82,7 @@ class NotificationViewModel @Inject constructor(
                     _readNotificationsCallback.value =
                         Event(
                             ReadNotificationsState.Success(
-                                it.success
+                                it.success, isReadAll = true
                             )
                         )
                 } else {

@@ -81,7 +81,7 @@ class KyberCodeViewModel @Inject constructor(
             },
             Consumer {
                 it.printStackTrace()
-                if (it is TokenException) {
+                if (it is TokenException || it is KyberCodeException) {
                     _getKyberCodeCallback.value = Event(KyberCodeState.ShowError(it.message))
                 } else {
                     _getKyberCodeCallback.value =

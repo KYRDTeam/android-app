@@ -28,6 +28,7 @@ import com.kyberswap.android.util.USER_TRANSFER_DATA_FORCE_LOGOUT
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.isNetworkAvailable
+import com.onesignal.OneSignal
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
@@ -229,6 +230,13 @@ class ProfileDetailFragment : BaseFragment(), LoginState {
         binding.tvMoreAlert.setOnClickListener {
             navigator.navigateToManageAlert(
                 currentFragment
+            )
+        }
+
+        OneSignal.idsAvailable { _, _ ->
+            viewModel.updatePushToken(
+                OneSignal.getPermissionSubscriptionState().subscriptionStatus.userId,
+                OneSignal.getPermissionSubscriptionState().subscriptionStatus.pushToken
             )
         }
     }

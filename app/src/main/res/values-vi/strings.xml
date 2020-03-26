@@ -699,5 +699,10 @@
     <string name="marker_change_percent">%.2f %%</string>
     <string name="marker_change_title">"Thay đổi: "</string>
     <string name="marker_change_percent_title">"% thay đổi: "</string>
+    <string name="horizontal_divider">|</string>
+    <string name="kyber_code_invalid_date_time">Kybercode cần xác minh thời gian chính xác. Vui lòng chỉnh Ngày và Giờ trên thiết bị của bạn về chế độ tự động.</string>
+    <string name="kyber_code_invalid_nonce">Invalid nonce</string>
+    <string name="notification_setting">Cài đặt thông báo</string>
+    <string name="price_trending_notification">Thông báo về thay đổi tỷ giá</string>
 
 </resources>

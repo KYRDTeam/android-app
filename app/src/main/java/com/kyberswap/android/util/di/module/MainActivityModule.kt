@@ -39,6 +39,8 @@ import com.kyberswap.android.presentation.main.limitorder.ManageOrderFragment
 import com.kyberswap.android.presentation.main.limitorder.ManageOrderViewModel
 import com.kyberswap.android.presentation.main.limitorder.OrderConfirmFragment
 import com.kyberswap.android.presentation.main.notification.NotificationFragment
+import com.kyberswap.android.presentation.main.notification.NotificationSettingFragment
+import com.kyberswap.android.presentation.main.notification.NotificationSettingViewModel
 import com.kyberswap.android.presentation.main.notification.NotificationViewModel
 import com.kyberswap.android.presentation.main.profile.ProfileDetailFragment
 import com.kyberswap.android.presentation.main.profile.ProfileDetailViewModel
@@ -147,7 +149,6 @@ interface MainActivityModule {
     @ContributesAndroidInjector
     fun contributeSendFragment(): SendFragment
 
-
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeChartFragment(): ChartFragment
@@ -160,11 +161,9 @@ interface MainActivityModule {
     @ContributesAndroidInjector
     fun contributeCandleStickChartFragment(): CandleStickChartFragment
 
-
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeSettingFragment(): SettingFragment
-
 
     @FragmentScoped
     @ContributesAndroidInjector
@@ -193,7 +192,6 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeReceivedTransactionFragment(): TransactionDetailReceiveFragment
-
 
     @FragmentScoped
     @ContributesAndroidInjector
@@ -275,6 +273,9 @@ interface MainActivityModule {
     @ContributesAndroidInjector
     fun contributeNotificationFragment(): NotificationFragment
 
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeNotificationSettingFragment(): NotificationSettingFragment
 
     @FragmentScoped
     @ContributesAndroidInjector
@@ -300,7 +301,6 @@ interface MainActivityModule {
     fun bindBalanceAddressViewModel(
         otherViewModel: BalanceAddressViewModel
     ): ViewModel
-
 
     @Binds
     @IntoMap
@@ -428,14 +428,12 @@ interface MainActivityModule {
         manageOrderViewModel: ManageOrderViewModel
     ): ViewModel
 
-
     @Binds
     @IntoMap
     @ViewModelKey(FilterViewModel::class)
     fun bindFilterViewModel(
         filterViewModel: FilterViewModel
     ): ViewModel
-
 
     @Binds
     @IntoMap
@@ -547,6 +545,13 @@ interface MainActivityModule {
     @ViewModelKey(NotificationViewModel::class)
     fun bindNotificationViewModel(
         notificationViewModel: NotificationViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(NotificationSettingViewModel::class)
+    fun bindNotificationSettingViewModel(
+        notificationSettingViewModel: NotificationSettingViewModel
     ): ViewModel
 
     @Binds

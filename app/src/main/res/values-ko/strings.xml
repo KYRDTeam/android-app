@@ -699,5 +699,10 @@
     <string name="marker_change_percent">%.2f %%</string>
     <string name="marker_change_title">"변동: "</string>
     <string name="marker_change_percent_title">"변동%: "</string>
+    <string name="horizontal_divider">|</string>
+    <string name="kyber_code_invalid_date_time">카이버 코드 검증에는 올바른 시간이 필요합니다. 핸드폰의 설정 메뉴에서 날짜와 시간대를 자동모드로 설정해주세요</string>
+    <string name="kyber_code_invalid_nonce">Invalid nonce</string>
+    <string name="notification_setting">알림 설정</string>
+    <string name="price_trending_notification">가격 현황 알림</string>
 
 </resources>

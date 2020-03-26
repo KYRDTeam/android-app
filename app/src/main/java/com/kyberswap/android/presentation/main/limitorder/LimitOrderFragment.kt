@@ -1183,7 +1183,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         })
 
         binding.imgFlag.setOnClickListener {
-            navigator.navigateToNotificationcreen(currentFragment)
+            navigator.navigateToNotificationScreen(currentFragment)
         }
     }
 

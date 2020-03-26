@@ -42,6 +42,7 @@ import com.kyberswap.android.presentation.main.swap.GetContactState
 import com.kyberswap.android.presentation.main.swap.GetENSAddressState
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
+import com.kyberswap.android.presentation.main.swap.GetMaxPriceState
 import com.kyberswap.android.presentation.main.swap.GetSendState
 import com.kyberswap.android.presentation.main.swap.SaveContactState
 import com.kyberswap.android.presentation.main.swap.SaveSendState
@@ -71,11 +72,11 @@ import net.cachapa.expandablelayout.ExpandableLayout
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.web3j.utils.Convert
 import java.math.BigDecimal
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-
 
 class SendFragment : BaseFragment() {
 
@@ -94,6 +95,8 @@ class SendFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    private var maxGasPrice: String = ""
 
     @Inject
     lateinit var analytics: FirebaseAnalytics
@@ -115,16 +118,19 @@ class SendFragment : BaseFragment() {
     private var helperText: String? = null
 
     private val contactAddress: String
-        get() = if (ilAddress.helperText.toString().isContact()) ilAddress.helperText.toString() else edtAddress.text.toString().onlyAddress()
+        get() = if (ilAddress.helperText.toString()
+                .isContact()
+        ) ilAddress.helperText.toString() else edtAddress.text.toString().onlyAddress()
 
     private val isENSAddress: Boolean
-        get() = edtAddress.text.toString().isENSAddress() && !edtAddress.text.toString().onlyAddress().isContact()
+        get() = edtAddress.text.toString().isENSAddress() && !edtAddress.text.toString()
+            .onlyAddress().isContact()
 
     private val isContactExist: Boolean
         get() = contacts.find { ct ->
             ct.address.equals(currentSelection?.address, true)
-                || ct.address.equals(edtAddress.text.toString().onlyAddress(), true)
-                || ct.address.equals(ilAddress.helperText?.toString(), true)
+                    || ct.address.equals(edtAddress.text.toString().onlyAddress(), true)
+                    || ct.address.equals(ilAddress.helperText?.toString(), true)
         } != null
 
     private val availableAmount: BigDecimal
@@ -144,7 +150,6 @@ class SendFragment : BaseFragment() {
     private val currentActivity by lazy {
         activity as MainActivity
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -213,7 +218,7 @@ class SendFragment : BaseFragment() {
                     is GetGasPriceState.Success -> {
                         val send = binding.send?.copy(
                             gasPrice = getSelectedGasPrice(state.gas, selectedGasFeeView?.id),
-                            gas = state.gas
+                            gas = state.gas.copy(maxGasPrice = maxGasPrice)
                         )
                         binding.send = send
                     }
@@ -270,7 +275,9 @@ class SendFragment : BaseFragment() {
             navigator.navigateToAddContactScreen(
                 currentFragment,
                 wallet,
-                if (ilAddress.helperText?.toString()?.isContact() == true) ilAddress.helperText.toString() else
+                if (ilAddress.helperText?.toString()
+                        ?.isContact() == true
+                ) ilAddress.helperText.toString() else
                     edtAddress.text.toString().onlyAddress(),
                 currentSelection
             )
@@ -581,15 +588,16 @@ class SendFragment : BaseFragment() {
                         title = getString(R.string.invalid_contact_address_title),
                         message = getString(R.string.specify_contact_address)
                     )
-                    binding.edtSource.text.toString().toBigDecimalOrDefaultZero() > binding.send?.tokenSource?.currentBalance -> {
+                    binding.edtSource.text.toString()
+                        .toBigDecimalOrDefaultZero() > binding.send?.tokenSource?.currentBalance -> {
                         showAlertWithoutIcon(
                             title = getString(R.string.title_amount_too_big),
                             message = getString(R.string.exceed_balance)
                         )
                     }
                     !(edtAddress.text.toString().onlyAddress().isContact() ||
-                        ilAddress.helperText.toString().isContact() ||
-                        edtAddress.text.toString().isENSAddress()) -> showAlertWithoutIcon(
+                            ilAddress.helperText.toString().isContact() ||
+                            edtAddress.text.toString().isENSAddress()) -> showAlertWithoutIcon(
                         title = getString(R.string.invalid_contact_address_title),
                         message = getString(R.string.specify_contact_address)
                     )
@@ -605,7 +613,7 @@ class SendFragment : BaseFragment() {
                     )
 
                     send.tokenSource.isETH &&
-                        availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
+                            availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
                         showAlertWithoutIcon(
                             getString(R.string.insufficient_eth),
                             getString(R.string.not_enough_eth_blance)
@@ -659,13 +667,41 @@ class SendFragment : BaseFragment() {
                             ).toDisplayNumber()
                         )
                     } else {
-                        binding.edtSource.setText(it.tokenSource.currentBalance.rounding().toDisplayNumber())
+                        binding.edtSource.setText(
+                            it.tokenSource.currentBalance.rounding().toDisplayNumber()
+                        )
                     }
 
                 }
             }
 
         }
+
+        currentActivity.mainViewModel.getMaxPriceCallback.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                event?.peekContent()?.let { state ->
+                    when (state) {
+                        is GetMaxPriceState.Success -> {
+                            maxGasPrice = Convert.fromWei(
+                                state.data,
+                                Convert.Unit.GWEI
+                            ).toDisplayNumber()
+                            val currentSend = binding.send
+                            if (currentSend != null) {
+                                val send = currentSend.copy(
+                                    gas = currentSend.gas.copy(maxGasPrice = maxGasPrice)
+                                )
+                                binding.send = send
+                                binding.executePendingBindings()
+                            }
+                        }
+                        is GetMaxPriceState.ShowError -> {
+
+                        }
+                    }
+                }
+            })
 
         binding.tv25Percent.setOnClickListener {
             hideKeyboard()
@@ -776,8 +812,6 @@ class SendFragment : BaseFragment() {
             })
     }
 
-
-
     private fun onVerifyWalletComplete() {
         binding.tvContinue.setViewEnable(true)
         if (isENSAddress) {
@@ -828,7 +862,6 @@ class SendFragment : BaseFragment() {
         super.onStart()
         EventBus.getDefault().register(this)
     }
-
 
     override fun onStop() {
         super.onStop()
@@ -918,7 +951,6 @@ class SendFragment : BaseFragment() {
             )
         }
     }
-
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"

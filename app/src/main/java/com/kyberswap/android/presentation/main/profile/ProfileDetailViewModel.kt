@@ -16,6 +16,7 @@ import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
 import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
+import timber.log.Timber
 import javax.inject.Inject
 
 class ProfileDetailViewModel @Inject constructor(
@@ -56,6 +57,23 @@ class ProfileDetailViewModel @Inject constructor(
                     Event(UserInfoState.ShowError(errorHandler.getError(it)))
             },
             null
+        )
+    }
+
+    fun updatePushToken(userId: String, token: String?) {
+        updatePushTokenUseCase.dispose()
+        updatePushTokenUseCase.execute(
+            Consumer {
+
+            },
+            Consumer {
+                it.printStackTrace()
+                Timber.e(it.localizedMessage)
+            },
+            UpdatePushTokenUseCase.Param(
+                userId,
+                token
+            )
         )
     }
 
