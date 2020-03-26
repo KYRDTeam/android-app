@@ -192,7 +192,7 @@ class ManageAlertFragment : BaseFragment(), LoginState {
         })
 
         binding.tvAdd.setOnClickListener {
-            if (alertAdapter.getData().size >= 10) {
+            if ((alertAdapter.getData().size + triggerAlertAdapter.getData().size) >= 10) {
                 dialogHelper.showDialogInfo(
                     title = getString(R.string.alert_limit_exceed), content = getString(
                         R.string.alert_limit_exceeds_instruction
@@ -211,7 +211,7 @@ class ManageAlertFragment : BaseFragment(), LoginState {
         }
 
         binding.imgAdd.setOnClickListener {
-            if (alertAdapter.getData().size >= 10) {
+            if ((alertAdapter.getData().size + triggerAlertAdapter.getData().size) >= 10) {
                 dialogHelper.showDialogInfo(
                     title = getString(R.string.alert_limit_exceed), content = getString(
                         R.string.alert_limit_exceeds_instruction
