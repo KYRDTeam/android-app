@@ -28,7 +28,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.math.BigDecimal
 import javax.inject.Inject
 
-
 class ChartFragment : BaseFragment() {
 
     private lateinit var binding: FragmentChartBinding
@@ -43,6 +42,8 @@ class ChartFragment : BaseFragment() {
 
     private var wallet: Wallet? = null
 
+    private var market: String = ""
+
     private val rateChange: BigDecimal
         get() = if (isEth) token?.changeEth24h ?: BigDecimal.ZERO else token?.changeUsd24h
             ?: BigDecimal.ZERO
@@ -56,17 +57,6 @@ class ChartFragment : BaseFragment() {
         ViewModelProviders.of(this, viewModelFactory).get(ChartViewModel::class.java)
     }
 
-//    private var vol24hData = Data()
-
-//    private val message: String
-//        get() {
-//            return if (isEth) {
-//                vol24hData.eth24hVolume?.toDisplayNumber() ?: ""
-//            } else {
-//                vol24hData.usd24hVolume?.toDisplayNumber() ?: ""
-//            }
-//        }
-
     private val handler by lazy {
         Handler()
     }
@@ -76,8 +66,9 @@ class ChartFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        token = arguments!!.getParcelable(TOKEN_PARAM)
-        wallet = arguments!!.getParcelable(WALLET_PARAM)
+        token = arguments?.getParcelable(TOKEN_PARAM)
+        wallet = arguments?.getParcelable(WALLET_PARAM)
+        market = arguments?.getString(MARKET_PARAM) ?: ""
     }
 
     override fun onCreateView(
@@ -88,7 +79,6 @@ class ChartFragment : BaseFragment() {
         binding = FragmentChartBinding.inflate(inflater, container, false)
         return binding.root
     }
-
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -121,35 +111,40 @@ class ChartFragment : BaseFragment() {
         chartPagerAdapter.addFragment(
             CandleStickChartFragment.newInstance(
                 token,
-                ChartType.DAY
+                ChartType.DAY,
+                market
             ),
             getString(R.string.tab_day)
         )
         chartPagerAdapter.addFragment(
             CandleStickChartFragment.newInstance(
                 token,
-                ChartType.WEEK
+                ChartType.WEEK,
+                market
             ),
             getString(R.string.tab_week)
         )
         chartPagerAdapter.addFragment(
             CandleStickChartFragment.newInstance(
                 token,
-                ChartType.MONTH
+                ChartType.MONTH,
+                market
             ),
             getString(R.string.tab_month)
         )
         chartPagerAdapter.addFragment(
             CandleStickChartFragment.newInstance(
                 token,
-                ChartType.YEAR
+                ChartType.YEAR,
+                market
             ),
             getString(R.string.tab_year)
         )
         chartPagerAdapter.addFragment(
             CandleStickChartFragment.newInstance(
                 token,
-                ChartType.ALL
+                ChartType.ALL,
+                market
             ),
             getString(R.string.tab_all)
         )
@@ -305,7 +300,6 @@ class ChartFragment : BaseFragment() {
         })
     }
 
-
     fun getIndexByChartType(chartType: ChartType): Int {
         return when (chartType) {
             ChartType.DAY -> {
@@ -338,7 +332,6 @@ class ChartFragment : BaseFragment() {
         }
     }
 
-
     private fun moveToSwapTab() {
         if (activity is MainActivity) {
             handler.post {
@@ -357,11 +350,13 @@ class ChartFragment : BaseFragment() {
     companion object {
         private const val TOKEN_PARAM = "token_param"
         private const val WALLET_PARAM = "wallet_param"
-        fun newInstance(wallet: Wallet?, token: Token?) =
+        private const val MARKET_PARAM = "market_param"
+        fun newInstance(wallet: Wallet?, token: Token?, market: String) =
             ChartFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(TOKEN_PARAM, token)
                     putParcelable(WALLET_PARAM, wallet)
+                    putString(MARKET_PARAM, market)
                 }
             }
     }

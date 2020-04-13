@@ -406,7 +406,7 @@
         android:paddingEnd="20dp"
         android:text="@string/send_token"
         android:textAllCaps="true"
-        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+        android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
         android:textColor="@color/colorAccent"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"

@@ -35,7 +35,7 @@
                 android:paddingStart="30dp"
                 android:paddingEnd="30dp"
                 android:text="@string/attempt_to_cancel"
-                android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                android:textAppearance="@style/TextAppearance.Roboto.Medium"
                 android:textColor="#141927"
                 android:textSize="18sp" />
 
@@ -61,7 +61,7 @@
                         android:gravity="center"
                         android:lineSpacingExtra="14sp"
                         android:text="@string/cancellation_gas_fee"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Bold"
+                        android:textAppearance="@style/TextAppearance.Roboto.Bold"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
 
@@ -72,7 +72,7 @@
                         android:gravity="center"
                         android:lineSpacingExtra="12sp"
                         android:text="@{fee != null ? fee + ` ETH` : ``}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Bold"
+                        android:textAppearance="@style/TextAppearance.Roboto.Bold"
                         android:textColor="#141927"
                         android:textSize="16sp" />
 
@@ -83,7 +83,7 @@
                         android:layout_marginTop="24dp"
                         android:lineSpacingExtra="6sp"
                         android:text="@string/cancel_transaction_warning"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="14sp" />
 
@@ -126,7 +126,7 @@
                     android:gravity="center"
                     android:minHeight="45dp"
                     android:text="@string/limit_order_yes"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                     android:textColor="#ffffff"
                     android:textSize="16sp" />
             </LinearLayout>

@@ -51,6 +51,9 @@ interface TokenDao {
     @get:Query("SELECT * FROM tokens where isOther = 1 ")
     val otherTokens: List<Token>
 
+    @get:Query("SELECT * FROM tokens where spLimitOrder = 1 ")
+    val limitOrderTokens: List<Token>
+
     @get:Query("SELECT * FROM tokens")
     val allTokens: List<Token>
 }

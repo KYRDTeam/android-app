@@ -42,7 +42,7 @@
                 android:layout_marginBottom="8dp"
                 android:lineSpacingExtra="8sp"
                 android:text="@{title}"
-                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                 android:textColor="#141927"
                 android:textSize="15sp"
                 android:visibility="@{isVisibleTitle ? View.VISIBLE : View.GONE}"

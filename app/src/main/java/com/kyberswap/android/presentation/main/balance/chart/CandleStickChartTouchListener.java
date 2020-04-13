@@ -21,8 +21,6 @@ import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.Utils;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
-import timber.log.Timber;
-
 public class CandleStickChartTouchListener extends ChartTouchListener<BarLineChartBase<? extends BarLineScatterCandleBubbleData<?
         extends IBarLineScatterCandleBubbleDataSet<? extends Entry>>>> {
     /**
@@ -145,7 +143,6 @@ public class CandleStickChartTouchListener extends ChartTouchListener<BarLineCha
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        Timber.e("mTouchMode: " + mTouchMode);
         if (mVelocityTracker == null) {
             mVelocityTracker = VelocityTracker.obtain();
         }

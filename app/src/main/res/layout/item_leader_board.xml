@@ -49,7 +49,7 @@
                     android:layout_marginStart="12dp"
                     android:gravity="center"
                     android:text="@{alert.displayRank}"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                     android:textSize="16sp"
                     app:isActive="@{isActive}"
                     app:isReward="@{isReward}"
@@ -61,7 +61,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_weight="1"
                     android:text="@{isActive ? String.format(@string/alert_leader_board_name, alert.userName) : alert.displayUserInfo}"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                     android:textColor="@color/email_text_view_color"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -116,7 +116,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/pair"
                         android:textAllCaps="true"
-                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                        android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                         android:textColor="#9ea1aa"
                         android:textSize="10sp"
                         tools:ignore="SmallSp" />
@@ -147,7 +147,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/entry"
                         android:textAllCaps="true"
-                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                        android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                         android:textColor="#9ea1aa"
                         android:textSize="10sp"
                         tools:ignore="SmallSp" />
@@ -178,7 +178,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/target"
                         android:textAllCaps="true"
-                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                        android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                         android:textColor="#9ea1aa"
                         android:textSize="10sp"
                         tools:ignore="SmallSp" />
@@ -209,7 +209,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/swing"
                         android:textAllCaps="true"
-                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                        android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                         android:textColor="#9ea1aa"
                         android:textSize="10sp"
                         tools:ignore="SmallSp" />

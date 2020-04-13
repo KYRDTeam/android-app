@@ -70,6 +70,8 @@
     <string name="default_balance">0</string>
     <string name="buy">구매</string>
     <string name="sell">판매</string>
+    <string name="buy_token">구매 %s</string>
+    <string name="sell_token">판매 %s</string>
     <string name="unit_usd">USD</string>
     <string name="unit_eth">ETH</string>
     <string name="your_balance_is_empty">잔액이 비어 있습니다</string>
@@ -704,5 +706,23 @@
     <string name="kyber_code_invalid_nonce">Invalid nonce</string>
     <string name="notification_setting">알림 설정</string>
     <string name="price_trending_notification">가격 현황 알림</string>
+    <string name="order_confirmed_info">Limit order is non-custodial, which means %s will remain in your wallet till %s price reaches %s</string>
+    <string name="available_balance">Available Balance</string>
+    <string name="price">Price</string>
+    <string name="amount">Amount</string>
+    <string name="market">Market</string>
+    <string name="limit_order_v1">Limit Order V1</string>
+    <string name="token_wbtc">WBTC</string>
+    <string name="volume">Volume</string>
+    <string name="quantity">Quantity</string>
+    <string name="your_price">Your price</string>
+    <string name="market_price">Market price</string>
+    <string name="fee">Fee</string>
+    <string name="total">Total</string>
+    <string name="preview_order">Preview Order</string>
+    <string name="change_price">Change Price</string>
+    <string name="cancel_order">Cancel Order</string>
+    <string name="vol">"Vol: "</string>
+    <string name="accelerate_transaction">Select a higher gas fee to accelerate the processing of your transaction</string>
 
 </resources>

@@ -78,9 +78,8 @@ class BalanceDataRepository @Inject constructor(
                 }
             }
 
-            val limitOrder = localLimitOrderDao.findLocalLimitOrderByAddress(wallet.address)
-            limitOrder?.let {
-
+            val limitOrders = localLimitOrderDao.findAllLimitOrderByAddress(wallet.address)
+            limitOrders.forEach {
                 val source = updateBalance(it.tokenSource)
                 val dest = updateBalance(it.tokenDest)
 
@@ -131,7 +130,6 @@ class BalanceDataRepository @Inject constructor(
             }
         }
     }
-
 
     override fun getTokenBalance(token: Token): Completable {
         return Completable.fromCallable {
@@ -309,7 +307,6 @@ class BalanceDataRepository @Inject constructor(
             .map { it.values.toList() }
     }
 
-
     private fun updateTokenRate(
         remoteTokens: List<Token>,
         wallets: List<Wallet>
@@ -393,7 +390,6 @@ class BalanceDataRepository @Inject constructor(
         }
     }
 
-
     private fun updateTokenInfo(
         eth: Map<String, BigDecimal>,
         usd: Map<String, BigDecimal>,
@@ -414,8 +410,11 @@ class BalanceDataRepository @Inject constructor(
                     ?: false,
                 isQuote = listedToken[token.value.tokenAddress.toLowerCase(Locale.getDefault())]?.isQuote
                     ?: false
-
-            )
+            ).apply {
+                quotePriority =
+                    listedToken[token.value.tokenAddress.toLowerCase(Locale.getDefault())]?.quotePriority
+                        ?: 0
+            }
 
         }.toMap()
     }

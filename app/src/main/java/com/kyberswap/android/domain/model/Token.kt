@@ -55,9 +55,11 @@ data class Token(
 
     @IgnoredOnParcel
     var isHide: Boolean = false
+
     @IgnoredOnParcel
     @Ignore
     var delistTime: Long = 0
+
     @IgnoredOnParcel
     @Ignore
     var isGasFixed: Boolean = false
@@ -65,6 +67,10 @@ data class Token(
     @IgnoredOnParcel
     @Ignore
     var isEven: Boolean = false
+
+    @IgnoredOnParcel
+    @Ignore
+    var quotePriority: Int = 0
 
     val isDelist: Boolean
         get() {
@@ -119,6 +125,7 @@ data class Token(
     ) {
         delistTime = entity.delistTime ?: 0L
         isGasFixed = entity.isGasFixed ?: false
+        quotePriority = entity.quotePriority ?: 0
     }
 
     val symbol: String
@@ -157,6 +164,7 @@ data class Token(
         ).apply {
             delistTime = entity.delistTime ?: 0L
             isGasFixed = entity.isGasFixed ?: false
+            quotePriority = entity.quotePriority ?: 0
         }
     }
 
@@ -210,7 +218,6 @@ data class Token(
         return this
     }
 
-
     private fun updateBalance(walletBalance: WalletBalance?): Token {
         if (walletBalance == null) return this
         val updatedWalletBalance = wallets.map {
@@ -255,7 +262,9 @@ data class Token(
         get() = if (isHide) "******" else currentBalance.rounding().toDisplayNumber().exactAmount()
 
     val roundingBalance: BigDecimal
-        get() = if (currentBalance - currentBalance.toBigInteger().toBigDecimal() > BigDecimal(1E-6)) currentBalance else currentBalance.toBigInteger().toBigDecimal()
+        get() = if (currentBalance - currentBalance.toBigInteger()
+                .toBigDecimal() > BigDecimal(1E-6)
+        ) currentBalance else currentBalance.toBigInteger().toBigDecimal()
 
     val displayLimitOrderBalance: String
         get() = limitOrderBalance.rounding().max(BigDecimal.ZERO).toDisplayNumber().exactAmount()
@@ -315,21 +324,20 @@ data class Token(
     val isETHWETH: Boolean
         get() = tokenSymbol.toLowerCase(Locale.getDefault()) == ETH_SYMBOL_STAR.toLowerCase(Locale.getDefault())
 
-
     val isENJ: Boolean
         get() = tokenSymbol.toLowerCase(Locale.getDefault()) == ENJ.toLowerCase(Locale.getDefault())
 
     fun areContentsTheSame(other: Token): Boolean {
         return this.tokenSymbol == other.tokenSymbol &&
-            this.tokenAddress == other.tokenAddress &&
-            this.currentBalance.toDisplayNumber() == other.currentBalance.toDisplayNumber() &&
-            this.rateEthNow.toDisplayNumber() == other.rateEthNow.toDisplayNumber() &&
-            this.rateUsdNow.toDisplayNumber() == other.rateUsdNow.toDisplayNumber() &&
-            this.changeUsd24h.toDisplayNumber() == other.changeUsd24h.toDisplayNumber() &&
-            this.changeEth24h.toDisplayNumber() == other.changeEth24h.toDisplayNumber() &&
-            this.fav == other.fav &&
-            this.shouldShowAsNew == other.shouldShowAsNew &&
-            this.isEven == other.isEven
+                this.tokenAddress == other.tokenAddress &&
+                this.currentBalance.toDisplayNumber() == other.currentBalance.toDisplayNumber() &&
+                this.rateEthNow.toDisplayNumber() == other.rateEthNow.toDisplayNumber() &&
+                this.rateUsdNow.toDisplayNumber() == other.rateUsdNow.toDisplayNumber() &&
+                this.changeUsd24h.toDisplayNumber() == other.changeUsd24h.toDisplayNumber() &&
+                this.changeEth24h.toDisplayNumber() == other.changeEth24h.toDisplayNumber() &&
+                this.fav == other.fav &&
+                this.shouldShowAsNew == other.shouldShowAsNew &&
+                this.isEven == other.isEven
     }
 
     fun change24hStatus(isEth: Boolean): Int {
@@ -363,6 +371,7 @@ data class Token(
         const val ETH_SYMBOL = "ETH"
         const val ETH_SYMBOL_STAR = "ETH*"
         const val WETH_SYMBOL = "WETH"
+        const val WBTC_SYMBOL = "WBTC"
         const val ETH_NAME = "Ethereum"
         const val ETH_DECIMAL = 18
         const val ETH = "ETH"
@@ -376,6 +385,7 @@ data class Token(
         const val PT = "PT"
         const val ENJ = "ENJ"
         const val ENJIN = "ENJIN"
+        const val FAV = "isFav"
 
         const val DIGIX_GAS_LIMIT_DEFAULT = 975_000
         const val EXCHANGE_ETH_TOKEN_GAS_LIMIT_DEFAULT = 500_000

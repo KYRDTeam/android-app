@@ -16,7 +16,8 @@ data class TokenExt(
     val tokenAddress: String = "",
     val isGasFixed: Boolean = false,
     val gasLimit: String = "",
-    var delistTime: Long = 0
+    var delistTime: Long = 0,
+    var quotePriority: Int = 0
 ) : Parcelable {
     constructor(token: Token) : this(
         token.tokenSymbol,
@@ -24,6 +25,7 @@ data class TokenExt(
         token.tokenAddress,
         token.isGasFixed,
         token.gasLimit,
-        token.delistTime
+        token.delistTime,
+        token.quotePriority
     )
 }

@@ -138,7 +138,7 @@
                 android:gravity="center"
                 android:text="@string/register"
                 android:textAllCaps="false"
-                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                 android:textColor="#ffffff"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"

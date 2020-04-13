@@ -200,23 +200,23 @@ class SwapDataRepository @Inject constructor(
 
     override fun transferToken(param: TransferTokenUseCase.Param): Single<ResponseStatus> {
         return Single.fromCallable {
-                var password = ""
-                if (context is KyberSwapApplication) {
-                    password = String(
-                        context.aead.decrypt(
-                            Base64.decode(param.wallet.cipher, Base64.DEFAULT), ByteArray(0)
-                        ), Charsets.UTF_8
-                    )
-                }
-                val credentials = WalletUtils.loadCredentials(
-                    password,
-                    WalletManager.storage.keystoreDir.toString() + "/wallets/" + param.wallet.walletId + ".json"
+            var password = ""
+            if (context is KyberSwapApplication) {
+                password = String(
+                    context.aead.decrypt(
+                        Base64.decode(param.wallet.cipher, Base64.DEFAULT), ByteArray(0)
+                    ), Charsets.UTF_8
                 )
+            }
+            val credentials = WalletUtils.loadCredentials(
+                password,
+                WalletManager.storage.keystoreDir.toString() + "/wallets/" + param.wallet.walletId + ".json"
+            )
 
-                val hash = tokenClient.doTransferTransaction(
-                    param,
-                    credentials
-                )
+            val hash = tokenClient.doTransferTransaction(
+                param,
+                credentials
+            )
 //            val resetSend = param.send.copy()
 //            resetSend.let {
 //                sendTokenDao.updateSend(
@@ -226,33 +226,33 @@ class SwapDataRepository @Inject constructor(
 //                )
 //            }
 
-                hash?.let {
-                    val transfer = param.send
-                    transactionDao.insertTransaction(
-                        Transaction(
-                            hash = it.toLowerCase(Locale.getDefault()),
-                            transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
-                            timeStamp = System.currentTimeMillis() / 1000L,
-                            from = param.wallet.address,
-                            gas = transfer.gasLimit,
-                            gasUsed = transfer.gasLimit,
-                            gasPrice = Convert.toWei(
-                                transfer.gasPrice.toBigDecimalOrDefaultZero(),
-                                Convert.Unit.GWEI
-                            ).toString(),
-                            to = transfer.contact.address,
-                            value = transfer.amountUnit.toString(),
-                            tokenDecimal = transfer.tokenSource.tokenDecimal.toString(),
-                            tokenSymbol = transfer.tokenSource.tokenSymbol,
-                            walletAddress = param.send.walletAddress,
-                            type = Transaction.TransactionType.SEND
-                        )
+            hash?.let {
+                val transfer = param.send
+                transactionDao.insertTransaction(
+                    Transaction(
+                        hash = it.toLowerCase(Locale.getDefault()),
+                        transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
+                        timeStamp = System.currentTimeMillis() / 1000L,
+                        from = param.wallet.address,
+                        gas = transfer.gasLimit,
+                        gasUsed = transfer.gasLimit,
+                        gasPrice = Convert.toWei(
+                            transfer.gasPrice.toBigDecimalOrDefaultZero(),
+                            Convert.Unit.GWEI
+                        ).toString(),
+                        to = transfer.contact.address,
+                        value = transfer.amountUnit.toString(),
+                        tokenDecimal = transfer.tokenSource.tokenDecimal.toString(),
+                        tokenSymbol = transfer.tokenSource.tokenSymbol,
+                        walletAddress = param.send.walletAddress,
+                        type = Transaction.TransactionType.SEND
                     )
-                }
-
-                hash ?: ""
-
+                )
             }
+
+            hash ?: ""
+
+        }
             .flatMap { hash ->
                 userApi.submitTx(hash).map {
                     it.copy(hash = hash)
@@ -278,19 +278,22 @@ class SwapDataRepository @Inject constructor(
                     ).toBigDecimal(), false
                 )
             ), Single.fromCallable {
-                tokenClient.estimateGas(
-                    param.wallet.address,
-                    context.getString(R.string.kyber_address),
-                    param.tokenSource.tokenAddress,
-                    param.tokenDest.tokenAddress,
-                    param.sourceAmount.toBigDecimalOrDefaultZero().times(
-                        10.0.pow(param.tokenSource.tokenDecimal)
-                            .toBigDecimal()
-                    ).toBigInteger(),
-                    param.minConversionRate,
-                    param.tokenSource.isETH
-                )
-
+                try {
+                    tokenClient.estimateGas(
+                        param.wallet.address,
+                        context.getString(R.string.kyber_address),
+                        param.tokenSource.tokenAddress,
+                        param.tokenDest.tokenAddress,
+                        param.sourceAmount.toBigDecimalOrDefaultZero().times(
+                            10.0.pow(param.tokenSource.tokenDecimal)
+                                .toBigDecimal()
+                        ).toBigInteger(),
+                        param.minConversionRate,
+                        param.tokenSource.isETH
+                    )
+                } catch (ex: Exception) {
+                    throw RuntimeException("error: " + ex.localizedMessage)
+                }
             }
 
         ) { gasLimitEntity, ethEstimateGas ->
@@ -426,7 +429,7 @@ class SwapDataRepository @Inject constructor(
                         val sourceToken = Token.ETH
                         var destToken =
                             if (notification.token.isEmpty()) Token.KNC else notification.token
-                        if(destToken == sourceToken) {
+                        if (destToken == sourceToken) {
                             destToken = Token.DAI
                         }
                         val defaultSourceToken = tokenDao.getTokenBySymbol(sourceToken) ?: Token()

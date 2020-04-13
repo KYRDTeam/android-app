@@ -71,8 +71,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:lineSpacingExtra="8sp"
-                    android:text="Select a higher gas fee to accelerate the processing of your transaction"
-                    android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                    android:text="@string/accelerate_transaction"
+                    android:textAppearance="@style/TextAppearance.Roboto.Medium"
                     android:textColor="#000000"
                     android:textSize="14sp" />
 
@@ -208,7 +208,7 @@
 
                         android:lineSpacingExtra="14sp"
                         android:text="@string/current_fee"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="#5a5e67"
                         android:textSize="12sp" />
 
@@ -219,7 +219,7 @@
                         android:gravity="end"
                         android:lineSpacingExtra="12sp"
                         android:text="@{transaction.fee + ` ETH`}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="#141927"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -236,7 +236,7 @@
 
                         android:lineSpacingExtra="14sp"
                         android:text="@string/new_fee"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Bold"
+                        android:textAppearance="@style/TextAppearance.Roboto.Bold"
                         android:textColor="#5a5e67"
                         android:textSize="12sp" />
 
@@ -247,7 +247,7 @@
                         android:gravity="end"
                         android:lineSpacingExtra="12sp"
                         android:text="@{fee != null ? fee + ` ETH` : ``}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Bold"
+                        android:textAppearance="@style/TextAppearance.Roboto.Bold"
                         android:textColor="#141927"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -273,7 +273,7 @@
                     android:gravity="center"
                     android:minHeight="45dp"
                     android:text="@string/password_done"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                     android:textColor="#ffffff"
                     android:textSize="16sp" />
 

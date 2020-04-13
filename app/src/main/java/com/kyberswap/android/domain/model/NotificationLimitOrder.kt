@@ -37,7 +37,9 @@ data class NotificationLimitOrder(
     @SerializedName("test_order_id")
     val testOrderId: String = "",
     @SerializedName("notification_id")
-    val notificationId: Long = 0
+    val notificationId: Long = 0,
+    @SerializedName("side_trade")
+    val sideTrade: String = ""
 ) : Parcelable {
     constructor(notificationExt: NotificationExt) : this(
         notificationExt.type,
@@ -52,6 +54,7 @@ data class NotificationLimitOrder(
         notificationExt.sender,
         notificationExt.createdAt,
         notificationExt.updatedAt,
-        notificationExt.txHash
+        notificationExt.txHash,
+        sideTrade = notificationExt.sideTrade
     )
 }

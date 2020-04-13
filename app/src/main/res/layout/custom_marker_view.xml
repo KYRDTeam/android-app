@@ -12,7 +12,7 @@
 
 
         <TextView
-            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
             android:id="@+id/tvTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

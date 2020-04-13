@@ -37,5 +37,7 @@ data class NotificationExtEntity(
     val base: String? = "",
     @SerializedName("token")
     val token: String? = "",
-    val percent: String? = ""
+    val percent: String? = "",
+    @SerializedName("side_trade")
+    val sideTrade: String? = ""
 )

@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+
+        <variable
+            name="availableAmount"
+            type="String" />
+
+        <variable
+            name="type"
+            type="Integer" />
+
+        <variable
+            name="order"
+            type="com.kyberswap.android.domain.model.LocalLimitOrder" />
+
+
+    </data>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/placeHolder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color_bg_gray"
+            android:paddingBottom="80dp">
+
+            <TextView
+                android:id="@+id/textView47"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="17dp"
+                android:text="@string/available_balance"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextAppearance.Roboto.Medium"
+                android:textColor="#9ea1aa"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/vAmount" />
+
+
+            <TextView
+                android:id="@+id/tvBalance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="?selectableItemBackground"
+                android:paddingStart="0dp"
+                android:paddingEnd="8dp"
+                android:text="@{availableAmount}"
+                android:textAppearance="@style/TextAppearance.Roboto.Medium"
+                android:textColor="#141927"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/textView47"
+                app:layout_constraintTop_toBottomOf="@+id/textView47"
+                tools:text="123456" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="right"
+                app:constraint_referenced_ids="textView47,tvBalance"
+                tools:layout_editor_absoluteX="411dp" />
+
+            <TextView
+                android:id="@+id/tv25Percent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="61dp"
+                android:background="@drawable/rounded_corner_percent_background"
+                android:gravity="center"
+                android:minWidth="50dp"
+                android:minHeight="36dp"
+                android:text="@string/percent_25"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
+                android:textColor="#8690ad"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvBalance"
+                app:layout_constraintEnd_toStartOf="@+id/tv50Percent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toEndOf="@+id/barrier"
+                app:layout_constraintTop_toTopOf="@+id/textView47" />
+
+            <TextView
+                android:id="@+id/tv50Percent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:layout_marginEnd="7dp"
+                android:background="@drawable/rounded_corner_percent_background"
+                android:gravity="center"
+                android:minWidth="50dp"
+                android:minHeight="36dp"
+                android:text="@string/percent_50"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
+                android:textColor="#8690ad"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv25Percent"
+                app:layout_constraintEnd_toStartOf="@+id/tv100Percent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/tv25Percent"
+                app:layout_constraintTop_toTopOf="@+id/tv25Percent" />
+
+            <TextView
+                android:id="@+id/tv100Percent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="18dp"
+                android:background="@drawable/rounded_corner_percent_background"
+                android:gravity="center"
+                android:minWidth="50dp"
+                android:minHeight="36dp"
+                android:text="@string/percent_100"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
+                android:textColor="#8690ad"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv50Percent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/tv50Percent"
+                app:layout_constraintTop_toTopOf="@+id/tv50Percent" />
+
+
+            <View
+                android:id="@+id/vRate"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="18dp"
+                android:background="@drawable/rounded_corner_price_background"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView56"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginEnd="20dp"
+                android:gravity="center"
+                android:text="@string/price"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextAppearance.Roboto.Bold"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@+id/vRate"
+                app:layout_constraintStart_toStartOf="@+id/vRate"
+
+                app:layout_constraintTop_toTopOf="@+id/vRate" />
+
+
+            <com.kyberswap.android.presentation.common.ClearableEditText
+                android:id="@+id/edtPrice"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="20dp"
+                android:background="@android:color/white"
+                android:drawablePadding="8dp"
+                android:gravity="center|start"
+                android:hint="@string/default_swap_amount"
+                android:imeOptions="actionDone"
+                android:inputType="numberDecimal"
+                android:paddingStart="15dp"
+                android:paddingEnd="8dp"
+                android:textAppearance="@style/TextAppearance.Roboto.Medium"
+                android:textColor="#141927"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/vRate"
+                app:layout_constraintEnd_toStartOf="@+id/tvDest"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/barrier11"
+                app:layout_constraintTop_toTopOf="@+id/vRate"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/tvDest"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:background="@android:color/white"
+                android:gravity="center"
+                android:paddingStart="8dp"
+                android:paddingEnd="15dp"
+                android:text="@{order.tokenSource.tokenSymbol}"
+                android:textAppearance="@style/TextAppearance.Roboto.Medium"
+                android:textColor="#5a5e67"
+                android:textSize="16sp"
+                android:textStyle="normal"
+                app:layout_constraintBottom_toBottomOf="@+id/vRate"
+                app:layout_constraintEnd_toEndOf="@+id/vRate"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/edtPrice"
+                app:layout_constraintTop_toTopOf="@+id/vRate"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/tvRateWarning"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textColor="#626b86"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="@+id/vRate"
+                app:layout_constraintStart_toStartOf="@+id/vRate"
+                app:layout_constraintTop_toBottomOf="@+id/edtPrice"
+                tools:text="Rate here" />
+
+
+            <View
+                android:id="@+id/vAmount"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="18dp"
+                android:background="@drawable/rounded_corner_price_background"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvRateWarning" />
+
+            <TextView
+                android:id="@+id/tvAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginStart="14dp"
+                android:gravity="center"
+                android:text="@string/amount"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextAppearance.Roboto.Bold"
+                android:textColor="#141927"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@+id/vAmount"
+                app:layout_constraintStart_toStartOf="@+id/vAmount"
+                app:layout_constraintTop_toTopOf="@+id/vAmount" />
+
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="right"
+                app:constraint_referenced_ids="textView56,tvAmount"
+                tools:layout_editor_absoluteX="411dp" />
+
+            <com.kyberswap.android.presentation.common.ClearableEditText
+                android:id="@+id/edtAmount"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="20dp"
+                android:background="@android:color/white"
+                android:drawablePadding="8dp"
+                android:gravity="center|start"
+                android:hint="@string/default_swap_amount"
+                android:imeOptions="actionDone"
+                android:inputType="numberDecimal"
+                android:paddingStart="15dp"
+                android:paddingEnd="8dp"
+                android:textAppearance="@style/TextAppearance.Roboto.Medium"
+                android:textColor="#141927"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/vAmount"
+                app:layout_constraintEnd_toStartOf="@+id/tvSource"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/barrier11"
+                app:layout_constraintTop_toTopOf="@+id/vAmount" />
+
+            <TextView
+                android:id="@+id/tvSource"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:background="@android:color/white"
+                android:gravity="center"
+                android:paddingStart="8dp"
+                android:paddingEnd="15dp"
+                android:text="@{order.tokenDest.tokenSymbol}"
+                android:textAppearance="@style/TextAppearance.Roboto.Medium"
+                android:textColor="#5a5e67"
+                android:textSize="16sp"
+                android:textStyle="normal"
+                app:layout_constraintBottom_toBottomOf="@+id/vAmount"
+                app:layout_constraintEnd_toEndOf="@+id/vAmount"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/edtAmount"
+                app:layout_constraintTop_toTopOf="@+id/vAmount"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/textView89"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="21dp"
+                android:text="@string/order_fee"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
+                android:textColor="#626b86"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/vTotal" />
+
+            <TextView
+                android:id="@+id/tvFee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
+                android:textColor="#626b86"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView89"
+                app:layout_constraintEnd_toStartOf="@+id/tvOff"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/textView89"
+                app:layout_constraintTop_toTopOf="@+id/textView89" />
+
+            <TextView
+                android:id="@+id/tvLearnMore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="18dp"
+                android:background="?selectableItemBackground"
+                android:text="@string/learn_more"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
+                android:textColor="#ff9008"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvFee"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/tvFee"
+                app:layout_constraintTop_toTopOf="@+id/tvFee" />
+
+            <TextView
+                android:id="@+id/tvOriginalFee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="?selectableItemBackground"
+                android:textColor="#626b86"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@+id/tvFee"
+                app:layout_constraintTop_toBottomOf="@+id/tvFee" />
+
+            <TextView
+                android:id="@+id/tvOff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/rounded_corner_discount_background"
+                android:gravity="center"
+                android:minHeight="16.8dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:textColor="#ffffff"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvOriginalFee"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toEndOf="@+id/barrier8"
+                app:layout_constraintTop_toTopOf="@+id/tvOriginalFee" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="24dp"
+                android:indeterminateTint="@color/colorAccent"
+                app:layout_constraintBottom_toBottomOf="@+id/tvOff"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/tvOff"
+                app:layout_constraintTop_toTopOf="@+id/tvOff" />
+
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="end"
+                app:constraint_referenced_ids="tvFee,tvOriginalFee" />
+
+
+            <View
+                android:id="@+id/vTotal"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="18dp"
+                android:background="@drawable/rounded_corner_price_background"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvBalance" />
+
+            <TextView
+                android:id="@+id/tvTotalLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginEnd="20dp"
+                android:gravity="center"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextAppearance.Roboto.Bold"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@+id/vTotal"
+                app:layout_constraintStart_toStartOf="@+id/vTotal"
+
+                app:layout_constraintTop_toTopOf="@+id/vTotal" />
+
+
+            <com.kyberswap.android.presentation.common.ClearableEditText
+                android:id="@+id/edtTotal"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="20dp"
+                android:background="@android:color/white"
+                android:drawablePadding="8dp"
+                android:gravity="center|start"
+                android:hint="@string/default_swap_amount"
+                android:imeOptions="actionDone"
+                android:inputType="numberDecimal"
+                android:paddingStart="15dp"
+                android:paddingEnd="8dp"
+                android:textAppearance="@style/TextAppearance.Roboto.Medium"
+                android:textColor="#141927"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/vTotal"
+                app:layout_constraintEnd_toStartOf="@+id/tvTotalTokenSymbol"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/barrier11"
+                app:layout_constraintTop_toTopOf="@+id/vTotal"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/tvTotalTokenSymbol"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:background="@android:color/white"
+                android:gravity="center"
+                android:paddingStart="8dp"
+                android:paddingEnd="15dp"
+                android:text="@{order.tokenSource.tokenSymbol}"
+                android:textAppearance="@style/TextAppearance.Roboto.Medium"
+                android:textColor="#5a5e67"
+                android:textSize="16sp"
+                android:textStyle="normal"
+                app:layout_constraintBottom_toBottomOf="@+id/vTotal"
+                app:layout_constraintEnd_toEndOf="@+id/vTotal"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/edtTotal"
+                app:layout_constraintTop_toTopOf="@+id/vTotal"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/tvSubmitOrder"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="53dp"
+                android:layout_marginEnd="24dp"
+                android:background="@{type == 1 ? @drawable/buy_toggle_drawable : @drawable/sell_toggle_drawable}"
+                android:gravity="center"
+                android:minHeight="45dp"
+                android:text="@{(type == 1 ? String.format(@string/buy_token, order.tokenDest.tokenSymbol) : String.format(@string/sell_token, order.tokenDest.tokenSymbol))}"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextAppearance.Roboto.Bold"
+                android:textColor="#ffffff"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView89"
+                app:selected="@{true}" />
+
+
+            <TextView
+                android:id="@+id/tvRelatedOrder"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center|start"
+                android:text="@string/related_orders"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
+                android:textColor="#5a5e67"
+                android:textSize="14sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/tvManageOrder"
+                app:layout_constraintEnd_toStartOf="@+id/tvManageOrder"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="@+id/tvSubmitOrder"
+                app:layout_constraintTop_toTopOf="@+id/tvManageOrder" />
+
+            <TextView
+                android:id="@+id/tvManageOrder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:background="?selectableItemBackground"
+                android:gravity="center"
+                android:padding="4dp"
+                android:text="@string/manage_orders"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
+                android:textColor="#ff9008"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="@+id/tvSubmitOrder"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/tvRelatedOrder"
+                app:layout_constraintTop_toBottomOf="@+id/tvSubmitOrder" />
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvRelatedOrder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvManageOrder" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</layout>

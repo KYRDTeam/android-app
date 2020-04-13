@@ -140,7 +140,7 @@ class ConvertFragment : BaseFragment() {
             }
         })
 
-        viewModel.convertCallback.observe(this, Observer {
+        viewModel.convertCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == ConvertState.Loading)
                 when (state) {
@@ -150,11 +150,19 @@ class ConvertFragment : BaseFragment() {
                             message = getString(R.string.transaction_broadcasted_message)
                         )
                         hideKeyboard()
-                        navigator.navigateToOrderConfirmScreen(
-                            currentFragment,
-                            wallet,
-                            limitOrder
-                        )
+                        if (binding.order?.type == LocalLimitOrder.TYPE_LIMIT_ORDER_V1) {
+                            navigator.navigateToOrderConfirmScreen(
+                                currentFragment,
+                                wallet,
+                                limitOrder
+                            )
+                        } else {
+                            navigator.navigateToOrderConfirmV2Screen(
+                                currentFragment,
+                                wallet,
+                                limitOrder
+                            )
+                        }
                     }
                     is ConvertState.ShowError -> {
                         showError(
@@ -172,7 +180,6 @@ class ConvertFragment : BaseFragment() {
         tvCancel.setOnClickListener {
             onBackPressed()
         }
-
 
 
         tvConvert.setOnClickListener {

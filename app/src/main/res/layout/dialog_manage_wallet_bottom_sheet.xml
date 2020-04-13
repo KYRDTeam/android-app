@@ -16,7 +16,7 @@
             android:gravity="center"
             android:minHeight="45dp"
             android:text="@string/switch_wallet"
-            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
             android:textColor="#2e3957"
             android:textSize="14sp" />
 
@@ -28,7 +28,7 @@
             android:gravity="center"
             android:minHeight="45dp"
             android:text="@string/wallet_edit"
-            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
             android:textColor="#2e3957"
             android:textSize="14sp" />
 
@@ -40,7 +40,7 @@
             android:gravity="center"
             android:minHeight="45dp"
             android:text="@string/wallet_delete"
-            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
             android:textColor="#f96363"
             android:textSize="14sp" />
 
@@ -53,7 +53,7 @@
             android:gravity="center"
             android:minHeight="45dp"
             android:text="@string/cancel"
-            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
             android:textColor="#2e3957"
             android:textSize="14sp" />
 

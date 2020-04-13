@@ -35,7 +35,7 @@
             android:layout_marginEnd="16dp"
             android:lineSpacingExtra="8sp"
             android:text="@{notification.title}"
-            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
             android:textColor="#5a5e67"
             android:textSize="12sp"
             app:font="@{@string/normal_font_path}"

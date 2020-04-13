@@ -205,7 +205,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:lineSpacingExtra="10sp"
-                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold.Italic"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold.Italic"
                 android:textColor="#5a5e67"
                 android:textSize="12sp"
                 android:textStyle="italic" />

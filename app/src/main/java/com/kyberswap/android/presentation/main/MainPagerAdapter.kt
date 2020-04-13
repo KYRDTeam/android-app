@@ -9,11 +9,10 @@ import com.kyberswap.android.domain.model.Notification
 import com.kyberswap.android.domain.model.NotificationAlert
 import com.kyberswap.android.domain.model.NotificationLimitOrder
 import com.kyberswap.android.presentation.main.balance.BalanceFragment
-import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
+import com.kyberswap.android.presentation.main.limitorder.LimitOrderV2Fragment
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.setting.SettingFragment
 import com.kyberswap.android.presentation.main.swap.SwapFragment
-
 
 class MainPagerAdapter constructor(
     fm: FragmentManager,
@@ -26,7 +25,7 @@ class MainPagerAdapter constructor(
     init {
         listFragment.add(BALANCE, BalanceFragment.newInstance())
         listFragment.add(SWAP, SwapFragment.newInstance(alert, notification))
-        listFragment.add(LIMIT_ORDER, LimitOrderFragment.newInstance(limitOrder))
+        listFragment.add(LIMIT_ORDER, LimitOrderV2Fragment.newInstance(limitOrder))
         listFragment.add(PROFILE, ProfileFragment.newInstance())
         listFragment.add(SETTING, SettingFragment.newInstance())
 

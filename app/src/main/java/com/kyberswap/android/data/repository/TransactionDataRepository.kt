@@ -152,9 +152,9 @@ class TransactionDataRepository @Inject constructor(
 
         }
 
-        val orderByAddress =
-            limitOrderDao.findLocalLimitOrderByAddress(wallet.address)
-        orderByAddress?.let { order ->
+        val ordersByAddress =
+            limitOrderDao.findAllLimitOrderByAddress(wallet.address)
+        ordersByAddress.forEach { order ->
             when {
                 order.tokenSource.tokenAddress.equals(
                     updatedBalanceToken.tokenAddress,

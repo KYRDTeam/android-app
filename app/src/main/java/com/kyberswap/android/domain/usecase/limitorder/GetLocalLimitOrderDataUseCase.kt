@@ -18,5 +18,5 @@ class GetLocalLimitOrderDataUseCase @Inject constructor(
         return limitOrderRepository.getCurrentLimitOrders(param)
     }
 
-    class Param(val wallet: Wallet)
+    class Param(val wallet: Wallet, val type: Int = LocalLimitOrder.TYPE_LIMIT_ORDER_V1)
 }

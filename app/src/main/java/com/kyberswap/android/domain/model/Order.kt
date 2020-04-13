@@ -10,6 +10,8 @@ import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toLongSafe
 import kotlinx.android.parcel.Parcelize
 import java.math.BigDecimal
+import java.math.MathContext
+import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -27,6 +29,7 @@ data class Order(
     val nonce: String = "",
     val fee: BigDecimal = BigDecimal.ZERO,
     val receive: BigDecimal = BigDecimal.ZERO,
+    val sideTrade: String = "",
     val status: String = "",
     val msg: String = "",
     val txHash: String = "",
@@ -44,6 +47,7 @@ data class Order(
         entity.nonce,
         entity.fee + entity.transferFee,
         entity.receive,
+        entity.sideTrade,
         entity.status,
         entity.msg,
         entity.txHash,
@@ -67,6 +71,7 @@ data class Order(
         "",
         notification.fee + notification.transferFee,
         notification.receive,
+        notification.sideTrade,
         Status.FILLED.value,
         "",
         notification.txHash,
@@ -77,14 +82,44 @@ data class Order(
     val receivedSource: BigDecimal
         get() = (BigDecimal.ONE - fee).multiply(srcAmount)
 
+    val displayBuySellToken: String
+        get() = if (sideTrade.equals(SIDE_TRADE_BUY, true))
+            dst else src
+
+    val displayPrice: String
+        get() = if (sideTrade.equals(SIDE_TRADE_BUY, true))
+            BigDecimal.ONE.divide(
+                minRate,
+                10,
+                RoundingMode.CEILING
+            ).toDisplayNumber()
+        else minRate.toDisplayNumber()
+
+    val displayTotal: String
+        get() = if (sideTrade.equals(SIDE_TRADE_BUY, true)) sourceDisplay else destDisplay
+
+    val displayAmount: String
+        get() = if (sideTrade.equals(SIDE_TRADE_BUY, true)) destDisplay else sourceDisplay
+
+    val isV1: Boolean
+        get() = sideTrade.isEmpty()
+
+    val isSell: Boolean
+        get() = sideTrade.equals(SIDE_TRADE_SELL, true)
+
+    val isBuy: Boolean
+        get() = sideTrade.equals(SIDE_TRADE_BUY, true)
+
+
     val displayTokenPair: String
-        get() = StringBuilder()
-            .append(src)
-            .append("/")
-            .append(dst)
-            .append(" >= ")
-            .append(minRate.toDisplayNumber())
-            .toString()
+        get() =
+            StringBuilder()
+                .append(src)
+                .append("/")
+                .append(dst)
+                .append(" >= ")
+                .append(minRate.toDisplayNumber())
+                .toString()
 
     val sourceDisplay: String
         get() = StringBuilder()
@@ -95,7 +130,7 @@ data class Order(
 
     val destDisplay: String
         get() = StringBuilder()
-            .append(receivedSource.multiply(minRate).toDisplayNumber())
+            .append(receivedSource.multiply(minRate, MathContext(10)).toDisplayNumber())
             .append(" ")
             .append(dst)
             .toString()
@@ -137,7 +172,7 @@ data class Order(
         get() = status.toLowerCase(Locale.getDefault()) == Status.INVALIDATED.value.toLowerCase(
             Locale.getDefault()
         ) &&
-            msg.isNotEmpty()
+                msg.isNotEmpty()
 
     val hasErrorMessage: Boolean
         get() = msg.isNotEmpty()
@@ -161,18 +196,20 @@ data class Order(
 
     companion object {
         val formatterShort = SimpleDateFormat("dd MMM yyyy", Locale.US)
+        const val SIDE_TRADE_BUY = "buy"
+        const val SIDE_TRADE_SELL = "sell"
     }
 
     fun sameDisplay(other: Order): Boolean {
         return this.id == other.id &&
-            this.displayTokenPair == other.displayTokenPair &&
-            this.displayAddress == other.displayAddress &&
-            this.status == other.status &&
-            this.sourceDisplay == other.sourceDisplay &&
-            this.destDisplay == other.destDisplay &&
-            this.destDisplayFee == other.destDisplayFee &&
-            this.extraDisplay == other.extraDisplay &&
-            this.msg == other.msg
+                this.displayTokenPair == other.displayTokenPair &&
+                this.displayAddress == other.displayAddress &&
+                this.status == other.status &&
+                this.sourceDisplay == other.sourceDisplay &&
+                this.destDisplay == other.destDisplay &&
+                this.destDisplayFee == other.destDisplayFee &&
+                this.extraDisplay == other.extraDisplay &&
+                this.msg == other.msg
     }
 
     enum class Status {

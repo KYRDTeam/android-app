@@ -1,8 +1,20 @@
 package com.kyberswap.android.data.api.home
 
-import com.kyberswap.android.data.api.limitorder.*
+import com.kyberswap.android.data.api.limitorder.CancelledEntity
+import com.kyberswap.android.data.api.limitorder.EligibleAddressEntity
+import com.kyberswap.android.data.api.limitorder.FeeEntity
+import com.kyberswap.android.data.api.limitorder.LimitOrderResponseEntity
+import com.kyberswap.android.data.api.limitorder.ListLimitOrderResponseEntity
+import com.kyberswap.android.data.api.limitorder.NonceEntity
+import com.kyberswap.android.data.api.limitorder.PendingBalancesEntity
 import io.reactivex.Single
-import retrofit2.http.*
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface LimitOrderApi {
     @GET("api/orders")
@@ -48,7 +60,8 @@ interface LimitOrderApi {
         @Field("min_rate") minRate: String,
         @Field("dest_address") destAddress: String,
         @Field("fee") fee: String,
-        @Field("signature") signature: String
+        @Field("signature") signature: String,
+        @Field("side_trade") sideTrade: String?
 
     ): Single<LimitOrderResponseEntity>
 

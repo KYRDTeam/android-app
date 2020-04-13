@@ -11,7 +11,7 @@ import com.daimajia.swipe.SwipeLayout
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ItemHeaderBinding
-import com.kyberswap.android.databinding.ItemOrderBinding
+import com.kyberswap.android.databinding.ItemOrderV2Binding
 import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.presentation.base.DataBoundListSwipeAdapter
 import com.kyberswap.android.presentation.base.DataBoundViewHolder
@@ -105,7 +105,7 @@ class OrderAdapter(
         }
     }
 
-    private fun binding(binding: ItemOrderBinding, item: Order) {
+    private fun binding(binding: ItemOrderV2Binding, item: Order) {
         binding.swipe.isSwipeEnabled = item.isPending && !isWarning
         binding.swipe.addSwipeListener(object : SimpleSwipeListener() {
             override fun onStartOpen(layout: SwipeLayout?) {
@@ -147,7 +147,7 @@ class OrderAdapter(
             }
 
             is OrderItem.ItemEven -> {
-                binding as ItemOrderBinding
+                binding as ItemOrderV2Binding
                 binding(binding, item.order)
                 val background = ContextCompat.getColor(
                     binding.root.context,
@@ -163,7 +163,7 @@ class OrderAdapter(
             }
 
             is OrderItem.ItemOdd -> {
-                binding as ItemOrderBinding
+                binding as ItemOrderV2Binding
                 binding(binding, item.order)
                 val background = ContextCompat.getColor(
                     binding.root.context,
@@ -192,7 +192,7 @@ class OrderAdapter(
 
     override fun createBinding(parent: ViewGroup, viewType: Int): ViewDataBinding {
         val layout =
-            if (viewType == TYPE_HEADER) R.layout.item_header else R.layout.item_order
+            if (viewType == TYPE_HEADER) R.layout.item_header else R.layout.item_order_v2
         return DataBindingUtil.inflate(
             LayoutInflater.from(parent.context),
             layout,

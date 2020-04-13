@@ -86,7 +86,7 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
                 .addInterceptor(
                     CalligraphyInterceptor(
                         CalligraphyConfig.Builder()
-                            .setDefaultFontPath("fonts/Montserrat-Medium.ttf")
+                            .setDefaultFontPath("fonts/Roboto-Medium.ttf")
                             .build()
                     )
                 )

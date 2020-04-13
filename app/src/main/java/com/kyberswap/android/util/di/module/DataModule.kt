@@ -14,11 +14,13 @@ import com.kyberswap.android.data.db.AlertDao
 import com.kyberswap.android.data.db.ContactDao
 import com.kyberswap.android.data.db.LimitOrderDao
 import com.kyberswap.android.data.db.LocalLimitOrderDao
+import com.kyberswap.android.data.db.MarketDao
 import com.kyberswap.android.data.db.OrderFilterDao
 import com.kyberswap.android.data.db.PassCodeDao
 import com.kyberswap.android.data.db.PendingBalancesDao
 import com.kyberswap.android.data.db.RateDao
 import com.kyberswap.android.data.db.RatingDao
+import com.kyberswap.android.data.db.SelectedMarketDao
 import com.kyberswap.android.data.db.SendDao
 import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.db.TokenDao
@@ -216,7 +218,6 @@ object DataModule {
     ): ContactRepository =
         ContactDataRepository(contactDao, sendDao, context)
 
-
     @Singleton
     @Provides
     @JvmStatic
@@ -245,7 +246,6 @@ object DataModule {
             context
         )
 
-
     @Singleton
     @Provides
     @JvmStatic
@@ -260,18 +260,21 @@ object DataModule {
     ): UserRepository =
         UserDataRepository(api, userDao, storageMediator, userMapper, alertDao, ratingDao, context)
 
-
     @Singleton
     @Provides
     @JvmStatic
     fun provideLimitOrderRepository(
         context: Context,
         tokenDao: TokenDao,
+        tokenExtDao: TokenExtDao,
+        marketDao: MarketDao,
+        selectedMarketDao: SelectedMarketDao,
         localLimitOrderDao: LocalLimitOrderDao,
         orderFilterDao: OrderFilterDao,
         dao: LimitOrderDao,
         pendingBalancesDao: PendingBalancesDao,
         api: LimitOrderApi,
+        tokenApi: TokenApi,
         mapper: OrderMapper,
         feeMapper: FeeMapper,
         tokenClient: TokenClient
@@ -282,13 +285,16 @@ object DataModule {
             localLimitOrderDao,
             orderFilterDao,
             tokenDao,
+            tokenExtDao,
+            marketDao,
+            selectedMarketDao,
             pendingBalancesDao,
             api,
+            tokenApi,
             tokenClient,
             mapper,
             feeMapper
         )
-
 
     @Singleton
     @Provides

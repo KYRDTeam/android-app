@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presentation.main.MainActivity">
+
+    <data>
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/screen_background"
+        android:fitsSystemWindows="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/toolbar_height">
+
+            <ImageView
+                android:id="@+id/imgBack"
+                style="@style/BackImage"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView61"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="64dp"
+                android:layout_marginEnd="64dp"
+                android:gravity="center"
+                android:text="@string/market"
+                android:textAppearance="@style/TextAppearance.Roboto.Medium"
+                android:textColor="#ffffff"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/imgBack"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/imgBack" />
+
+            <TextView
+                android:id="@+id/tvLimitOrderV1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="14dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="@string/limit_order_v1"
+                android:textAppearance="@style/TextAppearance.Roboto.Medium"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="normal"
+                app:layout_constraintBottom_toBottomOf="@+id/textView61"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textView61" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scFilter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/toolbar_height"
+            android:background="@android:color/white"
+            android:fillViewport="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/imgFav"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/rounded_corner_market_toggle_drawable"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_fav_market"
+                    app:layout_constraintEnd_toStartOf="@+id/spnStableCoin"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.kyberswap.android.presentation.main.limitorder.CustomSpinner
+                    android:id="@+id/spnStableCoin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="10dp"
+                    android:minWidth="68dp"
+                    android:minHeight="32dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/imgFav"
+                    app:layout_constraintEnd_toStartOf="@+id/tvEth"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/imgFav"
+                    app:layout_constraintTop_toTopOf="@+id/imgFav" />
+
+                <!--                <FrameLayout-->
+                <!--                    android:id="@+id/vSpn"-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginStart="10dp"-->
+                <!--                    app:layout_constraintBottom_toBottomOf="@+id/imgFav"-->
+                <!--                    app:layout_constraintEnd_toStartOf="@+id/tvEth"-->
+                <!--                    app:layout_constraintHorizontal_bias="0.5"-->
+                <!--                    app:layout_constraintStart_toEndOf="@+id/imgFav"-->
+                <!--                    app:layout_constraintTop_toTopOf="@+id/imgFav">-->
+
+                <!--                    <Spinner-->
+                <!--                        android:id="@+id/spnStableCoin"-->
+                <!--                        android:layout_width="wrap_content"-->
+                <!--                        android:layout_height="match_parent"-->
+                <!--                        android:layout_gravity="center"-->
+                <!--                        android:minHeight="32dp" />-->
+
+                <!--&lt;!&ndash;                    <ImageView&ndash;&gt;-->
+                <!--&lt;!&ndash;                        android:layout_width="wrap_content"&ndash;&gt;-->
+                <!--&lt;!&ndash;                        android:layout_height="wrap_content"&ndash;&gt;-->
+                <!--&lt;!&ndash;                        android:layout_gravity="center|end"&ndash;&gt;-->
+                <!--&lt;!&ndash;                        android:layout_marginEnd="8dp"&ndash;&gt;-->
+                <!--&lt;!&ndash;                        android:src="@drawable/ic_arrow_drop_down_toggle" />&ndash;&gt;-->
+                <!--                </FrameLayout>-->
+
+
+                <TextView
+                    android:id="@+id/tvEth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/rounded_corner_market_toggle_drawable"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:minWidth="68dp"
+                    android:minHeight="32dp"
+                    android:text="@string/token_eth_star"
+                    android:textColor="#5a5e67"
+                    android:textSize="14sp"
+                    android:textStyle="normal"
+                    app:layout_constraintBottom_toBottomOf="@+id/spnStableCoin"
+                    app:layout_constraintEnd_toStartOf="@+id/tvWBTC"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/spnStableCoin"
+                    app:layout_constraintTop_toTopOf="@+id/spnStableCoin" />
+
+                <TextView
+                    android:id="@+id/tvWBTC"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/rounded_corner_market_toggle_drawable"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:minWidth="68dp"
+                    android:minHeight="32dp"
+                    android:text="@string/token_wbtc"
+                    android:textColor="#5a5e67"
+                    android:textSize="14sp"
+                    android:textStyle="normal"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvEth"
+                    app:layout_constraintEnd_toStartOf="@+id/edtSearch"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/tvEth"
+                    app:layout_constraintTop_toTopOf="@+id/tvEth" />
+
+                <EditText
+                    android:id="@+id/edtSearch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@android:color/transparent"
+                    android:drawableEnd="@drawable/ic_search"
+                    android:drawablePadding="4dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:imeOptions="actionDone"
+                    android:minHeight="36dp"
+                    android:singleLine="true"
+                    android:textColor="#5a5e67"
+                    android:textSize="12sp"
+                    android:textStyle="normal"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvWBTC"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/tvWBTC"
+                    app:layout_constraintTop_toTopOf="@+id/tvWBTC" />
+
+
+                <View
+                    android:id="@+id/vHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="42dp"
+                    android:layout_marginTop="10dp"
+                    android:background="#e4e7fd"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/imgFav" />
+
+                <FrameLayout
+                    android:id="@+id/flPair"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/vHeader"
+                    app:layout_constraintEnd_toStartOf="@+id/flPrice"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="spread"
+                    app:layout_constraintHorizontal_weight="0.8"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/vHeader">
+
+                    <TextView
+                        android:id="@+id/tvPair"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start|center"
+                        android:fontFamily="sans-serif"
+                        android:text="@string/pair"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextAppearance.Roboto.Bold"
+                        android:textColor="#4e5063"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/flPrice"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/flPair"
+                    app:layout_constraintEnd_toStartOf="@+id/flVolume"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_weight="0.8"
+                    app:layout_constraintStart_toEndOf="@+id/flPair"
+                    app:layout_constraintTop_toTopOf="@+id/flPair">
+
+                    <TextView
+                        android:id="@+id/tvPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start|center"
+                        android:fontFamily="sans-serif"
+                        android:text="@string/price"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextAppearance.Roboto.Bold"
+                        android:textColor="#4e5063"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/flVolume"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/flPrice"
+                    app:layout_constraintEnd_toStartOf="@+id/flChange24h"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_weight="0.9"
+                    app:layout_constraintStart_toEndOf="@+id/flPrice"
+                    app:layout_constraintTop_toTopOf="@+id/flPrice">
+
+                    <TextView
+                        android:id="@+id/tvVolume"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end|center"
+                        android:fontFamily="sans-serif"
+                        android:gravity="end"
+                        android:text="@string/volume"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextAppearance.Roboto.Bold"
+                        android:textColor="#4e5063"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/flChange24h"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/flVolume"
+                    app:layout_constraintEnd_toStartOf="@+id/imageView11"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_weight="0.6"
+                    app:layout_constraintStart_toEndOf="@+id/flVolume"
+                    app:layout_constraintTop_toTopOf="@+id/flVolume">
+
+                    <TextView
+                        android:id="@+id/tvChange24h"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end|center"
+                        android:fontFamily="sans-serif"
+                        android:gravity="end"
+                        android:text="@string/change_24h"
+                        android:textAllCaps="true"
+                        android:textColor="#4e5063"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
+
+
+                <ImageView
+                    android:id="@+id/imageView11"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_token_favorite"
+                    app:layout_constraintBottom_toBottomOf="@+id/flChange24h"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_weight="0.35"
+                    app:layout_constraintStart_toEndOf="@+id/flChange24h"
+                    app:layout_constraintTop_toTopOf="@+id/flChange24h" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvMarket"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/vHeader" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </FrameLayout>
+
+
+</layout>

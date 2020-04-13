@@ -48,15 +48,11 @@ class CandleStickChartFragment : BaseFragment() {
 
     private var chartType: ChartType? = null
 
+    private var market: String? = null
+
     var changedRate: BigDecimal = BigDecimal.ZERO
 
     private var isShowMarker: Boolean = false
-
-//    private var currentX: Float = 0f
-//
-//    private val deltaX by lazy {
-//        max((candleStickChart.viewPortHandler.chartWidth - currentX).absoluteValue, currentX.absoluteValue)
-//    }
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -67,6 +63,10 @@ class CandleStickChartFragment : BaseFragment() {
 
     private val lineWidth by lazy {
         resources.getDimension(R.dimen.line_chart_width)
+    }
+
+    private val gridLineWidth by lazy {
+        lineWidth * 0.3f
     }
 
     private val resolution by lazy {
@@ -81,14 +81,6 @@ class CandleStickChartFragment : BaseFragment() {
         }
     }
 
-//    private val zoomLevel by lazy {
-//        if (chartType == ChartType.DAY || chartType == ChartType.WEEK) {
-//            2
-//        } else {
-//            1
-//        }
-//    }
-
     private val decreasingColor by lazy {
         context?.let { ContextCompat.getColor(it, R.color.desc_color) }
     }
@@ -101,8 +93,12 @@ class CandleStickChartFragment : BaseFragment() {
         ContextCompat.getColor(context!!, R.color.limit_line_color)
     }
 
+    private val gridLineColor by lazy {
+        ContextCompat.getColor(context!!, R.color.color_chart_grid_line)
+    }
+
     private val typeFace by lazy {
-        Typeface.createFromAsset(activity!!.assets, "fonts/Montserrat-Medium.ttf")
+        Typeface.createFromAsset(activity!!.assets, "fonts/Roboto-Medium.ttf")
     }
 
     private val lineLimitTextColor by lazy {
@@ -112,8 +108,9 @@ class CandleStickChartFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        token = arguments!!.getParcelable(TOKEN_PARAM)
-        chartType = arguments!!.getParcelable(CHART_TYPE)
+        token = arguments?.getParcelable(TOKEN_PARAM)
+        chartType = arguments?.getParcelable(CHART_TYPE)
+        market = arguments?.getString(MARKET_PARAM)
     }
 
     override fun onCreateView(
@@ -133,7 +130,7 @@ class CandleStickChartFragment : BaseFragment() {
                 when (state) {
                     is GetWalletState.Success -> {
                         viewModel.getChartData(
-                            if (state.wallet.unit == getString(R.string.unit_usd)) token?.symbol + "_USDC" else token?.symbol + "_ETH",
+                            market,
                             chartType
                         )
                     }
@@ -171,10 +168,27 @@ class CandleStickChartFragment : BaseFragment() {
         candleStickChart.setDrawGridBackground(false)
         candleStickChart.legend.isEnabled = false
         candleStickChart.description.isEnabled = false
-        candleStickChart.xAxis.setDrawGridLines(false)
-        candleStickChart.xAxis.setDrawAxisLine(false)
-        candleStickChart.axisRight.setDrawAxisLine(false)
-        candleStickChart.axisRight.setDrawGridLines(false)
+//        candleStickChart.xAxis.setDrawGridLines(true)
+//        candleStickChart.xAxis.setDrawAxisLine(false)
+
+        candleStickChart.axisRight.setDrawAxisLine(true)
+        candleStickChart.axisRight.setDrawGridLines(true)
+        candleStickChart.axisRight.setDrawGridLinesBehindData(true)
+        candleStickChart.axisRight.gridColor = gridLineColor
+        candleStickChart.axisRight.gridLineWidth = gridLineWidth
+        candleStickChart.xAxis.setDrawAxisLine(true)
+        candleStickChart.xAxis.setDrawGridLines(true)
+        candleStickChart.xAxis.setDrawGridLinesBehindData(true)
+        candleStickChart.xAxis.gridColor = gridLineColor
+        candleStickChart.xAxis.gridLineWidth = gridLineWidth
+
+        candleStickChart.xAxis.axisLineColor = gridLineColor
+        candleStickChart.xAxis.axisLineWidth = gridLineWidth
+
+        candleStickChart.axisRight.axisLineColor = gridLineColor
+        candleStickChart.axisRight.axisLineWidth = gridLineWidth
+
+
         candleStickChart.xAxis.setAvoidFirstLastClipping(true)
         candleStickChart.fitScreen()
         candleStickChart.xAxis.granularity = 1f
@@ -365,11 +379,13 @@ class CandleStickChartFragment : BaseFragment() {
     companion object {
         private const val TOKEN_PARAM = "token_param"
         private const val CHART_TYPE = "chart_type"
-        fun newInstance(token: Token?, type: ChartType) =
+        private const val MARKET_PARAM = "market_param"
+        fun newInstance(token: Token?, type: ChartType, market: String) =
             CandleStickChartFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(TOKEN_PARAM, token)
                     putParcelable(CHART_TYPE, type)
+                    putString(MARKET_PARAM, market)
                 }
             }
     }

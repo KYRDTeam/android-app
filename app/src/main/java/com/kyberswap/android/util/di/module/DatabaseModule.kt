@@ -6,11 +6,13 @@ import com.kyberswap.android.data.db.AppDatabase
 import com.kyberswap.android.data.db.ContactDao
 import com.kyberswap.android.data.db.LimitOrderDao
 import com.kyberswap.android.data.db.LocalLimitOrderDao
+import com.kyberswap.android.data.db.MarketDao
 import com.kyberswap.android.data.db.OrderFilterDao
 import com.kyberswap.android.data.db.PassCodeDao
 import com.kyberswap.android.data.db.PendingBalancesDao
 import com.kyberswap.android.data.db.RateDao
 import com.kyberswap.android.data.db.RatingDao
+import com.kyberswap.android.data.db.SelectedMarketDao
 import com.kyberswap.android.data.db.SendDao
 import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.db.TokenDao
@@ -84,7 +86,6 @@ class DatabaseModule {
         return appDatabase.transactionDao()
     }
 
-
     @Provides
     @Singleton
     fun provideOrderDao(appDatabase: AppDatabase): LimitOrderDao {
@@ -137,5 +138,17 @@ class DatabaseModule {
     @Singleton
     fun provideRatingDao(appDatabase: AppDatabase): RatingDao {
         return appDatabase.ratingDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideMarketDao(appDatabase: AppDatabase): MarketDao {
+        return appDatabase.marketDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSelectedMarketDao(appDatabase: AppDatabase): SelectedMarketDao {
+        return appDatabase.selectedMarketDao()
     }
 }

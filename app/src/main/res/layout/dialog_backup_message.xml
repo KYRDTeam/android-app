@@ -42,7 +42,7 @@
                 android:layout_marginTop="30dp"
                 android:background="@drawable/default_button"
                 android:gravity="center"
-                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                 android:minWidth="234dp"
                 android:minHeight="45dp"
                 android:text="@string/try_again"
