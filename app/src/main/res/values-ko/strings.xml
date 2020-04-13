@@ -724,5 +724,10 @@
     <string name="cancel_order">Cancel Order</string>
     <string name="vol">"Vol: "</string>
     <string name="accelerate_transaction">Select a higher gas fee to accelerate the processing of your transaction</string>
+    <string name="customize_gas">Customize Gas</string>
+    <string name="preview_order_buy_base_quote">Buy %s with %s</string>
+    <string name="preview_order_sell_base_quote">Sell %s to %s</string>
+    <string name="limit_order_price_higer_market_price">Your price is %s higher than market price</string>
+    <string name="limit_order_price_lower_market_price">Your price is %s lower than market price</string>
 
 </resources>

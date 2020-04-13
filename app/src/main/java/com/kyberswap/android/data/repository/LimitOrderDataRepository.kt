@@ -214,10 +214,23 @@ class LimitOrderDataRepository @Inject constructor(
 //
 //                    localLimitOrderDao.insertOrder(order)
 //                    order
+
+                    val srcToken = if (type == LocalLimitOrder.TYPE_SELL) {
+                        kncToken
+                    } else {
+                        ethStarToken
+                    }
+
+                    val dstToken = if (type == LocalLimitOrder.TYPE_SELL) {
+                        ethStarToken
+                    } else {
+                        kncToken
+                    }
+
                     LocalLimitOrder(
                         wallet.address,
-                        ethStarToken ?: Token(),
-                        kncToken ?: Token(),
+                        tokenSource = srcToken ?: Token(),
+                        tokenDest = dstToken ?: Token(),
                         type = type
                     )
                 }
@@ -519,7 +532,7 @@ class LimitOrderDataRepository @Inject constructor(
                 }.groupBy { it.combinedPair }
                     .map { maps ->
                         var volume: BigDecimal = BigDecimal.ZERO
-                        var change = ""
+                        var change: String? = null
                         var pair = ""
                         maps.value.forEach {
                             volume += it.volume.toBigDecimalOrDefaultZero()
@@ -532,7 +545,7 @@ class LimitOrderDataRepository @Inject constructor(
                         val item = maps.value.first()
                         item.copy(
                             pair = pair,
-                            change = change,
+                            change = change ?: item.change,
                             volume = volume.toDisplayNumber(),
                             isFav = favMarket[pair] ?: false
                         )

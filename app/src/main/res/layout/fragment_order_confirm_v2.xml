@@ -44,13 +44,14 @@
                     android:layout_marginTop="18dp"
                     android:fontFamily="sans-serif-medium"
                     android:lineSpacingExtra="12sp"
+                    android:text="@{order.isBuy ? String.format(@string/preview_order_buy_base_quote, order.baseSymbol, order.quoteSymbol) : String.format(@string/preview_order_sell_base_quote, order.baseSymbol, order.quoteSymbol)}"
+                    android:textAllCaps="true"
                     android:textColor="#141927"
                     android:textSize="14sp"
                     android:textStyle="normal"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="Buy KNC with ETH" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/textView60"
@@ -96,7 +97,7 @@
                     android:layout_marginTop="16dp"
                     android:fontFamily="sans-serif"
                     android:lineSpacingExtra="22sp"
-                    android:text="Your price"
+                    android:text="@string/your_price"
                     android:textAppearance="@style/TextAppearance.Roboto.Regular"
                     android:textColor="#141927"
                     android:textSize="14sp"
@@ -288,7 +289,7 @@
                     android:layout_marginTop="24dp"
                     android:fontFamily="sans-serif"
                     android:lineSpacingExtra="12sp"
-                    android:text="@{String.format(@string/order_confirmed_info, order.displayTotal, order.pair, order.price) }"
+                    android:text="@{String.format(@string/order_confirmed_info, order.displaySource, order.pair, order.price) }"
                     android:textColor="#141927"
                     android:textSize="14sp"
                     android:textStyle="normal"

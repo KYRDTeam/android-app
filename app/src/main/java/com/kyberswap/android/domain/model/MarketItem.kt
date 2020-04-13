@@ -37,6 +37,9 @@ data class MarketItem(
             }
         }
 
+    val displayMarketVol: String
+        get() = "$volume $quoteSymbol"
+
     constructor(entity: MarketItemEntity) : this(
         entity.buyPrice, entity.change, entity.pair, entity.sellPrice, entity.volume
     )
@@ -62,10 +65,24 @@ data class MarketItem(
         }
 
     val displayBuyPrice: String
-        get() = buyPrice.toBigDecimalOrDefaultZero().toDisplayNumber()
+        get() {
+            val bp = buyPrice.toBigDecimalOrDefaultZero()
+            return if (bp == BigDecimal.ZERO) {
+                "--"
+            } else {
+                bp.toDisplayNumber()
+            }
+        }
 
     val displaySellPrice: String
-        get() = sellPrice.toBigDecimalOrDefaultZero().toDisplayNumber()
+        get() {
+            val sp = sellPrice.toBigDecimalOrDefaultZero()
+            return if (sp == BigDecimal.ZERO) {
+                "--"
+            } else {
+                sp.toDisplayNumber()
+            }
+        }
 
     val displayVolume: String
         get() {

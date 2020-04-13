@@ -257,7 +257,7 @@
                             android:fontFamily="sans-serif-medium"
                             android:gravity="center_vertical"
                             android:minHeight="14dp"
-                            android:text="@{market.volume}"
+                            android:text="@{market.displayMarketVol}"
                             android:textColor="#5a5e67"
                             android:textSize="12sp"
                             android:textStyle="normal"
@@ -600,6 +600,7 @@
                             android:layout_marginTop="4dp"
                             android:background="?selectableItemBackground"
                             android:textColor="#626b86"
+                            android:textAllCaps="true"
                             android:textSize="14sp"
                             app:layout_constraintStart_toStartOf="@+id/tvFee"
                             app:layout_constraintTop_toBottomOf="@+id/tvFee" />

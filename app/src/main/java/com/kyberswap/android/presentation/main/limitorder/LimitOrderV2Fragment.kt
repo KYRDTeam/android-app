@@ -39,7 +39,7 @@ import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
-import com.kyberswap.android.util.ext.colorRate
+import com.kyberswap.android.util.ext.colorRateV2
 import com.kyberswap.android.util.ext.exactAmount
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isNetworkAvailable
@@ -56,10 +56,10 @@ import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
 import com.kyberswap.android.util.ext.toDoubleSafe
 import com.kyberswap.android.util.ext.underline
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.fragment_limit_order.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.concurrent.atomic.AtomicBoolean
@@ -106,6 +106,9 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
     private val srcAmount: String
         get() = if (isSell) amount else totalAmount
 
+    private val dstAmount: String
+        get() = if (isSell) totalAmount else amount
+
     private val tokenSourceSymbol: String?
         get() = binding.order?.tokenSource?.tokenSymbol
 
@@ -146,6 +149,25 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 }
         }
 
+    private val marketRate: BigDecimal
+        get() = when {
+            isSell -> {
+                marketPrice.toBigDecimalOrDefaultZero()
+            }
+            else ->
+                when {
+                    marketPrice?.toDoubleSafe() == 0.0 -> BigDecimal.ZERO
+                    else -> BigDecimal.ONE.divide(
+                        marketPrice.toBigDecimalOrDefaultZero(),
+                        18,
+                        RoundingMode.CEILING
+                    )
+                }
+        }
+
+    private val balanceText: String
+        get() = binding.tvBalance.text.toString().split(" ").first()
+
     private val marketPrice: String?
         get() =
             if (type == LocalLimitOrder.TYPE_SELL) binding.market?.displaySellPrice
@@ -174,6 +196,9 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
     private var userInfo: UserInfo? = null
 
     private var eligibleWalletStatus: EligibleWalletStatus? = null
+
+    private val order: LocalLimitOrder?
+        get() = binding.order
 
     @Inject
     lateinit var dialogHelper: DialogHelper
@@ -236,22 +261,6 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                     is GetSelectedMarketState.Success -> {
                         if (state.market != binding.market) {
                             binding.market = state.market
-
-                            val marketRate = when {
-                                isSell -> state.market.sellPrice
-                                state.market.buyPrice.toDoubleSafe() == 0.0 -> {
-                                    ""
-                                }
-                                else -> BigDecimal.ONE.divide(
-                                    state.market.buyPrice.toBigDecimalOrDefaultZero(),
-                                    18,
-                                    RoundingMode.CEILING
-                                ).toDisplayNumber()
-                            }
-                            val order = binding.order?.copy(marketRate = marketRate)
-                            if (order != binding.order) {
-                                binding.order = order
-                            }
                             binding.executePendingBindings()
                             binding.tlHeader.getTabAt(0)?.text = String.format(
                                 getString(R.string.buy_token),
@@ -277,7 +286,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                         }
                     }
                     is GetSelectedMarketState.ShowError -> {
-
+                        Timber.e(state.message)
                     }
                 }
             }
@@ -290,6 +299,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                         if (!state.order.isSameTokenPairForAddress(binding.order)) {
                             binding.order = state.order
                             binding.executePendingBindings()
+                            resetUI()
                             viewModel.getPendingBalances(wallet)
                             viewModel.getFee(
                                 binding.order,
@@ -299,7 +309,6 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                             )
                             viewModel.getGasPrice()
                             this.baseToken = state.order.tokenDest
-                            resetUI()
                             refresh()
                         }
                     }
@@ -691,7 +700,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 .observeOn(schedulerProvider.ui())
                 .subscribe { text ->
 
-                    binding.tvRateWarning.colorRate(text.toString().percentage(marketPrice))
+                    binding.tvRateWarning.colorRateV2(text.toString().percentage(marketPrice))
                     binding.order?.let { order ->
                         if (isAmountFocus) {
                             binding.edtTotal.setAmount(calcTotalAmount)
@@ -738,7 +747,6 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
             }
 
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                resetUI()
                 val position = tab?.position ?: 0
                 type = if (position == 0) {
                     LocalLimitOrder.TYPE_BUY
@@ -748,6 +756,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 binding.isSell = isSell
                 binding.executePendingBindings()
                 viewModel.getLimitOrder(wallet, type)
+                resetUI()
             }
         })
 
@@ -774,7 +783,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
             updateCurrentFocus(viewByType)
             hideKeyboard()
             viewByType.setAmount(
-                binding.tvBalance.text.toString().toBigDecimalOrDefaultZero().multiply(
+                balanceText.toBigDecimalOrDefaultZero().multiply(
                     0.25.toBigDecimal()
                 ).toDisplayNumber()
             )
@@ -784,7 +793,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
             updateCurrentFocus(viewByType)
             hideKeyboard()
             viewByType.setAmount(
-                binding.tvBalance.text.toString().toBigDecimalOrDefaultZero().multiply(
+                balanceText.toBigDecimalOrDefaultZero().multiply(
                     0.5.toBigDecimal()
                 ).toDisplayNumber()
             )
@@ -793,19 +802,20 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         binding.tv100Percent.setOnClickListener {
             updateCurrentFocus(viewByType)
             hideKeyboard()
-            binding.order?.let {
-                if (it.tokenSource.isETHWETH) {
+            val currentOrder = order
+            if (currentOrder != null) {
+                if (currentOrder.tokenSource.isETHWETH) {
                     viewByType.setText(
-                        it.availableAmountForTransfer(
-                            binding.tvBalance.toBigDecimalOrDefaultZero(),
-                            it.gasPrice.toBigDecimalOrDefaultZero()
+                        currentOrder.availableAmountForTransfer(
+                            balanceText.toBigDecimalOrDefaultZero(),
+                            currentOrder.gasPrice.toBigDecimalOrDefaultZero()
                         ).toDisplayNumber()
                     )
                 } else {
-                    viewByType.setAmount(tvBalance.text.toString())
+                    viewByType.setAmount(balanceText)
                 }
-
             }
+
         }
 
         binding.tvPrice.setOnClickListener {
@@ -828,13 +838,13 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 !isNetworkAvailable() -> {
                     showNetworkUnAvailable()
                 }
-                totalAmount.isEmpty() -> {
+                srcAmount.isEmpty() -> {
                     showAlertWithoutIcon(
                         title = getString(R.string.invalid_amount),
                         message = getString(R.string.specify_amount)
                     )
                 }
-                totalAmount.toBigDecimalOrDefaultZero() >
+                srcAmount.toBigDecimalOrDefaultZero() >
                         viewModel.calAvailableAmount(
                             binding.order?.tokenSource,
                             pendingBalances
@@ -844,11 +854,8 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                         message = getString(R.string.limit_order_insufficient_balance)
                     )
                 }
-                binding.order?.hasSamePair == true -> showAlertWithoutIcon(
-                    title = getString(R.string.title_unsupported),
-                    message = getString(R.string.limit_order_source_different_dest)
-                )
-                binding.order?.amountTooSmall(totalAmount, amount) == true -> {
+
+                binding.order?.amountTooSmall(srcAmount, dstAmount) == true -> {
                     showAlertWithoutIcon(
                         title = getString(R.string.invalid_amount),
                         message = getString(R.string.limit_order_amount_too_small)
@@ -1011,7 +1018,8 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
             val order = it.copy(
                 srcAmount = srcAmount,
-                minRate = minRate
+                minRate = minRate,
+                marketRate = marketRate.toDisplayNumber()
             )
 
             if (binding.order != order) {
@@ -1064,6 +1072,8 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
     private fun resetUI() {
         hasUserFocus = false
+        binding.edtPrice.setAmount(marketPrice)
+
         binding.edtTotal.setText("")
         binding.edtAmount.setText("")
     }
@@ -1118,13 +1128,6 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         }
     }
 
-    private fun updateBaseTokenToParentFragment(token: Token) {
-        val parent = parentFragment
-        if (parent is LimitOrderV2Fragment) {
-            parent.baseToken = token
-        }
-    }
-
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
@@ -1136,8 +1139,11 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 pendingBalances
             )
         }
-        if (binding.availableAmount != calAvailableAmount) {
-            binding.availableAmount = calAvailableAmount
+
+        val availableAmount = "$calAvailableAmount $tokenSourceSymbol"
+
+        if (binding.availableAmount != availableAmount) {
+            binding.availableAmount = availableAmount
             binding.executePendingBindings()
         }
     }

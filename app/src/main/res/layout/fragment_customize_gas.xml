@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:gravity="center"
-                android:text="Customize Gas"
+                android:text="@string/customize_gas"
                 android:textColor="#ffffff"
                 android:textSize="18sp" />
 

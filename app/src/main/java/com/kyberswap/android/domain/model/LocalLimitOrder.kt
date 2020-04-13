@@ -100,10 +100,15 @@ data class LocalLimitOrder(
         ).toString()
 
     val displayTotal: String
-        get() = if (type == TYPE_BUY) displayedSrcAmountV2 else displayedDestAmountV2
+        get() = if (isBuy) displayedSrcAmountV2 else displayedDestAmountV2
 
     val displayAmount: String
-        get() = if (type == TYPE_BUY) displayedDestAmountV2 else displayedSrcAmountV2
+        get() = if (isBuy) displayedDestAmountV2 else displayedSrcAmountV2
+
+    val displaySource: String
+        get() = if (isSell) displayAmount else displayTotal
+
+
 
     fun swapToken(): LocalLimitOrder {
         return LocalLimitOrder(
@@ -118,6 +123,18 @@ data class LocalLimitOrder(
     val pair: String
         get() = if (type == TYPE_BUY) tokenDest.tokenSymbol + "/" + tokenSource.tokenSymbol else
             tokenSource.tokenSymbol + "/" + tokenDest.tokenSymbol
+
+    val isSell: Boolean
+        get() = type == TYPE_SELL
+
+    val isBuy: Boolean
+        get() = type == TYPE_BUY
+
+    val baseSymbol: String
+        get() = if (isSell) tokenSource.tokenSymbol else tokenDest.tokenSymbol
+
+    val quoteSymbol: String
+        get() = if (isSell) tokenDest.tokenSymbol else tokenSource.tokenSymbol
 
     fun isSameTokenPair(other: LocalLimitOrder?): Boolean {
         return this.tokenSource.tokenSymbol == other?.tokenSource?.tokenSymbol &&
@@ -278,7 +295,7 @@ data class LocalLimitOrder(
     }
 
     val sideTrade: String?
-        get() = if (type == TYPE_BUY) Order.SIDE_TRADE_BUY else if (type == TYPE_SELL) Order.SIDE_TRADE_SELL else null
+        get() = if (isBuy) Order.SIDE_TRADE_BUY else if (isSell) Order.SIDE_TRADE_SELL else null
 
     fun getExpectedDestAmount(rate: BigDecimal, amount: BigDecimal): BigDecimal {
         return amount.multiply(rate)
