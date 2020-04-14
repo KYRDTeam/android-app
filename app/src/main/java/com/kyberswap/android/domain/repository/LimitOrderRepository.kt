@@ -9,6 +9,7 @@ import com.kyberswap.android.domain.model.MarketItem
 import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.domain.model.OrderFilter
 import com.kyberswap.android.domain.model.PendingBalances
+import com.kyberswap.android.domain.model.SelectedMarketItem
 import com.kyberswap.android.domain.usecase.limitorder.CancelOrderUseCase
 import com.kyberswap.android.domain.usecase.limitorder.CheckEligibleAddressUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetLimitOrderFeeUseCase
@@ -66,7 +67,7 @@ interface LimitOrderRepository {
 
     fun saveSelectedMarket(param: SaveSelectedMarketUseCase.Param): Completable
 
-    fun getSelectedMarket(param: GetSelectedMarketUseCase.Param): Flowable<MarketItem>
+    fun getSelectedMarket(param: GetSelectedMarketUseCase.Param): Flowable<SelectedMarketItem>
 
     fun getMarket(param: GetMarketUseCase.Param): Flowable<MarketItem>
 }

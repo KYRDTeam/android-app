@@ -18,6 +18,9 @@ interface TokenDao {
     @Query("SELECT * FROM tokens WHERE tokenSymbol = :tokenSymbol")
     fun getTokenBySymbol(tokenSymbol: String): Token?
 
+    @Query("SELECT * FROM tokens WHERE tokenSymbol = :tokenSymbol AND isOther = :isOther")
+    fun getKyberListedTokenBySymbol(tokenSymbol: String, isOther: Boolean = false): Token?
+
     @Query("SELECT * FROM tokens WHERE tokenSymbol = :tokenSymbol")
     fun getAllTokenBySymbol(tokenSymbol: String): List<Token>
 

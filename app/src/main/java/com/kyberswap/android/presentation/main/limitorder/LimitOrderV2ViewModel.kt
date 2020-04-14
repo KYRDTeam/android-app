@@ -11,6 +11,7 @@ import com.kyberswap.android.domain.usecase.limitorder.CancelOrderUseCase
 import com.kyberswap.android.domain.usecase.limitorder.CheckEligibleAddressUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetLimitOrderFeeUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetLocalLimitOrderDataUseCase
+import com.kyberswap.android.domain.usecase.limitorder.GetMarketUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetNonceUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetPendingBalancesUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetRelatedLimitOrdersUseCase
@@ -57,6 +58,7 @@ class LimitOrderV2ViewModel @Inject constructor(
     private val getGasPriceUseCase: GetGasPriceUseCase,
     private val getRelatedLimitOrdersUseCase: GetRelatedLimitOrdersUseCase,
     private val getSelectedMarketUseCase: GetSelectedMarketUseCase,
+    private val getMarketUseCase: GetMarketUseCase,
     private val cancelOrderUseCase: CancelOrderUseCase,
     private val getLoginStatusUseCase: GetLoginStatusUseCase,
     private val elegibleAddressUseCase: CheckEligibleAddressUseCase,
@@ -369,15 +371,27 @@ class LimitOrderV2ViewModel @Inject constructor(
     }
 
     fun getSelectedMarket(wallet: Wallet?) {
+        Timber.e("getselected market")
         if (wallet == null) return
         getSelectedMarketUseCase.dispose()
         getSelectedMarketUseCase.execute(
             Consumer {
                 Timber.e(it.pair)
-                _getSelectedMarketCallback.value = Event(GetSelectedMarketState.Success(it))
+                getMarketUseCase.dispose()
+                getMarketUseCase.execute(
+                    Consumer {
+                        _getSelectedMarketCallback.value = Event(GetSelectedMarketState.Success(it))
+                    },
+                    Consumer {
+                        it.printStackTrace()
+                        _getSelectedMarketCallback.value =
+                            Event(GetSelectedMarketState.ShowError(errorHandler.getError(it)))
+                    },
+                    GetMarketUseCase.Param(it.pair)
+                )
+
             },
             Consumer {
-                Timber.e(it.localizedMessage)
                 it.printStackTrace()
                 _getSelectedMarketCallback.value =
                     Event(GetSelectedMarketState.ShowError(errorHandler.getError(it)))
@@ -570,6 +584,7 @@ class LimitOrderV2ViewModel @Inject constructor(
         cancelOrderUseCase.dispose()
         elegibleAddressUseCase.dispose()
         checkEligibleWalletUseCase.dispose()
+        getMarketUseCase.dispose()
         super.onCleared()
     }
 }

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
 import com.google.android.material.tabs.TabLayout
+import com.google.gson.Gson
 import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
@@ -243,6 +244,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                         binding.walletName = state.wallet.display()
                         if (!state.wallet.isSameWallet(wallet)) {
                             wallet = state.wallet
+                            Timber.e("wallet change")
                             viewModel.getSelectedMarket(wallet)
                             viewModel.getLimitOrder(wallet, type)
                             viewModel.getLoginStatus()
@@ -260,6 +262,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 when (state) {
                     is GetSelectedMarketState.Success -> {
                         if (state.market != binding.market) {
+                            Timber.e(Gson().toJson(state.market))
                             binding.market = state.market
                             binding.executePendingBindings()
                             binding.tlHeader.getTabAt(0)?.text = String.format(
@@ -297,14 +300,15 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 when (state) {
                     is GetLocalLimitOrderState.Success -> {
                         if (!state.order.isSameTokenPairForAddress(binding.order)) {
+                            Timber.e(Gson().toJson(state.order))
                             binding.order = state.order
                             binding.executePendingBindings()
                             resetUI()
                             viewModel.getPendingBalances(wallet)
                             viewModel.getFee(
                                 binding.order,
-                                totalAmount,
-                                amount,
+                                srcAmount,
+                                dstAmount,
                                 wallet
                             )
                             viewModel.getGasPrice()
@@ -327,7 +331,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
                         binding.tvFee.text = String.format(
                             getString(R.string.limit_order_fee),
-                            totalAmount.toBigDecimalOrDefaultZero()
+                            srcAmount.toBigDecimalOrDefaultZero()
                                 .times(state.fee.totalFee.toBigDecimal()).toDisplayNumber()
                                 .exactAmount(),
                             tokenSourceSymbol
@@ -340,7 +344,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                             showDiscount(true)
                             binding.tvOriginalFee.text = String.format(
                                 getString(R.string.limit_order_fee),
-                                totalAmount.toBigDecimalOrDefaultZero()
+                                srcAmount.toBigDecimalOrDefaultZero()
                                     .times(state.fee.totalNonDiscountedFee.toBigDecimal())
                                     .toDisplayNumber().exactAmount(),
                                 tokenSourceSymbol
@@ -664,8 +668,8 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                     binding.edtTotal.setAmount(calcTotalAmount)
                     viewModel.getFee(
                         binding.order,
-                        totalAmount,
-                        amount,
+                        srcAmount,
+                        dstAmount,
                         wallet
                     )
                 }
@@ -684,8 +688,8 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 binding.edtAmount.setAmount(calcAmount)
                 viewModel.getFee(
                     binding.order,
-                    totalAmount,
-                    amount,
+                    srcAmount,
+                    dstAmount,
                     wallet
                 )
 
@@ -725,16 +729,6 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                         binding.edtAmount.setText("")
                     }
                 })
-
-        val adapter = LimitOrderV2PagerAdapter(childFragmentManager)
-        adapter.addFragment(
-            LimitOrderTypeFragment.newInstance(LocalLimitOrder.TYPE_BUY),
-            getString(R.string.buy)
-        )
-        adapter.addFragment(
-            LimitOrderTypeFragment.newInstance(LocalLimitOrder.TYPE_SELL),
-            getString(R.string.sell)
-        )
 
         binding.tlHeader.addTab(binding.tlHeader.newTab().setText("BUY"))
         binding.tlHeader.addTab(binding.tlHeader.newTab().setText("SELL"))
@@ -963,6 +957,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: WalletChangeEvent) {
+        Timber.e("event bus")
         viewModel.getSelectedMarket(wallet)
         viewModel.getLimitOrder(wallet, type)
         viewModel.getLoginStatus()
@@ -1075,6 +1070,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         binding.edtPrice.setAmount(marketPrice)
 
         binding.edtTotal.setText("")
+        binding.tvFee.text = ""
         binding.edtAmount.setText("")
     }
 

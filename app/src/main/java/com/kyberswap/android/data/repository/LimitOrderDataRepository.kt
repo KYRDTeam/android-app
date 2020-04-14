@@ -378,7 +378,7 @@ class LimitOrderDataRepository @Inject constructor(
                 if (currentMarket.quote.equals(Token.ETH_SYMBOL_STAR, true)) {
                     ethStarToken
                 } else {
-                    tokenDao.getTokenBySymbol(currentMarket.quote)
+                    tokenDao.getKyberListedTokenBySymbol(currentMarket.quote)
                 } ?: Token()
 
             val srcToken = getRecentBalance(quoteToken, param.wallet)
@@ -387,7 +387,7 @@ class LimitOrderDataRepository @Inject constructor(
                 if (currentMarket.base.equals(Token.ETH_SYMBOL_STAR, true)) {
                     ethStarToken
                 } else {
-                    tokenDao.getTokenBySymbol(currentMarket.base)
+                    tokenDao.getKyberListedTokenBySymbol(currentMarket.base)
                 } ?: Token()
 
             val dstToken = getRecentBalance(baseToken, param.wallet)
@@ -413,7 +413,7 @@ class LimitOrderDataRepository @Inject constructor(
         }
     }
 
-    override fun getSelectedMarket(param: GetSelectedMarketUseCase.Param): Flowable<MarketItem> {
+    override fun getSelectedMarket(param: GetSelectedMarketUseCase.Param): Flowable<SelectedMarketItem> {
         return Flowable.fromCallable {
             var market = selectedMarketDao.getSelectedMarketByWalletAddress(param.wallet.address)
             if (market == null) {
@@ -423,9 +423,6 @@ class LimitOrderDataRepository @Inject constructor(
             market
         }.flatMap {
             selectedMarketDao.getSelectedMarketByWalletAddressFlowable(it.walletAddress)
-                .flatMap {
-                    marketDao.getMarketByPairFlowable(it.pair)
-                }
         }
     }
 

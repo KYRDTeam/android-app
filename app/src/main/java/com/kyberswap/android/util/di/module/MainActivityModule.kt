@@ -35,8 +35,6 @@ import com.kyberswap.android.presentation.main.limitorder.FilterViewModel
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderTokenSearchFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderTokenSearchViewModel
-import com.kyberswap.android.presentation.main.limitorder.LimitOrderTypeFragment
-import com.kyberswap.android.presentation.main.limitorder.LimitOrderTypeViewModel
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderV2Fragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderV2ViewModel
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderViewModel
@@ -136,10 +134,6 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeLimitOrderV2Fragment(): LimitOrderV2Fragment
-
-    @FragmentScoped
-    @ContributesAndroidInjector
-    fun contributeLimitOrderTypeFragment(): LimitOrderTypeFragment
 
     @FragmentScoped
     @ContributesAndroidInjector
@@ -601,12 +595,5 @@ interface MainActivityModule {
     @ViewModelKey(LimitOrderV2ViewModel::class)
     fun bindLimitOrderV2ViewModel(
         limitOrderV2ViewModel: LimitOrderV2ViewModel
-    ): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(LimitOrderTypeViewModel::class)
-    fun bindLimitOrderTypeViewModel(
-        limitOrderTypeViewModel: LimitOrderTypeViewModel
     ): ViewModel
 }

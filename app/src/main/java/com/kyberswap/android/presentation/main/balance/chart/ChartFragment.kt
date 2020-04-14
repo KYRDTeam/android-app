@@ -64,6 +64,12 @@ class ChartFragment : BaseFragment() {
     private val isEth: Boolean
         get() = wallet?.unit == getString(R.string.unit_eth)
 
+    private val quoteToken: String
+        get() = market.split("_").last()
+
+    private val isEthQuote: Boolean
+        get() = quoteToken == Token.ETH_SYMBOL
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         token = arguments?.getParcelable(TOKEN_PARAM)
@@ -91,7 +97,7 @@ class ChartFragment : BaseFragment() {
                 when (state) {
                     is GetWalletState.Success -> {
                         wallet = state.wallet
-                        binding.isEth = isEth
+                        binding.isEth = if (quoteToken.isEmpty()) isEth else isEthQuote
                         viewModel.getVol24h(token)
                     }
                     is GetWalletState.ShowError -> {
