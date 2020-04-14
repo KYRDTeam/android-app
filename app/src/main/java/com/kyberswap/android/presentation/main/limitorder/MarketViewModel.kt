@@ -38,6 +38,10 @@ class MarketViewModel @Inject constructor(
     val saveSelectedMarketCallback: LiveData<Event<SaveSelectedMarketState>>
         get() = _saveSelectedMarketCallback
 
+    private val _saveFavMarketCallback = MutableLiveData<Event<SaveFavMarketState>>()
+    val saveFavMarketCallback: LiveData<Event<SaveFavMarketState>>
+        get() = _saveFavMarketCallback
+
     val currentMarketLiveData = MutableLiveData<Event<String>>()
 
     fun getMarkets(isForceRefresh: Boolean = false) {
@@ -70,8 +74,13 @@ class MarketViewModel @Inject constructor(
     fun saveFav(marketItem: MarketItem) {
         saveMarketItemUseCase.dispose()
         saveMarketItemUseCase.execute(
-            Action { },
-            Consumer { },
+            Action {
+                _saveFavMarketCallback.value = Event(SaveFavMarketState.Success(marketItem.isFav))
+            },
+            Consumer {
+                _saveFavMarketCallback.value =
+                    Event(SaveFavMarketState.ShowError(errorHandler.getError(it)))
+            },
             SaveMarketItemUseCase.Param(marketItem)
         )
     }

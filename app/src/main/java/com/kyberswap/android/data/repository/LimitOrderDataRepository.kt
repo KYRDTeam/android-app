@@ -514,7 +514,7 @@ class LimitOrderDataRepository @Inject constructor(
             }
         }
             .doAfterSuccess { markets ->
-                val spLimitOrder = tokenDao.limitOrderTokens.map {
+                val spLimitOrder = tokenDao.limitOrderTokens.filter { it.isListed }.map {
                     it.symbol.toLowerCase(Locale.getDefault())
                 }
 
@@ -547,7 +547,7 @@ class LimitOrderDataRepository @Inject constructor(
                             isFav = favMarket[pair] ?: false
                         )
                     }
-                marketDao.insertMarkets(combinedMarkets)
+                marketDao.updateLatestMarketItem(combinedMarkets)
             }
             .toFlowable()
             .repeatWhen {
@@ -572,7 +572,7 @@ class LimitOrderDataRepository @Inject constructor(
                 }
                 .doAfterSuccess { markets ->
 
-                    val spLimitOrder = tokenDao.limitOrderTokens.map {
+                    val spLimitOrder = tokenDao.limitOrderTokens.filter { it.isListed }.map {
                         it.symbol.toLowerCase(Locale.getDefault())
                     }
 
@@ -605,7 +605,7 @@ class LimitOrderDataRepository @Inject constructor(
                                 isFav = favMarket[pair] ?: false
                             )
                         }
-                    marketDao.insertMarkets(combinedMarkets)
+                    marketDao.updateLatestMarketItem(combinedMarkets)
                 }
                 .toFlowable()
         } else {

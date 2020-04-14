@@ -177,6 +177,23 @@ class MarketFragment : BaseFragment() {
             }
         })
 
+        viewModel.saveFavMarketCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is SaveFavMarketState.Success -> {
+                        if (state.fav) {
+                            showAlertWithoutIcon(message = getString(R.string.add_fav_success))
+                        } else {
+                            showAlertWithoutIcon(message = getString(R.string.remove_fav_success))
+                        }
+                    }
+                    is SaveFavMarketState.ShowError -> {
+
+                    }
+                }
+            }
+        })
+
         viewModel.currentMarketLiveData.observe(viewLifecycleOwner, Observer { event ->
             event?.getContentIfNotHandled()?.let { mk ->
                 currentMarket = mk

@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.kyberswap.android.domain.model.MarketItem
 import io.reactivex.Flowable
@@ -47,5 +48,11 @@ interface MarketDao {
 
     @get:Query("SELECT * FROM markets WHERE isFav = 1 ")
     val favMarkets: List<MarketItem>
+
+    @Transaction
+    fun updateLatestMarketItem(marketItems: List<MarketItem>) {
+        deleteAllMarkets()
+        insertMarkets(marketItems)
+    }
 }
 

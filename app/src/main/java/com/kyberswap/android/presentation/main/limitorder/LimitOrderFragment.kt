@@ -202,6 +202,7 @@ class LimitOrderFragment : BaseFragment(), LoginState {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.getSelectedWallet()
+        getLoginStatus()
         binding.tvSubmitOrder.setViewEnable(true)
         notification?.let {
             dialogHelper.showOrderFillDialog(it) { url ->
@@ -215,9 +216,8 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         binding.walletName = state.wallet.display()
                         if (!state.wallet.isSameWallet(wallet)) {
                             wallet = state.wallet
-                            viewModel.getLimitOrders(wallet)
-                            viewModel.getPendingBalances(wallet)
                             viewModel.getLoginStatus()
+                            viewModel.getLimitOrders(wallet)
                         }
                     }
                     is GetWalletState.ShowError -> {
@@ -465,7 +465,7 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                     is CheckEligibleAddressState.Success -> {
                         if (this.eleigibleAddress != state.eligibleAddress || state.isWalletChangeEvent) {
                             this.eleigibleAddress = state.eligibleAddress
-                            if (state.eligibleAddress.success && !state.eligibleAddress.eligibleAddress && currentFragment is LimitOrderFragment) {
+                            if (state.eligibleAddress.success && !state.eligibleAddress.eligibleAddress && currentFragment is LimitOrderV2Fragment) {
                                 showAlertWithoutIcon(
                                     title = getString(R.string.title_error),
                                     message = getString(R.string.address_not_eligible)
@@ -1105,6 +1105,8 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                                 binding.tvRelatedOrder.visibility = View.GONE
                             }
                             else -> {
+                                checkEligibleAddress()
+                                verifyEligibleWallet()
                                 getRelatedOrders()
                                 getPendingBalance()
                                 getNonce()
@@ -1211,10 +1213,12 @@ class LimitOrderFragment : BaseFragment(), LoginState {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: WalletChangeEvent) {
-        viewModel.getLimitOrders(wallet)
-        viewModel.getPendingBalances(wallet)
-        viewModel.getLoginStatus()
-        wallet?.let { viewModel.checkEligibleAddress(it, true) }
+        getLoginStatus()
+        getLimitOrder()
+        verifyEligibleWallet()
+        wallet?.let {
+            viewModel.checkEligibleAddress(it, true)
+        }
     }
 
     override fun onStart() {

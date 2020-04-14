@@ -132,9 +132,17 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
 
     fun onBackPress() {
         val fm = currentFragment.childFragmentManager
-        for (i in 0 until fm.backStackEntryCount) {
+
+        fm.fragments.forEach {
+            if (it is LimitOrderFragment) {
+                return@forEach
+            }
             fm.popBackStack()
         }
+
+//        for (i in 0 until fm.backStackEntryCount) {
+//            fm.popBackStack()
+//        }
 
     }
 

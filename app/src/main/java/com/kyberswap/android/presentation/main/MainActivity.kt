@@ -247,7 +247,6 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             checkEligibleAddress()
                             verifyEligibleWallet()
                         }
-
                         updateLoginStatus()
                     }
 
