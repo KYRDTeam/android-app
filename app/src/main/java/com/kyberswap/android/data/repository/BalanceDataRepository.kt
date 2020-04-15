@@ -384,7 +384,7 @@ class BalanceDataRepository @Inject constructor(
         return Flowable.fromCallable {
             tokenDao.otherTokens
         }.repeatWhen {
-            it.delay(60, TimeUnit.SECONDS)
+            it.delay(90, TimeUnit.SECONDS)
         }.retryWhen { throwable ->
             throwable.compose(zipWithFlatMap())
         }

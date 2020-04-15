@@ -5,5 +5,5 @@ sealed class SaveFavMarketState {
     class ShowError(val message: String?) :
         SaveFavMarketState()
 
-    class Success(val fav: Boolean) : SaveFavMarketState()
+    class Success(val fav: Boolean, val isLogin: Boolean, val pair: String) : SaveFavMarketState()
 }

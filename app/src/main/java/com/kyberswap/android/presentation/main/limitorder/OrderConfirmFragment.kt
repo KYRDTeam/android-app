@@ -15,6 +15,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.di.ViewModelFactory
 import javax.inject.Inject
@@ -62,7 +63,7 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.imgBack.setOnClickListener {
-            activity?.onBackPressed()
+            onBackPress()
         }
 
         binding.order = limitOrder
@@ -121,20 +122,14 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
             title = getString(R.string.title_success),
             message = getString(R.string.order_submitted_message)
         )
-        val fm = currentFragment.childFragmentManager
-        for (i in 0 until fm.backStackEntryCount) {
-            fm.popBackStack()
-        }
-        if (currentFragment is LimitOrderFragment) {
-            (currentFragment as LimitOrderFragment).onRefresh()
-        }
+        onBackPress(true)
     }
 
-    fun onBackPress() {
-        val fm = currentFragment.childFragmentManager
-
+    fun onBackPress(isRefresh: Boolean = false) {
+        val fm = (activity as MainActivity).getCurrentFragment()?.childFragmentManager ?: return
         fm.fragments.forEach {
             if (it is LimitOrderFragment) {
+                it.onRefresh()
                 return@forEach
             }
             fm.popBackStack()

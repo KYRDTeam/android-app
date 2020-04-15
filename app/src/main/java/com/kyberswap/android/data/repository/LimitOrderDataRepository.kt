@@ -2,10 +2,13 @@ package com.kyberswap.android.data.repository
 
 import android.content.Context
 import android.util.Base64
+import com.google.gson.Gson
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.LimitOrderApi
 import com.kyberswap.android.data.api.home.TokenApi
+import com.kyberswap.android.data.api.limitorder.FavoritePair
+import com.kyberswap.android.data.api.limitorder.FavoritePairStatus
 import com.kyberswap.android.data.api.limitorder.OrderEntity
 import com.kyberswap.android.data.db.LimitOrderDao
 import com.kyberswap.android.data.db.LocalLimitOrderDao
@@ -26,6 +29,7 @@ import com.kyberswap.android.domain.model.MarketItem
 import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.domain.model.OrderFilter
 import com.kyberswap.android.domain.model.PendingBalances
+import com.kyberswap.android.domain.model.ResponseStatus
 import com.kyberswap.android.domain.model.SelectedMarketItem
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
@@ -53,6 +57,8 @@ import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
+import okhttp3.MediaType
+import okhttp3.RequestBody
 import org.consenlabs.tokencore.wallet.WalletManager
 import org.web3j.crypto.WalletUtils
 import java.math.BigDecimal
@@ -406,7 +412,6 @@ class LimitOrderDataRepository @Inject constructor(
                 type = LocalLimitOrder.TYPE_SELL
             )
 
-            localLimitOrderDao.deleteAllLocalLimitOrders()
             localLimitOrderDao.insertOrder(buyOrder)
             localLimitOrderDao.insertOrder(sellOrder)
 
@@ -428,6 +433,16 @@ class LimitOrderDataRepository @Inject constructor(
 
     override fun getMarket(param: GetMarketUseCase.Param): Flowable<MarketItem> {
         return marketDao.getMarketByPairFlowable(param.pair)
+    }
+
+    override fun getFavoritePairs(): Single<List<FavoritePair>> {
+        return limitOrderApi.getFavoritePairs().map {
+            if (it.success) {
+                it.favoritePairs
+            } else {
+                throw RuntimeException("can't get the favorite pairs")
+            }
+        }
     }
 
     override fun getLimitOrders(): Flowable<List<Order>> {
@@ -613,22 +628,51 @@ class LimitOrderDataRepository @Inject constructor(
         }
     }
 
-    override fun saveMarketIem(param: SaveMarketItemUseCase.Param): Completable {
-        return Completable.fromCallable {
-            val marketByPair = marketDao.getMarketByPair(param.marketItem.pair)
-            marketByPair?.let {
-                marketDao.updateMarket(it.copy(isFav = param.marketItem.isFav))
+    override fun saveMarketIem(param: SaveMarketItemUseCase.Param): Single<ResponseStatus> {
+        if (param.isLogin) {
+            val base = param.marketItem.baseSymbol
+            val quote = param.marketItem.quoteSymbol
+            val body =
+                RequestBody.create(
+                    MediaType.parse("text/plain"),
+                    Gson().toJson(
+                        FavoritePairStatus(
+                            if (base.equals(
+                                    Token.ETH_SYMBOL_STAR,
+                                    true
+                                )
+                            ) Token.WETH_SYMBOL else base,
+                            if (quote.equals(
+                                    Token.ETH_SYMBOL_STAR,
+                                    true
+                                )
+                            ) Token.WETH_SYMBOL else quote,
+                            param.marketItem.isFav
+                        )
+                    )
+                )
+            return limitOrderApi.favPair(body).map {
+                ResponseStatus(it)
+            }
+        } else {
+            return Single.fromCallable {
+                val marketByPair = marketDao.getMarketByPair(param.marketItem.pair)
+                marketByPair?.let {
+                    marketDao.updateMarket(it.copy(isFav = param.marketItem.isFav))
+                }
+                ResponseStatus(success = true)
             }
         }
     }
 
     override fun getStableQuoteTokens(): Single<List<String>> {
         return Single.fromCallable {
-            tokenExtDao.allTokens.filter {
-                it.quotePriority == 3
-            }.map {
-                it.tokenSymbol
-            }
+            tokenExtDao.allTokens
+                .filter {
+                    it.quotePriority == 3
+                }.map {
+                    it.tokenSymbol
+                }
         }
     }
 }

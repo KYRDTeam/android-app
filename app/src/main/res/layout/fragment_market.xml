@@ -103,33 +103,6 @@
                     app:layout_constraintStart_toEndOf="@+id/imgFav"
                     app:layout_constraintTop_toTopOf="@+id/imgFav" />
 
-                <!--                <FrameLayout-->
-                <!--                    android:id="@+id/vSpn"-->
-                <!--                    android:layout_width="wrap_content"-->
-                <!--                    android:layout_height="wrap_content"-->
-                <!--                    android:layout_marginStart="10dp"-->
-                <!--                    app:layout_constraintBottom_toBottomOf="@+id/imgFav"-->
-                <!--                    app:layout_constraintEnd_toStartOf="@+id/tvEth"-->
-                <!--                    app:layout_constraintHorizontal_bias="0.5"-->
-                <!--                    app:layout_constraintStart_toEndOf="@+id/imgFav"-->
-                <!--                    app:layout_constraintTop_toTopOf="@+id/imgFav">-->
-
-                <!--                    <Spinner-->
-                <!--                        android:id="@+id/spnStableCoin"-->
-                <!--                        android:layout_width="wrap_content"-->
-                <!--                        android:layout_height="match_parent"-->
-                <!--                        android:layout_gravity="center"-->
-                <!--                        android:minHeight="32dp" />-->
-
-                <!--&lt;!&ndash;                    <ImageView&ndash;&gt;-->
-                <!--&lt;!&ndash;                        android:layout_width="wrap_content"&ndash;&gt;-->
-                <!--&lt;!&ndash;                        android:layout_height="wrap_content"&ndash;&gt;-->
-                <!--&lt;!&ndash;                        android:layout_gravity="center|end"&ndash;&gt;-->
-                <!--&lt;!&ndash;                        android:layout_marginEnd="8dp"&ndash;&gt;-->
-                <!--&lt;!&ndash;                        android:src="@drawable/ic_arrow_drop_down_toggle" />&ndash;&gt;-->
-                <!--                </FrameLayout>-->
-
-
                 <TextView
                     android:id="@+id/tvEth"
                     android:layout_width="wrap_content"

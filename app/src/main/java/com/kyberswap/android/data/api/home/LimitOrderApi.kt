@@ -2,15 +2,20 @@ package com.kyberswap.android.data.api.home
 
 import com.kyberswap.android.data.api.limitorder.CancelledEntity
 import com.kyberswap.android.data.api.limitorder.EligibleAddressEntity
+import com.kyberswap.android.data.api.limitorder.FavoritePairsEntity
 import com.kyberswap.android.data.api.limitorder.FeeEntity
 import com.kyberswap.android.data.api.limitorder.LimitOrderResponseEntity
 import com.kyberswap.android.data.api.limitorder.ListLimitOrderResponseEntity
 import com.kyberswap.android.data.api.limitorder.NonceEntity
 import com.kyberswap.android.data.api.limitorder.PendingBalancesEntity
+import com.kyberswap.android.data.api.user.ResponseStatusEntity
 import io.reactivex.Single
+import okhttp3.RequestBody
+import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -77,4 +82,11 @@ interface LimitOrderApi {
     fun eligibleAddress(
         @Query("user_addr") address: String
     ): Single<EligibleAddressEntity>
+
+    @GET("api/orders/favorite_pairs")
+    fun getFavoritePairs(): Single<FavoritePairsEntity>
+
+    @Headers("Content-Type: application/json")
+    @PUT("api/orders/favorite_pair")
+    fun favPair(@Body body: RequestBody): Single<ResponseStatusEntity>
 }

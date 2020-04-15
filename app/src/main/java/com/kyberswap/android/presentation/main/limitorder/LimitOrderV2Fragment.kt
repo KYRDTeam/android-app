@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
 import com.google.android.material.tabs.TabLayout
-import com.google.gson.Gson
 import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
@@ -95,7 +94,21 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         ViewModelProviders.of(this, viewModelFactory).get(LimitOrderV2ViewModel::class.java)
     }
 
-    var baseToken: Token? = null
+    val baseToken: Token?
+        get() = if (isSell) binding.order?.tokenSource else binding.order?.tokenDest
+
+    val quoteToken: Token?
+        get() = if (isSell) binding.order?.tokenDest else binding.order?.tokenSource
+
+    val rateUsdQuote: BigDecimal
+        get() = quoteToken?.rateUsdNow ?: BigDecimal.ZERO
+
+    val priceUsdQuote: String
+        get() {
+            if (marketPrice.equals("--")) return "--"
+            val priceUsd = rateUsdQuote.multiply(marketPrice.toBigDecimalOrDefaultZero())
+            return if (priceUsd == BigDecimal.ZERO) "--" else priceUsd.toDisplayNumber()
+        }
 
     private var pendingBalances: PendingBalances? = null
 
@@ -170,9 +183,10 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         get() = binding.tvBalance.text.toString().split(" ").first()
 
     private val marketPrice: String?
-        get() =
-            if (type == LocalLimitOrder.TYPE_SELL) binding.market?.displaySellPrice
+        get() {
+            return if (type == LocalLimitOrder.TYPE_SELL) binding.market?.displaySellPrice
             else binding.market?.displayBuyPrice
+        }
 
     private val calcAmount: String
         get() = calcTotalAmount(priceText, totalAmount)
@@ -244,7 +258,6 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                         binding.walletName = state.wallet.display()
                         if (!state.wallet.isSameWallet(wallet)) {
                             wallet = state.wallet
-                            Timber.e("wallet change")
                             viewModel.getSelectedMarket(wallet)
                             viewModel.getLimitOrder(wallet, type)
                             viewModel.getLoginStatus()
@@ -262,9 +275,15 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 when (state) {
                     is GetSelectedMarketState.Success -> {
                         if (state.market != binding.market) {
-                            Timber.e(Gson().toJson(state.market))
                             binding.market = state.market
                             binding.executePendingBindings()
+                            binding.tvPrice.text =
+                                if (priceUsdQuote != "--") {
+                                    "$marketPrice ~ $$priceUsdQuote"
+                                } else {
+                                    marketPrice
+                                }
+
                             binding.tlHeader.getTabAt(0)?.text = String.format(
                                 getString(R.string.buy_token),
                                 state.market.baseSymbol
@@ -300,7 +319,6 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 when (state) {
                     is GetLocalLimitOrderState.Success -> {
                         if (!state.order.isSameTokenPairForAddress(binding.order)) {
-                            Timber.e(Gson().toJson(state.order))
                             binding.order = state.order
                             binding.executePendingBindings()
                             resetUI()
@@ -312,7 +330,13 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                                 wallet
                             )
                             viewModel.getGasPrice()
-                            this.baseToken = state.order.tokenDest
+
+
+                            binding.tvPrice.text = if (priceUsdQuote != "--") {
+                                "$marketPrice ~ $$priceUsdQuote"
+                            } else {
+                                marketPrice
+                            }
                             refresh()
                         }
                     }
@@ -755,7 +779,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         })
 
         binding.tvTokenPair.setOnClickListener {
-            navigator.navigateToLimitOrderMarket(currentFragment, type)
+            navigator.navigateToLimitOrderMarket(currentFragment, type, quoteToken?.tokenSymbol)
         }
 
         binding.imgCandle.setOnClickListener {
@@ -813,7 +837,12 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         }
 
         binding.tvPrice.setOnClickListener {
-            binding.edtPrice.setText(marketPrice)
+            binding.edtPrice.setAmount(marketPrice)
+            binding.tvRateWarning.text = ""
+        }
+
+        binding.tvPriceTitle.setOnClickListener {
+            binding.edtPrice.setAmount(marketPrice)
             binding.tvRateWarning.text = ""
         }
 
@@ -957,7 +986,6 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: WalletChangeEvent) {
-        Timber.e("event bus")
         viewModel.getSelectedMarket(wallet)
         viewModel.getLimitOrder(wallet, type)
         viewModel.getLoginStatus()
@@ -1162,6 +1190,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
     override fun onDestroyView() {
         compositeDisposable.clear()
+        hideKeyboard()
         super.onDestroyView()
     }
 

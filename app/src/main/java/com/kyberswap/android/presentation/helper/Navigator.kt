@@ -168,11 +168,11 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
     }
 
     fun navigateToLimitOrderMarket(
-        currentFragment: Fragment?, type: Int
+        currentFragment: Fragment?, type: Int, quoteSymbol: String?
     ) {
         navigateByChildFragmentManager(
             currentFragment,
-            MarketFragment.newInstance(type)
+            MarketFragment.newInstance(type, quoteSymbol)
         )
     }
 

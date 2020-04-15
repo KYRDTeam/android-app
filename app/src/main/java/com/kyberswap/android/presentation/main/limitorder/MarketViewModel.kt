@@ -4,16 +4,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.kyberswap.android.domain.model.MarketItem
 import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.usecase.limitorder.GetFavoritePairsUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetMarketsUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetStableQuoteTokensUseCase
 import com.kyberswap.android.domain.usecase.limitorder.SaveMarketItemUseCase
 import com.kyberswap.android.domain.usecase.limitorder.SaveSelectedMarketUseCase
+import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
+import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
+import timber.log.Timber
 import javax.inject.Inject
 
 class MarketViewModel @Inject constructor(
@@ -21,6 +25,8 @@ class MarketViewModel @Inject constructor(
     private val getStableQuoteTokensUseCase: GetStableQuoteTokensUseCase,
     private val saveMarketItemUseCase: SaveMarketItemUseCase,
     private val saveSelectedMarketUseCase: SaveSelectedMarketUseCase,
+    private val getFavoritePairsUseCase: GetFavoritePairsUseCase,
+    private val getLoginStatusUseCase: GetLoginStatusUseCase,
     selectedWalletViewModel: GetSelectedWalletUseCase,
     private val errorHandler: ErrorHandler
 
@@ -34,6 +40,10 @@ class MarketViewModel @Inject constructor(
     val getQuotesCallback: LiveData<Event<GetQuoteTokensState>>
         get() = _getQuotesCallback
 
+    private val _getFavPairsCallback = MutableLiveData<Event<GetFavPairsState>>()
+    val getFavPairsCallback: LiveData<Event<GetFavPairsState>>
+        get() = _getFavPairsCallback
+
     private val _saveSelectedMarketCallback = MutableLiveData<Event<SaveSelectedMarketState>>()
     val saveSelectedMarketCallback: LiveData<Event<SaveSelectedMarketState>>
         get() = _saveSelectedMarketCallback
@@ -42,7 +52,42 @@ class MarketViewModel @Inject constructor(
     val saveFavMarketCallback: LiveData<Event<SaveFavMarketState>>
         get() = _saveFavMarketCallback
 
+    private val _getLoginStatusCallback = MutableLiveData<Event<UserInfoState>>()
+    val getLoginStatusCallback: LiveData<Event<UserInfoState>>
+        get() = _getLoginStatusCallback
+
     val currentMarketLiveData = MutableLiveData<Event<String>>()
+
+    fun getFavPairs() {
+        getFavoritePairsUseCase.dispose()
+        getFavoritePairsUseCase.execute(
+            Consumer {
+                _getFavPairsCallback.value = Event(GetFavPairsState.Success(it))
+            },
+            Consumer {
+                Timber.e(it.localizedMessage)
+                it.printStackTrace()
+                _getFavPairsCallback.value =
+                    Event(GetFavPairsState.ShowError(errorHandler.getError(it)))
+            },
+            null
+        )
+    }
+
+    fun getLoginStatus() {
+        getLoginStatusUseCase.dispose()
+        getLoginStatusUseCase.execute(
+            Consumer {
+                _getLoginStatusCallback.value = Event(UserInfoState.Success(it))
+            },
+            Consumer {
+                it.printStackTrace()
+                _getLoginStatusCallback.value =
+                    Event(UserInfoState.ShowError(errorHandler.getError(it)))
+            },
+            null
+        )
+    }
 
     fun getMarkets(isForceRefresh: Boolean = false) {
         getMarkets.dispose()
@@ -71,17 +116,26 @@ class MarketViewModel @Inject constructor(
         )
     }
 
-    fun saveFav(marketItem: MarketItem) {
+    fun saveFav(marketItem: MarketItem, isLogin: Boolean) {
         saveMarketItemUseCase.dispose()
         saveMarketItemUseCase.execute(
-            Action {
-                _saveFavMarketCallback.value = Event(SaveFavMarketState.Success(marketItem.isFav))
+            Consumer {
+                if (it.success) {
+                    _saveFavMarketCallback.value =
+                        Event(
+                            SaveFavMarketState.Success(
+                                marketItem.isFav,
+                                isLogin,
+                                marketItem.pair
+                            )
+                        )
+                }
             },
             Consumer {
                 _saveFavMarketCallback.value =
                     Event(SaveFavMarketState.ShowError(errorHandler.getError(it)))
             },
-            SaveMarketItemUseCase.Param(marketItem)
+            SaveMarketItemUseCase.Param(marketItem, isLogin)
         )
     }
 
@@ -105,6 +159,8 @@ class MarketViewModel @Inject constructor(
         getStableQuoteTokensUseCase.dispose()
         saveMarketItemUseCase.dispose()
         saveSelectedMarketUseCase.dispose()
+        getFavoritePairsUseCase.dispose()
+        getLoginStatusUseCase.dispose()
         super.onCleared()
     }
 }

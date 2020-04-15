@@ -190,9 +190,9 @@
                             android:gravity="center_vertical"
                             android:lineSpacingExtra="12sp"
                             android:minHeight="26dp"
-                            android:text="@{isSell ? market.displaySellPrice : market.displayBuyPrice}"
                             android:textColor="#141927"
                             android:textSize="14sp"
+                            android:textAppearance="@style/TextAppearance.Roboto.Medium"
                             android:textStyle="normal"
                             app:layout_constraintBottom_toBottomOf="@+id/imgCandle"
                             app:layout_constraintEnd_toStartOf="@+id/tvChange24h"
@@ -395,11 +395,11 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:id="@+id/textView56"
+                            android:id="@+id/tvPriceTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
-                            android:layout_marginStart="14dp"
-                            android:layout_marginEnd="20dp"
+                            android:paddingStart="14dp"
+                            android:paddingEnd="20dp"
                             android:gravity="center"
                             android:text="@string/price"
                             android:textAllCaps="true"
@@ -500,7 +500,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             app:barrierDirection="right"
-                            app:constraint_referenced_ids="textView56,tvAmount"
+                            app:constraint_referenced_ids="tvPriceTitle,tvAmount"
                             tools:layout_editor_absoluteX="411dp" />
 
                         <com.kyberswap.android.presentation.common.ClearableEditText
@@ -546,7 +546,7 @@
                             app:layout_constraintVertical_bias="0.0" />
 
                         <TextView
-                            android:id="@+id/textView89"
+                            android:id="@+id/tvFeeTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="28dp"
@@ -570,11 +570,11 @@
                             android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                             android:textColor="#626b86"
                             android:textSize="14sp"
-                            app:layout_constraintBottom_toBottomOf="@+id/textView89"
+                            app:layout_constraintBottom_toBottomOf="@+id/tvFeeTitle"
                             app:layout_constraintEnd_toStartOf="@+id/tvOff"
                             app:layout_constraintHorizontal_bias="0.0"
-                            app:layout_constraintStart_toEndOf="@+id/textView89"
-                            app:layout_constraintTop_toTopOf="@+id/textView89" />
+                            app:layout_constraintStart_toEndOf="@+id/tvFeeTitle"
+                            app:layout_constraintTop_toTopOf="@+id/tvFeeTitle" />
 
                         <TextView
                             android:id="@+id/tvLearnMore"
@@ -599,8 +599,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:background="?selectableItemBackground"
-                            android:textColor="#626b86"
                             android:textAllCaps="true"
+                            android:textColor="#626b86"
                             android:textSize="14sp"
                             app:layout_constraintStart_toStartOf="@+id/tvFee"
                             app:layout_constraintTop_toBottomOf="@+id/tvFee" />
@@ -737,7 +737,7 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.0"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/textView89" />
+                            app:layout_constraintTop_toBottomOf="@+id/tvFeeTitle" />
 
 
                         <TextView

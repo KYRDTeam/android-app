@@ -601,10 +601,16 @@ class ProfileFragment : BaseFragment() {
         callbackManager.onActivityResult(requestCode, resultCode, data)
         twitterAuthClient.onActivityResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == RC_SIGN_IN) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            handleSignInResult(task)
+        try {
+            if (requestCode == RC_SIGN_IN) {
+                val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+                handleSignInResult(task)
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            Timber.e(ex.localizedMessage)
         }
+
     }
 
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {

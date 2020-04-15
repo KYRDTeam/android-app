@@ -45,7 +45,8 @@ class ChartFragment : BaseFragment() {
     private var market: String = ""
 
     private val rateChange: BigDecimal
-        get() = if (isEth) token?.changeEth24h ?: BigDecimal.ZERO else token?.changeUsd24h
+        get() = if (isSelectedUnitEth) token?.changeEth24h
+            ?: BigDecimal.ZERO else token?.changeUsd24h
             ?: BigDecimal.ZERO
 
     private var currentSelection = 0
@@ -61,8 +62,11 @@ class ChartFragment : BaseFragment() {
         Handler()
     }
 
-    private val isEth: Boolean
+    private val isSelectedUnitEth: Boolean
         get() = wallet?.unit == getString(R.string.unit_eth)
+
+    private val isEth: Boolean
+        get() = if (quoteToken.isEmpty()) isSelectedUnitEth else isEthQuote
 
     private val quoteToken: String
         get() = market.split("_").last()
@@ -97,7 +101,7 @@ class ChartFragment : BaseFragment() {
                 when (state) {
                     is GetWalletState.Success -> {
                         wallet = state.wallet
-                        binding.isEth = if (quoteToken.isEmpty()) isEth else isEthQuote
+                        binding.isEth = isEth
                         viewModel.getVol24h(token)
                     }
                     is GetWalletState.ShowError -> {

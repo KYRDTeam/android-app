@@ -16,7 +16,6 @@ import com.kyberswap.android.domain.usecase.limitorder.GetNonceUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetPendingBalancesUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetRelatedLimitOrdersUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetSelectedMarketUseCase
-import com.kyberswap.android.domain.usecase.limitorder.GetStableQuoteTokensUseCase
 import com.kyberswap.android.domain.usecase.limitorder.PollingMarketsUseCase
 import com.kyberswap.android.domain.usecase.limitorder.SaveLimitOrderUseCase
 import com.kyberswap.android.domain.usecase.profile.GetLoginStatusUseCase
@@ -47,7 +46,6 @@ import javax.inject.Inject
 
 class LimitOrderV2ViewModel @Inject constructor(
     private val pollingMarketsUseCase: PollingMarketsUseCase,
-    private val getStableQuoteTokensUseCase: GetStableQuoteTokensUseCase,
     private val getLocalLimitOrderDataUseCase: GetLocalLimitOrderDataUseCase,
     private val getNonceUseCase: GetNonceUseCase,
     getSelectedWalletUseCase: GetSelectedWalletUseCase,
@@ -175,19 +173,6 @@ class LimitOrderV2ViewModel @Inject constructor(
                 it.printStackTrace()
                 _getLoginStatusCallback.value =
                     Event(UserInfoState.ShowError(errorHandler.getError(it)))
-            },
-            null
-        )
-    }
-
-    fun getStableQuoteTokens() {
-        getStableQuoteTokensUseCase.dispose()
-        getStableQuoteTokensUseCase.execute(
-            Consumer {
-                _getQuotesCallback.value = Event(GetQuoteTokensState.Success(it))
-            },
-            Consumer {
-                _getQuotesCallback.value = Event(GetQuoteTokensState.ShowError(it.localizedMessage))
             },
             null
         )
@@ -371,12 +356,10 @@ class LimitOrderV2ViewModel @Inject constructor(
     }
 
     fun getSelectedMarket(wallet: Wallet?) {
-        Timber.e("getselected market")
         if (wallet == null) return
         getSelectedMarketUseCase.dispose()
         getSelectedMarketUseCase.execute(
             Consumer {
-                Timber.e(it.pair)
                 getMarketUseCase.dispose()
                 getMarketUseCase.execute(
                     Consumer {
@@ -571,7 +554,6 @@ class LimitOrderV2ViewModel @Inject constructor(
 
     override fun onCleared() {
         pollingMarketsUseCase.dispose()
-        getStableQuoteTokensUseCase.dispose()
         getLocalLimitOrderDataUseCase.dispose()
         getNonceUseCase.dispose()
         pendingBalancesUseCase.dispose()

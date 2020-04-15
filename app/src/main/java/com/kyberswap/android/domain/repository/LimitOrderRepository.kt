@@ -1,5 +1,6 @@
 package com.kyberswap.android.domain.repository
 
+import com.kyberswap.android.data.api.limitorder.FavoritePair
 import com.kyberswap.android.domain.model.Cancelled
 import com.kyberswap.android.domain.model.EligibleAddress
 import com.kyberswap.android.domain.model.Fee
@@ -9,6 +10,7 @@ import com.kyberswap.android.domain.model.MarketItem
 import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.domain.model.OrderFilter
 import com.kyberswap.android.domain.model.PendingBalances
+import com.kyberswap.android.domain.model.ResponseStatus
 import com.kyberswap.android.domain.model.SelectedMarketItem
 import com.kyberswap.android.domain.usecase.limitorder.CancelOrderUseCase
 import com.kyberswap.android.domain.usecase.limitorder.CheckEligibleAddressUseCase
@@ -63,11 +65,13 @@ interface LimitOrderRepository {
 
     fun getMarkets(forceRefresh: Boolean): Flowable<List<MarketItem>>
 
-    fun saveMarketIem(param: SaveMarketItemUseCase.Param): Completable
+    fun saveMarketIem(param: SaveMarketItemUseCase.Param): Single<ResponseStatus>
 
     fun saveSelectedMarket(param: SaveSelectedMarketUseCase.Param): Completable
 
     fun getSelectedMarket(param: GetSelectedMarketUseCase.Param): Flowable<SelectedMarketItem>
 
     fun getMarket(param: GetMarketUseCase.Param): Flowable<MarketItem>
+
+    fun getFavoritePairs(): Single<List<FavoritePair>>
 }

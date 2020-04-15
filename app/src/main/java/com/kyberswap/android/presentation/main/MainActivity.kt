@@ -20,7 +20,6 @@ import androidx.viewpager.widget.ViewPager
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.gson.Gson
 import com.google.zxing.integration.android.IntentIntegrator
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
@@ -48,7 +47,6 @@ import com.kyberswap.android.presentation.main.balance.WalletAdapter
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderV2Fragment
-import com.kyberswap.android.presentation.main.limitorder.OrderConfirmFragment
 import com.kyberswap.android.presentation.main.notification.GetUnReadNotificationsState
 import com.kyberswap.android.presentation.main.profile.DataTransferState
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
@@ -79,7 +77,6 @@ import org.consenlabs.tokencore.wallet.WalletManager
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -436,9 +433,6 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                         val pendingList =
                             state.transactions.filter { it.blockNumber.isEmpty() && !it.isCancel }
 
-                        Timber.e(
-                            Gson().toJson(txList)
-                        )
                         if (currentDialogFragment != null) {
                             handler.postDelayed(
                                 {
@@ -891,9 +885,6 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                     is SubmitFragment -> {
                         it.onBackPress()
                         return
-                    }
-                    is OrderConfirmFragment -> {
-                        it.onBackPress()
                     }
                     is WalletConnectFragment -> {
                         it.onBackPress()
