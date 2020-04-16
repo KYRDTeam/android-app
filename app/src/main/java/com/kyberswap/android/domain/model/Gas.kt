@@ -25,7 +25,10 @@ data class Gas(
 
     val superFast: String
         get() = BigDecimal("20").max(fast.toBigDecimalOrDefaultZero() * 2.toBigDecimal())
-            .min(maxGasPrice.toBigDecimal())
+            .min(
+                if (maxGasPrice.toBigDecimalOrDefaultZero() == BigDecimal.ZERO) 200.toBigDecimal()
+                else maxGasPrice.toBigDecimalOrDefaultZero()
+            )
             .toDisplayNumber()
 
     fun toPromoGas(): Gas {
