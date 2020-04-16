@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
@@ -22,7 +23,9 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.USER_CLICK_CANCEL_RELATED_ORDERS
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.openUrl
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_convert.*
@@ -43,6 +46,9 @@ class CancelOrderFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
 
     private var wallet: Wallet? = null
 
@@ -128,6 +134,11 @@ class CancelOrderFragment : BaseFragment() {
                     binding.order
                 )
             }
+            analytics.logEvent(
+                USER_CLICK_CANCEL_RELATED_ORDERS,
+                Bundle().createEvent()
+            )
+
         }
 
         binding.rvRelatedOrder.layoutManager = LinearLayoutManager(

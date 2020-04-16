@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.jakewharton.rxbinding3.widget.textChanges
@@ -43,8 +44,11 @@ import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.main.swap.GetMarketRateState
 import com.kyberswap.android.presentation.main.swap.SwapTokenTransactionState
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.USER_CLICK_SUBMIT_LO_V1
+import com.kyberswap.android.util.USER_CLICK_SUBMIT_LO_V1_WARNING
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.colorRate
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.exactAmount
 import com.kyberswap.android.util.ext.getAmountOrDefaultValue
 import com.kyberswap.android.util.ext.hideKeyboard
@@ -103,6 +107,9 @@ class LimitOrderFragment : BaseFragment(), LoginState {
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
+
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
 
     var hasUserFocus: Boolean? = false
 
@@ -857,6 +864,10 @@ class LimitOrderFragment : BaseFragment(), LoginState {
         binding.tvSubmitOrderWarning.setOnClickListener {
             setWarning(false)
             saveLimitOrder()
+            analytics.logEvent(
+                USER_CLICK_SUBMIT_LO_V1_WARNING,
+                Bundle().createEvent()
+            )
         }
 
         viewModel.getFeeCallback.observe(viewLifecycleOwner, Observer {
@@ -1015,6 +1026,10 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                 else -> binding.order?.let {
                     viewModel.checkEligibleWallet(wallet)
 
+                    analytics.logEvent(
+                        USER_CLICK_SUBMIT_LO_V1,
+                        Bundle().createEvent()
+                    )
                 }
             }
         }

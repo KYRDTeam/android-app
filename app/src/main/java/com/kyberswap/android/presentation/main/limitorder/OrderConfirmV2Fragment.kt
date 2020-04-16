@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentOrderConfirmV2Binding
@@ -16,7 +17,10 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.profile.UserInfoState
+import com.kyberswap.android.util.USER_CLICK_CANCEL_SUBMIT_ORDER
+import com.kyberswap.android.util.USER_CLICK_SUBMIT_ORDER_CONFIRM
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import javax.inject.Inject
 
 class OrderConfirmV2Fragment : BaseFragment(), LoginState {
@@ -35,6 +39,9 @@ class OrderConfirmV2Fragment : BaseFragment(), LoginState {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(LimitOrderViewModel::class.java)
@@ -69,10 +76,18 @@ class OrderConfirmV2Fragment : BaseFragment(), LoginState {
 
         binding.tvCancel.setOnClickListener {
             onBackPress()
+            analytics.logEvent(
+                USER_CLICK_CANCEL_SUBMIT_ORDER,
+                Bundle().createEvent(binding.order?.displayTokenPair)
+            )
         }
 
         binding.tvContinue.setOnClickListener {
             viewModel.submitOrder(binding.order, wallet)
+            analytics.logEvent(
+                USER_CLICK_SUBMIT_ORDER_CONFIRM,
+                Bundle().createEvent(binding.order?.displayTokenPair)
+            )
         }
 
         viewModel.submitOrderCallback.observe(viewLifecycleOwner, Observer {

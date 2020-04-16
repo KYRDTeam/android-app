@@ -11,11 +11,15 @@
             type="com.kyberswap.android.domain.model.Token" />
 
         <variable
-            name="rate"
+            name="rateChange"
             type="java.math.BigDecimal" />
 
         <variable
             name="isEth"
+            type="Boolean" />
+
+        <variable
+            name="isLimitOrder"
             type="Boolean" />
 
         <import type="android.view.View" />
@@ -153,23 +157,22 @@
                     app:layout_constraintTop_toBottomOf="@+id/tvTokenBalanceEth" />
 
                 <TextView
-                    android:id="@+id/textView27"
+                    android:id="@+id/tvRate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:text="@{isEth ? token.displayRateEthNow + ` ETH` :  token.displayRateUsdNow +` USD`}"
                     android:textColor="#2e3957"
                     android:textSize="24sp"
                     android:visibility="@{token.other ? View.GONE : View.VISIBLE}"
-                    app:layout_constraintEnd_toStartOf="@+id/textView28"
+                    app:layout_constraintEnd_toStartOf="@+id/tvChange"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintHorizontal_chainStyle="packed"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvTokenBalanceUsd" />
 
                 <TextView
-                    android:id="@+id/textView28"
+                    android:id="@+id/tvChange"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
@@ -180,12 +183,12 @@
                     android:textColor="#ffffff"
                     android:textSize="12sp"
                     android:visibility="@{token.other ? View.GONE : View.VISIBLE}"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView27"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvRate"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/textView27"
-                    app:layout_constraintTop_toTopOf="@+id/textView27"
-                    app:rate="@{rate}"
+                    app:layout_constraintStart_toEndOf="@+id/tvRate"
+                    app:layout_constraintTop_toTopOf="@+id/tvRate"
+                    app:rate="@{rateChange}"
                     tools:text="25%" />
 
                 <TextView
@@ -194,7 +197,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="12dp"
-                    android:text="@string/eth_24h_vol"
+                    android:text="@{isLimitOrder ? @string/vol : @string/eth_24h_vol}"
                     android:textColor="#8b8e93"
                     android:textSize="12sp"
                     android:visibility="invisible"
@@ -203,13 +206,13 @@
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintHorizontal_chainStyle="packed"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView28" />
+                    app:layout_constraintTop_toBottomOf="@+id/tvChange" />
 
                 <TextView
                     android:id="@+id/tv24hVol"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="4dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/defaut_24h_eth"
                     android:textAppearance="@style/TextAppearance.Roboto.SemiBold"

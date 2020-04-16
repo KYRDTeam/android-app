@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentManageOrderBinding
@@ -20,10 +21,11 @@ import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.profile.UserInfoState
+import com.kyberswap.android.util.USER_CLICK_CANCEL_ORDER
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.openUrl
 import javax.inject.Inject
-
 
 class ManageOrderFragment : BaseFragment(), LoginState {
 
@@ -45,6 +47,9 @@ class ManageOrderFragment : BaseFragment(), LoginState {
     private var isHideInstruction: Boolean = false
 
     @Inject
+    lateinit var analytics: FirebaseAnalytics
+
+    @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by lazy {
@@ -59,7 +64,6 @@ class ManageOrderFragment : BaseFragment(), LoginState {
     var orders: List<OrderItem> = mutableListOf()
 
     var orderAdapter: OrderAdapter? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,9 +93,12 @@ class ManageOrderFragment : BaseFragment(), LoginState {
                 OrderAdapter(
                     appExecutors
                     , {
-
                         dialogHelper.showCancelOrder(it) {
                             viewModel.cancelOrder(it)
+                            analytics.logEvent(
+                                USER_CLICK_CANCEL_ORDER,
+                                Bundle().createEvent()
+                            )
                         }
                     }, {
                         dialogHelper.showBottomSheetExtraDialog(it)
@@ -214,7 +221,6 @@ class ManageOrderFragment : BaseFragment(), LoginState {
         binding.tvInstruction.visibility = if (isShow) View.VISIBLE else View.GONE
         binding.imgInstruction.visibility = if (isShow) View.VISIBLE else View.GONE
     }
-
 
     override fun getLoginStatus() {
         viewModel.getLoginStatus()

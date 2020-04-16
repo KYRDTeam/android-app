@@ -1,14 +1,17 @@
 package com.kyberswap.android.domain.model
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.kyberswap.android.data.api.limitorder.MarketItemEntity
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
+import kotlinx.android.parcel.Parcelize
 import java.math.BigDecimal
 
 @Entity(tableName = "markets")
+@Parcelize
 data class MarketItem(
     @SerializedName("buy_price")
     val buyPrice: String = "",
@@ -22,7 +25,7 @@ data class MarketItem(
     @SerializedName("volume")
     val volume: String = "",
     var isFav: Boolean = false
-) {
+) : Parcelable {
 
     val combinedPair: String
         get() {
@@ -38,7 +41,7 @@ data class MarketItem(
         }
 
     val displayMarketVol: String
-        get() = "$volume $quoteSymbol"
+        get() = "$displayVolume $quoteSymbol"
 
     constructor(entity: MarketItemEntity) : this(
         entity.buyPrice, entity.change, entity.pair, entity.sellPrice, entity.volume

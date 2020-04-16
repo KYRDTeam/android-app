@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
@@ -38,8 +39,22 @@ import com.kyberswap.android.presentation.main.balance.CheckEligibleWalletState
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.USER_CLICK_100_PERCENT
+import com.kyberswap.android.util.USER_CLICK_25_PERCENT
+import com.kyberswap.android.util.USER_CLICK_50_PERCENT
+import com.kyberswap.android.util.USER_CLICK_BUY
+import com.kyberswap.android.util.USER_CLICK_BUY_SELL_ERROR
+import com.kyberswap.android.util.USER_CLICK_CANCEL_ORDER
+import com.kyberswap.android.util.USER_CLICK_CHART
+import com.kyberswap.android.util.USER_CLICK_CHOOSE_MARKET
+import com.kyberswap.android.util.USER_CLICK_LEARN_MORE
+import com.kyberswap.android.util.USER_CLICK_MANAGE_ORDER
+import com.kyberswap.android.util.USER_CLICK_MARKET_PRICE_TEXT
+import com.kyberswap.android.util.USER_CLICK_PRICE_TEXT
+import com.kyberswap.android.util.USER_CLICK_SELL
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.colorRateV2
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.exactAmount
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isNetworkAvailable
@@ -89,6 +104,9 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
     private val isSell
         get() = type == LocalLimitOrder.TYPE_SELL
+
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(LimitOrderV2ViewModel::class.java)
@@ -480,6 +498,10 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
                         dialogHelper.showCancelOrder(it) {
                             viewModel.cancelOrder(it)
+                            analytics.logEvent(
+                                USER_CLICK_CANCEL_ORDER,
+                                Bundle().createEvent()
+                            )
                         }
                     }, {
 
@@ -625,6 +647,11 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                     )
                 }
             }
+
+            analytics.logEvent(
+                USER_CLICK_MANAGE_ORDER,
+                Bundle().createEvent()
+            )
         }
 
         viewModel.cancelOrderCallback.observe(viewLifecycleOwner, Observer {
@@ -780,6 +807,10 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
         binding.tvTokenPair.setOnClickListener {
             navigator.navigateToLimitOrderMarket(currentFragment, type, quoteToken?.tokenSymbol)
+            analytics.logEvent(
+                USER_CLICK_CHOOSE_MARKET,
+                Bundle().createEvent()
+            )
         }
 
         binding.imgCandle.setOnClickListener {
@@ -787,8 +818,14 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 currentFragment,
                 wallet,
                 baseToken,
-                binding.market?.chartMarket ?: ""
+                binding.market?.chartMarket ?: "",
+                binding.market,
+                type
+            )
 
+            analytics.logEvent(
+                USER_CLICK_CHART,
+                Bundle().createEvent()
             )
         }
 
@@ -805,6 +842,11 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                     0.25.toBigDecimal()
                 ).toDisplayNumber()
             )
+            analytics.logEvent(
+                USER_CLICK_25_PERCENT,
+                Bundle().createEvent()
+            )
+
         }
 
         binding.tv50Percent.setOnClickListener {
@@ -814,6 +856,11 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 balanceText.toBigDecimalOrDefaultZero().multiply(
                     0.5.toBigDecimal()
                 ).toDisplayNumber()
+            )
+
+            analytics.logEvent(
+                USER_CLICK_50_PERCENT,
+                Bundle().createEvent()
             )
         }
 
@@ -834,16 +881,29 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 }
             }
 
+            analytics.logEvent(
+                USER_CLICK_100_PERCENT,
+                Bundle().createEvent()
+            )
+
         }
 
         binding.tvPrice.setOnClickListener {
             binding.edtPrice.setAmount(marketPrice)
             binding.tvRateWarning.text = ""
+            analytics.logEvent(
+                USER_CLICK_MARKET_PRICE_TEXT,
+                Bundle().createEvent()
+            )
         }
 
         binding.tvPriceTitle.setOnClickListener {
             binding.edtPrice.setAmount(marketPrice)
             binding.tvRateWarning.text = ""
+            analytics.logEvent(
+                USER_CLICK_PRICE_TEXT,
+                Bundle().createEvent()
+            )
         }
 
         binding.tvOriginalFee.paintFlags =
@@ -852,11 +912,15 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
         binding.tvLearnMore.setOnClickListener {
             openUrl(getString(R.string.order_fee_url))
+            analytics.logEvent(
+                USER_CLICK_LEARN_MORE,
+                Bundle().createEvent()
+            )
         }
 
 
         binding.tvSubmitOrder.setOnClickListener {
-
+            var error = ""
             when {
                 !isNetworkAvailable() -> {
                     showNetworkUnAvailable()
@@ -872,60 +936,102 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                             binding.order?.tokenSource,
                             pendingBalances
                         ).toBigDecimalOrDefaultZero() -> {
+
+                    error = getString(R.string.limit_order_insufficient_balance)
                     showAlertWithoutIcon(
                         title = getString(R.string.title_amount_too_big),
-                        message = getString(R.string.limit_order_insufficient_balance)
+                        message = error
+                    )
+
+                    analytics.logEvent(
+                        USER_CLICK_BUY_SELL_ERROR,
+                        Bundle().createEvent(error)
                     )
                 }
 
                 binding.order?.amountTooSmall(srcAmount, dstAmount) == true -> {
+                    error = getString(R.string.limit_order_amount_too_small)
                     showAlertWithoutIcon(
                         title = getString(R.string.invalid_amount),
-                        message = getString(R.string.limit_order_amount_too_small)
+                        message = error
+                    )
+                    analytics.logEvent(
+                        USER_CLICK_BUY_SELL_ERROR,
+                        Bundle().createEvent(error)
                     )
                 }
 
                 binding.edtPrice.textToDouble() == 0.0 -> {
+                    error = getString(R.string.limit_order_invalid_rate)
                     showAlertWithoutIcon(
                         title = getString(R.string.invalid_amount),
-                        message = getString(R.string.limit_order_invalid_rate)
+                        message = error
+                    )
+                    analytics.logEvent(
+                        USER_CLICK_BUY_SELL_ERROR,
+                        Bundle().createEvent(error)
                     )
                 }
 
                 priceText.toBigDecimalOrDefaultZero() > marketPrice.toBigDecimalOrDefaultZero() * 10.toBigDecimal() -> {
+                    error = getString(R.string.limit_order_rate_too_big)
                     showAlertWithoutIcon(
                         title = getString(R.string.invalid_amount),
-                        message = getString(R.string.limit_order_rate_too_big)
+                        message = error
+                    )
+                    analytics.logEvent(
+                        USER_CLICK_BUY_SELL_ERROR,
+                        Bundle().createEvent(error)
                     )
                 }
 
                 userInfo == null || userInfo!!.uid <= 0 -> {
                     moveToLoginTab()
+                    error = getString(
+                        R.string.sign_in_to_use_limit_order_feature
+                    )
                     showAlertWithoutIcon(
                         title = getString(R.string.sign_in_required_title),
-                        message = getString(
-                            R.string.sign_in_to_use_limit_order_feature
-                        )
+                        message = error
+                    )
+                    analytics.logEvent(
+                        USER_CLICK_BUY_SELL_ERROR,
+                        Bundle().createEvent(error)
                     )
                 }
 
                 (wallet?.isPromo == true) -> {
+                    error = getString(
+                        R.string.submit_order_promo_code
+                    )
                     showAlertWithoutIcon(
-                        title = getString(R.string.title_error), message = getString(
-                            R.string.submit_order_promo_code
-                        )
+                        title = getString(R.string.title_error),
+                        message = error
+                    )
+                    analytics.logEvent(
+                        USER_CLICK_BUY_SELL_ERROR,
+                        Bundle().createEvent(error)
                     )
                 }
 
                 eleigibleAddress?.success == true && eleigibleAddress?.eligibleAddress != true -> {
+                    error = getString(R.string.address_not_eligible)
                     showAlertWithoutIcon(
                         title = getString(R.string.title_error),
-                        message = getString(R.string.address_not_eligible)
+                        message = error
+                    )
+                    analytics.logEvent(
+                        USER_CLICK_BUY_SELL_ERROR,
+                        Bundle().createEvent(error)
                     )
                 }
 
                 else -> binding.order?.let {
                     viewModel.checkEligibleWallet(wallet)
+                    analytics.logEvent(
+                        if (isSell) USER_CLICK_SELL else USER_CLICK_BUY,
+                        Bundle().createEvent(it.displayTokenPair)
+                    )
 
                 }
             }

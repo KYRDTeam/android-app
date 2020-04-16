@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
@@ -25,7 +26,10 @@ import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.USER_CLICK_FAV
+import com.kyberswap.android.util.USER_CLICK_LO_V1
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isNetworkAvailable
 import io.reactivex.disposables.CompositeDisposable
@@ -90,6 +94,9 @@ class MarketFragment : BaseFragment() {
 
     private val isLogin: Boolean
         get() = userInfo != null && userInfo!!.uid > 0
+
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -217,6 +224,10 @@ class MarketFragment : BaseFragment() {
 
         }, {
             viewModel.saveFav(it, isLogin)
+            analytics.logEvent(
+                USER_CLICK_FAV,
+                Bundle().createEvent()
+            )
         })
         binding.rvMarket.adapter = adapter
         viewModel.getMarketsCallback.observe(viewLifecycleOwner, Observer { event ->
@@ -273,14 +284,15 @@ class MarketFragment : BaseFragment() {
         })
         binding.tvLimitOrderV1.setOnClickListener {
             navigator.navigateToLimitOrderV1(currentFragment)
+            analytics.logEvent(
+                USER_CLICK_LO_V1,
+                Bundle().createEvent()
+            )
         }
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
         }
-
-
-
 
         marketMap.entries.forEach { entry ->
             if (entry.value == quote) {
@@ -317,7 +329,6 @@ class MarketFragment : BaseFragment() {
                 }.observeOn(schedulerProvider.ui())
                 .subscribe { searchedText ->
                     adapter.submitFilterList(filterMarkets(currentMarket ?: Token.ETH_SYMBOL_STAR))
-
                 })
 
         binding.flPair.setOnClickListener {

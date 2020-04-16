@@ -8,6 +8,7 @@ import com.kyberswap.android.R
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.model.LocalLimitOrder
+import com.kyberswap.android.domain.model.MarketItem
 import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.domain.model.SocialInfo
 import com.kyberswap.android.domain.model.Token
@@ -137,11 +138,13 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         currentFragment: Fragment?,
         wallet: Wallet?,
         token: Token?,
-        market: String
+        chartMarket: String,
+        market: MarketItem? = null,
+        orderType: Int = LocalLimitOrder.TYPE_BUY
     ) {
         navigateByChildFragmentManager(
             currentFragment,
-            ChartFragment.newInstance(wallet, token, market)
+            ChartFragment.newInstance(wallet, token, chartMarket, market, orderType)
         )
     }
 
