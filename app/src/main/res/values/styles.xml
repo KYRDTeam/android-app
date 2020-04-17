@@ -42,7 +42,7 @@
     </style>
 
     <style name="TextAppearance.Roboto.Regular" parent="android:TextAppearance">
-        <item name="fontPath">fonts/Roboto-Roboto-Regular.ttf</item>
+        <item name="fontPath">fonts/Roboto-Regular.ttf</item>
     </style>
 
     <style name="TextAppearance.Roboto.LimitLine" parent="TextAppearance.Roboto.Medium">

@@ -430,7 +430,7 @@
     <string name="setting_about_url" translatable="false">https://medium.com/kyberswap/get-started-on-kyberswap-mobile-ios-and-android-c56de6d7cc52</string>
     <string name="setting_community_url" translatable="false">https://kyber.network/community</string>
     <string name="setting_support_message">Please send request to support@kyberswap.com</string>
-    <string name="setting_kyber_network_url" translatable="false">https://t.me/kybernetwork</string>
+    <string name="setting_kyber_network_url" translatable="false">https://t.me/KyberSwapOfficial</string>
     <string name="setting_kyber_network_developer_url" translatable="false">https://t.me/KyberDeveloper</string>
     <string name="setting_github_url" translatable="false">https://github.com/KyberSwap/android-app</string>
     <string name="setting_twitter_url" translatable="false">https://twitter.com/KyberSwap</string>
