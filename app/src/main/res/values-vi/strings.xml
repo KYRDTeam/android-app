@@ -725,8 +725,8 @@
     <string name="vol">"Vol: "</string>
     <string name="accelerate_transaction">Chọn phí gas cao hơn để tăng tốc giao dịch</string>
     <string name="customize_gas">Tùy chọn phí gas</string>
-    <string name="preview_order_buy_base_quote">Buy %s with %s</string>
-    <string name="preview_order_sell_base_quote">Sell %s to %s</string>
+    <string name="preview_order_buy_base_quote">Mua %s với %s</string>
+    <string name="preview_order_sell_base_quote">Bán %s với %s</string>
     <string name="limit_order_price_higer_market_price">Tỉ giá bạn đặt cao hơn %s so với tỉ giá hiện tại.</string>
     <string name="limit_order_price_lower_market_price">Tỉ giá bạn đặt thấp hơn %s so với tỉ giá hiện tại.</string>
 

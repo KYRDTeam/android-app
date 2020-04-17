@@ -725,8 +725,8 @@
     <string name="vol">"Vol: "</string>
     <string name="accelerate_transaction">트랜잭션 처리 속도를 높이려면 가스비를 더 높게 설정하세요.</string>
     <string name="customize_gas">가스비 맞춤 설정</string>
-    <string name="preview_order_buy_base_quote">Buy %s with %s</string>
-    <string name="preview_order_sell_base_quote">Sell %s to %s</string>
+    <string name="preview_order_buy_base_quote">%s로 %s 매수</string>
+    <string name="preview_order_sell_base_quote">%s를 %s 로 매도</string>
     <string name="limit_order_price_higer_market_price">원하는 비율이 현재 비율보다 %s 높습니다.</string>
     <string name="limit_order_price_lower_market_price">원하는 비율이 현재 비율보다 %s 낮습니다.</string>
 

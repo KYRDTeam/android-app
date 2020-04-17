@@ -726,8 +726,8 @@
     <string name="vol">"Vol: "</string>
     <string name="accelerate_transaction">选择较高的燃料价格以加快交易处理</string>
     <string name="customize_gas">自定义燃料费用</string>
-    <string name="preview_order_buy_base_quote">Buy %s with %s</string>
-    <string name="preview_order_sell_base_quote">Sell %s to %s</string>
+    <string name="preview_order_buy_base_quote">用%s购买%s</string>
+    <string name="preview_order_sell_base_quote">用%s出售%s</string>
     <string name="limit_order_price_higer_market_price">您期望的汇率比当前汇率高%s。</string>
     <string name="limit_order_price_lower_market_price">您期望的汇率比当前汇率低%s。</string>
 
