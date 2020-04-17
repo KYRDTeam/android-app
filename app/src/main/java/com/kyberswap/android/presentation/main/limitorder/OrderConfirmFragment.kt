@@ -16,7 +16,6 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.util.USER_CLICK_CANCEL_SUBMIT_ORDER_V1
 import com.kyberswap.android.util.USER_CLICK_SUBMIT_ORDER_CONFIRM_V1
@@ -140,19 +139,20 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
     }
 
     fun onBackPress(isRefresh: Boolean = false) {
-        val fm = (activity as MainActivity).getCurrentFragment()?.childFragmentManager ?: return
-        fm.fragments.forEach {
-            if (it is LimitOrderFragment) {
-                it.onRefresh()
-                return@forEach
+        val fm = currentFragment.childFragmentManager
+        for (i in fm.backStackEntryCount - 1 downTo 0) {
+            val name = fm.getBackStackEntryAt(i).name
+            if (name == LimitOrderFragment::class.java.simpleName) {
+                val fragmentByTag = fm.findFragmentByTag(tag)
+                if (fragmentByTag is LimitOrderFragment) {
+                    if (isRefresh) {
+                        fragmentByTag.onRefresh()
+                    }
+                }
+                break
             }
             fm.popBackStack()
         }
-
-//        for (i in 0 until fm.backStackEntryCount) {
-//            fm.popBackStack()
-//        }
-
     }
 
     override fun getLoginStatus() {
