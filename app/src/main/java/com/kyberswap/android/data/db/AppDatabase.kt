@@ -241,7 +241,7 @@ abstract class AppDatabase : RoomDatabase() {
                 // Add new markets table
                 database.execSQL(
                     """
-                    CREATE TABLE IF NOT EXISTS `markets` (`buyPrice` TEXT NOT NULL, `change` TEXT NOT NULL, `pair` TEXT NOT NULL, `sellPrice` TEXT NOT NULL, `volume` TEXT NOT NULL, `isFav` INTEGER NOT NULL, `isSelected` INTEGER NOT NULL, PRIMARY KEY(`pair`))
+                    CREATE TABLE IF NOT EXISTS `markets` (`buyPrice` TEXT NOT NULL, `change` TEXT NOT NULL, `pair` TEXT NOT NULL, `sellPrice` TEXT NOT NULL, `volume` TEXT NOT NULL, `isFav` INTEGER NOT NULL, PRIMARY KEY(`pair`))
                 """.trimIndent()
                 )
 
