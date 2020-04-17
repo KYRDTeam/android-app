@@ -187,7 +187,7 @@
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.firstName}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -212,7 +212,7 @@
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.middleName}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -238,7 +238,7 @@
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.lastName}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -263,7 +263,7 @@
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.nativeFullName}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -289,7 +289,7 @@
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.gender ? @string/male : @string/female}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -314,7 +314,7 @@
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.dob}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -339,7 +339,7 @@
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.nationality}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -374,7 +374,7 @@
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.residentialAddress}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textColorHint="#9ea1aa"
                         android:textSize="14sp" />
@@ -400,7 +400,7 @@
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.country}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -425,7 +425,7 @@
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.city}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -451,7 +451,7 @@
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.zipCode}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -497,7 +497,7 @@
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -582,7 +582,7 @@
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -609,7 +609,7 @@
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.occupationCode}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -636,7 +636,7 @@
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.industryCode}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -662,7 +662,7 @@
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.taxResidencyCountry}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -689,7 +689,7 @@
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.displayTaxIdentificationNumber}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -732,7 +732,7 @@
                         android:letterSpacing="0.07"
                         android:minHeight="60dp"
                         android:singleLine="true"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp"
                         app:documentType="@{info.documentType}" />
@@ -759,7 +759,7 @@
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.documentId}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -786,7 +786,7 @@
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.displayIssueDate}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -813,7 +813,7 @@
                         android:minHeight="60dp"
                         android:singleLine="true"
                         android:text="@{info.displayExpiredDate}"
-                        android:textAppearance="@style/TextAppearance.Montserrat.Medium"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="@color/kyc_submit_active_color"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -969,7 +969,7 @@
                     android:gravity="center"
                     android:minHeight="45dp"
                     android:text="@string/next"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                     android:textColor="#ffffff"
                     android:textSize="16sp" />
             </LinearLayout>

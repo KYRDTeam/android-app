@@ -34,7 +34,7 @@
                 android:gravity="center"
                 android:text="@string/wallet_switch"
                 android:textAllCaps="false"
-                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                 android:textColor="#ffffff"
                 android:textSize="16sp" />
 
@@ -47,7 +47,7 @@
                 android:gravity="center"
                 android:text="@string/wallet_edit"
                 android:textAllCaps="false"
-                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                 android:textColor="#ffffff"
                 android:textSize="16sp" />
 
@@ -60,7 +60,7 @@
                 android:gravity="center"
                 android:text="@string/wallet_delete"
                 android:textAllCaps="false"
-                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                 android:textColor="#ffffff"
                 android:textSize="16sp" />
         </LinearLayout>

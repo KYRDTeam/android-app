@@ -22,7 +22,6 @@ import io.github.inflationx.calligraphy3.TypefaceUtils
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-
 object TextViewBindingAdapter {
     @BindingAdapter("app:resourceId")
     @JvmStatic
@@ -126,7 +125,6 @@ object TextViewBindingAdapter {
         }
     }
 
-
     @BindingAdapter("app:styleBold", "app:font")
     @JvmStatic
     fun styleRadioButtonText(view: RadioButton, bold: String?, font: String) {
@@ -196,7 +194,6 @@ object TextViewBindingAdapter {
         }
     }
 
-
     @BindingAdapter("app:ratePercentage")
     @JvmStatic
     fun ratePercentage(view: TextView, percent: String?) {
@@ -229,6 +226,37 @@ object TextViewBindingAdapter {
         view.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawable, 0)
     }
 
+    @BindingAdapter("app:market24h")
+    @JvmStatic
+    fun market24h(view: TextView, percent: String?) {
+
+        val percentageRate = percent.toBigDecimalOrDefaultZero()
+        val drawable = when {
+            percentageRate > BigDecimal.ZERO -> R.drawable.ic_arrow_up
+            percentageRate < BigDecimal.ZERO -> R.drawable.ic_arrow_down
+            else -> 0
+        }
+        val color = when {
+            percentageRate > BigDecimal.ZERO -> R.color.token_change24h_up
+            percentageRate < BigDecimal.ZERO -> R.color.token_change24h_down
+            else -> R.color.token_change24h_same
+        }
+
+
+        view.setTextColor(ContextCompat.getColor(view.context, color))
+
+        if (percentageRate == BigDecimal.ZERO) {
+            view.text = "--"
+            view.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+        } else {
+            view.text =
+                String.format(
+                    view.context.getString(R.string.percentage_format),
+                    percentageRate.abs().toDouble()
+                )
+            view.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawable, 0)
+        }
+    }
 
     @BindingAdapter("app:rateValue")
     @JvmStatic
@@ -247,7 +275,6 @@ object TextViewBindingAdapter {
     fun transactionDate(view: TextView, time: Long) {
         view.text = DateTimeHelper.transactionDate(time)
     }
-
 
     @BindingAdapter("app:time")
     @JvmStatic
@@ -276,7 +303,6 @@ object TextViewBindingAdapter {
         view.text = displayText
     }
 
-
     @BindingAdapter("app:documentType")
     @JvmStatic
     fun documentType(view: TextView, documentType: String?) {
@@ -286,7 +312,6 @@ object TextViewBindingAdapter {
             view.text = view.context.getString(R.string.personal_id)
         }
     }
-
 
     @BindingAdapter("app:isAbove", "app:alertPrice")
     @JvmStatic
@@ -341,7 +366,6 @@ object TextViewBindingAdapter {
         view.text = StringBuilder()
             .append(percentChange?.setScale(2, RoundingMode.UP)?.toDisplayNumber()).append("%")
     }
-
 
     @BindingAdapter("app:isAbove", "app:percentChange", "app:isFilled")
     @JvmStatic

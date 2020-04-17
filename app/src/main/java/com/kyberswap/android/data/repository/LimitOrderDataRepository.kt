@@ -2,15 +2,22 @@ package com.kyberswap.android.data.repository
 
 import android.content.Context
 import android.util.Base64
+import com.google.gson.Gson
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.LimitOrderApi
+import com.kyberswap.android.data.api.home.TokenApi
+import com.kyberswap.android.data.api.limitorder.FavoritePair
+import com.kyberswap.android.data.api.limitorder.FavoritePairStatus
 import com.kyberswap.android.data.api.limitorder.OrderEntity
 import com.kyberswap.android.data.db.LimitOrderDao
 import com.kyberswap.android.data.db.LocalLimitOrderDao
+import com.kyberswap.android.data.db.MarketDao
 import com.kyberswap.android.data.db.OrderFilterDao
 import com.kyberswap.android.data.db.PendingBalancesDao
+import com.kyberswap.android.data.db.SelectedMarketDao
 import com.kyberswap.android.data.db.TokenDao
+import com.kyberswap.android.data.db.TokenExtDao
 import com.kyberswap.android.data.mapper.FeeMapper
 import com.kyberswap.android.data.mapper.OrderMapper
 import com.kyberswap.android.domain.model.Cancelled
@@ -18,9 +25,12 @@ import com.kyberswap.android.domain.model.EligibleAddress
 import com.kyberswap.android.domain.model.Fee
 import com.kyberswap.android.domain.model.LimitOrderResponse
 import com.kyberswap.android.domain.model.LocalLimitOrder
+import com.kyberswap.android.domain.model.MarketItem
 import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.domain.model.OrderFilter
 import com.kyberswap.android.domain.model.PendingBalances
+import com.kyberswap.android.domain.model.ResponseStatus
+import com.kyberswap.android.domain.model.SelectedMarketItem
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.repository.LimitOrderRepository
@@ -28,25 +38,33 @@ import com.kyberswap.android.domain.usecase.limitorder.CancelOrderUseCase
 import com.kyberswap.android.domain.usecase.limitorder.CheckEligibleAddressUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetLimitOrderFeeUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetLocalLimitOrderDataUseCase
+import com.kyberswap.android.domain.usecase.limitorder.GetMarketUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetNonceUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetPendingBalancesUseCase
 import com.kyberswap.android.domain.usecase.limitorder.GetRelatedLimitOrdersUseCase
+import com.kyberswap.android.domain.usecase.limitorder.GetSelectedMarketUseCase
 import com.kyberswap.android.domain.usecase.limitorder.SaveLimitOrderFilterUseCase
 import com.kyberswap.android.domain.usecase.limitorder.SaveLimitOrderTokenUseCase
 import com.kyberswap.android.domain.usecase.limitorder.SaveLimitOrderUseCase
+import com.kyberswap.android.domain.usecase.limitorder.SaveMarketItemUseCase
+import com.kyberswap.android.domain.usecase.limitorder.SaveSelectedMarketUseCase
 import com.kyberswap.android.domain.usecase.limitorder.SubmitOrderUseCase
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.hexWithPrefix
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
+import okhttp3.MediaType
+import okhttp3.RequestBody
 import org.consenlabs.tokencore.wallet.WalletManager
 import org.web3j.crypto.WalletUtils
 import java.math.BigDecimal
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-
 
 class LimitOrderDataRepository @Inject constructor(
     private val context: Context,
@@ -54,8 +72,12 @@ class LimitOrderDataRepository @Inject constructor(
     private val localLimitOrderDao: LocalLimitOrderDao,
     private val orderFilterDao: OrderFilterDao,
     private val tokenDao: TokenDao,
+    private val tokenExtDao: TokenExtDao,
+    private val marketDao: MarketDao,
+    private val selectedMarketDao: SelectedMarketDao,
     private val pendingBalancesDao: PendingBalancesDao,
     private val limitOrderApi: LimitOrderApi,
+    private val tokenApi: TokenApi,
     private val tokenClient: TokenClient,
     private val orderMapper: OrderMapper,
     private val feeMapper: FeeMapper
@@ -149,7 +171,9 @@ class LimitOrderDataRepository @Inject constructor(
                 param.localLimitOrder.minRateWithPrecision.toString(16).hexWithPrefix(),
                 param.wallet.address,
                 param.localLimitOrder.feeAmountWithPrecision.toString(16).hexWithPrefix(),
-                it
+                it,
+                param.localLimitOrder.sideTrade
+
             ).map {
                 orderMapper.transform(it)
             }.doAfterSuccess {
@@ -181,47 +205,46 @@ class LimitOrderDataRepository @Inject constructor(
     override fun getCurrentLimitOrders(param: GetLocalLimitOrderDataUseCase.Param): Flowable<LocalLimitOrder> {
         return Flowable.fromCallable {
             val wallet = param.wallet
+            val type = param.type
             val defaultLimitOrder = when (val limitOrder =
-                localLimitOrderDao.findLocalLimitOrderByAddress(wallet.address)) {
+                localLimitOrderDao.findLocalLimitOrderByAddress(wallet.address, type)) {
                 null -> {
-                    val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)
-                    val wethToken = tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)
+                    val ethStarToken = getEthStarToken()
+                    val kncToken = tokenDao.getTokenBySymbol(Token.KNC)
+                    //                    val order = LocalLimitOrder(
+//                        wallet.address,
+//                        defaultSourceToken ?: Token(),
+//                        defaultDestToken ?: Token(),
+//                        type = type
+//                    )
+//
+//                    localLimitOrderDao.insertOrder(order)
+//                    order
 
-                    val ethBalance = ethToken?.currentBalance ?: BigDecimal.ZERO
-                    val wethBalance = wethToken?.currentBalance ?: BigDecimal.ZERO
-
-                    val defaultSourceToken =
-                        wethToken?.updateBalance(ethBalance.plus(wethBalance))?.copy(
-                            tokenSymbol = Token.ETH_SYMBOL_STAR
-                        )
-
-                    val defaultDestToken = tokenDao.getTokenBySymbol(Token.KNC)
-
-                    val order = LocalLimitOrder(
-                        wallet.address,
-                        defaultSourceToken ?: Token(),
-                        defaultDestToken ?: Token()
-                    )
-
-                    localLimitOrderDao.insertOrder(order)
-                    order
-                }
-                else -> limitOrder.copy(
-                    tokenSource = if (limitOrder.tokenSource.selectedWalletAddress != wallet.address) {
-                        limitOrder.tokenSource.updateSelectedWallet(wallet)
+                    val srcToken = if (type == LocalLimitOrder.TYPE_SELL) {
+                        kncToken
                     } else {
-                        limitOrder.tokenSource
-                    },
-                    tokenDest = if (limitOrder.tokenDest.selectedWalletAddress != wallet.address) {
-                        limitOrder.tokenDest.updateSelectedWallet(wallet)
-                    } else {
-                        limitOrder.tokenDest
+                        ethStarToken
                     }
-                )
+
+                    val dstToken = if (type == LocalLimitOrder.TYPE_SELL) {
+                        ethStarToken
+                    } else {
+                        kncToken
+                    }
+
+                    LocalLimitOrder(
+                        wallet.address,
+                        tokenSource = srcToken ?: Token(),
+                        tokenDest = dstToken ?: Token(),
+                        type = type
+                    )
+                }
+                else -> limitOrder
             }
 
-            val source = updateBalance(defaultLimitOrder.tokenSource, wallet)
-            val dest = updateBalance(defaultLimitOrder.tokenDest, wallet)
+            val source = getRecentBalance(defaultLimitOrder.tokenSource, wallet)
+            val dest = getRecentBalance(defaultLimitOrder.tokenDest, wallet)
 
             val order = when {
                 source.isETHWETH -> {
@@ -232,49 +255,50 @@ class LimitOrderDataRepository @Inject constructor(
 
                     defaultLimitOrder.copy(
                         ethToken = ethToken,
-                        wethToken = wethToken
+                        wethToken = wethToken,
+                        tokenSource = source,
+                        tokenDest = dest
                     )
                 }
-                else -> defaultLimitOrder
+                else -> defaultLimitOrder.copy(
+                    tokenSource = source,
+                    tokenDest = dest
+                )
             }
-
-            val orderWithToken = order.copy(
-                tokenSource = source,
-                tokenDest = dest
-            )
-
-            localLimitOrderDao.insertOrder(orderWithToken)
-            orderWithToken
+            localLimitOrderDao.insertOrder(order)
+            order
         }.flatMap {
-            localLimitOrderDao.findLocalLimitOrderByAddressFlowable(param.wallet.address)
+            localLimitOrderDao.findLocalLimitOrderByAddressFlowable(
+                param.wallet.address,
+                param.type
+            )
                 .defaultIfEmpty(it)
         }
     }
 
+    private fun getTokenBalance(
+        symbol: String,
+        wallet: Wallet
+    ): BigDecimal {
+        val token = tokenDao.getTokenBySymbol(symbol)
+        return if (token?.selectedWalletAddress != wallet.address) {
+            token?.updateSelectedWallet(wallet)
+        } else {
+            token
+        }?.currentBalance ?: BigDecimal.ZERO
+    }
 
-    private fun updateBalance(token: Token, wallet: Wallet): Token {
+    private fun getRecentBalance(token: Token, wallet: Wallet): Token {
         return when {
             token.isETHWETH -> {
-
-                val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)
-                val wethToken = tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)
-                val ethBalance = if (ethToken?.selectedWalletAddress != wallet.address) {
-                    ethToken?.updateSelectedWallet(wallet)
-                } else {
-                    ethToken
-                }?.currentBalance ?: BigDecimal.ZERO
-
-                val wethBalance = if (wethToken?.selectedWalletAddress != wallet.address) {
-                    wethToken?.updateSelectedWallet(wallet)
-                } else {
-                    wethToken
-                }?.currentBalance ?: BigDecimal.ZERO
-
+                val ethBalance = getTokenBalance(Token.ETH_SYMBOL, wallet)
+                val wethBalance = getTokenBalance(Token.WETH_SYMBOL, wallet)
                 token.updateBalance(
                     ethBalance.plus(wethBalance)
                 )
             }
             else -> {
+
                 val updatedBalanceToken = tokenDao.getTokenByAddress(token.tokenAddress) ?: token
                 when {
                     updatedBalanceToken.selectedWalletAddress != wallet.address -> updatedBalanceToken.updateSelectedWallet(
@@ -285,7 +309,6 @@ class LimitOrderDataRepository @Inject constructor(
             }
         }
     }
-
 
     override fun saveLimitOrder(param: SaveLimitOrderUseCase.Param): Completable {
         return Completable.fromCallable {
@@ -322,6 +345,103 @@ class LimitOrderDataRepository @Inject constructor(
                 )
             }
             order?.let { localLimitOrderDao.updateOrder(it) }
+        }
+    }
+
+    private fun getEthStarToken(): Token? {
+        val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)
+        val wethToken = tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)
+
+        val ethBalance = ethToken?.currentBalance ?: BigDecimal.ZERO
+        val wethBalance = wethToken?.currentBalance ?: BigDecimal.ZERO
+
+        return wethToken?.updateBalance(ethBalance.plus(wethBalance))?.copy(
+            tokenSymbol = Token.ETH_SYMBOL_STAR
+        )
+    }
+
+    override fun saveSelectedMarket(param: SaveSelectedMarketUseCase.Param): Completable {
+        return Completable.fromCallable {
+            val walletAddress = param.wallet.walletAddress
+            var currentMarket =
+                selectedMarketDao.getSelectedMarketByWalletAddress(walletAddress)
+            if (currentMarket != null) {
+                currentMarket = currentMarket.copy(pair = param.marketItem.pair)
+                selectedMarketDao.updateSelectedMarket(currentMarket)
+            } else {
+                currentMarket = SelectedMarketItem(
+                    walletAddress,
+                    param.marketItem.pair
+                )
+                selectedMarketDao.insertSelectedMarket(
+                    currentMarket
+                )
+            }
+
+            val ethStarToken = getEthStarToken()
+
+            val quoteToken =
+                if (currentMarket.quote.equals(Token.ETH_SYMBOL_STAR, true)) {
+                    ethStarToken
+                } else {
+                    tokenDao.getKyberListedTokenBySymbol(currentMarket.quote)
+                } ?: Token()
+
+            val srcToken = getRecentBalance(quoteToken, param.wallet)
+
+            val baseToken =
+                if (currentMarket.base.equals(Token.ETH_SYMBOL_STAR, true)) {
+                    ethStarToken
+                } else {
+                    tokenDao.getKyberListedTokenBySymbol(currentMarket.base)
+                } ?: Token()
+
+            val dstToken = getRecentBalance(baseToken, param.wallet)
+
+            val buyOrder = LocalLimitOrder(
+                walletAddress,
+                tokenSource = srcToken,
+                tokenDest = dstToken,
+                type = LocalLimitOrder.TYPE_BUY
+            )
+
+            val sellOrder = LocalLimitOrder(
+                walletAddress,
+                tokenSource = dstToken,
+                tokenDest = srcToken,
+                type = LocalLimitOrder.TYPE_SELL
+            )
+
+            localLimitOrderDao.insertOrder(buyOrder)
+            localLimitOrderDao.insertOrder(sellOrder)
+
+        }
+    }
+
+    override fun getSelectedMarket(param: GetSelectedMarketUseCase.Param): Flowable<SelectedMarketItem> {
+        return Flowable.fromCallable {
+            var market = selectedMarketDao.getSelectedMarketByWalletAddress(param.wallet.address)
+            if (market == null) {
+                market = SelectedMarketItem(param.wallet.address, MarketItem.DEFAULT_PAIR)
+                selectedMarketDao.insertSelectedMarket(market)
+            }
+            market
+        }.flatMap {
+            selectedMarketDao.getSelectedMarketByWalletAddressFlowable(it.walletAddress)
+        }
+    }
+
+    override fun getMarket(param: GetMarketUseCase.Param): Flowable<MarketItem> {
+        return marketDao.getMarketByPairFlowable(param.pair)
+    }
+
+    override fun getFavoritePairs(): Single<List<FavoritePair>> {
+        return limitOrderApi.getFavoritePairs().map {
+            if (it.success) {
+                it.favoritePairs
+            } else {
+                throw RuntimeException("can't get the favorite pairs")
+            }
         }
     }
 
@@ -396,5 +516,163 @@ class LimitOrderDataRepository @Inject constructor(
                 }
 
         )
+    }
+
+    override fun pollingMarket(): Flowable<List<MarketItem>> {
+        return tokenApi.getPairMarket().map {
+            if (it.error) {
+                throw RuntimeException()
+            } else {
+                it.data.map { entity ->
+                    MarketItem(entity)
+                }
+            }
+        }
+            .doAfterSuccess { markets ->
+                val spLimitOrder = tokenDao.limitOrderTokens.filter { it.isListed }.map {
+                    it.symbol.toLowerCase(Locale.getDefault())
+                }
+
+                val favMarket = marketDao.favMarkets.map {
+                    it.pair to it.isFav
+                }.toMap()
+
+                val combinedMarkets = markets.filter { item ->
+                    spLimitOrder.contains(
+                        item.pair.split("_").last().toLowerCase(Locale.getDefault())
+                    )
+                }.groupBy { it.combinedPair }
+                    .map { maps ->
+                        var volume: BigDecimal = BigDecimal.ZERO
+                        var change: String? = null
+                        var pair = ""
+                        maps.value.forEach {
+                            volume += it.volume.toBigDecimalOrDefaultZero()
+                            if (it.pair.contains(Token.WETH_SYMBOL)) {
+                                change = it.change
+                            }
+                            pair = it.combinedPair
+                        }
+
+                        val item = maps.value.first()
+                        item.copy(
+                            pair = pair,
+                            change = change ?: item.change,
+                            volume = volume.toDisplayNumber(),
+                            isFav = favMarket[pair] ?: false
+                        )
+                    }
+                marketDao.updateLatestMarketItem(combinedMarkets)
+            }
+            .toFlowable()
+            .repeatWhen {
+                it.delay(60, TimeUnit.SECONDS)
+            }
+            .retryWhen { throwable ->
+                throwable.compose(zipWithFlatMap())
+            }
+    }
+
+    override fun getMarkets(forceRefresh: Boolean): Flowable<List<MarketItem>> {
+        return if (forceRefresh) {
+            tokenApi.getPairMarket()
+                .map {
+                    if (it.error) {
+                        throw RuntimeException()
+                    } else {
+                        it.data.map { entity ->
+                            MarketItem(entity)
+                        }
+                    }
+                }
+                .doAfterSuccess { markets ->
+
+                    val spLimitOrder = tokenDao.limitOrderTokens.filter { it.isListed }.map {
+                        it.symbol.toLowerCase(Locale.getDefault())
+                    }
+
+                    val favMarket = marketDao.favMarkets.map {
+                        it.pair to it.isFav
+                    }.toMap()
+
+                    val combinedMarkets = markets.filter { item ->
+                        spLimitOrder.contains(
+                            item.pair.split("_").last().toLowerCase(Locale.getDefault())
+                        )
+                    }.groupBy { it.combinedPair }
+                        .map { maps ->
+                            var volume: BigDecimal = BigDecimal.ZERO
+                            var change = ""
+                            var pair = ""
+                            maps.value.forEach {
+                                volume += it.volume.toBigDecimalOrDefaultZero()
+                                if (it.pair.contains(Token.WETH_SYMBOL)) {
+                                    change = it.change
+                                }
+                                pair = it.combinedPair
+                            }
+
+                            val item = maps.value.first()
+                            item.copy(
+                                pair = pair,
+                                change = change,
+                                volume = volume.toDisplayNumber(),
+                                isFav = favMarket[pair] ?: false
+                            )
+                        }
+                    marketDao.updateLatestMarketItem(combinedMarkets)
+                }
+                .toFlowable()
+        } else {
+            marketDao.all
+        }
+    }
+
+    override fun saveMarketIem(param: SaveMarketItemUseCase.Param): Single<ResponseStatus> {
+        if (param.isLogin) {
+            val base = param.marketItem.baseSymbol
+            val quote = param.marketItem.quoteSymbol
+            val body =
+                RequestBody.create(
+                    MediaType.parse("text/plain"),
+                    Gson().toJson(
+                        FavoritePairStatus(
+                            if (base.equals(
+                                    Token.ETH_SYMBOL_STAR,
+                                    true
+                                )
+                            ) Token.WETH_SYMBOL else base,
+                            if (quote.equals(
+                                    Token.ETH_SYMBOL_STAR,
+                                    true
+                                )
+                            ) Token.WETH_SYMBOL else quote,
+                            param.marketItem.isFav
+                        )
+                    )
+                )
+            return limitOrderApi.favPair(body).map {
+                ResponseStatus(it)
+            }
+        } else {
+            return Single.fromCallable {
+                val marketByPair = marketDao.getMarketByPair(param.marketItem.pair)
+                marketByPair?.let {
+                    marketDao.updateMarket(it.copy(isFav = param.marketItem.isFav))
+                }
+                ResponseStatus(success = true)
+            }
+        }
+    }
+
+    override fun getStableQuoteTokens(): Single<List<String>> {
+        return Single.fromCallable {
+            tokenExtDao.allTokens
+                .filter {
+                    it.quotePriority == 3
+                }.map {
+                    it.tokenSymbol
+                }
+        }
     }
 }

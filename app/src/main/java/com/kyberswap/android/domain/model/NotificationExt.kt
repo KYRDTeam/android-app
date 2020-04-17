@@ -43,7 +43,9 @@ data class NotificationExt(
     val percent: String = "",
     val link: String = "",
     @SerializedName("notification_id")
-    val notificationId: Long = 0L
+    val notificationId: Long = 0L,
+    @SerializedName("side_trade")
+    val sideTrade: String = ""
 ) : Parcelable {
     constructor(entity: NotificationExtEntity) : this(
         entity.type ?: "",
@@ -62,7 +64,8 @@ data class NotificationExt(
         entity.alertId ?: 0L,
         entity.base ?: "",
         entity.token ?: "",
-        entity.percent ?: ""
+        entity.percent ?: "",
+        sideTrade = entity.sideTrade ?: ""
     )
 
     val hasLink: Boolean

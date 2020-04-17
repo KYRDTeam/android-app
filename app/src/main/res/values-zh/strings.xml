@@ -70,6 +70,8 @@
     <string name="default_balance">0</string>
     <string name="buy">购买</string>
     <string name="sell">卖</string>
+    <string name="buy_token">购买 %s</string>
+    <string name="sell_token">卖 %s</string>
     <string name="unit_usd">USD</string>
     <string name="unit_eth">ETH</string>
     <string name="your_balance_is_empty">您的余额是空的</string>
@@ -705,5 +707,28 @@
     <string name="kyber_code_invalid_nonce">Invalid nonce</string>
     <string name="notification_setting">通知设置</string>
     <string name="price_trending_notification">价格变化通知</string>
+    <string name="order_confirmed_info">限价订单是非托管的，这意味着%s将保留在您的钱包中，直到%s的价格达到%s</string>
+    <string name="available_balance">可用余额</string>
+    <string name="price">价格</string>
+    <string name="amount">数量</string>
+    <string name="market">市场</string>
+    <string name="limit_order_v1">Limit Order V1</string>
+    <string name="token_wbtc">WBTC</string>
+    <string name="volume">交易量</string>
+    <string name="quantity">数量</string>
+    <string name="your_price">你设定的价格</string>
+    <string name="market_price">市场价格</string>
+    <string name="fee">费用</string>
+    <string name="total">估值</string>
+    <string name="preview_order">预览订单</string>
+    <string name="change_price">更改价格</string>
+    <string name="cancel_order">取消订单</string>
+    <string name="vol">"Vol: "</string>
+    <string name="accelerate_transaction">选择较高的燃料价格以加快交易处理</string>
+    <string name="customize_gas">自定义燃料费用</string>
+    <string name="preview_order_buy_base_quote">用%s购买%s</string>
+    <string name="preview_order_sell_base_quote">用%s出售%s</string>
+    <string name="limit_order_price_higer_market_price">您期望的汇率比当前汇率高%s。</string>
+    <string name="limit_order_price_lower_market_price">您期望的汇率比当前汇率低%s。</string>
 
 </resources>

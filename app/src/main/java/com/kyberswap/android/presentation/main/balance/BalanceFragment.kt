@@ -40,7 +40,6 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-
 class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     private lateinit var binding: FragmentBalanceBinding
@@ -61,7 +60,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     private val isCurrencySelected: Boolean
         get() = binding.header.tvEth == orderByOptions[orderBySelectedIndex] && binding.header.tvEth.compoundDrawables.isNotEmpty()
-            || binding.header.tvUsd == orderByOptions[orderBySelectedIndex] && binding.header.tvUsd.compoundDrawables.isNotEmpty()
+                || binding.header.tvUsd == orderByOptions[orderBySelectedIndex] && binding.header.tvUsd.compoundDrawables.isNotEmpty()
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(BalanceViewModel::class.java)
@@ -493,7 +492,6 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         }
     }
 
-
     private fun setSelectedOption(view: View) {
         if (view == currentSelectedView) return
         currentSelectedView?.isSelected = false
@@ -579,12 +577,12 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         navigator.navigateToSendScreen((activity as MainActivity).getCurrentFragment(), wallet)
     }
 
-
     private fun navigateToChartScreen(token: Token?) {
         navigator.navigateToChartScreen(
             (activity as MainActivity).getCurrentFragment(),
             wallet,
-            token
+            token,
+            if (wallet?.unit == getString(R.string.unit_usd)) token?.symbol + "_USDC" else token?.symbol + "_ETH"
         )
     }
 
@@ -592,7 +590,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         if (searchedString.isEmpty()) return tokens
         return tokens.filter { token ->
             token.tokenSymbol.toLowerCase(Locale.getDefault()).contains(searchedString) or
-                token.tokenName.toLowerCase(Locale.getDefault()).contains(searchedString)
+                    token.tokenName.toLowerCase(Locale.getDefault()).contains(searchedString)
         }
     }
 
@@ -600,7 +598,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         val tokenList = tokenAdapter?.getFullTokenList() ?: listOf()
         return tokenList.filter { token ->
             token.tokenSymbol.toLowerCase(Locale.getDefault()).contains(searchedString) or
-                token.tokenName.toLowerCase(Locale.getDefault()).contains(searchedString)
+                    token.tokenName.toLowerCase(Locale.getDefault()).contains(searchedString)
         }
     }
 
@@ -622,7 +620,6 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         }
         return balance
     }
-
 
     override fun onDestroyView() {
         viewModel.compositeDisposable.clear()
@@ -667,7 +664,6 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
         setSelectedOption(view)
     }
-
 
     private fun setNameBalanceSelectedOption(index: Int, forceUpdate: Boolean = false) {
         tokenAdapter?.let {

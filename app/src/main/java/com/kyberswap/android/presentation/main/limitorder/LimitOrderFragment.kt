@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.jakewharton.rxbinding3.widget.textChanges
@@ -31,7 +32,6 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.LoginState
-import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
@@ -44,8 +44,11 @@ import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.main.swap.GetMarketRateState
 import com.kyberswap.android.presentation.main.swap.SwapTokenTransactionState
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.USER_CLICK_SUBMIT_LO_V1
+import com.kyberswap.android.util.USER_CLICK_SUBMIT_LO_V1_WARNING
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.colorRate
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.exactAmount
 import com.kyberswap.android.util.ext.getAmountOrDefaultValue
 import com.kyberswap.android.util.ext.hideKeyboard
@@ -55,7 +58,6 @@ import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.percentage
 import com.kyberswap.android.util.ext.setAmount
 import com.kyberswap.android.util.ext.setViewEnable
-import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.textToDouble
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
@@ -73,8 +75,7 @@ import java.math.RoundingMode
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
-
-class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, LoginState {
+class LimitOrderFragment : BaseFragment(), LoginState {
 
     private lateinit var binding: FragmentLimitOrderBinding
 
@@ -107,6 +108,9 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
+
     var hasUserFocus: Boolean? = false
 
     private var userInfo: UserInfo? = null
@@ -115,7 +119,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
     private val srcAmount: String
         get() = binding.edtSource.text.toString()
-    private val destAmount: String
+    private val dstAmount: String
         get() = binding.edtDest.text.toString()
 
     private val expectedDestAmount: String
@@ -147,14 +151,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 }
             }
 
-    private val dstAmount: String
-        get() = binding.edtDest.text.toString()
-
     private val rateText: String
         get() = binding.edtRate.text.toString()
 
     private var currentFocus: EditText? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -209,6 +209,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.getSelectedWallet()
+        getLoginStatus()
         binding.tvSubmitOrder.setViewEnable(true)
         notification?.let {
             dialogHelper.showOrderFillDialog(it) { url ->
@@ -222,9 +223,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         binding.walletName = state.wallet.display()
                         if (!state.wallet.isSameWallet(wallet)) {
                             wallet = state.wallet
-                            viewModel.getLimitOrders(wallet)
-                            viewModel.getPendingBalances(wallet)
                             viewModel.getLoginStatus()
+                            viewModel.getLimitOrders(wallet)
                         }
                     }
                     is GetWalletState.ShowError -> {
@@ -304,8 +304,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
             }
         }
 
-        binding.imgMenu.setOnClickListener {
-            showDrawer(true)
+        binding.imgClose.setOnClickListener {
+            activity?.onBackPressed()
         }
 
         binding.tvBalance.setOnClickListener {
@@ -472,7 +472,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                     is CheckEligibleAddressState.Success -> {
                         if (this.eleigibleAddress != state.eligibleAddress || state.isWalletChangeEvent) {
                             this.eleigibleAddress = state.eligibleAddress
-                            if (state.eligibleAddress.success && !state.eligibleAddress.eligibleAddress && currentFragment is LimitOrderFragment) {
+                            if (state.eligibleAddress.success && !state.eligibleAddress.eligibleAddress && currentFragment is LimitOrderV2Fragment) {
                                 showAlertWithoutIcon(
                                     title = getString(R.string.title_error),
                                     message = getString(R.string.address_not_eligible)
@@ -543,15 +543,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
         }
 
-        viewModel.compositeDisposable.add(binding.edtRate.focusChanges()
-            .skipInitialValue()
-            .observeOn(schedulerProvider.ui())
-            .subscribe {
-                if (it) {
-                    hasUserFocus = it
-                }
-            })
-
         viewModel.getGetMarketRateCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -591,6 +582,15 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
             }
         })
 
+        viewModel.compositeDisposable.add(binding.edtRate.focusChanges()
+            .skipInitialValue()
+            .observeOn(schedulerProvider.ui())
+            .subscribe {
+                if (it) {
+                    hasUserFocus = it
+                }
+            })
+
         viewModel.compositeDisposable.add(binding.edtSource.focusChanges()
             .skipInitialValue()
             .observeOn(schedulerProvider.ui())
@@ -615,7 +615,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                         binding.edtSource.setText("")
                     }
                 }
-
             })
 
         viewModel.compositeDisposable.add(binding.edtDest.textChanges()
@@ -731,7 +730,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                                 String.format(
                                     "1 %s = %s %s",
                                     tokenDestSymbol,
-                                    (1.0 / text.toString().toDoubleSafe()).toBigDecimal().toDisplayNumber(),
+                                    (1.0 / text.toString().toDoubleSafe()).toBigDecimal()
+                                        .toDisplayNumber(),
                                     tokenSourceSymbol
                                 )
                         }
@@ -864,6 +864,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         binding.tvSubmitOrderWarning.setOnClickListener {
             setWarning(false)
             saveLimitOrder()
+            analytics.logEvent(
+                USER_CLICK_SUBMIT_LO_V1_WARNING,
+                Bundle().createEvent()
+            )
         }
 
         viewModel.getFeeCallback.observe(viewLifecycleOwner, Observer {
@@ -878,19 +882,25 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
                         binding.tvFee.text = String.format(
                             getString(R.string.limit_order_fee),
-                            srcAmount.toBigDecimalOrDefaultZero().times(state.fee.totalFee.toBigDecimal()).toDisplayNumber().exactAmount(),
+                            srcAmount.toBigDecimalOrDefaultZero()
+                                .times(state.fee.totalFee.toBigDecimal()).toDisplayNumber()
+                                .exactAmount(),
                             tokenSourceSymbol
                         )
 
                         binding.tvFeeNoDiscount.text = String.format(
                             getString(R.string.limit_order_fee_no_discount),
-                            srcAmount.toBigDecimalOrDefaultZero().times(state.fee.totalFee.toBigDecimal()).toDisplayNumber().exactAmount(),
+                            srcAmount.toBigDecimalOrDefaultZero()
+                                .times(state.fee.totalFee.toBigDecimal()).toDisplayNumber()
+                                .exactAmount(),
                             tokenSourceSymbol
                         )
 
                         binding.tvOriginalFee.text = String.format(
                             getString(R.string.limit_order_fee),
-                            srcAmount.toBigDecimalOrDefaultZero().times(state.fee.totalNonDiscountedFee.toBigDecimal()).toDisplayNumber().exactAmount(),
+                            srcAmount.toBigDecimalOrDefaultZero()
+                                .times(state.fee.totalNonDiscountedFee.toBigDecimal())
+                                .toDisplayNumber().exactAmount(),
                             tokenSourceSymbol
                         )
 
@@ -927,8 +937,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
             }
         })
 
-
-
         binding.tvSubmitOrder.setOnClickListener {
             val warningOrderList = viewModel.warningOrderList(
                 binding.edtRate.toBigDecimalOrDefaultZero(),
@@ -946,10 +954,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                     )
                 }
                 srcAmount.toBigDecimalOrDefaultZero() >
-                    viewModel.calAvailableAmount(
-                        binding.order?.tokenSource,
-                        pendingBalances
-                    ).toBigDecimalOrDefaultZero() -> {
+                        viewModel.calAvailableAmount(
+                            binding.order?.tokenSource,
+                            pendingBalances
+                        ).toBigDecimalOrDefaultZero() -> {
                     showAlertWithoutIcon(
                         title = getString(R.string.title_amount_too_big),
                         message = getString(R.string.limit_order_insufficient_balance)
@@ -959,7 +967,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                     title = getString(R.string.title_unsupported),
                     message = getString(R.string.limit_order_source_different_dest)
                 )
-                binding.order?.amountTooSmall(srcAmount, destAmount) == true -> {
+                binding.order?.amountTooSmall(srcAmount, dstAmount) == true -> {
                     showAlertWithoutIcon(
                         title = getString(R.string.invalid_amount),
                         message = getString(R.string.limit_order_amount_too_small)
@@ -1018,6 +1026,10 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 else -> binding.order?.let {
                     viewModel.checkEligibleWallet(wallet)
 
+                    analytics.logEvent(
+                        USER_CLICK_SUBMIT_LO_V1,
+                        Bundle().createEvent()
+                    )
                 }
             }
         }
@@ -1108,6 +1120,8 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                                 binding.tvRelatedOrder.visibility = View.GONE
                             }
                             else -> {
+                                checkEligibleAddress()
+                                verifyEligibleWallet()
                                 getRelatedOrders()
                                 getPendingBalance()
                                 getNonce()
@@ -1181,10 +1195,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
                 }
             }
         })
-
-        binding.imgFlag.setOnClickListener {
-            navigator.navigateToNotificationScreen(currentFragment)
-        }
     }
 
     fun verifyEligibleWallet(isDisablePopup: Boolean = false) {
@@ -1203,7 +1213,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
     }
 
     fun showFillOrder(notificationLimitOrder: NotificationLimitOrder) {
-
         clearFragmentBackStack()
         dialogHelper.showOrderFillDialog(notificationLimitOrder) { url ->
             openUrl(getString(R.string.transaction_etherscan_endpoint_url) + url)
@@ -1219,17 +1228,18 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: WalletChangeEvent) {
-        viewModel.getLimitOrders(wallet)
-        viewModel.getPendingBalances(wallet)
-        viewModel.getLoginStatus()
-        wallet?.let { viewModel.checkEligibleAddress(it, true) }
+        getLoginStatus()
+        getLimitOrder()
+        verifyEligibleWallet()
+        wallet?.let {
+            viewModel.checkEligibleAddress(it, true)
+        }
     }
 
     override fun onStart() {
         super.onStart()
         EventBus.getDefault().register(this)
     }
-
 
     override fun onStop() {
         super.onStop()
@@ -1283,7 +1293,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
         getPendingBalance()
         getNonce()
     }
-
 
     private fun saveOrder() {
         binding.order?.let {
@@ -1368,6 +1377,7 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
     override fun onDestroyView() {
         handler.removeCallbacksAndMessages(null)
         viewModel.compositeDisposable.clear()
+        wallet = null
         super.onDestroyView()
     }
 
@@ -1385,18 +1395,6 @@ class LimitOrderFragment : BaseFragment(), PendingTransactionNotification, Login
 
     fun getRelatedOrders() {
         binding.order?.let { wallet?.let { it1 -> viewModel.getRelatedOrders(it, it1) } }
-    }
-
-    override fun showPendingTxNotification(showNotification: Boolean) {
-        if (::binding.isInitialized) {
-            binding.vNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
-        }
-    }
-
-    override fun showUnReadNotification(showNotification: Boolean) {
-        if (::binding.isInitialized) {
-            binding.vFlagNotification.visibility = if (showNotification) View.VISIBLE else View.GONE
-        }
     }
 
     companion object {

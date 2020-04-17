@@ -1,7 +1,32 @@
 package com.kyberswap.android.domain.repository
 
-import com.kyberswap.android.domain.model.*
-import com.kyberswap.android.domain.usecase.limitorder.*
+import com.kyberswap.android.data.api.limitorder.FavoritePair
+import com.kyberswap.android.domain.model.Cancelled
+import com.kyberswap.android.domain.model.EligibleAddress
+import com.kyberswap.android.domain.model.Fee
+import com.kyberswap.android.domain.model.LimitOrderResponse
+import com.kyberswap.android.domain.model.LocalLimitOrder
+import com.kyberswap.android.domain.model.MarketItem
+import com.kyberswap.android.domain.model.Order
+import com.kyberswap.android.domain.model.OrderFilter
+import com.kyberswap.android.domain.model.PendingBalances
+import com.kyberswap.android.domain.model.ResponseStatus
+import com.kyberswap.android.domain.model.SelectedMarketItem
+import com.kyberswap.android.domain.usecase.limitorder.CancelOrderUseCase
+import com.kyberswap.android.domain.usecase.limitorder.CheckEligibleAddressUseCase
+import com.kyberswap.android.domain.usecase.limitorder.GetLimitOrderFeeUseCase
+import com.kyberswap.android.domain.usecase.limitorder.GetLocalLimitOrderDataUseCase
+import com.kyberswap.android.domain.usecase.limitorder.GetMarketUseCase
+import com.kyberswap.android.domain.usecase.limitorder.GetNonceUseCase
+import com.kyberswap.android.domain.usecase.limitorder.GetPendingBalancesUseCase
+import com.kyberswap.android.domain.usecase.limitorder.GetRelatedLimitOrdersUseCase
+import com.kyberswap.android.domain.usecase.limitorder.GetSelectedMarketUseCase
+import com.kyberswap.android.domain.usecase.limitorder.SaveLimitOrderFilterUseCase
+import com.kyberswap.android.domain.usecase.limitorder.SaveLimitOrderTokenUseCase
+import com.kyberswap.android.domain.usecase.limitorder.SaveLimitOrderUseCase
+import com.kyberswap.android.domain.usecase.limitorder.SaveMarketItemUseCase
+import com.kyberswap.android.domain.usecase.limitorder.SaveSelectedMarketUseCase
+import com.kyberswap.android.domain.usecase.limitorder.SubmitOrderUseCase
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -34,4 +59,19 @@ interface LimitOrderRepository {
 
     fun cancelOrder(param: CancelOrderUseCase.Param): Single<Cancelled>
 
+    fun pollingMarket(): Flowable<List<MarketItem>>
+
+    fun getStableQuoteTokens(): Single<List<String>>
+
+    fun getMarkets(forceRefresh: Boolean): Flowable<List<MarketItem>>
+
+    fun saveMarketIem(param: SaveMarketItemUseCase.Param): Single<ResponseStatus>
+
+    fun saveSelectedMarket(param: SaveSelectedMarketUseCase.Param): Completable
+
+    fun getSelectedMarket(param: GetSelectedMarketUseCase.Param): Flowable<SelectedMarketItem>
+
+    fun getMarket(param: GetMarketUseCase.Param): Flowable<MarketItem>
+
+    fun getFavoritePairs(): Single<List<FavoritePair>>
 }

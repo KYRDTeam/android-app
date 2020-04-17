@@ -129,7 +129,7 @@
                         android:paddingEnd="16dp"
                         android:text="@string/alert_triggered"
                         android:textAllCaps="true"
-                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                        android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                         android:textColor="#5a5e67"
                         android:textSize="12sp" />
 
@@ -145,7 +145,7 @@
                         android:paddingEnd="16dp"
                         android:text="@string/delete_all"
                         android:textAllCaps="true"
-                        android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                        android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                         android:textColor="#fa6566"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -192,7 +192,7 @@
                     android:gravity="center"
                     android:minHeight="45dp"
                     android:text="@string/add_alert"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                     android:textColor="#ffffff"
                     android:textSize="16sp"
                     android:visibility="@{isEmpty ? View.VISIBLE : View.GONE}"

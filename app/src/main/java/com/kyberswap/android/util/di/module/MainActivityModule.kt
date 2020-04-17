@@ -28,16 +28,22 @@ import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.balance.send.SendViewModel
 import com.kyberswap.android.presentation.main.kybercode.KyberCodeFragment
 import com.kyberswap.android.presentation.main.kybercode.KyberCodeViewModel
+import com.kyberswap.android.presentation.main.limitorder.CancelOrderFragment
 import com.kyberswap.android.presentation.main.limitorder.ConvertFragment
 import com.kyberswap.android.presentation.main.limitorder.FilterLimitOrderFragment
 import com.kyberswap.android.presentation.main.limitorder.FilterViewModel
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderTokenSearchFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderTokenSearchViewModel
+import com.kyberswap.android.presentation.main.limitorder.LimitOrderV2Fragment
+import com.kyberswap.android.presentation.main.limitorder.LimitOrderV2ViewModel
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderViewModel
 import com.kyberswap.android.presentation.main.limitorder.ManageOrderFragment
 import com.kyberswap.android.presentation.main.limitorder.ManageOrderViewModel
+import com.kyberswap.android.presentation.main.limitorder.MarketFragment
+import com.kyberswap.android.presentation.main.limitorder.MarketViewModel
 import com.kyberswap.android.presentation.main.limitorder.OrderConfirmFragment
+import com.kyberswap.android.presentation.main.limitorder.OrderConfirmV2Fragment
 import com.kyberswap.android.presentation.main.notification.NotificationFragment
 import com.kyberswap.android.presentation.main.notification.NotificationSettingFragment
 import com.kyberswap.android.presentation.main.notification.NotificationSettingViewModel
@@ -127,6 +133,14 @@ interface MainActivityModule {
 
     @FragmentScoped
     @ContributesAndroidInjector
+    fun contributeLimitOrderV2Fragment(): LimitOrderV2Fragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeMarketFragment(): MarketFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
     fun contributeLimitOrderTokenSearchFragment(): LimitOrderTokenSearchFragment
 
     @FragmentScoped
@@ -143,7 +157,15 @@ interface MainActivityModule {
 
     @FragmentScoped
     @ContributesAndroidInjector
+    fun contributeOrderConfirmV2Fragment(): OrderConfirmV2Fragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
     fun contributeConvertFragment(): ConvertFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeCancelOrderFragment(): CancelOrderFragment
 
     @FragmentScoped
     @ContributesAndroidInjector
@@ -559,5 +581,19 @@ interface MainActivityModule {
     @ViewModelKey(CustomizeGasViewModel::class)
     fun bindCustomizeGasViewModel(
         customizeGasViewModel: CustomizeGasViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(MarketViewModel::class)
+    fun bindMarketViewModel(
+        marketViewModel: MarketViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LimitOrderV2ViewModel::class)
+    fun bindLimitOrderV2ViewModel(
+        limitOrderV2ViewModel: LimitOrderV2ViewModel
     ): ViewModel
 }

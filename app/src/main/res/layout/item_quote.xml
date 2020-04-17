@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presentation.main.MainActivity">
+
+    <data>
+
+        <variable
+            name="symbol"
+            type="String" />
+    </data>
+
+    <TextView
+        android:id="@+id/tokenSymbol"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center|start"
+        android:minWidth="68dp"
+        android:minHeight="32dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:text="@{symbol}"
+        android:textColor="#5a5e67"
+        android:textSize="14sp"
+        android:textStyle="normal" />
+
+
+</layout>

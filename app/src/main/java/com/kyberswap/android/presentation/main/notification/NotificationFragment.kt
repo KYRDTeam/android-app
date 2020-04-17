@@ -23,6 +23,7 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainPagerAdapter
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
+import com.kyberswap.android.presentation.main.limitorder.LimitOrderV2Fragment
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.util.di.ViewModelFactory
@@ -95,6 +96,8 @@ class NotificationFragment : BaseFragment() {
                         handler.post {
                             val currentFragment = act.getCurrentFragment()
                             if (currentFragment is LimitOrderFragment) {
+                                currentFragment.showFillOrder(NotificationLimitOrder(it.data))
+                            } else if (currentFragment is LimitOrderV2Fragment) {
                                 currentFragment.showFillOrder(NotificationLimitOrder(it.data))
                             }
                         }

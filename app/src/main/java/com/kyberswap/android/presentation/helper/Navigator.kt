@@ -8,6 +8,8 @@ import com.kyberswap.android.R
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.model.LocalLimitOrder
+import com.kyberswap.android.domain.model.MarketItem
+import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.domain.model.SocialInfo
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Transaction
@@ -26,11 +28,15 @@ import com.kyberswap.android.presentation.main.balance.chart.ChartFragment
 import com.kyberswap.android.presentation.main.balance.send.SendConfirmActivity
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.kybercode.KyberCodeFragment
+import com.kyberswap.android.presentation.main.limitorder.CancelOrderFragment
 import com.kyberswap.android.presentation.main.limitorder.ConvertFragment
 import com.kyberswap.android.presentation.main.limitorder.FilterLimitOrderFragment
+import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderTokenSearchFragment
 import com.kyberswap.android.presentation.main.limitorder.ManageOrderFragment
+import com.kyberswap.android.presentation.main.limitorder.MarketFragment
 import com.kyberswap.android.presentation.main.limitorder.OrderConfirmFragment
+import com.kyberswap.android.presentation.main.limitorder.OrderConfirmV2Fragment
 import com.kyberswap.android.presentation.main.notification.NotificationFragment
 import com.kyberswap.android.presentation.main.notification.NotificationSettingFragment
 import com.kyberswap.android.presentation.main.profile.ProfileDetailFragment
@@ -121,7 +127,6 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         transaction.commitAllowingStateLoss()
     }
 
-
     fun navigateToBalanceAddressScreen(
         currentFragment: Fragment?
     ) {
@@ -132,9 +137,15 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
     fun navigateToChartScreen(
         currentFragment: Fragment?,
         wallet: Wallet?,
-        token: Token?
+        token: Token?,
+        chartMarket: String,
+        market: MarketItem? = null,
+        orderType: Int = LocalLimitOrder.TYPE_BUY
     ) {
-        navigateByChildFragmentManager(currentFragment, ChartFragment.newInstance(wallet, token))
+        navigateByChildFragmentManager(
+            currentFragment,
+            ChartFragment.newInstance(wallet, token, chartMarket, market, orderType)
+        )
     }
 
     fun navigateToTokenSearchFromSwapTokenScreen(
@@ -148,7 +159,6 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         )
     }
 
-
     fun navigateToTokenSearchFromLimitOrder(
         currentFragment: Fragment?,
         wallet: Wallet?,
@@ -160,6 +170,23 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         )
     }
 
+    fun navigateToLimitOrderMarket(
+        currentFragment: Fragment?, type: Int, quoteSymbol: String?
+    ) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            MarketFragment.newInstance(type, quoteSymbol)
+        )
+    }
+
+    fun navigateToLimitOrderV1(
+        currentFragment: Fragment?
+    ) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            LimitOrderFragment.newInstance()
+        )
+    }
 
     fun navigateToTokenSearchFromSendTokenScreen(
         currentFragment: Fragment?,
@@ -171,7 +198,6 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
             TokenSearchFragment.newInstance(wallet, true, false)
         )
     }
-
 
     fun navigateToSwapConfirmationScreen(wallet: Wallet?) {
         when {
@@ -187,7 +213,6 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
             else -> activity.startActivity(SwapConfirmActivity.newIntent(activity, wallet))
         }
     }
-
 
     fun navigateToSendConfirmationScreen(wallet: Wallet?, isContactExist: Boolean) {
         activity.startActivity(SendConfirmActivity.newIntent(activity, wallet, isContactExist))
@@ -221,7 +246,10 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
     fun navigateToNotificationSettingScreen(
         currentFragment: Fragment?, isPriceNotificationEnable: Boolean
     ) {
-        navigateByChildFragmentManager(currentFragment, NotificationSettingFragment.newInstance(isPriceNotificationEnable))
+        navigateByChildFragmentManager(
+            currentFragment,
+            NotificationSettingFragment.newInstance(isPriceNotificationEnable)
+        )
     }
 
     fun navigateToAddContactScreen(
@@ -253,7 +281,6 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         navigateByChildFragmentManager(currentFragment, TransactionFragment.newInstance(wallet))
     }
 
-
     fun navigateToTransactionFilterScreen(
         currentFragment: Fragment?,
         wallet: Wallet?
@@ -264,7 +291,6 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
             TransactionFilterFragment.newInstance(wallet)
         )
     }
-
 
     fun navigateToSwapTransactionScreen(
         currentFragment: Fragment?,
@@ -319,7 +345,6 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         }
     }
 
-
     private fun navigateByFragmentManager(
         currentFragment: Fragment?,
         newFragment: Fragment
@@ -347,7 +372,6 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
     fun navigateToTermAndCondition() {
         activity.startActivity(TermConditionActivity.newIntent(activity))
     }
-
 
     fun navigateToSignUpConfirmScreen(
         currentFragment: Fragment?,
@@ -390,6 +414,13 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         )
     }
 
+    fun navigateToManageOrderV1(currentFragment: Fragment?, wallet: Wallet?) {
+        navigateByFragmentManager(
+            currentFragment,
+            ManageOrderFragment.newInstance(wallet)
+        )
+    }
+
     fun navigateToLimitOrderFilterScreen(
         currentFragment: Fragment?,
         wallet: Wallet?
@@ -413,6 +444,18 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         )
     }
 
+    fun navigateToOrderConfirmV2Screen(
+        currentFragment: Fragment?,
+        wallet: Wallet?,
+        limitOrder: LocalLimitOrder?
+    ) {
+
+        navigateByChildFragmentManager(
+            currentFragment,
+            OrderConfirmV2Fragment.newInstance(wallet, limitOrder)
+        )
+    }
+
     fun navigateToConvertFragment(
         currentFragment: Fragment?,
         wallet: Wallet?,
@@ -421,6 +464,19 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         navigateByChildFragmentManager(
             currentFragment,
             ConvertFragment.newInstance(wallet, order)
+        )
+    }
+
+    fun navigateToCancelOrderFragment(
+        currentFragment: Fragment?,
+        wallet: Wallet?,
+        orders: ArrayList<Order>,
+        currentOrder: LocalLimitOrder?,
+        needConvertEth: Boolean
+    ) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            CancelOrderFragment.newInstance(wallet, orders, currentOrder, needConvertEth)
         )
     }
 
@@ -487,7 +543,6 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
             PersonalInfoFragment.newInstance()
         )
     }
-
 
     fun navigateToSubmitKYC(currentFragment: Fragment) {
         navigateByChildFragmentManager(

@@ -41,5 +41,8 @@ interface TokenExtDao {
 
     @get:Query("SELECT * FROM token_extras")
     val allTokens: List<TokenExt>
+
+//    @get:Query("SELECT * FROM token_extras WHERE isQuote = 1")
+//    val quotedTokens: List<TokenExt>
 }
 

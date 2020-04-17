@@ -126,6 +126,54 @@ fun TextView.colorRate(rate: BigDecimal) {
     }
 }
 
+fun TextView.colorRateV2(rate: BigDecimal) {
+    try {
+
+        val color: Int
+        val ratePercent =
+            String.format(context.getString(R.string.rate_percent), rate.abs().toString())
+        val text: String
+        when {
+            rate > BigDecimal.ZERO -> {
+
+                color = ContextCompat.getColor(context, R.color.token_change24h_up)
+                text = String.format(
+                    context.getString(R.string.limit_order_price_higer_market_price),
+
+                    ratePercent
+                )
+            }
+            rate < BigDecimal.ZERO -> {
+                color = ContextCompat.getColor(context, R.color.token_change24h_down)
+                text = String.format(
+                    context.getString(R.string.limit_order_price_lower_market_price),
+                    ratePercent
+                )
+            }
+            else -> {
+                color = ContextCompat.getColor(context, R.color.token_change24h_same)
+                text = ""
+            }
+        }
+        if (text.isEmpty()) {
+            setText("")
+            return
+        }
+        val spannableString = SpannableString(text)
+
+        spannableString.setSpan(
+            ForegroundColorSpan(color),
+            spannableString.indexOf(ratePercent),
+            spannableString.indexOf(ratePercent) + ratePercent.length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+        setText(spannableString, TextView.BufferType.SPANNABLE)
+    } catch (ex: Exception) {
+        ex.printStackTrace()
+    }
+}
+
 fun TextView.colorize(colorString: String, color: Int) {
     val spannableString = SpannableString(text)
     if (spannableString.indexOf(colorString) >= 0 && (spannableString.indexOf(colorString) + colorString.length <= spannableString.length)) {

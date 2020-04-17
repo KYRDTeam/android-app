@@ -71,6 +71,8 @@
     <string name="default_balance">0</string>
     <string name="buy">Mua</string>
     <string name="sell">Bán</string>
+    <string name="buy_token">Mua %s</string>
+    <string name="sell_token">Bán %s</string>
     <string name="unit_usd">USD</string>
     <string name="unit_eth">ETH</string>
     <string name="your_balance_is_empty">Số dư của bạn trống</string>
@@ -704,5 +706,28 @@
     <string name="kyber_code_invalid_nonce">Invalid nonce</string>
     <string name="notification_setting">Cài đặt thông báo</string>
     <string name="price_trending_notification">Thông báo về thay đổi tỷ giá</string>
+    <string name="order_confirmed_info">Bạn không cần gửi tiền khi sử dụng Limit Order, điều này có nghĩa là %s sẽ ở nguyên trong ví của bạn cho đến khi %s tỷ  giá đạt %s</string>
+    <string name="available_balance">Số dư khả dụng</string>
+    <string name="price">GIÁ</string>
+    <string name="amount">SỐ LƯỢNG</string>
+    <string name="market">Thị trường</string>
+    <string name="limit_order_v1">Limit Order V1</string>
+    <string name="token_wbtc">WBTC</string>
+    <string name="volume">Lượng giao dịch</string>
+    <string name="quantity">Số lượng</string>
+    <string name="your_price">Giá bạn đặt</string>
+    <string name="market_price">Giá thị trường</string>
+    <string name="fee">Phí</string>
+    <string name="total">Tổng giá trị</string>
+    <string name="preview_order">Xem lệnh</string>
+    <string name="change_price">Thay đổi giá</string>
+    <string name="cancel_order">Hủy lệnh</string>
+    <string name="vol">"Vol: "</string>
+    <string name="accelerate_transaction">Chọn phí gas cao hơn để tăng tốc giao dịch</string>
+    <string name="customize_gas">Tùy chọn phí gas</string>
+    <string name="preview_order_buy_base_quote">Mua %s với %s</string>
+    <string name="preview_order_sell_base_quote">Bán %s với %s</string>
+    <string name="limit_order_price_higer_market_price">Tỉ giá bạn đặt cao hơn %s so với tỉ giá hiện tại.</string>
+    <string name="limit_order_price_lower_market_price">Tỉ giá bạn đặt thấp hơn %s so với tỉ giá hiện tại.</string>
 
 </resources>

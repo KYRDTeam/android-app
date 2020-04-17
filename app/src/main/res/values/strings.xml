@@ -41,10 +41,10 @@
     <string name="word_6">Word #6</string>
     <string name="kyberswap">KyberSwap</string>
     <string name="backup_message">We will give you a list of 12 random words. Please write down on paper and keep safe. This paper is the only way to restore your Kyber Wallet if you lose your phone or forget your password.</string>
-    <string name="bold_font_path" translatable="false">fonts/Montserrat-Bold.ttf</string>
-    <string name="normal_font_path" translatable="false">fonts/Montserrat-Medium.ttf</string>
-    <string name="semi_bold_font_path" translatable="false">fonts/Montserrat-Bold.ttf</string>
-    <string name="semi_bold_italic_font_path" translatable="false">fonts/Montserrat-SemiBoldItalic.ttf</string>
+    <string name="bold_font_path" translatable="false">fonts/Roboto-Bold.ttf</string>
+    <string name="normal_font_path" translatable="false">fonts/Roboto-Medium.ttf</string>
+    <string name="semi_bold_font_path" translatable="false">fonts/Roboto-Bold.ttf</string>
+    <string name="semi_bold_italic_font_path" translatable="false">fonts/Roboto-BoldItalic.ttf</string>
     <string name="verify_word_description">To make sure you have written down all of your backup words. Please enter the following:</string>
     <string name="backup_json">JSON</string>
     <string name="backup_private_key">Private Key</string>
@@ -76,6 +76,8 @@
     <string name="default_balance">0</string>
     <string name="buy">Buy</string>
     <string name="sell">Sell</string>
+    <string name="buy_token">Buy %s</string>
+    <string name="sell_token">Sell %s</string>
     <string name="unit_usd">USD</string>
     <string name="unit_eth">ETH</string>
     <string name="your_balance_is_empty">Your balance is empty</string>
@@ -97,7 +99,7 @@
     <string name="advanced_optional">Advanced (optional)</string>
     <string name="rate">Rate</string>
     <string name="default_source_amount">0.001</string>
-    <string name="percentage_format" formatted="false" translatable="false">"%.2f %%"</string>
+    <string name="percentage_format" formatted="false" translatable="false">"%.2f%%"</string>
     <string name="dest_balance_usd_format" formatted="false" translatable="false">"≈ %s USD"</string>
     <string name="default_dest_balance_usd">≈ 0.0 USD</string>
     <string name="gas_fee_gwei">GAS fee (Gwei)</string>
@@ -428,7 +430,7 @@
     <string name="setting_about_url" translatable="false">https://medium.com/kyberswap/get-started-on-kyberswap-mobile-ios-and-android-c56de6d7cc52</string>
     <string name="setting_community_url" translatable="false">https://kyber.network/community</string>
     <string name="setting_support_message">Please send request to support@kyberswap.com</string>
-    <string name="setting_kyber_network_url" translatable="false">https://t.me/kybernetwork</string>
+    <string name="setting_kyber_network_url" translatable="false">https://t.me/KyberSwapOfficial</string>
     <string name="setting_kyber_network_developer_url" translatable="false">https://t.me/KyberDeveloper</string>
     <string name="setting_github_url" translatable="false">https://github.com/KyberSwap/android-app</string>
     <string name="setting_twitter_url" translatable="false">https://twitter.com/KyberSwap</string>
@@ -694,6 +696,29 @@
     <string name="kyber_code_invalid_nonce">Invalid nonce</string>
     <string name="notification_setting">Notification Setting</string>
     <string name="price_trending_notification">Price Trending Notification</string>
+    <string name="order_confirmed_info">Limit order is non-custodial, which means %s will remain in your wallet till %s price reaches %s</string>
+    <string name="available_balance">Available Balance</string>
+    <string name="price">Price</string>
+    <string name="amount">Amount</string>
+    <string name="market">Market</string>
+    <string name="limit_order_v1">Limit Order V1</string>
+    <string name="token_wbtc">WBTC</string>
+    <string name="volume">Volume</string>
+    <string name="quantity">Quantity</string>
+    <string name="your_price">Your price</string>
+    <string name="market_price">Market price</string>
+    <string name="fee">Fee</string>
+    <string name="total">Total</string>
+    <string name="preview_order">Preview Order</string>
+    <string name="change_price">Change Price</string>
+    <string name="cancel_order">Cancel Order</string>
+    <string name="vol">"Vol: "</string>
+    <string name="accelerate_transaction">Select a higher gas fee to accelerate the processing of your transaction</string>
+    <string name="customize_gas">Customize Gas</string>
+    <string name="preview_order_buy_base_quote">Buy %s with %s</string>
+    <string name="preview_order_sell_base_quote">Sell %s to %s</string>
+    <string name="limit_order_price_higer_market_price">Your price is %s higher than market price</string>
+    <string name="limit_order_price_lower_market_price">Your price is %s lower than market price</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>

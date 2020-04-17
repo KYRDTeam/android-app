@@ -11,6 +11,7 @@
     <color name="colorAccent">#FFFFB046</color>
     <color name="color_mine_shaft">#333333</color>
     <color name="color_divider">#E1E4EB</color>
+    <color name="color_chart_grid_line">#cce7e9ee</color>
     <color name="grey">#555555</color>
     <color name="header_gradient">#4c000000</color>
     <color name="color_fab">#99000000</color>

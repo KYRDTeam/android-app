@@ -113,9 +113,7 @@ class TokenClient @Inject constructor(
         destToken: String,
         srcTokenAmount: BigInteger
     ): Function {
-
         val amount = srcTokenAmount or 2.toBigInteger().pow(255)
-
         return Function(
             "getExpectedRate",
             listOf(

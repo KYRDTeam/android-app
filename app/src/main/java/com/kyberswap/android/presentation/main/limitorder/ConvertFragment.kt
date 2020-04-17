@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.view.focusChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
@@ -19,7 +20,10 @@ import com.kyberswap.android.presentation.common.KEEP_ETH_BALANCE_FOR_GAS
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
+import com.kyberswap.android.util.USER_CLICK_COVERT_ETH_WETH
+import com.kyberswap.android.util.USER_CLICK_COVERT_ETH_WETH_ERROR
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.exactAmount
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.setAmount
@@ -27,7 +31,6 @@ import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import kotlinx.android.synthetic.main.fragment_convert.*
 import java.math.BigDecimal
 import javax.inject.Inject
-
 
 class ConvertFragment : BaseFragment() {
 
@@ -38,6 +41,9 @@ class ConvertFragment : BaseFragment() {
 
     @Inject
     lateinit var appExecutors: AppExecutors
+
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
 
     private var wallet: Wallet? = null
 
@@ -140,7 +146,7 @@ class ConvertFragment : BaseFragment() {
             }
         })
 
-        viewModel.convertCallback.observe(this, Observer {
+        viewModel.convertCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == ConvertState.Loading)
                 when (state) {
@@ -150,11 +156,19 @@ class ConvertFragment : BaseFragment() {
                             message = getString(R.string.transaction_broadcasted_message)
                         )
                         hideKeyboard()
-                        navigator.navigateToOrderConfirmScreen(
-                            currentFragment,
-                            wallet,
-                            limitOrder
-                        )
+                        if (binding.order?.type == LocalLimitOrder.TYPE_LIMIT_ORDER_V1) {
+                            navigator.navigateToOrderConfirmScreen(
+                                currentFragment,
+                                wallet,
+                                limitOrder
+                            )
+                        } else {
+                            navigator.navigateToOrderConfirmV2Screen(
+                                currentFragment,
+                                wallet,
+                                limitOrder
+                            )
+                        }
                     }
                     is ConvertState.ShowError -> {
                         showError(
@@ -174,10 +188,9 @@ class ConvertFragment : BaseFragment() {
         }
 
 
-
         tvConvert.setOnClickListener {
 
-
+            var error = ""
             binding.order?.let {
 
                 when {
@@ -186,20 +199,31 @@ class ConvertFragment : BaseFragment() {
                     }
                     binding.edtConvertedAmount.toBigDecimalOrDefaultZero() <
                         it.minConvertedAmount.toBigDecimalOrDefaultZero() -> {
+
+                        error = String.format(
+                            getString(R.string.min_eth_amount),
+                            it.minConvertedAmount
+                        )
                         showAlertWithoutIcon(
-                            message = String.format(
-                                getString(R.string.min_eth_amount),
-                                it.minConvertedAmount
-                            ),
+                            message = error,
                             title = getString(R.string.invalid_amount)
+                        )
+                        analytics.logEvent(
+                            USER_CLICK_COVERT_ETH_WETH_ERROR,
+                            Bundle().createEvent(error)
                         )
                     }
 
                     binding.edtConvertedAmount.toBigDecimalOrDefaultZero() >
                         it.ethToken.currentBalance -> {
+                        error = getString(R.string.eth_balance_not_enough)
                         showAlertWithoutIcon(
-                            message = getString(R.string.eth_balance_not_enough),
+                            message = error,
                             title = getString(R.string.insufficient_eth)
+                        )
+                        analytics.logEvent(
+                            USER_CLICK_COVERT_ETH_WETH_ERROR,
+                            Bundle().createEvent(error)
                         )
                     }
 
@@ -207,13 +231,19 @@ class ConvertFragment : BaseFragment() {
                         it.availableAmountForTransfer(
                             it.ethToken.currentBalance, it.gasPrice.toBigDecimalOrDefaultZero()
                         ) -> {
+
+                        error = String.format(
+                            getString(R.string.eth_balance_not_enough_for_fee),
+                            it.copy(gasLimit = KEEP_ETH_BALANCE_FOR_GAS.toBigInteger())
+                                .displayGasFee
+                        )
                         showAlertWithoutIcon(
-                            message = String.format(
-                                getString(R.string.eth_balance_not_enough_for_fee),
-                                it.copy(gasLimit = KEEP_ETH_BALANCE_FOR_GAS.toBigInteger())
-                                    .displayGasFee
-                            ),
+                            message = error,
                             title = getString(R.string.insufficient_eth)
+                        )
+                        analytics.logEvent(
+                            USER_CLICK_COVERT_ETH_WETH_ERROR,
+                            Bundle().createEvent(error)
                         )
                     }
 
@@ -223,6 +253,11 @@ class ConvertFragment : BaseFragment() {
                             wallet,
                             it,
                             binding.edtConvertedAmount.toBigDecimalOrDefaultZero()
+                        )
+
+                        analytics.logEvent(
+                            USER_CLICK_COVERT_ETH_WETH,
+                            Bundle().createEvent()
                         )
                     }
                 }

@@ -46,7 +46,7 @@ import com.kyberswap.android.presentation.main.balance.GetRatingInfoState
 import com.kyberswap.android.presentation.main.balance.WalletAdapter
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
-import com.kyberswap.android.presentation.main.limitorder.OrderConfirmFragment
+import com.kyberswap.android.presentation.main.limitorder.LimitOrderV2Fragment
 import com.kyberswap.android.presentation.main.notification.GetUnReadNotificationsState
 import com.kyberswap.android.presentation.main.profile.DataTransferState
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
@@ -69,7 +69,6 @@ import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.toLongSafe
-import com.onesignal.OneSignal
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_drawer.*
 import kotlinx.android.synthetic.main.layout_drawer.view.*
@@ -240,6 +239,16 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                     }
                     is LimitOrderFragment -> {
                         with((currentFragment as LimitOrderFragment)) {
+                            getLimitOrder()
+                            getLoginStatus()
+                            checkEligibleAddress()
+                            verifyEligibleWallet()
+                        }
+                        updateLoginStatus()
+                    }
+
+                    is LimitOrderV2Fragment -> {
+                        with((currentFragment as LimitOrderV2Fragment)) {
                             getLimitOrder()
                             getLoginStatus()
                             checkEligibleAddress()
@@ -877,9 +886,6 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                         it.onBackPress()
                         return
                     }
-                    is OrderConfirmFragment -> {
-                        it.onBackPress()
-                    }
                     is WalletConnectFragment -> {
                         it.onBackPress()
                     }
@@ -890,8 +896,9 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                 (currentFragment as LimitOrderFragment).onRefresh()
             } else if (currentFragment is SwapFragment) {
                 (currentFragment as SwapFragment).getSwap()
+            } else if (currentFragment is LimitOrderV2Fragment) {
+                (currentFragment as LimitOrderV2Fragment).refresh()
             }
-
             currentFragment!!.childFragmentManager.popBackStack()
         } else {
             super.onBackPressed()

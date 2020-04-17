@@ -31,9 +31,9 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.pow
 
-
 class TokenDataRepository @Inject constructor(
     private val tokenClient: TokenClient,
+//    private val tokenApi: TokenApi,
     private val api: SwapApi,
     private val chartApi: ChartApi,
     private val rateDao: RateDao,
@@ -63,7 +63,7 @@ class TokenDataRepository @Inject constructor(
 
                 val srcToEtherRateValue =
                     if ((sourceTokenToEtherRate == null ||
-                            sourceTokenToEtherRate.rate.toBigIntSafe() == BigInteger.ZERO)
+                                sourceTokenToEtherRate.rate.toBigIntSafe() == BigInteger.ZERO)
                         && (param.src == Token.ETH_SYMBOL || param.src == Token.WETH_SYMBOL)
                     ) {
                         BigDecimal.ONE
@@ -76,7 +76,7 @@ class TokenDataRepository @Inject constructor(
 
                 val etherToDestRateValue =
                     if ((etherToDestTokenRate == null ||
-                            etherToDestTokenRate.rate.toBigIntSafe() == BigInteger.ZERO)
+                                etherToDestTokenRate.rate.toBigIntSafe() == BigInteger.ZERO)
                         && (param.dest == Token.ETH_SYMBOL || param.dest == Token.WETH_SYMBOL)
                     ) {
                         BigDecimal.ONE
@@ -93,8 +93,24 @@ class TokenDataRepository @Inject constructor(
 
     override fun getExpectedRate(param: GetExpectedRateUseCase.Param): Flowable<List<String>> {
         val tokenSource = param.tokenSource
+        val tokenDest = param.tokenDest
         val amount = 10.0.pow(tokenSource.tokenDecimal).times(param.srcAmount.toDouble())
             .toBigDecimal().toBigInteger()
+
+//        return tokenApi.getExpectedRate(tokenSource.tokenAddress, tokenDest.tokenAddress, amount)
+//            .map {
+//                if (it.error) {
+//                    throw RuntimeException("Can't get rate from API")
+//                } else {
+//                    listOf(it.expectedRate)
+//                }
+//            }.repeatWhen {
+//                it.delay(15, TimeUnit.SECONDS)
+//            }
+//            .retryWhen { throwable ->
+//                throwable.compose(zipWithFlatMap())
+//            }
+
         return Flowable.fromCallable {
             val expectedRate = tokenClient.getExpectedRate(
                 context.getString(R.string.kyber_address),

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentOrderConfirmBinding
@@ -16,9 +17,11 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.profile.UserInfoState
+import com.kyberswap.android.util.USER_CLICK_CANCEL_SUBMIT_ORDER_V1
+import com.kyberswap.android.util.USER_CLICK_SUBMIT_ORDER_CONFIRM_V1
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import javax.inject.Inject
-
 
 class OrderConfirmFragment : BaseFragment(), LoginState {
 
@@ -36,6 +39,9 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(LimitOrderViewModel::class.java)
@@ -62,7 +68,7 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.imgBack.setOnClickListener {
-            activity?.onBackPressed()
+            onBackPress()
         }
 
         binding.order = limitOrder
@@ -92,10 +98,18 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
 
         binding.tvCancel.setOnClickListener {
             onBackPress()
+            analytics.logEvent(
+                USER_CLICK_CANCEL_SUBMIT_ORDER_V1,
+                Bundle().createEvent(binding.order?.displayTokenPair)
+            )
         }
 
         binding.tvContinue.setOnClickListener {
             viewModel.submitOrder(binding.order, wallet)
+            analytics.logEvent(
+                USER_CLICK_SUBMIT_ORDER_CONFIRM_V1,
+                Bundle().createEvent(binding.order?.displayTokenPair)
+            )
         }
 
         viewModel.submitOrderCallback.observe(viewLifecycleOwner, Observer {
@@ -121,21 +135,24 @@ class OrderConfirmFragment : BaseFragment(), LoginState {
             title = getString(R.string.title_success),
             message = getString(R.string.order_submitted_message)
         )
-        val fm = currentFragment.childFragmentManager
-        for (i in 0 until fm.backStackEntryCount) {
-            fm.popBackStack()
-        }
-        if (currentFragment is LimitOrderFragment) {
-            (currentFragment as LimitOrderFragment).onRefresh()
-        }
+        onBackPress(true)
     }
 
-    fun onBackPress() {
+    fun onBackPress(isRefresh: Boolean = false) {
         val fm = currentFragment.childFragmentManager
-        for (i in 0 until fm.backStackEntryCount) {
+        for (i in fm.backStackEntryCount - 1 downTo 0) {
+            val name = fm.getBackStackEntryAt(i).name
+            if (name == LimitOrderFragment::class.java.simpleName) {
+                val fragmentByTag = fm.findFragmentByTag(tag)
+                if (fragmentByTag is LimitOrderFragment) {
+                    if (isRefresh) {
+                        fragmentByTag.onRefresh()
+                    }
+                }
+                break
+            }
             fm.popBackStack()
         }
-
     }
 
     override fun getLoginStatus() {

@@ -12,6 +12,8 @@ import com.google.android.material.tabs.TabLayout
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentChartBinding
+import com.kyberswap.android.domain.model.LocalLimitOrder
+import com.kyberswap.android.domain.model.MarketItem
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
@@ -22,12 +24,12 @@ import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleSafe
 import kotlinx.android.synthetic.main.activity_main.*
 import java.math.BigDecimal
 import javax.inject.Inject
-
 
 class ChartFragment : BaseFragment() {
 
@@ -43,8 +45,18 @@ class ChartFragment : BaseFragment() {
 
     private var wallet: Wallet? = null
 
+    private var chartMarket: String = ""
+
+    private var market: MarketItem? = null
+
+    private val marketChange: BigDecimal
+        get() = market?.change.toBigDecimalOrDefaultZero()
+
+    private var orderType: Int = LocalLimitOrder.TYPE_BUY
+
     private val rateChange: BigDecimal
-        get() = if (isEth) token?.changeEth24h ?: BigDecimal.ZERO else token?.changeUsd24h
+        get() = if (isSelectedUnitEth) token?.changeEth24h
+            ?: BigDecimal.ZERO else token?.changeUsd24h
             ?: BigDecimal.ZERO
 
     private var currentSelection = 0
@@ -56,28 +68,47 @@ class ChartFragment : BaseFragment() {
         ViewModelProviders.of(this, viewModelFactory).get(ChartViewModel::class.java)
     }
 
-//    private var vol24hData = Data()
-
-//    private val message: String
-//        get() {
-//            return if (isEth) {
-//                vol24hData.eth24hVolume?.toDisplayNumber() ?: ""
-//            } else {
-//                vol24hData.usd24hVolume?.toDisplayNumber() ?: ""
-//            }
-//        }
-
     private val handler by lazy {
         Handler()
     }
 
-    private val isEth: Boolean
+    private val isSelectedUnitEth: Boolean
         get() = wallet?.unit == getString(R.string.unit_eth)
+
+    private val tokenRate: String
+        get() = if (isEth) token?.displayRateEthNow + " ETH" else token?.displayRateUsdNow + " USD"
+
+    private val marketPriceByOrderType: String?
+        get() {
+            return if (orderType == LocalLimitOrder.TYPE_SELL) market?.displaySellPrice
+            else market?.displayBuyPrice
+        }
+
+    private val marketPrice: String
+        get() = marketPriceByOrderType + " " + market?.quoteSymbol
+
+    private val isLimitOrder: Boolean
+        get() = market != null
+
+    private val rate: String?
+        get() = if (isLimitOrder) marketPrice else tokenRate
+
+    private val isEth: Boolean
+        get() = if (quoteToken.isEmpty()) isSelectedUnitEth else isEthQuote
+
+    private val quoteToken: String
+        get() = chartMarket.split("_").last()
+
+    private val isEthQuote: Boolean
+        get() = quoteToken == Token.ETH_SYMBOL
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        token = arguments!!.getParcelable(TOKEN_PARAM)
-        wallet = arguments!!.getParcelable(WALLET_PARAM)
+        token = arguments?.getParcelable(TOKEN_PARAM)
+        wallet = arguments?.getParcelable(WALLET_PARAM)
+        chartMarket = arguments?.getString(CHART_MARKET_PARAM) ?: ""
+        market = arguments?.getParcelable(MARKET_PARAM)
+        orderType = arguments?.getInt(ORDER_TYPE) ?: LocalLimitOrder.TYPE_BUY
     }
 
     override fun onCreateView(
@@ -88,7 +119,6 @@ class ChartFragment : BaseFragment() {
         binding = FragmentChartBinding.inflate(inflater, container, false)
         return binding.root
     }
-
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -102,6 +132,8 @@ class ChartFragment : BaseFragment() {
                     is GetWalletState.Success -> {
                         wallet = state.wallet
                         binding.isEth = isEth
+                        binding.isLimitOrder = isLimitOrder
+                        binding.tvRate.text = rate
                         viewModel.getVol24h(token)
                     }
                     is GetWalletState.ShowError -> {
@@ -121,35 +153,40 @@ class ChartFragment : BaseFragment() {
         chartPagerAdapter.addFragment(
             CandleStickChartFragment.newInstance(
                 token,
-                ChartType.DAY
+                ChartType.DAY,
+                chartMarket
             ),
             getString(R.string.tab_day)
         )
         chartPagerAdapter.addFragment(
             CandleStickChartFragment.newInstance(
                 token,
-                ChartType.WEEK
+                ChartType.WEEK,
+                chartMarket
             ),
             getString(R.string.tab_week)
         )
         chartPagerAdapter.addFragment(
             CandleStickChartFragment.newInstance(
                 token,
-                ChartType.MONTH
+                ChartType.MONTH,
+                chartMarket
             ),
             getString(R.string.tab_month)
         )
         chartPagerAdapter.addFragment(
             CandleStickChartFragment.newInstance(
                 token,
-                ChartType.YEAR
+                ChartType.YEAR,
+                chartMarket
             ),
             getString(R.string.tab_year)
         )
         chartPagerAdapter.addFragment(
             CandleStickChartFragment.newInstance(
                 token,
-                ChartType.ALL
+                ChartType.ALL,
+                chartMarket
             ),
             getString(R.string.tab_all)
         )
@@ -172,11 +209,14 @@ class ChartFragment : BaseFragment() {
                 currentSelection = position
                 val chart = chartPagerAdapter.getRegisteredFragment(position)
                 if (chart is CandleStickChartFragment) {
-                    binding.rate = if (position == 0) {
-                        rateChange
-                    } else {
-                        chart.changedRate
-                    }
+                    binding.rateChange =
+                        if (isLimitOrder) marketChange else {
+                            if (position == 0) {
+                                rateChange
+                            } else {
+                                chart.changedRate
+                            }
+                        }
                 }
             }
         }
@@ -262,20 +302,24 @@ class ChartFragment : BaseFragment() {
                 when (state) {
                     is GetVol24hState.Success -> {
 
-                        val message = if (isEth) {
-                            state.data.eth24hVolume?.toDisplayNumber() ?: ""
-                        } else {
-                            state.data.usd24hVolume?.toDisplayNumber() ?: ""
-                        }
-                        if (message.toDoubleSafe() > 0) {
+                        val message =
+                            if (isEth) {
+                                state.data.eth24hVolume?.toDisplayNumber() ?: ""
+                            } else {
+                                state.data.usd24hVolume?.toDisplayNumber() ?: ""
+                            }
+                        if (message.toDoubleSafe() > 0 || isLimitOrder) {
                             binding.tv24hVol.visibility = View.VISIBLE
                             binding.tv24hTitle.visibility = View.VISIBLE
-                            binding.tv24hVol.text =
+                            binding.tv24hVol.text = if (isLimitOrder) {
+                                market?.displayMarketVol
+                            } else {
                                 String.format(
                                     if (isEth) getString(R.string.token_24h_vol) else getString(
                                         R.string.token_24h_vol_usd
                                     ), message
                                 )
+                            }
                         } else {
                             binding.tv24hVol.visibility = View.INVISIBLE
                             binding.tv24hTitle.visibility = View.INVISIBLE
@@ -305,7 +349,6 @@ class ChartFragment : BaseFragment() {
         })
     }
 
-
     fun getIndexByChartType(chartType: ChartType): Int {
         return when (chartType) {
             ChartType.DAY -> {
@@ -330,14 +373,15 @@ class ChartFragment : BaseFragment() {
 
     fun updateChangeRate(rate: BigDecimal, chartType: ChartType) {
         if (getIndexByChartType(chartType) == currentSelection) {
-            binding.rate = if (binding.vpChart.currentItem == 0) {
-                rateChange
-            } else {
-                rate
+            binding.rateChange = if (isLimitOrder) marketChange else {
+                if (binding.vpChart.currentItem == 0) {
+                    rateChange
+                } else {
+                    rate
+                }
             }
         }
     }
-
 
     private fun moveToSwapTab() {
         if (activity is MainActivity) {
@@ -357,11 +401,23 @@ class ChartFragment : BaseFragment() {
     companion object {
         private const val TOKEN_PARAM = "token_param"
         private const val WALLET_PARAM = "wallet_param"
-        fun newInstance(wallet: Wallet?, token: Token?) =
+        private const val CHART_MARKET_PARAM = "chart_market_param"
+        private const val MARKET_PARAM = "market_param"
+        private const val ORDER_TYPE = "order_type"
+        fun newInstance(
+            wallet: Wallet?,
+            token: Token?,
+            chartMarket: String,
+            market: MarketItem?,
+            orderType: Int
+        ) =
             ChartFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(TOKEN_PARAM, token)
                     putParcelable(WALLET_PARAM, wallet)
+                    putString(CHART_MARKET_PARAM, chartMarket)
+                    putParcelable(MARKET_PARAM, market)
+                    putInt(ORDER_TYPE, orderType)
                 }
             }
     }

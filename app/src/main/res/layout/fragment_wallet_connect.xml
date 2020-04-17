@@ -81,7 +81,7 @@
                     android:layout_marginTop="24dp"
                     android:gravity="center_horizontal"
                     android:lineSpacingExtra="10sp"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                     android:textColor="#2e3957"
                     android:textSize="14sp"
                     tools:text="Trust Wallet
@@ -93,7 +93,7 @@ This is title of Wallet Conneted" />
                     android:layout_marginTop="24dp"
                     android:lineSpacingExtra="38sp"
                     android:text="@string/status"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                     android:textColor="#5a5e67"
                     android:textSize="14sp" />
 
@@ -112,7 +112,7 @@ This is title of Wallet Conneted" />
                     android:layout_marginTop="16dp"
                     android:lineSpacingExtra="38sp"
                     android:text="@string/connected_to"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                     android:textColor="#5a5e67"
                     android:textSize="14sp" />
 
@@ -131,7 +131,7 @@ This is title of Wallet Conneted" />
                     android:layout_marginTop="16dp"
                     android:lineSpacingExtra="38sp"
                     android:text="@string/address"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                     android:textColor="#5a5e67"
                     android:textSize="14sp" />
 

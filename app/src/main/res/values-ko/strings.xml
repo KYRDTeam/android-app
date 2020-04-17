@@ -70,6 +70,8 @@
     <string name="default_balance">0</string>
     <string name="buy">구매</string>
     <string name="sell">판매</string>
+    <string name="buy_token">구매 %s</string>
+    <string name="sell_token">판매 %s</string>
     <string name="unit_usd">USD</string>
     <string name="unit_eth">ETH</string>
     <string name="your_balance_is_empty">잔액이 비어 있습니다</string>
@@ -704,5 +706,28 @@
     <string name="kyber_code_invalid_nonce">Invalid nonce</string>
     <string name="notification_setting">알림 설정</string>
     <string name="price_trending_notification">가격 현황 알림</string>
+    <string name="order_confirmed_info">리밋오더는 비수탁으로 이뤄지기 때문에, %s 가격이 %s에 도달하기 전까지 사용자의 지갑에 %s가 유지됩니다.</string>
+    <string name="available_balance">사용 가능한 잔액</string>
+    <string name="price">가격</string>
+    <string name="amount">금액</string>
+    <string name="market">시장</string>
+    <string name="limit_order_v1">Limit Order V1</string>
+    <string name="token_wbtc">WBTC</string>
+    <string name="volume">볼륨</string>
+    <string name="quantity">양</string>
+    <string name="your_price">사용자 지정 가</string>
+    <string name="market_price">시장가</string>
+    <string name="fee">수수료</string>
+    <string name="total">추정 가치</string>
+    <string name="preview_order">주문 미리보기</string>
+    <string name="change_price">가격 바꾸기</string>
+    <string name="cancel_order">주문 취소하기</string>
+    <string name="vol">"Vol: "</string>
+    <string name="accelerate_transaction">트랜잭션 처리 속도를 높이려면 가스비를 더 높게 설정하세요.</string>
+    <string name="customize_gas">가스비 맞춤 설정</string>
+    <string name="preview_order_buy_base_quote">%s로 %s 매수</string>
+    <string name="preview_order_sell_base_quote">%s를 %s 로 매도</string>
+    <string name="limit_order_price_higer_market_price">원하는 비율이 현재 비율보다 %s 높습니다.</string>
+    <string name="limit_order_price_lower_market_price">원하는 비율이 현재 비율보다 %s 낮습니다.</string>
 
 </resources>

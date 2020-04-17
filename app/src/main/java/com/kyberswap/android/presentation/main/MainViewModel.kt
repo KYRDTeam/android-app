@@ -291,6 +291,7 @@ class MainViewModel @Inject constructor(
 
                 },
                 Consumer {
+                    Timber.e(token.symbol)
                     Timber.e(it.localizedMessage)
                     it.printStackTrace()
                 },

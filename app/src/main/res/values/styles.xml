@@ -4,7 +4,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@android:color/transparent</item>
         <item name="colorAccent">@color/colorAccent</item>
-
+        <item name="android:spinnerStyle">@style/Widget.App.Spinner</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
@@ -37,32 +37,46 @@
 
     </style>
 
-    <style name="TextAppearance.Montserrat.Medium" parent="android:TextAppearance">
-        <item name="fontPath">fonts/Montserrat-Medium.ttf</item>
+    <style name="TextAppearance.Roboto.Medium" parent="android:TextAppearance">
+        <item name="fontPath">fonts/Roboto-Medium.ttf</item>
     </style>
 
-    <style name="TextAppearance.Montserrat.LimitLine" parent="TextAppearance.Montserrat.Medium">
+    <style name="TextAppearance.Roboto.Regular" parent="android:TextAppearance">
+        <item name="fontPath">fonts/Roboto-Regular.ttf</item>
+    </style>
+
+    <style name="TextAppearance.Roboto.LimitLine" parent="TextAppearance.Roboto.Medium">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">#2e3957</item>
     </style>
 
-    <style name="TextAppearance.Tab.Item" parent="TextAppearance.Montserrat.Medium">
+    <style name="TextAppearance.Tab.Item" parent="TextAppearance.Roboto.Medium">
         <item name="android:textSize">12sp</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textColor">#2e3957</item>
     </style>
 
-    <style name="TextAppearance.Montserrat.SemiBold" parent="android:TextAppearance">
-        <item name="fontPath">fonts/Montserrat-SemiBold.ttf</item>
+    <style name="TextAppearance.Roboto.SemiBold" parent="android:TextAppearance">
+        <item name="fontPath">fonts/Roboto-Bold.ttf</item>
     </style>
 
-    <style name="TextAppearance.Montserrat.Bold" parent="android:TextAppearance">
-        <item name="fontPath">fonts/Montserrat-Bold.ttf</item>
+    <style name="TextAppearance.Roboto.Bold" parent="android:TextAppearance">
+        <item name="fontPath">fonts/Roboto-Bold.ttf</item>
+        <item name="android:textStyle">bold</item>
+        <item name="fontFamily">sans-serif</item>
+    </style>
+
+    <style name="TextAppearance.LimitOrder.Tab.Item" parent="TextAppearance.Roboto.Bold">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">#5a5e67</item>
+        <item name="android:textStyle">bold</item>
+        <item name="fontFamily">sans-serif</item>
     </style>
 
 
-    <style name="TextAppearance.Montserrat.SemiBold.Italic" parent="android:TextAppearance">
-        <item name="fontPath">fonts/Montserrat-SemiBoldItalic.ttf</item>
+    <style name="TextAppearance.Roboto.SemiBold.Italic" parent="android:TextAppearance">
+        <item name="fontPath">fonts/Roboto-BoldItalic.ttf</item>
     </style>
 
     <style name="AlertStyle" parent="AppThemeTranslucentStatus">
@@ -116,6 +130,11 @@
     <style name="error_appearance" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/warning_color</item>
         <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="Widget.App.Spinner" parent="@style/Widget.AppCompat.Spinner.DropDown">
+        <item name="android:overlapAnchor">true</item>
+        <item name="android:background">@drawable/spinner_background</item>
     </style>
 
     <style name="success_appearance" parent="@android:style/TextAppearance">

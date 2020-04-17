@@ -44,54 +44,84 @@
                 android:background="@android:color/white"
                 android:minHeight="114dp">
 
-                <View
-                    android:id="@+id/view17"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
                 <TextView
                     android:id="@+id/textView73"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="6dp"
-                    android:text="@{order.displayTokenPair}"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:text="@{ order.isV1 ? order.displayTokenPair : order.isSell ? String.format(@string/sell_token, order.src) : String.format(@string/buy_token, order.dst)}"
+                    android:textAllCaps="true"
+                    android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                     android:textColor="#2c2c2c"
                     android:textSize="14sp"
-                    app:layout_constraintStart_toStartOf="@+id/view17"
-                    app:layout_constraintTop_toTopOf="@+id/view17" />
+                    app:layout_constraintEnd_toStartOf="@+id/textView91"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="KNC/ETH" />
 
                 <TextView
-                    android:id="@+id/textView72"
+                    android:id="@+id/textView91"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
                     android:text="@{order.displayedDate}"
                     android:textColor="#9ea1aa"
                     android:textSize="12sp"
-                    app:layout_constraintEnd_toStartOf="@+id/textView58"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toStartOf="@+id/textView73"
-                    app:layout_constraintTop_toBottomOf="@+id/textView73" />
+                    app:layout_constraintBottom_toBottomOf="@+id/textView73"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/textView73"
+                    app:layout_constraintTop_toTopOf="@+id/textView73"
+                    tools:text="12 Mar 2019" />
+
 
                 <TextView
                     android:id="@+id/textView58"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
                     android:text="@{order.displayAddress}"
                     android:textColor="#141927"
                     android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView72"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/textView72"
-                    app:layout_constraintTop_toTopOf="@+id/textView72" />
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/textView73"
+                    app:layout_constraintTop_toBottomOf="@+id/textView73"
+                    tools:text="0xa4d...4a3025" />
+
+                <TextView
+                    android:id="@+id/tvPriceLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="@string/price"
+                    android:textAllCaps="true"
+                    android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
+                    android:textColor="#9ea1aa"
+                    android:textSize="10sp"
+                    android:textStyle="normal"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView58"
+                    app:layout_constraintEnd_toStartOf="@+id/tvPrice"
+                    app:layout_constraintStart_toStartOf="@+id/textView68"
+                    app:layout_constraintTop_toTopOf="@+id/textView58" />
+
+                <TextView
+                    android:id="@+id/tvPrice"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:fontFamily="sans-serif"
+                    android:text="@{order.displayPrice}"
+                    android:textColor="#141927"
+                    android:textSize="12sp"
+                    android:textStyle="normal"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvPriceLabel"
+                    app:layout_constraintEnd_toStartOf="@+id/textView74"
+                    app:layout_constraintStart_toEndOf="@+id/tvPriceLabel"
+                    app:layout_constraintTop_toTopOf="@+id/tvPriceLabel" />
 
                 <TextView
                     android:id="@+id/textView74"
@@ -109,10 +139,11 @@
                     android:textColor="#ffffff"
                     android:textSize="10sp"
                     app:layout_constraintBottom_toBottomOf="@+id/textView58"
-                    app:layout_constraintEnd_toEndOf="@+id/view17"
-                    app:layout_constraintTop_toTopOf="@+id/textView73"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/textView58"
                     app:orderStatus="@{order.status}"
                     tools:ignore="SmallSp" />
+
 
                 <TextView
                     android:id="@+id/textView64"
@@ -120,15 +151,15 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="13dp"
-                    android:text="@string/transaction_from"
+                    android:text="@string/total"
                     android:textAllCaps="true"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                     android:textColor="#9ea1aa"
                     android:textSize="10sp"
                     app:layout_constraintEnd_toStartOf="@+id/textView68"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/view17"
+                    app:layout_constraintTop_toBottomOf="@+id/textView58"
                     tools:ignore="SmallSp" />
 
                 <TextView
@@ -137,7 +168,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:gravity="start"
-                    android:text="@{order.sourceDisplay}"
+                    android:text="@{order.displayTotal}"
                     android:textColor="#141927"
                     android:textSize="11sp"
                     app:layout_constraintEnd_toEndOf="@+id/textView64"
@@ -146,12 +177,30 @@
                     tools:ignore="SmallSp" />
 
                 <TextView
+                    android:id="@+id/tvExtraSell"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:background="?selectableItemBackground"
+                    android:gravity="start"
+                    android:padding="2dp"
+                    android:text="@{order.extraDisplay}"
+                    android:textColor="@color/color_order_extra"
+                    android:textSize="10sp"
+                    android:visibility="@{order.hasExtra &amp;&amp; !order.isBuy ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintEnd_toEndOf="@+id/textView67"
+                    app:layout_constraintStart_toStartOf="@+id/textView67"
+                    app:layout_constraintTop_toBottomOf="@+id/textView67"
+                    tools:ignore="SmallSp"
+                    tools:text="+ 12.987 KNC" />
+
+                <TextView
                     android:id="@+id/textView69"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:gravity="start"
-                    android:text="@{order.destDisplay}"
+                    android:text="@{order.displayAmount}"
                     android:textColor="#141927"
                     android:textSize="11sp"
                     app:layout_constraintEnd_toEndOf="@+id/textView68"
@@ -170,7 +219,7 @@
                     android:text="@{order.extraDisplay}"
                     android:textColor="@color/color_order_extra"
                     android:textSize="10sp"
-                    android:visibility="@{order.hasExtra ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{order.hasExtra &amp;&amp; order.isBuy ? View.VISIBLE : View.GONE}"
                     app:layout_constraintEnd_toEndOf="@+id/textView69"
                     app:layout_constraintStart_toStartOf="@+id/textView69"
                     app:layout_constraintTop_toBottomOf="@+id/textView69"
@@ -184,7 +233,7 @@
                     android:layout_marginEnd="12dp"
                     android:text="@string/transaction_fee"
                     android:textAllCaps="true"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                     android:textColor="#9ea1aa"
                     android:textSize="10sp"
                     app:layout_constraintBottom_toBottomOf="@+id/textView68"
@@ -200,9 +249,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
-                    android:text="@string/transaction_to"
+                    android:text="@string/amount"
                     android:textAllCaps="true"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                     android:textColor="#9ea1aa"
                     android:textSize="10sp"
                     app:layout_constraintBottom_toBottomOf="@+id/textView64"
@@ -257,7 +306,7 @@
                     android:gravity="center"
                     android:minHeight="45dp"
                     android:text="@string/order_filled_details"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                     android:textColor="#ffffff"
                     android:textSize="16sp" />
             </LinearLayout>

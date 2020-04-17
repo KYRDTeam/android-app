@@ -77,7 +77,7 @@ class CombinedChartFragment : BaseFragment() {
     }
 
     private val typeFace by lazy {
-        Typeface.createFromAsset(activity!!.assets, "fonts/Montserrat-Medium.ttf")
+        Typeface.createFromAsset(activity!!.assets, "fonts/Roboto-Medium.ttf")
     }
 
     private val lineLimitTextColor by lazy {

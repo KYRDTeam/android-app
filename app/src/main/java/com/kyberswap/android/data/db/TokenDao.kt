@@ -18,6 +18,9 @@ interface TokenDao {
     @Query("SELECT * FROM tokens WHERE tokenSymbol = :tokenSymbol")
     fun getTokenBySymbol(tokenSymbol: String): Token?
 
+    @Query("SELECT * FROM tokens WHERE tokenSymbol = :tokenSymbol AND isOther = :isOther")
+    fun getKyberListedTokenBySymbol(tokenSymbol: String, isOther: Boolean = false): Token?
+
     @Query("SELECT * FROM tokens WHERE tokenSymbol = :tokenSymbol")
     fun getAllTokenBySymbol(tokenSymbol: String): List<Token>
 
@@ -50,6 +53,9 @@ interface TokenDao {
 
     @get:Query("SELECT * FROM tokens where isOther = 1 ")
     val otherTokens: List<Token>
+
+    @get:Query("SELECT * FROM tokens where spLimitOrder = 1 ")
+    val limitOrderTokens: List<Token>
 
     @get:Query("SELECT * FROM tokens")
     val allTokens: List<Token>

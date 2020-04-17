@@ -47,7 +47,7 @@
                 android:gravity="center|end"
                 android:text="@string/log_out"
                 android:textAllCaps="true"
-                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                 android:textColor="#ffffff"
                 android:textSize="10sp"
                 tools:ignore="SmallSp" />
@@ -309,7 +309,7 @@
                     android:minHeight="56dp"
                     android:text="@string/more_alerts"
                     android:textAllCaps="true"
-                    android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                    android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                     android:textColor="#5a5e67"
                     android:textSize="12sp"
                     android:visibility="@{isEmpty ? View.GONE : View.VISIBLE}"

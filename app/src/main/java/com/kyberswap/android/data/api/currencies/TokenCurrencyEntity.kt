@@ -29,6 +29,8 @@ data class TokenCurrencyEntity(
     @SerializedName("delist_time")
     val delistTime: Long? = 0,
     @SerializedName("is_gas_fixed")
-    val isGasFixed: Boolean? = false
+    val isGasFixed: Boolean? = false,
+    @SerializedName("quote_priority")
+    val quotePriority: Int? = 0
 
 )

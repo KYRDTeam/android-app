@@ -11,12 +11,14 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.model.LocalLimitOrder
+import com.kyberswap.android.domain.model.MarketItem
 import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.domain.model.OrderFilter
 import com.kyberswap.android.domain.model.PassCode
 import com.kyberswap.android.domain.model.PendingBalances
 import com.kyberswap.android.domain.model.Rate
 import com.kyberswap.android.domain.model.RatingInfo
+import com.kyberswap.android.domain.model.SelectedMarketItem
 import com.kyberswap.android.domain.model.Send
 import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Token
@@ -46,9 +48,11 @@ import com.kyberswap.android.domain.model.Wallet
         PassCode::class,
         PendingBalances::class,
         TransactionFilter::class,
-        RatingInfo::class
+        RatingInfo::class,
+        MarketItem::class,
+        SelectedMarketItem::class
     ],
-    version = 10
+    version = 11
 )
 @TypeConverters(
     DataTypeConverter::class,
@@ -80,6 +84,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun transactionFilterDao(): TransactionFilterDao
     abstract fun tokenExtDao(): TokenExtDao
     abstract fun ratingDao(): RatingDao
+    abstract fun marketDao(): MarketDao
+    abstract fun selectedMarketDao(): SelectedMarketDao
 
     companion object {
         @Volatile
@@ -223,6 +229,40 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        @VisibleForTesting
+        internal val MIGRATION_10_11: Migration = object : Migration(10, 11) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // add quotePriority to token_extras table
+                database.execSQL("ALTER TABLE token_extras " + " ADD COLUMN quotePriority INTEGER NOT NULL default 0 ")
+
+                // add sideTrade to orders table
+                database.execSQL("ALTER TABLE orders " + " ADD COLUMN sideTrade TEXT NOT NULL default '' ")
+
+                // Add new markets table
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `markets` (`buyPrice` TEXT NOT NULL, `change` TEXT NOT NULL, `pair` TEXT NOT NULL, `sellPrice` TEXT NOT NULL, `volume` TEXT NOT NULL, `isFav` INTEGER NOT NULL, PRIMARY KEY(`pair`))
+                """.trimIndent()
+                )
+
+                // Update primary key for current_orders (userAddr, type)
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `new_current_orders` (`userAddr` TEXT NOT NULL, `srcAmount` TEXT NOT NULL, `marketRate` TEXT NOT NULL, `expectedRate` TEXT NOT NULL, `minRate` TEXT NOT NULL, `destAddr` TEXT NOT NULL, `nonce` TEXT NOT NULL, `fee` TEXT NOT NULL, `status` TEXT NOT NULL, `txHash` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `gasLimit` TEXT NOT NULL, `gasPrice` TEXT NOT NULL, `transferFee` TEXT NOT NULL, `type` INTEGER NOT NULL, `source_isHide` INTEGER NOT NULL, `source_timestamp` INTEGER NOT NULL, `source_tokenSymbol` TEXT NOT NULL, `source_tokenName` TEXT NOT NULL, `source_tokenAddress` TEXT NOT NULL, `source_tokenDecimal` INTEGER NOT NULL, `source_rateEthNow` TEXT NOT NULL, `source_changeEth24h` TEXT NOT NULL, `source_rateUsdNow` TEXT NOT NULL, `source_changeUsd24h` TEXT NOT NULL, `source_cgId` TEXT NOT NULL, `source_gasApprove` TEXT NOT NULL, `source_gasLimit` TEXT NOT NULL, `source_listingTime` INTEGER NOT NULL, `source_priority` INTEGER NOT NULL, `source_spLimitOrder` INTEGER NOT NULL, `source_wallets` TEXT NOT NULL, `source_fav` INTEGER NOT NULL, `source_isOther` INTEGER NOT NULL, `source_limitOrderBalance` TEXT NOT NULL, `source_isQuote` INTEGER NOT NULL, `dest_isHide` INTEGER NOT NULL, `dest_timestamp` INTEGER NOT NULL, `dest_tokenSymbol` TEXT NOT NULL, `dest_tokenName` TEXT NOT NULL, `dest_tokenAddress` TEXT NOT NULL, `dest_tokenDecimal` INTEGER NOT NULL, `dest_rateEthNow` TEXT NOT NULL, `dest_changeEth24h` TEXT NOT NULL, `dest_rateUsdNow` TEXT NOT NULL, `dest_changeUsd24h` TEXT NOT NULL, `dest_cgId` TEXT NOT NULL, `dest_gasApprove` TEXT NOT NULL, `dest_gasLimit` TEXT NOT NULL, `dest_listingTime` INTEGER NOT NULL, `dest_priority` INTEGER NOT NULL, `dest_spLimitOrder` INTEGER NOT NULL, `dest_wallets` TEXT NOT NULL, `dest_fav` INTEGER NOT NULL, `dest_isOther` INTEGER NOT NULL, `dest_limitOrderBalance` TEXT NOT NULL, `dest_isQuote` INTEGER NOT NULL, `eth_isHide` INTEGER NOT NULL, `eth_timestamp` INTEGER NOT NULL, `eth_tokenSymbol` TEXT NOT NULL, `eth_tokenName` TEXT NOT NULL, `eth_tokenAddress` TEXT NOT NULL, `eth_tokenDecimal` INTEGER NOT NULL, `eth_rateEthNow` TEXT NOT NULL, `eth_changeEth24h` TEXT NOT NULL, `eth_rateUsdNow` TEXT NOT NULL, `eth_changeUsd24h` TEXT NOT NULL, `eth_cgId` TEXT NOT NULL, `eth_gasApprove` TEXT NOT NULL, `eth_gasLimit` TEXT NOT NULL, `eth_listingTime` INTEGER NOT NULL, `eth_priority` INTEGER NOT NULL, `eth_spLimitOrder` INTEGER NOT NULL, `eth_wallets` TEXT NOT NULL, `eth_fav` INTEGER NOT NULL, `eth_isOther` INTEGER NOT NULL, `eth_limitOrderBalance` TEXT NOT NULL, `eth_isQuote` INTEGER NOT NULL, `weth_isHide` INTEGER NOT NULL, `weth_timestamp` INTEGER NOT NULL, `weth_tokenSymbol` TEXT NOT NULL, `weth_tokenName` TEXT NOT NULL, `weth_tokenAddress` TEXT NOT NULL, `weth_tokenDecimal` INTEGER NOT NULL, `weth_rateEthNow` TEXT NOT NULL, `weth_changeEth24h` TEXT NOT NULL, `weth_rateUsdNow` TEXT NOT NULL, `weth_changeUsd24h` TEXT NOT NULL, `weth_cgId` TEXT NOT NULL, `weth_gasApprove` TEXT NOT NULL, `weth_gasLimit` TEXT NOT NULL, `weth_listingTime` INTEGER NOT NULL, `weth_priority` INTEGER NOT NULL, `weth_spLimitOrder` INTEGER NOT NULL, `weth_wallets` TEXT NOT NULL, `weth_fav` INTEGER NOT NULL, `weth_isOther` INTEGER NOT NULL, `weth_limitOrderBalance` TEXT NOT NULL, `weth_isQuote` INTEGER NOT NULL, PRIMARY KEY(`userAddr`, `type`))
+                """.trimIndent()
+                )
+
+                // Add new selected_markets table
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `selected_markets` (`walletAddress` TEXT NOT NULL, `pair` TEXT NOT NULL, PRIMARY KEY(`walletAddress`))
+                """.trimIndent()
+                )
+
+                database.execSQL("DROP TABLE current_orders")
+                database.execSQL("ALTER TABLE new_current_orders RENAME TO current_orders")
+            }
+        }
 
         private fun buildDatabase(context: Context) =
             Room.databaseBuilder(
@@ -238,7 +278,8 @@ abstract class AppDatabase : RoomDatabase() {
                     MIGRATION_6_7,
                     MIGRATION_7_8,
                     MIGRATION_8_9,
-                    MIGRATION_9_10
+                    MIGRATION_9_10,
+                    MIGRATION_10_11
                 )
 //                .fallbackToDestructiveMigration()
 //                .allowMainThreadQueries()

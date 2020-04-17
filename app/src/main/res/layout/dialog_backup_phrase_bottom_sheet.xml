@@ -17,7 +17,7 @@
             android:gravity="center"
             android:minHeight="45dp"
             android:text="@string/backup_keystore"
-            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
             android:textColor="#2e3957"
             android:textSize="14sp" />
 
@@ -29,7 +29,7 @@
             android:gravity="center"
             android:minHeight="45dp"
             android:text="@string/wallet_backup_private_key"
-            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
             android:textColor="#2e3957"
             android:textSize="14sp" />
 
@@ -41,7 +41,7 @@
             android:gravity="center"
             android:minHeight="45dp"
             android:text="@string/backup_mnemonic"
-            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
             android:textColor="#2e3957"
             android:textSize="14sp" />
 
@@ -53,7 +53,7 @@
             android:gravity="center"
             android:minHeight="45dp"
             android:text="@string/wallet_copy_address"
-            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
             android:textColor="#2e3957"
             android:textSize="14sp" />
 
@@ -66,7 +66,7 @@
             android:gravity="center"
             android:minHeight="45dp"
             android:text="@string/cancel"
-            android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+            android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
             android:textColor="#2e3957"
             android:textSize="14sp" />
 

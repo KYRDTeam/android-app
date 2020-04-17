@@ -47,7 +47,7 @@
                 android:minWidth="234dp"
                 android:minHeight="45dp"
                 android:text="@string/ok"
-                android:textAppearance="@style/TextAppearance.Montserrat.SemiBold"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                 android:textColor="#ffffff"
                 android:textSize="16sp" />
 
