@@ -1049,6 +1049,20 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                         )
 
                         when {
+                            warningOrderList.isNotEmpty() -> {
+                                hideKeyboard()
+                                navigator.navigateToCancelOrderFragment(
+                                    currentFragment,
+                                    wallet,
+                                    ArrayList(warningOrderList),
+                                    binding.order,
+                                    viewModel.needConvertWETH(
+                                        binding.order,
+                                        pendingBalances
+                                    )
+                                )
+                            }
+
                             viewModel.needConvertWETH(
                                 binding.order,
                                 pendingBalances
@@ -1060,15 +1074,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                                     binding.order
                                 )
                             }
-                            warningOrderList.isNotEmpty() -> {
-                                hideKeyboard()
-                                navigator.navigateToCancelOrderFragment(
-                                    currentFragment,
-                                    wallet,
-                                    ArrayList(warningOrderList),
-                                    binding.order
-                                )
-                            }
+
                             else -> {
                                 hideKeyboard()
                                 navigator.navigateToOrderConfirmV2Screen(

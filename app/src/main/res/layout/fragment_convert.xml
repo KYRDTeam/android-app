@@ -233,7 +233,7 @@
                     android:id="@+id/imgWeth"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
-                    android:src="@drawable/eth"
+                    android:src="@drawable/weth"
                     app:layout_constraintBottom_toBottomOf="@+id/textView94"
                     app:layout_constraintEnd_toStartOf="@+id/textView94"
                     app:layout_constraintHorizontal_bias="0.5"

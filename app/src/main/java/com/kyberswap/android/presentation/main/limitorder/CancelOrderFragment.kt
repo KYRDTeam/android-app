@@ -66,6 +66,8 @@ class CancelOrderFragment : BaseFragment() {
 
     var orders = listOf<Order>()
 
+    private var needConvertEthWeth: Boolean = false
+
     val compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,6 +75,7 @@ class CancelOrderFragment : BaseFragment() {
         wallet = arguments?.getParcelable(WALLET_PARAM)
         currentOrder = arguments?.getParcelable(LIMIT_ORDER_PARAM)
         orders = arguments?.getParcelableArrayList(CANCEL_LIMIT_ORDER_PARAM) ?: listOf()
+        needConvertEthWeth = arguments?.getBoolean(NEED_CONVERT_ETH_WETH) ?: false
     }
 
     override fun onCreateView(
@@ -121,7 +124,13 @@ class CancelOrderFragment : BaseFragment() {
         }
 
         binding.tvSubmitOrderWarning.setOnClickListener {
-            if (binding.order?.type == LocalLimitOrder.TYPE_LIMIT_ORDER_V1) {
+            if (needConvertEthWeth) {
+                navigator.navigateToConvertFragment(
+                    currentFragment,
+                    wallet,
+                    binding.order
+                )
+            } else if (binding.order?.type == LocalLimitOrder.TYPE_LIMIT_ORDER_V1) {
                 navigator.navigateToOrderConfirmScreen(
                     currentFragment,
                     wallet,
@@ -191,12 +200,19 @@ class CancelOrderFragment : BaseFragment() {
         private const val WALLET_PARAM = "wallet_param"
         private const val CANCEL_LIMIT_ORDER_PARAM = "cancel_limit_order_param"
         private const val LIMIT_ORDER_PARAM = "limit_order_param"
-        fun newInstance(wallet: Wallet?, orders: ArrayList<Order>, currentOrder: LocalLimitOrder?) =
+        private const val NEED_CONVERT_ETH_WETH = "need_convert_eth_weth"
+        fun newInstance(
+            wallet: Wallet?,
+            orders: ArrayList<Order>,
+            currentOrder: LocalLimitOrder?,
+            needConvertEthWeth: Boolean
+        ) =
             CancelOrderFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(WALLET_PARAM, wallet)
                     putParcelable(LIMIT_ORDER_PARAM, currentOrder)
                     putParcelableArrayList(CANCEL_LIMIT_ORDER_PARAM, orders)
+                    putBoolean(NEED_CONVERT_ETH_WETH, needConvertEthWeth)
                 }
             }
     }

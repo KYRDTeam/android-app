@@ -471,11 +471,12 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         currentFragment: Fragment?,
         wallet: Wallet?,
         orders: ArrayList<Order>,
-        currentOrder: LocalLimitOrder?
+        currentOrder: LocalLimitOrder?,
+        needConvertEth: Boolean
     ) {
         navigateByChildFragmentManager(
             currentFragment,
-            CancelOrderFragment.newInstance(wallet, orders, currentOrder)
+            CancelOrderFragment.newInstance(wallet, orders, currentOrder, needConvertEth)
         )
     }
 
