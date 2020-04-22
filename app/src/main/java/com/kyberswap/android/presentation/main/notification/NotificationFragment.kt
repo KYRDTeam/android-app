@@ -71,6 +71,8 @@ class NotificationFragment : BaseFragment() {
 
     private var isLoggedIn: Boolean = false
 
+    private var hasUnReadNotification: Boolean = false
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         context?.let {
@@ -81,6 +83,7 @@ class NotificationFragment : BaseFragment() {
                 )
             )
         }
+        binding.hasUnReadNotification = hasUnReadNotification
         val notificationAdapter = NotificationAdapter(appExecutors) {
             if (!it.read) {
                 if (isLoggedIn) {
@@ -131,8 +134,9 @@ class NotificationFragment : BaseFragment() {
                         setUpNotificationSetting(state.userInfo?.priceNoti == true)
                         if (isLoggedIn != (userId > 0)) {
                             isLoggedIn = userId > 0
-                            binding.isLoggedIn =
+                            hasUnReadNotification =
                                 isLoggedIn && notificationAdapter.getData().any { !it.read }
+                            binding.hasUnReadNotification = hasUnReadNotification
                             refresh()
                         }
                     }
@@ -171,9 +175,10 @@ class NotificationFragment : BaseFragment() {
                         if (!isLoggedIn) {
                             notificationAdapter.readAll()
                         }
-                        binding.isLoggedIn = isLoggedIn
+                        hasUnReadNotification = isLoggedIn && state.notifications.any { !it.read }
+                        binding.hasUnReadNotification = hasUnReadNotification
                         binding.isNoData = state.notifications.isEmpty()
-                        updateReadAllView(state.notifications.any { !it.read })
+//                        updateReadAllView(state.notifications.any { !it.read })
                     }
                     is GetNotificationsState.ShowError -> {
                         showError(
@@ -219,10 +224,17 @@ class NotificationFragment : BaseFragment() {
 
     private fun setUpNotificationSetting(isPriceNotificationEnable: Boolean) {
         binding.tvSetting.setOnClickListener {
-            navigator.navigateToNotificationSettingScreen(
-                currentFragment,
-                isPriceNotificationEnable
-            )
+            if (isLoggedIn) {
+                navigator.navigateToNotificationSettingScreen(
+                    currentFragment,
+                    isPriceNotificationEnable
+                )
+            } else {
+                showAlertWithoutIcon(
+                    getString(R.string.title_error),
+                    getString(R.string.sign_in_requried_notification_setting)
+                )
+            }
         }
     }
 

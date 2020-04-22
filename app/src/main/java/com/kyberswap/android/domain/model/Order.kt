@@ -110,7 +110,6 @@ data class Order(
     val isBuy: Boolean
         get() = sideTrade.equals(SIDE_TRADE_BUY, true)
 
-
     val displayTokenPair: String
         get() =
             StringBuilder()
@@ -201,15 +200,30 @@ data class Order(
     }
 
     fun sameDisplay(other: Order): Boolean {
-        return this.id == other.id &&
-                this.displayTokenPair == other.displayTokenPair &&
-                this.displayAddress == other.displayAddress &&
-                this.status == other.status &&
-                this.sourceDisplay == other.sourceDisplay &&
-                this.destDisplay == other.destDisplay &&
-                this.destDisplayFee == other.destDisplayFee &&
-                this.extraDisplay == other.extraDisplay &&
-                this.msg == other.msg
+        if (isV1) {
+            return this.id == other.id &&
+                    this.displayTokenPair == other.displayTokenPair &&
+                    this.displayAddress == other.displayAddress &&
+                    this.status == other.status &&
+                    this.sourceDisplay == other.sourceDisplay &&
+                    this.destDisplay == other.destDisplay &&
+                    this.destDisplayFee == other.destDisplayFee &&
+                    this.extraDisplay == other.extraDisplay &&
+                    this.msg == other.msg
+        } else {
+            return this.id == other.id &&
+                    this.displayTokenPair == other.displayTokenPair &&
+                    this.displayAddress == other.displayAddress &&
+                    this.status == other.status &&
+                    this.sideTrade == other.sideTrade &&
+                    this.displayPrice == other.displayPrice &&
+                    this.displayTotal == other.displayTotal &&
+                    this.displayAmount == other.displayAmount &&
+                    this.destDisplayFee == other.destDisplayFee &&
+                    this.extraDisplay == other.extraDisplay &&
+                    this.hasExtra == other.hasExtra &&
+                    this.msg == other.msg
+        }
     }
 
     enum class Status {

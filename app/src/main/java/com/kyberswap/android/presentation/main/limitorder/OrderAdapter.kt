@@ -49,14 +49,14 @@ class OrderAdapter(
                 oldItem is OrderItem.ItemEven && newItem is OrderItem.ItemEven && oldItem.order.sameDisplay(
                     newItem.order
                 ) -> true
-                oldItem is OrderItem.ItemOdd && newItem is OrderItem.ItemEven && oldItem.order.sameDisplay(
-                    newItem.order
-                )
-                -> true
-                oldItem is OrderItem.ItemEven && newItem is OrderItem.ItemOdd && oldItem.order.sameDisplay(
-                    newItem.order
-                )
-                -> true
+//                oldItem is OrderItem.ItemOdd && newItem is OrderItem.ItemEven && oldItem.order.sameDisplay(
+//                    newItem.order
+//                )
+//                -> true
+//                oldItem is OrderItem.ItemEven && newItem is OrderItem.ItemOdd && oldItem.order.sameDisplay(
+//                    newItem.order
+//                )
+//                -> true
 
                 else -> false
             }

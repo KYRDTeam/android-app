@@ -263,6 +263,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             getSwap()
                             getKyberEnable()
                             verifyEligibleWallet()
+                            getRate()
                         }
                         updateLoginStatus()
                     }

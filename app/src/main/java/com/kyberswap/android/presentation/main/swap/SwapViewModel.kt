@@ -175,6 +175,10 @@ class SwapViewModel @Inject constructor(
         )
     }
 
+    fun disposeGetExpectedRate() {
+        getExpectedRateUseCase.dispose()
+    }
+
     fun getExpectedRate(
         swap: Swap,
         srcAmount: String

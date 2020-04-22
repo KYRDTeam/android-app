@@ -729,5 +729,6 @@
     <string name="preview_order_sell_base_quote">Bán %s với %s</string>
     <string name="limit_order_price_higer_market_price">Tỉ giá bạn đặt cao hơn %s so với tỉ giá hiện tại.</string>
     <string name="limit_order_price_lower_market_price">Tỉ giá bạn đặt thấp hơn %s so với tỉ giá hiện tại.</string>
+    <string name="sign_in_requried_notification_setting">Please sign in to use Notification Setting feature</string>
 
 </resources>
