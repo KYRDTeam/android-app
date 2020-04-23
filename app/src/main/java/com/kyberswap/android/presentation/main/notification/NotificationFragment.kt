@@ -222,7 +222,7 @@ class NotificationFragment : BaseFragment() {
         }
     }
 
-    private fun setUpNotificationSetting(isPriceNotificationEnable: Boolean) {
+    private fun setUpNotificationSetting(isPriceNotificationEnable: Boolean = false) {
         binding.tvSetting.setOnClickListener {
             if (isLoggedIn) {
                 navigator.navigateToNotificationSettingScreen(
@@ -231,8 +231,7 @@ class NotificationFragment : BaseFragment() {
                 )
             } else {
                 showAlertWithoutIcon(
-                    getString(R.string.title_error),
-                    getString(R.string.sign_in_requried_notification_setting)
+                    message = getString(R.string.sign_in_requried_notification_setting)
                 )
             }
         }
@@ -252,6 +251,7 @@ class NotificationFragment : BaseFragment() {
     fun onMessageEvent(event: UserStatusChangeEvent) {
         isLoggedIn = false
         viewModel.getNotifications()
+        setUpNotificationSetting()
     }
 
     override fun showProgress(showProgress: Boolean) {

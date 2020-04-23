@@ -61,7 +61,7 @@
                     android:layout_marginTop="16dp"
                     android:fontFamily="sans-serif"
                     android:lineSpacingExtra="22sp"
-                    android:text="@string/quantity"
+                    android:text="@string/amount"
                     android:textAppearance="@style/TextAppearance.Roboto.Regular"
                     android:textColor="#141927"
                     android:textSize="14sp"

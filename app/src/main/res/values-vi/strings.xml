@@ -709,7 +709,7 @@
     <string name="order_confirmed_info">Bạn không cần gửi tiền khi sử dụng Limit Order, điều này có nghĩa là %s sẽ ở nguyên trong ví của bạn cho đến khi %s tỷ  giá đạt %s</string>
     <string name="available_balance">Số dư khả dụng</string>
     <string name="price">GIÁ</string>
-    <string name="amount">SỐ LƯỢNG</string>
+    <string name="amount">Số lượng</string>
     <string name="market">Thị trường</string>
     <string name="limit_order_v1">Limit Order V1</string>
     <string name="token_wbtc">WBTC</string>
@@ -729,6 +729,6 @@
     <string name="preview_order_sell_base_quote">Bán %s với %s</string>
     <string name="limit_order_price_higer_market_price">Tỉ giá bạn đặt cao hơn %s so với tỉ giá hiện tại.</string>
     <string name="limit_order_price_lower_market_price">Tỉ giá bạn đặt thấp hơn %s so với tỉ giá hiện tại.</string>
-    <string name="sign_in_requried_notification_setting">Please sign in to use Notification Setting feature</string>
+    <string name="sign_in_requried_notification_setting">Vui lòng đăng nhập để sử dụng tính năng Cài đặt thông báo</string>
 
 </resources>

@@ -348,6 +348,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                         if (!state.order.isSameTokenPairForAddress(binding.order)) {
                             binding.order = state.order
                             binding.executePendingBindings()
+                            resetUI()
                             viewModel.getPendingBalances(wallet)
                             viewModel.getFee(
                                 binding.order,
@@ -1256,13 +1257,12 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
     }
 
     fun refresh() {
-        resetUI()
         getRelatedOrders()
         getPendingBalance()
         getNonce()
     }
 
-    private fun resetUI() {
+    fun resetUI() {
         hasUserFocus = false
         binding.edtPrice.setAmount(marketPrice)
 
