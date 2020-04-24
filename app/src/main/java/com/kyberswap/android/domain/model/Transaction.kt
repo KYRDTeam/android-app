@@ -97,7 +97,7 @@ data class Transaction(
 
     val isCancelTransaction: Boolean
         get() = transactionType == TransactionType.SEND
-            && value.toBigDecimalOrDefaultZero() == BigDecimal.ZERO
+                && value.toBigDecimalOrDefaultZero() == BigDecimal.ZERO
 
     constructor(entity: TransactionEntity, address: String, txType: String) : this(
         entity.blockHash ?: "",
@@ -151,7 +151,6 @@ data class Transaction(
     val enableDeleteTransaction: Boolean
         get() = if (BuildConfig.FLAVOR == "dev" || BuildConfig.FLAVOR == "stg") (System.currentTimeMillis() / 1000 - timeStamp) / 60f > 5f else
             (System.currentTimeMillis() / 1000 - timeStamp) / 60f / 60f > 1f
-
 
     fun with(tx: org.web3j.protocol.core.methods.response.Transaction): Transaction {
         return this.copy(
@@ -301,10 +300,10 @@ data class Transaction(
     fun sameDisplay(other: Transaction): Boolean {
 
         return this.displayTransaction == other.displayTransaction &&
-            this.displayRate == other.displayRate &&
-            this.transactionType == other.transactionType &&
-            this.isTransactionFail == other.isTransactionFail &&
-            this.timeStamp == other.timeStamp
+                this.displayRate == other.displayRate &&
+                this.transactionType == other.transactionType &&
+                this.isTransactionFail == other.isTransactionFail &&
+                this.timeStamp == other.timeStamp
     }
 
     val transactionType: TransactionType
@@ -322,10 +321,9 @@ data class Transaction(
 
     fun sameKey(other: Transaction): Boolean {
         return this.hash == other.hash &&
-            this.from == other.from &&
-            this.to == other.to
+                this.from == other.from &&
+                this.to == other.to
     }
-
 
     val isPendingTransaction: Boolean
         get() = transactionStatus == PENDING_TRANSACTION_STATUS
@@ -390,6 +388,7 @@ data class Transaction(
         ).toDisplayNumber()
 
     fun getFeeFromGwei(gasPrice: String): String {
+        if (gasPrice.isEmpty()) return gasPrice
         return Convert.fromWei(
             Convert.toWei(gasPrice, Convert.Unit.GWEI).multiply(gas.toBigDecimalOrDefaultZero())
             , Convert.Unit.ETHER

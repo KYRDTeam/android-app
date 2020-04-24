@@ -31,7 +31,6 @@ import org.web3j.utils.Convert
 import java.math.BigDecimal
 import javax.inject.Inject
 
-
 class CustomizeGasFragment : BaseFragment() {
 
     private lateinit var binding: FragmentCustomizeGasBinding
@@ -77,8 +76,11 @@ class CustomizeGasFragment : BaseFragment() {
         activity as MainActivity
     }
 
-    private val selectedGasPrice: BigDecimal
-        get() = Convert.toWei(selectedGasPriceGwei, Convert.Unit.GWEI)
+    private val selectedGasPrice: BigDecimal?
+        get() = if (selectedGasPriceGwei.isEmpty()) null else Convert.toWei(
+            selectedGasPriceGwei,
+            Convert.Unit.GWEI
+        )
 
     private val currentGasPrice: BigDecimal
         get() = transaction?.gasPrice.toBigDecimalOrDefaultZero()
@@ -216,14 +218,14 @@ class CustomizeGasFragment : BaseFragment() {
             })
 
         binding.tvDone.setOnClickListener {
-            selectedGasPrice.let {
+            selectedGasPrice?.let { price ->
                 transaction?.let { tx ->
                     wallet?.let { wallet ->
                         percentage =
                             if (currentGasPrice == BigDecimal.ZERO) {
                                 BigDecimal.ZERO
                             } else {
-                                (selectedGasPrice - currentGasPrice) / currentGasPrice
+                                (price - currentGasPrice) / currentGasPrice
                             }
 
                         if (percentage < 0.1.toBigDecimal()) {
@@ -235,7 +237,7 @@ class CustomizeGasFragment : BaseFragment() {
                             )
                             viewModel.speedUp(
                                 wallet,
-                                tx.copy(gasPrice = selectedGasPrice.toDisplayNumber())
+                                tx.copy(gasPrice = price.toDisplayNumber())
                             )
                         }
 
@@ -265,7 +267,6 @@ class CustomizeGasFragment : BaseFragment() {
         binding.rbFast.jumpDrawablesToCurrentState()
         selectedGasFeeView = rbFast
     }
-
 
     companion object {
         private const val TRANSACTION_PARAM = "transaction_param"

@@ -400,7 +400,7 @@
     <string name="order_filled_details">자세히</string>
     <string name="title_error">오류</string>
     <string name="title_fail">실패</string>
-    <string name="sign_in_required">Please sign in to your Profile to use Price Alert</string>
+    <string name="sign_in_required">Please sign in to use Price Alert feature</string>
     <string name="wellcome_back">다시 오신 것을 환영합니다, %s</string>
     <string name="lout_out_confirmation">로그 아웃 하시겠습니까?</string>
     <string name="alert_notification_title">Get Alert notifications by:</string>
@@ -729,5 +729,6 @@
     <string name="preview_order_sell_base_quote">%s를 %s 로 매도</string>
     <string name="limit_order_price_higer_market_price">원하는 비율이 현재 비율보다 %s 높습니다.</string>
     <string name="limit_order_price_lower_market_price">원하는 비율이 현재 비율보다 %s 낮습니다.</string>
+    <string name="sign_in_requried_notification_setting">Please sign in to use Notification Setting feature</string>
 
 </resources>

@@ -1,10 +1,14 @@
 package com.kyberswap.android.presentation.main.limitorder
 
+import android.animation.ObjectAnimator
 import android.graphics.Paint
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -29,6 +33,7 @@ import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.KeyImeChange
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -104,6 +109,10 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
     private val isSell
         get() = type == LocalLimitOrder.TYPE_SELL
+
+    private val scrollHeight by lazy {
+        binding.edtAmount.top
+    }
 
     @Inject
     lateinit var analytics: FirebaseAnalytics
@@ -348,8 +357,6 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                                 wallet
                             )
                             viewModel.getGasPrice()
-
-
                             binding.tvPrice.text = if (priceUsdQuote != "--") {
                                 "$marketPrice ~ $$priceUsdQuote"
                             } else {
@@ -920,7 +927,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
 
         binding.tvSubmitOrder.setOnClickListener {
-            var error = ""
+            val error: String
             when {
                 !isNetworkAvailable() -> {
                     showNetworkUnAvailable()
@@ -1094,6 +1101,56 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 }
             }
         })
+
+        binding.edtPrice.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                binding.edtPrice.clearFocus()
+                playAnimation(true)
+            }
+            false
+        }
+
+        binding.edtAmount.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                binding.edtAmount.clearFocus()
+                playAnimation(true)
+            }
+            false
+        }
+
+        binding.edtTotal.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                binding.edtTotal.clearFocus()
+                playAnimation(true)
+            }
+            false
+        }
+
+
+
+        binding.edtPrice.setKeyImeChangeListener(object : KeyImeChange {
+            override fun onKeyIme(keyCode: Int, event: KeyEvent?) {
+                if (KeyEvent.KEYCODE_BACK == event?.keyCode) {
+                    playAnimation(true)
+                }
+            }
+        })
+
+        binding.edtTotal.setKeyImeChangeListener(object : KeyImeChange {
+            override fun onKeyIme(keyCode: Int, event: KeyEvent?) {
+                if (KeyEvent.KEYCODE_BACK == event?.keyCode) {
+                    playAnimation(true)
+                }
+            }
+        })
+
+        binding.edtAmount.setKeyImeChangeListener(object : KeyImeChange {
+            override fun onKeyIme(keyCode: Int, event: KeyEvent?) {
+                if (KeyEvent.KEYCODE_BACK == event?.keyCode) {
+                    playAnimation(true)
+                }
+            }
+        })
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -1104,16 +1161,16 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         wallet?.let { viewModel.checkEligibleAddress(it, true) }
     }
 
-    private fun playAnimation() {
-//        val animator = ObjectAnimator.ofInt(
-//            binding.scView,
-//            "scrollY",
-//            binding.tvFee.bottom
-//        )
-//
-//        animator.duration = 300
-//        animator.interpolator = AccelerateDecelerateInterpolator()
-//        animator.start()
+    private fun playAnimation(isReady: Boolean = false) {
+        val animator = ObjectAnimator.ofInt(
+            binding.scView,
+            "scrollY",
+            if (isReady) 0 else scrollHeight
+        )
+
+        animator.duration = 300
+        animator.interpolator = AccelerateDecelerateInterpolator()
+        animator.start()
     }
 
     fun getLimitOrder() {
@@ -1205,7 +1262,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         getNonce()
     }
 
-    private fun resetUI() {
+    fun resetUI() {
         hasUserFocus = false
         binding.edtPrice.setAmount(marketPrice)
 

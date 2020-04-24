@@ -118,7 +118,10 @@ class OrderConfirmV2Fragment : BaseFragment(), LoginState {
             fm.popBackStack()
         }
         if (currentFragment is LimitOrderV2Fragment) {
-            (currentFragment as LimitOrderV2Fragment).refresh()
+            (currentFragment as LimitOrderV2Fragment).apply {
+                resetUI()
+                refresh()
+            }
         }
     }
 

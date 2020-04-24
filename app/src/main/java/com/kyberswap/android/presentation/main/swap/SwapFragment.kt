@@ -93,6 +93,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
     private var maxGasPrice: String = ""
 
+    private val isUserSelectSwap: Boolean
+        get() = currentFragment is SwapFragment
+
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -214,13 +217,18 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
                             // Token pair change need to reset rate and get the new one
                             binding.swap = state.swap.copy(marketRate = "", expectedRate = "")
-
                             binding.executePendingBindings()
                             sourceAmount = state.swap.sourceAmount
-                            getRate(state.swap)
+
+                            if (isUserSelectSwap) {
+                                getRate(state.swap)
+                                viewModel.getGasLimit(wallet, binding.swap)
+                            }
                             viewModel.getGasPrice()
-                        } else if (currentFragment is SwapFragment) {
+                        } else if (isUserSelectSwap) {
                             viewModel.getGasLimit(wallet, binding.swap)
+                        } else if (!isUserSelectSwap) {
+                            viewModel.disposeGetExpectedRate()
                         }
                     }
                     is GetSwapState.ShowError -> {
@@ -825,6 +833,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 message = getString(R.string.can_not_handle_amount)
                             )
                         }
+
                         else -> wallet?.let {
 
                             val data = swap.copy(
@@ -1144,6 +1153,12 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             R.id.rbRegular -> gas.standard
             R.id.rbSlow -> gas.low
             else -> gas.fast
+        }
+    }
+
+    fun getRate() {
+        binding.swap?.let {
+            getRate(it)
         }
     }
 

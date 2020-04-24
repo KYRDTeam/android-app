@@ -81,8 +81,7 @@ class SettingFragment : BaseFragment() {
                 )
             } else {
                 showAlertWithoutIcon(
-                    getString(R.string.title_error),
-                    getString(R.string.sign_in_required)
+                    message = getString(R.string.sign_in_required)
                 )
             }
         }
@@ -94,8 +93,7 @@ class SettingFragment : BaseFragment() {
                 )
             } else {
                 showAlertWithoutIcon(
-                    getString(R.string.title_error),
-                    getString(R.string.sign_in_required)
+                    message = getString(R.string.sign_in_required)
                 )
             }
         }

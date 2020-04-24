@@ -572,7 +572,7 @@
     <string name="nationality_singaporean">SINGAPOREAN</string>
     <string name="country_singapore">SINGAPORE</string>
     <string name="kyc_not_support">Sorry! We’re not currently able to accept applications from %s</string>
-    <string name="sign_in_required">Please sign in to your Profile to use Price Alert</string>
+    <string name="sign_in_required">Please sign in to use Price Alert feature</string>
     <string name="about_pdpa_update">About PDPA update</string>
     <string name="pdpa_content"><![CDATA[We are aware of the revised Advisory Guidelines on the PDPA for NRIC and other National Identification Numbers that Personal Data Protection Commission (PDPA) issued on 31 August 2018.\n\nWe seek your understanding that we are continuing  with the collection and use of NRIC Numbers / Foreign Identification Numbers / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers to ensure that KyberSwap does not deal with assets or funds that are proceeds of drug dealing, criminal conduct or property relating to money laundering or terrorism financing offence.\n\nWe assure you that we will undertake proper safeguarding measures to protect your personal data (including NRIC Numbers / FIN / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers) under our care.\n\nContact us at support@kyberswap.com should you have any queries or concerns.]]></string>
     <string name="notification_dropped">Dropped</string>
@@ -719,6 +719,7 @@
     <string name="preview_order_sell_base_quote">Sell %s to %s</string>
     <string name="limit_order_price_higer_market_price">Your price is %s higher than market price</string>
     <string name="limit_order_price_lower_market_price">Your price is %s lower than market price</string>
+    <string name="sign_in_requried_notification_setting">Please sign in to use Notification Setting feature</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>
