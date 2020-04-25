@@ -122,6 +122,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
     private val destLock = AtomicBoolean()
 
+    private var hasExpectedRate: Boolean = false
+
     private var eligibleWalletStatus: EligibleWalletStatus? = null
 
     private val availableAmount: BigDecimal
@@ -227,7 +229,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             viewModel.getGasPrice()
                         } else if (isUserSelectSwap) {
                             viewModel.getGasLimit(wallet, binding.swap)
-                        } else if (!isUserSelectSwap) {
+                        } else if (!isUserSelectSwap && hasExpectedRate) {
                             viewModel.disposeGetExpectedRate()
                         }
                     }
@@ -433,6 +435,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetExpectedRateState.Success -> {
+                        hasExpectedRate = true
                         val swap =
                             if (state.list.first().toBigDecimalOrDefaultZero() > BigDecimal.ZERO) {
                                 binding.swap?.copy(
@@ -827,6 +830,11 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         rbCustom.isChecked && edtCustom.text.isNullOrEmpty() -> {
                             showAlertWithoutIcon(message = getString(R.string.custom_rate_empty))
                         }
+
+                        !hasExpectedRate -> {
+                            showAlertWithoutIcon(message = getString(R.string.expected_rate_zero_error))
+                        }
+
                         swap.isExpectedRateZero -> {
                             showAlertWithoutIcon(
                                 title = getString(R.string.title_amount_too_big),
@@ -1165,6 +1173,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     private fun getRate(swap: Swap) {
         if (swap.hasSamePair) return
         viewModel.getMarketRate(swap)
+        hasExpectedRate = false
         viewModel.getExpectedRate(
             swap,
             edtSource.getAmountOrDefaultValue()

@@ -73,6 +73,8 @@ class NotificationFragment : BaseFragment() {
 
     private var hasUnReadNotification: Boolean = false
 
+    private var isPriceNotificationEnable: Boolean = false
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         context?.let {
@@ -131,7 +133,7 @@ class NotificationFragment : BaseFragment() {
                 when (state) {
                     is UserInfoState.Success -> {
                         val userId = state.userInfo?.uid ?: 0
-                        setUpNotificationSetting(state.userInfo?.priceNoti == true)
+                        isPriceNotificationEnable = state.userInfo?.priceNoti == true
                         if (isLoggedIn != (userId > 0)) {
                             isLoggedIn = userId > 0
                             hasUnReadNotification =
@@ -148,6 +150,19 @@ class NotificationFragment : BaseFragment() {
         })
 
         refresh()
+
+        binding.tvSetting.setOnClickListener {
+            if (isLoggedIn) {
+                navigator.navigateToNotificationSettingScreen(
+                    currentFragment,
+                    isPriceNotificationEnable
+                )
+            } else {
+                showAlertWithoutIcon(
+                    message = getString(R.string.sign_in_requried_notification_setting)
+                )
+            }
+        }
 
 
         binding.rvNotifications.layoutManager = LinearLayoutManager(
@@ -251,7 +266,6 @@ class NotificationFragment : BaseFragment() {
     fun onMessageEvent(event: UserStatusChangeEvent) {
         isLoggedIn = false
         viewModel.getNotifications()
-        setUpNotificationSetting()
     }
 
     override fun showProgress(showProgress: Boolean) {

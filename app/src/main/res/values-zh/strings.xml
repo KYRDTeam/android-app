@@ -731,5 +731,6 @@
     <string name="limit_order_price_higer_market_price">您期望的汇率比当前汇率高%s。</string>
     <string name="limit_order_price_lower_market_price">您期望的汇率比当前汇率低%s。</string>
     <string name="sign_in_requried_notification_setting">Please sign in to use Notification Setting feature</string>
+    <string name="expected_rate_zero_error">请等待更新的预期的汇率</string>
 
 </resources>

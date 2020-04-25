@@ -730,5 +730,6 @@
     <string name="limit_order_price_higer_market_price">Tỉ giá bạn đặt cao hơn %s so với tỉ giá hiện tại.</string>
     <string name="limit_order_price_lower_market_price">Tỉ giá bạn đặt thấp hơn %s so với tỉ giá hiện tại.</string>
     <string name="sign_in_requried_notification_setting">Vui lòng đăng nhập để sử dụng tính năng Cài đặt thông báo</string>
+    <string name="expected_rate_zero_error">Vui lòng chờ cập nhật tỷ giá</string>
 
 </resources>

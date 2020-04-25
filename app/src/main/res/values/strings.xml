@@ -720,6 +720,7 @@
     <string name="limit_order_price_higer_market_price">Your price is %s higher than market price</string>
     <string name="limit_order_price_lower_market_price">Your price is %s lower than market price</string>
     <string name="sign_in_requried_notification_setting">Please sign in to use Notification Setting feature</string>
+    <string name="expected_rate_zero_error">Please wait for expected rate to be updated</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>
