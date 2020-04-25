@@ -12,6 +12,7 @@ import com.kyberswap.android.data.mapper.RateMapper
 import com.kyberswap.android.domain.model.Chart
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.repository.TokenRepository
+import com.kyberswap.android.domain.usecase.swap.GetExpectedRateSequentialUseCase
 import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
 import com.kyberswap.android.domain.usecase.token.GetChartDataForTokenUseCase
@@ -91,6 +92,22 @@ class TokenDataRepository @Inject constructor(
             }
     }
 
+    override fun getExpectedRate(param: GetExpectedRateSequentialUseCase.Param): Single<List<String>> {
+        val tokenSource = param.tokenSource
+        val tokenDest = param.tokenDest
+        val amount = 10.0.pow(tokenSource.tokenDecimal).times(param.srcAmount.toDouble())
+            .toBigDecimal().toBigInteger()
+        return Single.fromCallable {
+            val expectedRate = tokenClient.getExpectedRate(
+                context.getString(R.string.kyber_address),
+                tokenSource,
+                tokenDest,
+                amount
+            )
+            expectedRate
+        }
+    }
+
     override fun getExpectedRate(param: GetExpectedRateUseCase.Param): Flowable<List<String>> {
         val tokenSource = param.tokenSource
         val tokenDest = param.tokenDest
@@ -115,7 +132,7 @@ class TokenDataRepository @Inject constructor(
             val expectedRate = tokenClient.getExpectedRate(
                 context.getString(R.string.kyber_address),
                 tokenSource,
-                param.tokenDest,
+                tokenDest,
                 amount
             )
             expectedRate

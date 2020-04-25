@@ -831,10 +831,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             showAlertWithoutIcon(message = getString(R.string.custom_rate_empty))
                         }
 
-                        !hasExpectedRate -> {
-                            showAlertWithoutIcon(message = getString(R.string.expected_rate_zero_error))
-                        }
-
                         swap.isExpectedRateZero -> {
                             showAlertWithoutIcon(
                                 title = getString(R.string.title_amount_too_big),
