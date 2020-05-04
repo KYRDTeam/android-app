@@ -14,7 +14,7 @@ class GetTokenUseCase @Inject constructor(
 ) : FlowableUseCase<String?, List<Token>>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     override fun buildUseCaseFlowable(param: String?): Flowable<List<Token>> {
-        return balanceRepository.getChange24h().map {
+        return balanceRepository.getLocalTokens().map {
             it.filter { token ->
                 token.isListed && !token.isOther
             }

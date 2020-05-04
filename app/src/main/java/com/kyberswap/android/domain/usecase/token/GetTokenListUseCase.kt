@@ -14,7 +14,7 @@ class GetTokenListUseCase @Inject constructor(
 ) : SequentialUseCase<String?, List<Token>>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     override fun buildUseCaseSingle(param: String?): Single<List<Token>> {
-        return balanceRepository.getChange24h()
+        return balanceRepository.getLocalTokens()
             .firstOrError()
     }
 

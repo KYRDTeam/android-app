@@ -329,15 +329,16 @@ data class Token(
 
     fun areContentsTheSame(other: Token): Boolean {
         return this.tokenSymbol == other.tokenSymbol &&
-                this.tokenAddress == other.tokenAddress &&
-                this.currentBalance.toDisplayNumber() == other.currentBalance.toDisplayNumber() &&
-                this.rateEthNow.toDisplayNumber() == other.rateEthNow.toDisplayNumber() &&
-                this.rateUsdNow.toDisplayNumber() == other.rateUsdNow.toDisplayNumber() &&
-                this.changeUsd24h.toDisplayNumber() == other.changeUsd24h.toDisplayNumber() &&
-                this.changeEth24h.toDisplayNumber() == other.changeEth24h.toDisplayNumber() &&
-                this.fav == other.fav &&
-                this.shouldShowAsNew == other.shouldShowAsNew &&
-                this.isEven == other.isEven
+            this.tokenAddress == other.tokenAddress &&
+            this.currentBalance.toDisplayNumber() == other.currentBalance.toDisplayNumber() &&
+            this.rateEthNow.toDisplayNumber() == other.rateEthNow.toDisplayNumber() &&
+            this.rateUsdNow.toDisplayNumber() == other.rateUsdNow.toDisplayNumber() &&
+            this.changeUsd24h.toDisplayNumber() == other.changeUsd24h.toDisplayNumber() &&
+            this.changeEth24h.toDisplayNumber() == other.changeEth24h.toDisplayNumber() &&
+            this.fav == other.fav &&
+            this.shouldShowAsNew == other.shouldShowAsNew &&
+            this.isEven == other.isEven &&
+            this.isOther == other.isOther
     }
 
     fun change24hStatus(isEth: Boolean): Int {

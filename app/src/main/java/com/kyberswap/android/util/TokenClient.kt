@@ -212,9 +212,7 @@ class TokenClient @Inject constructor(
         contractAddress: String,
         tokens: List<Token>
     ): List<Token> {
-
         try {
-
             val ethPosition = tokens.indexOfFirst { it.isETH }
             val ethToken = tokens[ethPosition]
             val walletAddress = ethToken.selectedWalletAddress
@@ -289,7 +287,6 @@ class TokenClient @Inject constructor(
         }
         return rateResult
     }
-
 
     @Throws(java.lang.Exception::class)
     fun estimateGas(
@@ -486,7 +483,6 @@ class TokenClient @Inject constructor(
         }
         return transactionResponse.transactionHash
     }
-
 
     @Throws(IOException::class)
     fun doTransferTransaction(
@@ -972,7 +968,9 @@ class TokenClient @Inject constructor(
             web3j.ethGetTransactionByHash(newHash).send().transaction.get()
 
 
-        return if (newHash.isNotEmpty() && !web3j.ethGetTransactionReceipt(tx.hash).send().transactionReceipt.isPresent) {
+        return if (newHash.isNotEmpty() && !web3j.ethGetTransactionReceipt(tx.hash)
+                .send().transactionReceipt.isPresent
+        ) {
             val nonce = if (newTx.nonce != null) newTx.nonce else txResponse.nonce
             transactionDao.updateTransaction(
                 tx.copy(

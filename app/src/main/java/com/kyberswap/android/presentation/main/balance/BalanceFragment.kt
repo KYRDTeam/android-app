@@ -60,7 +60,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     private val isCurrencySelected: Boolean
         get() = binding.header.tvEth == orderByOptions[orderBySelectedIndex] && binding.header.tvEth.compoundDrawables.isNotEmpty()
-                || binding.header.tvUsd == orderByOptions[orderBySelectedIndex] && binding.header.tvUsd.compoundDrawables.isNotEmpty()
+            || binding.header.tvUsd == orderByOptions[orderBySelectedIndex] && binding.header.tvUsd.compoundDrawables.isNotEmpty()
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(BalanceViewModel::class.java)
@@ -162,7 +162,9 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     viewModel.saveFav(it)
                 }
             )
-        refresh(true)
+
+        // Always get the latest price info
+        refresh()
 //        getTokenBalances()
         tokenAdapter?.mode = Attributes.Mode.Single
         binding.rvToken.adapter = tokenAdapter
@@ -172,10 +174,9 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                 when (state) {
                     is GetWalletState.Success -> {
                         if (state.wallet.address != wallet?.address) {
-                            forceUpdate = true
-//                            setNameBalanceSelectedOption(balanceIndex)
-                            binding.tvUnit.setTextIfChange(state.wallet.unit)
                             this.wallet = state.wallet
+                            forceUpdate = true
+                            binding.tvUnit.setTextIfChange(state.wallet.unit)
                             tokenAdapter?.showEth(wallet?.unit == eth)
                         }
 
@@ -261,7 +262,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     tokenAdapter?.let {
                         it.submitFilterList(getFilterTokenList(searchedText, it.getFullTokenList()))
                     }
-
+                    handleEmptyList()
                     currentSearchString = searchedText
                 })
 
@@ -283,15 +284,15 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetBalanceState.Success -> {
-                        if (binding.swipeLayout.isRefreshing) {
-                            binding.swipeLayout.isRefreshing = false
-                        }
-                        updateTokenBalance(state.tokens.map {
+//                        if (binding.swipeLayout.isRefreshing) {
+//                            binding.swipeLayout.isRefreshing = false
+//                        }
+                        updateTokenList(state.tokens.map {
                             it.updateSelectedWallet(wallet)
                         })
                     }
                     is GetBalanceState.ShowError -> {
-                        binding.swipeLayout.isRefreshing = false
+//                        binding.swipeLayout.isRefreshing = false
                     }
                 }
             }
@@ -301,14 +302,16 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetBalanceState.Success -> {
-                        updateTokenBalance(state.tokens.map {
+                        updateTokenList(state.tokens.map {
                             it.updateSelectedWallet(wallet)
                         })
-                        if (binding.swipeLayout.isRefreshing) {
-                            binding.swipeLayout.isRefreshing = false
+                        if (state.isCompleted) {
+                            if (binding.swipeLayout.isRefreshing) {
+                                binding.swipeLayout.isRefreshing = false
+                            }
+                            getTokenBalances()
                         }
-                        scrollToTop()
-                        getTokenBalances()
+//                        scrollToTop()
                     }
                     is GetBalanceState.ShowError -> {
                         binding.swipeLayout.isRefreshing = false
@@ -440,7 +443,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         layoutManager.scrollToPositionWithOffset(0, 0)
     }
 
-    private fun updateTokenBalance(tokens: List<Token>) {
+    private fun updateTokenList(tokens: List<Token>) {
         tokenAdapter?.let {
             it.setFullTokenList(tokens)
             if (forceUpdate) {
@@ -499,8 +502,8 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         currentSelectedView = view
     }
 
-    private fun refresh(forceUpdate: Boolean = true) {
-        viewModel.refresh(forceUpdate)
+    private fun refresh() {
+        viewModel.refresh()
     }
 
     private fun orderByCurrency(isEth: Boolean, type: OrderType, view: TextView) {
@@ -589,17 +592,14 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     private fun getFilterTokenList(searchedString: String, tokens: List<Token>): List<Token> {
         if (searchedString.isEmpty()) return tokens
         return tokens.filter { token ->
-            token.tokenSymbol.toLowerCase(Locale.getDefault()).contains(searchedString) or
-                    token.tokenName.toLowerCase(Locale.getDefault()).contains(searchedString)
+            token.tokenSymbol.toLowerCase(Locale.getDefault()).contains(searchedString, true) or
+                token.tokenName.toLowerCase(Locale.getDefault()).contains(searchedString, true)
         }
     }
 
     private fun getFilterTokenList(searchedString: String): List<Token> {
         val tokenList = tokenAdapter?.getFullTokenList() ?: listOf()
-        return tokenList.filter { token ->
-            token.tokenSymbol.toLowerCase(Locale.getDefault()).contains(searchedString) or
-                    token.tokenName.toLowerCase(Locale.getDefault()).contains(searchedString)
-        }
+        return getFilterTokenList(searchedString, tokenList)
     }
 
     private fun calcBalance(tokens: List<Token>, isETH: Boolean): BigDecimal {

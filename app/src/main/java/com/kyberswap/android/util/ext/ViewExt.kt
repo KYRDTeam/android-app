@@ -57,7 +57,7 @@ fun TextView.setAmount(amount: String?) {
 }
 
 fun TextView.getAmountOrDefaultValue(): String {
-    return if (text.isNullOrEmpty() ||
+    return if (text.isNullOrBlank() ||
         text.toString().toDouble() == 0.0
     ) context.getString(
         R.string.default_source_amount

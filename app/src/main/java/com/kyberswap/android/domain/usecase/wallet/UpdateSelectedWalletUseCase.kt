@@ -20,7 +20,7 @@ class UpdateSelectedWalletUseCase @Inject constructor(
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public override fun buildUseCaseSingle(param: Param): Single<Pair<Wallet, List<Token>>> {
         return walletRepository.updatedSelectedWallet(param).flatMap { wallet ->
-            balanceRepository.getChange24h().first(listOf()).map { tokens ->
+            balanceRepository.getLocalTokens().first(listOf()).map { tokens ->
                 Pair(wallet, tokens)
             }
         }

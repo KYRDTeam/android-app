@@ -15,7 +15,7 @@ class GetBalanceUseCase @Inject constructor(
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     override fun buildUseCaseFlowable(param: String?): Flowable<List<Token>> {
-        return balanceRepository.getChange24h()
+        return balanceRepository.getLocalTokens()
     }
 
 }
