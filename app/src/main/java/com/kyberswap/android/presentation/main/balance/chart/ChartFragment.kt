@@ -20,6 +20,7 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainPagerAdapter
+import com.kyberswap.android.presentation.main.limitorder.LimitOrderV2Fragment
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.presentation.splash.GetWalletState
@@ -238,6 +239,20 @@ class ChartFragment : BaseFragment() {
                 }
             }
 
+        }
+
+        binding.tvBuyOrder.setOnClickListener {
+            if (currentFragment is LimitOrderV2Fragment) {
+                (currentFragment as LimitOrderV2Fragment).setSelectedTab(LocalLimitOrder.TYPE_BUY)
+                activity?.onBackPressed()
+            }
+        }
+
+        binding.tvSellOrder.setOnClickListener {
+            if (currentFragment is LimitOrderV2Fragment) {
+                (currentFragment as LimitOrderV2Fragment).setSelectedTab(LocalLimitOrder.TYPE_SELL)
+                activity?.onBackPressed()
+            }
         }
 
         binding.tvSell.setOnClickListener {

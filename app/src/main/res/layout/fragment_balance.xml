@@ -140,13 +140,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="16dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginEnd="0dp"
                 android:src="@drawable/ic_qr_code"
                 app:layout_constraintBottom_toBottomOf="@+id/tvAddress"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/tvCopy"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/tvAddress"
                 app:layout_constraintTop_toTopOf="@+id/tvAddress" />
+
+            <ImageView
+                android:id="@+id/tvCopy"
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="20dp"
+                android:src="@drawable/ic_copy_address"
+                app:layout_constraintBottom_toBottomOf="@+id/tvQr"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/tvQr"
+                app:layout_constraintTop_toTopOf="@+id/tvQr" />
 
             <LinearLayout
                 android:id="@+id/linearLayout"

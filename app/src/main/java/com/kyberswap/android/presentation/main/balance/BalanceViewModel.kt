@@ -20,7 +20,6 @@ import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
-import timber.log.Timber
 import javax.inject.Inject
 
 class BalanceViewModel @Inject constructor(
@@ -149,7 +148,6 @@ class BalanceViewModel @Inject constructor(
         var count = 0
         prepareBalanceUseCase.execute(
             Consumer {
-                Timber.e("refresh")
                 count++
                 _refreshBalanceStateCallback.value = Event(
                     GetBalanceState.Success(

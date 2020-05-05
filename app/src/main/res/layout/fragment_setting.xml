@@ -280,7 +280,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
                         android:lineSpacingExtra="10sp"
-                        android:text="@string/setting_community"
+                        android:text="@string/faq"
                         android:textColor="#141927"
                         android:textSize="14sp" />
                 </LinearLayout>

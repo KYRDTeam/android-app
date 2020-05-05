@@ -1,6 +1,9 @@
 package com.kyberswap.android.presentation.main.limitorder
 
 import android.animation.ObjectAnimator
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.graphics.Paint
 import android.os.Bundle
 import android.view.KeyEvent
@@ -226,8 +229,8 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
     private val hasRelatedOrder: Boolean
         get() = viewModel.relatedOrders.any {
             it.src == binding.order?.tokenSource?.symbol &&
-                    it.dst == binding.order?.tokenDest?.symbol &&
-                    it.userAddr == wallet?.address
+                it.dst == binding.order?.tokenDest?.symbol &&
+                it.userAddr == wallet?.address
         }
 
     private val viewByType: EditText
@@ -350,12 +353,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                             binding.executePendingBindings()
                             resetUI()
                             viewModel.getPendingBalances(wallet)
-                            viewModel.getFee(
-                                binding.order,
-                                srcAmount,
-                                dstAmount,
-                                wallet
-                            )
+                            getFee()
                             viewModel.getGasPrice()
                             binding.tvPrice.text = if (priceUsdQuote != "--") {
                                 "$marketPrice ~ $$priceUsdQuote"
@@ -377,7 +375,6 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 showLoading(state == GetFeeState.Loading && binding.tvOriginalFee.visibility == View.VISIBLE)
                 when (state) {
                     is GetFeeState.Success -> {
-
                         binding.tvFee.text = String.format(
                             getString(R.string.limit_order_fee),
                             srcAmount.toBigDecimalOrDefaultZero()
@@ -426,6 +423,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                         }
                     }
                     is GetFeeState.ShowError -> {
+                        showDiscount(false)
                         val err = state.message ?: getString(R.string.something_wrong)
                         if (isNetworkAvailable() && !isSomethingWrongError(err)) {
                             showError(err)
@@ -724,12 +722,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
             .subscribe { text ->
                 if (amountLock.get()) {
                     binding.edtTotal.setAmount(calcTotalAmount)
-                    viewModel.getFee(
-                        binding.order,
-                        srcAmount,
-                        dstAmount,
-                        wallet
-                    )
+                    getFee()
                 }
             })
 
@@ -744,12 +737,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 }
 
                 binding.edtAmount.setAmount(calcAmount)
-                viewModel.getFee(
-                    binding.order,
-                    srcAmount,
-                    dstAmount,
-                    wallet
-                )
+                getFee()
 
                 if (text.isNullOrEmpty()) {
                     binding.edtAmount.setText("")
@@ -939,10 +927,10 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                     )
                 }
                 srcAmount.toBigDecimalOrDefaultZero() >
-                        viewModel.calAvailableAmount(
-                            binding.order?.tokenSource,
-                            pendingBalances
-                        ).toBigDecimalOrDefaultZero() -> {
+                    viewModel.calAvailableAmount(
+                        binding.order?.tokenSource,
+                        pendingBalances
+                    ).toBigDecimalOrDefaultZero() -> {
 
                     error = getString(R.string.limit_order_insufficient_balance)
                     showAlertWithoutIcon(
@@ -1126,6 +1114,13 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
             false
         }
 
+        binding.tvName.setOnClickListener {
+            val clipboard =
+                context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+            val clip = ClipData.newPlainText("Copy", wallet?.address)
+            clipboard!!.primaryClip = clip
+            showAlert(getString(R.string.address_copy))
+        }
 
 
         binding.edtPrice.setKeyImeChangeListener(object : KeyImeChange {
@@ -1151,6 +1146,31 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 }
             }
         })
+    }
+
+    fun getFee() {
+        showDiscount(false)
+        viewModel.getFee(
+            binding.order,
+            srcAmount,
+            dstAmount,
+            wallet
+        )
+        if (binding.tvFee.text.isNullOrBlank()) {
+            binding.tvFee.text = String.format(
+                getString(R.string.limit_order_fee),
+                "0",
+                tokenSourceSymbol
+            )
+        }
+    }
+
+    fun setSelectedTab(type: Int) {
+        if (type == LocalLimitOrder.TYPE_BUY) {
+            binding.tlHeader.getTabAt(0)?.select()
+        } else if (type == LocalLimitOrder.TYPE_SELL) {
+            binding.tlHeader.getTabAt(1)?.select()
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

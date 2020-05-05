@@ -2,6 +2,9 @@ package com.kyberswap.android.presentation.main.swap
 
 import android.animation.ObjectAnimator
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
@@ -414,6 +417,14 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             )
         }
 
+        binding.tvName.setOnClickListener {
+            val clipboard =
+                context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+            val clip = ClipData.newPlainText("Copy", wallet?.address)
+            clipboard!!.primaryClip = clip
+            showAlert(getString(R.string.address_copy))
+        }
+
         binding.tv100Percent.setOnClickListener {
             updateCurrentFocus(edtSource)
             hideKeyboard()
@@ -821,7 +832,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             getString(R.string.not_enough_eth_blance)
                         )
                         swap.tokenSource.isETH &&
-                                availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
+                            availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
                             showAlertWithoutIcon(
                                 getString(R.string.insufficient_eth),
                                 getString(R.string.not_enough_eth_blance)

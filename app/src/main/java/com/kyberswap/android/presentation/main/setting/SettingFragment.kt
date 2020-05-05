@@ -124,7 +124,7 @@ class SettingFragment : BaseFragment() {
         }
 
         binding.lnCommunity.setOnClickListener {
-            openUrl(getString(R.string.setting_community_url))
+            openUrl(getString(R.string.setting_faq_url))
         }
 
         binding.imgTelegram.setOnClickListener {

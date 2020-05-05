@@ -1,5 +1,6 @@
 package com.kyberswap.android.presentation.main.balance
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -229,6 +230,15 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             view.setOnClickListener {
                 navigator.navigateToBalanceAddressScreen(currentFragment)
             }
+        }
+
+        binding.tvCopy.setOnClickListener {
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, wallet?.address)
+                type = MIME_TYPE_TEXT
+            }
+            startActivity(sendIntent)
         }
 
         binding.imgVisibility.setOnClickListener {
@@ -685,6 +695,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     companion object {
+        private const val MIME_TYPE_TEXT = "text/plain"
         fun newInstance() = BalanceFragment()
     }
 }
