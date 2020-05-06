@@ -724,6 +724,8 @@
     <string name="buy_limit_order">Buy Limit Order</string>
     <string name="sell_limit_order">Sell Limit Order</string>
     <string name="faq">FAQ</string>
+    <string name="buy_eth">BUY ETH</string>
+    <string name="buy_eth_endpoint" translatable="false">https://kyberswap.com</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>

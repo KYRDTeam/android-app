@@ -786,6 +786,11 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         })
     }
 
+    fun markReadAllNotification() {
+        setPendingNotification(0)
+        mainViewModel.getNotifications()
+    }
+
     private fun updateLoginStatus() {
         currentFragment?.childFragmentManager?.fragments?.forEach {
             when (it) {

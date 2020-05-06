@@ -292,23 +292,23 @@
                     android:layout_height="32dp"
                     android:layout_marginStart="44dp"
                     android:src="@drawable/ic_setting_telegram"
-                    app:layout_constraintBottom_toBottomOf="@+id/imgTelegramDeveloper"
-                    app:layout_constraintEnd_toStartOf="@+id/imgTelegramDeveloper"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintHorizontal_chainStyle="spread_inside"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/imgTelegramDeveloper" />
-
-                <ImageView
-                    android:id="@+id/imgTelegramDeveloper"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/ic_telegram_developer"
                     app:layout_constraintBottom_toBottomOf="@+id/imgGithub"
                     app:layout_constraintEnd_toStartOf="@+id/imgGithub"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imgTelegram"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/imgGithub" />
+
+                <!--                <ImageView-->
+                <!--                    android:id="@+id/imgTelegramDeveloper"-->
+                <!--                    android:layout_width="32dp"-->
+                <!--                    android:layout_height="32dp"-->
+                <!--                    android:src="@drawable/ic_telegram_developer"-->
+                <!--                    app:layout_constraintBottom_toBottomOf="@+id/imgGithub"-->
+                <!--                    app:layout_constraintEnd_toStartOf="@+id/imgGithub"-->
+                <!--                    app:layout_constraintHorizontal_bias="0.5"-->
+                <!--                    app:layout_constraintStart_toEndOf="@+id/imgTelegram"-->
+                <!--                    app:layout_constraintTop_toTopOf="@+id/imgGithub" />-->
 
                 <ImageView
                     android:id="@+id/imgGithub"
@@ -318,7 +318,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/imgFacebook"
                     app:layout_constraintEnd_toStartOf="@+id/imgFacebook"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/imgTelegramDeveloper"
+                    app:layout_constraintStart_toEndOf="@+id/imgTelegram"
                     app:layout_constraintTop_toTopOf="@+id/imgFacebook"
                     app:layout_constraintVertical_bias="1.0" />
 
@@ -360,7 +360,7 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="44dp"
                     android:src="@drawable/ic_linked_in"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"

@@ -30,6 +30,7 @@ import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.exactAmount
+import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.setTextIfChange
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.showKeyboard
@@ -442,6 +443,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                 }
             }
         })
+
+        binding.tvBuyEth.setOnClickListener {
+            openUrl(getString(R.string.buy_eth_endpoint))
+        }
     }
 
     fun getSelectedWallet() {

@@ -735,5 +735,6 @@
     <string name="buy_limit_order">购买限价订单</string>
     <string name="sell_limit_order">卖出限价订单</string>
     <string name="faq">FAQ</string>
+    <string name="buy_eth">BUY ETH</string>
 
 </resources>

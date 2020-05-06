@@ -211,6 +211,7 @@ class NotificationFragment : BaseFragment() {
                         notificationAdapter.updateReadItem(state.notification)
                         if (state.isReadAll) {
                             updateReadAllView(false)
+                            updateNotificationIndicator()
                         }
                     }
                     is ReadNotificationsState.ShowError -> {
@@ -224,6 +225,12 @@ class NotificationFragment : BaseFragment() {
 
         binding.swipeLayout.setOnRefreshListener {
             refresh()
+        }
+    }
+
+    private fun updateNotificationIndicator() {
+        if (activity is MainActivity) {
+            (activity as MainActivity).markReadAllNotification()
         }
     }
 

@@ -131,9 +131,9 @@ class SettingFragment : BaseFragment() {
             openUrl(getString(R.string.setting_kyber_network_url))
         }
 
-        binding.imgTelegramDeveloper.setOnClickListener {
-            openUrl(getString(R.string.setting_kyber_network_developer_url))
-        }
+//        binding.imgTelegramDeveloper.setOnClickListener {
+//            openUrl(getString(R.string.setting_kyber_network_developer_url))
+//        }
 
         binding.imgGithub.setOnClickListener {
             openUrl(getString(R.string.setting_github_url))

@@ -119,7 +119,7 @@
 
             <TextView
                 android:id="@+id/tvAddress"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="8dp"
@@ -133,14 +133,14 @@
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvBalance"
-                tools:text="0b274516cdcbd2bca7cf2ce0fa3921722…503" />
+                app:layout_constraintWidth_default="wrap"
+                tools:text="a…" />
 
             <ImageView
                 android:id="@+id/tvQr"
-                android:layout_width="wrap_content"
-                android:layout_height="16dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="0dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:padding="4dp"
                 android:src="@drawable/ic_qr_code"
                 app:layout_constraintBottom_toBottomOf="@+id/tvAddress"
                 app:layout_constraintEnd_toStartOf="@+id/tvCopy"
@@ -150,16 +150,79 @@
 
             <ImageView
                 android:id="@+id/tvCopy"
-                android:layout_width="wrap_content"
-                android:layout_height="16dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="20dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:padding="4dp"
                 android:src="@drawable/ic_copy_address"
                 app:layout_constraintBottom_toBottomOf="@+id/tvQr"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/tvBuyEth"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/tvQr"
                 app:layout_constraintTop_toTopOf="@+id/tvQr" />
+
+            <TextView
+                android:id="@+id/view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/tvCopy"
+                app:layout_constraintEnd_toStartOf="@+id/tvBuyEth"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/tvCopy"
+                app:layout_constraintTop_toTopOf="@+id/tvCopy"
+                app:layout_constraintWidth_min="8dp" />
+
+            <TextView
+                android:id="@+id/tvBuyEth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|end"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/rounded_corner_buy_eth_background"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif"
+                android:lineSpacingExtra="16sp"
+                android:padding="8dp"
+                android:singleLine="true"
+                android:text="@string/buy_eth"
+                android:textColor="#ffffff"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/view"
+                app:layout_constraintTop_toTopOf="@+id/view" />
+
+
+            <!--            <FrameLayout-->
+            <!--                android:id="@+id/flBuyEth"-->
+            <!--                android:layout_width="0dp"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_marginStart="8dp"-->
+            <!--                android:layout_marginEnd="16dp"-->
+            <!--                app:layout_constraintBottom_toBottomOf="@+id/tvCopy"-->
+            <!--                app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                app:layout_constraintHorizontal_bias="0.0"-->
+            <!--                app:layout_constraintStart_toEndOf="@+id/tvCopy"-->
+            <!--                app:layout_constraintTop_toTopOf="@+id/tvCopy"-->
+            <!--                >-->
+
+            <!--                <TextView-->
+            <!--                    android:id="@+id/tvBuyEth"-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:layout_gravity="center|end"-->
+            <!--                    android:background="@drawable/rounded_corner_edittext_background"-->
+            <!--                    android:ellipsize="end"-->
+            <!--                    android:fontFamily="sans-serif"-->
+            <!--                    android:lineSpacingExtra="16sp"-->
+            <!--                    android:padding="8dp"-->
+            <!--                    android:singleLine="true"-->
+            <!--                    android:text="@string/buy_eth"-->
+            <!--                    android:textColor="#ffffff"-->
+            <!--                    android:textSize="12sp"-->
+            <!--                    android:textStyle="bold" />-->
+            <!--            </FrameLayout>-->
 
             <LinearLayout
                 android:id="@+id/linearLayout"
