@@ -183,6 +183,7 @@
                 android:lineSpacingExtra="16sp"
                 android:padding="8dp"
                 android:singleLine="true"
+                android:textAllCaps="true"
                 android:text="@string/buy_eth"
                 android:textColor="#ffffff"
                 android:textSize="12sp"

@@ -734,6 +734,6 @@
     <string name="buy_limit_order">리밋오더 매수</string>
     <string name="sell_limit_order">리밋오더 매도</string>
     <string name="faq">FAQ</string>
-    <string name="buy_eth">BUY ETH</string>
+    <string name="buy_eth">구매 ETH</string>
 
 </resources>

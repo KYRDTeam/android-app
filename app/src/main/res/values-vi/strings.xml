@@ -734,6 +734,6 @@
     <string name="buy_limit_order">Đặt lệnh mua</string>
     <string name="sell_limit_order">Đặt lệnh bán</string>
     <string name="faq">FAQ</string>
-    <string name="buy_eth">BUY ETH</string>
+    <string name="buy_eth">Mua ETH</string>
 
 </resources>
