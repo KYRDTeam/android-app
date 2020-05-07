@@ -65,6 +65,7 @@ import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.main.walletconnect.WalletConnectFragment
 import com.kyberswap.android.presentation.wallet.UpdateWalletState
 import com.kyberswap.android.util.CLICK_WALLET_CONNECT_EVENT
+import com.kyberswap.android.util.MN_USER_CLICK_COPY_WALLET_ADDRESS
 import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_DISMISS
 import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_NO
 import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_NO_CONTINUE
@@ -337,7 +338,6 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         val walletAdapter =
             WalletAdapter(appExecutors, handler,
                 {
-
                     showDrawer(false)
                     handler.postDelayed(
                         {
@@ -354,8 +354,13 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             val clip = ClipData.newPlainText("Copy", it.address)
                             clipboard!!.primaryClip = clip
                             showAlert(getString(R.string.address_copy))
+                            firebaseAnalytics.logEvent(
+                                MN_USER_CLICK_COPY_WALLET_ADDRESS,
+                                Bundle().createEvent()
+                            )
                         }, 250
                     )
+
                 }, {
                     binding.drawerLayout.setDrawerLockMode(
                         DrawerLayout.LOCK_MODE_LOCKED_OPEN,

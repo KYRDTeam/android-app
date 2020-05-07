@@ -88,6 +88,15 @@ data class Token(
                 ?: BigDecimal.ZERO
         }
 
+    val allBalance: BigDecimal
+        get() {
+            var balance = BigDecimal.ZERO
+            wallets.forEach {
+                balance += it.currentBalance
+            }
+            return balance
+        }
+
     val sourceAmountWithoutRounding: String
         get() = currentBalance.stripTrailingZeros().toPlainString()
 

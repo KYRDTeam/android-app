@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
@@ -28,7 +29,11 @@ import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.BA_USER_CLICK_BUY_ETH
+import com.kyberswap.android.util.BA_USER_CLICK_COPY_WALLET_ADDRESS
+import com.kyberswap.android.util.BA_USER_OPEN_QR_CODE_WALLET_ADDRESS
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.exactAmount
 import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.setTextIfChange
@@ -58,6 +63,9 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
+
     private var currentSelectedView: View? = null
 
     private val isCurrencySelected: Boolean
@@ -68,7 +76,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         ViewModelProviders.of(this, viewModelFactory).get(BalanceViewModel::class.java)
     }
 
-    private val balanceAddress by lazy { listOf(binding.tvAddress, binding.tvQr) }
+    private val openedAddressView by lazy { listOf(binding.tvAddress, binding.tvQr) }
 
     private val handler by lazy {
         Handler()
@@ -227,9 +235,13 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             handleEmptyList()
         }
 
-        balanceAddress.forEach { view ->
+        openedAddressView.forEach { view ->
             view.setOnClickListener {
                 navigator.navigateToBalanceAddressScreen(currentFragment)
+                analytics.logEvent(
+                    BA_USER_OPEN_QR_CODE_WALLET_ADDRESS,
+                    Bundle().createEvent()
+                )
             }
         }
 
@@ -240,6 +252,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                 type = MIME_TYPE_TEXT
             }
             startActivity(sendIntent)
+            analytics.logEvent(
+                BA_USER_CLICK_COPY_WALLET_ADDRESS,
+                Bundle().createEvent()
+            )
         }
 
         binding.imgVisibility.setOnClickListener {
@@ -446,6 +462,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
         binding.tvBuyEth.setOnClickListener {
             openUrl(getString(R.string.buy_eth_endpoint))
+            analytics.logEvent(BA_USER_CLICK_BUY_ETH, Bundle().createEvent())
         }
     }
 

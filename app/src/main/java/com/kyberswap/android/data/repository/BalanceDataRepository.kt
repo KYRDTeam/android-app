@@ -20,6 +20,7 @@ import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.GetOtherBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.GetOtherTokenBalancesUseCase
 import com.kyberswap.android.domain.usecase.token.GetTokensBalanceUseCase
+import com.kyberswap.android.presentation.common.MIN_SUPPORT_AMOUNT
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
@@ -198,7 +199,7 @@ class BalanceDataRepository @Inject constructor(
                     }
                     .map { remoteTokens ->
                         val localTokenList = tokenDao.all.first(listOf()).blockingGet()
-                        remoteTokens.map { remoteToken ->
+                        val remoteList = remoteTokens.map { remoteToken ->
                             val localToken = localTokenList.find {
                                 it.tokenAddress.equals(remoteToken.tokenAddress, true)
                             }
@@ -212,6 +213,7 @@ class BalanceDataRepository @Inject constructor(
                                 remoteToken
                             }
                         }
+                        remoteList.union(tokenDao.otherTokens).toList()
                     }
             }
             .doAfterSuccess { tokens ->
@@ -379,7 +381,7 @@ class BalanceDataRepository @Inject constructor(
 
     override fun getOthersBalancePolling(param: GetOtherBalancePollingUseCase.Param): Flowable<List<Token>> {
         return Flowable.fromCallable {
-            tokenDao.otherTokens
+            tokenDao.otherTokens.filter { it.currentBalance >= MIN_SUPPORT_AMOUNT }.toList()
         }.repeatWhen {
             it.delay(90, TimeUnit.SECONDS)
         }.retryWhen { throwable ->

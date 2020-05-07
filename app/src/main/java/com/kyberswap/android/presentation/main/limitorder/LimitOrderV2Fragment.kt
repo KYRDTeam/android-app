@@ -47,6 +47,7 @@ import com.kyberswap.android.presentation.main.balance.CheckEligibleWalletState
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.LO_USER_CLICK_COPY_WALLET_ADDRESS
 import com.kyberswap.android.util.USER_CLICK_100_PERCENT
 import com.kyberswap.android.util.USER_CLICK_25_PERCENT
 import com.kyberswap.android.util.USER_CLICK_50_PERCENT
@@ -1120,6 +1121,10 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
             val clip = ClipData.newPlainText("Copy", wallet?.address)
             clipboard!!.primaryClip = clip
             showAlert(getString(R.string.address_copy))
+            analytics.logEvent(
+                LO_USER_CLICK_COPY_WALLET_ADDRESS,
+                Bundle().createEvent()
+            )
         }
 
 

@@ -19,6 +19,8 @@ import com.kyberswap.android.data.db.TransactionDao
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.util.ErrorHandler
 import com.kyberswap.android.util.TokenClient
+import com.kyberswap.android.util.di.qualifier.Alchemy
+import com.kyberswap.android.util.di.qualifier.SemiNode
 import com.trustwallet.walletconnect.WCClient
 import dagger.Module
 import dagger.Provides
@@ -98,6 +100,7 @@ class NetworkModule {
     }
 
     @Provides
+    @Alchemy
     @Singleton
     fun provideWeb3j(context: Context, client: OkHttpClient): Web3j {
         return Web3j.build(
@@ -110,18 +113,29 @@ class NetworkModule {
     }
 
     @Provides
+    @SemiNode
+    @Singleton
+    fun provideWeb3jSemiNode(context: Context, client: OkHttpClient): Web3j {
+        return Web3j.build(
+            HttpService(
+                context.getString(R.string.semi_node_base_rpc_url),
+                client,
+                false
+            )
+        )
+    }
+
+    @Provides
     @Singleton
     fun provideWCClient(gsonBuilder: GsonBuilder, client: OkHttpClient): WCClient {
         return WCClient(gsonBuilder, client)
     }
-
 
     @Provides
     @Singleton
     fun provideGsonBuilder(): GsonBuilder {
         return GsonBuilder()
     }
-
 
     @Provides
     @Singleton
@@ -192,13 +206,14 @@ class NetworkModule {
     @Provides
     @Singleton
     fun provideTokenClient(
-        web3j: Web3j,
+        @Alchemy web3j: Web3j,
+        @SemiNode web3jSemiNode: Web3j,
         tokenDao: TokenDao,
         transactionDao: TransactionDao,
         context: Context,
         analytics: FirebaseAnalytics
     ): TokenClient {
-        return TokenClient(web3j, tokenDao, transactionDao, context, analytics)
+        return TokenClient(web3j, web3jSemiNode, tokenDao, transactionDao, context, analytics)
     }
 
     private fun <T> createApiClient(clazz: Class<T>, baseUrl: String, client: OkHttpClient): T {

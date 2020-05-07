@@ -20,6 +20,7 @@ import android.widget.CompoundButton
 import android.widget.EditText
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.jakewharton.rxbinding3.widget.textChanges
@@ -49,7 +50,9 @@ import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.alert.GetAlertState
 import com.kyberswap.android.presentation.main.balance.CheckEligibleWalletState
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.SW_USER_CLICK_COPY_WALLET_ADDRESS
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.getAmountOrDefaultValue
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isNetworkAvailable
@@ -128,6 +131,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     private var hasExpectedRate: Boolean = false
 
     private var eligibleWalletStatus: EligibleWalletStatus? = null
+
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
 
     private val availableAmount: BigDecimal
         get() = binding.swap?.let {
@@ -423,6 +429,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             val clip = ClipData.newPlainText("Copy", wallet?.address)
             clipboard!!.primaryClip = clip
             showAlert(getString(R.string.address_copy))
+            analytics.logEvent(
+                SW_USER_CLICK_COPY_WALLET_ADDRESS,
+                Bundle().createEvent()
+            )
         }
 
         binding.tv100Percent.setOnClickListener {
