@@ -337,6 +337,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                                 binding.swipeLayout.isRefreshing = false
                             }
                             getTokenBalances()
+                            scrollToTop()
                         }
 //                        scrollToTop()
                     }

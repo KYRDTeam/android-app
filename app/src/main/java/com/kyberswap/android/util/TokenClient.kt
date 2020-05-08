@@ -149,7 +149,7 @@ class TokenClient @Inject constructor(
         contractAddress: String,
         fromAddress: String?,
         isOtherToken: Boolean = false
-    ): String {
+    ): String? {
         val encodedFunction = FunctionEncoder.encode(function)
         val response = if (isOtherToken) {
             web3jSemiNode.ethCall(
