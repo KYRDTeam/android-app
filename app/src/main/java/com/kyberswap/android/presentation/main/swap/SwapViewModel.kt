@@ -10,6 +10,7 @@ import com.kyberswap.android.domain.usecase.alert.GetAlertUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateAmountUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetCombinedCapUseCase
+import com.kyberswap.android.domain.usecase.swap.GetExpectedRateSequentialUseCase
 import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
 import com.kyberswap.android.domain.usecase.swap.GetKyberNetworkStatusCase
@@ -27,6 +28,7 @@ import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.alert.GetAlertState
 import com.kyberswap.android.presentation.main.balance.CheckEligibleWalletState
 import com.kyberswap.android.util.ErrorHandler
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toLongSafe
 import io.reactivex.disposables.CompositeDisposable
@@ -40,6 +42,7 @@ import javax.inject.Inject
 class SwapViewModel @Inject constructor(
     private val getWalletByAddressUseCase: GetWalletByAddressUseCase,
     private val getExpectedRateUseCase: GetExpectedRateUseCase,
+    private val getExpectedRateSequentialUseCase: GetExpectedRateSequentialUseCase,
     private val getSwapDataUseCase: GetSwapDataUseCase,
     private val getMarketRate: GetMarketRateUseCase,
     private val saveSwapUseCase: SaveSwapUseCase,
@@ -210,6 +213,76 @@ class SwapViewModel @Inject constructor(
         )
     }
 
+    fun checkEligibleWallet(wallet: Wallet, swap: Swap) {
+        checkEligibleWalletUseCase.dispose()
+        _checkEligibleWalletCallback.postValue(Event(CheckEligibleWalletState.Loading))
+        getExpectedRateSequentialUseCase.dispose()
+        getExpectedRateSequentialUseCase.execute(
+            Consumer {
+                val sw =
+                    if (it.isNotEmpty() && it.first()
+                            .toBigDecimalOrDefaultZero() > BigDecimal.ZERO
+                    ) {
+                        swap.copy(expectedRate = it[0])
+                    } else {
+                        swap.copy(expectedRate = swap.marketRate)
+                    }
+
+                checkEligibleWalletUseCase.execute(
+                    Consumer { eligibleWallet ->
+                        _checkEligibleWalletCallback.value =
+                            Event(CheckEligibleWalletState.Success(eligibleWallet, sw))
+                    },
+                    Consumer { error ->
+                        _checkEligibleWalletCallback.value =
+                            Event(
+                                CheckEligibleWalletState.ShowError(
+                                    errorHandler.getError(error),
+                                    sw
+                                )
+                            )
+                    },
+                    CheckEligibleWalletUseCase.Param(wallet)
+                )
+
+            },
+            Consumer {
+                val sw = if (swap.expectedRate.toBigDecimalOrDefaultZero() == BigDecimal.ZERO) {
+                    swap.copy(expectedRate = swap.marketRate)
+                } else {
+                    swap
+                }
+                checkEligibleWalletUseCase.execute(
+                    Consumer { eligibleWallet ->
+                        _checkEligibleWalletCallback.value =
+                            Event(
+                                CheckEligibleWalletState.Success(
+                                    eligibleWallet,
+                                    sw
+                                )
+                            )
+                    },
+                    Consumer { error ->
+                        _checkEligibleWalletCallback.value =
+                            Event(
+                                CheckEligibleWalletState.ShowError(
+                                    errorHandler.getError(error),
+                                    sw
+                                )
+                            )
+                    },
+                    CheckEligibleWalletUseCase.Param(wallet)
+                )
+            },
+            GetExpectedRateSequentialUseCase.Param(
+                swap.walletAddress,
+                swap.tokenSource,
+                swap.tokenDest,
+                swap.sourceAmount
+            )
+        )
+    }
+
     fun estimateAmount(source: String, dest: String, destAmount: String) {
         estimateAmountUseCase.execute(
             Consumer {
@@ -312,6 +385,7 @@ class SwapViewModel @Inject constructor(
         resetSwapUserCase.dispose()
         kyberNetworkStatusCase.dispose()
         checkEligibleWalletUseCase.dispose()
+        getExpectedRateSequentialUseCase.dispose()
         super.onCleared()
     }
 
@@ -328,22 +402,6 @@ class SwapViewModel @Inject constructor(
 //            GetCombinedCapUseCase.Param(wallet)
 //        )
 //    }
-
-    fun checkEligibleWallet(wallet: Wallet, swap: Swap) {
-        checkEligibleWalletUseCase.dispose()
-        _checkEligibleWalletCallback.postValue(Event(CheckEligibleWalletState.Loading))
-        checkEligibleWalletUseCase.execute(
-            Consumer {
-                _checkEligibleWalletCallback.value =
-                    Event(CheckEligibleWalletState.Success(it, swap))
-            },
-            Consumer {
-                _checkEligibleWalletCallback.value =
-                    Event(CheckEligibleWalletState.ShowError(errorHandler.getError(it), swap))
-            },
-            CheckEligibleWalletUseCase.Param(wallet)
-        )
-    }
 
     fun getKyberStatus() {
         kyberNetworkStatusCase.dispose()

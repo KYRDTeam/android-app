@@ -658,17 +658,17 @@
     <string name="not_attach_address">You have not attached your address to this domain. Please set up your account properly at ENS</string>
     <string name="kyber_down">Kyber交易目前无法使用。请稍后回来！</string>
     <string name="can_not_connect_wallet">Can not connect to your wallet, please make sure the QR code is valid and try again</string>
-    <string name="notifications">Notifications</string>
-    <string name="just_now">just now</string>
-    <string name="one_hour_ago">1 hour ago</string>
-    <string name="hours_ago">%s hours ago</string>
-    <string name="mins_ago">%s mins ago</string>
-    <string name="one_day_ago">1 day ago</string>
-    <string name="days_ago">%s days ago</string>
-    <string name="mark_all_read">Mark all read</string>
+    <string name="notifications">通知</string>
+    <string name="just_now">现在</string>
+    <string name="one_hour_ago">1小时前</string>
+    <string name="hours_ago">%s小时前</string>
+    <string name="mins_ago">%s分钟前</string>
+    <string name="one_day_ago">1天前</string>
+    <string name="days_ago">%s天前</string>
+    <string name="mark_all_read">将所有内容标记为已读</string>
     <string name="token_24h_vol"> %s ETH</string>
     <string name="action_open">Open</string>
-    <string name="title_notification">Notification</string>
+    <string name="title_notification">通知</string>
     <string name="eth_24h_vol">24h Vol:</string>
     <string name="defaut_24h_eth">0 ETH</string>
     <string name="transformation_data_content"><![CDATA[<div class="l-normal"><p>On Jan 24, 2020, KyberSwap.com and- related interfaces (the “Platform”) will no longer be operated by <strong class="text-black">Kyber Network International Limited </strong> (“Kyber Network”) and will be operated by <strong class="text-black">KYRD International Limited </strong> (“KYRD International”), a sister company incorporated and based in the <strong class="text-black">British Virgin Islands </strong>(“BVI”). There are no other changes apart from the new operating entity of KyberSwap.com being changed to KYRD International.</p><p><strong class="text-black">KYRD International </strong>is a company in BVI and as such, the country is not subject to an adequacy decision by the EU Commission on the processing of personal data. If you wish to continue using KyberSwap.com without providing personal data again, Kyber Network will transfer your current personal data to KYRD International upon your explicit consent. Please rest assured that KYRD International respects your privacy and is committed to protecting your personal data. For questions, please email <a href=mailto:support@kyberswap.com>support@kyberswap.com</a> or reach out to us at <a href="https://t.me/kyberswapofficial" target="_blank" class="text-orange">https://t.me/kyberswapofficial </a></p><p>Kindly select:</p><ul><li>\t<strong class="text-black">“Yes” </strong>if you wish to allow KyberSwap.com to copy your personal data to KYRD International; or</li><li>\t<strong class="text-black">“No”  </strong>if you do not wish to copy your personal data to KYRD International. Note that if you click “No”, your personal data shall be erased in accordance with the retention periods specified in Kyber Network’s Privacy Policy. You will have to create a new profile on KyberSwap.com in order to, but not limited to, access Limit Orders, price alerts, personalized notifications and other benefits. </li></ul></div>]]></string>
@@ -688,10 +688,10 @@
     <string name="cancel_transaction_warning">提交取消交易的请求并不能保证您的原始交易将被取消。如果请求成功，您将被收取上述交易费用。</string>
     <string name="cancellation_gas_fee">取消燃料费用</string>
     <string name="attempt_to_cancel">你想要取消吗?</string>
-    <string name="transaction_cancel_successfully">Your transaction has been cancelled successfully</string>
-    <string name="delete_all">DELETE ALL</string>
-    <string name="delete_all_trigger_alert_success">Delete all triggered alerts successfully</string>
-    <string name="do_you_want_to_delete_all_triggered_alerts">Do you want to delete all triggered alerts?</string>
+    <string name="transaction_cancel_successfully">您的交易已成功取消</string>
+    <string name="delete_all">全部删除</string>
+    <string name="delete_all_trigger_alert_success">成功删除所有触发的警报。</string>
+    <string name="do_you_want_to_delete_all_triggered_alerts">是否要删除所有触发的警报？</string>
     <string name="nonce_too_low">nonce too low</string>
     <string name="token_24h_vol_usd">%s USD</string>
     <string name="marker_open">开盘价: %s</string>
@@ -730,6 +730,11 @@
     <string name="preview_order_sell_base_quote">用%s出售%s</string>
     <string name="limit_order_price_higer_market_price">您期望的汇率比当前汇率高%s。</string>
     <string name="limit_order_price_lower_market_price">您期望的汇率比当前汇率低%s。</string>
-    <string name="sign_in_requried_notification_setting">Please sign in to use Notification Setting feature</string>
+    <string name="sign_in_requried_notification_setting">请登录以使用通知功能</string>
+    <string name="expected_rate_zero_error">请等待更新的预期的汇率</string>
+    <string name="buy_limit_order">购买限价订单</string>
+    <string name="sell_limit_order">卖出限价订单</string>
+    <string name="faq">FAQ</string>
+    <string name="buy_eth">购买 ETH</string>
 
 </resources>

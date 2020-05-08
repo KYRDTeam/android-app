@@ -2,6 +2,9 @@ package com.kyberswap.android.presentation.main.swap
 
 import android.animation.ObjectAnimator
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
@@ -17,6 +20,7 @@ import android.widget.CompoundButton
 import android.widget.EditText
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.jakewharton.rxbinding3.widget.textChanges
@@ -46,7 +50,9 @@ import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.alert.GetAlertState
 import com.kyberswap.android.presentation.main.balance.CheckEligibleWalletState
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.SW_USER_CLICK_COPY_WALLET_ADDRESS
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.getAmountOrDefaultValue
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isNetworkAvailable
@@ -122,7 +128,12 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
     private val destLock = AtomicBoolean()
 
+    private var hasExpectedRate: Boolean = false
+
     private var eligibleWalletStatus: EligibleWalletStatus? = null
+
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
 
     private val availableAmount: BigDecimal
         get() = binding.swap?.let {
@@ -227,7 +238,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             viewModel.getGasPrice()
                         } else if (isUserSelectSwap) {
                             viewModel.getGasLimit(wallet, binding.swap)
-                        } else if (!isUserSelectSwap) {
+                        } else if (!isUserSelectSwap && hasExpectedRate) {
                             viewModel.disposeGetExpectedRate()
                         }
                     }
@@ -412,6 +423,18 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             )
         }
 
+        binding.tvName.setOnClickListener {
+            val clipboard =
+                context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+            val clip = ClipData.newPlainText("Copy", wallet?.address)
+            clipboard!!.primaryClip = clip
+            showAlert(getString(R.string.address_copy))
+            analytics.logEvent(
+                SW_USER_CLICK_COPY_WALLET_ADDRESS,
+                Bundle().createEvent()
+            )
+        }
+
         binding.tv100Percent.setOnClickListener {
             updateCurrentFocus(edtSource)
             hideKeyboard()
@@ -433,6 +456,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetExpectedRateState.Success -> {
+                        hasExpectedRate = true
                         val swap =
                             if (state.list.first().toBigDecimalOrDefaultZero() > BigDecimal.ZERO) {
                                 binding.swap?.copy(
@@ -818,7 +842,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             getString(R.string.not_enough_eth_blance)
                         )
                         swap.tokenSource.isETH &&
-                                availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
+                            availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
                             showAlertWithoutIcon(
                                 getString(R.string.insufficient_eth),
                                 getString(R.string.not_enough_eth_blance)
@@ -827,6 +851,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         rbCustom.isChecked && edtCustom.text.isNullOrEmpty() -> {
                             showAlertWithoutIcon(message = getString(R.string.custom_rate_empty))
                         }
+
                         swap.isExpectedRateZero -> {
                             showAlertWithoutIcon(
                                 title = getString(R.string.title_amount_too_big),
@@ -1165,6 +1190,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     private fun getRate(swap: Swap) {
         if (swap.hasSamePair) return
         viewModel.getMarketRate(swap)
+        hasExpectedRate = false
         viewModel.getExpectedRate(
             swap,
             edtSource.getAmountOrDefaultValue()

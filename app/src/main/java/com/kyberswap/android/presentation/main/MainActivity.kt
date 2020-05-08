@@ -1,15 +1,20 @@
 package com.kyberswap.android.presentation.main
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -19,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter
+import com.daimajia.swipe.util.Attributes
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.zxing.integration.android.IntentIntegrator
 import com.kyberswap.android.AppExecutors
@@ -59,6 +65,7 @@ import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.main.walletconnect.WalletConnectFragment
 import com.kyberswap.android.presentation.wallet.UpdateWalletState
 import com.kyberswap.android.util.CLICK_WALLET_CONNECT_EVENT
+import com.kyberswap.android.util.MN_USER_CLICK_COPY_WALLET_ADDRESS
 import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_DISMISS
 import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_NO
 import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_NO_CONTINUE
@@ -171,6 +178,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
     private var adapter: MainPagerAdapter? = null
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -328,18 +336,79 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         )
 
         val walletAdapter =
-            WalletAdapter(appExecutors) {
+            WalletAdapter(appExecutors, handler,
+                {
+                    showDrawer(false)
+                    handler.postDelayed(
+                        {
 
-                showDrawer(false)
-                handler.postDelayed(
-                    {
+                            mainViewModel.updateSelectedWallet(it.copy(isSelected = true))
+                        }, 250
+                    )
+                }, {
+                    showDrawer(false)
+                    handler.postDelayed(
+                        {
+                            val clipboard =
+                                getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+                            val clip = ClipData.newPlainText("Copy", it.address)
+                            clipboard!!.primaryClip = clip
+                            showAlert(getString(R.string.address_copy))
+                            firebaseAnalytics.logEvent(
+                                MN_USER_CLICK_COPY_WALLET_ADDRESS,
+                                Bundle().createEvent()
+                            )
+                        }, 250
+                    )
 
-                        mainViewModel.updateSelectedWallet(it.copy(isSelected = true))
-                    }, 250
-                )
-            }
+                }, {
+                    binding.drawerLayout.setDrawerLockMode(
+                        DrawerLayout.LOCK_MODE_LOCKED_OPEN,
+                        GravityCompat.END
+                    )
+                }, {
+                    binding.drawerLayout.setDrawerLockMode(
+                        DrawerLayout.LOCK_MODE_UNLOCKED,
+                        GravityCompat.END
+                    )
+                })
+        walletAdapter.mode = Attributes.Mode.Single
         binding.navView.rvWallet.adapter = walletAdapter
 
+        binding.drawerLayout.setOnTouchListener { v, event ->
+            when (event?.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    if (walletAdapter.mItemManger.openItems.size > 0) {
+                        walletAdapter.mItemManger.closeAllItems()
+                    }
+                    if (binding.drawerLayout.getDrawerLockMode(GravityCompat.END) != DrawerLayout.LOCK_MODE_UNLOCKED) {
+                        binding.drawerLayout.setDrawerLockMode(
+                            DrawerLayout.LOCK_MODE_UNLOCKED,
+                            GravityCompat.END
+                        )
+                    }
+                }
+            }
+
+            v?.onTouchEvent(event) ?: true
+        }
+
+        binding.drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
+            override fun onDrawerStateChanged(newState: Int) {
+            }
+
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+            }
+
+            override fun onDrawerClosed(drawerView: View) {
+                if (walletAdapter.mItemManger.openItems.size > 0) {
+                    walletAdapter.mItemManger.closeAllItems()
+                }
+            }
+
+            override fun onDrawerOpened(drawerView: View) {
+            }
+        })
         mainViewModel.getWallets()
         mainViewModel.getAllWalletStateCallback.observe(this, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
@@ -720,6 +789,11 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                 }
             }
         })
+    }
+
+    fun markReadAllNotification() {
+        setPendingNotification(0)
+        mainViewModel.getNotifications()
     }
 
     private fun updateLoginStatus() {

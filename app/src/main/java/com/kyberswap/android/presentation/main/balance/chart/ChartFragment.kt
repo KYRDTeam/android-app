@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentChartBinding
@@ -20,10 +21,14 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainPagerAdapter
+import com.kyberswap.android.presentation.main.limitorder.LimitOrderV2Fragment
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.CH_USER_CLICK_BUY_LIMIT_ORDER
+import com.kyberswap.android.util.CH_USER_CLICK_SELL_LIMIT_ORDER
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleSafe
@@ -40,6 +45,9 @@ class ChartFragment : BaseFragment() {
 
     @Inject
     lateinit var appExecutors: AppExecutors
+
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
 
     private var token: Token? = null
 
@@ -238,6 +246,28 @@ class ChartFragment : BaseFragment() {
                 }
             }
 
+        }
+
+        binding.tvBuyOrder.setOnClickListener {
+            if (currentFragment is LimitOrderV2Fragment) {
+                (currentFragment as LimitOrderV2Fragment).setSelectedTab(LocalLimitOrder.TYPE_BUY)
+                activity?.onBackPressed()
+            }
+            analytics.logEvent(
+                CH_USER_CLICK_BUY_LIMIT_ORDER,
+                Bundle().createEvent()
+            )
+        }
+
+        binding.tvSellOrder.setOnClickListener {
+            if (currentFragment is LimitOrderV2Fragment) {
+                (currentFragment as LimitOrderV2Fragment).setSelectedTab(LocalLimitOrder.TYPE_SELL)
+                activity?.onBackPressed()
+            }
+            analytics.logEvent(
+                CH_USER_CLICK_SELL_LIMIT_ORDER,
+                Bundle().createEvent()
+            )
         }
 
         binding.tvSell.setOnClickListener {

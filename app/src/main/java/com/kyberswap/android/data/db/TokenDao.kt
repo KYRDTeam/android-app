@@ -45,6 +45,9 @@ interface TokenDao {
     @Query("DELETE FROM tokens")
     fun deleteAllTokens()
 
+    @Delete
+    fun deleteTokens(tokens: List<Token>)
+
     @get:Query("SELECT * FROM tokens")
     val all: Flowable<List<Token>>
 

@@ -1,5 +1,6 @@
 package com.kyberswap.android.presentation.main.balance
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
@@ -27,8 +29,13 @@ import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.BA_USER_CLICK_BUY_ETH
+import com.kyberswap.android.util.BA_USER_CLICK_COPY_WALLET_ADDRESS
+import com.kyberswap.android.util.BA_USER_OPEN_QR_CODE_WALLET_ADDRESS
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.exactAmount
+import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.setTextIfChange
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.showKeyboard
@@ -56,17 +63,20 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
+
     private var currentSelectedView: View? = null
 
     private val isCurrencySelected: Boolean
         get() = binding.header.tvEth == orderByOptions[orderBySelectedIndex] && binding.header.tvEth.compoundDrawables.isNotEmpty()
-                || binding.header.tvUsd == orderByOptions[orderBySelectedIndex] && binding.header.tvUsd.compoundDrawables.isNotEmpty()
+            || binding.header.tvUsd == orderByOptions[orderBySelectedIndex] && binding.header.tvUsd.compoundDrawables.isNotEmpty()
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(BalanceViewModel::class.java)
     }
 
-    private val balanceAddress by lazy { listOf(binding.tvAddress, binding.tvQr) }
+    private val openedAddressView by lazy { listOf(binding.tvAddress, binding.tvQr) }
 
     private val handler by lazy {
         Handler()
@@ -162,7 +172,9 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     viewModel.saveFav(it)
                 }
             )
-        refresh(true)
+
+        // Always get the latest price info
+        refresh()
 //        getTokenBalances()
         tokenAdapter?.mode = Attributes.Mode.Single
         binding.rvToken.adapter = tokenAdapter
@@ -172,10 +184,9 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                 when (state) {
                     is GetWalletState.Success -> {
                         if (state.wallet.address != wallet?.address) {
-                            forceUpdate = true
-//                            setNameBalanceSelectedOption(balanceIndex)
-                            binding.tvUnit.setTextIfChange(state.wallet.unit)
                             this.wallet = state.wallet
+                            forceUpdate = true
+                            binding.tvUnit.setTextIfChange(state.wallet.unit)
                             tokenAdapter?.showEth(wallet?.unit == eth)
                         }
 
@@ -224,10 +235,27 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             handleEmptyList()
         }
 
-        balanceAddress.forEach { view ->
+        openedAddressView.forEach { view ->
             view.setOnClickListener {
                 navigator.navigateToBalanceAddressScreen(currentFragment)
+                analytics.logEvent(
+                    BA_USER_OPEN_QR_CODE_WALLET_ADDRESS,
+                    Bundle().createEvent()
+                )
             }
+        }
+
+        binding.tvCopy.setOnClickListener {
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, wallet?.address)
+                type = MIME_TYPE_TEXT
+            }
+            startActivity(sendIntent)
+            analytics.logEvent(
+                BA_USER_CLICK_COPY_WALLET_ADDRESS,
+                Bundle().createEvent()
+            )
         }
 
         binding.imgVisibility.setOnClickListener {
@@ -261,7 +289,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     tokenAdapter?.let {
                         it.submitFilterList(getFilterTokenList(searchedText, it.getFullTokenList()))
                     }
-
+                    handleEmptyList()
                     currentSearchString = searchedText
                 })
 
@@ -283,15 +311,15 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetBalanceState.Success -> {
-                        if (binding.swipeLayout.isRefreshing) {
-                            binding.swipeLayout.isRefreshing = false
-                        }
-                        updateTokenBalance(state.tokens.map {
+//                        if (binding.swipeLayout.isRefreshing) {
+//                            binding.swipeLayout.isRefreshing = false
+//                        }
+                        updateTokenList(state.tokens.map {
                             it.updateSelectedWallet(wallet)
                         })
                     }
                     is GetBalanceState.ShowError -> {
-                        binding.swipeLayout.isRefreshing = false
+//                        binding.swipeLayout.isRefreshing = false
                     }
                 }
             }
@@ -301,14 +329,17 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetBalanceState.Success -> {
-                        updateTokenBalance(state.tokens.map {
+                        updateTokenList(state.tokens.map {
                             it.updateSelectedWallet(wallet)
                         })
-                        if (binding.swipeLayout.isRefreshing) {
-                            binding.swipeLayout.isRefreshing = false
+                        if (state.isCompleted) {
+                            if (binding.swipeLayout.isRefreshing) {
+                                binding.swipeLayout.isRefreshing = false
+                            }
+                            getTokenBalances()
+                            scrollToTop()
                         }
-                        scrollToTop()
-                        getTokenBalances()
+//                        scrollToTop()
                     }
                     is GetBalanceState.ShowError -> {
                         binding.swipeLayout.isRefreshing = false
@@ -429,6 +460,11 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                 }
             }
         })
+
+        binding.tvBuyEth.setOnClickListener {
+            openUrl(getString(R.string.buy_eth_endpoint))
+            analytics.logEvent(BA_USER_CLICK_BUY_ETH, Bundle().createEvent())
+        }
     }
 
     fun getSelectedWallet() {
@@ -440,7 +476,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         layoutManager.scrollToPositionWithOffset(0, 0)
     }
 
-    private fun updateTokenBalance(tokens: List<Token>) {
+    private fun updateTokenList(tokens: List<Token>) {
         tokenAdapter?.let {
             it.setFullTokenList(tokens)
             if (forceUpdate) {
@@ -499,8 +535,8 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         currentSelectedView = view
     }
 
-    private fun refresh(forceUpdate: Boolean = true) {
-        viewModel.refresh(forceUpdate)
+    private fun refresh() {
+        viewModel.refresh()
     }
 
     private fun orderByCurrency(isEth: Boolean, type: OrderType, view: TextView) {
@@ -589,17 +625,14 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     private fun getFilterTokenList(searchedString: String, tokens: List<Token>): List<Token> {
         if (searchedString.isEmpty()) return tokens
         return tokens.filter { token ->
-            token.tokenSymbol.toLowerCase(Locale.getDefault()).contains(searchedString) or
-                    token.tokenName.toLowerCase(Locale.getDefault()).contains(searchedString)
+            token.tokenSymbol.toLowerCase(Locale.getDefault()).contains(searchedString, true) or
+                token.tokenName.toLowerCase(Locale.getDefault()).contains(searchedString, true)
         }
     }
 
     private fun getFilterTokenList(searchedString: String): List<Token> {
         val tokenList = tokenAdapter?.getFullTokenList() ?: listOf()
-        return tokenList.filter { token ->
-            token.tokenSymbol.toLowerCase(Locale.getDefault()).contains(searchedString) or
-                    token.tokenName.toLowerCase(Locale.getDefault()).contains(searchedString)
-        }
+        return getFilterTokenList(searchedString, tokenList)
     }
 
     private fun calcBalance(tokens: List<Token>, isETH: Boolean): BigDecimal {
@@ -685,6 +718,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     companion object {
+        private const val MIME_TYPE_TEXT = "text/plain"
         fun newInstance() = BalanceFragment()
     }
 }

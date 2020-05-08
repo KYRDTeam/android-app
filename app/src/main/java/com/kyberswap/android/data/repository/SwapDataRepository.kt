@@ -24,6 +24,7 @@ import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.GasLimit
 import com.kyberswap.android.domain.model.KyberEnabled
 import com.kyberswap.android.domain.model.MaxGasPrice
+import com.kyberswap.android.domain.model.Promo
 import com.kyberswap.android.domain.model.QuoteAmount
 import com.kyberswap.android.domain.model.ResponseStatus
 import com.kyberswap.android.domain.model.Send
@@ -402,6 +403,14 @@ class SwapDataRepository @Inject constructor(
         }
     }
 
+    private fun getPairFromPromoWallet(promo: Promo?): Pair<String, String> {
+        val sourceToken: String = context.getString(R.string.promo_source_token)
+        val destToken =
+            if (promo?.destinationToken?.isNotEmpty() == true) promo.destinationToken else Token.KNC
+
+        return Pair(sourceToken, destToken)
+    }
+
     override fun getSwapData(param: GetSwapDataUseCase.Param): Flowable<Swap> {
         return Flowable.fromCallable {
             val wallet = param.wallet
@@ -411,9 +420,18 @@ class SwapDataRepository @Inject constructor(
             val defaultSwap =
                 when {
                     alert != null -> {
-                        val sourceToken =
-                            if (alert.base == Alert.BASE_USD) Token.ETH else alert.token
-                        val destToken = if (alert.base == Alert.BASE_USD) Token.KNC else Token.ETH
+                        val sourceToken: String
+                        val destToken: String
+                        if (wallet.isPromo) {
+                            val pair = getPairFromPromoWallet(wallet.promo)
+                            sourceToken = pair.first
+                            destToken = pair.second
+                        } else {
+                            sourceToken =
+                                if (alert.base == Alert.BASE_USD) Token.ETH else alert.token
+                            destToken = if (alert.base == Alert.BASE_USD) Token.KNC else Token.ETH
+                        }
+
                         val defaultSourceToken = tokenDao.getTokenBySymbol(sourceToken) ?: Token()
                         val defaultDestToken = tokenDao.getTokenBySymbol(destToken) ?: Token()
                         val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
@@ -426,12 +444,22 @@ class SwapDataRepository @Inject constructor(
                     }
 
                     notification != null -> {
-                        val sourceToken = Token.ETH
-                        var destToken =
-                            if (notification.token.isEmpty()) Token.KNC else notification.token
-                        if (destToken == sourceToken) {
-                            destToken = Token.DAI
+                        val sourceToken: String
+                        var destToken: String
+                        if (wallet.isPromo) {
+                            val pair = getPairFromPromoWallet(wallet.promo)
+                            sourceToken = pair.first
+                            destToken = pair.second
+                        } else {
+                            sourceToken = Token.ETH
+                            destToken =
+                                if (notification.token.isEmpty()) Token.KNC else notification.token
+
+                            if (destToken == sourceToken) {
+                                destToken = Token.DAI
+                            }
                         }
+
                         val defaultSourceToken = tokenDao.getTokenBySymbol(sourceToken) ?: Token()
                         val defaultDestToken = tokenDao.getTokenBySymbol(destToken) ?: Token()
                         val ethToken = tokenDao.getTokenBySymbol(Token.ETH) ?: Token()
@@ -444,14 +472,12 @@ class SwapDataRepository @Inject constructor(
                     }
 
                     localSwap == null -> {
-
-                        val promo = wallet.promo
                         val sourceToken: String
                         val destToken: String
                         if (wallet.isPromo) {
-                            sourceToken = context.getString(R.string.promo_source_token)
-                            destToken =
-                                if (promo?.destinationToken?.isNotEmpty() == true) promo.destinationToken else Token.KNC
+                            val pair = getPairFromPromoWallet(wallet.promo)
+                            sourceToken = pair.first
+                            destToken = pair.second
                         } else {
                             sourceToken = Token.ETH
                             destToken = Token.KNC

@@ -20,7 +20,7 @@ import com.kyberswap.android.domain.usecase.token.GetBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.GetOtherBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.GetOtherTokenBalancesUseCase
 import com.kyberswap.android.domain.usecase.token.GetTokensBalanceUseCase
-import com.kyberswap.android.domain.usecase.token.PrepareBalanceUseCase
+import com.kyberswap.android.presentation.common.MIN_SUPPORT_AMOUNT
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
@@ -171,59 +171,54 @@ class BalanceDataRepository @Inject constructor(
         }
     }
 
-    override fun getChange24h(): Flowable<List<Token>> {
+    override fun getLocalTokens(): Flowable<List<Token>> {
         return tokenDao.all.map {
             it.distinctBy { token -> token.tokenAddress.toLowerCase(Locale.getDefault()) }
         }
     }
 
-    override fun getBalance(param: PrepareBalanceUseCase.Param): Single<List<Token>> {
-        return if (tokenDao.all.blockingFirst().isEmpty() || param.forceUpdate) {
-            fetchChange24h()
-                .flatMap { remoteTokenList ->
-                    currencyApi.internalCurrencies()
-                        .map { currencies -> currencies.data }
-                        .toFlowable()
-                        .flatMapIterable { tokenCurrency -> tokenCurrency }
-                        .map { internalCurrency ->
-                            val tokenBySymbol = remoteTokenList.find {
-                                it.tokenSymbol.equals(internalCurrency.symbol, true)
+    override fun getBalance(): Flowable<List<Token>> {
+        return getLocalTokens().first(listOf()).mergeWith(fetchChange24h()
+            .flatMap { remoteTokenList ->
+                currencyApi.internalCurrencies()
+                    .map { currencies -> currencies.data }
+                    .toFlowable()
+                    .flatMapIterable { tokenCurrency -> tokenCurrency }
+                    .map { internalCurrency ->
+                        val tokenBySymbol = remoteTokenList.find {
+                            it.tokenSymbol.equals(internalCurrency.symbol, true)
+                        }
+
+                        tokenBySymbol?.with(internalCurrency) ?: Token(internalCurrency)
+                    }
+                    .toList()
+                    .doAfterSuccess { tokens ->
+                        tokenExtDao.insertTokenExtras(tokens.map {
+                            TokenExt(it)
+                        })
+                    }
+                    .map { remoteTokens ->
+                        val localTokenList = tokenDao.all.first(listOf()).blockingGet()
+                        val remoteList = remoteTokens.map { remoteToken ->
+                            val localToken = localTokenList.find {
+                                it.tokenAddress.equals(remoteToken.tokenAddress, true)
                             }
 
-                            tokenBySymbol?.with(internalCurrency) ?: Token(internalCurrency)
-                        }
-                        .toList()
-                        .doAfterSuccess { tokens ->
-                            tokenExtDao.insertTokenExtras(tokens.map {
-                                TokenExt(it)
-                            })
-                        }
-                        .map { remoteTokens ->
-                            val localTokenList = tokenDao.all.first(listOf()).blockingGet()
-                            remoteTokens.map { remoteToken ->
-                                val localToken = localTokenList.find {
-                                    it.tokenAddress.equals(remoteToken.tokenAddress, true)
-                                }
-
-                                if (localToken != null) {
-                                    remoteToken.copy(
-                                        wallets = localToken.wallets,
-                                        fav = localToken.fav
-                                    )
-                                } else {
-                                    remoteToken
-                                }
-
+                            if (localToken != null) {
+                                remoteToken.copy(
+                                    wallets = localToken.wallets,
+                                    fav = localToken.fav
+                                )
+                            } else {
+                                remoteToken
                             }
                         }
-                }
-
-                .doAfterSuccess { tokens ->
-                    tokenDao.insertTokens(tokens)
-                }
-        } else {
-            tokenDao.all.first(listOf())
-        }
+                        remoteList.union(tokenDao.otherTokens).toList()
+                    }
+            }
+            .doAfterSuccess { tokens ->
+                tokenDao.insertTokens(tokens)
+            })
     }
 
     override fun preloadTokenInfo(): Single<List<Token>> {
@@ -353,13 +348,17 @@ class BalanceDataRepository @Inject constructor(
 
         return if (selectedWallet?.address.equals(localSelected?.address, true)) {
             val currentFavs = tokenDao.allTokens.map {
-                it.tokenSymbol to it.fav
+                it.tokenAddress.toLowerCase(Locale.getDefault()) to it.fav
             }.toMap()
             tokenDao.updateTokens(listedTokens.map {
-                it.copy(fav = currentFavs[it.tokenSymbol] ?: false)
+                it.copy(
+                    fav = currentFavs[it.tokenAddress.toLowerCase(Locale.getDefault())] ?: false
+                )
             })
             tokenDao.updateTokens(otherTokens.map {
-                it.copy(fav = currentFavs[it.tokenSymbol] ?: false)
+                it.copy(
+                    fav = currentFavs[it.tokenAddress.toLowerCase(Locale.getDefault())] ?: false
+                )
             })
             listedTokens
         } else {
@@ -381,8 +380,22 @@ class BalanceDataRepository @Inject constructor(
     }
 
     override fun getOthersBalancePolling(param: GetOtherBalancePollingUseCase.Param): Flowable<List<Token>> {
+//        var isChecked = false
         return Flowable.fromCallable {
+//            val otherList = tokenDao.otherTokens.toMutableList()
+//            val removedOtherTokenList =
+//                otherList.filter { it.allBalance < MIN_SUPPORT_AMOUNT }
+//
+//            if (otherList.size == removedOtherTokenList.size && !isChecked) {
+//                if (otherList.size > 0) {
+//                    isChecked = true
+//                }
+//                tokenDao.otherTokens.toList()
+//            } else {
+//                tokenDao.otherTokens.filter { it.currentBalance >= MIN_SUPPORT_AMOUNT }.toList()
+//            }
             tokenDao.otherTokens
+
         }.repeatWhen {
             it.delay(90, TimeUnit.SECONDS)
         }.retryWhen { throwable ->

@@ -144,12 +144,15 @@ class BalanceViewModel @Inject constructor(
         )
     }
 
-    fun refresh(forceUpdated: Boolean) {
+    fun refresh() {
+        var count = 0
         prepareBalanceUseCase.execute(
             Consumer {
+                count++
                 _refreshBalanceStateCallback.value = Event(
                     GetBalanceState.Success(
-                        it
+                        it,
+                        isCompleted = count == 2 // both local and remote resource return
                     )
                 )
             },
@@ -161,9 +164,8 @@ class BalanceViewModel @Inject constructor(
                             errorHandler.getError(error)
                         )
                     )
-
             },
-            PrepareBalanceUseCase.Param(forceUpdated)
+            PrepareBalanceUseCase.Param()
         )
     }
 

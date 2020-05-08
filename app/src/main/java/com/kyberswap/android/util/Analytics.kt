@@ -85,4 +85,15 @@ const val APPROVE_WALLET_CONNECT_SIGN_ACTION = "approve_wallet_connect_sign_acti
 const val REJECT_WALLET_CONNECT_SIGN_ACTION = "reject_wallet_connect_sign_action"
 const val OPEN_SCAN_IN_WALLET_CONNECT_ACTION = "open_scan_in_wallet_connect_action"
 
+const val BA_USER_CLICK_BUY_ETH = "ba_user_click_buy_eth" // BA - Balance
+const val BA_USER_CLICK_COPY_WALLET_ADDRESS = "ba_user_click_copy_wallet_address"
+const val BA_USER_OPEN_QR_CODE_WALLET_ADDRESS = "ba_user_open_qr_code_wallet_address"
+const val SW_USER_CLICK_COPY_WALLET_ADDRESS = "sw_user_click_copy_wallet_address" // sw - SWAP
+const val LO_USER_CLICK_COPY_WALLET_ADDRESS =
+    "lo_user_click_copy_wallet_address" // lo - Limit Order
+const val MN_USER_CLICK_COPY_WALLET_ADDRESS = "mn_user_click_copy_wallet_address" // mn - Menu
+const val ST_USER_CLICK_FAQ = "st_user_click_faq" // st - Setting
+const val CH_USER_CLICK_BUY_LIMIT_ORDER = "ch_user_click_buy_limit_order" // ch - Chart
+const val CH_USER_CLICK_SELL_LIMIT_ORDER = "ch_user_click_sell_limit_order"
+
 

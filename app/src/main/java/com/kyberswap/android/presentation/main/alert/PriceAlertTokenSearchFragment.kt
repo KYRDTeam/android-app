@@ -20,6 +20,7 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.balance.GetBalanceState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.hideKeyboard
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -145,6 +146,7 @@ class PriceAlertTokenSearchFragment : BaseFragment() {
     }
 
     private fun onSelectionComplete() {
+        hideKeyboard()
         activity?.onBackPressed()
     }
 

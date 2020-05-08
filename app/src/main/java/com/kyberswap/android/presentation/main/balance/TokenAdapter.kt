@@ -17,6 +17,7 @@ import com.kyberswap.android.databinding.ItemTokenBinding
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.presentation.base.DataBoundListSwipeAdapter
 import com.kyberswap.android.presentation.base.DataBoundViewHolder
+import com.kyberswap.android.presentation.common.MIN_SUPPORT_AMOUNT
 import java.math.RoundingMode
 
 class TokenAdapter(
@@ -82,7 +83,8 @@ class TokenAdapter(
     fun submitFilterList(tokens: List<Token>, forceUpdate: Boolean = false) {
         val orderList = when (orderType) {
             OrderType.NAME -> tokens.sortedBy { it.tokenSymbol }
-            OrderType.BALANCE -> tokens.sortedByDescending { it.currentBalance }.sortedByDescending { it.currentBalance * it.rateEthNow }
+            OrderType.BALANCE -> tokens.sortedByDescending { it.currentBalance }
+                .sortedByDescending { it.currentBalance * it.rateEthNow }
             OrderType.ETH_ASC -> tokens.sortedBy {
                 it.rateEthNowOrDefaultValue
             }
@@ -104,7 +106,8 @@ class TokenAdapter(
                 val mutableTokens = tokens.toMutableList()
                 if (newTokens.isNotEmpty()) {
                     mutableTokens.removeAll(newTokens)
-                    newTokens.union(mutableTokens.sortedByDescending { it.currentBalance }.sortedByDescending { it.currentBalance * it.rateEthNow })
+                    newTokens.union(mutableTokens.sortedByDescending { it.currentBalance }
+                        .sortedByDescending { it.currentBalance * it.rateEthNow })
                 } else {
                     mutableTokens.sortedByDescending { it.currentBalance }
                 }
@@ -117,13 +120,14 @@ class TokenAdapter(
                 it.fav
             }
             TokenType.OTHER -> orderList.filter {
-                it.isOther
+                it.isOther && it.currentBalance >= MIN_SUPPORT_AMOUNT
             }
         }.mapIndexed { index, token ->
             token.apply {
                 isEven = index % 2 == 0
             }
         }
+
 
         if (forceUpdate) {
             submitList(null)

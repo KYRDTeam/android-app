@@ -70,6 +70,7 @@ import kotlin.math.pow
 
 class TokenClient @Inject constructor(
     private val web3j: Web3j,
+    private val web3jSemiNode: Web3j,
     private val tokenDao: TokenDao,
     private val transactionDao: TransactionDao,
     private val context: Context,
@@ -146,22 +147,35 @@ class TokenClient @Inject constructor(
     private fun callSmartContractFunction(
         function: Function,
         contractAddress: String,
-        fromAddress: String?
-    ): String {
+        fromAddress: String?,
+        isOtherToken: Boolean = false
+    ): String? {
         val encodedFunction = FunctionEncoder.encode(function)
-        val response = web3j.ethCall(
-            Transaction.createEthCallTransaction(fromAddress, contractAddress, encodedFunction),
-            DefaultBlockParameterName.LATEST
-        )
-            .send()
+        val response = if (isOtherToken) {
+            web3jSemiNode.ethCall(
+                Transaction.createEthCallTransaction(fromAddress, contractAddress, encodedFunction),
+                DefaultBlockParameterName.LATEST
+            )
+                .send()
+        } else {
+            web3j.ethCall(
+                Transaction.createEthCallTransaction(fromAddress, contractAddress, encodedFunction),
+                DefaultBlockParameterName.LATEST
+            )
+                .send()
+        }
         return response.value
     }
 
     @Throws(Exception::class)
-    fun updateBalance(walletAddress: String?, tokenAddress: String?): BigDecimal? {
+    fun updateBalance(
+        walletAddress: String?,
+        tokenAddress: String?,
+        isOtherToken: Boolean = false
+    ): BigDecimal? {
         if (walletAddress == null || tokenAddress == null) return BigDecimal.ZERO
         val function = balanceOf(walletAddress)
-        val responseValue = callSmartContractFunction(function, tokenAddress, null)
+        val responseValue = callSmartContractFunction(function, tokenAddress, null, isOtherToken)
 
         val response = FunctionReturnDecoder.decode(
             responseValue, function.outputParameters
@@ -198,7 +212,8 @@ class TokenClient @Inject constructor(
             if (token.isETH) {
                 Convert.fromWei(BigDecimal(getEthBalance(token.owner)), Convert.Unit.ETHER)
             } else {
-                (updateBalance(token.owner, token.tokenAddress) ?: BigDecimal.ZERO).divide(
+                (updateBalance(token.owner, token.tokenAddress, token.isOther)
+                    ?: BigDecimal.ZERO).divide(
                     BigDecimal(10).pow(
                         token.tokenDecimal
                     ), 18, RoundingMode.HALF_EVEN
@@ -212,9 +227,7 @@ class TokenClient @Inject constructor(
         contractAddress: String,
         tokens: List<Token>
     ): List<Token> {
-
         try {
-
             val ethPosition = tokens.indexOfFirst { it.isETH }
             val ethToken = tokens[ethPosition]
             val walletAddress = ethToken.selectedWalletAddress
@@ -289,7 +302,6 @@ class TokenClient @Inject constructor(
         }
         return rateResult
     }
-
 
     @Throws(java.lang.Exception::class)
     fun estimateGas(
@@ -486,7 +498,6 @@ class TokenClient @Inject constructor(
         }
         return transactionResponse.transactionHash
     }
-
 
     @Throws(IOException::class)
     fun doTransferTransaction(
@@ -972,7 +983,9 @@ class TokenClient @Inject constructor(
             web3j.ethGetTransactionByHash(newHash).send().transaction.get()
 
 
-        return if (newHash.isNotEmpty() && !web3j.ethGetTransactionReceipt(tx.hash).send().transactionReceipt.isPresent) {
+        return if (newHash.isNotEmpty() && !web3j.ethGetTransactionReceipt(tx.hash)
+                .send().transactionReceipt.isPresent
+        ) {
             val nonce = if (newTx.nonce != null) newTx.nonce else txResponse.nonce
             transactionDao.updateTransaction(
                 tx.copy(

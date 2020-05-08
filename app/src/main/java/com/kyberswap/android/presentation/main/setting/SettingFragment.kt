@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentSettingBinding
@@ -16,7 +17,9 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.setting.PassCodeLockActivity
+import com.kyberswap.android.util.ST_USER_CLICK_FAQ
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.shareUrl
 import javax.inject.Inject
@@ -33,6 +36,9 @@ class SettingFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(SettingViewModel::class.java)
@@ -124,16 +130,20 @@ class SettingFragment : BaseFragment() {
         }
 
         binding.lnCommunity.setOnClickListener {
-            openUrl(getString(R.string.setting_community_url))
+            openUrl(getString(R.string.setting_faq_url))
+            analytics.logEvent(
+                ST_USER_CLICK_FAQ,
+                Bundle().createEvent()
+            )
         }
 
         binding.imgTelegram.setOnClickListener {
             openUrl(getString(R.string.setting_kyber_network_url))
         }
 
-        binding.imgTelegramDeveloper.setOnClickListener {
-            openUrl(getString(R.string.setting_kyber_network_developer_url))
-        }
+//        binding.imgTelegramDeveloper.setOnClickListener {
+//            openUrl(getString(R.string.setting_kyber_network_developer_url))
+//        }
 
         binding.imgGithub.setOnClickListener {
             openUrl(getString(R.string.setting_github_url))
@@ -174,6 +184,4 @@ class SettingFragment : BaseFragment() {
                 }
             }
     }
-
-
 }

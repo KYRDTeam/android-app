@@ -1,20 +1,28 @@
 package com.kyberswap.android.presentation.main.balance
 
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
+import com.daimajia.swipe.SimpleSwipeListener
+import com.daimajia.swipe.SwipeLayout
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.BR
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ItemDrawerMenuBinding
 import com.kyberswap.android.domain.model.Wallet
-import com.kyberswap.android.presentation.base.DataBoundListAdapter
+import com.kyberswap.android.presentation.base.DataBoundListSwipeAdapter
+import com.kyberswap.android.presentation.base.DataBoundViewHolder
 
 class WalletAdapter(
     appExecutors: AppExecutors,
-    private val onItemClick: ((Wallet) -> Unit)?
-) : DataBoundListAdapter<Wallet, ItemDrawerMenuBinding>(
+    private val handler: Handler,
+    private val onItemClick: ((Wallet) -> Unit)?,
+    private val onItemCopyClick: ((Wallet) -> Unit)?,
+    private val onStartOpen: (() -> Unit)?,
+    private val onStartClose: (() -> Unit)?
+) : DataBoundListSwipeAdapter<Wallet, ItemDrawerMenuBinding>(
     appExecutors,
     diffCallback = object : DiffUtil.ItemCallback<Wallet>() {
         override fun areItemsTheSame(oldItem: Wallet, newItem: Wallet): Boolean {
@@ -28,14 +36,41 @@ class WalletAdapter(
     }
 ) {
 
-
     override fun bind(binding: ItemDrawerMenuBinding, item: Wallet) {
         binding.setVariable(BR.wallet, item)
         binding.executePendingBindings()
-        binding.root.setOnClickListener {
+        binding.csItem.setOnClickListener {
             onItemClick?.invoke(item.copy(isSelected = true))
+        }
+
+        binding.swManageWallet.addSwipeListener(object : SimpleSwipeListener() {
+            override fun onStartOpen(layout: SwipeLayout?) {
+                onStartOpen?.invoke()
+                mItemManger.closeAllExcept(layout)
+            }
+
+            override fun onStartClose(layout: SwipeLayout?) {
+                onStartClose?.invoke()
+                super.onStartClose(layout)
+            }
+        })
+
+        binding.btnCopy.setOnClickListener {
+            binding.swManageWallet.close(true)
+            handler.postDelayed({
+                onItemCopyClick?.invoke(item)
+            }, 250)
 
         }
+    }
+
+    override fun onBindViewHolder(
+        holder: DataBoundViewHolder<ItemDrawerMenuBinding>,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+        mItemManger.bindView(holder.itemView, position)
+        super.onBindViewHolder(holder, position, payloads)
     }
 
 
@@ -46,4 +81,8 @@ class WalletAdapter(
             parent,
             false
         )
+
+    override fun getSwipeLayoutResourceId(position: Int): Int {
+        return R.id.sw_manage_wallet
+    }
 }

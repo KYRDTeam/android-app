@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/layout">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -12,57 +11,87 @@
         <import type="android.view.View" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.daimajia.swipe.SwipeLayout
+        android:id="@+id/sw_manage_wallet"
         android:layout_width="match_parent"
-        android:layout_height="58dp"
-        android:background="@drawable/item_drawer_menu_toggle"
-        app:selected="@{wallet.isSelected}">
+        android:layout_height="wrap_content"
+        app:clickToClose="true"
+        app:drag_edge="right">
 
-        <TextView
-            android:id="@+id/textView13"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="35dp"
-            android:layout_marginEnd="45dp"
-            android:letterSpacing="0.07"
-            android:singleLine="true"
-            android:text="@{wallet.name}"
-            android:textColor="#141927"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toTopOf="@+id/textView12"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed" />
-
-        <TextView
-            android:id="@+id/textView12"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="45dp"
-            android:letterSpacing="0.07"
-            android:singleLine="true"
-            android:text="@{wallet.displayWalletAddress}"
-            android:textColor="#9ea1aa"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/textView13"
-            app:layout_constraintTop_toBottomOf="@+id/textView13" />
-
-        <ImageView
-            android:id="@+id/imgCheck"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="13dp"
-            android:background="@drawable/ic_check_toggle"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:selected="@{wallet.isSelected}" />
+            android:layout_height="match_parent">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <Button
+                android:id="@+id/btnCopy"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="#31cb9e"
+                android:gravity="center"
+                android:minWidth="72dp"
+                android:padding="4dp"
+                android:text="@string/copy"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
+                android:textColor="#ffffff"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/csItem"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:background="@drawable/item_drawer_menu_toggle"
+            app:selected="@{wallet.isSelected}">
+
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="35dp"
+                android:layout_marginEnd="45dp"
+                android:letterSpacing="0.07"
+                android:singleLine="true"
+                android:text="@{wallet.name}"
+                android:textColor="#141927"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toTopOf="@+id/textView12"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <TextView
+                android:id="@+id/textView12"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="45dp"
+                android:letterSpacing="0.07"
+                android:singleLine="true"
+                android:text="@{wallet.displayWalletAddress}"
+                android:textColor="#9ea1aa"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/textView13"
+                app:layout_constraintTop_toBottomOf="@+id/textView13" />
+
+            <ImageView
+                android:id="@+id/imgCheck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="13dp"
+                android:background="@drawable/ic_check_toggle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:selected="@{wallet.isSelected}" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.daimajia.swipe.SwipeLayout>
 </layout>

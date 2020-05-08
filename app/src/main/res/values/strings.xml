@@ -428,7 +428,7 @@
     <string name="too_many_attempt">Too many attempts, please try in %s seconds</string>
     <string name="number_of_attempt">You have %d attempts</string>
     <string name="setting_about_url" translatable="false">https://medium.com/kyberswap/get-started-on-kyberswap-mobile-ios-and-android-c56de6d7cc52</string>
-    <string name="setting_community_url" translatable="false">https://kyber.network/community</string>
+    <string name="setting_faq_url" translatable="false">https://kyberswap.com/faq</string>
     <string name="setting_support_message">Please send request to support@kyberswap.com</string>
     <string name="setting_kyber_network_url" translatable="false">https://t.me/KyberSwapOfficial</string>
     <string name="setting_kyber_network_developer_url" translatable="false">https://t.me/KyberDeveloper</string>
@@ -720,6 +720,12 @@
     <string name="limit_order_price_higer_market_price">Your price is %s higher than market price</string>
     <string name="limit_order_price_lower_market_price">Your price is %s lower than market price</string>
     <string name="sign_in_requried_notification_setting">Please sign in to use Notification Setting feature</string>
+    <string name="expected_rate_zero_error">Please wait for expected rate to be updated</string>
+    <string name="buy_limit_order">Buy Limit Order</string>
+    <string name="sell_limit_order">Sell Limit Order</string>
+    <string name="faq">FAQ</string>
+    <string name="buy_eth">BUY ETH</string>
+    <string name="buy_eth_endpoint" translatable="false">https://kyberswap.com</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>

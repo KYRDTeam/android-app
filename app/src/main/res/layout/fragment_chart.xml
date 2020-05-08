@@ -257,9 +257,9 @@
 
                 <TextView
                     android:id="@+id/tvBuy"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
                     android:background="@drawable/buy_button_drawable"
                     android:gravity="center"
                     android:minWidth="110dp"
@@ -270,39 +270,19 @@
                     android:textAppearance="@style/TextAppearance.Roboto.Medium"
                     android:textColor="@android:color/white"
                     android:textSize="14sp"
-                    android:visibility="@{token.other ? View.GONE : View.VISIBLE}"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/tvSell"
+                    android:visibility="@{isLimitOrder || token.other ? View.GONE : View.VISIBLE}"
                     app:layout_constraintEnd_toStartOf="@+id/tvSell"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintHorizontal_chainStyle="spread"
-                    app:layout_constraintStart_toStartOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvSend"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:background="@drawable/transfer_button_drawable"
-                    android:gravity="center"
-                    android:minWidth="110dp"
-                    android:minHeight="45dp"
-                    android:paddingStart="4dp"
-                    android:paddingEnd="4dp"
-                    android:text="@string/send"
-                    android:textAppearance="@style/TextAppearance.Roboto.Medium"
-                    android:textColor="@android:color/white"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/tvSell"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toStartOf="@+id/guideline7"
                     app:layout_constraintTop_toBottomOf="@+id/vpChart" />
 
                 <TextView
                     android:id="@+id/tvSell"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:background="@drawable/sell_button_drawable"
                     android:gravity="center"
@@ -314,11 +294,93 @@
                     android:textAppearance="@style/TextAppearance.Roboto.Medium"
                     android:textColor="@android:color/white"
                     android:textSize="14sp"
-                    android:visibility="@{token.other ? View.GONE : View.VISIBLE}"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/tvSend"
+                    android:visibility="@{isLimitOrder || token.other ? View.GONE : View.VISIBLE}"
                     app:layout_constraintEnd_toStartOf="@+id/tvSend"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/tvBuy" />
+                    app:layout_constraintStart_toEndOf="@+id/tvBuy"
+                    app:layout_constraintTop_toBottomOf="@+id/vpChart" />
+
+                <TextView
+                    android:id="@+id/tvSend"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/transfer_button_drawable"
+                    android:gravity="center"
+                    android:minWidth="110dp"
+                    android:minHeight="45dp"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
+                    android:text="@string/send"
+                    android:textAppearance="@style/TextAppearance.Roboto.Medium"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:visibility="@{isLimitOrder ? View.GONE : View.VISIBLE}"
+                    app:layout_constraintEnd_toEndOf="@+id/guideline8"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/tvSell"
+                    app:layout_constraintTop_toBottomOf="@+id/vpChart" />
+
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_begin="16dp" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_end="16dp" />
+
+                <TextView
+                    android:id="@+id/tvBuyOrder"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/buy_button_drawable"
+                    android:gravity="center"
+                    android:minWidth="110dp"
+                    android:minHeight="45dp"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
+                    android:text="@string/buy_limit_order"
+                    android:textAppearance="@style/TextAppearance.Roboto.Medium"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:visibility="@{isLimitOrder ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintEnd_toStartOf="@+id/tvSellOrder"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/vpChart" />
+
+                <TextView
+                    android:id="@+id/tvSellOrder"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="@drawable/sell_button_drawable"
+                    android:gravity="center"
+                    android:minWidth="110dp"
+                    android:minHeight="45dp"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
+                    android:text="@string/sell_limit_order"
+                    android:textAppearance="@style/TextAppearance.Roboto.Medium"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:visibility="@{isLimitOrder ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/tvBuyOrder"
+                    app:layout_constraintTop_toBottomOf="@+id/vpChart" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
