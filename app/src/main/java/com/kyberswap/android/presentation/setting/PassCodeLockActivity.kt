@@ -14,7 +14,7 @@ import android.view.animation.AnimationUtils
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.andrognito.pinlockview.PinLockListener
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
@@ -53,7 +53,7 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
     lateinit var navigator: Navigator
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(PassCodeLockViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(PassCodeLockViewModel::class.java)
     }
 
     private val binding by lazy {

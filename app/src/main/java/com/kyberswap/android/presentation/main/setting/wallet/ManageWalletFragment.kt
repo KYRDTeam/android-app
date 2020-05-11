@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
@@ -51,7 +51,7 @@ class ManageWalletFragment : BaseFragment() {
     }
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(ManageWalletViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(ManageWalletViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -181,7 +181,7 @@ class ManageWalletFragment : BaseFragment() {
             }
         })
 
-        viewModel.updateWalletStateCallback.observe(this, Observer { event ->
+        viewModel.updateWalletStateCallback.observe(viewLifecycleOwner, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == UpdateWalletState.Loading)
                 when (state) {

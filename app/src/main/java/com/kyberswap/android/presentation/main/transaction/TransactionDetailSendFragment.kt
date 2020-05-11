@@ -9,7 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentTransactionDetailSendBinding
 import com.kyberswap.android.domain.model.Transaction
@@ -34,7 +34,7 @@ class TransactionDetailSendFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory)
+        ViewModelProvider(this, viewModelFactory)
             .get(TransactionDetailViewModel::class.java)
     }
 

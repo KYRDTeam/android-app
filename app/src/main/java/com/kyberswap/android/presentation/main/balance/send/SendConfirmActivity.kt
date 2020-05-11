@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.caverock.androidsvg.SVG
 import com.kyberswap.android.AppExecutors
@@ -45,7 +45,7 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
     private var isContactExist: Boolean = false
 
     private val viewModel: SendConfirmViewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(SendConfirmViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(SendConfirmViewModel::class.java)
     }
 
     private val binding by lazy {

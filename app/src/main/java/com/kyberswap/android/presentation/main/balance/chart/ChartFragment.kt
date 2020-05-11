@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -73,7 +73,7 @@ class ChartFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(ChartViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(ChartViewModel::class.java)
     }
 
     private val handler by lazy {

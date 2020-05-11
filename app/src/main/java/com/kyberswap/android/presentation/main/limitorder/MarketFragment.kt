@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.TextView
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -62,7 +62,7 @@ class MarketFragment : BaseFragment() {
     private var quote: String? = null
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(MarketViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(MarketViewModel::class.java)
     }
 
     val compositeDisposable by lazy {

@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
@@ -57,7 +57,7 @@ class TransactionFilterFragment : BaseFragment(), DatePickerDialog.OnDateSetList
     lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory)
+        ViewModelProvider(this, viewModelFactory)
             .get(TransactionFilterViewModel::class.java)
     }
 

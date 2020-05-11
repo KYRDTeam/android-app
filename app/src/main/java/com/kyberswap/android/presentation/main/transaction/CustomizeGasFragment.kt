@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
@@ -54,7 +54,7 @@ class CustomizeGasFragment : BaseFragment() {
     private var maxGasPrice: String = ""
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(CustomizeGasViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(CustomizeGasViewModel::class.java)
     }
 
     private var selectedGasFeeView: CompoundButton? = null

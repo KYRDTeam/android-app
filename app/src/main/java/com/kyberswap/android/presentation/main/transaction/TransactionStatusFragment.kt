@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -68,7 +68,7 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
         )
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory)
+        ViewModelProvider(this, viewModelFactory)
             .get(TransactionStatusViewModel::class.java)
     }
 

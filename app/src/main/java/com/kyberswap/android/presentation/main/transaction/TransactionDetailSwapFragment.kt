@@ -9,7 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentTransactionDetailSwapBinding
 import com.kyberswap.android.domain.model.Transaction
@@ -35,7 +35,7 @@ class TransactionDetailSwapFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory)
+        ViewModelProvider(this, viewModelFactory)
             .get(TransactionDetailViewModel::class.java)
     }
 
@@ -79,8 +79,6 @@ class TransactionDetailSwapFragment : BaseFragment() {
         }
 
         binding
-
-
     }
 
     private fun openUrl(url: String?) {

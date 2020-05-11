@@ -10,7 +10,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
@@ -73,7 +73,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             || binding.header.tvUsd == orderByOptions[orderBySelectedIndex] && binding.header.tvUsd.compoundDrawables.isNotEmpty()
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(BalanceViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(BalanceViewModel::class.java)
     }
 
     private val openedAddressView by lazy { listOf(binding.tvAddress, binding.tvQr) }

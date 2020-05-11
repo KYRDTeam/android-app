@@ -10,7 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import com.kyberswap.android.AppExecutors
@@ -37,7 +37,7 @@ class BalanceAddressFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(BalanceAddressViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(BalanceAddressViewModel::class.java)
     }
 
     override fun onCreateView(

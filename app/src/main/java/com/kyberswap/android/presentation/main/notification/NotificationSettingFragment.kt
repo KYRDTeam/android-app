@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.widget.checkedChanges
@@ -52,7 +52,7 @@ class NotificationSettingFragment : BaseFragment(), LoginState {
     lateinit var analytics: FirebaseAnalytics
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(NotificationSettingViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(NotificationSettingViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

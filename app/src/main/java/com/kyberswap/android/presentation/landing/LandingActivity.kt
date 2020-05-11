@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityLandingBinding
 import com.kyberswap.android.presentation.base.BaseActivity
@@ -34,7 +34,7 @@ class LandingActivity : BaseActivity(), KeystoreStorage {
     lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(LandingActivityViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(LandingActivityViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

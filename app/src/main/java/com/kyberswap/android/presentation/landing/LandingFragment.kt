@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.kyberswap.android.databinding.FragmentLandingBinding
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -30,7 +30,7 @@ class LandingFragment : BaseFragment() {
     private var position: Int = 0
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(LandingViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(LandingViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -18,7 +18,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
@@ -130,7 +130,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
     private var hasDone = false
 
     val mainViewModel: MainViewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
     }
 
     private val handler by lazy {

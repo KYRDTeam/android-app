@@ -12,7 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookAuthorizationException
@@ -97,7 +97,7 @@ class ProfileFragment : BaseFragment() {
     }
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(ProfileViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(ProfileViewModel::class.java)
     }
 
     private val twitterAuthClient by lazy {

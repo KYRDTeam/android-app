@@ -19,7 +19,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.CompoundButton
 import android.widget.EditText
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.checkedChanges
@@ -111,7 +111,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         get() = sourceAmount.toBigDecimalOrDefaultZero().toDisplayNumber()
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(SwapViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(SwapViewModel::class.java)
     }
 
     private val tokenSources by lazy {

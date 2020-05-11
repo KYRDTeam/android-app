@@ -12,7 +12,7 @@ import android.view.animation.AccelerateInterpolator
 import android.widget.AdapterView
 import android.widget.CompoundButton
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -102,7 +102,7 @@ class SendFragment : BaseFragment() {
     lateinit var analytics: FirebaseAnalytics
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(SendViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(SendViewModel::class.java)
     }
 
     private val handler by lazy {

@@ -10,7 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.zxing.integration.android.IntentIntegrator
@@ -63,7 +63,7 @@ class WalletConnectFragment : BaseFragment() {
     lateinit var analytics: FirebaseAnalytics
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(WalletConnectViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(WalletConnectViewModel::class.java)
     }
 
     private lateinit var handler: Handler
@@ -138,7 +138,7 @@ class WalletConnectFragment : BaseFragment() {
 
         handleWalletConnect()
 
-        viewModel.requestConnectCallback.observe(this, Observer { event ->
+        viewModel.requestConnectCallback.observe(viewLifecycleOwner, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is RequestState.Loading -> {
@@ -166,7 +166,7 @@ class WalletConnectFragment : BaseFragment() {
             }
         })
 
-        viewModel.rejectSessionCallback.observe(this, Observer { event ->
+        viewModel.rejectSessionCallback.observe(viewLifecycleOwner, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
 
@@ -180,7 +180,7 @@ class WalletConnectFragment : BaseFragment() {
             }
         })
 
-        viewModel.approveSessionCallback.observe(this, Observer { event ->
+        viewModel.approveSessionCallback.observe(viewLifecycleOwner, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == SessionRequestState.Loading)
                 when (state) {
@@ -203,7 +203,7 @@ class WalletConnectFragment : BaseFragment() {
             }
         })
 
-        viewModel.decodeTransactionCallback.observe(this, Observer { event ->
+        viewModel.decodeTransactionCallback.observe(viewLifecycleOwner, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is DecodeTransactionState.Success -> {
@@ -257,7 +257,7 @@ class WalletConnectFragment : BaseFragment() {
             }
         })
 
-        viewModel.killSessionCallback.observe(this, Observer { event ->
+        viewModel.killSessionCallback.observe(viewLifecycleOwner, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is RequestState.Success -> {

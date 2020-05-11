@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jakewharton.rxbinding3.widget.textChanges
@@ -51,7 +51,7 @@ class TokenSearchFragment : BaseFragment() {
 
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(TokenSearchViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(TokenSearchViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.EditText
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
@@ -96,7 +96,7 @@ class LimitOrderFragment : BaseFragment(), LoginState {
     private var pendingBalances: PendingBalances? = null
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(LimitOrderViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(LimitOrderViewModel::class.java)
     }
 
     private val currentActivity by lazy {

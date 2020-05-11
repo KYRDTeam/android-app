@@ -6,7 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityPromoPaymentConfirmBinding
@@ -33,7 +33,7 @@ class PromoPaymentConfirmActivity : BaseActivity(), KeystoreStorage {
     private var wallet: Wallet? = null
 
     private val viewModel: SwapConfirmViewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(SwapConfirmViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(SwapConfirmViewModel::class.java)
     }
 
     private val binding by lazy {

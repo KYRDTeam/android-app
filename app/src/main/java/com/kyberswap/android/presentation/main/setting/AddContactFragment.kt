@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.google.zxing.integration.android.IntentIntegrator
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.R
@@ -54,7 +54,7 @@ class AddContactFragment : BaseFragment() {
     private var contact: Contact? = null
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(AddContactViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(AddContactViewModel::class.java)
     }
 
     private val isEmptyOrDefaultName: Boolean

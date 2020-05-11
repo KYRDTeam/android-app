@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.google.zxing.integration.android.IntentIntegrator
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
@@ -35,7 +35,7 @@ class ImportPrivateKeyFragment : BaseFragment() {
     private var fromMain: Boolean = false
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(ImportPrivateKeyViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(ImportPrivateKeyViewModel::class.java)
     }
 
 

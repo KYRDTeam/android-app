@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
@@ -65,7 +65,7 @@ class PriceAlertFragment : BaseFragment() {
     }
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(PriceAlertViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(PriceAlertViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

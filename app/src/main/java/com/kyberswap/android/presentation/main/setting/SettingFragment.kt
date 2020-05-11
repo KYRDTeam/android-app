@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.R
@@ -41,7 +41,7 @@ class SettingFragment : BaseFragment() {
     lateinit var analytics: FirebaseAnalytics
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(SettingViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(SettingViewModel::class.java)
     }
 
     override fun onCreateView(

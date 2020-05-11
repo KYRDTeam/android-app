@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kyberswap.android.AppExecutors
@@ -51,7 +51,7 @@ class LeaderBoardFragment : BaseFragment() {
     private var isCampaignResult: Boolean? = null
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(LeaderBoardViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(LeaderBoardViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

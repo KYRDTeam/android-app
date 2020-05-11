@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -93,7 +93,7 @@ class SignUpFragment : BaseFragment() {
     }
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(SignUpViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(SignUpViewModel::class.java)
     }
 
     override fun onCreateView(
