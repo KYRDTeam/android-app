@@ -41,7 +41,6 @@ import com.kyberswap.android.databinding.DialogDataTranformationBinding
 import com.kyberswap.android.databinding.DialogEligibleTokenBinding
 import com.kyberswap.android.databinding.DialogExtraBottomSheetBinding
 import com.kyberswap.android.databinding.DialogForgotPasswordBinding
-import com.kyberswap.android.databinding.DialogHoldingPassportBottomSheetBinding
 import com.kyberswap.android.databinding.DialogImagePickerBottomSheetBinding
 import com.kyberswap.android.databinding.DialogInfoBinding
 import com.kyberswap.android.databinding.DialogInvalidatedBottomSheetBinding
@@ -49,7 +48,6 @@ import com.kyberswap.android.databinding.DialogManageWalletBottomSheetBinding
 import com.kyberswap.android.databinding.DialogMaximumAlertBinding
 import com.kyberswap.android.databinding.DialogNotificationBinding
 import com.kyberswap.android.databinding.DialogOrderFilledBinding
-import com.kyberswap.android.databinding.DialogPassportBottomSheetBinding
 import com.kyberswap.android.databinding.DialogPasswordBackupWalletBinding
 import com.kyberswap.android.databinding.DialogPdpaUpdateBinding
 import com.kyberswap.android.databinding.DialogRateUsBinding
@@ -59,8 +57,6 @@ import com.kyberswap.android.domain.model.Notification
 import com.kyberswap.android.domain.model.NotificationLimitOrder
 import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.presentation.main.alert.EligibleTokenAdapter
-import com.kyberswap.android.presentation.main.alert.Passport
-import com.kyberswap.android.presentation.main.alert.PassportAdapter
 import com.kyberswap.android.util.NOT_OPEN_STORE_EVENT
 import com.kyberswap.android.util.NO_THANK_ACTION
 import com.kyberswap.android.util.OPEN_PLAY_STORE_ACTION
@@ -371,86 +367,6 @@ class DialogHelper @Inject constructor(
         dialog.show()
     }
 
-    fun showBottomSheetPassportDialog(
-        appExecutors: AppExecutors
-    ) {
-
-        val binding = DataBindingUtil.inflate<DialogPassportBottomSheetBinding>(
-            LayoutInflater.from(activity), R.layout.dialog_passport_bottom_sheet, null, false
-        )
-
-        val dialog = BottomSheetDialog(activity)
-        dialog.setContentView(binding.root)
-
-        val resources = listOf(
-            R.drawable.passport_show_corner,
-            R.drawable.passport_cover,
-            R.drawable.passport_blurry,
-            R.drawable.passport_correct
-        )
-
-        val contents = listOf(
-            R.string.must_show_all_4_corners_of_the_card,
-            R.string.must_not_be_covered_in_anyway,
-            R.string.must_not_be_blurry,
-            R.string.this_is_right
-        )
-
-        val passports = resources.zip(contents) { resource, content ->
-            Passport(resource, content)
-        }
-
-        val passportAdapter = PassportAdapter(appExecutors)
-
-        binding.rvPassport.layoutManager = GridLayoutManager(
-            activity,
-            2
-        )
-        binding.rvPassport.adapter = passportAdapter
-        passportAdapter.submitList(passports)
-        dialog.show()
-    }
-
-    fun showBottomSheetHoldPassportDialog(
-        appExecutors: AppExecutors
-    ) {
-
-        val binding = DataBindingUtil.inflate<DialogHoldingPassportBottomSheetBinding>(
-            LayoutInflater.from(activity),
-            R.layout.dialog_holding_passport_bottom_sheet,
-            null,
-            false
-        )
-
-        val dialog = BottomSheetDialog(activity)
-        dialog.setContentView(binding.root)
-
-        val resources = listOf(
-            R.drawable.passport_hold_incorrect,
-            R.drawable.passport_hold_correct
-        )
-
-        val contents = listOf(
-            R.string.passport_hold_incorrect,
-            R.string.passport_hold_correct
-        )
-
-        val passports = resources.zip(contents) { resource, content ->
-            Passport(resource, content)
-        }
-
-        val passportAdapter = PassportAdapter(appExecutors)
-
-        binding.rvPassport.layoutManager = GridLayoutManager(
-            activity,
-            2
-        )
-        binding.rvPassport.adapter = passportAdapter
-        passportAdapter.submitList(passports)
-        dialog.show()
-    }
-
-
     fun showCancelOrder(order: Order, positiveListener: () -> Unit) {
         val dialog = AlertDialog.Builder(activity).create()
         dialog.setCanceledOnTouchOutside(true)
@@ -515,9 +431,10 @@ class DialogHelper @Inject constructor(
             binding.ilPassword.error = null
         })
 
-        compositeDisposable.add(binding.edtConfirmPassword.textChanges().skipInitialValue().subscribe {
-            binding.ilConfirmPassword.error = null
-        })
+        compositeDisposable.add(
+            binding.edtConfirmPassword.textChanges().skipInitialValue().subscribe {
+                binding.ilConfirmPassword.error = null
+            })
 
         dialog.show()
 

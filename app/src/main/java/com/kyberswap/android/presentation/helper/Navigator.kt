@@ -44,12 +44,6 @@ import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.profile.SignUpConfirmFragment
 import com.kyberswap.android.presentation.main.profile.SignUpFragment
 import com.kyberswap.android.presentation.main.profile.TermConditionActivity
-import com.kyberswap.android.presentation.main.profile.kyc.KycInfoSearchFragment
-import com.kyberswap.android.presentation.main.profile.kyc.KycInfoType
-import com.kyberswap.android.presentation.main.profile.kyc.PassportFragment
-import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
-import com.kyberswap.android.presentation.main.profile.kyc.SubmitFragment
-import com.kyberswap.android.presentation.main.profile.kyc.VerificationFragment
 import com.kyberswap.android.presentation.main.setting.AddContactFragment
 import com.kyberswap.android.presentation.main.setting.ContactFragment
 import com.kyberswap.android.presentation.main.setting.wallet.BackupWalletInfoFragment
@@ -516,57 +510,6 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         navigateByChildFragmentManager(
             currentFragment,
             AlertMethodFragment.newInstance()
-        )
-    }
-
-    fun navigateToKYC(currentFragment: Fragment, step: Int?) {
-        navigateByChildFragmentManager(
-            currentFragment,
-            when (step) {
-                UserInfo.KYC_STEP_ID_PASSPORT -> PassportFragment.newInstance()
-                UserInfo.KYC_STEP_SUBMIT -> SubmitFragment.newInstance()
-                else -> PersonalInfoFragment.newInstance()
-            }
-        )
-    }
-
-    fun navigateToPassport(currentFragment: Fragment) {
-        navigateByChildFragmentManager(
-            currentFragment,
-            PassportFragment.newInstance()
-        )
-    }
-
-    fun navigateToPersonalInfo(currentFragment: Fragment) {
-        navigateByChildFragmentManager(
-            currentFragment,
-            PersonalInfoFragment.newInstance()
-        )
-    }
-
-    fun navigateToSubmitKYC(currentFragment: Fragment) {
-        navigateByChildFragmentManager(
-            currentFragment,
-            SubmitFragment.newInstance()
-        )
-    }
-
-    fun navigateToVerification(currentFragment: Fragment) {
-        navigateByChildFragmentManager(
-            currentFragment,
-            VerificationFragment.newInstance()
-        )
-    }
-
-    fun navigateToSearch(
-        currentFragment: Fragment,
-        data: List<String>,
-        infoType: KycInfoType
-    ) {
-        navigateByChildFragmentManager(
-            currentFragment,
-            KycInfoSearchFragment.newInstance(data, infoType)
-
         )
     }
 

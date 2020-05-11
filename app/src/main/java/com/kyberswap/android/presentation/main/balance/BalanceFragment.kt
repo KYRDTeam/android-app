@@ -100,6 +100,12 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         getString(R.string.favourite)
     }
 
+    private val isOtherSelected: Boolean
+        get() = currentSelectedView == binding.tvFavOther && isOther
+
+    private val isOther: Boolean
+        get() = binding.tvFavOther.text.toString().equals(other, true)
+
     private val nameAndBal by lazy {
         listOf(binding.header.tvName, binding.header.tvBalance)
     }
@@ -537,6 +543,9 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     private fun refresh() {
         viewModel.refresh()
+        if (isOtherSelected && activity is MainActivity) {
+            (activity as MainActivity).refreshOthers()
+        }
     }
 
     private fun orderByCurrency(isEth: Boolean, type: OrderType, view: TextView) {

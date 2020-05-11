@@ -380,22 +380,22 @@ class BalanceDataRepository @Inject constructor(
     }
 
     override fun getOthersBalancePolling(param: GetOtherBalancePollingUseCase.Param): Flowable<List<Token>> {
-//        var isChecked = false
+        var size = 0
         return Flowable.fromCallable {
-//            val otherList = tokenDao.otherTokens.toMutableList()
-//            val removedOtherTokenList =
-//                otherList.filter { it.allBalance < MIN_SUPPORT_AMOUNT }
-//
-//            if (otherList.size == removedOtherTokenList.size && !isChecked) {
-//                if (otherList.size > 0) {
-//                    isChecked = true
-//                }
-//                tokenDao.otherTokens.toList()
-//            } else {
-//                tokenDao.otherTokens.filter { it.currentBalance >= MIN_SUPPORT_AMOUNT }.toList()
-//            }
-            tokenDao.otherTokens
-
+            val otherList = tokenDao.otherTokens.toMutableList()
+            val othersSize = otherList.size
+            if (othersSize > 0 && othersSize > size) {
+                size = othersSize
+            } else {
+                if (othersSize > 0) {
+                    val removedOtherTokenList =
+                        otherList.filter { it.allBalance < MIN_SUPPORT_AMOUNT }
+                    if (removedOtherTokenList.isNotEmpty()) {
+                        otherList.removeAll(removedOtherTokenList)
+                    }
+                }
+            }
+            otherList.toList()
         }.repeatWhen {
             it.delay(90, TimeUnit.SECONDS)
         }.retryWhen { throwable ->

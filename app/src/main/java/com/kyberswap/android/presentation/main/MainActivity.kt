@@ -57,9 +57,6 @@ import com.kyberswap.android.presentation.main.notification.GetUnReadNotificatio
 import com.kyberswap.android.presentation.main.profile.DataTransferState
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.profile.UserInfoState
-import com.kyberswap.android.presentation.main.profile.kyc.PassportFragment
-import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
-import com.kyberswap.android.presentation.main.profile.kyc.SubmitFragment
 import com.kyberswap.android.presentation.main.setting.SettingFragment
 import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.main.walletconnect.WalletConnectFragment
@@ -791,6 +788,10 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         })
     }
 
+    fun refreshOthers() {
+        mainViewModel.monitorOtherTokenBalance()
+    }
+
     fun markReadAllNotification() {
         setPendingNotification(0)
         mainViewModel.getNotifications()
@@ -953,14 +954,6 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
             currentFragment?.childFragmentManager?.fragments?.forEach {
                 when (it) {
-                    is PassportFragment -> {
-                        it.onBackPress()
-                        return
-                    }
-                    is SubmitFragment -> {
-                        it.onBackPress()
-                        return
-                    }
                     is WalletConnectFragment -> {
                         it.onBackPress()
                     }
@@ -1006,12 +999,6 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         val allFragments = supportFragmentManager.fragments
         allFragments.forEach {
             if (it is ProfileFragment) {
-                it.onActivityResult(requestCode, resultCode, data)
-            }
-        }
-
-        currentFragment?.childFragmentManager?.fragments?.forEach {
-            if (it is PersonalInfoFragment || it is PassportFragment) {
                 it.onActivityResult(requestCode, resultCode, data)
             }
         }

@@ -38,14 +38,12 @@ import com.kyberswap.android.domain.usecase.profile.ReSubmitUserInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.ResetPasswordUseCase
 import com.kyberswap.android.domain.usecase.profile.ResizeImageUseCase
 import com.kyberswap.android.domain.usecase.profile.SaveIdPassportUseCase
-import com.kyberswap.android.domain.usecase.profile.SaveKycInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.SaveLocalPersonalInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.SavePersonalInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.SaveRatingInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.SignUpUseCase
 import com.kyberswap.android.domain.usecase.profile.SubmitUserInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.UpdatePushTokenUseCase
-import com.kyberswap.android.presentation.main.profile.kyc.KycInfoType
 import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -84,8 +82,8 @@ class UserDataRepository @Inject constructor(
                 alerts.filter { it.isNotLocal }
             },
             userApi.getAlert().map {
-                    userMapper.transform(it.alerts)
-                }
+                userMapper.transform(it.alerts)
+            }
                 .doAfterSuccess {
                     alertDao.updateAlerts(it)
                 }.toFlowable()
@@ -115,8 +113,8 @@ class UserDataRepository @Inject constructor(
 
     override fun pollingUserInfo(): Flowable<UserInfo> {
         return userApi.getUserInfo().map {
-                userMapper.transform(it)
-            }
+            userMapper.transform(it)
+        }
             .doAfterSuccess {
                 if (!it.success && it.message.equals(
                         context.getString(R.string.not_authenticated_message), true
@@ -197,17 +195,17 @@ class UserDataRepository @Inject constructor(
 
     override fun loginSocial(param: LoginSocialUseCase.Param): Single<LoginUser> {
         return userApi.socialLogin(
-                param.socialInfo.type.value,
-                param.socialInfo.accessToken,
-                param.socialInfo.subscription,
-                param.socialInfo.photoUrl,
-                param.socialInfo.twoFa,
-                param.socialInfo.displayName,
-                param.socialInfo.oAuthToken,
-                param.socialInfo.oAuthTokenSecret,
-                param.confirmSignUp,
-                param.socialInfo.twoFa
-            )
+            param.socialInfo.type.value,
+            param.socialInfo.accessToken,
+            param.socialInfo.subscription,
+            param.socialInfo.photoUrl,
+            param.socialInfo.twoFa,
+            param.socialInfo.displayName,
+            param.socialInfo.oAuthToken,
+            param.socialInfo.oAuthTokenSecret,
+            param.confirmSignUp,
+            param.socialInfo.twoFa
+        )
             .map { userMapper.transform(it) }
             .doAfterSuccess {
                 userDao.updateUser(it.userInfo)
@@ -217,10 +215,10 @@ class UserDataRepository @Inject constructor(
 
     override fun login(param: LoginUseCase.Param): Single<LoginUser> {
         return userApi.login(
-                param.email.toLowerCase(Locale.getDefault()),
-                param.password,
-                param.twoFa
-            )
+            param.email.toLowerCase(Locale.getDefault()),
+            param.password,
+            param.twoFa
+        )
             .map { userMapper.transform(it) }
             .doAfterSuccess {
                 userDao.updateUser(it.userInfo)
@@ -237,25 +235,6 @@ class UserDataRepository @Inject constructor(
             param.isSubscription
         ).map {
             userMapper.transform(it)
-        }
-    }
-
-    override fun save(param: SaveKycInfoUseCase.Param): Completable {
-        return Completable.fromCallable {
-            val user = userDao.getUser() ?: UserInfo()
-            val currentKycInfo = user.kycInfo
-
-            val kycInfo = when (param.kycInfoType) {
-                KycInfoType.NATIONALITY -> currentKycInfo.copy(nationality = param.value)
-                KycInfoType.COUNTRY_OF_RESIDENCE -> currentKycInfo.copy(country = param.value)
-                KycInfoType.PROOF_ADDRESS -> currentKycInfo.copy(documentProofAddress = param.value)
-                KycInfoType.SOURCE_FUND -> currentKycInfo.copy(sourceFund = param.value)
-                KycInfoType.OCCUPATION_CODE -> currentKycInfo.copy(occupationCode = param.value)
-                KycInfoType.INDUSTRY_CODE -> currentKycInfo.copy(industryCode = param.value)
-                KycInfoType.TAX_RESIDENCY_COUNTRY -> currentKycInfo.copy(taxResidencyCountry = param.value)
-            }
-            user.kycInfo = kycInfo
-            userDao.updateUser(user)
         }
     }
 
@@ -503,10 +482,10 @@ class UserDataRepository @Inject constructor(
 
     override fun getUnReadNotifications(): Flowable<Int> {
         return userApi.getNotifications().map {
-                it.pagingInfo.unreadCount ?: 0
-            }.repeatWhen {
-                it.delay(15, TimeUnit.SECONDS)
-            }
+            it.pagingInfo.unreadCount ?: 0
+        }.repeatWhen {
+            it.delay(15, TimeUnit.SECONDS)
+        }
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
             }

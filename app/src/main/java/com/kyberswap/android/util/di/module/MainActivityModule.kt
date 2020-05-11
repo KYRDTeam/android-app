@@ -55,15 +55,6 @@ import com.kyberswap.android.presentation.main.profile.ProfileViewModel
 import com.kyberswap.android.presentation.main.profile.SignUpConfirmFragment
 import com.kyberswap.android.presentation.main.profile.SignUpFragment
 import com.kyberswap.android.presentation.main.profile.SignUpViewModel
-import com.kyberswap.android.presentation.main.profile.kyc.CountryViewModel
-import com.kyberswap.android.presentation.main.profile.kyc.KycInfoSearchFragment
-import com.kyberswap.android.presentation.main.profile.kyc.PassportFragment
-import com.kyberswap.android.presentation.main.profile.kyc.PassportViewModel
-import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
-import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoViewModel
-import com.kyberswap.android.presentation.main.profile.kyc.SubmitFragment
-import com.kyberswap.android.presentation.main.profile.kyc.SubmitViewModel
-import com.kyberswap.android.presentation.main.profile.kyc.VerificationFragment
 import com.kyberswap.android.presentation.main.setting.AddContactFragment
 import com.kyberswap.android.presentation.main.setting.AddContactViewModel
 import com.kyberswap.android.presentation.main.setting.ContactFragment
@@ -246,26 +237,6 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeLeaderBoardFragment(): LeaderBoardFragment
-
-    @FragmentScoped
-    @ContributesAndroidInjector
-    fun contributePersonalInfoFragment(): PersonalInfoFragment
-
-    @FragmentScoped
-    @ContributesAndroidInjector
-    fun contributePassportFragment(): PassportFragment
-
-    @FragmentScoped
-    @ContributesAndroidInjector
-    fun contributeSubmitFragment(): SubmitFragment
-
-    @FragmentScoped
-    @ContributesAndroidInjector
-    fun contributeCountryFragment(): KycInfoSearchFragment
-
-    @FragmentScoped
-    @ContributesAndroidInjector
-    fun contributeVerificationFragment(): VerificationFragment
 
     @FragmentScoped
     @ContributesAndroidInjector
@@ -492,33 +463,6 @@ interface MainActivityModule {
         leaderBoardViewModel: LeaderBoardViewModel
     ): ViewModel
 
-    @Binds
-    @IntoMap
-    @ViewModelKey(PersonalInfoViewModel::class)
-    fun bindPersonalInfoViewModel(
-        personalInfoViewModel: PersonalInfoViewModel
-    ): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(PassportViewModel::class)
-    fun bindPassportViewModel(
-        passportViewModel: PassportViewModel
-    ): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(SubmitViewModel::class)
-    fun bindSubmitViewModel(
-        submitViewModel: SubmitViewModel
-    ): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(CountryViewModel::class)
-    fun bindCountryViewModel(
-        countryViewModel: CountryViewModel
-    ): ViewModel
 
     @Binds
     @IntoMap

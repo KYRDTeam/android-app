@@ -21,7 +21,6 @@ import com.kyberswap.android.domain.usecase.profile.ReSubmitUserInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.ResetPasswordUseCase
 import com.kyberswap.android.domain.usecase.profile.ResizeImageUseCase
 import com.kyberswap.android.domain.usecase.profile.SaveIdPassportUseCase
-import com.kyberswap.android.domain.usecase.profile.SaveKycInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.SaveLocalPersonalInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.SavePersonalInfoUseCase
 import com.kyberswap.android.domain.usecase.profile.SaveRatingInfoUseCase
@@ -63,7 +62,7 @@ interface UserRepository {
 
     fun logout(): Completable
 
-    fun save(param: SaveKycInfoUseCase.Param): Completable
+//    fun save(param: SaveKycInfoUseCase.Param): Completable
 
     fun save(param: SavePersonalInfoUseCase.Param): Single<KycResponseStatus>
 
