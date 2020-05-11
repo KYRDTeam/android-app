@@ -164,7 +164,7 @@ class TokenClient @Inject constructor(
             )
                 .send()
         }
-        return response.value
+        return response?.value
     }
 
     @Throws(Exception::class)

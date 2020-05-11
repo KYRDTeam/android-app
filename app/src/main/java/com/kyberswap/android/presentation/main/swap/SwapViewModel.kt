@@ -343,7 +343,8 @@ class SwapViewModel @Inject constructor(
         saveSwapUseCase.execute(
             Action {
                 if (fromContinue) {
-                    _saveSwapCallback.value = Event(SaveSwapState.Success(""))
+                    _saveSwapCallback.value =
+                        Event(SaveSwapState.Success(swap.isExpectedRateEmptyOrZero))
                 }
             },
             Consumer {

@@ -735,5 +735,6 @@
     <string name="sell_limit_order">Đặt lệnh bán</string>
     <string name="faq">FAQ</string>
     <string name="buy_eth">Mua ETH</string>
+    <string name="please_wait_for_expected_rate_updated">Vui lòng chờ cập nhật tỷ giá</string>
 
 </resources>

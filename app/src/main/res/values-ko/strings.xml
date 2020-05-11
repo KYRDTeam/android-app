@@ -735,5 +735,6 @@
     <string name="sell_limit_order">리밋오더 매도</string>
     <string name="faq">FAQ</string>
     <string name="buy_eth">구매 ETH</string>
+    <string name="please_wait_for_expected_rate_updated">예상 요율이 업데이트 될 때까지 기다려주세요.</string>
 
 </resources>

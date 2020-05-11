@@ -662,16 +662,18 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         }
 
-        binding.edtSource.setOnEditorActionListener { _, actionId, _ ->
+        binding.edtSource.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 verifyAmount()
+                v.clearFocus()
             }
             false
         }
 
-        binding.edtDest.setOnEditorActionListener { _, actionId, _ ->
+        binding.edtDest.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 verifyAmount()
+                v.clearFocus()
             }
             false
         }
@@ -775,23 +777,27 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 showProgress(state == SaveSwapState.Loading)
                 when (state) {
                     is SaveSwapState.Success -> {
-                        val currentActivity = activity
-                        if (currentActivity != null) {
-                            val confirmedActivity = when {
-                                wallet?.isPromo == true -> when {
-                                    wallet?.isPromoPayment == true -> PromoPaymentConfirmActivity.newIntent(
-                                        currentActivity,
-                                        wallet
-                                    )
-                                    else -> PromoSwapConfirmActivity.newIntent(
-                                        currentActivity,
-                                        wallet
-                                    )
+                        if (state.isExpectedRateZero) {
+                            showAlertWithoutIcon(message = getString(R.string.please_wait_for_expected_rate_updated))
+                        } else {
+                            val currentActivity = activity
+                            if (currentActivity != null) {
+                                val confirmedActivity = when {
+                                    wallet?.isPromo == true -> when {
+                                        wallet?.isPromoPayment == true -> PromoPaymentConfirmActivity.newIntent(
+                                            currentActivity,
+                                            wallet
+                                        )
+                                        else -> PromoSwapConfirmActivity.newIntent(
+                                            currentActivity,
+                                            wallet
+                                        )
+                                    }
+                                    else -> SwapConfirmActivity.newIntent(currentActivity, wallet)
                                 }
-                                else -> SwapConfirmActivity.newIntent(currentActivity, wallet)
-                            }
 
-                            startActivityForResult(confirmedActivity, SWAP_CONFIRM)
+                                startActivityForResult(confirmedActivity, SWAP_CONFIRM)
+                            }
                         }
                     }
                 }

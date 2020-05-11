@@ -726,6 +726,7 @@
     <string name="faq">FAQ</string>
     <string name="buy_eth">BUY ETH</string>
     <string name="buy_eth_endpoint" translatable="false">https://kyberswap.com</string>
+    <string name="please_wait_for_expected_rate_updated">Please wait for expected rate to be updated</string>
     <string-array name="proof_address">
         <item>Bank Statement</item>
         <item>Correspondences from Bank</item>
