@@ -59,7 +59,7 @@
             android:layout_height="match_parent"
             android:background="@color/color_bg_gray">
 
-            <EditText
+            <com.kyberswap.android.presentation.common.ClearableEditText
                 android:id="@+id/edtName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -68,11 +68,11 @@
                 android:layout_marginEnd="24dp"
                 android:backgroundTint="@color/edt_background_tint"
                 android:hint="@string/name"
-                android:inputType="text"
+                android:imeOptions="actionDone"
+                android:inputType="textCapWords"
                 android:minHeight="48dp"
                 android:singleLine="true"
                 android:text="@{contact.name}"
-                android:imeOptions="actionDone"
                 android:textColor="#2e3957"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -100,10 +100,10 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/edt_background_tint"
                     android:hint="@string/contact_address"
-                    android:inputType="text"
                     android:imeOptions="actionDone"
-                    android:minHeight="48dp"
+                    android:inputType="text"
                     android:maxLines="1"
+                    android:minHeight="48dp"
                     android:paddingStart="0dp"
                     android:paddingEnd="24dp"
                     android:singleLine="true"

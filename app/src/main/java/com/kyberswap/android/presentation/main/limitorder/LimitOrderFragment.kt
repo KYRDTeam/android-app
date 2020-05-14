@@ -770,7 +770,7 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         if (isDestFocus) {
                             binding.edtSource.setAmount(expectedSourceAmount)
                         } else {
-                            if (binding.edtRate.text.isNotEmpty()) {
+                            if (binding.edtRate.text?.isNotEmpty() == true) {
                                 binding.edtDest.setAmount(
                                     expectedDestAmount
                                 )
@@ -858,7 +858,7 @@ class LimitOrderFragment : BaseFragment(), LoginState {
             orderAdapter?.submitList(viewModel.toOrderItems(viewModel.relatedOrders))
             playAnimation(false)
             binding.edtRate.requestFocus()
-            binding.edtRate.setSelection(binding.edtRate.text.length)
+            binding.edtRate.setSelection(binding.edtRate.text?.length ?: 0)
         }
 
         binding.tvSubmitOrderWarning.setOnClickListener {

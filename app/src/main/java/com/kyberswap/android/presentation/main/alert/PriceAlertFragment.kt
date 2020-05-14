@@ -6,6 +6,7 @@ import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.jakewharton.rxbinding3.widget.checkedChanges
@@ -199,7 +200,6 @@ class PriceAlertFragment : BaseFragment() {
 
                 }
 
-
                 binding.ratePercentage.toBigDecimalOrDefaultZero().abs() < 0.1.toBigDecimal() -> {
                     showAlertWithoutIcon(
                         getString(R.string.title_error),
@@ -235,6 +235,13 @@ class PriceAlertFragment : BaseFragment() {
             navigator.navigateToTokenSelection(
                 currentFragment, wallet, alert
             )
+        }
+
+        binding.edtRate.setOnEditorActionListener { v, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                v.clearFocus()
+            }
+            false
         }
     }
 
@@ -311,6 +318,4 @@ class PriceAlertFragment : BaseFragment() {
                 }
             }
     }
-
-
 }

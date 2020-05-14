@@ -260,7 +260,7 @@
                     app:ratePercentage="@{ratePercentage}"
                     tools:text="0.32%" />
 
-                <EditText
+                <com.kyberswap.android.presentation.common.ClearFocusEditText
                     android:id="@+id/edtRate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

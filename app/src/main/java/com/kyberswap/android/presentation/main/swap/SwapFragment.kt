@@ -578,7 +578,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     if (it) {
                         edtCustom.setText("3")
                         edtCustom.requestFocus()
-                        edtCustom.setSelection(edtCustom.text.length)
+                        edtCustom.setSelection(edtCustom.text?.length ?: 0)
                     } else {
                         edtCustom.setText("")
                     }
@@ -687,6 +687,14 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 }
             }
         })
+
+        edtCustom.setOnEditorActionListener { v, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                verifyAmount()
+                v.clearFocus()
+            }
+            false
+        }
 
 
         viewModel.getGetGasPriceCallback.observe(viewLifecycleOwner, Observer {
@@ -1015,7 +1023,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     }
 
     private fun showDestValueInUsd(swap: Swap) {
-        if (swap.tokenDest.rateEthNowOrDefaultValue > BigDecimal.ZERO && edtSource.text.isNotEmpty()) {
+        if (swap.tokenDest.rateEthNowOrDefaultValue > BigDecimal.ZERO && edtSource.text?.isNotEmpty() == true) {
             binding.tvValueInUSD.text =
                 getString(
                     R.string.dest_balance_usd_format,

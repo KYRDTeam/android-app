@@ -160,7 +160,7 @@ class LimitOrderV2ViewModel @Inject constructor(
         val pendingAmount =
             pendingBalances?.data?.get(order.tokenSource.symbol) ?: BigDecimal.ZERO
         return order.tokenSource.isETHWETH &&
-                (order.wethToken.currentBalance - pendingAmount - order.srcAmount.toBigDecimalOrDefaultZero() < BigDecimal.ZERO)
+            (order.wethToken.currentBalance - pendingAmount - order.srcAmount.toBigDecimalOrDefaultZero() < BigDecimal.ZERO)
     }
 
     fun getLoginStatus() {
@@ -557,16 +557,18 @@ class LimitOrderV2ViewModel @Inject constructor(
         getLocalLimitOrderDataUseCase.dispose()
         getNonceUseCase.dispose()
         pendingBalancesUseCase.dispose()
+        getLimitOrderFee.dispose()
         getMarketRateUseCase.dispose()
         getExpectedRateUseCase.dispose()
         getGasPriceUseCase.dispose()
         getRelatedLimitOrdersUseCase.dispose()
         getSelectedMarketUseCase.dispose()
-        getLoginStatusUseCase.dispose()
+        getMarketUseCase.dispose()
         cancelOrderUseCase.dispose()
+        getLoginStatusUseCase.dispose()
         elegibleAddressUseCase.dispose()
         checkEligibleWalletUseCase.dispose()
-        getMarketUseCase.dispose()
+        saveLimitOrderUseCase.dispose()
         super.onCleared()
     }
 }

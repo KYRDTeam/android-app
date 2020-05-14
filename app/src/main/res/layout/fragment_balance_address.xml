@@ -13,7 +13,16 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/screen_background">
+        android:background="@drawable/screen_background"
+        android:clickable="true"
+        android:focusable="true">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
 
         <FrameLayout
             android:id="@+id/toolbar"

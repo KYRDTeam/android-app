@@ -330,7 +330,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                             if (isAmountFocus) {
                                 binding.edtTotal.setAmount(calcTotalAmount)
                             } else {
-                                if (binding.edtPrice.text.isNotEmpty()) {
+                                if (binding.edtPrice.text?.isNotEmpty() == true) {
                                     binding.edtAmount.setAmount(
                                         calcAmount
                                     )

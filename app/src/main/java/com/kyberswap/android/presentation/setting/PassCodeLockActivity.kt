@@ -100,6 +100,10 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
 
     private var currentPin: String? = null
 
+    private var fingerPrintManager: FingerprintManager? = null
+
+    private var keyguardManager: KeyguardManager? = null
+
     private val isVerifyAccess: Boolean
         get() = binding.title == verifyAccess
 
@@ -234,11 +238,13 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
 
     private fun showFingerPrint() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !isChangePinCode) {
-            val keyguardManager = getSystemService(KeyguardManager::class.java)
-            val fingerprintManager = getSystemService(FingerprintManager::class.java)
+            keyguardManager =
+                applicationContext.getSystemService(KeyguardManager::class.java) ?: return
+            fingerPrintManager =
+                applicationContext.getSystemService(FingerprintManager::class.java) ?: return
             if (keyguardManager?.isKeyguardSecure == true &&
-                fingerprintManager?.isHardwareDetected == true &&
-                fingerprintManager.hasEnrolledFingerprints()
+                fingerPrintManager?.isHardwareDetected == true &&
+                fingerPrintManager?.hasEnrolledFingerprints() == true
             ) {
                 setupKeyStoreAndKeyGenerator()
                 createKey(DEFAULT_KEY_NAME)
@@ -270,7 +276,6 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
         }
         return defaultCipher
     }
-
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun initCipher(cipher: Cipher, keyName: String): Boolean {
@@ -394,6 +399,8 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
 
     override fun onDestroy() {
         viewModel.onCleared()
+        fingerPrintManager = null
+        keyguardManager = null
         super.onDestroy()
     }
 

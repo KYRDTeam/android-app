@@ -273,7 +273,6 @@ class ConvertFragment : BaseFragment() {
                     hasUserFocus = it
                 }
             })
-
     }
 
     private fun setupBalance(pendingBalances: PendingBalances) {
@@ -307,7 +306,9 @@ class ConvertFragment : BaseFragment() {
 
                 if (minCovertAmount < BigDecimal.ZERO) minCovertAmount = BigDecimal.ZERO
                 if (binding.edtConvertedAmount.text.toString() != minCovertAmount.toPlainString()) {
-                    binding.edtConvertedAmount.setAmount(minCovertAmount.stripTrailingZeros().toPlainString())
+                    binding.edtConvertedAmount.setAmount(
+                        minCovertAmount.stripTrailingZeros().toPlainString()
+                    )
                 }
             }
         }

@@ -67,7 +67,7 @@ class ManageOrderFragment : BaseFragment(), LoginState {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        wallet = arguments!!.getParcelable(WALLET_PARAM)
+        wallet = arguments?.getParcelable(WALLET_PARAM)
     }
 
     override fun onCreateView(

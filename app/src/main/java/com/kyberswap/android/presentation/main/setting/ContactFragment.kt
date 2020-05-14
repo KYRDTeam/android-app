@@ -73,7 +73,7 @@ class ContactFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
 
         viewModel.getSelectedWallet()
-        viewModel.getSelectedWalletCallback.observe(parentFragment!!.viewLifecycleOwner, Observer {
+        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.peekContent()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {

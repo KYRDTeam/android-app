@@ -41,7 +41,6 @@ class SendConfirmViewModel @Inject constructor(
     val getGetGasPriceCallback: LiveData<Event<GetGasPriceState>>
         get() = _getGetGasPriceCallback
 
-
     private val _transferTokenTransactionCallback =
         MutableLiveData<Event<TransferTokenTransactionState>>()
     val transferTokenTransactionCallback: LiveData<Event<TransferTokenTransactionState>>
@@ -83,7 +82,10 @@ class SendConfirmViewModel @Inject constructor(
             Consumer {
 
                 val gasLimit = calculateDefaultGasLimitTransfer(send.tokenSource)
-                    .min(it.amountUsed.multiply(120.toBigInteger()).divide(100.toBigInteger()) + ADDITIONAL_SEND_GAS_LIMIT.toBigInteger())
+                    .min(
+                        it.amountUsed.multiply(120.toBigInteger())
+                            .divide(100.toBigInteger()) + ADDITIONAL_SEND_GAS_LIMIT.toBigInteger()
+                    )
 
                 val specialGasLimit = specialGasLimitDefault(send.tokenSource, send.tokenSource)
 
@@ -123,4 +125,11 @@ class SendConfirmViewModel @Inject constructor(
         }
     }
 
+    override fun onCleared() {
+        getSendTokenUseCase.dispose()
+        transferTokenUseCase.dispose()
+        estimateTransferGasUseCase.dispose()
+        getGasPriceUseCase.dispose()
+        super.onCleared()
+    }
 }

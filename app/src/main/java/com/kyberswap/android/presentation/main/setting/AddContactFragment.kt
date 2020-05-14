@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.zxing.integration.android.IntentIntegrator
@@ -63,7 +64,8 @@ class AddContactFragment : BaseFragment() {
         )
 
     private val isENSAddress: Boolean
-        get() = binding.edtAddress.text.toString().isENSAddress() && !binding.edtAddress.text.toString().onlyAddress().isContact()
+        get() = binding.edtAddress.text.toString()
+            .isENSAddress() && !binding.edtAddress.text.toString().onlyAddress().isContact()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,6 +92,7 @@ class AddContactFragment : BaseFragment() {
         }
         binding.edtAddress.setText(address)
         binding.imgBack.setOnClickListener {
+            hideKeyboard()
             activity!!.onBackPressed()
         }
 
@@ -127,7 +130,8 @@ class AddContactFragment : BaseFragment() {
             hideKeyboard()
             when {
                 binding.edtAddress.text.isNullOrEmpty() -> showError(getString(R.string.provide_receive_address))
-                !binding.edtAddress.text.toString().isContact() -> showError(getString(R.string.invalid_contact_address))
+                !binding.edtAddress.text.toString()
+                    .isContact() -> showError(getString(R.string.invalid_contact_address))
                 else -> {
                     wallet?.let {
                         if (contact == null) contact = Contact(
@@ -164,7 +168,8 @@ class AddContactFragment : BaseFragment() {
         binding.imgDone.setOnClickListener {
             when {
                 binding.edtAddress.text.isNullOrEmpty() -> showAlert(getString(R.string.provide_receive_address))
-                !binding.edtAddress.text.toString().isContact() -> showError(getString(R.string.invalid_contact_address))
+                !binding.edtAddress.text.toString()
+                    .isContact() -> showError(getString(R.string.invalid_contact_address))
                 else -> {
                     hideKeyboard()
                     wallet?.address?.let { address ->
@@ -246,6 +251,20 @@ class AddContactFragment : BaseFragment() {
                 }
             }
         })
+
+        binding.edtName.setOnEditorActionListener { v, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                v.clearFocus()
+            }
+            false
+        }
+
+        binding.edtAddress.setOnEditorActionListener { v, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                v.clearFocus()
+            }
+            false
+        }
     }
 
     private fun onSuccess() {

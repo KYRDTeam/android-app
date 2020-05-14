@@ -1,6 +1,7 @@
 package com.kyberswap.android.presentation.setting.fingerprint
 
 import android.content.Context
+import android.content.DialogInterface
 import android.hardware.fingerprint.FingerprintManager
 import android.os.Build
 import android.os.Bundle
@@ -53,10 +54,13 @@ class FingerprintAuthenticationDialogFragment : DialogFragment(),
         super.onActivityCreated(savedInstanceState)
         dialog?.setTitle(getString(R.string.app_name))
         dialog?.window?.setBackgroundDrawableResource(R.drawable.rounded_corner_dialog_background)
-        binding.cancelButton.setOnClickListener { dismissAllowingStateLoss() }
+        binding.cancelButton.setOnClickListener {
+            fingerprintUiHelper.clearCallbackReference()
+            dismissAllowingStateLoss()
+        }
         activity?.let {
             fingerprintUiHelper = FingerprintUiHelper(
-                it.getSystemService(FingerprintManager::class.java),
+                it.applicationContext.getSystemService(FingerprintManager::class.java),
                 binding.fingerprintIcon,
                 binding.fingerprintStatus,
                 this
@@ -104,6 +108,20 @@ class FingerprintAuthenticationDialogFragment : DialogFragment(),
         if (::fingerprintUiHelper.isInitialized) {
             fingerprintUiHelper.stopListening()
         }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            fingerprintUiHelper.clearCallbackReference()
+        }
+        super.onDismiss(dialog)
+    }
+
+    override fun onDestroyView() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            fingerprintUiHelper.clearCallbackReference()
+        }
+        super.onDestroyView()
     }
 
     interface Callback {

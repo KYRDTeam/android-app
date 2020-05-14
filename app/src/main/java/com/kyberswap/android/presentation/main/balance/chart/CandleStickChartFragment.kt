@@ -125,7 +125,7 @@ class CandleStickChartFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
         binding.candleStickChart.setNoDataText(getString(R.string.chart_updating_data))
         viewModel.getSelectedWallet()
-        viewModel.getSelectedWalletCallback.observe(parentFragment!!.viewLifecycleOwner, Observer {
+        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.peekContent()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
@@ -360,7 +360,6 @@ class CandleStickChartFragment : BaseFragment() {
 
         candleStickChart.axisRight.addLimitLine(ll1)
         candleStickChart.axisRight.addLimitLine(ll2)
-
 
         if (chartType == ChartType.DAY || chartType == ChartType.WEEK) {
             val entry = entries[entries.size - 1]

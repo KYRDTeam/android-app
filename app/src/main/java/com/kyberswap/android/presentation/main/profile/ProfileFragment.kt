@@ -8,6 +8,7 @@ import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -428,6 +429,13 @@ class ProfileFragment : BaseFragment() {
                 .subscribe {
                     binding.ilPassword.error = null
                 })
+
+        binding.edtPassword.setOnEditorActionListener { v, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                v.clearFocus()
+            }
+            false
+        }
     }
 
     private fun onTransferDataCompleted(userInfo: UserInfo) {
@@ -610,7 +618,6 @@ class ProfileFragment : BaseFragment() {
             ex.printStackTrace()
             Timber.e(ex.localizedMessage)
         }
-
     }
 
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {

@@ -209,6 +209,9 @@ class TransactionStatusViewModel @Inject constructor(
         getTransactionsUseCase.dispose()
         getPendingTransactionsUseCase.dispose()
         getTransactionFilterUseCase.dispose()
+        deleteTransactionUseCase.dispose()
+        speedUpOrCancelOrCancelTransactionUseCase.dispose()
+        getGasPriceUseCase.dispose()
         super.onCleared()
     }
 

@@ -179,7 +179,7 @@
                     android:text="@string/custom_value"
                     android:theme="@style/CustomRadioTheme" />
 
-                <EditText
+                <com.kyberswap.android.presentation.common.ClearFocusEditText
                     android:id="@+id/edtCustom"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

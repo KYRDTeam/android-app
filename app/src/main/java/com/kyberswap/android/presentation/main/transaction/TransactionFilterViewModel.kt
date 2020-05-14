@@ -83,4 +83,11 @@ class TransactionFilterViewModel @Inject constructor(
             SaveTransactionFilterUseCase.Param(transactionFilter)
         )
     }
+
+    override fun onCleared() {
+        getTokenListUseCase.dispose()
+        getTransactionFilterUseCase.dispose()
+        saveTransactionFilterUseCase.dispose()
+        super.onCleared()
+    }
 }

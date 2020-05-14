@@ -112,4 +112,11 @@ class NotificationViewModel @Inject constructor(
             null
         )
     }
+
+    override fun onCleared() {
+        notificationUseCase.dispose()
+        readNotificationsUseCase.dispose()
+        getLoginStatusUseCase.dispose()
+        super.onCleared()
+    }
 }

@@ -82,6 +82,13 @@ class ChartViewModel @Inject constructor(
             GetToken24hVolUseCase.Param(token)
         )
     }
+
+    override fun onCleared() {
+        saveSwapDataTokenUseCase.dispose()
+        saveSendTokenUseCase.dispose()
+        getToken24hVolUseCase.dispose()
+        super.onCleared()
+    }
 }
 
 @Parcelize
