@@ -164,7 +164,7 @@ class ManageOrderFragment : BaseFragment(), LoginState {
                 when (state) {
                     is GetRelatedOrdersState.Success -> {
                         orders = state.orders
-
+                        orderAdapter?.submitList(null)
                         filterByTab(currentSelectedView == binding.tvOpenOrder)
                     }
                     is GetRelatedOrdersState.ShowError -> {
