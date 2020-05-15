@@ -11,7 +11,6 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -23,6 +22,7 @@ import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.CustomLinearLayoutManager
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
@@ -131,6 +131,8 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     private var orderBySelectedIndex: Int = 0
 
     private var currentSearchString = ""
+
+    private var hasScrollToTop: Boolean = false
 
     private var tokenAdapter: TokenAdapter? = null
 
@@ -306,7 +308,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             false
         }
 
-        binding.rvToken.layoutManager = LinearLayoutManager(
+        binding.rvToken.layoutManager = CustomLinearLayoutManager(
             activity,
             RecyclerView.VERTICAL,
             false
@@ -343,9 +345,11 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                                 binding.swipeLayout.isRefreshing = false
                             }
                             getTokenBalances()
-                            scrollToTop()
+                            if (!hasScrollToTop) {
+                                scrollToTop()
+                                hasScrollToTop = true
+                            }
                         }
-//                        scrollToTop()
                     }
                     is GetBalanceState.ShowError -> {
                         binding.swipeLayout.isRefreshing = false
@@ -478,8 +482,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     fun scrollToTop() {
-        val layoutManager = binding.rvToken.layoutManager as LinearLayoutManager
-        layoutManager.scrollToPositionWithOffset(0, 0)
+
+        handler.postDelayed({
+            binding.rvToken.smoothScrollToPosition(0)
+        }, 250)
     }
 
     private fun updateTokenList(tokens: List<Token>) {
