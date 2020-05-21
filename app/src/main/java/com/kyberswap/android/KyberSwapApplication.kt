@@ -6,17 +6,24 @@ import android.content.Intent
 import android.hardware.fingerprint.FingerprintManager
 import android.os.Build
 import android.util.Log
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.freshchat.consumer.sdk.Freshchat
+import com.freshchat.consumer.sdk.FreshchatConfig
+import com.freshchat.consumer.sdk.FreshchatNotificationConfig
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.crypto.tink.Aead
 import com.google.crypto.tink.KeysetHandle
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink.aead.AeadFactory
 import com.google.crypto.tink.aead.AeadKeyTemplates
 import com.google.crypto.tink.integration.android.AndroidKeysetManager
+import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.presentation.notification.NotificationOpenedHandler
 import com.kyberswap.android.presentation.setting.PassCodeLockActivity
 import com.kyberswap.android.util.di.AppComponent
@@ -43,6 +50,7 @@ import timber.log.Timber
 import java.io.IOException
 import java.security.GeneralSecurityException
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 
 class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
@@ -54,6 +62,11 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
     lateinit var aead: Aead
     private val disposable = CompositeDisposable()
     private var counter = THRESHOLD_VALUE
+
+    private var freshchat: Freshchat? = null
+
+    @Inject
+    lateinit var mediator: StorageMediator
 
     private var _currentActivity: Activity? = null
 
@@ -116,6 +129,8 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
             .build()
         Twitter.initialize(config)
 
+        initialiseFreshChat()
+
         OneSignal.startInit(this)
             .setNotificationOpenedHandler(NotificationOpenedHandler())
             .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
@@ -132,6 +147,47 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
     fun stopCounter() {
         counter = 0
         disposable.clear()
+    }
+
+    private fun initialiseFreshChat() {
+        val freshchatConfig = FreshchatConfig(
+            getString(R.string.freshchat_app_id),
+            getString(R.string.freshchat_app_key)
+        )
+        freshchatConfig.isCameraCaptureEnabled = true
+        freshchatConfig.isGallerySelectionEnabled = true
+        freshchatConfig.isResponseExpectationEnabled = false
+        freshchatConfig.isUserEventsTrackingEnabled = false
+        getFreshchatInstance(applicationContext)?.init(freshchatConfig)
+        val notificationConfig = FreshchatNotificationConfig()
+            .setNotificationSoundEnabled(true)
+            .setSmallIcon(R.drawable.ic_stat_onesignal_default)
+            .setLargeIcon(R.drawable.ic_app_icon_rounded)
+            .setImportance(NotificationManagerCompat.IMPORTANCE_MAX)
+        getFreshchatInstance(applicationContext)?.setNotificationConfig(notificationConfig)
+
+        if (!mediator.isInitialFreshChat()) {
+            FirebaseInstanceId.getInstance().instanceId
+                .addOnCompleteListener(OnCompleteListener { task ->
+                    if (!task.isSuccessful) {
+                        return@OnCompleteListener
+                    }
+                    val token = task.result?.token
+                    token?.let {
+                        Freshchat.getInstance(this).setPushRegistrationToken(token)
+                        Freshchat.getInstance(this).userIdTokenStatus.asInt()
+                        mediator.setInitialFreshChat(true)
+                    }
+
+                })
+        }
+    }
+
+    private fun getFreshchatInstance(context: Context): Freshchat? {
+        if (freshchat == null) {
+            freshchat = Freshchat.getInstance(context)
+        }
+        return freshchat
     }
 
     fun startCounter() {

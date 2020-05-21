@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -122,7 +121,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
     var fromLimitOrder: Boolean = false
 
-    private var currentDialogFragment: DialogFragment? = null
+    private var currentDialogFragment: AlertDialogFragment? = null
 
     @Inject
     lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -239,7 +238,6 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                 showPendingIndicator()
                 when (currentFragment) {
                     is BalanceFragment -> {
-                        (currentFragment as BalanceFragment).scrollToTop()
                         updateLoginStatus()
                     }
                     is LimitOrderFragment -> {
@@ -798,6 +796,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
     }
 
     private fun updateLoginStatus() {
+        if (currentFragment?.isAdded == false) return
         currentFragment?.childFragmentManager?.fragments?.forEach {
             when (it) {
                 is LoginState -> it.getLoginStatus()
@@ -1018,6 +1017,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
     }
 
     override fun onDestroy() {
+        currentDialogFragment?.dismiss()
         currentDialogFragment = null
         handler.removeCallbacksAndMessages(null)
         super.onDestroy()

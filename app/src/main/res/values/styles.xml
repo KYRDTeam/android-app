@@ -142,5 +142,84 @@
         <item name="android:textSize">12sp</item>
     </style>
 
+    <style name="MyCustomTheme" parent="Theme.Freshchat.Light.DarkActionBar">
+        <item name="colorPrimary">#FEA949</item>
+        <item name="colorPrimaryDark">#FEA949</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="freshchatChannelListStyle">@style/ChannelListStyle</item>
+        <item name="freshchatTeamMemberAvatarIcon">@drawable/ic_app_icon_rounded</item>
+        <item name="freshchatChannelNameTextStyle">@style/Freshchat.ChannelName</item>
+        <item name="freshchatChannelDescriptionTextStyle">@style/Freshchat.ChannelDescription</item>
+        <item name="freshchatChannelLastUpdatedAtTextStyle">@style/Freshchat.ChannelLastUpdatedAt
+        </item>
+        <item name="freshchatChannelUnreadCountTextStyle">@style/Freshchat.ChannelUnreadCount</item>
+        <item name="freshchatTeamMemberNameTextStyle">@style/Freshchat.TeamMemberName</item>
+        <item name="freshchatUserMessageTextStyle">@style/Freshchat.UsermessageText</item>
+        <item name="freshchatTeamMemberMessageTextStyle">@style/Freshchat.TeamMemberMessageText
+        </item>
+        <item name="freshchatUserMessageTimeTextStyle">@style/Freshchat.UserMessageTimeText</item>
+        <item name="freshchatTeamMemberMessageTimeTextStyle">
+            @style/Freshchat.TeamMemberMessageTimetext
+        </item>
+
+        <item name="freshchatMessageListStyle">@style/Freshchat.MessageList</item>
+        <item name="freshchatSendIcon">@drawable/ic_send_24</item>
+    </style>
+
+    <style name="Freshchat.ChannelName" parent="TextAppearance.Roboto.Bold">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Freshchat.ChannelDescription" parent="TextAppearance.Roboto.Regular">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="Freshchat.ChannelLastUpdatedAt" parent="TextAppearance.Roboto.Regular">
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="Freshchat.ChannelUnreadCount" parent="TextAppearance.Roboto.Regular">
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="Freshchat.TeamMemberName" parent="TextAppearance.Roboto.Bold">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="Freshchat.TeamMemberMessageText" parent="TextAppearance.Roboto.Medium">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Freshchat.UsermessageText" parent="TextAppearance.Roboto.Medium">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Freshchat.UserMessageTimeText" parent="TextAppearance.Roboto.Medium">
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="Freshchat.TeamMemberMessageTimetext" parent="TextAppearance.Roboto.Medium">
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="Freshchat.MessageList" parent="Widget.Freshchat.MessageList">
+        <item name="android:background">@color/color_bg_gray</item>
+        <item name="android:divider">@color/color_bg_gray</item>
+    </style>
+
+    <style name="Freshchat.MessageListItem" parent="Widget.Freshchat.MessageListItem">
+        <item name="android:background">@color/color_bg_gray</item>
+    </style>
+
+    <style name="Freshchat.MessageReplyEditText" parent="Widget.Freshchat.MessageReplyEditText">
+        <item name="android:textAppearance">@style/TextAppearance.Roboto.Medium</item>
+    </style>
+
+
+    <style name="Theme.Freshchat.SelectedTheme" parent="MyCustomTheme" />
+
+    <style name="ChannelListStyle" parent="Base.Widget.AppCompat.ListView">
+        <item name="android:background">@color/freshchat_white</item>
+    </style>
 
 </resources>

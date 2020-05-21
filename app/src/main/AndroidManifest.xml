@@ -21,7 +21,6 @@
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
 
     <application
-        tools:ignore="LockedOrientationActivity"
         android:name=".KyberSwapApplication"
         android:allowBackup="false"
         android:banner="@mipmap/ic_launcher"
@@ -31,11 +30,23 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppThemeTranslucentStatus"
+        tools:ignore="LockedOrientationActivity"
         tools:targetApi="m">
 
         <meta-data
             android:name="com.onesignal.NotificationAccentColor.DEFAULT"
             android:value="FFFF9008" />
+
+        <!-- Set custom default icon. This is used when no icon is set for incoming notification messages.
+     See README(https://goo.gl/l4GJaQ) for more. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_onesignal_default" />
+        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
 
         <activity
             android:name=".presentation.common.AlertActivity"
@@ -70,8 +81,7 @@
         <activity
             android:name=".presentation.wallet.VerifyBackupWordActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden"
-            />
+            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden" />
         <activity
             android:name=".presentation.wallet.ImportWalletActivity"
             android:screenOrientation="portrait" />
@@ -96,12 +106,20 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <service
-            android:name=".service.job.SchedulerJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <!--        <service-->
+        <!--            android:name=".service.job.SchedulerJobService"-->
+        <!--            android:permission="android.permission.BIND_JOB_SERVICE" />-->
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
+
+        <service
+            android:name=".presentation.setting.FreshchatMesssagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <activity
             android:name="com.facebook.FacebookActivity"

@@ -12,6 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.TransactionApi
+import com.kyberswap.android.data.api.home.UserApi
 import com.kyberswap.android.data.db.LocalLimitOrderDao
 import com.kyberswap.android.data.db.SendDao
 import com.kyberswap.android.data.db.SwapDao
@@ -60,6 +61,7 @@ class TransactionDataRepository @Inject constructor(
     private val tokenDao: TokenDao,
     private val swapDao: SwapDao,
     private val sendDao: SendDao,
+    private val userApi: UserApi,
     private val limitOrderDao: LocalLimitOrderDao,
     private val transactionFilterDao: TransactionFilterDao,
     private val context: Context
@@ -854,7 +856,13 @@ class TransactionDataRepository @Inject constructor(
         return Single.fromCallable {
             val newTx =
                 tokenClient.speedUpOrCancelTx(param.wallet, param.transaction, param.isCancel)
-            newTx.hash != param.transaction.hash
+            newTx.hash
+        }.map { hash ->
+            if (hash != param.transaction.hash)
+                userApi.submitTx(hash).map {
+                    it.copy(hash = hash)
+                }
+            hash != param.transaction.hash
         }
     }
 

@@ -34,14 +34,12 @@ class EditWalletFragment : BaseFragment() {
     @Inject
     lateinit var dialogHelper: DialogHelper
 
-
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
     private var wallet: Wallet? = null
 
     private var jsonContent: String? = null
-
 
     private val viewModel by lazy {
         ViewModelProvider(this, viewModelFactory).get(EditWalletViewModel::class.java)
@@ -74,10 +72,22 @@ class EditWalletFragment : BaseFragment() {
                     }
                 },
                 {
-                    wallet?.let { it1 -> viewModel.backupPrivateKey(it1) }
+
+                    dialogHelper.showConfirmation(
+                        "",
+                        getString(R.string.warning_backup_private_key),
+                        {
+                            wallet?.let { it1 -> viewModel.backupPrivateKey(it1) }
+                        })
+
                 },
                 {
-                    wallet?.let { it1 -> viewModel.backupMnemonic(it1) }
+                    dialogHelper.showConfirmation(
+                        "",
+                        getString(R.string.warning_backup_mnemonic),
+                        {
+                            wallet?.let { it1 -> viewModel.backupMnemonic(it1) }
+                        })
 
                 }, {
                     copyWalletAddress()
@@ -209,7 +219,6 @@ class EditWalletFragment : BaseFragment() {
         val fileName = getString(R.string.wallet_file_prefix) + wallet?.address + ".json"
         this.jsonContent = content
         createFile("text/json", fileName)
-
     }
 
     private fun createFile(mimeType: String, fileName: String) {
@@ -244,7 +253,6 @@ class EditWalletFragment : BaseFragment() {
                 }
             }
         }
-
     }
 
     private fun closeQuietly(closeable: AutoCloseable?) {
@@ -255,7 +263,6 @@ class EditWalletFragment : BaseFragment() {
                 throw rethrown
             } catch (ignored: Exception) {
             }
-
         }
     }
 
@@ -266,7 +273,6 @@ class EditWalletFragment : BaseFragment() {
         } else {
             activity?.onBackPressed()
         }
-
     }
 
 
@@ -280,6 +286,4 @@ class EditWalletFragment : BaseFragment() {
                 }
             }
     }
-
-
 }

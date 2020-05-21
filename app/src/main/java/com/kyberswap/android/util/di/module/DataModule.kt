@@ -231,6 +231,7 @@ object DataModule {
         sendDao: SendDao,
         limitOrderDao: LocalLimitOrderDao,
         transactionFilterDao: TransactionFilterDao,
+        userApi: UserApi,
         context: Context
     ): TransactionRepository =
         TransactionDataRepository(
@@ -241,6 +242,7 @@ object DataModule {
             tokenDao,
             swapDao,
             sendDao,
+            userApi,
             limitOrderDao,
             transactionFilterDao,
             context

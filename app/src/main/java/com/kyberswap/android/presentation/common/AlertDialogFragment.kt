@@ -98,7 +98,7 @@ class AlertDialogFragment : DialogFragment() {
                                 transaction.to.displayWalletAddress()
                             )
                         } else {
-                            if(transaction.isCancel) {
+                            if (transaction.isCancel) {
                                 getString(R.string.transaction_cancel_successfully)
                             } else {
                                 String.format(
@@ -258,6 +258,7 @@ class AlertDialogFragment : DialogFragment() {
     override fun onDestroyView() {
         callback = null
         analytics = null
+        handler.removeCallbacksAndMessages(null)
         super.onDestroyView()
     }
 

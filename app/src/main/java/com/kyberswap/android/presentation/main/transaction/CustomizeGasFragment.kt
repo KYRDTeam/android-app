@@ -29,6 +29,7 @@ import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.synthetic.main.layout_expanable.*
 import org.web3j.utils.Convert
 import java.math.BigDecimal
+import java.math.RoundingMode
 import javax.inject.Inject
 
 class CustomizeGasFragment : BaseFragment() {
@@ -225,7 +226,11 @@ class CustomizeGasFragment : BaseFragment() {
                             if (currentGasPrice == BigDecimal.ZERO) {
                                 BigDecimal.ZERO
                             } else {
-                                (price - currentGasPrice) / currentGasPrice
+                                (price - currentGasPrice).divide(
+                                    currentGasPrice,
+                                    10,
+                                    RoundingMode.HALF_EVEN
+                                )
                             }
 
                         if (percentage < 0.1.toBigDecimal()) {

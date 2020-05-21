@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">KyberSwap-Kovan</string>
+    <string name="freshchat_file_provider_authority" translatable="false">com.kyberswap.android.kovan.provider</string>
 </resources>

@@ -582,13 +582,13 @@ class TokenClient @Inject constructor(
             transactionAmount
         )
 
-        if (transactionResponse.hasError()) run {
+        if (transactionResponse?.hasError() == true) run {
             throw RuntimeException(
                 "Error processing transaction request: " +
                     transactionResponse.error.message
             )
         }
-        return transactionResponse.transactionHash
+        return transactionResponse?.transactionHash
     }
 
     private fun handleSwapERC20Token(

@@ -21,7 +21,7 @@ class FingerprintUiHelper
  * Constructor for [FingerprintUiHelper].
  */
 internal constructor(
-    private val fingerprintMgr: FingerprintManager,
+    private val fingerprintMgr: FingerprintManager?,
     private val icon: ImageView,
     private val errorTextView: TextView,
     private val callback: Callback
@@ -31,13 +31,13 @@ internal constructor(
     private var selfCancelled = false
 
     private val isFingerprintAuthAvailable: Boolean
-        get() = fingerprintMgr.isHardwareDetected && fingerprintMgr.hasEnrolledFingerprints()
+        get() = fingerprintMgr?.isHardwareDetected == true && fingerprintMgr.hasEnrolledFingerprints()
 
     fun startListening(cryptoObject: FingerprintManager.CryptoObject) {
         if (!isFingerprintAuthAvailable) return
         cancellationSignal = CancellationSignal()
         selfCancelled = false
-        fingerprintMgr.authenticate(cryptoObject, cancellationSignal, 0, this, null)
+        fingerprintMgr?.authenticate(cryptoObject, cancellationSignal, 0, this, null)
         icon.setImageResource(R.drawable.ic_fp_40px)
     }
 
@@ -94,7 +94,7 @@ internal constructor(
     fun clearCallbackReference() {
         try {
             if (emptyAuthenticationCallback != null) {
-                fingerprintMgr.authenticate(null, null, 0, emptyAuthenticationCallback!!, null)
+                fingerprintMgr?.authenticate(null, null, 0, emptyAuthenticationCallback!!, null)
                 emptyAuthenticationCallback?.onAuthenticationFailed()
             }
         } catch (ex: Exception) {

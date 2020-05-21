@@ -678,7 +678,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     private fun moveToSwapTab() {
         if (activity is MainActivity) {
             handler.post {
-                activity!!.bottomNavigation.currentItem = 1
+                activity?.bottomNavigation?.currentItem = 1
             }
         }
     }

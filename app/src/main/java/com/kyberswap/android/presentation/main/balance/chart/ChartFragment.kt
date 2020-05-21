@@ -416,9 +416,14 @@ class ChartFragment : BaseFragment() {
     private fun moveToSwapTab() {
         if (activity is MainActivity) {
             handler.post {
-                activity!!.bottomNavigation.currentItem = MainPagerAdapter.SWAP
+                activity?.bottomNavigation?.currentItem = MainPagerAdapter.SWAP
             }
         }
+    }
+
+    override fun onDestroyView() {
+        handler.removeCallbacksAndMessages(null)
+        super.onDestroyView()
     }
 
     private fun moveToSendScreen() {

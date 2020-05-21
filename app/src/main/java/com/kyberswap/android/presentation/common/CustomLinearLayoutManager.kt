@@ -6,7 +6,6 @@ import android.util.DisplayMetrics
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
-import timber.log.Timber
 
 class CustomLinearLayoutManager : LinearLayoutManager {
     constructor(context: Context?) : super(context)
@@ -35,7 +34,6 @@ class CustomLinearLayoutManager : LinearLayoutManager {
                     return MILLISECONDS_PER_INCH / displayMetrics.densityDpi
                 }
             }
-        Timber.e("smoothScrollToPosition")
         linearSmoothScroller.targetPosition = position
         startSmoothScroll(linearSmoothScroller)
     }
