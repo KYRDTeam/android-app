@@ -733,6 +733,7 @@
     <string name="freshchat_app_key" translatable="false">1fba28af-bc60-4f7d-b77d-83d055178cd7</string>
     <string name="warning_backup_private_key">⚠️NEVER share your private key with anyone (including KyberSwap). Your private key grants access to all your funds and they may get stolen.</string>
     <string name="warning_backup_mnemonic">⚠️NEVER share your mnemonic with anyone (including KyberSwap). Your mnemonic grants access to all your funds and they may get stolen.</string>
+    <string name="warning_backup_keystore">⚠️NEVER share your keystore with anyone (including KyberSwap). Your keystore grants access to all your funds and they may get stolen.</string>
 
 
     <string-array name="proof_address">

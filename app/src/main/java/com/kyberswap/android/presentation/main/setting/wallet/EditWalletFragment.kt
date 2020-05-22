@@ -66,10 +66,17 @@ class EditWalletFragment : BaseFragment() {
             dialogHelper.showBottomSheetBackupPhraseDialog(
                 wallet?.mnemonicAvailable == true,
                 {
-                    dialogHelper.showInputPassword(viewModel.compositeDisposable) {
-                        wallet?.let { it1 -> viewModel.backupKeyStore(it, it1) }
+                    dialogHelper.showConfirmation(
+                        "",
+                        getString(R.string.warning_backup_keystore),
+                        {
+                            dialogHelper.showInputPassword(viewModel.compositeDisposable) {
+                                wallet?.let { it1 -> viewModel.backupKeyStore(it, it1) }
 
-                    }
+                            }
+                        })
+
+
                 },
                 {
 
