@@ -864,7 +864,7 @@ class TransactionDataRepository @Inject constructor(
             val userInfo = userDao.getUser()
             val isLogin = userInfo != null && userInfo.uid > 0
 
-            if (isSuccessed && isLogin) {
+            if (!param.isCancel && isSuccessed && isLogin) {
                 userApi.submitTx(newHash).map {
                     isSuccessed
                 }
