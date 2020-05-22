@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivitySplashBinding
 import com.kyberswap.android.presentation.base.BaseActivity
@@ -23,7 +23,7 @@ class SplashActivity : BaseActivity() {
     lateinit var navigator: Navigator
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(SplashViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(SplashViewModel::class.java)
     }
 
     private val binding by lazy {

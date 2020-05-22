@@ -19,7 +19,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.CompoundButton
 import android.widget.EditText
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.checkedChanges
@@ -111,7 +111,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         get() = sourceAmount.toBigDecimalOrDefaultZero().toDisplayNumber()
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(SwapViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(SwapViewModel::class.java)
     }
 
     private val tokenSources by lazy {
@@ -578,7 +578,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     if (it) {
                         edtCustom.setText("3")
                         edtCustom.requestFocus()
-                        edtCustom.setSelection(edtCustom.text.length)
+                        edtCustom.setSelection(edtCustom.text?.length ?: 0)
                     } else {
                         edtCustom.setText("")
                     }
@@ -662,16 +662,18 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         }
 
-        binding.edtSource.setOnEditorActionListener { _, actionId, _ ->
+        binding.edtSource.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 verifyAmount()
+                v.clearFocus()
             }
             false
         }
 
-        binding.edtDest.setOnEditorActionListener { _, actionId, _ ->
+        binding.edtDest.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 verifyAmount()
+                v.clearFocus()
             }
             false
         }
@@ -685,6 +687,14 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 }
             }
         })
+
+        edtCustom.setOnEditorActionListener { v, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                verifyAmount()
+                v.clearFocus()
+            }
+            false
+        }
 
 
         viewModel.getGetGasPriceCallback.observe(viewLifecycleOwner, Observer {
@@ -775,23 +785,27 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 showProgress(state == SaveSwapState.Loading)
                 when (state) {
                     is SaveSwapState.Success -> {
-                        val currentActivity = activity
-                        if (currentActivity != null) {
-                            val confirmedActivity = when {
-                                wallet?.isPromo == true -> when {
-                                    wallet?.isPromoPayment == true -> PromoPaymentConfirmActivity.newIntent(
-                                        currentActivity,
-                                        wallet
-                                    )
-                                    else -> PromoSwapConfirmActivity.newIntent(
-                                        currentActivity,
-                                        wallet
-                                    )
+                        if (state.isExpectedRateZero) {
+                            showAlertWithoutIcon(message = getString(R.string.please_wait_for_expected_rate_updated))
+                        } else {
+                            val currentActivity = activity
+                            if (currentActivity != null) {
+                                val confirmedActivity = when {
+                                    wallet?.isPromo == true -> when {
+                                        wallet?.isPromoPayment == true -> PromoPaymentConfirmActivity.newIntent(
+                                            currentActivity,
+                                            wallet
+                                        )
+                                        else -> PromoSwapConfirmActivity.newIntent(
+                                            currentActivity,
+                                            wallet
+                                        )
+                                    }
+                                    else -> SwapConfirmActivity.newIntent(currentActivity, wallet)
                                 }
-                                else -> SwapConfirmActivity.newIntent(currentActivity, wallet)
-                            }
 
-                            startActivityForResult(confirmedActivity, SWAP_CONFIRM)
+                                startActivityForResult(confirmedActivity, SWAP_CONFIRM)
+                            }
                         }
                     }
                 }
@@ -1009,7 +1023,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     }
 
     private fun showDestValueInUsd(swap: Swap) {
-        if (swap.tokenDest.rateEthNowOrDefaultValue > BigDecimal.ZERO && edtSource.text.isNotEmpty()) {
+        if (swap.tokenDest.rateEthNowOrDefaultValue > BigDecimal.ZERO && edtSource.text?.isNotEmpty() == true) {
             binding.tvValueInUSD.text =
                 getString(
                     R.string.dest_balance_usd_format,

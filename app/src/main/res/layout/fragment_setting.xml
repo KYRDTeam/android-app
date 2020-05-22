@@ -27,7 +27,8 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/color_bg_gray">
+                android:background="@color/color_bg_gray"
+                android:paddingBottom="42dp">
 
                 <LinearLayout
                     android:id="@+id/lnManageWallet"
@@ -242,6 +243,7 @@
                         android:layout_height="24dp"
                         android:scaleType="centerInside"
                         android:src="@drawable/ic_about" />
+
                     <TextView
                         android:id="@+id/tvAbout"
                         android:layout_width="wrap_content"
@@ -284,7 +286,6 @@
                         android:textColor="#141927"
                         android:textSize="14sp" />
                 </LinearLayout>
-
 
                 <ImageView
                     android:id="@+id/imgTelegram"
@@ -367,6 +368,7 @@
                     app:layout_constraintStart_toEndOf="@+id/imgMedium"
                     app:layout_constraintTop_toBottomOf="@+id/lnCommunity" />
 
+
                 <LinearLayout
                     android:id="@+id/lnShareWithFriend"
                     android:layout_width="match_parent"
@@ -398,6 +400,7 @@
                         android:textColor="#141927"
                         android:textSize="14sp" />
                 </LinearLayout>
+
 
                 <LinearLayout
                     android:id="@+id/lnRateMyApp"
@@ -453,6 +456,31 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabChat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_customer_support"
+            app:elevation="0dp">
+
+        </com.google.android.material.floatingactionbutton.FloatingActionButton>
+
+        <TextView
+            android:id="@+id/tvBadge"
+            android:layout_width="18sp"
+            android:layout_height="18sp"
+            android:layout_gravity="end|bottom"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="56dp"
+            android:background="@drawable/circle_chat_badge"
+            android:elevation="0dp"
+            android:gravity="center"
+            android:textColor="#fff"
+            android:textSize="10sp"
+            android:visibility="gone"
+            tools:ignore="SmallSp" />
 
     </FrameLayout>
 

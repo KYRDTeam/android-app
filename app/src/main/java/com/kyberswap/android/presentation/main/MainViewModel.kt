@@ -200,7 +200,7 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    private fun monitorOtherTokenBalance() {
+    fun monitorOtherTokenBalance() {
         getOtherBalancePollingUseCase.dispose()
         getOtherBalancePollingUseCase.execute(
             Consumer {

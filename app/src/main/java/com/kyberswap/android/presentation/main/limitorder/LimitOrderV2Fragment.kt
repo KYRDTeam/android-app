@@ -14,7 +14,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
@@ -122,7 +122,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
     lateinit var analytics: FirebaseAnalytics
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(LimitOrderV2ViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(LimitOrderV2ViewModel::class.java)
     }
 
     val baseToken: Token?
@@ -330,7 +330,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                             if (isAmountFocus) {
                                 binding.edtTotal.setAmount(calcTotalAmount)
                             } else {
-                                if (binding.edtPrice.text.isNotEmpty()) {
+                                if (binding.edtPrice.text?.isNotEmpty() == true) {
                                     binding.edtAmount.setAmount(
                                         calcAmount
                                     )

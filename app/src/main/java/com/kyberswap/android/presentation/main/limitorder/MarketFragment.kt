@@ -4,10 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.TextView
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -62,7 +63,7 @@ class MarketFragment : BaseFragment() {
     private var quote: String? = null
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(MarketViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(MarketViewModel::class.java)
     }
 
     val compositeDisposable by lazy {
@@ -366,6 +367,14 @@ class MarketFragment : BaseFragment() {
 
         currentOrderedView = binding.tvPair
         updateOrderDrawable(false, binding.tvPair)
+
+        binding.edtSearch.setOnEditorActionListener { v, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                v.clearFocus()
+            }
+            false
+        }
+
     }
 
     private fun updateOrderedView(view: TextView) {

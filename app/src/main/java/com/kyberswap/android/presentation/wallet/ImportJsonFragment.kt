@@ -9,7 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
@@ -40,7 +40,7 @@ class ImportJsonFragment : BaseFragment() {
     private var uri: Uri? = null
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(ImportJsonViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(ImportJsonViewModel::class.java)
     }
 
     private var fromMain: Boolean = false

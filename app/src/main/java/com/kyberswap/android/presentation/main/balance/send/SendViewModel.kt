@@ -218,7 +218,10 @@ class SendViewModel @Inject constructor(
                     calculateDefaultGasLimitTransfer(send.tokenSource)
                 } else {
                     calculateDefaultGasLimitTransfer(send.tokenSource)
-                        .min(it.amountUsed.multiply(120.toBigInteger()).divide(100.toBigInteger()) + ADDITIONAL_SEND_GAS_LIMIT.toBigInteger())
+                        .min(
+                            it.amountUsed.multiply(120.toBigInteger())
+                                .divide(100.toBigInteger()) + ADDITIONAL_SEND_GAS_LIMIT.toBigInteger()
+                        )
                 }
 
                 val specialGasLimit = specialGasLimitDefault(send.tokenSource, send.tokenSource)
@@ -250,6 +253,7 @@ class SendViewModel @Inject constructor(
         saveContactUseCase.dispose()
         deleteContactUseCase.dispose()
         ensResolveUseCase.dispose()
+        compositeDisposable.dispose()
         super.onCleared()
     }
 

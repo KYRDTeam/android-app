@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
@@ -53,7 +53,7 @@ class ManageOrderFragment : BaseFragment(), LoginState {
     lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(ManageOrderViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(ManageOrderViewModel::class.java)
     }
 
     private var currentSelectedView: TextView? = null
@@ -67,7 +67,7 @@ class ManageOrderFragment : BaseFragment(), LoginState {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        wallet = arguments!!.getParcelable(WALLET_PARAM)
+        wallet = arguments?.getParcelable(WALLET_PARAM)
     }
 
     override fun onCreateView(
@@ -164,7 +164,7 @@ class ManageOrderFragment : BaseFragment(), LoginState {
                 when (state) {
                     is GetRelatedOrdersState.Success -> {
                         orders = state.orders
-
+                        orderAdapter?.submitList(null)
                         filterByTab(currentSelectedView == binding.tvOpenOrder)
                     }
                     is GetRelatedOrdersState.ShowError -> {

@@ -12,7 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/screen_background"
-        android:fitsSystemWindows="true">
+        android:clickable="true"
+        android:fitsSystemWindows="true"
+        android:focusable="true">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/toolbar"
@@ -143,7 +151,7 @@
                     app:layout_constraintStart_toEndOf="@+id/tvEth"
                     app:layout_constraintTop_toTopOf="@+id/tvEth" />
 
-                <EditText
+                <com.kyberswap.android.presentation.common.ClearFocusEditText
                     android:id="@+id/edtSearch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -194,11 +202,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start|center"
+                        android:ellipsize="end"
                         android:fontFamily="sans-serif"
+                        android:singleLine="true"
                         android:text="@string/pair"
                         android:textAllCaps="true"
-                        android:ellipsize="end"
-                        android:singleLine="true"
                         android:textAppearance="@style/TextAppearance.Roboto.Bold"
                         android:textColor="#4e5063"
                         android:textSize="12sp"
@@ -221,11 +229,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start|center"
+                        android:ellipsize="end"
                         android:fontFamily="sans-serif"
+                        android:singleLine="true"
                         android:text="@string/price"
                         android:textAllCaps="true"
-                        android:ellipsize="end"
-                        android:singleLine="true"
                         android:textAppearance="@style/TextAppearance.Roboto.Bold"
                         android:textColor="#4e5063"
                         android:textSize="12sp"
@@ -274,13 +282,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|center"
-                        android:fontFamily="sans-serif"
-                        android:text="@string/tab_day"
-                        android:gravity="end"
                         android:ellipsize="end"
+                        android:fontFamily="sans-serif"
+                        android:gravity="end"
                         android:singleLine="true"
-                        android:textAppearance="@style/TextAppearance.Roboto.Bold"
+                        android:text="@string/tab_day"
                         android:textAllCaps="true"
+                        android:textAppearance="@style/TextAppearance.Roboto.Bold"
                         android:textColor="#4e5063"
                         android:textSize="12sp"
                         android:textStyle="bold" />

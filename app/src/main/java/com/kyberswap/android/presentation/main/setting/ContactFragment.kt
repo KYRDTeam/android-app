@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kyberswap.android.AppExecutors
@@ -47,7 +47,7 @@ class ContactFragment : BaseFragment() {
 
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(ContactViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(ContactViewModel::class.java)
     }
 
     private val handler by lazy {
@@ -73,7 +73,7 @@ class ContactFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
 
         viewModel.getSelectedWallet()
-        viewModel.getSelectedWalletCallback.observe(parentFragment!!.viewLifecycleOwner, Observer {
+        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.peekContent()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {

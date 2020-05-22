@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentKyberCodeBinding
@@ -38,7 +38,7 @@ class KyberCodeFragment : BaseFragment() {
     private var fromLandingPage: Boolean? = null
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(KyberCodeViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(KyberCodeViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -177,7 +177,7 @@
                     app:layout_constraintStart_toStartOf="@+id/textView92"
                     app:layout_constraintTop_toTopOf="@+id/textView92" />
 
-                <EditText
+                <com.kyberswap.android.presentation.common.ClearFocusEditText
                     android:id="@+id/edtConvertedAmount"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

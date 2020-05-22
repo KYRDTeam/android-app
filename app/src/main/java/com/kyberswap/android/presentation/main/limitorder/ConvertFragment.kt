@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.view.focusChanges
 import com.kyberswap.android.AppExecutors
@@ -57,7 +57,7 @@ class ConvertFragment : BaseFragment() {
     private var hasUserFocus: Boolean? = false
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(LimitOrderViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(LimitOrderViewModel::class.java)
     }
 
     @Inject
@@ -190,7 +190,7 @@ class ConvertFragment : BaseFragment() {
 
         tvConvert.setOnClickListener {
 
-            var error = ""
+            var error: String
             binding.order?.let {
 
                 when {
@@ -273,7 +273,6 @@ class ConvertFragment : BaseFragment() {
                     hasUserFocus = it
                 }
             })
-
     }
 
     private fun setupBalance(pendingBalances: PendingBalances) {
@@ -307,7 +306,9 @@ class ConvertFragment : BaseFragment() {
 
                 if (minCovertAmount < BigDecimal.ZERO) minCovertAmount = BigDecimal.ZERO
                 if (binding.edtConvertedAmount.text.toString() != minCovertAmount.toPlainString()) {
-                    binding.edtConvertedAmount.setAmount(minCovertAmount.stripTrailingZeros().toPlainString())
+                    binding.edtConvertedAmount.setAmount(
+                        minCovertAmount.stripTrailingZeros().toPlainString()
+                    )
                 }
             }
         }

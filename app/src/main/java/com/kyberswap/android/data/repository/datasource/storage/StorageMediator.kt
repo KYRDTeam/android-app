@@ -8,6 +8,15 @@ class StorageMediator @Inject constructor(private val hawkWrapper: HawkWrapper) 
         private const val KEY_ACCESS_TOKEN = "key_auth_token"
         private const val KEY_REFRESH_TOKEN = "key_refresh_token"
         private const val KEY_EXPIRES_IN = "key_expiration_time"
+        private const val KEY_INITIAL_FRESHCHAT = "key_initial_fresh_chat"
+    }
+
+    fun setInitialFreshChat(isInitial: Boolean) {
+        hawkWrapper.put(KEY_INITIAL_FRESHCHAT, isInitial)
+    }
+
+    fun isInitialFreshChat(): Boolean {
+        return hawkWrapper[KEY_INITIAL_FRESHCHAT, false]
     }
 
     fun applyToken(authInfo: AuthInfo) {

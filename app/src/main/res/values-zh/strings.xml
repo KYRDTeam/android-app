@@ -736,5 +736,9 @@
     <string name="sell_limit_order">卖出限价订单</string>
     <string name="faq">FAQ</string>
     <string name="buy_eth">购买 ETH</string>
+    <string name="please_wait_for_expected_rate_updated">请等待更新的预期的汇率</string>
+    <string name="warning_backup_private_key">切勿与任何人（包括KyberSwap）分享密钥库/私钥/助记符。 这些数据会授予您所有资金的访问权限，可能有被盗風險。</string>
+    <string name="warning_backup_mnemonic">切勿与任何人（包括KyberSwap）分享密钥库/私钥/助记符。 这些数据会授予您所有资金的访问权限，可能有被盗風險。</string>
+    <string name="warning_backup_keystore">切勿与任何人（包括KyberSwap）分享密钥库/私钥/助记符。 这些数据会授予您所有资金的访问权限，可能有被盗風險。</string>
 
 </resources>

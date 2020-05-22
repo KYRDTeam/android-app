@@ -93,4 +93,6 @@
     <color name="color_active_percent_change">#5a5e67</color>
     <color name="desc_color">#FA6566</color>
     <color name="inc_color">#31CB9E</color>
+    <color name="freshchat_notification_accent_color">@color/colorAccent</color>
+
 </resources>

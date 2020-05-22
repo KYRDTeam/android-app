@@ -45,7 +45,7 @@ class AlertDialogFragment : DialogFragment() {
 
     private var walletAddress: String? = null
 
-    lateinit var analytics: FirebaseAnalytics
+    private var analytics: FirebaseAnalytics? = null
 
     private val handler by lazy {
         Handler()
@@ -98,7 +98,7 @@ class AlertDialogFragment : DialogFragment() {
                                 transaction.to.displayWalletAddress()
                             )
                         } else {
-                            if(transaction.isCancel) {
+                            if (transaction.isCancel) {
                                 getString(R.string.transaction_cancel_successfully)
                             } else {
                                 String.format(
@@ -199,7 +199,7 @@ class AlertDialogFragment : DialogFragment() {
 
         if (isDone) {
             if (transaction?.isTransactionFail == true) {
-                analytics.logEvent(
+                analytics?.logEvent(
                     TX_FAILED_EVENT,
                     Bundle().createEvent(
                         TX_FAILED_ACTION,
@@ -207,7 +207,7 @@ class AlertDialogFragment : DialogFragment() {
                     )
                 )
             } else {
-                analytics.logEvent(
+                analytics?.logEvent(
                     TX_MINED_EVENT,
                     Bundle().createEvent(TRANSACTION_DETAIL_ACTION, transaction?.displayTransaction)
                 )
@@ -215,7 +215,7 @@ class AlertDialogFragment : DialogFragment() {
         }
 
         binding.imgViewPendingTx.setOnClickListener {
-            analytics.logEvent(
+            analytics?.logEvent(
                 OPEN_TX_FROM_ALERT_EVENT, Bundle().createEvent(
                     if (isDone) OPEN_TX_MINED_ACTION else OPEN_TX_PENDING_ACTION,
                     transaction?.displayTransaction
@@ -230,7 +230,7 @@ class AlertDialogFragment : DialogFragment() {
         }
 
         binding.tvDetail.setOnClickListener {
-            analytics.logEvent(
+            analytics?.logEvent(
                 OPEN_TX_FROM_ALERT_EVENT, Bundle().createEvent(
                     if (isDone) OPEN_TX_MINED_ACTION else OPEN_TX_PENDING_ACTION,
                     transaction?.displayTransaction
@@ -253,6 +253,13 @@ class AlertDialogFragment : DialogFragment() {
             dismissAllowingStateLoss()
             callback?.onTransfer()
         }
+    }
+
+    override fun onDestroyView() {
+        callback = null
+        analytics = null
+        handler.removeCallbacksAndMessages(null)
+        super.onDestroyView()
     }
 
     companion object {

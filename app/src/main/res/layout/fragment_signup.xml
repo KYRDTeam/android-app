@@ -125,7 +125,6 @@
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="32dp"
                     android:layout_marginEnd="24dp"
-                    android:singleLine="true"
                     android:textAppearance="@style/TextAppearance.Roboto.Medium"
                     android:textColor="#9ea1aa"
                     android:textColorHint="#9ea1aa"
@@ -135,16 +134,17 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <EditText
+                    <com.kyberswap.android.presentation.common.ClearFocusTextInputEditText
                         android:id="@+id/edtEmail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
                         android:hint="@string/login_email_address"
+                        android:imeOptions="actionNext"
                         android:inputType="textEmailAddress"
                         android:letterSpacing="0.07"
+                        android:maxLines="1"
                         android:minHeight="60dp"
-                        android:singleLine="true"
                         android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="#9ea1aa"
                         android:textColorHint="#9ea1aa"
@@ -159,7 +159,6 @@
                     android:layout_marginTop="8dp"
                     android:backgroundTint="@color/edt_background_tint"
                     android:inputType="textEmailAddress"
-                    android:singleLine="true"
                     android:textAppearance="@style/TextAppearance.Roboto.Medium"
                     android:textColorHint="#9ea1aa"
                     android:textSize="14sp"
@@ -167,16 +166,17 @@
                     app:layout_constraintStart_toStartOf="@+id/ilEmail"
                     app:layout_constraintTop_toBottomOf="@+id/ilEmail">
 
-                    <EditText
+                    <com.kyberswap.android.presentation.common.ClearFocusTextInputEditText
                         android:id="@+id/edtDisplayName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/edt_background_tint"
                         android:hint="@string/signup_display_name"
-                        android:inputType="textEmailAddress"
+                        android:imeOptions="actionNext"
+                        android:inputType="textCapWords"
                         android:letterSpacing="0.07"
+                        android:maxLines="1"
                         android:minHeight="60dp"
-                        android:singleLine="true"
                         android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="#9ea1aa"
                         android:textColorHint="#9ea1aa"
@@ -243,7 +243,7 @@
                     app:passwordToggleEnabled="true"
                     app:passwordToggleTint="#9ea1aa">
 
-                    <com.google.android.material.textfield.TextInputEditText
+                    <com.kyberswap.android.presentation.common.ClearFocusTextInputEditText
                         android:id="@+id/edtPassword"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -251,8 +251,8 @@
                         android:hint="@string/login_password"
                         android:inputType="textPassword"
                         android:letterSpacing="0.07"
+                        android:maxLines="1"
                         android:minHeight="60dp"
-                        android:singleLine="true"
                         android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="#5a5e67"
                         android:textColorHint="#9ea1aa"

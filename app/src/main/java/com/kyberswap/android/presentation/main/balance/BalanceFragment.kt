@@ -10,8 +10,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -23,6 +22,7 @@ import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.CustomLinearLayoutManager
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
@@ -73,7 +73,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             || binding.header.tvUsd == orderByOptions[orderBySelectedIndex] && binding.header.tvUsd.compoundDrawables.isNotEmpty()
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(BalanceViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(BalanceViewModel::class.java)
     }
 
     private val openedAddressView by lazy { listOf(binding.tvAddress, binding.tvQr) }
@@ -100,6 +100,12 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         getString(R.string.favourite)
     }
 
+    private val isOtherSelected: Boolean
+        get() = currentSelectedView == binding.tvFavOther && isOther
+
+    private val isOther: Boolean
+        get() = binding.tvFavOther.text.toString().equals(other, true)
+
     private val nameAndBal by lazy {
         listOf(binding.header.tvName, binding.header.tvBalance)
     }
@@ -125,6 +131,8 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     private var orderBySelectedIndex: Int = 0
 
     private var currentSearchString = ""
+
+    private var hasScrollToTop: Boolean = false
 
     private var tokenAdapter: TokenAdapter? = null
 
@@ -300,7 +308,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             false
         }
 
-        binding.rvToken.layoutManager = LinearLayoutManager(
+        binding.rvToken.layoutManager = CustomLinearLayoutManager(
             activity,
             RecyclerView.VERTICAL,
             false
@@ -337,9 +345,11 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                                 binding.swipeLayout.isRefreshing = false
                             }
                             getTokenBalances()
-                            scrollToTop()
+                            if (!hasScrollToTop) {
+                                scrollToTop()
+                                hasScrollToTop = true
+                            }
                         }
-//                        scrollToTop()
                     }
                     is GetBalanceState.ShowError -> {
                         binding.swipeLayout.isRefreshing = false
@@ -472,8 +482,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     fun scrollToTop() {
-        val layoutManager = binding.rvToken.layoutManager as LinearLayoutManager
-        layoutManager.scrollToPositionWithOffset(0, 0)
+
+        handler.postDelayed({
+            binding.rvToken.smoothScrollToPosition(0)
+        }, 250)
     }
 
     private fun updateTokenList(tokens: List<Token>) {
@@ -537,6 +549,9 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     private fun refresh() {
         viewModel.refresh()
+        if (isOtherSelected && activity is MainActivity) {
+            (activity as MainActivity).refreshOthers()
+        }
     }
 
     private fun orderByCurrency(isEth: Boolean, type: OrderType, view: TextView) {
@@ -663,7 +678,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     private fun moveToSwapTab() {
         if (activity is MainActivity) {
             handler.post {
-                activity!!.bottomNavigation.currentItem = 1
+                activity?.bottomNavigation?.currentItem = 1
             }
         }
     }

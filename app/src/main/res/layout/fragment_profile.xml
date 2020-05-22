@@ -61,7 +61,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <EditText
+                <com.kyberswap.android.presentation.common.ClearFocusEditText
                     android:id="@+id/edtEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -95,7 +95,7 @@
                 app:passwordToggleEnabled="true"
                 app:passwordToggleTint="#9ea1aa">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <com.kyberswap.android.presentation.common.ClearFocusTextInputEditText
                     android:id="@+id/edtPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

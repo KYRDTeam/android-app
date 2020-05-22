@@ -15,10 +15,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
@@ -57,9 +56,6 @@ import com.kyberswap.android.presentation.main.notification.GetUnReadNotificatio
 import com.kyberswap.android.presentation.main.profile.DataTransferState
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.profile.UserInfoState
-import com.kyberswap.android.presentation.main.profile.kyc.PassportFragment
-import com.kyberswap.android.presentation.main.profile.kyc.PersonalInfoFragment
-import com.kyberswap.android.presentation.main.profile.kyc.SubmitFragment
 import com.kyberswap.android.presentation.main.setting.SettingFragment
 import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.main.walletconnect.WalletConnectFragment
@@ -125,7 +121,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
     var fromLimitOrder: Boolean = false
 
-    private var currentDialogFragment: DialogFragment? = null
+    private var currentDialogFragment: AlertDialogFragment? = null
 
     @Inject
     lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -133,7 +129,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
     private var hasDone = false
 
     val mainViewModel: MainViewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
     }
 
     private val handler by lazy {
@@ -242,7 +238,6 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                 showPendingIndicator()
                 when (currentFragment) {
                     is BalanceFragment -> {
-                        (currentFragment as BalanceFragment).scrollToTop()
                         updateLoginStatus()
                     }
                     is LimitOrderFragment -> {
@@ -791,12 +786,17 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         })
     }
 
+    fun refreshOthers() {
+        mainViewModel.monitorOtherTokenBalance()
+    }
+
     fun markReadAllNotification() {
         setPendingNotification(0)
         mainViewModel.getNotifications()
     }
 
     private fun updateLoginStatus() {
+        if (currentFragment?.isAdded == false) return
         currentFragment?.childFragmentManager?.fragments?.forEach {
             when (it) {
                 is LoginState -> it.getLoginStatus()
@@ -953,14 +953,6 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
             currentFragment?.childFragmentManager?.fragments?.forEach {
                 when (it) {
-                    is PassportFragment -> {
-                        it.onBackPress()
-                        return
-                    }
-                    is SubmitFragment -> {
-                        it.onBackPress()
-                        return
-                    }
                     is WalletConnectFragment -> {
                         it.onBackPress()
                     }
@@ -1010,12 +1002,6 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             }
         }
 
-        currentFragment?.childFragmentManager?.fragments?.forEach {
-            if (it is PersonalInfoFragment || it is PassportFragment) {
-                it.onActivityResult(requestCode, resultCode, data)
-            }
-        }
-
         val scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (scanResult != null && scanResult.contents != null) {
             wallet?.address?.let {
@@ -1031,6 +1017,8 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
     }
 
     override fun onDestroy() {
+        currentDialogFragment?.dismiss()
+        currentDialogFragment = null
         handler.removeCallbacksAndMessages(null)
         super.onDestroy()
     }

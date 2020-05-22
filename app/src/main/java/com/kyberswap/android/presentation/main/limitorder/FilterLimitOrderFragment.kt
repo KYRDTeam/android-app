@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
@@ -43,7 +43,7 @@ class FilterLimitOrderFragment : BaseFragment(), LoginState {
     lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(FilterViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(FilterViewModel::class.java)
     }
 
     @Inject

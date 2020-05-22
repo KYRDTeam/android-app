@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.databinding.FragmentTransactionBinding
@@ -43,7 +43,7 @@ class TransactionFragment : BaseFragment() {
     val status = mutableListOf<View>()
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(TransactionViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(TransactionViewModel::class.java)
     }
 
     override fun onCreateView(

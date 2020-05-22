@@ -149,4 +149,13 @@ class ManageWalletViewModel @Inject constructor(
             UpdateSelectedWalletUseCase.Param(wallet)
         )
     }
+
+    override fun onCleared() {
+        createWalletUseCase.dispose()
+        getAllWalletUseCase.dispose()
+        updateSelectedWalletUseCase.dispose()
+        deleteWalletUseCase.dispose()
+        getTokenBalanceUseCase.dispose()
+        super.onCleared()
+    }
 }

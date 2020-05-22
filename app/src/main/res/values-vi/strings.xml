@@ -735,5 +735,9 @@
     <string name="sell_limit_order">Đặt lệnh bán</string>
     <string name="faq">FAQ</string>
     <string name="buy_eth">Mua ETH</string>
+    <string name="please_wait_for_expected_rate_updated">Vui lòng chờ cập nhật tỷ giá</string>
+    <string name="warning_backup_private_key">⚠️KHÔNG chia sẻ Private Key cho bất kỳ ai (kể cả đội ngũ KyberSwap). Thông tin này có thể giúp kẻ gian tiếp cận và đánh cắp tài sản của bạn.</string>
+    <string name="warning_backup_mnemonic">⚠️KHÔNG chia sẻ Mnemonic cho bất kỳ ai (kể cả đội ngũ KyberSwap). Thông tin này có thể giúp kẻ gian tiếp cận và đánh cắp tài sản của bạn.</string>
+    <string name="warning_backup_keystore">⚠️KHÔNG chia sẻ KeyStore cho bất kỳ ai (kể cả đội ngũ KyberSwap). Thông tin này có thể giúp kẻ gian tiếp cận và đánh cắp tài sản của bạn.</string>
 
 </resources>

@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daimajia.swipe.util.Attributes
@@ -55,7 +55,7 @@ class CancelOrderFragment : BaseFragment() {
     private var currentOrder: LocalLimitOrder? = null
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(LimitOrderV2ViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(LimitOrderV2ViewModel::class.java)
     }
 
     @Inject

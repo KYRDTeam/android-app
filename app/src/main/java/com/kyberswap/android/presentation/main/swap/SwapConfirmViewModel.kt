@@ -116,4 +116,12 @@ class SwapConfirmViewModel @Inject constructor(
             )
         )
     }
+
+    override fun onCleared() {
+        getSwapData.dispose()
+        estimateGasUseCase.dispose()
+        getGasPriceUseCase.dispose()
+        swapTokenUseCase.dispose()
+        super.onCleared()
+    }
 }

@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -62,7 +62,7 @@ class ProfileDetailFragment : BaseFragment(), LoginState {
     lateinit var analytics: FirebaseAnalytics
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(ProfileDetailViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(ProfileDetailViewModel::class.java)
     }
 
     override fun onCreateView(

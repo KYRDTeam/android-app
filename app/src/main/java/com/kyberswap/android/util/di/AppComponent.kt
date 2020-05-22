@@ -2,7 +2,6 @@ package com.kyberswap.android.util.di
 
 import android.app.Application
 import com.kyberswap.android.KyberSwapApplication
-import com.kyberswap.android.service.job.GetTokenWorker
 import com.kyberswap.android.util.di.module.ActivityBindingModule
 import com.kyberswap.android.util.di.module.AnalyticModule
 import com.kyberswap.android.util.di.module.AppModule
@@ -42,5 +41,5 @@ interface AppComponent : AndroidInjector<KyberSwapApplication> {
 
     override fun inject(instance: KyberSwapApplication)
 
-    fun inject(worker: GetTokenWorker)
+//    fun inject(worker: GetTokenWorker)
 }

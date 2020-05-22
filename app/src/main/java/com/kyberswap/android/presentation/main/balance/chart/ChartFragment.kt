@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -73,7 +73,7 @@ class ChartFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(ChartViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(ChartViewModel::class.java)
     }
 
     private val handler by lazy {
@@ -134,7 +134,7 @@ class ChartFragment : BaseFragment() {
             activity?.onBackPressed()
         }
         viewModel.getSelectedWallet()
-        viewModel.getSelectedWalletCallback.observe(parentFragment!!.viewLifecycleOwner, Observer {
+        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.peekContent()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
@@ -416,9 +416,14 @@ class ChartFragment : BaseFragment() {
     private fun moveToSwapTab() {
         if (activity is MainActivity) {
             handler.post {
-                activity!!.bottomNavigation.currentItem = MainPagerAdapter.SWAP
+                activity?.bottomNavigation?.currentItem = MainPagerAdapter.SWAP
             }
         }
+    }
+
+    override fun onDestroyView() {
+        handler.removeCallbacksAndMessages(null)
+        super.onDestroyView()
     }
 
     private fun moveToSendScreen() {

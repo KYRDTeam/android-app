@@ -3,9 +3,9 @@ package com.kyberswap.android.presentation.common
 import android.content.Context
 import android.util.AttributeSet
 import android.view.KeyEvent
-import android.widget.AutoCompleteTextView
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 
-open class ClearFocusAutocompleteEditText : AutoCompleteTextView {
+open class ClearFocusAutocompleteEditText : AppCompatAutoCompleteTextView {
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
     constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(

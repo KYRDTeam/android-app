@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kyberswap.android.AppExecutors
@@ -53,7 +53,7 @@ class ManageAlertFragment : BaseFragment(), LoginState {
     }
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(MangeAlertViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(MangeAlertViewModel::class.java)
     }
 
     override fun onCreateView(

@@ -9,10 +9,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
+import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.CompoundButton
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -102,7 +103,7 @@ class SendFragment : BaseFragment() {
     lateinit var analytics: FirebaseAnalytics
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(SendViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(SendViewModel::class.java)
     }
 
     private val handler by lazy {
@@ -129,8 +130,8 @@ class SendFragment : BaseFragment() {
     private val isContactExist: Boolean
         get() = contacts.find { ct ->
             ct.address.equals(currentSelection?.address, true)
-                    || ct.address.equals(edtAddress.text.toString().onlyAddress(), true)
-                    || ct.address.equals(ilAddress.helperText?.toString(), true)
+                || ct.address.equals(edtAddress.text.toString().onlyAddress(), true)
+                || ct.address.equals(ilAddress.helperText?.toString(), true)
         } != null
 
     private val availableAmount: BigDecimal
@@ -304,6 +305,7 @@ class SendFragment : BaseFragment() {
         }
 
         binding.imgBack.setOnClickListener {
+            hideKeyboard()
             activity?.onBackPressed()
         }
 
@@ -596,8 +598,8 @@ class SendFragment : BaseFragment() {
                         )
                     }
                     !(edtAddress.text.toString().onlyAddress().isContact() ||
-                            ilAddress.helperText.toString().isContact() ||
-                            edtAddress.text.toString().isENSAddress()) -> showAlertWithoutIcon(
+                        ilAddress.helperText.toString().isContact() ||
+                        edtAddress.text.toString().isENSAddress()) -> showAlertWithoutIcon(
                         title = getString(R.string.invalid_contact_address_title),
                         message = getString(R.string.specify_contact_address)
                     )
@@ -613,7 +615,7 @@ class SendFragment : BaseFragment() {
                     )
 
                     send.tokenSource.isETH &&
-                            availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
+                        availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
                         showAlertWithoutIcon(
                             getString(R.string.insufficient_eth),
                             getString(R.string.not_enough_eth_blance)
@@ -810,6 +812,22 @@ class SendFragment : BaseFragment() {
                     }
                 }
             })
+
+        binding.edtSource.setOnEditorActionListener { v, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                v.clearFocus()
+            }
+            false
+        }
+
+        binding.edtAddress.setOnEditorActionListener { v, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                v.clearFocus()
+            }
+            false
+        }
+
+
     }
 
     private fun onVerifyWalletComplete() {
