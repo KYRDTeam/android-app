@@ -7,6 +7,7 @@ import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.api.home.UserApi
 import com.kyberswap.android.data.api.home.UtilitiesApi
+import com.kyberswap.android.data.api.user.ResponseStatusEntity
 import com.kyberswap.android.data.db.ContactDao
 import com.kyberswap.android.data.db.SendDao
 import com.kyberswap.android.data.db.SwapDao
@@ -151,11 +152,6 @@ class SwapDataRepository @Inject constructor(
                 credentials,
                 context.getString(R.string.kyber_address)
             )
-//            val resetSwap = swapDao.findSwapByAddress(param.wallet.address)
-//            resetSwap?.let {
-//                it.reset()
-//                swapDao.updateSwap(it)
-//            }
             hash?.let {
                 val swap = param.swap
                 transactionDao.insertTransaction(
@@ -183,8 +179,16 @@ class SwapDataRepository @Inject constructor(
 
             hash ?: ""
         }.flatMap { hash ->
-            userApi.submitTx(hash).map {
-                it.copy(hash = hash)
+            val userInfo = userDao.getUser()
+            val isLogin = userInfo != null && userInfo.uid > 0
+            if (isLogin) {
+                userApi.submitTx(hash).map {
+                    it.copy(hash = hash)
+                }
+            } else {
+                Single.fromCallable {
+                    ResponseStatusEntity().copy(hash = hash, success = true)
+                }
             }
         }.map {
             userMapper.transform(it)
@@ -218,15 +222,6 @@ class SwapDataRepository @Inject constructor(
                 param,
                 credentials
             )
-//            val resetSend = param.send.copy()
-//            resetSend.let {
-//                sendTokenDao.updateSend(
-//                    it.copy(
-//                        sourceAmount = ""
-//                    )
-//                )
-//            }
-
             hash?.let {
                 val transfer = param.send
                 transactionDao.insertTransaction(
@@ -253,14 +248,9 @@ class SwapDataRepository @Inject constructor(
 
             hash ?: ""
 
+        }.map {
+            userMapper.transform(ResponseStatusEntity().copy(hash = it, success = true))
         }
-            .flatMap { hash ->
-                userApi.submitTx(hash).map {
-                    it.copy(hash = hash)
-                }
-            }.map {
-                userMapper.transform(it)
-            }
     }
 
     override fun estimateGas(param: EstimateGasUseCase.Param): Single<BigDecimal> {

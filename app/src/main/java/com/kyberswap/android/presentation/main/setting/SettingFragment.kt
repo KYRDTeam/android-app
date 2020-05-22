@@ -189,6 +189,13 @@ class SettingFragment : BaseFragment() {
 
         registerBroadcastReceiver()
 
+        context?.applicationContext?.let {
+            Freshchat.getInstance(it)
+                .getUnreadCountAsync { _, unreadCount ->
+                    showBadge(unreadCount)
+                }
+        }
+
         binding.fabChat.setOnClickListener {
             val lConvOptions = ConversationOptions()
             lConvOptions.filterByTags(listOf("conversations"), "")
@@ -229,17 +236,21 @@ class SettingFragment : BaseFragment() {
                 activity?.applicationContext?.let {
                     Freshchat.getInstance(it)
                         .getUnreadCountAsync { _, unreadCount ->
-                            if (unreadCount > 0) {
-                                tvBadge.visibility = View.VISIBLE
-                                tvBadge.text = unreadCount.toString()
-                            } else {
-                                tvBadge.text = ""
-                                tvBadge.visibility = View.GONE
-                            }
+                            showBadge(unreadCount)
                         }
                 }
             }
         }
+
+    private fun showBadge(unreadCount: Int) {
+        if (unreadCount > 0) {
+            tvBadge.visibility = View.VISIBLE
+            tvBadge.text = unreadCount.toString()
+        } else {
+            tvBadge.text = ""
+            tvBadge.visibility = View.GONE
+        }
+    }
 
     companion object {
         fun newInstance() =

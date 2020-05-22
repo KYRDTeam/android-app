@@ -475,7 +475,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="56dp"
             android:background="@drawable/circle_chat_badge"
-            android:elevation="6dp"
+            android:elevation="0dp"
             android:gravity="center"
             android:textColor="#fff"
             android:textSize="10sp"

@@ -19,6 +19,7 @@ import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.data.db.TransactionDao
 import com.kyberswap.android.data.db.TransactionFilterDao
+import com.kyberswap.android.data.db.UserDao
 import com.kyberswap.android.data.mapper.TransactionMapper
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Transaction
@@ -64,6 +65,7 @@ class TransactionDataRepository @Inject constructor(
     private val userApi: UserApi,
     private val limitOrderDao: LocalLimitOrderDao,
     private val transactionFilterDao: TransactionFilterDao,
+    private val userDao: UserDao,
     private val context: Context
 ) : TransactionRepository {
 
@@ -857,12 +859,20 @@ class TransactionDataRepository @Inject constructor(
             val newTx =
                 tokenClient.speedUpOrCancelTx(param.wallet, param.transaction, param.isCancel)
             newTx.hash
-        }.map { hash ->
-            if (hash != param.transaction.hash)
-                userApi.submitTx(hash).map {
-                    it.copy(hash = hash)
+        }.flatMap { newHash ->
+            val isSuccessed = newHash != param.transaction.hash
+            val userInfo = userDao.getUser()
+            val isLogin = userInfo != null && userInfo.uid > 0
+
+            if (isSuccessed && isLogin) {
+                userApi.submitTx(newHash).map {
+                    isSuccessed
                 }
-            hash != param.transaction.hash
+            } else {
+                Single.fromCallable {
+                    isSuccessed
+                }
+            }
         }
     }
 
