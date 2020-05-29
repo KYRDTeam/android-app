@@ -1,38 +1,27 @@
 package com.kyberswap.android.presentation.setting
 
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
+import android.widget.Toast
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.andrognito.pinlockview.PinLockListener
-import com.github.pwittchen.rxbiometric.library.RxBiometric
-import com.github.pwittchen.rxbiometric.library.throwable.AuthenticationError
-import com.github.pwittchen.rxbiometric.library.throwable.AuthenticationFail
-import com.github.pwittchen.rxbiometric.library.throwable.AuthenticationHelp
-import com.github.pwittchen.rxbiometric.library.throwable.BiometricNotSupported
-import com.github.pwittchen.rxbiometric.library.validation.RxPreconditions
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityPassCodeLockBinding
 import com.kyberswap.android.domain.model.PassCode
 import com.kyberswap.android.presentation.base.BaseActivity
-import com.kyberswap.android.presentation.base.BaseFragment
-import com.kyberswap.android.presentation.common.AlertWithoutIconActivity
-import com.kyberswap.android.presentation.common.BIOMETRIC_ERROR_CANCEL
-import com.kyberswap.android.presentation.common.BIOMETRIC_ERROR_NONE_ENROLLED
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
-import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.rxkotlin.subscribeBy
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -87,8 +76,6 @@ class PassCodeLockActivity : BaseActivity() {
 
     private var currentTimePassed: Long = 0
 
-    private var disposable: Disposable? = null
-
     private var currentPin: String? = null
 
     private val isVerifyAccess: Boolean
@@ -96,6 +83,27 @@ class PassCodeLockActivity : BaseActivity() {
 
     private val isRepeatTitle: Boolean
         get() = binding.title == repeatTitle
+
+    private val biometricPrompt: BiometricPrompt
+        get() = BiometricPrompt(this, ActivityCompat.getMainExecutor(this),
+            object : BiometricPrompt.AuthenticationCallback() {
+
+                override fun onAuthenticationSucceeded(
+                    result: BiometricPrompt.AuthenticationResult
+                ) {
+                    super.onAuthenticationSucceeded(result)
+                    (applicationContext as KyberSwapApplication).startCounter()
+                    finish()
+                }
+            })
+
+    private val promptInfo: BiometricPrompt.PromptInfo
+        get() = BiometricPrompt.PromptInfo.Builder()
+            .setTitle(getString(R.string.verify_your_identity))
+            .setDescription(getString(R.string.confirm_your_fingerpint_to_continue))
+            .setNegativeButtonText(getString(R.string.finger_print_cancel))
+            .build()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -143,7 +151,7 @@ class PassCodeLockActivity : BaseActivity() {
                 when (state) {
                     is SavePinState.Success -> {
                         (applicationContext as KyberSwapApplication).startCounter()
-                        disposeObserver()
+                        cancelAuthentication()
                         finish()
                     }
                     is SavePinState.ShowError -> {
@@ -169,7 +177,7 @@ class PassCodeLockActivity : BaseActivity() {
                                 binding.executePendingBindings()
                             } else {
                                 (applicationContext as KyberSwapApplication).startCounter()
-                                disposeObserver()
+                                cancelAuthentication()
                                 finish()
                             }
                         } else {
@@ -212,7 +220,9 @@ class PassCodeLockActivity : BaseActivity() {
                                 binding.executePendingBindings()
                             } else {
                                 binding.title = verifyAccess
-                                showFingerPrint()
+                                if (!isChangePinCode) {
+                                    showBiometricPrompt()
+                                }
                             }
                         }
                     }
@@ -225,89 +235,126 @@ class PassCodeLockActivity : BaseActivity() {
         })
 
         binding.imgFingerPrint.setOnClickListener {
-            showFingerPrint()
+            showBiometricPrompt()
         }
     }
 
-    private fun showFingerPrint() {
-
-        disposable =
-            RxPreconditions
-                .hasBiometricSupport(this)
-                .flatMapCompletable {
-                    if (!it) {
-                        binding.imgFingerPrint.visibility = View.GONE
-                        Completable.error(BiometricNotSupported())
-                    } else {
-                        binding.imgFingerPrint.visibility = View.VISIBLE
-                        RxBiometric
-                            .title(getString(R.string.verify_your_identity))
-                            .description(getString(R.string.confirm_your_fingerpint_to_continue))
-                            .negativeButtonText(getString(R.string.finger_print_cancel))
-                            .negativeButtonListener(DialogInterface.OnClickListener { _, _ ->
-
-                            })
-                            .executor(ActivityCompat.getMainExecutor(this))
-                            .build()
-                            .authenticate(this)
-                    }
-
+    private fun showBiometricPrompt() {
+        val biometricManager = BiometricManager.from(this)
+        when (biometricManager.canAuthenticate()) {
+            BiometricManager.BIOMETRIC_SUCCESS -> {
+                if (isChangePinCode) {
+                    binding.imgFingerPrint.visibility = View.GONE
+                } else {
+                    binding.imgFingerPrint.visibility = View.VISIBLE
                 }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                    onComplete = {
-                        (applicationContext as KyberSwapApplication).startCounter()
-                        finish()
-                    },
-                    onError = {
-                        when (it) {
-                            is AuthenticationError -> {
-                                when (it.errorCode) {
-                                    BIOMETRIC_ERROR_NONE_ENROLLED -> {
-                                        binding.imgFingerPrint.visibility = View.GONE
-                                    }
-                                    BIOMETRIC_ERROR_CANCEL -> {
+                biometricPrompt.authenticate(promptInfo)
+            }
 
-                                    }
-                                    else -> {
-                                        it.errorMessage?.let { err ->
-                                            showMessage(err.toString())
-                                        }
-                                    }
-                                }
-                            }
+            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
+                binding.imgFingerPrint.visibility = View.GONE
+            }
 
-                            is AuthenticationFail -> {
-                                showMessage(it.localizedMessage)
-                            }
+            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
+                binding.imgFingerPrint.visibility = View.GONE
+            }
 
-                            is AuthenticationHelp -> {
-
-                            }
-
-                            is BiometricNotSupported -> {
-
-                            }
-
-                            else -> {
-                                showMessage(it.localizedMessage)
-                            }
-                        }
-                    }
-                )
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
+                binding.imgFingerPrint.visibility = View.GONE
+            }
+        }
     }
+
+//    private fun showFingerPrint() {
+//
+//        disposable =
+//            RxPreconditions
+//                .hasBiometricSupport(this)
+//                .flatMapCompletable {
+//                    if (!it) {
+//                        binding.imgFingerPrint.visibility = View.GONE
+//                        Completable.error(BiometricNotSupported())
+//                    } else {
+//                        binding.imgFingerPrint.visibility = View.VISIBLE
+//                        RxBiometric
+//                            .title(getString(R.string.verify_your_identity))
+//                            .description(getString(R.string.confirm_your_fingerpint_to_continue))
+//                            .negativeButtonText(getString(R.string.finger_print_cancel))
+//                            .negativeButtonListener(DialogInterface.OnClickListener { _, _ ->
+//
+//                            })
+//                            .executor(ActivityCompat.getMainExecutor(this))
+//                            .build()
+//                            .authenticate(this)
+//                    }
+//
+//                }
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribeBy(
+//                    onComplete = {
+//                        Timber.e(
+//                            "onComplete"
+//                        )
+//                        (applicationContext as KyberSwapApplication).startCounter()
+//                        finish()
+//                    },
+//                    onError = {
+//                        Timber.e("onError")
+//                        it.printStackTrace()
+//                        when (it) {
+//                            is AuthenticationError -> {
+//                                Timber.e("AuthenticationError")
+//                                when (it.errorCode) {
+//                                    BIOMETRIC_ERROR_NONE_ENROLLED -> {
+//                                        binding.imgFingerPrint.visibility = View.GONE
+//                                    }
+//                                    BIOMETRIC_ERROR_CANCEL -> {
+//
+//                                    }
+//                                    else -> {
+//                                        it.errorMessage?.let { err ->
+//                                            showMessage(err.toString())
+//                                        }
+//                                    }
+//                                }
+//                            }
+//
+//                            is AuthenticationFail -> {
+//                                Timber.e("AuthenticationError")
+//                                showMessage(it.localizedMessage)
+//                            }
+//
+//                            is AuthenticationHelp -> {
+//                                Timber.e("AuthenticationError")
+//
+//                            }
+//
+//                            is BiometricNotSupported -> {
+//                                Timber.e("AuthenticationError")
+//
+//                            }
+//
+//                            else -> {
+//                                Timber.e("Error")
+//                                showMessage(it.localizedMessage)
+//                            }
+//                        }
+//                    }
+//                )
+//    }
 
     override fun onPause() {
         super.onPause()
-        disposeObserver()
+        cancelAuthentication()
     }
 
-    private fun disposeObserver() {
-        disposable?.let {
-            if (!it.isDisposed) {
-                it.dispose()
-            }
-        }
+    private fun cancelAuthentication() {
+        biometricPrompt.cancelAuthentication()
+//        disposable?.let {
+//            if (!it.isDisposed) {
+//                it.dispose()
+//            }
+//        }
     }
 
     private fun startCounter() {
@@ -357,10 +404,13 @@ class PassCodeLockActivity : BaseActivity() {
         super.onBackPressed()
     }
 
-    private fun showMessage(message: String) {
-        val intent = AlertWithoutIconActivity.newIntent(this, null, message)
-        startActivityForResult(intent, BaseFragment.SHOW_ALERT)
+    private fun showMessage(message: String?) {
+        message?.let {
+            Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
+
+        }
     }
+
 
     override fun onDestroy() {
         viewModel.onCleared()

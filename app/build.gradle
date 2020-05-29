@@ -102,7 +102,6 @@ android {
 
         packagingOptions {
             exclude 'lib/x86_64/darwin/libscrypt.dylib'
-            exclude 'META-INF/library_release.kotlin_module'
         }
     }
 
@@ -237,7 +236,8 @@ dependencies {
     implementation 'com.onesignal:OneSignal:3.13.0'
 //    implementation 'com.github.freshdesk:freshchat-android:3.3.0'
     implementation 'com.github.freshdesk:freshchat-android:3.5.1'
-    implementation 'com.github.pwittchen:rxbiometric:0.1.0'
+    implementation "androidx.biometric:biometric:1.0.1"
+
 
 
     implementation 'org.greenrobot:eventbus:3.1.1'
