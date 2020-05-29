@@ -107,7 +107,9 @@ class SendConfirmViewModel @Inject constructor(
     }
 
     fun send(wallet: Wallet?, send: Send?) {
-        send?.let {
+        if (wallet == null) return
+        if (send == null) return
+        send.let {
             _transferTokenTransactionCallback.postValue(Event(TransferTokenTransactionState.Loading))
             transferTokenUseCase.execute(
                 Consumer {
@@ -117,9 +119,9 @@ class SendConfirmViewModel @Inject constructor(
                 Consumer {
                     it.printStackTrace()
                     _transferTokenTransactionCallback.value =
-                        Event(TransferTokenTransactionState.ShowError(errorHandler.getError(it)))
+                        Event(TransferTokenTransactionState.ShowError(it.localizedMessage))
                 },
-                TransferTokenUseCase.Param(wallet!!, send)
+                TransferTokenUseCase.Param(wallet, send)
 
             )
         }

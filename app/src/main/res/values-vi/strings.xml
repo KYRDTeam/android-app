@@ -49,7 +49,7 @@
     <string name="import_wallet_success">Bạn đã nhập thành công ví</string>
     <string name="name_of_your_wallet">Tên ví của bạn</string>
     <string name="recover_with_seeds">Phục hồi bằng seeds/mnemonic</string>
-<!--    <string name="please_use_seed">Please use seed, the 12 random words assigned when you create the wallet</string>-->
+    <!--    <string name="please_use_seed">Please use seed, the 12 random words assigned when you create the wallet</string>-->
     <string name="enter_private_key">Nhập hoặc quét khóa cá nhân</string>
     <string name="enter_seeds">Nhập seeds/mnemonic</string>
     <string name="permission_required">The permission is required to perform this action</string>
@@ -739,5 +739,8 @@
     <string name="warning_backup_private_key">⚠️KHÔNG chia sẻ Private Key cho bất kỳ ai (kể cả đội ngũ KyberSwap). Thông tin này có thể giúp kẻ gian tiếp cận và đánh cắp tài sản của bạn.</string>
     <string name="warning_backup_mnemonic">⚠️KHÔNG chia sẻ Mnemonic cho bất kỳ ai (kể cả đội ngũ KyberSwap). Thông tin này có thể giúp kẻ gian tiếp cận và đánh cắp tài sản của bạn.</string>
     <string name="warning_backup_keystore">⚠️KHÔNG chia sẻ KeyStore cho bất kỳ ai (kể cả đội ngũ KyberSwap). Thông tin này có thể giúp kẻ gian tiếp cận và đánh cắp tài sản của bạn.</string>
+    <string name="verify_your_identity">Xác nhận danh tính</string>
+    <string name="confirm_your_fingerpint_to_continue">Xác nhận vân tay của bạn để tiếp tục</string>
+    <string name="finger_print_cancel">Hủy</string>
 
 </resources>

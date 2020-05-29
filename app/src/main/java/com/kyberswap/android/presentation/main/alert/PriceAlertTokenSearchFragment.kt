@@ -85,7 +85,7 @@ class PriceAlertTokenSearchFragment : BaseFragment() {
             }
 
         binding.rvToken.adapter = tokenAdapter
-        viewModel.getTokenList(wallet!!.address)
+        wallet?.address?.let { viewModel.getTokenList(it) }
 
         viewModel.getTokenListCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->

@@ -740,5 +740,8 @@
     <string name="warning_backup_private_key">切勿与任何人（包括KyberSwap）分享密钥库/私钥/助记符。 这些数据会授予您所有资金的访问权限，可能有被盗風險。</string>
     <string name="warning_backup_mnemonic">切勿与任何人（包括KyberSwap）分享密钥库/私钥/助记符。 这些数据会授予您所有资金的访问权限，可能有被盗風險。</string>
     <string name="warning_backup_keystore">切勿与任何人（包括KyberSwap）分享密钥库/私钥/助记符。 这些数据会授予您所有资金的访问权限，可能有被盗風險。</string>
+    <string name="verify_your_identity">验证您的身份</string>
+    <string name="confirm_your_fingerpint_to_continue">请确认指纹以继续</string>
+    <string name="finger_print_cancel">取消</string>
 
 </resources>

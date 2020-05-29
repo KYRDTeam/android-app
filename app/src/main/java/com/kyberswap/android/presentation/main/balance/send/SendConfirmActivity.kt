@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.caverock.androidsvg.SVG
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivitySendConfirmBinding
@@ -22,8 +23,12 @@ import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.main.swap.GetSendState
 import com.kyberswap.android.presentation.main.swap.TransferTokenTransactionState
+import com.kyberswap.android.util.GET_GAS_LIMIT_ERROR
+import com.kyberswap.android.util.GET_GAS_PRICE_ERROR
+import com.kyberswap.android.util.TRANSFER_BROADCAST_ERROR
+import com.kyberswap.android.util.TRANSFER_CONFIRMED_ERROR
 import com.kyberswap.android.util.di.ViewModelFactory
-import com.kyberswap.android.util.ext.isNetworkAvailable
+import com.kyberswap.android.util.ext.createEvent
 import jdenticon.Jdenticon
 import org.consenlabs.tokencore.wallet.KeystoreStorage
 import org.consenlabs.tokencore.wallet.WalletManager
@@ -43,6 +48,9 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
     private var wallet: Wallet? = null
 
     private var isContactExist: Boolean = false
+
+    @Inject
+    lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private val viewModel: SendConfirmViewModel by lazy {
         ViewModelProvider(this, viewModelFactory).get(SendConfirmViewModel::class.java)
@@ -99,6 +107,11 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
                         finish()
                     }
                     is TransferTokenTransactionState.ShowError -> {
+                        firebaseAnalytics.logEvent(
+                            TRANSFER_CONFIRMED_ERROR, Bundle().createEvent(
+                                TRANSFER_BROADCAST_ERROR, state.message
+                            )
+                        )
                         showError(
                             state.message ?: getString(R.string.something_wrong)
                         ) {
@@ -123,11 +136,10 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
                         }
                     }
                     is GetGasLimitState.ShowError -> {
-                        if (isNetworkAvailable()) {
-                            showError(
-                                state.message ?: getString(R.string.something_wrong)
-                            )
-                        }
+                        firebaseAnalytics.logEvent(
+                            TRANSFER_CONFIRMED_ERROR,
+                            Bundle().createEvent(GET_GAS_LIMIT_ERROR, state.message)
+                        )
                     }
                 }
             }
@@ -145,11 +157,10 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
                         }
                     }
                     is GetGasPriceState.ShowError -> {
-                        if (isNetworkAvailable()) {
-                            showError(
-                                state.message ?: getString(R.string.something_wrong)
-                            )
-                        }
+                        firebaseAnalytics.logEvent(
+                            TRANSFER_CONFIRMED_ERROR,
+                            Bundle().createEvent(GET_GAS_PRICE_ERROR, state.message)
+                        )
                     }
                 }
             }

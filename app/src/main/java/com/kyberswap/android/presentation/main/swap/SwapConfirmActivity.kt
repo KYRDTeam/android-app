@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivitySwapConfirmBinding
@@ -14,8 +15,12 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.base.BaseFragment.Companion.HASH_PARAM
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.util.GET_GAS_LIMIT_ERROR
+import com.kyberswap.android.util.GET_GAS_PRICE_ERROR
+import com.kyberswap.android.util.SW_BROADCAST_ERROR
+import com.kyberswap.android.util.SW_CONFIRMED_ERROR
 import com.kyberswap.android.util.di.ViewModelFactory
-import com.kyberswap.android.util.ext.isNetworkAvailable
+import com.kyberswap.android.util.ext.createEvent
 import org.consenlabs.tokencore.wallet.KeystoreStorage
 import org.consenlabs.tokencore.wallet.WalletManager
 import java.io.File
@@ -25,11 +30,15 @@ import javax.inject.Inject
 class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
     @Inject
     lateinit var navigator: Navigator
+
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
     @Inject
     lateinit var appExecutors: AppExecutors
+
+    @Inject
+    lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private var wallet: Wallet? = null
 
@@ -73,18 +82,17 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
                 showProgress(state == SwapTokenTransactionState.Loading)
                 when (state) {
                     is SwapTokenTransactionState.Success -> {
-//                        showAlertWithoutIcon(
-//                            getString(R.string.transaction_broadcasted), getString(
-//                                R.string.transaction_broadcasted_message
-//                            )
-//                        )
-
                         val returnIntent = Intent()
                         setResult(Activity.RESULT_OK, returnIntent)
                         returnIntent.putExtra(HASH_PARAM, state.responseStatus?.hash)
                         finish()
                     }
                     is SwapTokenTransactionState.ShowError -> {
+                        firebaseAnalytics.logEvent(
+                            SW_CONFIRMED_ERROR, Bundle().createEvent(
+                                SW_BROADCAST_ERROR, state.message
+                            )
+                        )
                         showError(
                             state.message ?: getString(R.string.something_wrong)
                         )
@@ -110,11 +118,11 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
                         }
                     }
                     is GetGasLimitState.ShowError -> {
-                        if (isNetworkAvailable()) {
-                            showError(
-                                state.message ?: getString(R.string.something_wrong)
+                        firebaseAnalytics.logEvent(
+                            SW_CONFIRMED_ERROR, Bundle().createEvent(
+                                GET_GAS_LIMIT_ERROR, state.message
                             )
-                        }
+                        )
                     }
                 }
             }
@@ -135,7 +143,11 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
                         }
                     }
                     is GetGasPriceState.ShowError -> {
-
+                        firebaseAnalytics.logEvent(
+                            SW_CONFIRMED_ERROR, Bundle().createEvent(
+                                GET_GAS_PRICE_ERROR, state.message
+                            )
+                        )
                     }
                 }
             }

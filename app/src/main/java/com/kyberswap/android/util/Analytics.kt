@@ -96,4 +96,11 @@ const val ST_USER_CLICK_FAQ = "st_user_click_faq" // st - Setting
 const val CH_USER_CLICK_BUY_LIMIT_ORDER = "ch_user_click_buy_limit_order" // ch - Chart
 const val CH_USER_CLICK_SELL_LIMIT_ORDER = "ch_user_click_sell_limit_order"
 
+const val TRANSFER_CONFIRMED_ERROR = "transfer_confirmed_error"
+const val GET_GAS_PRICE_ERROR = "transfer_get_gas_price_error"
+const val GET_GAS_LIMIT_ERROR = "transfer_get_gas_limit_error"
+const val TRANSFER_BROADCAST_ERROR = "transfer_broadcast_error"
+const val SW_BROADCAST_ERROR = "transfer_broadcast_error"
+const val SW_CONFIRMED_ERROR = "swap_confirmed_error"
+
 
