@@ -1017,7 +1017,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
     }
 
     override fun onDestroy() {
-        currentDialogFragment?.dismiss()
+        currentDialogFragment?.dismissAllowingStateLoss()
         currentDialogFragment = null
         handler.removeCallbacksAndMessages(null)
         super.onDestroy()

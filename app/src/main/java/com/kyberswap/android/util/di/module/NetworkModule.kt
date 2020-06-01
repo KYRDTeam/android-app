@@ -71,7 +71,7 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideHomeApi(context: Context, client: OkHttpClient): TokenApi {
+    fun provideTokenApi(context: Context, client: OkHttpClient): TokenApi {
         return createApiClient(
             TokenApi::class.java,
             context.getString(R.string.token_endpoint_url),

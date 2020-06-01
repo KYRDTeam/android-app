@@ -1,17 +1,14 @@
 package com.kyberswap.android.presentation.setting
 
-import android.annotation.TargetApi
-import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
-import android.hardware.fingerprint.FingerprintManager
-import android.os.Build
 import android.os.Bundle
-import android.security.keystore.KeyGenParameterSpec
-import android.security.keystore.KeyPermanentlyInvalidatedException
-import android.security.keystore.KeyProperties
+import android.view.View
 import android.view.animation.AnimationUtils
-import androidx.annotation.RequiresApi
+import android.widget.Toast
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -21,30 +18,15 @@ import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityPassCodeLockBinding
 import com.kyberswap.android.domain.model.PassCode
 import com.kyberswap.android.presentation.base.BaseActivity
-import com.kyberswap.android.presentation.common.DEFAULT_KEY_NAME
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.presentation.setting.fingerprint.FingerprintAuthenticationDialogFragment
 import com.kyberswap.android.util.di.ViewModelFactory
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import java.io.IOException
-import java.security.InvalidAlgorithmParameterException
-import java.security.InvalidKeyException
-import java.security.KeyStore
-import java.security.KeyStoreException
-import java.security.NoSuchAlgorithmException
-import java.security.NoSuchProviderException
-import java.security.UnrecoverableKeyException
-import java.security.cert.CertificateException
 import java.util.concurrent.TimeUnit
-import javax.crypto.Cipher
-import javax.crypto.KeyGenerator
-import javax.crypto.NoSuchPaddingException
-import javax.crypto.SecretKey
 import javax.inject.Inject
 
 
-class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFragment.Callback {
+class PassCodeLockActivity : BaseActivity() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -94,21 +76,34 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
 
     private var currentTimePassed: Long = 0
 
-    private lateinit var keyStore: KeyStore
-
-    private lateinit var keyGenerator: KeyGenerator
-
     private var currentPin: String? = null
-
-    private var fingerPrintManager: FingerprintManager? = null
-
-    private var keyguardManager: KeyguardManager? = null
 
     private val isVerifyAccess: Boolean
         get() = binding.title == verifyAccess
 
     private val isRepeatTitle: Boolean
         get() = binding.title == repeatTitle
+
+    private val biometricPrompt: BiometricPrompt
+        get() = BiometricPrompt(this, ActivityCompat.getMainExecutor(this),
+            object : BiometricPrompt.AuthenticationCallback() {
+
+                override fun onAuthenticationSucceeded(
+                    result: BiometricPrompt.AuthenticationResult
+                ) {
+                    super.onAuthenticationSucceeded(result)
+                    (applicationContext as KyberSwapApplication).startCounter()
+                    finish()
+                }
+            })
+
+    private val promptInfo: BiometricPrompt.PromptInfo
+        get() = BiometricPrompt.PromptInfo.Builder()
+            .setTitle(getString(R.string.verify_your_identity))
+            .setDescription(getString(R.string.confirm_your_fingerpint_to_continue))
+            .setNegativeButtonText(getString(R.string.finger_print_cancel))
+            .build()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -156,6 +151,7 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
                 when (state) {
                     is SavePinState.Success -> {
                         (applicationContext as KyberSwapApplication).startCounter()
+                        cancelAuthentication()
                         finish()
                     }
                     is SavePinState.ShowError -> {
@@ -181,6 +177,7 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
                                 binding.executePendingBindings()
                             } else {
                                 (applicationContext as KyberSwapApplication).startCounter()
+                                cancelAuthentication()
                                 finish()
                             }
                         } else {
@@ -223,7 +220,9 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
                                 binding.executePendingBindings()
                             } else {
                                 binding.title = verifyAccess
-                                showFingerPrint()
+                                if (!isChangePinCode) {
+                                    showBiometricPrompt()
+                                }
                             }
                         }
                     }
@@ -234,88 +233,128 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
                 }
             }
         })
+
+        binding.imgFingerPrint.setOnClickListener {
+            showBiometricPrompt()
+        }
     }
 
-    private fun showFingerPrint() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !isChangePinCode) {
-            keyguardManager =
-                applicationContext.getSystemService(KeyguardManager::class.java) ?: return
-            fingerPrintManager =
-                applicationContext.getSystemService(FingerprintManager::class.java) ?: return
-            if (keyguardManager?.isKeyguardSecure == true &&
-                fingerPrintManager?.isHardwareDetected == true &&
-                fingerPrintManager?.hasEnrolledFingerprints() == true
-            ) {
-                setupKeyStoreAndKeyGenerator()
-                createKey(DEFAULT_KEY_NAME)
-                val cipher = setupCiphers()
-                val fragment = FingerprintAuthenticationDialogFragment()
-                fragment.setCryptoObject(FingerprintManager.CryptoObject(cipher))
-                fragment.setCallback(this)
-                if (initCipher(cipher, DEFAULT_KEY_NAME)) {
-                    fragment.show(supportFragmentManager, DIALOG_FRAGMENT_TAG)
+    private fun showBiometricPrompt() {
+        val biometricManager = BiometricManager.from(this)
+        when (biometricManager.canAuthenticate()) {
+            BiometricManager.BIOMETRIC_SUCCESS -> {
+                if (isChangePinCode) {
+                    binding.imgFingerPrint.visibility = View.GONE
+                } else {
+                    binding.imgFingerPrint.visibility = View.VISIBLE
                 }
+                biometricPrompt.authenticate(promptInfo)
+            }
+
+            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
+                binding.imgFingerPrint.visibility = View.GONE
+            }
+
+            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
+                binding.imgFingerPrint.visibility = View.GONE
+            }
+
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
+                binding.imgFingerPrint.visibility = View.GONE
             }
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun setupCiphers(): Cipher {
-        val defaultCipher: Cipher
-        try {
-            val cipherString =
-                "${KeyProperties.KEY_ALGORITHM_AES}/${KeyProperties.BLOCK_MODE_CBC}/${KeyProperties.ENCRYPTION_PADDING_PKCS7}"
-            defaultCipher = Cipher.getInstance(cipherString)
-        } catch (e: Exception) {
-            when (e) {
-                is NoSuchAlgorithmException,
-                is NoSuchPaddingException ->
-                    throw RuntimeException("Failed to get an instance of Cipher", e)
-                else -> throw e
-            }
-        }
-        return defaultCipher
+//    private fun showFingerPrint() {
+//
+//        disposable =
+//            RxPreconditions
+//                .hasBiometricSupport(this)
+//                .flatMapCompletable {
+//                    if (!it) {
+//                        binding.imgFingerPrint.visibility = View.GONE
+//                        Completable.error(BiometricNotSupported())
+//                    } else {
+//                        binding.imgFingerPrint.visibility = View.VISIBLE
+//                        RxBiometric
+//                            .title(getString(R.string.verify_your_identity))
+//                            .description(getString(R.string.confirm_your_fingerpint_to_continue))
+//                            .negativeButtonText(getString(R.string.finger_print_cancel))
+//                            .negativeButtonListener(DialogInterface.OnClickListener { _, _ ->
+//
+//                            })
+//                            .executor(ActivityCompat.getMainExecutor(this))
+//                            .build()
+//                            .authenticate(this)
+//                    }
+//
+//                }
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribeBy(
+//                    onComplete = {
+//                        Timber.e(
+//                            "onComplete"
+//                        )
+//                        (applicationContext as KyberSwapApplication).startCounter()
+//                        finish()
+//                    },
+//                    onError = {
+//                        Timber.e("onError")
+//                        it.printStackTrace()
+//                        when (it) {
+//                            is AuthenticationError -> {
+//                                Timber.e("AuthenticationError")
+//                                when (it.errorCode) {
+//                                    BIOMETRIC_ERROR_NONE_ENROLLED -> {
+//                                        binding.imgFingerPrint.visibility = View.GONE
+//                                    }
+//                                    BIOMETRIC_ERROR_CANCEL -> {
+//
+//                                    }
+//                                    else -> {
+//                                        it.errorMessage?.let { err ->
+//                                            showMessage(err.toString())
+//                                        }
+//                                    }
+//                                }
+//                            }
+//
+//                            is AuthenticationFail -> {
+//                                Timber.e("AuthenticationError")
+//                                showMessage(it.localizedMessage)
+//                            }
+//
+//                            is AuthenticationHelp -> {
+//                                Timber.e("AuthenticationError")
+//
+//                            }
+//
+//                            is BiometricNotSupported -> {
+//                                Timber.e("AuthenticationError")
+//
+//                            }
+//
+//                            else -> {
+//                                Timber.e("Error")
+//                                showMessage(it.localizedMessage)
+//                            }
+//                        }
+//                    }
+//                )
+//    }
+
+    override fun onPause() {
+        super.onPause()
+        cancelAuthentication()
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun initCipher(cipher: Cipher, keyName: String): Boolean {
-        try {
-            keyStore.load(null)
-            cipher.init(Cipher.ENCRYPT_MODE, keyStore.getKey(keyName, null) as SecretKey)
-            return true
-        } catch (e: Exception) {
-            when (e) {
-                is KeyPermanentlyInvalidatedException -> return false
-                is KeyStoreException,
-                is CertificateException,
-                is UnrecoverableKeyException,
-                is IOException,
-                is NoSuchAlgorithmException,
-                is InvalidKeyException -> throw RuntimeException("Failed to init Cipher", e)
-                else -> throw e
-            }
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun setupKeyStoreAndKeyGenerator() {
-        try {
-            keyStore = KeyStore.getInstance(ANDROID_KEY_STORE)
-        } catch (e: KeyStoreException) {
-            throw RuntimeException("Failed to get an instance of KeyStore", e)
-        }
-
-        try {
-            keyGenerator =
-                KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEY_STORE)
-        } catch (e: Exception) {
-            when (e) {
-                is NoSuchAlgorithmException,
-                is NoSuchProviderException ->
-                    throw RuntimeException("Failed to get an instance of KeyGenerator", e)
-                else -> throw e
-            }
-        }
+    private fun cancelAuthentication() {
+        biometricPrompt.cancelAuthentication()
+//        disposable?.let {
+//            if (!it.isDisposed) {
+//                it.dispose()
+//            }
+//        }
     }
 
     private fun startCounter() {
@@ -357,38 +396,6 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
         }
     }
 
-    override fun onAuthSuccess() {
-        (applicationContext as KyberSwapApplication).startCounter()
-        finish()
-    }
-
-    @TargetApi(Build.VERSION_CODES.N)
-    @RequiresApi(Build.VERSION_CODES.M)
-    override fun createKey(keyName: String, invalidatedByBiometricEnrollment: Boolean) {
-        try {
-            keyStore.load(null)
-
-            val keyProperties = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
-            val builder = KeyGenParameterSpec.Builder(keyName, keyProperties)
-                .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
-                .setUserAuthenticationRequired(true)
-                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
-                .setInvalidatedByBiometricEnrollment(invalidatedByBiometricEnrollment)
-
-            keyGenerator.run {
-                init(builder.build())
-                generateKey()
-            }
-        } catch (e: Exception) {
-            when (e) {
-                is NoSuchAlgorithmException,
-                is InvalidAlgorithmParameterException,
-                is CertificateException,
-                is IOException -> throw RuntimeException(e)
-                else -> throw e
-            }
-        }
-    }
 
     override fun onBackPressed() {
         if (!isChangePinCode) {
@@ -397,10 +404,16 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
         super.onBackPressed()
     }
 
+    private fun showMessage(message: String?) {
+        message?.let {
+            Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
+
+        }
+    }
+
+
     override fun onDestroy() {
         viewModel.onCleared()
-        fingerPrintManager = null
-        keyguardManager = null
         super.onDestroy()
     }
 
@@ -409,8 +422,6 @@ class PassCodeLockActivity : BaseActivity(), FingerprintAuthenticationDialogFrag
         const val PASS_CODE_LOCK_TYPE_VERIFY = 0
         const val PASS_CODE_LOCK_TYPE_CHANGE = 1
         private const val TYPE_PARAM = "type_param"
-        private const val DIALOG_FRAGMENT_TAG = "fingerprint_fragment"
-        private const val ANDROID_KEY_STORE = "AndroidKeyStore"
         fun newIntent(context: Context, type: Int = PASS_CODE_LOCK_TYPE_VERIFY) =
             Intent(context, PassCodeLockActivity::class.java)
                 .apply {

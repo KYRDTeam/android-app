@@ -242,7 +242,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:scaleType="centerInside"
-                        android:src="@drawable/ic_about" />
+                        android:src="@drawable/ic_play_circle_filled" />
 
                     <TextView
                         android:id="@+id/tvAbout"
@@ -274,7 +274,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:scaleType="centerInside"
-                        android:src="@drawable/ic_language" />
+                        android:src="@drawable/ic_help" />
 
                     <TextView
                         android:id="@+id/tvCommunity"

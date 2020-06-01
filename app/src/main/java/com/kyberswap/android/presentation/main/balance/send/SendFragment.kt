@@ -826,8 +826,6 @@ class SendFragment : BaseFragment() {
             }
             false
         }
-
-
     }
 
     private fun onVerifyWalletComplete() {
@@ -903,12 +901,16 @@ class SendFragment : BaseFragment() {
         get() = (activity as MainActivity).pendingTransactions.size > 0
 
     private fun getSelectedGasPrice(gas: Gas, id: Int?): String {
-        return when (id) {
+        val value = when (id) {
             R.id.rbSuperFast -> gas.superFast
             R.id.rbRegular -> gas.standard
             R.id.rbSlow -> gas.low
             else -> gas.fast
         }
+
+        return if (value.isBlank()) {
+            gas.superFast
+        } else value
     }
 
     override fun onDestroyView() {
@@ -937,7 +939,10 @@ class SendFragment : BaseFragment() {
 
                 if (!(resultContent.isContact() || resultContent.isENSAddress())) {
                     val error = getString(R.string.invalid_contact_address)
-                    showAlertWithoutIcon(title = "Invalid Address", message = error)
+                    showAlertWithoutIcon(
+                        title = getString(R.string.invalid_contact_address_title),
+                        message = error
+                    )
                     ilAddress.setErrorTextAppearance(R.style.error_appearance)
                     binding.ilAddress.error = error
                 }

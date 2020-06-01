@@ -231,7 +231,7 @@ class ChartFragment : BaseFragment() {
 
         binding.vpChart.addOnPageChangeListener(listener)
 
-        binding.vpChart.post {
+        handler.post {
             listener.onPageSelected(0)
         }
 

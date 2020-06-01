@@ -3,8 +3,6 @@ package com.kyberswap.android
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.hardware.fingerprint.FingerprintManager
-import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.Lifecycle
@@ -135,12 +133,6 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
             .setNotificationOpenedHandler(NotificationOpenedHandler())
             .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
             .init()
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            emptyAuthenticationCallback =
-                object : FingerprintManager.AuthenticationCallback() {}
-        }
-
         setupRemoteConfig()
     }
 
@@ -264,6 +256,5 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
     companion object {
         const val THRESHOLD_VALUE = 60L
         lateinit var instance: Context private set
-        var emptyAuthenticationCallback: FingerprintManager.AuthenticationCallback? = null
     }
 }

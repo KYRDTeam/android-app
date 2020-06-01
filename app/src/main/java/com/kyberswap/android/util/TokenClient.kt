@@ -223,7 +223,8 @@ class TokenClient @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun updateBalances(
+    fun
+        updateBalances(
         contractAddress: String,
         tokens: List<Token>
     ): List<Token> {
@@ -544,13 +545,13 @@ class TokenClient @Inject constructor(
             transactionAmount
         )
 
-        if (transactionResponse.hasError()) run {
+        if (transactionResponse?.hasError() == true) run {
             throw RuntimeException(
                 "Error processing transaction request: " +
-                    transactionResponse.error.message
+                    transactionResponse.error?.message
             )
         }
-        return transactionResponse.transactionHash
+        return transactionResponse?.transactionHash
     }
 
     private fun executeTradeWithHint(
@@ -585,7 +586,7 @@ class TokenClient @Inject constructor(
         if (transactionResponse?.hasError() == true) run {
             throw RuntimeException(
                 "Error processing transaction request: " +
-                    transactionResponse.error.message
+                    transactionResponse.error?.message
             )
         }
         return transactionResponse?.transactionHash
@@ -611,7 +612,7 @@ class TokenClient @Inject constructor(
                 txManager
             )
         if (allowanceAmount < tradeWithHintAmount) {
-            sendContractApproveTransferWithCondition(
+            sendContractApprovalWithCondition(
                 allowanceAmount,
                 fromToken,
                 contractAddress,
@@ -680,7 +681,7 @@ class TokenClient @Inject constructor(
         )
     }
 
-    private fun sendContractApproveTransferWithCondition(
+    private fun sendContractApprovalWithCondition(
         allowanceAmount: BigInteger,
         token: Token,
         contractAddress: String,
@@ -689,7 +690,7 @@ class TokenClient @Inject constructor(
     ) {
 
         if (allowanceAmount > BigInteger.ZERO) {
-            sendContractApproveTransfer(
+            sendContractApproval(
                 BigInteger.ZERO,
                 token,
                 contractAddress,
@@ -698,7 +699,7 @@ class TokenClient @Inject constructor(
                 transactionManager
             )
         }
-        sendContractApproveTransfer(
+        sendContractApproval(
             DEFAULT_MAX_AMOUNT,
             token,
             contractAddress,
@@ -708,7 +709,7 @@ class TokenClient @Inject constructor(
         )
     }
 
-    private fun sendContractApproveTransfer(
+    private fun sendContractApproval(
         allowanceAmount: BigInteger,
         token: Token,
         contractAddress: String,
@@ -936,22 +937,35 @@ class TokenClient @Inject constructor(
                         )
                     }
                 } else {
-                    if ((System.currentTimeMillis() / 1000 - s.timeStamp) / 60f > 10f) {
-                        transactionsList.add(s.copy(blockNumber = com.kyberswap.android.domain.model.Transaction.DEFAULT_DROPPED_BLOCK_NUMBER.toString()))
+//                    if ((System.currentTimeMillis() / 1000 - s.timeStamp) / 60f > 10f) {
+//                        transactionsList.add(s.copy(blockNumber = com.kyberswap.android.domain.model.Transaction.DEFAULT_DROPPED_BLOCK_NUMBER.toString()))
+//                    } else {
+//                        val latestTx = transactionDao.getLatestTransaction(wallet.address)
+//                        if (s.nonce.toBigDecimalOrDefaultZero() > BigDecimal.ZERO &&
+//                            latestTx?.nonce.toBigDecimalOrDefaultZero() >= s.nonce.toBigDecimalOrDefaultZero() &&
+//                            System.currentTimeMillis() / 1000 - s.timeStamp > 30
+//                        ) {
+//                            analytics.logEvent(
+//                                TX_SPEED_UP_CANCEL_DROPPED_EVENT,
+//                                Bundle().createEvent(s.displayTransaction)
+//                            )
+//                            transactionDao.delete(s)
+//                        } else {
+//                            transactionsList.add(s)
+//                        }
+//                    }
+                    val latestTx = transactionDao.getLatestTransaction(wallet.address)
+                    if (s.nonce.toBigDecimalOrDefaultZero() > BigDecimal.ZERO &&
+                        latestTx?.nonce.toBigDecimalOrDefaultZero() >= s.nonce.toBigDecimalOrDefaultZero() &&
+                        System.currentTimeMillis() / 1000 - s.timeStamp > 30
+                    ) {
+                        analytics.logEvent(
+                            TX_SPEED_UP_CANCEL_DROPPED_EVENT,
+                            Bundle().createEvent(s.displayTransaction)
+                        )
+                        transactionDao.delete(s)
                     } else {
-                        val latestTx = transactionDao.getLatestTransaction(wallet.address)
-                        if (s.nonce.toBigDecimalOrDefaultZero() > BigDecimal.ZERO &&
-                            latestTx?.nonce.toBigDecimalOrDefaultZero() >= s.nonce.toBigDecimalOrDefaultZero() &&
-                            System.currentTimeMillis() / 1000 - s.timeStamp > 30
-                        ) {
-                            analytics.logEvent(
-                                TX_SPEED_UP_CANCEL_DROPPED_EVENT,
-                                Bundle().createEvent(s.displayTransaction)
-                            )
-                            transactionDao.delete(s)
-                        } else {
-                            transactionsList.add(s)
-                        }
+                        transactionsList.add(s)
                     }
                 }
             } catch (ex: Exception) {
@@ -968,17 +982,13 @@ class TokenClient @Inject constructor(
         tx: com.kyberswap.android.domain.model.Transaction,
         isCancel: Boolean
     ): com.kyberswap.android.domain.model.Transaction {
-
         val optionalResponse = web3j.ethGetTransactionByHash(tx.hash).send().transaction
         val txResponse = optionalResponse.get()
-
-//        Timber.e("hash: " + tx.hash)
         val newHash = if (isCancel) cancel(
             wallet,
             txResponse,
             tx.gasPrice.toBigIntegerOrDefaultZero()
         ) else speedUp(wallet, txResponse, tx.gasPrice.toBigIntegerOrDefaultZero())
-//        Timber.e("newHash: " + newHash)
         val newTx =
             web3j.ethGetTransactionByHash(newHash).send().transaction.get()
 
@@ -1039,7 +1049,7 @@ class TokenClient @Inject constructor(
                 txManager
             )
         if (allowanceAmount < order.sourceAmountWithPrecision) {
-            sendContractApproveTransferWithCondition(
+            sendContractApprovalWithCondition(
                 allowanceAmount,
                 order.tokenSource,
                 contractAddress,

@@ -5,6 +5,7 @@ import com.kyberswap.android.R
 import com.kyberswap.android.data.api.chart.Data
 import com.kyberswap.android.data.api.home.ChartApi
 import com.kyberswap.android.data.api.home.SwapApi
+import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.db.RateDao
 import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.data.mapper.ChartMapper
@@ -26,6 +27,7 @@ import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
+import org.web3j.utils.Convert
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.concurrent.TimeUnit
@@ -34,7 +36,7 @@ import kotlin.math.pow
 
 class TokenDataRepository @Inject constructor(
     private val tokenClient: TokenClient,
-//    private val tokenApi: TokenApi,
+    private val tokenApi: TokenApi,
     private val api: SwapApi,
     private val chartApi: ChartApi,
     private val rateDao: RateDao,
@@ -64,7 +66,7 @@ class TokenDataRepository @Inject constructor(
 
                 val srcToEtherRateValue =
                     if ((sourceTokenToEtherRate == null ||
-                                sourceTokenToEtherRate.rate.toBigIntSafe() == BigInteger.ZERO)
+                            sourceTokenToEtherRate.rate.toBigIntSafe() == BigInteger.ZERO)
                         && (param.src == Token.ETH_SYMBOL || param.src == Token.WETH_SYMBOL)
                     ) {
                         BigDecimal.ONE
@@ -77,7 +79,7 @@ class TokenDataRepository @Inject constructor(
 
                 val etherToDestRateValue =
                     if ((etherToDestTokenRate == null ||
-                                etherToDestTokenRate.rate.toBigIntSafe() == BigInteger.ZERO)
+                            etherToDestTokenRate.rate.toBigIntSafe() == BigInteger.ZERO)
                         && (param.dest == Token.ETH_SYMBOL || param.dest == Token.WETH_SYMBOL)
                     ) {
                         BigDecimal.ONE
@@ -114,35 +116,40 @@ class TokenDataRepository @Inject constructor(
         val amount = 10.0.pow(tokenSource.tokenDecimal).times(param.srcAmount.toDouble())
             .toBigDecimal().toBigInteger()
 
-//        return tokenApi.getExpectedRate(tokenSource.tokenAddress, tokenDest.tokenAddress, amount)
-//            .map {
-//                if (it.error) {
-//                    throw RuntimeException("Can't get rate from API")
-//                } else {
-//                    listOf(it.expectedRate)
-//                }
-//            }.repeatWhen {
-//                it.delay(15, TimeUnit.SECONDS)
-//            }
-//            .retryWhen { throwable ->
-//                throwable.compose(zipWithFlatMap())
-//            }
-
-        return Flowable.fromCallable {
-            val expectedRate = tokenClient.getExpectedRate(
-                context.getString(R.string.kyber_address),
-                tokenSource,
-                tokenDest,
-                amount
-            )
-            expectedRate
-        }
-            .repeatWhen {
+        return tokenApi.getExpectedRate(tokenSource.tokenAddress, tokenDest.tokenAddress, amount)
+            .map {
+                if (it.error) {
+                    throw RuntimeException("Can not get rate from: " + context.getString(R.string.token_endpoint_url) + "expectedRate")
+                } else {
+                    listOf(
+                        Convert.fromWei(
+                            it.expectedRate.toBigDecimalOrDefaultZero(),
+                            Convert.Unit.ETHER
+                        ).toPlainString()
+                    )
+                }
+            }.repeatWhen {
                 it.delay(15, TimeUnit.SECONDS)
             }
             .retryWhen { throwable ->
                 throwable.compose(zipWithFlatMap())
             }
+
+//        return Flowable.fromCallable {
+//            val expectedRate = tokenClient.getExpectedRate(
+//                context.getString(R.string.kyber_address),
+//                tokenSource,
+//                tokenDest,
+//                amount
+//            )
+//            expectedRate
+//        }
+//            .repeatWhen {
+//                it.delay(15, TimeUnit.SECONDS)
+//            }
+//            .retryWhen { throwable ->
+//                throwable.compose(zipWithFlatMap())
+//            }
     }
 
     override fun getChartData(param: GetChartDataForTokenUseCase.Param): Single<Chart> {

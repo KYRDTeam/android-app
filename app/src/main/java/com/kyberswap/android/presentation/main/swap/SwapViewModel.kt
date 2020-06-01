@@ -308,6 +308,7 @@ class SwapViewModel @Inject constructor(
 
     fun getGasLimit(wallet: Wallet?, swap: Swap?) {
         if (wallet == null || swap == null) return
+        if (swap.sourceAmount.isEmpty()) return
         estimateGasUseCase.dispose()
         estimateGasUseCase.execute(
             Consumer {

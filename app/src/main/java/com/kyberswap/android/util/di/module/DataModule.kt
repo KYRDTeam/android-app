@@ -145,6 +145,7 @@ object DataModule {
     @JvmStatic
     fun provideTokenRepository(
         client: TokenClient,
+        tokenApi: TokenApi,
         api: SwapApi,
         chartApi: ChartApi,
         rateDao: RateDao,
@@ -155,6 +156,7 @@ object DataModule {
     ): TokenRepository =
         TokenDataRepository(
             client,
+            tokenApi,
             api,
             chartApi,
             rateDao,

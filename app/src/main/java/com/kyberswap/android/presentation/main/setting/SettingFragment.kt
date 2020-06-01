@@ -243,12 +243,14 @@ class SettingFragment : BaseFragment() {
         }
 
     private fun showBadge(unreadCount: Int) {
-        if (unreadCount > 0) {
-            tvBadge.visibility = View.VISIBLE
-            tvBadge.text = unreadCount.toString()
-        } else {
-            tvBadge.text = ""
-            tvBadge.visibility = View.GONE
+        if (activity != null && isAdded) {
+            if (unreadCount > 0) {
+                tvBadge.visibility = View.VISIBLE
+                tvBadge.text = unreadCount.toString()
+            } else {
+                tvBadge.visibility = View.GONE
+                tvBadge.text = ""
+            }
         }
     }
 

@@ -891,7 +891,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 //                                    data, true
 //                                )
 //                            }
-
                             viewModel.checkEligibleWallet(it, data)
                         }
                     }
@@ -1187,12 +1186,15 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     }
 
     private fun getSelectedGasPrice(gas: Gas, id: Int?): String {
-        return when (id) {
+        val value = when (id) {
             R.id.rbSuperFast -> gas.superFast
             R.id.rbRegular -> gas.standard
             R.id.rbSlow -> gas.low
             else -> gas.fast
         }
+        return if (value.isBlank()) {
+            gas.superFast
+        } else value
     }
 
     fun getRate() {

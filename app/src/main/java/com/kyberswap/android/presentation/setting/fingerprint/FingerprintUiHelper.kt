@@ -7,7 +7,7 @@ import android.os.CancellationSignal
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import com.kyberswap.android.KyberSwapApplication.Companion.emptyAuthenticationCallback
+//import com.kyberswap.android.KyberSwapApplication.Companion.emptyAuthenticationCallback
 import com.kyberswap.android.R
 import timber.log.Timber
 
@@ -92,15 +92,15 @@ internal constructor(
     }
 
     fun clearCallbackReference() {
-        try {
-            if (emptyAuthenticationCallback != null) {
-                fingerprintMgr?.authenticate(null, null, 0, emptyAuthenticationCallback!!, null)
-                emptyAuthenticationCallback?.onAuthenticationFailed()
-            }
-        } catch (ex: Exception) {
-            Timber.e(ex.localizedMessage)
-            ex.printStackTrace()
-        }
+//        try {
+//            if (emptyAuthenticationCallback != null) {
+//                fingerprintMgr?.authenticate(null, null, 0, emptyAuthenticationCallback!!, null)
+//                emptyAuthenticationCallback?.onAuthenticationFailed()
+//            }
+//        } catch (ex: Exception) {
+//            Timber.e(ex.localizedMessage)
+//            ex.printStackTrace()
+//        }
     }
 
     interface Callback {

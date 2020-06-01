@@ -1,6 +1,7 @@
 package com.kyberswap.android.presentation.wallet
 
 import com.kyberswap.android.domain.usecase.token.GetTokenBalanceUseCase
+import com.kyberswap.android.domain.usecase.token.GetTokensBalanceUseCase
 import com.kyberswap.android.domain.usecase.wallet.ImportWalletFromSeedUseCase
 import com.kyberswap.android.presentation.landing.ImportWalletState
 import io.reactivex.functions.Consumer
@@ -8,9 +9,10 @@ import org.consenlabs.tokencore.wallet.model.TokenException
 import javax.inject.Inject
 
 class ImportSeedViewModel @Inject constructor(
+    getBatchTokenBalanceUseCase: GetTokensBalanceUseCase,
     private val importWalletFromSeedUseCase: ImportWalletFromSeedUseCase,
     getTokenBalanceUseCase: GetTokenBalanceUseCase
-) : ImportWalletViewModel(getTokenBalanceUseCase) {
+) : ImportWalletViewModel(getBatchTokenBalanceUseCase, getTokenBalanceUseCase) {
 
 
     fun importFromSeed(seed: String, walletName: String) {

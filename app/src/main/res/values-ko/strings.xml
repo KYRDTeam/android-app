@@ -739,5 +739,8 @@
     <string name="warning_backup_private_key">⚠️NEVER share your private key with anyone (including KyberSwap). Your private key grants access to all your funds and they may get stolen.</string>
     <string name="warning_backup_mnemonic">⚠️NEVER share your mnemonic with anyone (including KyberSwap). Your mnemonic grants access to all your funds and they may get stolen.</string>
     <string name="warning_backup_keystore">⚠️NEVER share your keystore with anyone (including KyberSwap). Your keystore grants access to all your funds and they may get stolen.</string>
+    <string name="verify_your_identity">신원을 검증하세요</string>
+    <string name="confirm_your_fingerpint_to_continue">계속하기 위해 지문을 확인해주세요</string>
+    <string name="finger_print_cancel">취소</string>
 
 </resources>
