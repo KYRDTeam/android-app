@@ -14,6 +14,7 @@ import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.TransactionApi
 import com.kyberswap.android.data.api.home.UserApi
 import com.kyberswap.android.data.db.LocalLimitOrderDao
+import com.kyberswap.android.data.db.NonceDao
 import com.kyberswap.android.data.db.SendDao
 import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.db.TokenDao
@@ -37,6 +38,7 @@ import com.kyberswap.android.domain.usecase.transaction.TransactionsData
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toLongSafe
 import com.kyberswap.android.util.rx.operator.zipWithFlatMap
@@ -66,6 +68,7 @@ class TransactionDataRepository @Inject constructor(
     private val limitOrderDao: LocalLimitOrderDao,
     private val transactionFilterDao: TransactionFilterDao,
     private val userDao: UserDao,
+    private val nonceDao: NonceDao,
     private val context: Context
 ) : TransactionRepository {
 
@@ -351,6 +354,17 @@ class TransactionDataRepository @Inject constructor(
             .flatMap { latestBlockNumber ->
                 getTransactionRemote(param.wallet, max(latestBlockNumber - 10, 1))
             }.doOnNext {
+                val txs = it.filter { it.from.equals(param.wallet.address, true) }
+                if (txs.isNotEmpty()) {
+                    val latestMinedNonce = txs.first().nonce.toBigIntegerOrDefaultZero()
+                    val localNonce = nonceDao.findNonce(param.wallet.address)
+                    localNonce?.let { local ->
+                        if (latestMinedNonce >= local.nonce) {
+                            nonceDao.delete(local)
+                        }
+                    }
+                }
+
                 val latestTransaction = transactionDao.getLatestTransaction(param.wallet.address)
                 val latestBlock =
                     latestTransaction?.blockNumber?.toLongSafe() ?: 1

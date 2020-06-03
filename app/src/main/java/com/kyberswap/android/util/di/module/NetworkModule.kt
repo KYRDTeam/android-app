@@ -14,6 +14,7 @@ import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.api.home.TransactionApi
 import com.kyberswap.android.data.api.home.UserApi
 import com.kyberswap.android.data.api.home.UtilitiesApi
+import com.kyberswap.android.data.db.NonceDao
 import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.data.db.TransactionDao
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
@@ -209,11 +210,20 @@ class NetworkModule {
         @Alchemy web3j: Web3j,
         @SemiNode web3jSemiNode: Web3j,
         tokenDao: TokenDao,
+        nonceDao: NonceDao,
         transactionDao: TransactionDao,
         context: Context,
         analytics: FirebaseAnalytics
     ): TokenClient {
-        return TokenClient(web3j, web3jSemiNode, tokenDao, transactionDao, context, analytics)
+        return TokenClient(
+            web3j,
+            web3jSemiNode,
+            tokenDao,
+            transactionDao,
+            nonceDao,
+            context,
+            analytics
+        )
     }
 
     private fun <T> createApiClient(clazz: Class<T>, baseUrl: String, client: OkHttpClient): T {

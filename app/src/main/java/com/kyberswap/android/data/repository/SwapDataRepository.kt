@@ -147,7 +147,7 @@ class SwapDataRepository @Inject constructor(
                 WalletManager.storage.keystoreDir.toString() + "/wallets/" + param.wallet.walletId + ".json"
             )
 
-            val hash = tokenClient.doSwap(
+            val (hash, nonce) = tokenClient.doSwap(
                 param,
                 credentials,
                 context.getString(R.string.kyber_address)
@@ -166,6 +166,7 @@ class SwapDataRepository @Inject constructor(
                             swap.gasPrice.toBigDecimalOrDefaultZero(),
                             Convert.Unit.GWEI
                         ).toString(),
+                        nonce = nonce.toString(),
                         to = param.wallet.address,
                         tokenSource = swap.tokenSource.tokenSymbol,
                         tokenDest = swap.tokenDest.tokenSymbol,
@@ -218,7 +219,7 @@ class SwapDataRepository @Inject constructor(
                 WalletManager.storage.keystoreDir.toString() + "/wallets/" + param.wallet.walletId + ".json"
             )
 
-            val hash = tokenClient.doTransferTransaction(
+            val (hash, nonce) = tokenClient.doTransferTransaction(
                 param,
                 credentials
             )
@@ -232,6 +233,7 @@ class SwapDataRepository @Inject constructor(
                         from = param.wallet.address,
                         gas = transfer.gasLimit,
                         gasUsed = transfer.gasLimit,
+                        nonce = nonce.toString(),
                         gasPrice = Convert.toWei(
                             transfer.gasPrice.toBigDecimalOrDefaultZero(),
                             Convert.Unit.GWEI

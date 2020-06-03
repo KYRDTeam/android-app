@@ -8,6 +8,7 @@ import com.kyberswap.android.data.api.home.PromoApi
 import com.kyberswap.android.data.api.home.UserApi
 import com.kyberswap.android.data.db.ContactDao
 import com.kyberswap.android.data.db.LocalLimitOrderDao
+import com.kyberswap.android.data.db.NonceDao
 import com.kyberswap.android.data.db.SendDao
 import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.db.TokenDao
@@ -92,6 +93,7 @@ class WalletDataRepository @Inject constructor(
     private val tokenClient: TokenClient,
     private val transactionDao: TransactionDao,
     private val contactDao: ContactDao,
+    private val nonceDao: NonceDao,
     private val userApi: UserApi
 ) : WalletRepository {
 
@@ -539,10 +541,11 @@ class WalletDataRepository @Inject constructor(
                 param.wallet.walletPath
             )
 
-            val hash = tokenClient.sendTransaction(param.transaction, credentials)
+            val (hash, nonce) = tokenClient.sendTransaction(param.transaction, credentials)
 
-            hash.let {
-                val tx = decodeData(param.transaction, it, param.wallet)
+            hash?.let {
+                val tx =
+                    decodeData(param.transaction, it, param.wallet).copy(nonce = nonce.toString())
                 val currentTx = transactionDao.findTransaction(tx.hash, tx.transactionStatus)
                 if (currentTx != null) {
                     transactionDao.updateTransaction(tx)
@@ -726,6 +729,7 @@ class WalletDataRepository @Inject constructor(
         currentLimitOrder?.let {
             limitOrderDao.delete(currentLimitOrder)
         }
+        nonceDao.deleteNonces(wallet.address)
     }
 
     override fun saveWallet(param: SaveWalletUseCase.Param): Completable {

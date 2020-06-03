@@ -6,9 +6,11 @@ import android.util.Base64
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
+import com.kyberswap.android.data.db.NonceDao
 import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.data.db.TransactionDao
 import com.kyberswap.android.domain.model.LocalLimitOrder
+import com.kyberswap.android.domain.model.Nonce
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
@@ -73,6 +75,7 @@ class TokenClient @Inject constructor(
     private val web3jSemiNode: Web3j,
     private val tokenDao: TokenDao,
     private val transactionDao: TransactionDao,
+    private val nonceDao: NonceDao,
     private val context: Context,
     private val analytics: FirebaseAnalytics
 ) {
@@ -223,8 +226,7 @@ class TokenClient @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun
-        updateBalances(
+    fun updateBalances(
         contractAddress: String,
         tokens: List<Token>
     ): List<Token> {
@@ -378,13 +380,6 @@ class TokenClient @Inject constructor(
     }
 
     @Throws(IOException::class)
-    private fun getNonce(addr: String): BigInteger {
-        val getNonce =
-            web3j.ethGetTransactionCount(addr, DefaultBlockParameterName.PENDING).send()
-        return getNonce.transactionCount
-    }
-
-    @Throws(IOException::class)
     private fun tradeWithHint(
         fromAddress: String,
         toAddress: String,
@@ -414,7 +409,7 @@ class TokenClient @Inject constructor(
         param: SwapTokenUseCase.Param,
         credentials: Credentials,
         contractAddress: String
-    ): String? {
+    ): Pair<String?, BigInteger> {
         val gasPrice = Convert.toWei(
             param.swap.gasPrice.toBigDecimalOrDefaultZero(),
             Convert.Unit.GWEI
@@ -480,16 +475,25 @@ class TokenClient @Inject constructor(
     fun sendTransaction(
         wcTransaction: WCEthereumTransaction,
         credentials: Credentials
-    ): String {
+    ): Pair<String?, BigInteger> {
 
         val txManager = RawTransactionManager(web3j, credentials)
-        val transactionResponse = txManager.sendTransaction(
-            wcTransaction.gasPrice.toBigIntSafe(),
-            wcTransaction.gasLimit.toBigIntSafe(),
-            wcTransaction.to,
-            wcTransaction.data,
-            wcTransaction.value.toBigIntSafe()
+
+        val walletAddress = credentials.address
+
+        val localNonce = getTransactionNonce(walletAddress)
+
+        val transactionResponse = txManager.signAndSend(
+            RawTransaction.createTransaction(
+                localNonce,
+                wcTransaction.gasPrice.toBigIntSafe(),
+                wcTransaction.gasLimit.toBigIntSafe(),
+                wcTransaction.to,
+                wcTransaction.value.toBigIntSafe(),
+                wcTransaction.data
+            )
         )
+
 
         if (transactionResponse.hasError()) run {
             throw RuntimeException(
@@ -497,13 +501,17 @@ class TokenClient @Inject constructor(
                     transactionResponse.error.message
             )
         }
-        return transactionResponse.transactionHash
+
+        val hash = transactionResponse?.transactionHash
+        saveLocalNonce(walletAddress, localNonce, hash)
+
+        return Pair(hash, localNonce)
     }
 
     @Throws(IOException::class)
     fun doTransferTransaction(
         param: TransferTokenUseCase.Param, credentials: Credentials
-    ): String? {
+    ): Pair<String?, BigInteger> {
         val gasPrice = Convert.toWei(
             param.send.gasPrice.toBigDecimalOrDefaultZero(),
             Convert.Unit.GWEI
@@ -530,20 +538,57 @@ class TokenClient @Inject constructor(
         val transactionAmount = if (isEth) amount else BigInteger.ZERO
 
         val txManager = RawTransactionManager(web3j, credentials)
+        val walletAddress = credentials.address
+        val localNonce = getTransactionNonce(walletAddress)
+//        val transactionResponse = txManager.signAndSend(
+//            RawTransaction.createTransaction(
+//                localNonce,
+//                gasPrice,
+//                gasLimit,
+//                contractAddress,
+//                transactionAmount,
+//                FunctionEncoder.encode(
+//                    tradeWithHint(
+//                        fromAddress,
+//                        toAddress,
+//                        tradeWithHintAmount,
+//                        minConversionRate,
+//                        walletAddress
+//                    )
+//                )
+//            )
+//        )
 
-        val transactionResponse = txManager.sendTransaction(
-            gasPrice,
-            gasLimit,
-            if (isEth) param.send.contact.address else param.send.tokenSource.tokenAddress,
-            if (isEth) "" else
-                FunctionEncoder.encode(
-                    transfer(
-                        param.send.contact.address,
-                        amount.toString()
+        val transactionResponse = txManager.signAndSend(
+            RawTransaction.createTransaction(
+                localNonce,
+                gasPrice,
+                gasLimit,
+                if (isEth) param.send.contact.address else param.send.tokenSource.tokenAddress,
+                transactionAmount,
+                if (isEth) "" else
+                    FunctionEncoder.encode(
+                        transfer(
+                            param.send.contact.address,
+                            amount.toString()
+                        )
                     )
-                ),
-            transactionAmount
+            )
         )
+
+//        val transactionResponse = txManager.sendTransaction(
+//            gasPrice,
+//            gasLimit,
+//            if (isEth) param.send.contact.address else param.send.tokenSource.tokenAddress,
+//            if (isEth) "" else
+//                FunctionEncoder.encode(
+//                    transfer(
+//                        param.send.contact.address,
+//                        amount.toString()
+//                    )
+//                ),
+//            transactionAmount
+//        )
 
         if (transactionResponse?.hasError() == true) run {
             throw RuntimeException(
@@ -551,7 +596,16 @@ class TokenClient @Inject constructor(
                     transactionResponse.error?.message
             )
         }
-        return transactionResponse?.transactionHash
+
+        val hash = transactionResponse?.transactionHash
+        saveLocalNonce(walletAddress, localNonce, hash)
+
+        return Pair(hash, localNonce)
+    }
+
+    @Synchronized
+    private fun getTransactionNonce(address: String): BigInteger {
+        return getMinedNonce(address).max(getLocalNonce(address))
     }
 
     private fun executeTradeWithHint(
@@ -564,24 +618,44 @@ class TokenClient @Inject constructor(
         gasLimit: BigInteger,
         contractAddress: String,
         walletAddress: String,
-        txManager: TransactionManager
+        txManager: RawTransactionManager
 
-    ): String? {
-        val transactionResponse = txManager.sendTransaction(
-            gasPrice,
-            gasLimit,
-            contractAddress,
-            FunctionEncoder.encode(
-                tradeWithHint(
-                    fromAddress,
-                    toAddress,
-                    tradeWithHintAmount,
-                    minConversionRate,
-                    walletAddress
+    ): Pair<String?, BigInteger> {
+        val localNonce = getTransactionNonce(walletAddress)
+        val transactionResponse = txManager.signAndSend(
+            RawTransaction.createTransaction(
+                localNonce,
+                gasPrice,
+                gasLimit,
+                contractAddress,
+                transactionAmount,
+                FunctionEncoder.encode(
+                    tradeWithHint(
+                        fromAddress,
+                        toAddress,
+                        tradeWithHintAmount,
+                        minConversionRate,
+                        walletAddress
+                    )
                 )
-            ),
-            transactionAmount
+            )
         )
+
+//        val transactionResponse = txManager.sendTransaction(
+//            gasPrice,
+//            gasLimit,
+//            contractAddress,
+//            FunctionEncoder.encode(
+//                tradeWithHint(
+//                    fromAddress,
+//                    toAddress,
+//                    tradeWithHintAmount,
+//                    minConversionRate,
+//                    walletAddress
+//                )
+//            ),
+//            transactionAmount
+//        )
 
         if (transactionResponse?.hasError() == true) run {
             throw RuntimeException(
@@ -589,7 +663,33 @@ class TokenClient @Inject constructor(
                     transactionResponse.error?.message
             )
         }
-        return transactionResponse?.transactionHash
+
+        val hash = transactionResponse?.transactionHash
+
+        // Insert into local nonce
+        saveLocalNonce(walletAddress, localNonce, hash)
+        return Pair(hash, localNonce)
+    }
+
+    private fun saveLocalNonce(walletAddress: String, localNonce: BigInteger, hash: String?) {
+        // Insert into local nonce
+        nonceDao.insertNonce(Nonce(walletAddress = walletAddress, nonce = localNonce, hash = hash))
+    }
+
+    @Synchronized
+    @Throws(IOException::class)
+    private fun getMinedNonce(walletAddress: String): BigInteger {
+        val ethGetTransactionCount = web3j.ethGetTransactionCount(
+            walletAddress, DefaultBlockParameterName.LATEST
+        ).send()
+        return ethGetTransactionCount.transactionCount ?: BigInteger.ZERO
+    }
+
+    @Synchronized
+    @Throws(IOException::class)
+    private fun getLocalNonce(walletAddress: String): BigInteger {
+        val currentNonce = nonceDao.findNonce(walletAddress)?.nonce ?: BigInteger.ZERO
+        return currentNonce.plus(BigInteger.ONE)
     }
 
     private fun handleSwapERC20Token(
@@ -602,8 +702,8 @@ class TokenClient @Inject constructor(
         toToken: Token,
         walletAddress: String,
         contractAddress: String,
-        txManager: TransactionManager
-    ): String? {
+        txManager: RawTransactionManager
+    ): Pair<String?, BigInteger> {
         val allowanceAmount =
             getContractAllowanceAmount(
                 walletAddress,
@@ -617,7 +717,8 @@ class TokenClient @Inject constructor(
                 fromToken,
                 contractAddress,
                 gasPrice,
-                txManager
+                txManager,
+                walletAddress
             )
         }
         return executeTradeWithHint(
@@ -686,7 +787,8 @@ class TokenClient @Inject constructor(
         token: Token,
         contractAddress: String,
         gasPriceWei: BigInteger,
-        transactionManager: TransactionManager
+        transactionManager: RawTransactionManager,
+        walletAddress: String
     ) {
 
         if (allowanceAmount > BigInteger.ZERO) {
@@ -696,7 +798,8 @@ class TokenClient @Inject constructor(
                 contractAddress,
                 gasPriceWei,
                 if (token.gasApprove > BigDecimal.ZERO) token.gasApprove.toBigInteger() else Token.APPROVE_TOKEN_GAS_LIMIT_DEFAULT.toBigInteger(),
-                transactionManager
+                transactionManager,
+                walletAddress
             )
         }
         sendContractApproval(
@@ -705,7 +808,8 @@ class TokenClient @Inject constructor(
             contractAddress,
             gasPriceWei,
             if (token.gasApprove > BigDecimal.ZERO) token.gasApprove.toBigInteger() else Token.APPROVE_TOKEN_GAS_LIMIT_DEFAULT.toBigInteger(),
-            transactionManager
+            transactionManager,
+            walletAddress
         )
     }
 
@@ -715,19 +819,38 @@ class TokenClient @Inject constructor(
         contractAddress: String,
         gasPriceWei: BigInteger,
         gasLimit: BigInteger,
-        transactionManager: TransactionManager
+        transactionManager: RawTransactionManager,
+        walletAddress: String
     ) {
         val function = approve(contractAddress, allowanceAmount)
         val encodedFunction = FunctionEncoder.encode(function)
 
-        val transactionResponse = transactionManager.sendTransaction(
-            gasPriceWei, gasLimit, token.tokenAddress,
-            encodedFunction, BigInteger.ZERO
+//        val transactionResponse = transactionManager.sendTransaction(
+//            gasPriceWei,
+//            gasLimit,
+//            token.tokenAddress,
+//            encodedFunction,
+//            BigInteger.ZERO
+//        )
+
+        val localNonce = getTransactionNonce(walletAddress)
+
+        val transactionResponse = transactionManager.signAndSend(
+            RawTransaction.createTransaction(
+                localNonce,
+                gasPriceWei,
+                gasLimit,
+                token.tokenAddress,
+                BigInteger.ZERO,
+                encodedFunction
+            )
         )
 
         if (transactionResponse.hasError()) {
             throw RuntimeException("Error processing transaction request: " + transactionResponse.error.message)
         }
+        val hash = transactionResponse.transactionHash
+        saveLocalNonce(walletAddress, localNonce, hash)
     }
 
     @Throws(Exception::class)
@@ -1057,7 +1180,8 @@ class TokenClient @Inject constructor(
                     order.gasPrice.toBigDecimalOrDefaultZero(),
                     Convert.Unit.GWEI
                 ).toBigInteger(),
-                txManager
+                txManager,
+                credentials.address
             )
         }
 
