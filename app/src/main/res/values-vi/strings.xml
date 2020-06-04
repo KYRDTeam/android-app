@@ -742,5 +742,6 @@
     <string name="verify_your_identity">Xác nhận danh tính</string>
     <string name="confirm_your_fingerpint_to_continue">Xác nhận vân tay của bạn để tiếp tục</string>
     <string name="finger_print_cancel">Hủy</string>
+    <string name="replacement_underpriced">You are having a pending transaction with the same nonce and higher gas price than this swap. Please wait for the pending transaction completed, or please do this swap again with higher gas price than pending ones.</string>
 
 </resources>

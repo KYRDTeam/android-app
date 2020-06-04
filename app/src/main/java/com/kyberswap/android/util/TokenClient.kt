@@ -513,10 +513,17 @@ class TokenClient @Inject constructor(
             transactionResponseInfuraNode?.hasError() == true &&
             transactionResponseSemiNode?.hasError() == true
         ) run {
-            throw RuntimeException(
-                "Error processing transaction request: " +
-                    transactionResponseAlchemyNode.error?.message
-            )
+
+            if (transactionResponseAlchemyNode.error?.code == -32000) {
+                throw RuntimeException(
+                    context.getString(R.string.replacement_underpriced)
+                )
+            } else {
+                throw RuntimeException(
+                    "Error processing transaction request: " +
+                        transactionResponseAlchemyNode.error?.message
+                )
+            }
         }
 
         val hash = transactionResponseAlchemyNode?.transactionHash
@@ -618,10 +625,16 @@ class TokenClient @Inject constructor(
             transactionResponseInfuraNode?.hasError() == true &&
             transactionResponseSemiNode?.hasError() == true
         ) run {
-            throw RuntimeException(
-                "Error processing transaction request: " +
-                    transactionResponseAlchemyNode.error?.message
-            )
+            if (transactionResponseAlchemyNode.error?.code == -32000) {
+                throw RuntimeException(
+                    context.getString(R.string.replacement_underpriced)
+                )
+            } else {
+                throw RuntimeException(
+                    "Error processing transaction request: " +
+                        transactionResponseAlchemyNode.error?.message
+                )
+            }
         }
 
         val hash = transactionResponseAlchemyNode?.transactionHash
@@ -696,10 +709,16 @@ class TokenClient @Inject constructor(
             transactionResponseInfuraNode?.hasError() == true &&
             transactionResponseSemiNode?.hasError() == true
         ) run {
-            throw RuntimeException(
-                "Error processing transaction request: " +
-                    transactionResponseAlchemyNode.error?.message
-            )
+            if (transactionResponseAlchemyNode.error?.code == -32000) {
+                throw RuntimeException(
+                    context.getString(R.string.replacement_underpriced)
+                )
+            } else {
+                throw RuntimeException(
+                    "Error processing transaction request: " +
+                        transactionResponseAlchemyNode.error?.message
+                )
+            }
         }
 
         val hash = transactionResponseAlchemyNode?.transactionHash
@@ -908,10 +927,16 @@ class TokenClient @Inject constructor(
             transactionResponseInfuraNode?.hasError() == true &&
             transactionResponseSemiNode?.hasError() == true
         ) run {
-            throw RuntimeException(
-                "Error processing transaction request: " +
-                    transactionResponseAlchemyNode.error?.message
-            )
+            if (transactionResponseAlchemyNode.error?.code == -32000) {
+                throw RuntimeException(
+                    context.getString(R.string.replacement_underpriced)
+                )
+            } else {
+                throw RuntimeException(
+                    "Error processing transaction request: " +
+                        transactionResponseAlchemyNode.error?.message
+                )
+            }
         }
         val hash = transactionResponseAlchemyNode?.transactionHash
             ?: transactionResponseInfuraNode?.transactionHash
@@ -1035,10 +1060,16 @@ class TokenClient @Inject constructor(
                         transactionResponseInfuraNode?.hasError() == true &&
                         transactionResponseSemiNode?.hasError() == true
                     ) run {
-                        throw RuntimeException(
-                            "Error processing transaction request: " +
-                                transactionResponseAlchemyNode.error?.message
-                        )
+                        if (transactionResponseAlchemyNode.error?.code == -32000) {
+                            throw RuntimeException(
+                                context.getString(R.string.replacement_underpriced)
+                            )
+                        } else {
+                            throw RuntimeException(
+                                "Error processing transaction request: " +
+                                    transactionResponseAlchemyNode.error?.message
+                            )
+                        }
                     }
 
                     return transactionResponseAlchemyNode?.transactionHash
@@ -1082,10 +1113,16 @@ class TokenClient @Inject constructor(
                         transactionResponseInfuraNode?.hasError() == true &&
                         transactionResponseSemiNode?.hasError() == true
                     ) run {
-                        throw RuntimeException(
-                            "Error processing transaction request: " +
-                                transactionResponseAlchemyNode.error?.message
-                        )
+                        if (transactionResponseAlchemyNode.error?.code == -32000) {
+                            throw RuntimeException(
+                                context.getString(R.string.replacement_underpriced)
+                            )
+                        } else {
+                            throw RuntimeException(
+                                "Error processing transaction request: " +
+                                    transactionResponseAlchemyNode.error?.message
+                            )
+                        }
                     }
 
                     return transactionResponseAlchemyNode?.transactionHash

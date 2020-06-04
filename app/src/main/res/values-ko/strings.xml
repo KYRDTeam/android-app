@@ -742,5 +742,6 @@
     <string name="verify_your_identity">신원을 검증하세요</string>
     <string name="confirm_your_fingerpint_to_continue">계속하기 위해 지문을 확인해주세요</string>
     <string name="finger_print_cancel">취소</string>
+    <string name="replacement_underpriced">You are having a pending transaction with the same nonce and higher gas price than this swap. Please wait for the pending transaction completed, or please do this swap again with higher gas price than pending ones.</string>
 
 </resources>

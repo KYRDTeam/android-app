@@ -59,7 +59,7 @@ class AlertWithoutIconActivity : BaseActivity() {
         private const val ALERT_CONTENT = "alert_content"
         private const val ALERT_TITLE = "alert_title"
         private const val DISPLAY_TIME_SECONDS = "display_time_seconds"
-        private const val DEFAULT_DISPLAY_TIME = 3
+        private const val DEFAULT_DISPLAY_TIME = 10
 
         fun newIntent(
             context: Context,

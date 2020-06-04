@@ -743,5 +743,6 @@
     <string name="verify_your_identity">验证您的身份</string>
     <string name="confirm_your_fingerpint_to_continue">请确认指纹以继续</string>
     <string name="finger_print_cancel">取消</string>
+    <string name="replacement_underpriced">You are having a pending transaction with the same nonce and higher gas price than this swap. Please wait for the pending transaction completed, or please do this swap again with higher gas price than pending ones.</string>
 
 </resources>
