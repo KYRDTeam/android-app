@@ -516,7 +516,7 @@ class TokenClient @Inject constructor(
 
             if (transactionResponseAlchemyNode.error?.code == -32000) {
                 throw RuntimeException(
-                    context.getString(R.string.replacement_underpriced)
+                    context.getString(R.string.error_underpriced_wallet_connect)
                 )
             } else {
                 throw RuntimeException(
@@ -562,32 +562,12 @@ class TokenClient @Inject constructor(
         ).toBigInteger()
 
         val transactionAmount = if (isEth) amount else BigInteger.ZERO
-//        val txManager = RawTransactionManager(web3jAlchemyNode, credentials)
         val txManagerWithAlchemyNode = RawTransactionManager(web3jAlchemyNode, credentials)
         val txManagerWithInfuraNode = RawTransactionManager(web3jInfuraNode, credentials)
         val txManagerWithSemiNode = RawTransactionManager(web3jSemiNode, credentials)
 
         val walletAddress = credentials.address
         val localNonce = getTransactionNonce(walletAddress)
-//        val transactionResponse = txManager.signAndSend(
-//            RawTransaction.createTransaction(
-//                localNonce,
-//                gasPrice,
-//                gasLimit,
-//                contractAddress,
-//                transactionAmount,
-//                FunctionEncoder.encode(
-//                    tradeWithHint(
-//                        fromAddress,
-//                        toAddress,
-//                        tradeWithHintAmount,
-//                        minConversionRate,
-//                        walletAddress
-//                    )
-//                )
-//            )
-//        )
-
         val tx = RawTransaction.createTransaction(
             localNonce,
             gasPrice,
@@ -607,27 +587,13 @@ class TokenClient @Inject constructor(
         val transactionResponseInfuraNode = txManagerWithInfuraNode.signAndSend(tx)
         val transactionResponseSemiNode = txManagerWithSemiNode.signAndSend(tx)
 
-//        val transactionResponse = txManager.sendTransaction(
-//            gasPrice,
-//            gasLimit,
-//            if (isEth) param.send.contact.address else param.send.tokenSource.tokenAddress,
-//            if (isEth) "" else
-//                FunctionEncoder.encode(
-//                    transfer(
-//                        param.send.contact.address,
-//                        amount.toString()
-//                    )
-//                ),
-//            transactionAmount
-//        )
-
         if (transactionResponseAlchemyNode?.hasError() == true &&
             transactionResponseInfuraNode?.hasError() == true &&
             transactionResponseSemiNode?.hasError() == true
         ) run {
             if (transactionResponseAlchemyNode.error?.code == -32000) {
                 throw RuntimeException(
-                    context.getString(R.string.replacement_underpriced)
+                    context.getString(R.string.error_underpriced_transfer)
                 )
             } else {
                 throw RuntimeException(
@@ -688,22 +654,6 @@ class TokenClient @Inject constructor(
         val transactionResponseAlchemyNode = txManagerWithAlchemyNode.signAndSend(tx)
         val transactionResponseInfuraNode = txManagerWithInfuraNode.signAndSend(tx)
         val transactionResponseSemiNode = txManagerWithSemiNode.signAndSend(tx)
-
-//        val transactionResponse = txManager.sendTransaction(
-//            gasPrice,
-//            gasLimit,
-//            contractAddress,
-//            FunctionEncoder.encode(
-//                tradeWithHint(
-//                    fromAddress,
-//                    toAddress,
-//                    tradeWithHintAmount,
-//                    minConversionRate,
-//                    walletAddress
-//                )
-//            ),
-//            transactionAmount
-//        )
 
         if (transactionResponseAlchemyNode?.hasError() == true &&
             transactionResponseInfuraNode?.hasError() == true &&
@@ -929,7 +879,7 @@ class TokenClient @Inject constructor(
         ) run {
             if (transactionResponseAlchemyNode.error?.code == -32000) {
                 throw RuntimeException(
-                    context.getString(R.string.replacement_underpriced)
+                    context.getString(R.string.erorr_underpriced_transaction)
                 )
             } else {
                 throw RuntimeException(
@@ -1051,11 +1001,6 @@ class TokenClient @Inject constructor(
                     val transactionResponseSemiNode =
                         txManagerWithSemiNode.signAndSend(rawTransaction)
 
-//                    val transactionResponse =
-//                        RawTransactionManager(web3jAlchemyNode, credentials).signAndSend(
-//                            rawTransaction
-//                        )
-
                     if (transactionResponseAlchemyNode?.hasError() == true &&
                         transactionResponseInfuraNode?.hasError() == true &&
                         transactionResponseSemiNode?.hasError() == true
@@ -1115,7 +1060,7 @@ class TokenClient @Inject constructor(
                     ) run {
                         if (transactionResponseAlchemyNode.error?.code == -32000) {
                             throw RuntimeException(
-                                context.getString(R.string.replacement_underpriced)
+                                context.getString(R.string.error_underpriced_transfer)
                             )
                         } else {
                             throw RuntimeException(

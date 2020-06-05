@@ -737,7 +737,10 @@
     <string name="verify_your_identity">Verify your identity</string>
     <string name="confirm_your_fingerpint_to_continue">Confirm your fingerprint to continue</string>
     <string name="finger_print_cancel">CANCEL</string>
-    <string name="replacement_underpriced">You are having a pending transaction with the same nonce and higher gas price than this swap. Please wait for the pending transaction completed, or please do this swap again with higher gas price than pending ones.</string>
+    <string name="replacement_underpriced">You are having a pending transaction with the same nonce and higher gas price than this swap. Please wait for it completed, or please do this swap again with higher gas price than pending ones.</string>
+    <string name="error_underpriced_wallet_connect">You are having a pending transaction with the same nonce and higher gas price than this swap/transfer. Please wait for it completed, or please do this swap/transfer again with higher gas price than pending ones.</string>
+    <string name="error_underpriced_transfer">You are having a pending transaction with the same nonce and higher gas price than this transfer. Please wait for it completed, or please do this transfer again with higher gas price than pending ones.</string>
+    <string name="erorr_underpriced_transaction">You are having a pending transaction with the same nonce and higher gas price than this transaction. Please wait for it completed, or please do this transaction again with higher gas price than pending ones.</string>
 
 
     <string-array name="proof_address">

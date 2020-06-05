@@ -34,7 +34,7 @@ class AlertActivity : BaseActivity() {
         }
         handler.postDelayed({
             onBackPressed()
-        }, 3000)
+        }, 8000)
     }
 
     override fun onDestroy() {
