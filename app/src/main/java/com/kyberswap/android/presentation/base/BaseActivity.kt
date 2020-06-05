@@ -77,14 +77,23 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         startActivityForResult(intent, SHOW_ALERT)
     }
 
-    fun showAlert(message: String, resourceIcon: Int, listener: () -> Unit = {}) {
+    fun showAlert(
+        message: String,
+        resourceIcon: Int,
+        listener: () -> Unit = {},
+        displayTime: Int = 3
+    ) {
         this.alertListener = listener
-        val intent = AlertActivity.newIntent(this, message, resourceIcon)
+        val intent = AlertActivity.newIntent(this, message, resourceIcon, displayTime)
         startActivityForResult(intent, SHOW_ALERT)
     }
 
     fun showError(message: String, listener: () -> Unit = {}) {
         showAlert(message, R.drawable.ic_info_error, listener)
+    }
+
+    fun showErrorWithTime(message: String, time: Int, listener: () -> Unit = {}) {
+        showAlert(message, R.drawable.ic_info_error, listener, time)
     }
 
     fun showNetworkUnAvailable() {

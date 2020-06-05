@@ -24,6 +24,7 @@ import javax.inject.Inject
 class PromoSwapConfirmActivity : BaseActivity(), KeystoreStorage {
     @Inject
     lateinit var navigator: Navigator
+
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -87,8 +88,8 @@ class PromoSwapConfirmActivity : BaseActivity(), KeystoreStorage {
                         finish()
                     }
                     is SwapTokenTransactionState.ShowError -> {
-                        showError(
-                            state.message ?: getString(R.string.something_wrong)
+                        showErrorWithTime(
+                            state.message ?: getString(R.string.something_wrong), 10
                         )
                     }
                 }

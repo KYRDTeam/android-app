@@ -898,7 +898,7 @@ class SendFragment : BaseFragment() {
     }
 
     private val hasPendingTransaction: Boolean
-        get() = (activity as MainActivity).pendingTransactions.size > 0
+        get() = (activity as MainActivity).pendingTransactions.any { !it.isCancel }
 
     private fun getSelectedGasPrice(gas: Gas, id: Int?): String {
         val value = when (id) {

@@ -39,6 +39,7 @@ import javax.inject.Inject
 class SendConfirmActivity : BaseActivity(), KeystoreStorage {
     @Inject
     lateinit var navigator: Navigator
+
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -112,8 +113,8 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
                                 TRANSFER_BROADCAST_ERROR, state.message
                             )
                         )
-                        showError(
-                            state.message ?: getString(R.string.something_wrong)
+                        showErrorWithTime(
+                            state.message ?: getString(R.string.something_wrong), 10
                         ) {
                             finish()
                         }

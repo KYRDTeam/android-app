@@ -32,9 +32,11 @@ class AlertActivity : BaseActivity() {
         binding.flContainer.setOnClickListener {
             onBackPressed()
         }
+
+        val displayTime = intent.getIntExtra(ALERT_DISPLAY_TIME, 3)
         handler.postDelayed({
             onBackPressed()
-        }, 8000)
+        }, displayTime * 1000L)
     }
 
     override fun onDestroy() {
@@ -56,14 +58,17 @@ class AlertActivity : BaseActivity() {
     companion object {
         private const val ALERT_CONTENT = "alert_content"
         private const val ALERT_ICON = "alert_icon"
+        private const val ALERT_DISPLAY_TIME = "alert_display_time"
         fun newIntent(
             context: Context,
             content: String,
-            resourceId: Int = 0
+            resourceId: Int = 0,
+            displayTime: Int = 3
         ) =
             Intent(context, AlertActivity::class.java).apply {
                 putExtra(ALERT_CONTENT, content)
                 putExtra(ALERT_ICON, resourceId)
+                putExtra(ALERT_DISPLAY_TIME, displayTime)
             }
     }
 }

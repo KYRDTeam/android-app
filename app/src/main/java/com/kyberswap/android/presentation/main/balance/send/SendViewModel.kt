@@ -17,6 +17,7 @@ import com.kyberswap.android.domain.usecase.wallet.CheckEligibleWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.presentation.common.ADDITIONAL_SEND_GAS_LIMIT
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.common.MIN_SUPPORT_AMOUNT
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfer
 import com.kyberswap.android.presentation.common.specialGasLimitDefault
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
@@ -211,6 +212,8 @@ class SendViewModel @Inject constructor(
 
     fun getGasLimit(send: Send?, wallet: Wallet?) {
         if (send == null || wallet == null) return
+        if (send.tokenSource.isETH && send.contact.address.isEmpty()) return
+        if (send.ethToken.currentBalance <= MIN_SUPPORT_AMOUNT) return
         estimateTransferGasUseCase.dispose()
         estimateTransferGasUseCase.execute(
             Consumer {
