@@ -85,8 +85,8 @@ class PromoPaymentConfirmActivity : BaseActivity(), KeystoreStorage {
                         finish()
                     }
                     is SwapTokenTransactionState.ShowError -> {
-                        showError(
-                            state.message ?: getString(R.string.something_wrong)
+                        showErrorWithTime(
+                            state.message ?: getString(R.string.something_wrong), 10
                         )
                     }
                 }

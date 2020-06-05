@@ -7,6 +7,7 @@ import com.kyberswap.android.data.db.ContactDao
 import com.kyberswap.android.data.db.LimitOrderDao
 import com.kyberswap.android.data.db.LocalLimitOrderDao
 import com.kyberswap.android.data.db.MarketDao
+import com.kyberswap.android.data.db.NonceDao
 import com.kyberswap.android.data.db.OrderFilterDao
 import com.kyberswap.android.data.db.PassCodeDao
 import com.kyberswap.android.data.db.PendingBalancesDao
@@ -120,6 +121,12 @@ class DatabaseModule {
     @Singleton
     fun providePassCodeDao(appDatabase: AppDatabase): PassCodeDao {
         return appDatabase.passCodeDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideNonceDao(appDatabase: AppDatabase): NonceDao {
+        return appDatabase.nonceDao()
     }
 
     @Provides

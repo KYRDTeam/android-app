@@ -12,6 +12,7 @@ import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.model.LocalLimitOrder
 import com.kyberswap.android.domain.model.MarketItem
+import com.kyberswap.android.domain.model.Nonce
 import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.domain.model.OrderFilter
 import com.kyberswap.android.domain.model.PassCode
@@ -50,9 +51,10 @@ import com.kyberswap.android.domain.model.Wallet
         TransactionFilter::class,
         RatingInfo::class,
         MarketItem::class,
-        SelectedMarketItem::class
+        SelectedMarketItem::class,
+        Nonce::class
     ],
-    version = 11
+    version = 12
 )
 @TypeConverters(
     DataTypeConverter::class,
@@ -86,6 +88,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun ratingDao(): RatingDao
     abstract fun marketDao(): MarketDao
     abstract fun selectedMarketDao(): SelectedMarketDao
+    abstract fun nonceDao(): NonceDao
 
     companion object {
         @Volatile
@@ -264,6 +267,17 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        @VisibleForTesting
+        internal val MIGRATION_11_12: Migration = object : Migration(11, 12) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `nonces` (`walletAddress` TEXT NOT NULL, `nonce` TEXT NOT NULL, `hash` TEXT, PRIMARY KEY(`walletAddress`))
+                """.trimIndent()
+                )
+            }
+        }
+
         private fun buildDatabase(context: Context) =
             Room.databaseBuilder(
                 context.applicationContext,
@@ -279,7 +293,8 @@ abstract class AppDatabase : RoomDatabase() {
                     MIGRATION_7_8,
                     MIGRATION_8_9,
                     MIGRATION_9_10,
-                    MIGRATION_10_11
+                    MIGRATION_10_11,
+                    MIGRATION_11_12
                 )
 //                .fallbackToDestructiveMigration()
 //                .allowMainThreadQueries()

@@ -15,6 +15,7 @@ import com.kyberswap.android.data.db.ContactDao
 import com.kyberswap.android.data.db.LimitOrderDao
 import com.kyberswap.android.data.db.LocalLimitOrderDao
 import com.kyberswap.android.data.db.MarketDao
+import com.kyberswap.android.data.db.NonceDao
 import com.kyberswap.android.data.db.OrderFilterDao
 import com.kyberswap.android.data.db.PassCodeDao
 import com.kyberswap.android.data.db.PendingBalancesDao
@@ -90,6 +91,7 @@ object DataModule {
         tokenClient: TokenClient,
         transactionDao: TransactionDao,
         contactDao: ContactDao,
+        nonceDao: NonceDao,
         userApi: UserApi
     ): WalletRepository =
         WalletDataRepository(
@@ -106,6 +108,7 @@ object DataModule {
             tokenClient,
             transactionDao,
             contactDao,
+            nonceDao,
             userApi
         )
 
@@ -235,6 +238,7 @@ object DataModule {
         transactionFilterDao: TransactionFilterDao,
         userApi: UserApi,
         userDao: UserDao,
+        nonceDao: NonceDao,
         context: Context
     ): TransactionRepository =
         TransactionDataRepository(
@@ -249,6 +253,7 @@ object DataModule {
             limitOrderDao,
             transactionFilterDao,
             userDao,
+            nonceDao,
             context
         )
 

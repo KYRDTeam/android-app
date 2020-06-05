@@ -14,12 +14,14 @@ import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.api.home.TransactionApi
 import com.kyberswap.android.data.api.home.UserApi
 import com.kyberswap.android.data.api.home.UtilitiesApi
+import com.kyberswap.android.data.db.NonceDao
 import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.data.db.TransactionDao
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.util.ErrorHandler
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.di.qualifier.Alchemy
+import com.kyberswap.android.util.di.qualifier.Infura
 import com.kyberswap.android.util.di.qualifier.SemiNode
 import com.trustwallet.walletconnect.WCClient
 import dagger.Module
@@ -102,7 +104,7 @@ class NetworkModule {
     @Provides
     @Alchemy
     @Singleton
-    fun provideWeb3j(context: Context, client: OkHttpClient): Web3j {
+    fun provideWeb3jAlchemy(context: Context, client: OkHttpClient): Web3j {
         return Web3j.build(
             HttpService(
                 context.getString(R.string.base_rpc_url),
@@ -119,6 +121,19 @@ class NetworkModule {
         return Web3j.build(
             HttpService(
                 context.getString(R.string.semi_node_base_rpc_url),
+                client,
+                false
+            )
+        )
+    }
+
+    @Provides
+    @Infura
+    @Singleton
+    fun provideWeb3jInfura(context: Context, client: OkHttpClient): Web3j {
+        return Web3j.build(
+            HttpService(
+                context.getString(R.string.infura_base_rpc_url),
                 client,
                 false
             )
@@ -206,14 +221,25 @@ class NetworkModule {
     @Provides
     @Singleton
     fun provideTokenClient(
-        @Alchemy web3j: Web3j,
+        @Alchemy web3jAlchemyNode: Web3j,
         @SemiNode web3jSemiNode: Web3j,
+        @Infura web3jInfuraNode: Web3j,
         tokenDao: TokenDao,
+        nonceDao: NonceDao,
         transactionDao: TransactionDao,
         context: Context,
         analytics: FirebaseAnalytics
     ): TokenClient {
-        return TokenClient(web3j, web3jSemiNode, tokenDao, transactionDao, context, analytics)
+        return TokenClient(
+            web3jAlchemyNode,
+            web3jSemiNode,
+            web3jInfuraNode,
+            tokenDao,
+            transactionDao,
+            nonceDao,
+            context,
+            analytics
+        )
     }
 
     private fun <T> createApiClient(clazz: Class<T>, baseUrl: String, client: OkHttpClient): T {
