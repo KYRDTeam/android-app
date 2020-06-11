@@ -291,6 +291,7 @@ data class Transaction(
         const val PENDING = 0
         const val MINED = 1
         const val PENDING_TRANSACTION_STATUS = "pending"
+        const val MINED_TRANSACTION_STATUS = "mined"
         var formatterShort = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
         var formatterFull = SimpleDateFormat("EEEE, dd MMM yyyy HH:mm:ss", Locale.getDefault())
         var formatterFilter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -354,6 +355,9 @@ data class Transaction(
         return isTransfer && to == walletAddress
     }
 
+    val displayTransactionStatus: String
+        get() = if (isPendingTransaction) PENDING_TRANSACTION_STATUS else MINED_TRANSACTION_STATUS
+
     val displayRate: String
         get() =
             if (isTransfer) {
@@ -394,6 +398,22 @@ data class Transaction(
             , Convert.Unit.ETHER
         ).toDisplayNumber()
     }
+
+    val displayGasPrice: String
+        get() = StringBuilder().append(
+            Convert.fromWei(
+                gasPrice.toBigDecimalOrDefaultZero(),
+                Convert.Unit.ETHER
+            ).toDisplayNumber()
+        )
+            .append(" ")
+            .append("ETH")
+            .append(" ")
+            .append("(")
+            .append(Convert.fromWei(gasPrice, Convert.Unit.GWEI))
+            .append(" Gwei")
+            .append(")")
+            .toString()
 
     fun getFeeFromWei(gasPrice: String): String {
         return Convert.fromWei(

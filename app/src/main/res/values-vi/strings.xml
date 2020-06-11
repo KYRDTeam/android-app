@@ -491,7 +491,7 @@
     <string name="campaign_result">Kết quả</string>
     <string name="identity_info">Thông tin nhận dạng</string>
     <string name="wallet_file_prefix">kyber_swap_</string>
-    <string name="address_not_eligible">Địa chỉ ví này đã được sử dụng bởi tài khoản khác. Vui lòng sử dụng địa chỉ ví khác để đặt lệnh giao dịch.</string>
+    <string name="address_not_eligible">Địa chỉ ví này đã được sử dụng bởi tài khoản khác%s. Vui lòng sử dụng địa chỉ ví khác để đặt lệnh giao dịch.</string>
     <string name="small_amount_of_eth_transaction_fee">Một lượng nhỏ ETH sẽ được sử dụng cho phí giao dịch</string>
     <string name="two_factor_authentication_2fa">Bảo mật hai lớp (2FA)</string>
     <string name="two_fa_hint_token">Token</string>
@@ -747,5 +747,7 @@
     <string name="error_underpriced_transfer">You are having a pending transaction with the same nonce and higher gas price than this transfer. Please wait for it completed, or please do this transfer again with higher gas price than pending ones.</string>
     <string name="erorr_underpriced_transaction">You are having a pending transaction with the same nonce and higher gas price than this transaction. Please wait for it completed, or please do this transaction again with higher gas price than pending ones.</string>
     <string name="higher_gas_faster_transaction">Chọn giá gas cao hơn để tăng tốc độ giao dịch</string>
+    <string name="gas_price">Gas Price</string>
+    <string name="nonce">Nonce</string>
 
 </resources>

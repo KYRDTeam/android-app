@@ -158,6 +158,26 @@ object TextViewBindingAdapter {
         }
     }
 
+    @BindingAdapter("app:isPending")
+    @JvmStatic
+    fun transactionStatus(view: TextView, isPending: Boolean?) {
+
+        val background: Int
+        val textColor: Int
+        when (isPending) {
+            true -> {
+                background = R.drawable.rounded_corner_pending_transaction_background
+                textColor = R.color.pending_transaction_text
+            }
+            else -> {
+                background = R.drawable.rounded_corner_mined_transaction_background
+                textColor = R.color.mined_transaction_text
+            }
+        }
+        view.setTextColor(ContextCompat.getColor(view.context, textColor))
+        view.setBackgroundResource(background)
+    }
+
     @BindingAdapter("app:ratePercentage", "app:hasSamePair", "app:warning")
     @JvmStatic
     fun setPercentage(view: TextView, percent: String?, samePair: Boolean?, warning: Boolean?) {

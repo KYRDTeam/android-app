@@ -579,7 +579,11 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                             ) {
                                 showAlertWithoutIcon(
                                     title = getString(R.string.title_error),
-                                    message = getString(R.string.address_not_eligible)
+                                    message = String.format(
+                                        getString(R.string.address_not_eligible),
+                                        if (state.eligibleAddress.account.isNotBlank())
+                                            """ (${state.eligibleAddress.account})""" else ""
+                                    )
                                 )
                             }
                         }
@@ -1011,7 +1015,10 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 }
 
                 eleigibleAddress?.success == true && eleigibleAddress?.eligibleAddress != true -> {
-                    error = getString(R.string.address_not_eligible)
+                    error = String.format(
+                        getString(R.string.address_not_eligible),
+                        if (eleigibleAddress?.account?.isNotBlank() == true) """ (${eleigibleAddress?.account})""" else ""
+                    )
                     showAlertWithoutIcon(
                         title = getString(R.string.title_error),
                         message = error

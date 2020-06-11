@@ -497,7 +497,7 @@
     <string name="campaign_result">결과</string>
     <string name="identity_info">신원 정보</string>
     <string name="wallet_file_prefix">kyber_swap_</string>
-    <string name="address_not_eligible">다른 계정에서 해당 주소를 사용 중입니다. 다른 계정으로 주문해주세요.</string>
+    <string name="address_not_eligible">다른 계정에서 해당 주소를 사용 중입니다%s. 다른 계정으로 주문해주세요.</string>
     <string name="small_amount_of_eth_transaction_fee">소액의 ETH가 거래 수수료로 사용됩니다.</string>
     <string name="two_factor_authentication_2fa">2단계 인증 (2FA)</string>
     <string name="two_fa_hint_token">Token</string>
@@ -747,5 +747,7 @@
     <string name="error_underpriced_transfer">You are having a pending transaction with the same nonce and higher gas price than this transfer. Please wait for it completed, or please do this transfer again with higher gas price than pending ones.</string>
     <string name="erorr_underpriced_transaction">You are having a pending transaction with the same nonce and higher gas price than this transaction. Please wait for it completed, or please do this transaction again with higher gas price than pending ones.</string>
     <string name="higher_gas_faster_transaction">가스비를 더 높게 설정하여 거래 처리 속도를 높일 수 있습니다.</string>
+    <string name="gas_price">Gas Price</string>
+    <string name="nonce">Nonce</string>
 
 </resources>

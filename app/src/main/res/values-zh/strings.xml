@@ -493,7 +493,7 @@
     <string name="campaign_result">结果</string>
     <string name="identity_info">身份信息</string>
     <string name="wallet_file_prefix">kyber_swap_</string>
-    <string name="address_not_eligible">这个地址已经被另一个账户所使用。请使用其他地址下单。</string>
+    <string name="address_not_eligible">这个地址已经被另一个账户所使用%s。请使用其他地址下单。</string>
     <string name="two_factor_authentication_2fa">双重认证（2FA）</string>
     <string name="two_fa_hint_token">Token</string>
     <string name="two_fa_continue">继续</string>
@@ -748,5 +748,7 @@
     <string name="error_underpriced_transfer">You are having a pending transaction with the same nonce and higher gas price than this transfer. Please wait for it completed, or please do this transfer again with higher gas price than pending ones.</string>
     <string name="erorr_underpriced_transaction">You are having a pending transaction with the same nonce and higher gas price than this transaction. Please wait for it completed, or please do this transaction again with higher gas price than pending ones.</string>
     <string name="higher_gas_faster_transaction">选择较高的燃料价格，以加快您的交易处理时间</string>
+    <string name="gas_price">Gas Price</string>
+    <string name="nonce">Nonce</string>
 
 </resources>
