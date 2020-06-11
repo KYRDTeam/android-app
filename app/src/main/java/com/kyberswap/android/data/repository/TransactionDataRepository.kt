@@ -513,7 +513,7 @@ class TransactionDataRepository @Inject constructor(
                     pendingTransactions.filter { pending ->
                         pending.nonce.toBigIntegerOrDefaultZero() <= latestNonce
                     }.forEach { filteredPending ->
-                        sendNotification(filteredPending)
+                        sendNotification(filteredPending, true)
                         transactionDao.delete(filteredPending)
                     }
                 }
@@ -529,7 +529,7 @@ class TransactionDataRepository @Inject constructor(
     }
 
     private fun sendNotification(transaction: Transaction, isDropped: Boolean = false) {
-        if (Date().time / 1000 - transaction.timeStamp <= 5 * 60) {
+        if (Date().time / 1000 - transaction.timeStamp <= 5 * 60 || isDropped) {
 
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data =

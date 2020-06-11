@@ -25,7 +25,7 @@ const val USER_CLICK_SPEED_UP_TX_EVENT = "user_click_speed_up_tx_event"
 const val USER_CLICK_SUBMIT_SPEED_UP_TX_EVENT = "user_click_submit_speed_up_tx_event"
 const val USER_CLICK_CANCEL_TX_EVENT = "user_click_cancel_tx_event"
 const val USER_CLICK_SUBMIT_CANCEL_TX_EVENT = "user_click_submit_cancel_tx_event"
-const val TX_SPEED_UP_CANCEL_DROPPED_EVENT = "tx_dropped_event"
+const val TX_DROPPED_EVENT = "tx_dropped_event"
 const val FAIL_CANCEL_TX_EVENT = "fail_cancel_tx"
 const val FAIL_SPEED_UP_TX_EVENT = "fail_speed_up_tx"
 
