@@ -103,4 +103,8 @@ const val TRANSFER_BROADCAST_ERROR = "transfer_broadcast_error"
 const val SW_BROADCAST_ERROR = "transfer_broadcast_error"
 const val SW_CONFIRMED_ERROR = "swap_confirmed_error"
 
+const val ALCHEMY_BROADCAST_NODE_ERROR = "alchemy_broadcast_node_error"
+const val INFURA_BROADCAST_NODE_ERROR = "infura_broadcast_node_error"
+const val SEMINODE_BROADCAST_NODE_ERROR = "seminode_broadcast_node_error"
+
 

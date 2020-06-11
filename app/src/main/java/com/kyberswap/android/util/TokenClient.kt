@@ -509,10 +509,46 @@ class TokenClient @Inject constructor(
         val transactionResponseInfuraNode = txManagerWithInfuraNode.signAndSend(tx)
         val transactionResponseSemiNode = txManagerWithSemiNode.signAndSend(tx)
 
-        if (transactionResponseAlchemyNode?.hasError() == true &&
+        val isFail = transactionResponseAlchemyNode?.hasError() == true &&
             transactionResponseInfuraNode?.hasError() == true &&
             transactionResponseSemiNode?.hasError() == true
-        ) run {
+
+        if (transactionResponseAlchemyNode?.hasError() == true) {
+            analytics.logEvent(
+                ALCHEMY_BROADCAST_NODE_ERROR,
+                Bundle().createEvent(
+                    (isFail.toString() + "|" + transactionResponseAlchemyNode.error?.code?.toString() + "|" + transactionResponseAlchemyNode.error?.message).take(
+                        99
+                    )
+                )
+            )
+        }
+
+        if (transactionResponseInfuraNode?.hasError() == true) {
+            analytics.logEvent(
+                INFURA_BROADCAST_NODE_ERROR,
+                Bundle().createEvent(
+                    (isFail.toString() + "|" + transactionResponseInfuraNode.error?.code?.toString() + "|" + transactionResponseInfuraNode.error?.message).take(
+                        99
+                    )
+                )
+            )
+        }
+
+
+        if (transactionResponseSemiNode?.hasError() == true) {
+            analytics.logEvent(
+                SEMINODE_BROADCAST_NODE_ERROR,
+                Bundle().createEvent(
+                    (isFail.toString() + "|" + transactionResponseSemiNode.error?.code?.toString() + "|" + transactionResponseSemiNode.error?.message).take(
+                        99
+                    )
+                )
+            )
+        }
+
+
+        if (isFail) run {
 
             if (transactionResponseAlchemyNode.error?.code == -32000) {
                 throw RuntimeException(
@@ -587,9 +623,46 @@ class TokenClient @Inject constructor(
         val transactionResponseInfuraNode = txManagerWithInfuraNode.signAndSend(tx)
         val transactionResponseSemiNode = txManagerWithSemiNode.signAndSend(tx)
 
-        if (transactionResponseAlchemyNode?.hasError() == true &&
+        val isFail = transactionResponseAlchemyNode?.hasError() == true &&
             transactionResponseInfuraNode?.hasError() == true &&
             transactionResponseSemiNode?.hasError() == true
+
+        if (transactionResponseAlchemyNode?.hasError() == true) {
+            analytics.logEvent(
+                ALCHEMY_BROADCAST_NODE_ERROR,
+                Bundle().createEvent(
+                    (isFail.toString() + "|" + transactionResponseAlchemyNode.error?.code?.toString() + "|" + transactionResponseAlchemyNode.error?.message).take(
+                        99
+                    )
+                )
+            )
+        }
+
+        if (transactionResponseInfuraNode?.hasError() == true) {
+            analytics.logEvent(
+                INFURA_BROADCAST_NODE_ERROR,
+                Bundle().createEvent(
+                    (isFail.toString() + "|" + transactionResponseInfuraNode.error?.code?.toString() + "|" + transactionResponseInfuraNode.error?.message).take(
+                        99
+                    )
+                )
+            )
+        }
+
+
+        if (transactionResponseSemiNode?.hasError() == true) {
+            analytics.logEvent(
+                SEMINODE_BROADCAST_NODE_ERROR,
+                Bundle().createEvent(
+                    (isFail.toString() + "|" + transactionResponseSemiNode.error?.code?.toString() + "|" + transactionResponseSemiNode.error?.message).take(
+                        99
+                    )
+                )
+            )
+        }
+
+
+        if (isFail
         ) run {
             if (transactionResponseAlchemyNode.error?.code == -32000) {
                 throw RuntimeException(
@@ -655,10 +728,45 @@ class TokenClient @Inject constructor(
         val transactionResponseInfuraNode = txManagerWithInfuraNode.signAndSend(tx)
         val transactionResponseSemiNode = txManagerWithSemiNode.signAndSend(tx)
 
-        if (transactionResponseAlchemyNode?.hasError() == true &&
+        val isFail = transactionResponseAlchemyNode?.hasError() == true &&
             transactionResponseInfuraNode?.hasError() == true &&
             transactionResponseSemiNode?.hasError() == true
-        ) run {
+
+        if (transactionResponseAlchemyNode?.hasError() == true) {
+            analytics.logEvent(
+                ALCHEMY_BROADCAST_NODE_ERROR,
+                Bundle().createEvent(
+                    (isFail.toString() + "|" + transactionResponseAlchemyNode.error?.code?.toString() + "|" + transactionResponseAlchemyNode.error?.message).take(
+                        99
+                    )
+                )
+            )
+        }
+
+        if (transactionResponseInfuraNode?.hasError() == true) {
+            analytics.logEvent(
+                INFURA_BROADCAST_NODE_ERROR,
+                Bundle().createEvent(
+                    (isFail.toString() + "|" + transactionResponseInfuraNode.error?.code?.toString() + "|" + transactionResponseInfuraNode.error?.message).take(
+                        99
+                    )
+                )
+            )
+        }
+
+
+        if (transactionResponseSemiNode?.hasError() == true) {
+            analytics.logEvent(
+                SEMINODE_BROADCAST_NODE_ERROR,
+                Bundle().createEvent(
+                    (isFail.toString() + "|" + transactionResponseSemiNode.error?.code?.toString() + "|" + transactionResponseSemiNode.error?.message).take(
+                        99
+                    )
+                )
+            )
+        }
+
+        if (isFail) run {
             if (transactionResponseAlchemyNode.error?.code == -32000) {
                 throw RuntimeException(
                     context.getString(R.string.replacement_underpriced)
@@ -873,10 +981,46 @@ class TokenClient @Inject constructor(
 //            )
 //        )
 
-        if (transactionResponseAlchemyNode?.hasError() == true &&
+        val isFail = transactionResponseAlchemyNode?.hasError() == true &&
             transactionResponseInfuraNode?.hasError() == true &&
             transactionResponseSemiNode?.hasError() == true
-        ) run {
+
+        if (transactionResponseAlchemyNode?.hasError() == true) {
+            analytics.logEvent(
+                ALCHEMY_BROADCAST_NODE_ERROR,
+                Bundle().createEvent(
+                    (isFail.toString() + "|" + transactionResponseAlchemyNode.error?.code?.toString() + "|" + transactionResponseAlchemyNode.error?.message).take(
+                        99
+                    )
+                )
+            )
+        }
+
+        if (transactionResponseInfuraNode?.hasError() == true) {
+            analytics.logEvent(
+                INFURA_BROADCAST_NODE_ERROR,
+                Bundle().createEvent(
+                    (isFail.toString() + "|" + transactionResponseInfuraNode.error?.code?.toString() + "|" + transactionResponseInfuraNode.error?.message).take(
+                        99
+                    )
+                )
+            )
+        }
+
+
+        if (transactionResponseSemiNode?.hasError() == true) {
+            analytics.logEvent(
+                SEMINODE_BROADCAST_NODE_ERROR,
+                Bundle().createEvent(
+                    (isFail.toString() + "|" + transactionResponseSemiNode.error?.code?.toString() + "|" + transactionResponseSemiNode.error?.message).take(
+                        99
+                    )
+                )
+            )
+        }
+
+
+        if (isFail) run {
             if (transactionResponseAlchemyNode.error?.code == -32000) {
                 throw RuntimeException(
                     context.getString(R.string.erorr_underpriced_transaction)
@@ -930,12 +1074,45 @@ class TokenClient @Inject constructor(
             val transactionResponseInfuraNode = txManagerWithInfuraNode.signAndSend(rawTransaction)
             val transactionResponseSemiNode = txManagerWithSemiNode.signAndSend(rawTransaction)
 
-
-
-            if (transactionResponseAlchemyNode?.hasError() == true &&
+            val isFail = transactionResponseAlchemyNode?.hasError() == true &&
                 transactionResponseInfuraNode?.hasError() == true &&
                 transactionResponseSemiNode?.hasError() == true
-            ) run {
+
+            if (transactionResponseAlchemyNode?.hasError() == true) {
+                analytics.logEvent(
+                    ALCHEMY_BROADCAST_NODE_ERROR,
+                    Bundle().createEvent(
+                        (isFail.toString() + "|" + transactionResponseAlchemyNode.error?.code?.toString() + "|" + transactionResponseAlchemyNode.error?.message).take(
+                            99
+                        )
+                    )
+                )
+            }
+
+            if (transactionResponseInfuraNode?.hasError() == true) {
+                analytics.logEvent(
+                    INFURA_BROADCAST_NODE_ERROR,
+                    Bundle().createEvent(
+                        (isFail.toString() + "|" + transactionResponseInfuraNode.error?.code?.toString() + "|" + transactionResponseInfuraNode.error?.message).take(
+                            99
+                        )
+                    )
+                )
+            }
+
+
+            if (transactionResponseSemiNode?.hasError() == true) {
+                analytics.logEvent(
+                    SEMINODE_BROADCAST_NODE_ERROR,
+                    Bundle().createEvent(
+                        (isFail.toString() + "|" + transactionResponseSemiNode.error?.code?.toString() + "|" + transactionResponseSemiNode.error?.message).take(
+                            99
+                        )
+                    )
+                )
+            }
+
+            if (isFail) run {
                 throw RuntimeException(
                     "Error processing transaction request: " +
                         transactionResponseAlchemyNode.error.message
@@ -1001,10 +1178,46 @@ class TokenClient @Inject constructor(
                     val transactionResponseSemiNode =
                         txManagerWithSemiNode.signAndSend(rawTransaction)
 
-                    if (transactionResponseAlchemyNode?.hasError() == true &&
+                    val isFail = transactionResponseAlchemyNode?.hasError() == true &&
                         transactionResponseInfuraNode?.hasError() == true &&
                         transactionResponseSemiNode?.hasError() == true
-                    ) run {
+
+                    if (transactionResponseAlchemyNode?.hasError() == true) {
+                        analytics.logEvent(
+                            ALCHEMY_BROADCAST_NODE_ERROR,
+                            Bundle().createEvent(
+                                (isFail.toString() + "|" + transactionResponseAlchemyNode.error?.code?.toString() + "|" + transactionResponseAlchemyNode.error?.message).take(
+                                    99
+                                )
+                            )
+                        )
+                    }
+
+                    if (transactionResponseInfuraNode?.hasError() == true) {
+                        analytics.logEvent(
+                            INFURA_BROADCAST_NODE_ERROR,
+                            Bundle().createEvent(
+                                (isFail.toString() + "|" + transactionResponseInfuraNode.error?.code?.toString() + "|" + transactionResponseInfuraNode.error?.message).take(
+                                    99
+                                )
+                            )
+                        )
+                    }
+
+
+                    if (transactionResponseSemiNode?.hasError() == true) {
+                        analytics.logEvent(
+                            SEMINODE_BROADCAST_NODE_ERROR,
+                            Bundle().createEvent(
+                                (isFail.toString() + "|" + transactionResponseSemiNode.error?.code?.toString() + "|" + transactionResponseSemiNode.error?.message).take(
+                                    99
+                                )
+                            )
+                        )
+                    }
+
+
+                    if (isFail) run {
                         if (transactionResponseAlchemyNode.error?.code == -32000) {
                             throw RuntimeException(
                                 context.getString(R.string.replacement_underpriced)
@@ -1053,11 +1266,46 @@ class TokenClient @Inject constructor(
                     val transactionResponseSemiNode =
                         txManagerWithSemiNode.signAndSend(rawTransaction)
 
-
-                    if (transactionResponseAlchemyNode?.hasError() == true &&
+                    val isFail = transactionResponseAlchemyNode?.hasError() == true &&
                         transactionResponseInfuraNode?.hasError() == true &&
                         transactionResponseSemiNode?.hasError() == true
-                    ) run {
+
+                    if (transactionResponseAlchemyNode?.hasError() == true) {
+                        analytics.logEvent(
+                            ALCHEMY_BROADCAST_NODE_ERROR,
+                            Bundle().createEvent(
+                                (isFail.toString() + "|" + transactionResponseAlchemyNode.error?.code?.toString() + "|" + transactionResponseAlchemyNode.error?.message).take(
+                                    99
+                                )
+                            )
+                        )
+                    }
+
+                    if (transactionResponseInfuraNode?.hasError() == true) {
+                        analytics.logEvent(
+                            INFURA_BROADCAST_NODE_ERROR,
+                            Bundle().createEvent(
+                                (isFail.toString() + "|" + transactionResponseInfuraNode.error?.code?.toString() + "|" + transactionResponseInfuraNode.error?.message).take(
+                                    99
+                                )
+                            )
+                        )
+                    }
+
+
+                    if (transactionResponseSemiNode?.hasError() == true) {
+                        analytics.logEvent(
+                            SEMINODE_BROADCAST_NODE_ERROR,
+                            Bundle().createEvent(
+                                (isFail.toString() + "|" + transactionResponseSemiNode.error?.code?.toString() + "|" + transactionResponseSemiNode.error?.message).take(
+                                    99
+                                )
+                            )
+                        )
+                    }
+
+
+                    if (isFail) run {
                         if (transactionResponseAlchemyNode.error?.code == -32000) {
                             throw RuntimeException(
                                 context.getString(R.string.error_underpriced_transfer)
