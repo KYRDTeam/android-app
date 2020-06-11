@@ -1147,35 +1147,22 @@ class TokenClient @Inject constructor(
                         )
                     }
                 } else {
-//                    if ((System.currentTimeMillis() / 1000 - s.timeStamp) / 60f > 10f) {
-//                        transactionsList.add(s.copy(blockNumber = com.kyberswap.android.domain.model.Transaction.DEFAULT_DROPPED_BLOCK_NUMBER.toString()))
-//                    } else {
-//                        val latestTx = transactionDao.getLatestTransaction(wallet.address)
-//                        if (s.nonce.toBigDecimalOrDefaultZero() > BigDecimal.ZERO &&
-//                            latestTx?.nonce.toBigDecimalOrDefaultZero() >= s.nonce.toBigDecimalOrDefaultZero() &&
-//                            System.currentTimeMillis() / 1000 - s.timeStamp > 30
-//                        ) {
-//                            analytics.logEvent(
-//                                TX_SPEED_UP_CANCEL_DROPPED_EVENT,
-//                                Bundle().createEvent(s.displayTransaction)
-//                            )
-//                            transactionDao.delete(s)
-//                        } else {
-//                            transactionsList.add(s)
-//                        }
-//                    }
-                    val latestTx = transactionDao.getLatestTransaction(wallet.address)
-                    if (s.nonce.toBigDecimalOrDefaultZero() > BigDecimal.ZERO &&
-                        latestTx?.nonce.toBigDecimalOrDefaultZero() >= s.nonce.toBigDecimalOrDefaultZero() &&
-                        System.currentTimeMillis() / 1000 - s.timeStamp > 30
-                    ) {
-                        analytics.logEvent(
-                            TX_SPEED_UP_CANCEL_DROPPED_EVENT,
-                            Bundle().createEvent(s.displayTransaction)
-                        )
-                        transactionDao.delete(s)
+                    if ((System.currentTimeMillis() / 1000 - s.timeStamp) / 60f > 10f) {
+                        transactionsList.add(s.copy(blockNumber = com.kyberswap.android.domain.model.Transaction.DEFAULT_DROPPED_BLOCK_NUMBER.toString()))
                     } else {
-                        transactionsList.add(s)
+                        val latestTx = transactionDao.getLatestTransaction(wallet.address)
+                        if (s.nonce.toBigDecimalOrDefaultZero() > BigDecimal.ZERO &&
+                            latestTx?.nonce.toBigDecimalOrDefaultZero() >= s.nonce.toBigDecimalOrDefaultZero() &&
+                            System.currentTimeMillis() / 1000 - s.timeStamp > 30
+                        ) {
+                            analytics.logEvent(
+                                TX_SPEED_UP_CANCEL_DROPPED_EVENT,
+                                Bundle().createEvent(s.displayTransaction)
+                            )
+                            transactionDao.delete(s)
+                        } else {
+                            transactionsList.add(s)
+                        }
                     }
                 }
             } catch (ex: Exception) {

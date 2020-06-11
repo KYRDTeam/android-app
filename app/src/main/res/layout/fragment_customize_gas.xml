@@ -21,6 +21,22 @@
         <variable
             name="fee"
             type="String" />
+
+        <variable
+            name="feeFast"
+            type="String" />
+
+        <variable
+            name="feeSuperFast"
+            type="String" />
+
+        <variable
+            name="feeStandard"
+            type="String" />
+
+        <variable
+            name="feeSlow"
+            type="String" />
     </data>
 
     <FrameLayout
@@ -118,7 +134,7 @@
                                 android:backgroundTint="#fea34c"
                                 android:paddingStart="4dp"
                                 android:paddingEnd="0dp"
-                                android:text="@{ gas != null ? String.format(@string/gas_super_fast, gas.superFast) : ``}"
+                                app:data="@{ gas != null ? String.format(@string/gas_super_fast, gas.superFast, feeSuperFast) : ``}"
                                 android:textSize="12sp"
                                 android:theme="@style/CustomRadioTheme"
                                 app:font="@{@string/semi_bold_font_path}"
@@ -132,7 +148,7 @@
                                 android:backgroundTint="#fea34c"
                                 android:paddingStart="4dp"
                                 android:paddingEnd="0dp"
-                                android:text="@{gas != null ? String.format(@string/gas_fast, gas.fast): ``}"
+                                app:data="@{gas != null ? String.format(@string/gas_fast, gas.fast, feeFast): ``}"
                                 android:textSize="12sp"
                                 android:theme="@style/CustomRadioTheme"
                                 app:font="@{@string/semi_bold_font_path}"
@@ -153,7 +169,7 @@
                                 android:backgroundTint="#fea34c"
                                 android:paddingStart="4dp"
                                 android:paddingEnd="0dp"
-                                android:text="@{gas != null ? String.format(@string/gas_regular, gas.standard) : ``}"
+                                app:data="@{gas != null ? String.format(@string/gas_regular, gas.standard, feeStandard) : ``}"
                                 android:textSize="12sp"
                                 android:theme="@style/CustomRadioTheme"
                                 app:font="@{@string/semi_bold_font_path}"
@@ -167,7 +183,7 @@
                                 android:backgroundTint="#fea34c"
                                 android:paddingStart="4dp"
                                 android:paddingEnd="0dp"
-                                android:text="@{gas != null ? String.format(@string/gas_slow, gas.low) : ``}"
+                                app:data="@{gas != null ? String.format(@string/gas_slow, gas.low, feeSlow) : ``}"
                                 android:textSize="12sp"
                                 android:theme="@style/CustomRadioTheme"
                                 app:font="@{@string/semi_bold_font_path}"
@@ -176,11 +192,23 @@
 
                     </RadioGroup>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="11dp"
+                        android:layout_marginEnd="20dp"
+                        android:lineSpacingExtra="6sp"
+                        android:text="@string/higher_gas_faster_transaction"
+                        android:textAppearance="@style/TextAppearance.Roboto.SemiBold.Italic"
+                        android:textColor="#5a5e67"
+                        android:textSize="12sp" />
+
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginStart="20dp"
-                        android:layout_marginTop="23dp"
+                        android:layout_marginTop="11dp"
                         android:layout_marginEnd="10dp"
                         android:layout_marginBottom="11dp"
                         android:background="#e1e4eb" />
@@ -194,6 +222,7 @@
                         android:text="@string/speed_up_gas_price_hint"
                         android:textColor="#5a5e67"
                         android:textSize="12sp" />
+
                 </LinearLayout>
 
                 <LinearLayout

@@ -498,8 +498,12 @@
 
                         <include
                             layout="@layout/layout_expanable"
-                            app:dest="@{swap.tokenDest.tokenSymbol}"
                             app:gas="@{swap.gas}"
+                            app:dest="@{swap.tokenDest.tokenSymbol}"
+                            app:feeFast="@{swap.displayGasFastFeeEth}"
+                            app:feeSlow="@{swap.displayGasLowFeeEth}"
+                            app:feeStandard="@{swap.displayGasStandardFeeEth}"
+                            app:feeSuperFast="@{swap.displayGasSuperFastFeeEth}"
                             app:source="@{swap.tokenSource.tokenSymbol}" />
 
                         <TextView

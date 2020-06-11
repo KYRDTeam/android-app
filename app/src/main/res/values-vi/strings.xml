@@ -96,10 +96,10 @@
     <string name="default_source_amount">0.001</string>
     <string name="default_dest_balance_usd">≈ 0.0 USD</string>
     <string name="gas_fee_gwei">Phí GAS (Gwei)</string>
-    <string name="gas_super_fast">%s\nRất Nhanh</string>
-    <string name="gas_fast">%s\nNhanh</string>
-    <string name="gas_regular">%s\nThường</string>
-    <string name="gas_slow">%s\nChậm</string>
+    <string name="gas_super_fast">%s Rất Nhanh\n~ %s ETH</string>
+    <string name="gas_fast">%s Nhanh\n~ %s ETH</string>
+    <string name="gas_regular">%s Thường\n~ %s ETH</string>
+    <string name="gas_slow">%s Chậm\n~ %s ETH</string>
     <string name="swap_rate_condition">Vẫn tiếp tục nếu %s-%s giảm xuống:</string>
     <string name="three_percentage">3%</string>
     <string name="percentage">%</string>
@@ -551,7 +551,7 @@
     <string name="about_pdpa_update">About PDPA update</string>
     <string name="pdpa_content"><![CDATA[We are aware of the revised Advisory Guidelines on the PDPA for NRIC and other National Identification Numbers that Personal Data Protection Commission (PDPA) issued on 31 August 2018.\n\nWe seek your understanding that we are continuing  with the collection and use of NRIC Numbers / Foreign Identification Numbers / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers to ensure that KyberSwap does not deal with assets or funds that are proceeds of drug dealing, criminal conduct or property relating to money laundering or terrorism financing offence.\n\nWe assure you that we will undertake proper safeguarding measures to protect your personal data (including NRIC Numbers / FIN / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers) under our care.\n\nContact us at support@kyberswap.com should you have any queries or concerns.]]></string>
     <string name="notification_dropped">Dropped</string>
-    <string name="notification_dropped_message">Your transaction %s might be lost, please check Etherscan for more information</string>
+    <string name="notification_dropped_message">Your transaction %s might be lost, dropped or replaced. Please check Etherscan for more information</string>
     <string name="swap_now">Trao đổi</string>
     <string name="transfer_now">Chuyển</string>
     <string-array name="proof_address">
@@ -746,5 +746,6 @@
     <string name="error_underpriced_wallet_connect">You are having a pending transaction with the same nonce and higher gas price than this swap/transfer. Please wait for it completed, or please do this swap/transfer again with higher gas price than pending ones.</string>
     <string name="error_underpriced_transfer">You are having a pending transaction with the same nonce and higher gas price than this transfer. Please wait for it completed, or please do this transfer again with higher gas price than pending ones.</string>
     <string name="erorr_underpriced_transaction">You are having a pending transaction with the same nonce and higher gas price than this transaction. Please wait for it completed, or please do this transaction again with higher gas price than pending ones.</string>
+    <string name="higher_gas_faster_transaction">Chọn giá gas cao hơn để tăng tốc độ giao dịch</string>
 
 </resources>

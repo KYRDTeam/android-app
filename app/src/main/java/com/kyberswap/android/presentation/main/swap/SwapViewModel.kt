@@ -213,7 +213,7 @@ class SwapViewModel @Inject constructor(
         )
     }
 
-    fun checkEligibleWallet(wallet: Wallet, swap: Swap) {
+    fun verifySwap(wallet: Wallet, swap: Swap) {
         checkEligibleWalletUseCase.dispose()
         _checkEligibleWalletCallback.postValue(Event(CheckEligibleWalletState.Loading))
         getExpectedRateSequentialUseCase.dispose()

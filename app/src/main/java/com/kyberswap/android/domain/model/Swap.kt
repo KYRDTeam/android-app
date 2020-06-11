@@ -124,9 +124,10 @@ data class Swap(
         get() = tokenSource.tokenSymbol.isNotBlank() && tokenDest.tokenSymbol.isNotBlank()
 
     val displaySourceAmount: String
-        get() = StringBuilder().append(sourceAmount.toBigDecimalOrDefaultZero().toDisplayNumber()).append(
-            " "
-        ).append(tokenSource.tokenSymbol).toString()
+        get() = StringBuilder().append(sourceAmount.toBigDecimalOrDefaultZero().toDisplayNumber())
+            .append(
+                " "
+            ).append(tokenSource.tokenSymbol).toString()
 
     val displayDestAmount: String
         get() = StringBuilder().append(
@@ -240,6 +241,30 @@ data class Swap(
                 .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
         )
 
+    val displayGasFastFeeEth: String
+        get() = Convert.fromWei(
+            Convert.toWei(gas.fast.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
+                .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
+        ).toDisplayNumber()
+
+    val displayGasSuperFastFeeEth: String
+        get() = Convert.fromWei(
+            Convert.toWei(gas.superFast.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
+                .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
+        ).toDisplayNumber()
+
+    val displayGasStandardFeeEth: String
+        get() = Convert.fromWei(
+            Convert.toWei(gas.standard.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
+                .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
+        ).toDisplayNumber()
+
+    val displayGasLowFeeEth: String
+        get() = Convert.fromWei(
+            Convert.toWei(gas.low.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
+                .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
+        ).toDisplayNumber()
+
     private val gasFeeUsd: BigDecimal
         get() =
             if (tokenSource.rateEthNowOrDefaultValue == BigDecimal.ZERO) BigDecimal.ZERO
@@ -309,7 +334,8 @@ data class Swap(
                 this.tokenDest.rateEthNowOrDefaultValue.toDouble().div(
                     tokenSource.rateEthNowOrDefaultValue.toDouble()
                 ).toBigDecimal().toDisplayNumber()
-            else 0.toString()
+            else 0.toString(),
+            gas = this.gas
         )
     }
 

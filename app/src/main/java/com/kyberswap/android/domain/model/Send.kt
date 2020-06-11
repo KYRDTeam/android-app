@@ -45,10 +45,12 @@ data class Send(
     }
 
     val amountUnit: BigInteger
-        get() = sourceAmount.toBigDecimalOrDefaultZero().multiply(BigDecimal.TEN.pow(tokenSource.tokenDecimal)).toBigInteger()
+        get() = sourceAmount.toBigDecimalOrDefaultZero()
+            .multiply(BigDecimal.TEN.pow(tokenSource.tokenDecimal)).toBigInteger()
 
     val displaySourceAmount: String
-        get() = StringBuilder().append(sourceAmount).append(" ").append(tokenSource.tokenSymbol).toString()
+        get() = StringBuilder().append(sourceAmount).append(" ").append(tokenSource.tokenSymbol)
+            .toString()
 
     val isSendAll: Boolean
         get() = sourceAmount == tokenSource.currentBalance.rounding().toDisplayNumber()
@@ -58,10 +60,35 @@ data class Send(
             StringBuilder()
                 .append("≈ ")
                 .append(
-                    sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateUsdNow).toDisplayNumber()
+                    sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateUsdNow)
+                        .toDisplayNumber()
                 )
                 .append(" USD")
                 .toString()
+
+    val displayGasFastFeeEth: String
+        get() = Convert.fromWei(
+            Convert.toWei(gas.fast.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
+                .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
+        ).toDisplayNumber()
+
+    val displayGasSuperFastFeeEth: String
+        get() = Convert.fromWei(
+            Convert.toWei(gas.superFast.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
+                .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
+        ).toDisplayNumber()
+
+    val displayGasStandardFeeEth: String
+        get() = Convert.fromWei(
+            Convert.toWei(gas.standard.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
+                .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
+        ).toDisplayNumber()
+
+    val displayGasLowFeeEth: String
+        get() = Convert.fromWei(
+            Convert.toWei(gas.low.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
+                .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
+        ).toDisplayNumber()
 
     val transactionFeeEth: String
         get() = StringBuilder()

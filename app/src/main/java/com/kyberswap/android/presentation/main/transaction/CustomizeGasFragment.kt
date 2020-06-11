@@ -109,16 +109,24 @@ class CustomizeGasFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetGasPriceState.Success -> {
-                        binding.gas = state.gas.copy(maxGasPrice = maxGasPrice)
 
-                        binding.fee = transaction?.getFeeFromGwei(
-                            getSelectedGasPrice(
-                                binding.gas,
-                                selectedGasFeeView?.id
+                        val gas = state.gas.copy(maxGasPrice = maxGasPrice)
+                        if (gas != binding.gas) {
+                            binding.gas = gas
+
+                            binding.fee = transaction?.getFeeFromGwei(
+                                getSelectedGasPrice(
+                                    gas,
+                                    selectedGasFeeView?.id
+                                )
                             )
-                        )
+                            binding.feeSuperFast = transaction?.getFeeFromGwei(gas.superFast)
+                            binding.feeFast = transaction?.getFeeFromGwei(gas.fast)
+                            binding.feeStandard = transaction?.getFeeFromGwei(gas.standard)
+                            binding.feeSlow = transaction?.getFeeFromGwei(gas.low)
 
-                        binding.executePendingBindings()
+                            binding.executePendingBindings()
+                        }
                     }
                     is GetGasPriceState.ShowError -> {
 
@@ -208,6 +216,12 @@ class CustomizeGasFragment : BaseFragment() {
                                 )
 
                                 binding.gas = gas
+
+                                binding.feeSuperFast = transaction?.getFeeFromGwei(gas.superFast)
+                                binding.feeFast = transaction?.getFeeFromGwei(gas.fast)
+                                binding.feeStandard = transaction?.getFeeFromGwei(gas.standard)
+                                binding.feeSlow = transaction?.getFeeFromGwei(gas.low)
+
                                 binding.executePendingBindings()
                             }
                         }

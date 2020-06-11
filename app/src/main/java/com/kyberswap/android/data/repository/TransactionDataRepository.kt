@@ -513,6 +513,7 @@ class TransactionDataRepository @Inject constructor(
                     pendingTransactions.filter { pending ->
                         pending.nonce.toBigIntegerOrDefaultZero() <= latestNonce
                     }.forEach { filteredPending ->
+                        sendNotification(filteredPending)
                         transactionDao.delete(filteredPending)
                     }
                 }
