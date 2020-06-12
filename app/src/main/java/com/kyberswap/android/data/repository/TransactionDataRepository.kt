@@ -86,7 +86,7 @@ class TransactionDataRepository @Inject constructor(
                     transaction?.let {
                         if (tx.blockNumber.toLongSafe() > 0) {
                             if (tx.blockNumber.toLongSafe() == Transaction.DEFAULT_DROPPED_BLOCK_NUMBER) {
-                                sendNotification(tx, true)
+                                sendNotification(tx, !tx.isCancel)
                             }
                             transactionDao.delete(it)
                             updateBalance(it, param.wallet)
@@ -513,7 +513,7 @@ class TransactionDataRepository @Inject constructor(
                     pendingTransactions.filter { pending ->
                         pending.nonce.toBigIntegerOrDefaultZero() <= latestNonce
                     }.forEach { filteredPending ->
-                        sendNotification(filteredPending, true)
+                        sendNotification(filteredPending, !filteredPending.isCancel)
                         transactionDao.delete(filteredPending)
                     }
                 }

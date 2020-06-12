@@ -1245,8 +1245,10 @@ class TokenClient @Inject constructor(
                                 TX_DROPPED_EVENT,
                                 Bundle().createEvent(pending.displayTransaction)
                             )
+                            if (!pending.isCancel) {
+                                showDroppedNotification(pending)
+                            }
                             transactionDao.delete(pending)
-                            showDroppedNotification(pending)
                         } else {
                             transactionsList.add(pending)
                         }
