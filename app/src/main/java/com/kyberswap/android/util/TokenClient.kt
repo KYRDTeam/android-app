@@ -36,6 +36,7 @@ import com.kyberswap.android.util.ext.isSwapTx
 import com.kyberswap.android.util.ext.isTransferETHTx
 import com.kyberswap.android.util.ext.minConversionRate
 import com.kyberswap.android.util.ext.params
+import com.kyberswap.android.util.ext.shortenValue
 import com.kyberswap.android.util.ext.toAddress
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntSafe
@@ -1278,7 +1279,7 @@ class TokenClient @Inject constructor(
         val title: String = context.getString(R.string.notification_dropped)
         val message: String = String.format(
             context.getString(R.string.notification_dropped_message),
-            transaction.hash
+            transaction.hash.shortenValue()
         )
 
         val channelId = context.getString(R.string.default_notification_channel_id)

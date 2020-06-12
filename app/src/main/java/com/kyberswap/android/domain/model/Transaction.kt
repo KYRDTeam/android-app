@@ -8,8 +8,8 @@ import androidx.room.TypeConverters
 import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.data.api.transaction.TransactionEntity
 import com.kyberswap.android.data.db.TransactionTypeConverter
-import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.safeToString
+import com.kyberswap.android.util.ext.shortenValue
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleSafe
@@ -362,7 +362,7 @@ data class Transaction(
         get() =
             if (isTransfer) {
                 StringBuilder()
-                    .append(if (isSend) "To: ${to.displayWalletAddress()}" else "From: ${from.displayWalletAddress()}")
+                    .append(if (isSend) "To: ${to.shortenValue()}" else "From: ${from.shortenValue()}")
                     .toString()
             } else {
                 displaySwapRate

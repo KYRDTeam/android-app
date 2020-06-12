@@ -7,7 +7,7 @@ import com.kyberswap.android.domain.model.FilterSetting
 import com.kyberswap.android.domain.model.OrderFilter.Companion.TOKEN_PAIR_SEPARATOR
 import com.kyberswap.android.domain.repository.LimitOrderRepository
 import com.kyberswap.android.domain.usecase.MergeDelayErrorUseCase
-import com.kyberswap.android.util.ext.displayWalletAddress
+import com.kyberswap.android.util.ext.shortenValue
 import io.reactivex.Flowable
 import io.reactivex.rxkotlin.Flowables
 import javax.inject.Inject
@@ -42,7 +42,7 @@ class GetLimitOrdersFilterSettingUseCase @Inject constructor(
             }
 
             val addressSetting = address.map {
-                FilterItem(!unSelectedAddress.contains(it), it, it.displayWalletAddress())
+                FilterItem(!unSelectedAddress.contains(it), it, it.shortenValue())
             }
 
             val statusSettings = FilterSetting.DEFAULT_ORDER_STATUS.map {

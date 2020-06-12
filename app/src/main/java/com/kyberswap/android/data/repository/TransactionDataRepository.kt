@@ -36,7 +36,7 @@ import com.kyberswap.android.domain.usecase.transaction.SaveTransactionFilterUse
 import com.kyberswap.android.domain.usecase.transaction.SpeedUpOrCancelTransactionUseCase
 import com.kyberswap.android.domain.usecase.transaction.TransactionsData
 import com.kyberswap.android.util.TokenClient
-import com.kyberswap.android.util.ext.displayWalletAddress
+import com.kyberswap.android.util.ext.shortenValue
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
@@ -549,11 +549,11 @@ class TransactionDataRepository @Inject constructor(
                     )
                 val message: String = if (isDropped) String.format(
                     context.getString(R.string.notification_dropped_message),
-                    transaction.hash
+                    transaction.hash.shortenValue()
                 ) else String.format(
                     context.getString(R.string.notification_success_received),
                     transaction.displayValue,
-                    transaction.from.displayWalletAddress()
+                    transaction.from.shortenValue()
                 )
 
                 val channelId = context.getString(R.string.default_notification_channel_id)

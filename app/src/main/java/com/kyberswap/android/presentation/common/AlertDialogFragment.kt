@@ -28,8 +28,8 @@ import com.kyberswap.android.util.TX_FAILED_ACTION
 import com.kyberswap.android.util.TX_FAILED_EVENT
 import com.kyberswap.android.util.TX_MINED_EVENT
 import com.kyberswap.android.util.ext.createEvent
-import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.openUrl
+import com.kyberswap.android.util.ext.shortenValue
 
 
 /**
@@ -95,7 +95,7 @@ class AlertDialogFragment : DialogFragment() {
                             String.format(
                                 getString(R.string.notification_fail_sent),
                                 transaction.displayValue,
-                                transaction.to.displayWalletAddress()
+                                transaction.to.shortenValue()
                             )
                         } else {
                             if (transaction.isCancel) {
@@ -104,7 +104,7 @@ class AlertDialogFragment : DialogFragment() {
                                 String.format(
                                     getString(R.string.notification_success_sent),
                                     transaction.displayValue,
-                                    transaction.to.displayWalletAddress()
+                                    transaction.to.shortenValue()
                                 )
                             }
                         }

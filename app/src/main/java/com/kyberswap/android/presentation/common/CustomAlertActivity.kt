@@ -16,8 +16,8 @@ import com.kyberswap.android.databinding.ActivityCustomAlertBinding
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.common.BetterImageSpan.ALIGN_CENTER
-import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.openUrl
+import com.kyberswap.android.util.ext.shortenValue
 
 
 class CustomAlertActivity : BaseActivity() {
@@ -65,13 +65,13 @@ class CustomAlertActivity : BaseActivity() {
                             String.format(
                                 getString(R.string.notification_fail_sent),
                                 transaction.displayValue,
-                                transaction.to.displayWalletAddress()
+                                transaction.to.shortenValue()
                             )
                         } else {
                             String.format(
                                 getString(R.string.notification_success_sent),
                                 transaction.displayValue,
-                                transaction.to.displayWalletAddress()
+                                transaction.to.shortenValue()
                             )
                         }
                     }
