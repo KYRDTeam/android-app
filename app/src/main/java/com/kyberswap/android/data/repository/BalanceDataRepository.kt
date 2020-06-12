@@ -193,7 +193,7 @@ class BalanceDataRepository @Inject constructor(
                     }
                     .toList()
                     .doAfterSuccess { tokens ->
-                        tokenExtDao.insertTokenExtras(tokens.map {
+                        tokenExtDao.batchInsertTokenExtras(tokens.map {
                             TokenExt(it)
                         })
                     }
@@ -241,7 +241,7 @@ class BalanceDataRepository @Inject constructor(
                         }
                         .toList()
                         .doAfterSuccess { tokens ->
-                            tokenExtDao.insertTokenExtras(tokens.map {
+                            tokenExtDao.batchInsertTokenExtras(tokens.map {
                                 TokenExt(it)
                             })
                         }

@@ -4,7 +4,7 @@ import android.os.Parcelable
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.kyberswap.android.util.ext.displayWalletAddress
+import com.kyberswap.android.util.ext.shortenValue
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toWalletAddress
@@ -40,7 +40,7 @@ data class Wallet(
     )
 
     val displayWalletAddress: String
-        get() = address.displayWalletAddress()
+        get() = address.shortenValue()
 
     val walletPath: String
         get() = WalletManager.storage.keystoreDir.toString() + "/wallets/" + walletId + ".json"

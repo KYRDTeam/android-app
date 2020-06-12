@@ -4,6 +4,7 @@ import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.view.View
@@ -125,32 +126,56 @@ object TextViewBindingAdapter {
         }
     }
 
-    @BindingAdapter("app:styleBold", "app:font")
+    @BindingAdapter("app:styleBold", "app:font", "app:data")
     @JvmStatic
-    fun styleRadioButtonText(view: RadioButton, bold: String?, font: String) {
+    fun styleRadioButtonText(view: RadioButton, bold: String?, font: String?, data: String?) {
         try {
-            val spannableString = SpannableString(view.text.toString())
+            if (font.isNullOrBlank() || data.isNullOrBlank() || bold.isNullOrBlank()) return
+            val spannableString = SpannableStringBuilder().append(data)
             val typeface = TypefaceUtils.load(
                 view.context.assets,
                 font
             )
-
             val calligraphyTypeface = CalligraphyTypefaceSpan(
                 typeface
             )
-
             if (bold.isNullOrEmpty()) return
+            if (spannableString.indexOf(bold) < 0 ||
+                (spannableString.indexOf(bold) + bold.length) >= spannableString.length
+            ) return
+
+
             spannableString.setSpan(
                 calligraphyTypeface,
                 spannableString.indexOf(bold),
                 spannableString.indexOf(bold) + bold.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                Spannable.SPAN_EXCLUSIVE_INCLUSIVE
             )
 
-            view.setText(spannableString, TextView.BufferType.SPANNABLE)
+            view.text = spannableString
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
+    }
+
+    @BindingAdapter("app:isPending")
+    @JvmStatic
+    fun transactionStatus(view: TextView, isPending: Boolean?) {
+
+        val background: Int
+        val textColor: Int
+        when (isPending) {
+            true -> {
+                background = R.drawable.rounded_corner_pending_transaction_background
+                textColor = R.color.pending_transaction_text
+            }
+            else -> {
+                background = R.drawable.rounded_corner_mined_transaction_background
+                textColor = R.color.mined_transaction_text
+            }
+        }
+        view.setTextColor(ContextCompat.getColor(view.context, textColor))
+        view.setBackgroundResource(background)
     }
 
     @BindingAdapter("app:ratePercentage", "app:hasSamePair", "app:warning")

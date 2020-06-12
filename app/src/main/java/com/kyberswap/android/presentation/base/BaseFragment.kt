@@ -117,6 +117,9 @@ abstract class BaseFragment : DaggerFragment() {
     val currentFragment: Fragment
         get() = (activity as MainActivity).getCurrentFragment() ?: this
 
+    val lastAddedChildFragment: Fragment?
+        get() = currentFragment.childFragmentManager.fragments.lastOrNull()
+
     val profileFragment: Fragment?
         get() = (activity as MainActivity).profileFragment ?: this
 

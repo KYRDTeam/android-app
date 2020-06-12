@@ -95,10 +95,10 @@
     <string name="default_source_amount">0.001</string>
     <string name="default_dest_balance_usd">≈ 0.0 USD</string>
     <string name="gas_fee_gwei">燃料费用（Gwei）</string>
-    <string name="gas_super_fast">%s\n极速</string>
-    <string name="gas_fast">%s\n快速</string>
-    <string name="gas_regular">%s\n标准</string>
-    <string name="gas_slow">%s\n慢</string>
+    <string name="gas_super_fast">%s 极速\n~ %s ETH</string>
+    <string name="gas_fast">%s 快速\n~ %s ETH</string>
+    <string name="gas_regular">%s 标准\n~ %s ETH</string>
+    <string name="gas_slow">%s 慢\n~ %s ETH</string>
     <string name="swap_rate_condition">仍然继续，即便%s-%s下降：</string>
     <string name="three_percentage">3%</string>
     <string name="percentage">%</string>
@@ -493,7 +493,7 @@
     <string name="campaign_result">结果</string>
     <string name="identity_info">身份信息</string>
     <string name="wallet_file_prefix">kyber_swap_</string>
-    <string name="address_not_eligible">这个地址已经被另一个账户所使用。请使用其他地址下单。</string>
+    <string name="address_not_eligible">这个地址已经被另一个账户所使用%s。请使用其他地址下单。</string>
     <string name="two_factor_authentication_2fa">双重认证（2FA）</string>
     <string name="two_fa_hint_token">Token</string>
     <string name="two_fa_continue">继续</string>
@@ -546,8 +546,8 @@
     <string name="landing_limit_order_description">以您的目标价格兑换，时刻掌控您的资金，低费用，便捷的用户体验</string>
     <string name="about_pdpa_update">About PDPA update</string>
     <string name="pdpa_content"><![CDATA[We are aware of the revised Advisory Guidelines on the PDPA for NRIC and other National Identification Numbers that Personal Data Protection Commission (PDPA) issued on 31 August 2018.\n\nWe seek your understanding that we are continuing  with the collection and use of NRIC Numbers / Foreign Identification Numbers / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers to ensure that KyberSwap does not deal with assets or funds that are proceeds of drug dealing, criminal conduct or property relating to money laundering or terrorism financing offence.\n\nWe assure you that we will undertake proper safeguarding measures to protect your personal data (including NRIC Numbers / FIN / Birth Certificate Numbers / Work Permit Numbers / Passport Numbers) under our care.\n\nContact us at support@kyberswap.com should you have any queries or concerns.]]></string>
-    <string name="notification_dropped">Dropped</string>
-    <string name="notification_dropped_message">Your transaction %s might be lost, please check Etherscan for more information</string>
+    <string name="notification_dropped">Transaction might be dropped, replaced or lost</string>
+    <string name="notification_dropped_message">Your transaction %s might be lost, dropped or replaced. Please check Etherscan for more information</string>
     <string name="swap_now">现在兑换</string>
     <string-array name="backup_wallet_description_bold">
         <item>@string/backup_wallet_description_2</item>
@@ -747,5 +747,8 @@
     <string name="error_underpriced_wallet_connect">You are having a pending transaction with the same nonce and higher gas price than this swap/transfer. Please wait for it completed, or please do this swap/transfer again with higher gas price than pending ones.</string>
     <string name="error_underpriced_transfer">You are having a pending transaction with the same nonce and higher gas price than this transfer. Please wait for it completed, or please do this transfer again with higher gas price than pending ones.</string>
     <string name="erorr_underpriced_transaction">You are having a pending transaction with the same nonce and higher gas price than this transaction. Please wait for it completed, or please do this transaction again with higher gas price than pending ones.</string>
+    <string name="higher_gas_faster_transaction">选择较高的燃料价格，以加快您的交易处理时间</string>
+    <string name="gas_price">Gas Price</string>
+    <string name="nonce">Nonce</string>
 
 </resources>

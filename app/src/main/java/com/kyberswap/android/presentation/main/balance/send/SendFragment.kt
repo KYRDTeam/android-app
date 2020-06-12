@@ -118,6 +118,8 @@ class SendFragment : BaseFragment() {
 
     private var helperText: String? = null
 
+    private var hasGasLimit: Boolean = false
+
     private val contactAddress: String
         get() = if (ilAddress.helperText.toString()
                 .isContact()
@@ -199,11 +201,19 @@ class SendFragment : BaseFragment() {
                             }
                             ilAddress.helperText = helperText
                         }
+
+                        val lastAddedFragment =
+                            currentFragment.childFragmentManager.fragments.lastOrNull()
+                        if ((lastAddedFragment is SendFragment) ||
+                            !hasGasLimit
+                        ) {
+                            viewModel.getGasLimit(
+                                state.send,
+                                wallet
+                            )
+                        }
+
                         viewModel.getGasPrice()
-                        viewModel.getGasLimit(
-                            state.send,
-                            wallet
-                        )
                     }
                     is GetSendState.ShowError -> {
                         showError(
@@ -487,7 +497,11 @@ class SendFragment : BaseFragment() {
                             gasLimit = state.gasLimit.toString()
                         )
 
-                        binding.send = send
+                        if (binding.send != send) {
+                            hasGasLimit = true
+                            binding.send = send
+                            binding.executePendingBindings()
+                        }
                     }
                     is GetGasLimitState.ShowError -> {
                         if (isNetworkAvailable()) {
@@ -838,6 +852,7 @@ class SendFragment : BaseFragment() {
         }
     }
 
+
     private fun saveSend(address: String = "") {
         binding.send?.let { send ->
             viewModel.saveSend(
@@ -915,6 +930,7 @@ class SendFragment : BaseFragment() {
 
     override fun onDestroyView() {
         handler.removeCallbacksAndMessages(null)
+        hasGasLimit = false
         super.onDestroyView()
     }
 

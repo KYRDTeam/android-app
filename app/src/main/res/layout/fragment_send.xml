@@ -481,7 +481,7 @@
                                         android:backgroundTint="#fea34c"
                                         android:paddingStart="4dp"
                                         android:paddingEnd="0dp"
-                                        android:text="@{String.format(@string/gas_super_fast, send.gas.superFast)}"
+                                        app:data="@{String.format(@string/gas_super_fast, send.gas.superFast, send.displayGasSuperFastFeeEth)}"
                                         android:textSize="12sp"
                                         android:theme="@style/CustomRadioTheme"
                                         app:font="@{@string/semi_bold_font_path}"
@@ -495,7 +495,7 @@
                                         android:backgroundTint="#fea34c"
                                         android:paddingStart="4dp"
                                         android:paddingEnd="0dp"
-                                        android:text="@{String.format(@string/gas_fast, send.gas.fast)}"
+                                        app:data="@{String.format(@string/gas_fast, send.gas.fast, send.displayGasFastFeeEth)}"
                                         android:textSize="12sp"
                                         android:theme="@style/CustomRadioTheme"
                                         app:font="@{@string/semi_bold_font_path}"
@@ -516,7 +516,7 @@
                                         android:backgroundTint="#fea34c"
                                         android:paddingStart="4dp"
                                         android:paddingEnd="0dp"
-                                        android:text="@{String.format(@string/gas_regular, send.gas.standard)}"
+                                        app:data="@{String.format(@string/gas_regular, send.gas.standard, send.displayGasStandardFeeEth)}"
                                         android:textSize="12sp"
                                         android:theme="@style/CustomRadioTheme"
                                         app:font="@{@string/semi_bold_font_path}"
@@ -530,7 +530,7 @@
                                         android:backgroundTint="#fea34c"
                                         android:paddingStart="4dp"
                                         android:paddingEnd="0dp"
-                                        android:text="@{String.format(@string/gas_slow, send.gas.low)}"
+                                        app:data="@{String.format(@string/gas_slow, send.gas.low, send.displayGasLowFeeEth)}"
                                         android:textSize="12sp"
                                         android:theme="@style/CustomRadioTheme"
                                         app:font="@{@string/semi_bold_font_path}"
@@ -551,6 +551,18 @@
 
 
                             </RadioGroup>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="20dp"
+                                android:layout_marginTop="18dp"
+                                android:layout_marginEnd="20dp"
+                                android:lineSpacingExtra="6sp"
+                                android:text="@string/higher_gas_faster_transaction"
+                                android:textAppearance="@style/TextAppearance.Roboto.SemiBold.Italic"
+                                android:textColor="#5a5e67"
+                                android:textSize="12sp" />
 
                         </LinearLayout>
 

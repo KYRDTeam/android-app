@@ -4,8 +4,8 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.kyberswap.android.data.api.limitorder.OrderEntity
-import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.exactAmount
+import com.kyberswap.android.util.ext.shortenValue
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toLongSafe
 import kotlinx.android.parcel.Parcelize
@@ -191,7 +191,7 @@ data class Order(
         get() = formatterShort.format(Date(time * 1000L))
 
     val displayAddress: String
-        get() = userAddr.displayWalletAddress()
+        get() = userAddr.shortenValue()
 
     companion object {
         val formatterShort = SimpleDateFormat("dd MMM yyyy", Locale.US)

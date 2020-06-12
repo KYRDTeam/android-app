@@ -172,6 +172,98 @@
             app:layout_constraintStart_toEndOf="@+id/textView35"
             tools:text="0.00034 ETH" />
 
+
+        <TextView
+            android:id="@+id/tvGasPriceTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="4dp"
+            android:lineSpacingExtra="12sp"
+            android:text="@string/gas_price"
+            android:textColor="#5a5e67"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@+id/tvGasPriceValue"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView35" />
+
+        <TextView
+            android:id="@+id/tvGasPriceValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="20dp"
+            android:gravity="end"
+            android:lineSpacingExtra="12sp"
+            android:text="@{transaction.displayGasPrice}"
+            android:textColor="#141927"
+            android:textSize="14sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tvGasPriceTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tvGasPriceTitle"
+            tools:text="0.0001 ETH (10Gwei)" />
+
+
+        <TextView
+            android:id="@+id/tvNonceTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="4dp"
+            android:lineSpacingExtra="12sp"
+            android:text="@string/nonce"
+            android:textColor="#5a5e67"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@+id/tvNonceValue"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvGasPriceTitle" />
+
+        <TextView
+            android:id="@+id/tvNonceValue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:gravity="end"
+            android:lineSpacingExtra="12sp"
+            android:text="@{transaction.nonce}"
+            android:textColor="#141927"
+            android:textSize="14sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tvNonceTitle"
+            app:layout_constraintEnd_toStartOf="@+id/tvNonceLabel"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tvNonceTitle"
+            tools:text="7" />
+
+
+        <TextView
+            android:id="@+id/tvNonceLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="20dp"
+            android:gravity="end"
+            android:lineSpacingExtra="12sp"
+            android:padding="4dp"
+            android:text="@{transaction.displayTransactionStatus}"
+            android:textAllCaps="true"
+            android:textColor="#141927"
+            android:textSize="10sp"
+            app:isPending="@{transaction.pendingTransaction}"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tvNonceTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tvNonceValue"
+            tools:ignore="SmallSp"
+            tools:text="PENDING" />
+
+
         <TextView
             android:id="@+id/textView36"
             android:layout_width="wrap_content"
@@ -181,8 +273,8 @@
             android:text="@string/txhash"
             android:textColor="#5a5e67"
             android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="@+id/textView35"
-            app:layout_constraintTop_toBottomOf="@+id/textView35" />
+            app:layout_constraintStart_toStartOf="@+id/tvNonceTitle"
+            app:layout_constraintTop_toBottomOf="@+id/tvNonceTitle" />
 
         <TextView
             android:id="@+id/textView37"

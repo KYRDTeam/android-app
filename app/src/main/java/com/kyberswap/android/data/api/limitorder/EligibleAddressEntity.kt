@@ -7,5 +7,7 @@ data class EligibleAddressEntity(
     @SerializedName("success")
     val success: Boolean = false,
     @SerializedName("eligible_address")
-    val eligibleAddress: Boolean = false
+    val eligibleAddress: Boolean = false,
+    @SerializedName("account")
+    val account: String? = ""
 )

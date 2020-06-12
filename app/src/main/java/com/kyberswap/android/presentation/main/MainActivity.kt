@@ -128,6 +128,8 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
     private var hasDone = false
 
+    private var emptyCount = 0
+
     val mainViewModel: MainViewModel by lazy {
         ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
     }
@@ -482,11 +484,11 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetPendingTransactionState.Success -> {
-                        val txList = state.transactions.filter {
+                        val minedList = state.transactions.filter {
                             it.blockNumber.isNotEmpty() && it.blockNumber.toLongSafe() != Transaction.DEFAULT_DROPPED_BLOCK_NUMBER
                         }
 
-                        txList.forEach { transaction ->
+                        minedList.forEach { transaction ->
                             hasDone = true
                             showDialog(
                                 AlertDialogFragment.DIALOG_TYPE_DONE,
@@ -501,14 +503,22 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                         if (currentDialogFragment != null) {
                             handler.postDelayed(
                                 {
-                                    if (pendingList.isEmpty() && txList.isEmpty() && hasDone) {
-                                        if (currentDialogFragment is AlertDialogFragment) {
-                                            if (!(currentDialogFragment as AlertDialogFragment).isDone) {
-                                                currentDialogFragment?.dismissAllowingStateLoss()
-                                                hasDone = false
-                                                currentDialogFragment = null
+                                    if (pendingList.isEmpty() && minedList.isEmpty()) {
+                                        // Need to check empty count, if the pending list and minedList happen 2 times consequently mean transaction already were mined so we could dismiss the dialog
+                                        if (emptyCount < 2) {
+                                            emptyCount++
+                                        }
+                                        if (hasDone || emptyCount > 1) {
+                                            if (currentDialogFragment is AlertDialogFragment) {
+                                                if (!(currentDialogFragment as AlertDialogFragment).isDone) {
+                                                    currentDialogFragment?.dismissAllowingStateLoss()
+                                                    hasDone = false
+                                                    currentDialogFragment = null
+                                                }
                                             }
                                         }
+                                    } else {
+                                        emptyCount = 0
                                     }
                                 }, 500
                             )

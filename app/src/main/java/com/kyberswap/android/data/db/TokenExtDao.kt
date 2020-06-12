@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.kyberswap.android.domain.model.TokenExt
 import io.reactivex.Flowable
@@ -23,6 +24,12 @@ interface TokenExtDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertTokenExtras(tokenExtras: List<TokenExt>)
+
+    @Transaction
+    fun batchInsertTokenExtras(tokenExtras: List<TokenExt>) {
+        deleteAllTokens()
+        insertTokenExtras(tokenExtras)
+    }
 
     @Delete
     fun deleteTokenExt(tokenExt: TokenExt)

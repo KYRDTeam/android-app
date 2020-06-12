@@ -36,7 +36,7 @@ import com.kyberswap.android.domain.usecase.transaction.SaveTransactionFilterUse
 import com.kyberswap.android.domain.usecase.transaction.SpeedUpOrCancelTransactionUseCase
 import com.kyberswap.android.domain.usecase.transaction.TransactionsData
 import com.kyberswap.android.util.TokenClient
-import com.kyberswap.android.util.ext.displayWalletAddress
+import com.kyberswap.android.util.ext.shortenValue
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
@@ -86,7 +86,7 @@ class TransactionDataRepository @Inject constructor(
                     transaction?.let {
                         if (tx.blockNumber.toLongSafe() > 0) {
                             if (tx.blockNumber.toLongSafe() == Transaction.DEFAULT_DROPPED_BLOCK_NUMBER) {
-                                sendNotification(tx, true)
+                                sendNotification(tx, !tx.isCancel)
                             }
                             transactionDao.delete(it)
                             updateBalance(it, param.wallet)
@@ -513,6 +513,7 @@ class TransactionDataRepository @Inject constructor(
                     pendingTransactions.filter { pending ->
                         pending.nonce.toBigIntegerOrDefaultZero() <= latestNonce
                     }.forEach { filteredPending ->
+                        sendNotification(filteredPending, !filteredPending.isCancel)
                         transactionDao.delete(filteredPending)
                     }
                 }
@@ -528,7 +529,7 @@ class TransactionDataRepository @Inject constructor(
     }
 
     private fun sendNotification(transaction: Transaction, isDropped: Boolean = false) {
-        if (Date().time / 1000 - transaction.timeStamp <= 5 * 60) {
+        if (Date().time / 1000 - transaction.timeStamp <= 5 * 60 || isDropped) {
 
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data =
@@ -548,11 +549,11 @@ class TransactionDataRepository @Inject constructor(
                     )
                 val message: String = if (isDropped) String.format(
                     context.getString(R.string.notification_dropped_message),
-                    transaction.hash
+                    transaction.hash.shortenValue()
                 ) else String.format(
                     context.getString(R.string.notification_success_received),
                     transaction.displayValue,
-                    transaction.from.displayWalletAddress()
+                    transaction.from.shortenValue()
                 )
 
                 val channelId = context.getString(R.string.default_notification_channel_id)

@@ -13,8 +13,25 @@
             type="String" />
 
         <variable
+            name="feeFast"
+            type="String" />
+
+        <variable
+            name="feeSuperFast"
+            type="String" />
+
+        <variable
+            name="feeStandard"
+            type="String" />
+
+        <variable
+            name="feeSlow"
+            type="String" />
+
+        <variable
             name="gas"
             type="com.kyberswap.android.domain.model.Gas" />
+
     </data>
 
     <net.cachapa.expandablelayout.ExpandableLayout
@@ -75,7 +92,7 @@
                         android:backgroundTint="#fea34c"
                         android:paddingStart="4dp"
                         android:paddingEnd="0dp"
-                        android:text="@{String.format(@string/gas_super_fast, gas.superFast)}"
+                        app:data="@{String.format(@string/gas_super_fast, gas.superFast, feeSuperFast)}"
                         android:textSize="12sp"
                         android:theme="@style/CustomRadioTheme"
                         app:font="@{@string/semi_bold_font_path}"
@@ -89,7 +106,7 @@
                         android:backgroundTint="#fea34c"
                         android:paddingStart="4dp"
                         android:paddingEnd="0dp"
-                        android:text="@{String.format(@string/gas_fast, gas.fast)}"
+                        app:data="@{String.format(@string/gas_fast, gas.fast, feeFast)}"
                         android:textSize="12sp"
                         android:theme="@style/CustomRadioTheme"
                         app:font="@{@string/semi_bold_font_path}"
@@ -110,7 +127,7 @@
                         android:backgroundTint="#fea34c"
                         android:paddingStart="4dp"
                         android:paddingEnd="0dp"
-                        android:text="@{String.format(@string/gas_regular, gas.standard)}"
+                        app:data="@{String.format(@string/gas_regular, gas.standard, feeStandard)}"
                         android:textSize="12sp"
                         android:theme="@style/CustomRadioTheme"
                         app:font="@{@string/semi_bold_font_path}"
@@ -124,7 +141,7 @@
                         android:backgroundTint="#fea34c"
                         android:paddingStart="4dp"
                         android:paddingEnd="0dp"
-                        android:text="@{String.format(@string/gas_slow, gas.low)}"
+                        app:data="@{String.format(@string/gas_slow, gas.low, feeSlow)}"
                         android:textSize="12sp"
                         android:theme="@style/CustomRadioTheme"
                         app:font="@{@string/semi_bold_font_path}"
@@ -133,13 +150,26 @@
 
             </RadioGroup>
 
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="18dp"
+                android:layout_marginEnd="20dp"
+                android:lineSpacingExtra="6sp"
+                android:text="@string/higher_gas_faster_transaction"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold.Italic"
+                android:textColor="#5a5e67"
+                android:textSize="12sp" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="11dp"
+                android:layout_marginTop="13dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginBottom="11dp"
+                android:layout_marginBottom="13dp"
                 android:background="#e1e4eb" />
 
             <TextView
@@ -185,11 +215,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
                     android:background="@drawable/rounded_corner_edittext_toggle_background"
-                    android:maxLength="3"
                     android:enabled="false"
                     android:gravity="center|end"
                     android:hint="@string/three_percentage"
                     android:inputType="numberDecimal"
+                    android:maxLength="3"
                     android:minWidth="92dp"
                     android:minHeight="36dp"
                     android:paddingStart="10dp"

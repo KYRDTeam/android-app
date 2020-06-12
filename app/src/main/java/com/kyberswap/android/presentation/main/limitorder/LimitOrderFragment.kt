@@ -475,7 +475,10 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                             if (state.eligibleAddress.success && !state.eligibleAddress.eligibleAddress && currentFragment is LimitOrderV2Fragment) {
                                 showAlertWithoutIcon(
                                     title = getString(R.string.title_error),
-                                    message = getString(R.string.address_not_eligible)
+                                    message = String.format(
+                                        getString(R.string.address_not_eligible),
+                                        if (state.eligibleAddress.account.isNotBlank()) """ (${state.eligibleAddress.account})""" else ""
+                                    )
                                 )
                             }
                         }
@@ -954,10 +957,10 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                     )
                 }
                 srcAmount.toBigDecimalOrDefaultZero() >
-                        viewModel.calAvailableAmount(
-                            binding.order?.tokenSource,
-                            pendingBalances
-                        ).toBigDecimalOrDefaultZero() -> {
+                    viewModel.calAvailableAmount(
+                        binding.order?.tokenSource,
+                        pendingBalances
+                    ).toBigDecimalOrDefaultZero() -> {
                     showAlertWithoutIcon(
                         title = getString(R.string.title_amount_too_big),
                         message = getString(R.string.limit_order_insufficient_balance)
@@ -1009,7 +1012,10 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                 eleigibleAddress?.success == true && eleigibleAddress?.eligibleAddress != true -> {
                     showAlertWithoutIcon(
                         title = getString(R.string.title_error),
-                        message = getString(R.string.address_not_eligible)
+                        message = String.format(
+                            getString(R.string.address_not_eligible),
+                            if (eleigibleAddress?.account?.isNotBlank() == true) """ (${eleigibleAddress?.account})""" else ""
+                        )
                     )
                 }
 

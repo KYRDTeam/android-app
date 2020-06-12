@@ -148,7 +148,7 @@ fun CharSequence?.toBigDecimalOrDefaultZero(): BigDecimal {
     }
 }
 
-fun String.displayWalletAddress(): String {
+fun String.shortenValue(): String {
     return StringBuilder()
         .append(substring(0, if (length > 5) 5 else length))
         .append("...")

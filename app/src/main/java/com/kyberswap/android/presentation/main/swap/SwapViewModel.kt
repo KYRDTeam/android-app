@@ -22,6 +22,7 @@ import com.kyberswap.android.domain.usecase.wallet.CheckEligibleWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
+import com.kyberswap.android.presentation.common.MIN_SUPPORT_AMOUNT
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
 import com.kyberswap.android.presentation.common.specialGasLimitDefault
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
@@ -213,7 +214,7 @@ class SwapViewModel @Inject constructor(
         )
     }
 
-    fun checkEligibleWallet(wallet: Wallet, swap: Swap) {
+    fun verifySwap(wallet: Wallet, swap: Swap) {
         checkEligibleWalletUseCase.dispose()
         _checkEligibleWalletCallback.postValue(Event(CheckEligibleWalletState.Loading))
         getExpectedRateSequentialUseCase.dispose()
@@ -309,6 +310,7 @@ class SwapViewModel @Inject constructor(
     fun getGasLimit(wallet: Wallet?, swap: Swap?) {
         if (wallet == null || swap == null) return
         if (swap.sourceAmount.isEmpty() || (swap.sourceAmount.toBigDecimalOrDefaultZero() == BigDecimal.ZERO)) return
+        if (swap.ethToken.currentBalance <= MIN_SUPPORT_AMOUNT) return
         estimateGasUseCase.dispose()
         estimateGasUseCase.execute(
             Consumer {

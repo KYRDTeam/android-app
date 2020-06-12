@@ -62,6 +62,10 @@
     <color name="order_status_in_progress">#deebff</color>
     <color name="order_status_cancelled">#ffebe5</color>
     <color name="order_status_invalidated">#f7e8ad</color>
+    <color name="pending_transaction">#ffecd5</color>
+    <color name="mined_transaction">#bbfed5</color>
+    <color name="mined_transaction_text">#29a279</color>
+    <color name="pending_transaction_text">#ff9008</color>
     <color name="color_trigger_alert_price">#9ea1aa</color>
     <color name="text_order_status_open">#403294</color>
     <color name="text_order_status_filled">#006644</color>

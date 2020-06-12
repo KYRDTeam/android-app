@@ -891,7 +891,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 //                                    data, true
 //                                )
 //                            }
-                            viewModel.checkEligibleWallet(it, data)
+                            viewModel.verifySwap(it, data)
                         }
                     }
                 }

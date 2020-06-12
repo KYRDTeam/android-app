@@ -8,8 +8,8 @@ import androidx.room.TypeConverters
 import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.data.api.transaction.TransactionEntity
 import com.kyberswap.android.data.db.TransactionTypeConverter
-import com.kyberswap.android.util.ext.displayWalletAddress
 import com.kyberswap.android.util.ext.safeToString
+import com.kyberswap.android.util.ext.shortenValue
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleSafe
@@ -291,6 +291,7 @@ data class Transaction(
         const val PENDING = 0
         const val MINED = 1
         const val PENDING_TRANSACTION_STATUS = "pending"
+        const val MINED_TRANSACTION_STATUS = "mined"
         var formatterShort = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
         var formatterFull = SimpleDateFormat("EEEE, dd MMM yyyy HH:mm:ss", Locale.getDefault())
         var formatterFilter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -354,11 +355,14 @@ data class Transaction(
         return isTransfer && to == walletAddress
     }
 
+    val displayTransactionStatus: String
+        get() = if (isPendingTransaction) PENDING_TRANSACTION_STATUS else MINED_TRANSACTION_STATUS
+
     val displayRate: String
         get() =
             if (isTransfer) {
                 StringBuilder()
-                    .append(if (isSend) "To: ${to.displayWalletAddress()}" else "From: ${from.displayWalletAddress()}")
+                    .append(if (isSend) "To: ${to.shortenValue()}" else "From: ${from.shortenValue()}")
                     .toString()
             } else {
                 displaySwapRate
@@ -394,6 +398,22 @@ data class Transaction(
             , Convert.Unit.ETHER
         ).toDisplayNumber()
     }
+
+    val displayGasPrice: String
+        get() = StringBuilder().append(
+            Convert.fromWei(
+                gasPrice.toBigDecimalOrDefaultZero(),
+                Convert.Unit.ETHER
+            ).toDisplayNumber()
+        )
+            .append(" ")
+            .append("ETH")
+            .append(" ")
+            .append("(")
+            .append(Convert.fromWei(gasPrice, Convert.Unit.GWEI))
+            .append(" Gwei")
+            .append(")")
+            .toString()
 
     fun getFeeFromWei(gasPrice: String): String {
         return Convert.fromWei(

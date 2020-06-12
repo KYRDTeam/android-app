@@ -25,7 +25,7 @@ const val USER_CLICK_SPEED_UP_TX_EVENT = "user_click_speed_up_tx_event"
 const val USER_CLICK_SUBMIT_SPEED_UP_TX_EVENT = "user_click_submit_speed_up_tx_event"
 const val USER_CLICK_CANCEL_TX_EVENT = "user_click_cancel_tx_event"
 const val USER_CLICK_SUBMIT_CANCEL_TX_EVENT = "user_click_submit_cancel_tx_event"
-const val TX_SPEED_UP_CANCEL_DROPPED_EVENT = "tx_dropped_event"
+const val TX_DROPPED_EVENT = "tx_dropped_event"
 const val FAIL_CANCEL_TX_EVENT = "fail_cancel_tx"
 const val FAIL_SPEED_UP_TX_EVENT = "fail_speed_up_tx"
 
@@ -102,5 +102,9 @@ const val GET_GAS_LIMIT_ERROR = "transfer_get_gas_limit_error"
 const val TRANSFER_BROADCAST_ERROR = "transfer_broadcast_error"
 const val SW_BROADCAST_ERROR = "transfer_broadcast_error"
 const val SW_CONFIRMED_ERROR = "swap_confirmed_error"
+
+const val ALCHEMY_BROADCAST_NODE_ERROR = "alchemy_broadcast_node_error"
+const val INFURA_BROADCAST_NODE_ERROR = "infura_broadcast_node_error"
+const val SEMINODE_BROADCAST_NODE_ERROR = "seminode_broadcast_node_error"
 
 
