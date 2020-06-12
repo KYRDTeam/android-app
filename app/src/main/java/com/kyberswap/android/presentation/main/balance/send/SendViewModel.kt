@@ -34,7 +34,6 @@ import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
-import timber.log.Timber
 import java.math.BigInteger
 import javax.inject.Inject
 
@@ -215,7 +214,6 @@ class SendViewModel @Inject constructor(
         if (send == null || wallet == null) return
         if (send.tokenSource.isETH && send.contact.address.isEmpty()) return
         if (send.ethToken.currentBalance <= MIN_SUPPORT_AMOUNT) return
-        Timber.e("gasLimit ViewModel")
         estimateTransferGasUseCase.dispose()
         estimateTransferGasUseCase.execute(
             Consumer {
