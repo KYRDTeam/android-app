@@ -744,6 +744,8 @@
     <string name="higher_gas_faster_transaction">Select higher gas price to accelerate your transaction processing time</string>
     <string name="gas_price">Gas Price</string>
     <string name="nonce">Nonce</string>
+    <string name="under_price_error_message" translatable="false">replacement transaction underpriced</string>
+    <string name="under_price_error_message_1" translatable="false">transaction underpriced</string>
 
 
     <string-array name="proof_address">

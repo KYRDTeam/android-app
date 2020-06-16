@@ -513,6 +513,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                                                 if (!(currentDialogFragment as AlertDialogFragment).isDone) {
                                                     currentDialogFragment?.dismissAllowingStateLoss()
                                                     hasDone = false
+                                                    emptyCount = 0
                                                     currentDialogFragment = null
                                                 }
                                             }
@@ -887,6 +888,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
     }
 
     fun showDialog(type: Int, transaction: Transaction) {
+
         currentDialogFragment?.dismiss()
         val fragment = AlertDialogFragment.newInstance(type, transaction, wallet?.address)
         fragment.setCallback(this)
