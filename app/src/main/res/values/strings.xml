@@ -746,6 +746,7 @@
     <string name="nonce">Nonce</string>
     <string name="under_price_error_message" translatable="false">replacement transaction underpriced</string>
     <string name="under_price_error_message_1" translatable="false">transaction underpriced</string>
+    <string name="under_price_error_message_2" translatable="false">known transaction</string>
 
 
     <string-array name="proof_address">

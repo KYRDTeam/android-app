@@ -33,10 +33,8 @@ class ManageWalletFragment : BaseFragment() {
     @Inject
     lateinit var navigator: Navigator
 
-
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
-
 
     @Inject
     lateinit var appExecutors: AppExecutors
@@ -82,7 +80,6 @@ class ManageWalletFragment : BaseFragment() {
                                 {
                                     viewModel.deleteWallet(it)
                                 })
-
 
                         })
                 },
@@ -133,7 +130,6 @@ class ManageWalletFragment : BaseFragment() {
                     dialogHelper.showConfirmation {
                         viewModel.createWallet()
                     }
-
                 },
                 {
                     navigator.navigateToImportWalletPage()
@@ -150,7 +146,6 @@ class ManageWalletFragment : BaseFragment() {
                         showAlert(getString(R.string.create_wallet_success)) {
                             navigator.navigateToBackupWalletPage(state.words, state.wallet, true)
                         }
-
                     }
                     is CreateWalletState.ShowError -> {
                         showError(
@@ -208,6 +203,4 @@ class ManageWalletFragment : BaseFragment() {
         fun newInstance() =
             ManageWalletFragment()
     }
-
-
 }

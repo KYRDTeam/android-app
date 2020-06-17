@@ -154,7 +154,11 @@ class DialogHelper @Inject constructor(
     }
 
 
-    fun showBottomSheetDialog(onClickCreateWallet: () -> Unit, onClickImportWallet: () -> Unit) {
+    fun showBottomSheetDialog(
+        onClickCreateWallet: () -> Unit,
+        onClickImportWallet: () -> Unit,
+        onCancel: () -> Unit = {}
+    ) {
 
         val binding = DataBindingUtil.inflate<DialogBottomSheetBinding>(
             LayoutInflater.from(activity), R.layout.dialog_bottom_sheet, null, false
@@ -174,6 +178,7 @@ class DialogHelper @Inject constructor(
         }
 
         binding.tvCancel.setOnClickListener {
+            onCancel.invoke()
             dialog.dismiss()
         }
 

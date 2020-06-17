@@ -60,6 +60,13 @@ import com.kyberswap.android.presentation.main.setting.SettingFragment
 import com.kyberswap.android.presentation.main.swap.SwapFragment
 import com.kyberswap.android.presentation.main.walletconnect.WalletConnectFragment
 import com.kyberswap.android.presentation.wallet.UpdateWalletState
+import com.kyberswap.android.util.BALANCE_MENU_KYBERCODE
+import com.kyberswap.android.util.BALANCE_MENU_MYWALLET_CANCEL
+import com.kyberswap.android.util.BALANCE_MENU_MYWALLET_CREATE
+import com.kyberswap.android.util.BALANCE_MENU_MYWALLET_IMPORT
+import com.kyberswap.android.util.BALANCE_MENU_TNX
+import com.kyberswap.android.util.BALANCE_MENU_TRANSFER
+import com.kyberswap.android.util.BALANCE_MENU_WALLETCONNECT
 import com.kyberswap.android.util.CLICK_WALLET_CONNECT_EVENT
 import com.kyberswap.android.util.MN_USER_CLICK_COPY_WALLET_ADDRESS
 import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_DISMISS
@@ -562,6 +569,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                     }
                 }, 250
             )
+            firebaseAnalytics.logEvent(BALANCE_MENU_TNX, Bundle().createEvent())
         }
 
         tvKyberCode.setOnClickListener {
@@ -575,6 +583,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                     }
                 }, 250
             )
+            firebaseAnalytics.logEvent(BALANCE_MENU_KYBERCODE, Bundle().createEvent())
         }
 
         imgAdd.setOnClickListener {
@@ -585,12 +594,24 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                         {
                             dialogHelper.showConfirmation {
                                 mainViewModel.createWallet()
+                                firebaseAnalytics.logEvent(
+                                    BALANCE_MENU_MYWALLET_CREATE,
+                                    Bundle().createEvent()
+                                )
                             }
 
                         },
                         {
                             navigator.navigateToImportWalletPage()
-
+                            firebaseAnalytics.logEvent(
+                                BALANCE_MENU_MYWALLET_IMPORT,
+                                Bundle().createEvent()
+                            )
+                        }, {
+                            firebaseAnalytics.logEvent(
+                                BALANCE_MENU_MYWALLET_CANCEL,
+                                Bundle().createEvent()
+                            )
                         }
                     )
                 }, 250
@@ -661,6 +682,8 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                     }
                 }, 250
             )
+
+            firebaseAnalytics.logEvent(BALANCE_MENU_TRANSFER, Bundle().createEvent())
         }
 
 
@@ -1023,6 +1046,8 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                     wallet,
                     scanResult.contents
                 )
+
+                firebaseAnalytics.logEvent(BALANCE_MENU_WALLETCONNECT, Bundle().createEvent())
 
             }
         }
