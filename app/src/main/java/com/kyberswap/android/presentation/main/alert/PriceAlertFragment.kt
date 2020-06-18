@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
@@ -22,7 +23,14 @@ import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.profile.alert.GetNumberAlertsState
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.ALERT_ADDED
+import com.kyberswap.android.util.ALERT_BACK
+import com.kyberswap.android.util.ALERT_PRICE
+import com.kyberswap.android.util.ALERT_TOKEN_TAPPED
+import com.kyberswap.android.util.CURRENT_PRICE
+import com.kyberswap.android.util.TOKEN_PAIR
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.percentage
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
@@ -54,6 +62,9 @@ class PriceAlertFragment : BaseFragment() {
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
+
+    @Inject
+    lateinit var analytics: FirebaseAnalytics
 
     private var clearAlertPrice = false
 
@@ -191,6 +202,10 @@ class PriceAlertFragment : BaseFragment() {
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
+            analytics.logEvent(
+                ALERT_BACK,
+                Bundle().createEvent()
+            )
         }
 
         binding.imgDone.setOnClickListener {
@@ -221,13 +236,27 @@ class PriceAlertFragment : BaseFragment() {
                     )
                 }
 
-                else -> viewModel.createOrUpdateAlert(
-                    alert?.copy(
-                        base = unit,
-                        alertPrice = binding.edtRate.toBigDecimalOrDefaultZero(),
-                        isAbove = binding.ratePercentage.toBigDecimalOrDefaultZero() > BigDecimal.ZERO
+                else -> {
+                    viewModel.createOrUpdateAlert(
+                        alert?.copy(
+                            base = unit,
+                            alertPrice = binding.edtRate.toBigDecimalOrDefaultZero(),
+                            isAbove = binding.ratePercentage.toBigDecimalOrDefaultZero() > BigDecimal.ZERO
+                        )
                     )
-                )
+
+                    analytics.logEvent(
+                        ALERT_ADDED,
+                        Bundle().createEvent(
+                            listOf(TOKEN_PAIR, CURRENT_PRICE, ALERT_PRICE),
+                            listOf(
+                                binding.tvToken.text.toString(),
+                                price?.toDisplayNumber(),
+                                binding.edtRate.toBigDecimalOrDefaultZero().toDisplayNumber()
+                            )
+                        )
+                    )
+                }
             }
         }
 
@@ -235,6 +264,11 @@ class PriceAlertFragment : BaseFragment() {
             navigator.navigateToTokenSelection(
                 currentFragment, wallet, alert
             )
+            analytics.logEvent(
+                ALERT_TOKEN_TAPPED,
+                Bundle().createEvent()
+            )
+
         }
 
         binding.edtRate.setOnEditorActionListener { v, actionId, _ ->

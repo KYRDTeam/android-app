@@ -236,6 +236,8 @@ const val SRC_TOKEN = "src_token"
 const val DES_TOKEN = "des_token"
 
 // Value for param
+
+// Balance
 const val KYBER_LISTED = "kyber listed"
 const val FAVOURITE = "favourite"
 const val OTHERS = "others"
@@ -244,3 +246,16 @@ const val BAL = "bal"
 const val ETH = "eth"
 const val USD = "usd"
 const val CHANGE_24H = "24h"
+
+// Chart
+const val CHART_24H = "24h"
+const val CHART_7DAYS = "7days"
+const val CHART_MONTH = "month"
+const val CHART_YEAR = "year"
+const val CHART_ALL = "all"
+
+// slow/regular/fast/super fast
+const val GAS_OPTIONS_SLOW = "slow"
+const val GAS_OPTIONS_REGULAR = "regular"
+const val GAS_OPTIONS_FAST = "fast"
+const val GAS_OPTIONS_SUPER_FAST = "super fast"

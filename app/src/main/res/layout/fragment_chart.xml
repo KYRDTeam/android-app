@@ -65,7 +65,7 @@
                 app:layout_constraintStart_toStartOf="parent">
 
                 <ImageView
-                    android:id="@+id/imageView2"
+                    android:id="@+id/imgToken"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_marginStart="16dp"
@@ -92,7 +92,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/tvTokenBalance"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintHorizontal_chainStyle="spread_inside"
-                    app:layout_constraintStart_toEndOf="@+id/imageView2"
+                    app:layout_constraintStart_toEndOf="@+id/imgToken"
                     app:layout_constraintStart_toStartOf="@+id/tvTokenName"
                     app:layout_constraintTop_toTopOf="parent" />
 

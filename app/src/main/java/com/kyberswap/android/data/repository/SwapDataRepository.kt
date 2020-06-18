@@ -398,7 +398,7 @@ class SwapDataRepository @Inject constructor(
     private fun getPairFromPromoWallet(promo: Promo?): Pair<String, String> {
         val sourceToken: String = context.getString(R.string.promo_source_token)
         val destToken =
-            if (promo?.destinationToken?.isNotEmpty() == true) promo.destinationToken else Token.KNC
+            if (promo?.destinationToken?.isNotBlank() == true) promo.destinationToken else Token.KNC
 
         return Pair(sourceToken, destToken)
     }

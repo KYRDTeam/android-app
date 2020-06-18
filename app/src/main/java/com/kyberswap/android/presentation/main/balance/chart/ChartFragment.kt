@@ -25,10 +25,23 @@ import com.kyberswap.android.presentation.main.limitorder.LimitOrderV2Fragment
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.presentation.splash.GetWalletState
-import com.kyberswap.android.util.CH_USER_CLICK_BUY_LIMIT_ORDER
-import com.kyberswap.android.util.CH_USER_CLICK_SELL_LIMIT_ORDER
+import com.kyberswap.android.util.CHART_24H
+import com.kyberswap.android.util.CHART_7DAYS
+import com.kyberswap.android.util.CHART_ALL
+import com.kyberswap.android.util.CHART_BACK
+import com.kyberswap.android.util.CHART_BUY_LO_TAPPED
+import com.kyberswap.android.util.CHART_BUY_TAPPED
+import com.kyberswap.android.util.CHART_MONTH
+import com.kyberswap.android.util.CHART_SELL_LO_TAPPED
+import com.kyberswap.android.util.CHART_SELL_TAPPED
+import com.kyberswap.android.util.CHART_TIME_FRAME
+import com.kyberswap.android.util.CHART_TOKEN_INFO
+import com.kyberswap.android.util.CHART_YEAR
+import com.kyberswap.android.util.TIME
+import com.kyberswap.android.util.TOKEN_NAME
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
+import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleSafe
@@ -132,6 +145,11 @@ class ChartFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
+            analytics.logEvent(
+                CHART_BACK,
+                Bundle().createEvent()
+            )
+
         }
         viewModel.getSelectedWallet()
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
@@ -235,6 +253,18 @@ class ChartFragment : BaseFragment() {
             listener.onPageSelected(0)
         }
 
+        binding.imgToken.setOnClickListener {
+            token?.let {
+                openUrl(getString(R.string.token_etherscan_endpoint_url) + it.tokenAddress)
+                analytics.logEvent(
+                    CHART_TOKEN_INFO,
+                    Bundle().createEvent(TOKEN_NAME, it.tokenSymbol)
+                )
+
+            }
+
+        }
+
         binding.tvBuy.setOnClickListener {
             wallet?.let { wallet ->
                 token?.let {
@@ -243,6 +273,11 @@ class ChartFragment : BaseFragment() {
                     } else {
                         viewModel.save(wallet.address, token!!, false)
                     }
+                    analytics.logEvent(
+                        CHART_BUY_TAPPED,
+                        Bundle().createEvent(TOKEN_NAME, it.tokenSymbol)
+                    )
+
                 }
             }
 
@@ -254,8 +289,8 @@ class ChartFragment : BaseFragment() {
                 activity?.onBackPressed()
             }
             analytics.logEvent(
-                CH_USER_CLICK_BUY_LIMIT_ORDER,
-                Bundle().createEvent()
+                CHART_BUY_LO_TAPPED,
+                Bundle().createEvent(TOKEN_NAME, token?.tokenSymbol)
             )
         }
 
@@ -265,8 +300,8 @@ class ChartFragment : BaseFragment() {
                 activity?.onBackPressed()
             }
             analytics.logEvent(
-                CH_USER_CLICK_SELL_LIMIT_ORDER,
-                Bundle().createEvent()
+                CHART_SELL_LO_TAPPED,
+                Bundle().createEvent(TOKEN_NAME, token?.tokenSymbol)
             )
         }
 
@@ -278,6 +313,11 @@ class ChartFragment : BaseFragment() {
                     } else {
                         viewModel.save(wallet.address, token!!, true)
                     }
+
+                    analytics.logEvent(
+                        CHART_SELL_TAPPED,
+                        Bundle().createEvent(TOKEN_NAME, it.tokenSymbol)
+                    )
 
                 }
             }
@@ -307,6 +347,21 @@ class ChartFragment : BaseFragment() {
             override fun onTabSelected(p0: TabLayout.Tab?) {
                 p0?.let {
                     currentSelection = p0.position
+                    val timeFrame = if (currentSelection == ChartType.DAY.ordinal) {
+                        CHART_24H
+                    } else if (currentSelection == ChartType.WEEK.ordinal) {
+                        CHART_7DAYS
+                    } else if (currentSelection == ChartType.MONTH.ordinal) {
+                        CHART_MONTH
+                    } else if (currentSelection == ChartType.YEAR.ordinal) {
+                        CHART_YEAR
+                    } else {
+                        CHART_ALL
+                    }
+                    analytics.logEvent(
+                        CHART_TIME_FRAME,
+                        Bundle().createEvent(TIME, timeFrame)
+                    )
                 }
             }
         })
