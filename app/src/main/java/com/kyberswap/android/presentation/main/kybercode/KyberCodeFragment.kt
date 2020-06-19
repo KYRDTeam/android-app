@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentKyberCodeBinding
@@ -15,7 +16,11 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.listener.addTextChangeListener
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainPagerAdapter
+import com.kyberswap.android.util.ERROR_TEXT
+import com.kyberswap.android.util.KYBERCODE_APPLY
+import com.kyberswap.android.util.KYBERCODE_ERROR
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.hideKeyboard
 import org.consenlabs.tokencore.wallet.model.Messages
 import javax.inject.Inject
@@ -36,6 +41,9 @@ class KyberCodeFragment : BaseFragment() {
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
     private var fromLandingPage: Boolean? = null
+
+    @Inject
+    lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private val viewModel by lazy {
         ViewModelProvider(this, viewModelFactory).get(KyberCodeViewModel::class.java)
@@ -88,6 +96,7 @@ class KyberCodeFragment : BaseFragment() {
                                 ), state.wallet.expiredDatePromoCode
                             )
                         ) {
+                            firebaseAnalytics.logEvent(KYBERCODE_APPLY, Bundle().createEvent())
                             onKyberCodeFinish()
                         }
                     }
@@ -124,6 +133,10 @@ class KyberCodeFragment : BaseFragment() {
                         }
                         showAlertWithoutIcon(
                             message = message
+                        )
+                        firebaseAnalytics.logEvent(
+                            KYBERCODE_ERROR,
+                            Bundle().createEvent(ERROR_TEXT, message)
                         )
                     }
                 }

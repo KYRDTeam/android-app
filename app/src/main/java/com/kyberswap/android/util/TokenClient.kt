@@ -532,7 +532,19 @@ class TokenClient @Inject constructor(
                 )
             )
 
-            if (transactionResponseAlchemyNode.error?.code == -32000) {
+            if (transactionResponseAlchemyNode.error?.message?.contains(
+                    context.getString(R.string.under_price_error_message),
+                    true
+                ) == true ||
+                transactionResponseAlchemyNode.error?.message?.contains(
+                    context.getString(R.string.under_price_error_message_1),
+                    true
+                ) == true ||
+                transactionResponseAlchemyNode.error?.message?.contains(
+                    context.getString(R.string.under_price_error_message_2),
+                    true
+                ) == true
+            ) {
                 throw RuntimeException(
                     context.getString(R.string.error_underpriced_wallet_connect)
                 )
@@ -605,10 +617,6 @@ class TokenClient @Inject constructor(
         val transactionResponseInfuraNode = txManagerWithInfuraNode.signAndSend(tx)
         val transactionResponseSemiNode = txManagerWithSemiNode.signAndSend(tx)
 
-
-
-
-
         if (transactionResponseAlchemyNode?.hasError() == true &&
             transactionResponseInfuraNode?.hasError() == true &&
             transactionResponseSemiNode?.hasError() == true
@@ -622,7 +630,19 @@ class TokenClient @Inject constructor(
                 )
             )
 
-            if (transactionResponseAlchemyNode.error?.code == -32000) {
+            if (transactionResponseAlchemyNode.error?.message?.contains(
+                    context.getString(R.string.under_price_error_message),
+                    true
+                ) == true ||
+                transactionResponseAlchemyNode.error?.message?.contains(
+                    context.getString(R.string.under_price_error_message_1),
+                    true
+                ) == true ||
+                transactionResponseAlchemyNode.error?.message?.contains(
+                    context.getString(R.string.under_price_error_message_2),
+                    true
+                ) == true
+            ) {
                 throw RuntimeException(
                     context.getString(R.string.error_underpriced_transfer)
                 )
@@ -662,7 +682,7 @@ class TokenClient @Inject constructor(
         credentials: Credentials
 
     ): Pair<String?, BigInteger> {
-        val localNonce = getTransactionNonce(walletAddress)
+        val localNonce = getTransactionNonce(credentials.address)
         val txManagerWithAlchemyNode = RawTransactionManager(web3jAlchemyNode, credentials)
         val txManagerWithInfuraNode = RawTransactionManager(web3jInfuraNode, credentials)
         val txManagerWithSemiNode = RawTransactionManager(web3jSemiNode, credentials)
@@ -701,7 +721,19 @@ class TokenClient @Inject constructor(
                     )
                 )
             )
-            if (transactionResponseAlchemyNode.error?.code == -32000) {
+            if (transactionResponseAlchemyNode.error?.message?.contains(
+                    context.getString(R.string.under_price_error_message),
+                    true
+                ) == true ||
+                transactionResponseAlchemyNode.error?.message?.contains(
+                    context.getString(R.string.under_price_error_message_1),
+                    true
+                ) == true ||
+                transactionResponseAlchemyNode.error?.message?.contains(
+                    context.getString(R.string.under_price_error_message_2),
+                    true
+                ) == true
+            ) {
                 throw RuntimeException(
                     context.getString(R.string.replacement_underpriced)
                 )
@@ -719,6 +751,7 @@ class TokenClient @Inject constructor(
 
         // Insert into local nonce
         saveLocalNonce(walletAddress, localNonce, hash)
+
         return Pair(hash, localNonce)
     }
 
@@ -735,6 +768,14 @@ class TokenClient @Inject constructor(
             walletAddress, DefaultBlockParameterName.LATEST
         ).send()
         if (ethGetTransactionCount?.hasError() == true) {
+            analytics.logEvent(
+                NODE_GET_NONCE_ERROR,
+                Bundle().createEvent(
+                    ("mined|" + ethGetTransactionCount.error?.code?.toString() + "|" + ethGetTransactionCount.error?.message).take(
+                        99
+                    )
+                )
+            )
             throw RuntimeException("Error processing transaction request:" + ethGetTransactionCount.error?.message)
         }
         return ethGetTransactionCount?.transactionCount ?: BigInteger.ZERO
@@ -746,6 +787,18 @@ class TokenClient @Inject constructor(
         val ethGetTransactionCount = web3jAlchemyNode.ethGetTransactionCount(
             walletAddress, DefaultBlockParameterName.PENDING
         ).send()
+
+        if (ethGetTransactionCount?.hasError() == true) {
+            analytics.logEvent(
+                NODE_GET_NONCE_ERROR,
+                Bundle().createEvent(
+                    ("pending|" + ethGetTransactionCount.error?.code?.toString() + "|" + ethGetTransactionCount.error?.message).take(
+                        99
+                    )
+                )
+            )
+            throw RuntimeException("Error processing transaction request:" + ethGetTransactionCount.error?.message)
+        }
         return ethGetTransactionCount.transactionCount ?: BigInteger.ZERO
     }
 
@@ -897,7 +950,7 @@ class TokenClient @Inject constructor(
 //            BigInteger.ZERO
 //        )
 
-        val localNonce = getTransactionNonce(walletAddress)
+        val localNonce = getTransactionNonce(credentials.address)
 //        val txManager = RawTransactionManager(web3jAlchemyNode, credentials)
 
         val txManagerWithAlchemyNode = RawTransactionManager(web3jAlchemyNode, credentials)
@@ -940,7 +993,19 @@ class TokenClient @Inject constructor(
                     )
                 )
             )
-            if (transactionResponseAlchemyNode.error?.code == -32000) {
+            if (transactionResponseAlchemyNode.error?.message?.contains(
+                    context.getString(R.string.under_price_error_message),
+                    true
+                ) == true ||
+                transactionResponseAlchemyNode.error?.message?.contains(
+                    context.getString(R.string.under_price_error_message_1),
+                    true
+                ) == true ||
+                transactionResponseAlchemyNode.error?.message?.contains(
+                    context.getString(R.string.under_price_error_message_2),
+                    true
+                ) == true
+            ) {
                 throw RuntimeException(
                     context.getString(R.string.erorr_underpriced_transaction)
                 )
@@ -954,6 +1019,7 @@ class TokenClient @Inject constructor(
         val hash = transactionResponseAlchemyNode?.transactionHash
             ?: transactionResponseInfuraNode?.transactionHash
             ?: transactionResponseSemiNode?.transactionHash
+
         saveLocalNonce(walletAddress, localNonce, hash)
     }
 
@@ -1007,7 +1073,7 @@ class TokenClient @Inject constructor(
                 )
                 throw RuntimeException(
                     "Error processing transaction request: " +
-                        transactionResponseAlchemyNode.error.message
+                        transactionResponseAlchemyNode.error?.message
                 )
             }
             return transactionResponseAlchemyNode?.transactionHash
@@ -1083,7 +1149,19 @@ class TokenClient @Inject constructor(
                             )
                         )
 
-                        if (transactionResponseAlchemyNode.error?.code == -32000) {
+                        if (transactionResponseAlchemyNode.error?.message?.contains(
+                                context.getString(R.string.under_price_error_message),
+                                true
+                            ) == true ||
+                            transactionResponseAlchemyNode.error?.message?.contains(
+                                context.getString(R.string.under_price_error_message_1),
+                                true
+                            ) == true ||
+                            transactionResponseAlchemyNode.error?.message?.contains(
+                                context.getString(R.string.under_price_error_message_2),
+                                true
+                            ) == true
+                        ) {
                             throw RuntimeException(
                                 context.getString(R.string.replacement_underpriced)
                             )
@@ -1145,7 +1223,19 @@ class TokenClient @Inject constructor(
                             )
                         )
 
-                        if (transactionResponseAlchemyNode.error?.code == -32000) {
+                        if (transactionResponseAlchemyNode.error?.message?.contains(
+                                context.getString(R.string.under_price_error_message),
+                                true
+                            ) == true ||
+                            transactionResponseAlchemyNode.error?.message?.contains(
+                                context.getString(R.string.under_price_error_message_1),
+                                true
+                            ) == true ||
+                            transactionResponseAlchemyNode.error?.message?.contains(
+                                context.getString(R.string.under_price_error_message_2),
+                                true
+                            ) == true
+                        ) {
                             throw RuntimeException(
                                 context.getString(R.string.error_underpriced_transfer)
                             )

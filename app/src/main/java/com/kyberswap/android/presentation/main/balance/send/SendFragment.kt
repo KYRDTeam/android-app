@@ -48,6 +48,15 @@ import com.kyberswap.android.presentation.main.swap.GetSendState
 import com.kyberswap.android.presentation.main.swap.SaveContactState
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.GAS_OPTION
+import com.kyberswap.android.util.GAS_OPTIONS_FAST
+import com.kyberswap.android.util.GAS_OPTIONS_REGULAR
+import com.kyberswap.android.util.GAS_OPTIONS_SLOW
+import com.kyberswap.android.util.GAS_OPTIONS_SUPER_FAST
+import com.kyberswap.android.util.GAS_VALUE
+import com.kyberswap.android.util.TRANSFER_ADVANCED
+import com.kyberswap.android.util.TRANSFER_TOKEN_SELECT
+import com.kyberswap.android.util.TRANSFER_TRANSFERNOW_TAPPED
 import com.kyberswap.android.util.USER_CLICK_ADD_CONTACT_EVENT
 import com.kyberswap.android.util.USER_CLICK_DELETE_CONTACT_EVENT
 import com.kyberswap.android.util.USER_CLICK_EDIT_CONTACT_EVENT
@@ -260,6 +269,8 @@ class SendFragment : BaseFragment() {
                     wallet
                 )
             }
+
+            analytics.logEvent(TRANSFER_TOKEN_SELECT, Bundle().createEvent())
         }
 
         listOf(rbSuperFast, rbFast, rbRegular, rbSlow).forEach {
@@ -646,6 +657,21 @@ class SendFragment : BaseFragment() {
                 }
             }
 
+            analytics.logEvent(TRANSFER_TRANSFERNOW_TAPPED, Bundle().createEvent())
+            binding.send?.let {
+                analytics.logEvent(
+                    TRANSFER_ADVANCED, Bundle().createEvent(
+                        listOf(
+                            GAS_OPTION, GAS_VALUE
+                        ),
+                        listOf(
+                            getGasPriceOption(selectedGasFeeView?.id),
+                            getSelectedGasPrice(it.gas, selectedGasFeeView?.id)
+                        )
+                    )
+                )
+            }
+
         }
 
         viewModel.checkEligibleWalletCallback.observe(viewLifecycleOwner, Observer { event ->
@@ -839,6 +865,15 @@ class SendFragment : BaseFragment() {
                 v.clearFocus()
             }
             false
+        }
+    }
+
+    private fun getGasPriceOption(id: Int?): String {
+        return when (id) {
+            R.id.rbSuperFast -> GAS_OPTIONS_SUPER_FAST
+            R.id.rbRegular -> GAS_OPTIONS_REGULAR
+            R.id.rbSlow -> GAS_OPTIONS_SLOW
+            else -> GAS_OPTIONS_FAST
         }
     }
 

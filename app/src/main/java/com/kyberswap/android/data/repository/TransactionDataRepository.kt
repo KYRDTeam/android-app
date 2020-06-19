@@ -504,12 +504,16 @@ class TransactionDataRepository @Inject constructor(
                     }
                 }
                 if (it.isNotEmpty()) {
-                    val latestNonce = it.first().nonce.toBigIntegerOrDefaultZero()
+                    val latestNonce = it.first { tx ->
+                        tx.from.equals(
+                            param.wallet.address,
+                            true
+                        )
+                    }.nonce.toBigIntegerOrDefaultZero()
                     val pendingTransactions = transactionDao.getTransactions(
                         param.wallet.address,
                         Transaction.PENDING_TRANSACTION_STATUS
                     )
-
                     pendingTransactions.filter { pending ->
                         pending.nonce.toBigIntegerOrDefaultZero() <= latestNonce
                     }.forEach { filteredPending ->

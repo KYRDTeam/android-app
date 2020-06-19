@@ -20,13 +20,19 @@ import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentAlertDialogBinding
 import com.kyberswap.android.domain.model.Transaction
+import com.kyberswap.android.util.DES_AMOUNT
+import com.kyberswap.android.util.DES_TOKEN
+import com.kyberswap.android.util.GAS_LIMIT
 import com.kyberswap.android.util.OPEN_TX_FROM_ALERT_EVENT
 import com.kyberswap.android.util.OPEN_TX_MINED_ACTION
 import com.kyberswap.android.util.OPEN_TX_PENDING_ACTION
-import com.kyberswap.android.util.TRANSACTION_DETAIL_ACTION
-import com.kyberswap.android.util.TX_FAILED_ACTION
-import com.kyberswap.android.util.TX_FAILED_EVENT
-import com.kyberswap.android.util.TX_MINED_EVENT
+import com.kyberswap.android.util.SRC_AMOUNT
+import com.kyberswap.android.util.SRC_TOKEN
+import com.kyberswap.android.util.TOKEN
+import com.kyberswap.android.util.TX_MINED_FAIL
+import com.kyberswap.android.util.TX_MINED_SWAP_SUCCESS
+import com.kyberswap.android.util.TX_MINED_TRANSFER_FAIL
+import com.kyberswap.android.util.TX_MINED_TRANSFER_SUCCESS
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.shortenValue
@@ -199,18 +205,61 @@ class AlertDialogFragment : DialogFragment() {
 
         if (isDone) {
             if (transaction?.isTransactionFail == true) {
-                analytics?.logEvent(
-                    TX_FAILED_EVENT,
-                    Bundle().createEvent(
-                        TX_FAILED_ACTION,
-                        transaction?.displayTransaction + "|" + transaction?.gas + "|" + transaction?.gasUsed
+                if (transaction?.transactionType == Transaction.TransactionType.SEND) {
+                    analytics?.logEvent(
+                        TX_MINED_TRANSFER_FAIL,
+                        Bundle().createEvent(
+                            listOf(TOKEN, SRC_AMOUNT, GAS_LIMIT),
+                            listOf(
+                                transaction?.tokenSymbol,
+                                transaction?.displayValue,
+                                transaction?.gasUsed
+                            )
+                        )
                     )
-                )
+                } else if (transaction?.transactionType == Transaction.TransactionType.SWAP) {
+                    analytics?.logEvent(
+                        TX_MINED_FAIL,
+                        Bundle().createEvent(
+                            listOf(SRC_TOKEN, DES_TOKEN, SRC_AMOUNT, DES_AMOUNT, GAS_LIMIT),
+                            listOf(
+                                transaction?.tokenSource,
+                                transaction?.tokenDest,
+                                transaction?.sourceAmount,
+                                transaction?.destAmount,
+                                transaction?.gasUsed
+                            )
+                        )
+                    )
+                }
             } else {
-                analytics?.logEvent(
-                    TX_MINED_EVENT,
-                    Bundle().createEvent(TRANSACTION_DETAIL_ACTION, transaction?.displayTransaction)
-                )
+                if (transaction?.transactionType == Transaction.TransactionType.SEND) {
+                    analytics?.logEvent(
+                        TX_MINED_TRANSFER_SUCCESS,
+                        Bundle().createEvent(
+                            listOf(TOKEN, SRC_AMOUNT, GAS_LIMIT),
+                            listOf(
+                                transaction?.tokenSymbol,
+                                transaction?.displayValue,
+                                transaction?.gasUsed
+                            )
+                        )
+                    )
+                } else if (transaction?.transactionType == Transaction.TransactionType.SWAP) {
+                    analytics?.logEvent(
+                        TX_MINED_SWAP_SUCCESS,
+                        Bundle().createEvent(
+                            listOf(SRC_TOKEN, DES_TOKEN, SRC_AMOUNT, DES_AMOUNT, GAS_LIMIT),
+                            listOf(
+                                transaction?.tokenSource,
+                                transaction?.tokenDest,
+                                transaction?.sourceAmount,
+                                transaction?.destAmount,
+                                transaction?.gasUsed
+                            )
+                        )
+                    )
+                }
             }
         }
 

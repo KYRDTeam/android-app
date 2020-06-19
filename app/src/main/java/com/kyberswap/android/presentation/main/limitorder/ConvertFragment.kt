@@ -20,7 +20,8 @@ import com.kyberswap.android.presentation.common.KEEP_ETH_BALANCE_FOR_GAS
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
-import com.kyberswap.android.util.USER_CLICK_COVERT_ETH_WETH
+import com.kyberswap.android.util.LO_CONVERT_WETH_ACCEPT
+import com.kyberswap.android.util.LO_CONVERT_WETH_CANCEL
 import com.kyberswap.android.util.USER_CLICK_COVERT_ETH_WETH_ERROR
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
@@ -181,10 +182,12 @@ class ConvertFragment : BaseFragment() {
 
         imgBack.setOnClickListener {
             onBackPressed()
+            analytics.logEvent(LO_CONVERT_WETH_CANCEL, Bundle().createEvent())
         }
 
         tvCancel.setOnClickListener {
             onBackPressed()
+            analytics.logEvent(LO_CONVERT_WETH_CANCEL, Bundle().createEvent())
         }
 
 
@@ -256,7 +259,7 @@ class ConvertFragment : BaseFragment() {
                         )
 
                         analytics.logEvent(
-                            USER_CLICK_COVERT_ETH_WETH,
+                            LO_CONVERT_WETH_ACCEPT,
                             Bundle().createEvent()
                         )
                     }

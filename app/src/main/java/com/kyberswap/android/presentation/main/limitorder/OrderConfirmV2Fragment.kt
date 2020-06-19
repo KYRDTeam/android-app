@@ -17,7 +17,17 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.profile.UserInfoState
-import com.kyberswap.android.util.USER_CLICK_CANCEL_SUBMIT_ORDER
+import com.kyberswap.android.util.CURRENT_RATE
+import com.kyberswap.android.util.DES_AMOUNT
+import com.kyberswap.android.util.ERROR
+import com.kyberswap.android.util.FEE
+import com.kyberswap.android.util.LOCONFIRM_CANCEL
+import com.kyberswap.android.util.LOCONFIRM_ERROR
+import com.kyberswap.android.util.LOCONFIRM_ORDER_FAILED
+import com.kyberswap.android.util.LOCONFIRM_ORDER_SUCCESS
+import com.kyberswap.android.util.SRC_AMOUNT
+import com.kyberswap.android.util.TARGET_RATE
+import com.kyberswap.android.util.TOKEN_PAIR
 import com.kyberswap.android.util.USER_CLICK_SUBMIT_ORDER_CONFIRM
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
@@ -69,6 +79,10 @@ class OrderConfirmV2Fragment : BaseFragment(), LoginState {
         super.onActivityCreated(savedInstanceState)
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
+            analytics.logEvent(
+                LOCONFIRM_CANCEL,
+                Bundle().createEvent(binding.order?.displayTokenPair)
+            )
         }
 
         binding.order = limitOrder
@@ -77,7 +91,7 @@ class OrderConfirmV2Fragment : BaseFragment(), LoginState {
         binding.tvCancel.setOnClickListener {
             onBackPress()
             analytics.logEvent(
-                USER_CLICK_CANCEL_SUBMIT_ORDER,
+                LOCONFIRM_CANCEL,
                 Bundle().createEvent(binding.order?.displayTokenPair)
             )
         }
@@ -96,11 +110,56 @@ class OrderConfirmV2Fragment : BaseFragment(), LoginState {
                 when (state) {
                     is SubmitOrderState.Success -> {
                         onSubmitOrderSuccess()
+                        analytics.logEvent(
+                            LOCONFIRM_ORDER_SUCCESS,
+                            Bundle().createEvent(
+                                listOf(
+                                    TOKEN_PAIR,
+                                    CURRENT_RATE,
+                                    TARGET_RATE,
+                                    SRC_AMOUNT,
+                                    DES_AMOUNT,
+                                    FEE
+                                ),
+                                listOf(
+                                    binding.order?.pair,
+                                    binding.order?.marketRate,
+                                    binding.order?.price,
+                                    binding.order?.displayAmount,
+                                    binding.order?.displayTotal,
+                                    binding.order?.displayedFeeV2
+                                )
+                            )
+                        )
                     }
                     is SubmitOrderState.ShowError -> {
+                        val error = state.message ?: getString(R.string.something_wrong)
                         showAlert(
-                            state.message ?: getString(R.string.something_wrong),
+                            error,
                             R.drawable.ic_confirm_info
+                        )
+                        analytics.logEvent(
+                            LOCONFIRM_ORDER_FAILED,
+                            Bundle().createEvent(
+                                listOf(
+                                    TOKEN_PAIR,
+                                    CURRENT_RATE,
+                                    TARGET_RATE,
+                                    SRC_AMOUNT,
+                                    DES_AMOUNT,
+                                    FEE,
+                                    ERROR
+                                ),
+                                listOf(
+                                    binding.order?.pair,
+                                    binding.order?.marketRate,
+                                    binding.order?.price,
+                                    binding.order?.displayAmount,
+                                    binding.order?.displayTotal,
+                                    binding.order?.displayedFeeV2,
+                                    error
+                                )
+                            )
                         )
                     }
                 }
@@ -143,6 +202,7 @@ class OrderConfirmV2Fragment : BaseFragment(), LoginState {
                         }
                     }
                     is UserInfoState.ShowError -> {
+                        analytics.logEvent(LOCONFIRM_ERROR, Bundle().createEvent())
                         showError(
                             state.message ?: getString(R.string.something_wrong)
                         )

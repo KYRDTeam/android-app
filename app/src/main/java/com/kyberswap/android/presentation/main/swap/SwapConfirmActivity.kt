@@ -15,10 +15,16 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.base.BaseFragment.Companion.HASH_PARAM
 import com.kyberswap.android.presentation.helper.Navigator
-import com.kyberswap.android.util.GET_GAS_LIMIT_ERROR
-import com.kyberswap.android.util.GET_GAS_PRICE_ERROR
-import com.kyberswap.android.util.SW_BROADCAST_ERROR
-import com.kyberswap.android.util.SW_CONFIRMED_ERROR
+import com.kyberswap.android.util.AMOUNT
+import com.kyberswap.android.util.CURRENT_RATE
+import com.kyberswap.android.util.ERROR_TEXT
+import com.kyberswap.android.util.MIN_RATE
+import com.kyberswap.android.util.SWAPCONFIRM_BROADCAST_FAILED
+import com.kyberswap.android.util.SWAPCONFIRM_BROADCAST_SUCCESS
+import com.kyberswap.android.util.SWAPCONFIRM_CANCEL
+import com.kyberswap.android.util.SWAPCONFIRM_ERROR
+import com.kyberswap.android.util.TOKEN_PAIR
+import com.kyberswap.android.util.TX_FEE
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
 import org.consenlabs.tokencore.wallet.KeystoreStorage
@@ -82,19 +88,50 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
                 showProgress(state == SwapTokenTransactionState.Loading)
                 when (state) {
                     is SwapTokenTransactionState.Success -> {
+                        firebaseAnalytics.logEvent(
+                            SWAPCONFIRM_BROADCAST_SUCCESS, Bundle().createEvent(
+                                listOf(
+                                    TOKEN_PAIR,
+                                    AMOUNT,
+                                    CURRENT_RATE,
+                                    MIN_RATE,
+                                    TX_FEE
+                                ), listOf(
+                                    state.swap?.displayPair,
+                                    state.swap?.sourceAmount,
+                                    state.swap?.expectedRate,
+                                    state.swap?.displayMinAcceptedRate,
+                                    state.swap?.displayGasFee
+                                )
+                            )
+                        )
                         val returnIntent = Intent()
                         setResult(Activity.RESULT_OK, returnIntent)
                         returnIntent.putExtra(HASH_PARAM, state.responseStatus?.hash)
                         finish()
                     }
                     is SwapTokenTransactionState.ShowError -> {
-                        firebaseAnalytics.logEvent(
-                            SW_CONFIRMED_ERROR, Bundle().createEvent(
-                                SW_BROADCAST_ERROR, state.message
-                            )
-                        )
                         showErrorWithTime(
                             state.message ?: getString(R.string.something_wrong), 10
+                        )
+                        firebaseAnalytics.logEvent(
+                            SWAPCONFIRM_BROADCAST_FAILED, Bundle().createEvent(
+                                listOf(
+                                    TOKEN_PAIR,
+                                    AMOUNT,
+                                    CURRENT_RATE,
+                                    MIN_RATE,
+                                    TX_FEE,
+                                    ERROR_TEXT
+                                ), listOf(
+                                    state.swap?.displayPair,
+                                    state.swap?.sourceAmount,
+                                    state.swap?.expectedRate,
+                                    state.swap?.displayMinAcceptedRate,
+                                    state.swap?.displayGasFee,
+                                    state.message
+                                )
+                            )
                         )
                     }
                 }
@@ -119,8 +156,8 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
                     }
                     is GetGasLimitState.ShowError -> {
                         firebaseAnalytics.logEvent(
-                            SW_CONFIRMED_ERROR, Bundle().createEvent(
-                                GET_GAS_LIMIT_ERROR, state.message
+                            SWAPCONFIRM_ERROR, Bundle().createEvent(
+                                ERROR_TEXT, state.message
                             )
                         )
                     }
@@ -144,8 +181,8 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
                     }
                     is GetGasPriceState.ShowError -> {
                         firebaseAnalytics.logEvent(
-                            SW_CONFIRMED_ERROR, Bundle().createEvent(
-                                GET_GAS_PRICE_ERROR, state.message
+                            SWAPCONFIRM_ERROR, Bundle().createEvent(
+                                ERROR_TEXT, state.message
                             )
                         )
                     }
@@ -155,10 +192,44 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
 
 
         binding.imgBack.setOnClickListener {
+            firebaseAnalytics.logEvent(
+                SWAPCONFIRM_CANCEL, Bundle().createEvent(
+                    listOf(
+                        TOKEN_PAIR,
+                        AMOUNT,
+                        CURRENT_RATE,
+                        MIN_RATE,
+                        TX_FEE
+                    ), listOf(
+                        binding.swap?.displayPair,
+                        binding.swap?.sourceAmount,
+                        binding.swap?.expectedRate,
+                        binding.swap?.displayMinAcceptedRate,
+                        binding.swap?.displayGasFee
+                    )
+                )
+            )
             onBackPressed()
         }
 
         binding.tvCancel.setOnClickListener {
+            firebaseAnalytics.logEvent(
+                SWAPCONFIRM_CANCEL, Bundle().createEvent(
+                    listOf(
+                        TOKEN_PAIR,
+                        AMOUNT,
+                        CURRENT_RATE,
+                        MIN_RATE,
+                        TX_FEE
+                    ), listOf(
+                        binding.swap?.displayPair,
+                        binding.swap?.sourceAmount,
+                        binding.swap?.expectedRate,
+                        binding.swap?.displayMinAcceptedRate,
+                        binding.swap?.displayGasFee
+                    )
+                )
+            )
             onBackPressed()
         }
 

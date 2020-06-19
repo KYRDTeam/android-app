@@ -24,8 +24,8 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.FAIL_CANCEL_TX_EVENT
-import com.kyberswap.android.util.USER_CLICK_CANCEL_TX_EVENT
-import com.kyberswap.android.util.USER_CLICK_SPEED_UP_TX_EVENT
+import com.kyberswap.android.util.TRANSACTION_CANCEL
+import com.kyberswap.android.util.TRANSACTION_SPEEDUP
 import com.kyberswap.android.util.USER_CLICK_SUBMIT_CANCEL_TX_EVENT
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
@@ -226,14 +226,14 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
 
             }, {
                 analytics.logEvent(
-                    USER_CLICK_SPEED_UP_TX_EVENT,
+                    TRANSACTION_SPEEDUP,
                     Bundle().createEvent()
                 )
                 navigator.navigateToCustomGas(currentFragment, it)
             }, {
 
                 analytics.logEvent(
-                    USER_CLICK_CANCEL_TX_EVENT,
+                    TRANSACTION_CANCEL,
                     Bundle().createEvent()
                 )
                 val cancelGasPrice =

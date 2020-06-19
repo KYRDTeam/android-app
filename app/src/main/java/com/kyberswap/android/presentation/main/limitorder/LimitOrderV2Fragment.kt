@@ -47,20 +47,24 @@ import com.kyberswap.android.presentation.main.balance.CheckEligibleWalletState
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.DES_AMOUNT
+import com.kyberswap.android.util.LO_BUY_TAPPED
+import com.kyberswap.android.util.LO_CHART
+import com.kyberswap.android.util.LO_LEARNMORE
+import com.kyberswap.android.util.LO_MANAGE_ORDERS_TAPPED
+import com.kyberswap.android.util.LO_PAIR_CHANGE
+import com.kyberswap.android.util.LO_PRICE
+import com.kyberswap.android.util.LO_SELL_TAPPED
 import com.kyberswap.android.util.LO_USER_CLICK_COPY_WALLET_ADDRESS
+import com.kyberswap.android.util.SRC_AMOUNT
+import com.kyberswap.android.util.TOKEN_PAIR
 import com.kyberswap.android.util.USER_CLICK_100_PERCENT
 import com.kyberswap.android.util.USER_CLICK_25_PERCENT
 import com.kyberswap.android.util.USER_CLICK_50_PERCENT
-import com.kyberswap.android.util.USER_CLICK_BUY
 import com.kyberswap.android.util.USER_CLICK_BUY_SELL_ERROR
 import com.kyberswap.android.util.USER_CLICK_CANCEL_ORDER
-import com.kyberswap.android.util.USER_CLICK_CHART
-import com.kyberswap.android.util.USER_CLICK_CHOOSE_MARKET
-import com.kyberswap.android.util.USER_CLICK_LEARN_MORE
-import com.kyberswap.android.util.USER_CLICK_MANAGE_ORDER
 import com.kyberswap.android.util.USER_CLICK_MARKET_PRICE_TEXT
 import com.kyberswap.android.util.USER_CLICK_PRICE_TEXT
-import com.kyberswap.android.util.USER_CLICK_SELL
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.colorRateV2
 import com.kyberswap.android.util.ext.createEvent
@@ -659,7 +663,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
             }
 
             analytics.logEvent(
-                USER_CLICK_MANAGE_ORDER,
+                LO_MANAGE_ORDERS_TAPPED,
                 Bundle().createEvent()
             )
         }
@@ -808,7 +812,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         binding.tvTokenPair.setOnClickListener {
             navigator.navigateToLimitOrderMarket(currentFragment, type, quoteToken?.tokenSymbol)
             analytics.logEvent(
-                USER_CLICK_CHOOSE_MARKET,
+                LO_PAIR_CHANGE,
                 Bundle().createEvent()
             )
         }
@@ -824,7 +828,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
             )
 
             analytics.logEvent(
-                USER_CLICK_CHART,
+                LO_CHART,
                 Bundle().createEvent()
             )
         }
@@ -913,11 +917,10 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         binding.tvLearnMore.setOnClickListener {
             openUrl(getString(R.string.order_fee_url))
             analytics.logEvent(
-                USER_CLICK_LEARN_MORE,
+                LO_LEARNMORE,
                 Bundle().createEvent()
             )
         }
-
 
         binding.tvSubmitOrder.setOnClickListener {
             val error: String
@@ -1031,11 +1034,6 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
                 else -> binding.order?.let {
                     viewModel.checkEligibleWallet(wallet)
-                    analytics.logEvent(
-                        if (isSell) USER_CLICK_SELL else USER_CLICK_BUY,
-                        Bundle().createEvent(it.displayTokenPair)
-                    )
-
                 }
             }
         }
@@ -1251,6 +1249,19 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
             }
             viewModel.saveLimitOrder(
                 order, true
+            )
+
+            analytics.logEvent(
+                if (isSell) LO_SELL_TAPPED else LO_BUY_TAPPED,
+                Bundle().createEvent(
+                    listOf(TOKEN_PAIR, SRC_AMOUNT, DES_AMOUNT, LO_PRICE),
+                    listOf(
+                        order.pair,
+                        order.displayAmount,
+                        order.displayTotal,
+                        order.price
+                    )
+                )
             )
         }
     }

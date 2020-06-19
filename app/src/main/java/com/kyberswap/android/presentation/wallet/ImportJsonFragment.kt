@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
@@ -17,7 +18,13 @@ import com.kyberswap.android.databinding.FragmentImportJsonBinding
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.landing.ImportWalletState
+import com.kyberswap.android.util.ERROR_TEXT
+import com.kyberswap.android.util.WALLET_IMPORT_FAIL
+import com.kyberswap.android.util.WALLET_IMPORT_SUCCESS
+import com.kyberswap.android.util.WALLET_TYPE
+import com.kyberswap.android.util.WALLET_TYPE_JSON
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.fragment_import_json.*
 import org.consenlabs.tokencore.wallet.model.Messages
@@ -38,6 +45,9 @@ class ImportJsonFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelFactory
 
     private var uri: Uri? = null
+
+    @Inject
+    lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private val viewModel by lazy {
         ViewModelProvider(this, viewModelFactory).get(ImportJsonViewModel::class.java)
@@ -91,6 +101,11 @@ class ImportJsonFragment : BaseFragment() {
                             }
 
                         }
+                        firebaseAnalytics.logEvent(
+                            WALLET_IMPORT_SUCCESS, Bundle().createEvent(
+                                WALLET_TYPE, WALLET_TYPE_JSON
+                            )
+                        )
                     }
                     is ImportWalletState.ShowError -> {
 
@@ -119,6 +134,14 @@ class ImportJsonFragment : BaseFragment() {
                             }
 
                         }
+
+                        firebaseAnalytics.logEvent(
+                            WALLET_IMPORT_FAIL, Bundle().createEvent(
+                                listOf(
+                                    WALLET_TYPE, ERROR_TEXT
+                                ), listOf(WALLET_TYPE_JSON, message)
+                            )
+                        )
 
                         showAlertWithoutIcon(
                             message = message

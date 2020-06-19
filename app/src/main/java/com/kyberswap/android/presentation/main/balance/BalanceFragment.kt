@@ -29,9 +29,29 @@ import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.main.swap.SaveSwapDataState
 import com.kyberswap.android.presentation.splash.GetWalletState
-import com.kyberswap.android.util.BA_USER_CLICK_BUY_ETH
-import com.kyberswap.android.util.BA_USER_CLICK_COPY_WALLET_ADDRESS
-import com.kyberswap.android.util.BA_USER_OPEN_QR_CODE_WALLET_ADDRESS
+import com.kyberswap.android.util.BAL
+import com.kyberswap.android.util.BALANCE_ADDRESS_COPIED
+import com.kyberswap.android.util.BALANCE_ADDRESS_SHOWN
+import com.kyberswap.android.util.BALANCE_BUYETH_YES
+import com.kyberswap.android.util.BALANCE_FAVOURITE_ADDED
+import com.kyberswap.android.util.BALANCE_FAVOURITE_REMOVED
+import com.kyberswap.android.util.BALANCE_NOTI_FLAG
+import com.kyberswap.android.util.BALANCE_SEARCH_TOKEN
+import com.kyberswap.android.util.BALANCE_SWIPELEFT_BUY
+import com.kyberswap.android.util.BALANCE_SWIPELEFT_SELL
+import com.kyberswap.android.util.BALANCE_SWIPELEFT_TRANSFER
+import com.kyberswap.android.util.BALANCE_TOKEN_SORT
+import com.kyberswap.android.util.BALANCE_TOKEN_TAPPED
+import com.kyberswap.android.util.CHANGE_24H
+import com.kyberswap.android.util.ETH
+import com.kyberswap.android.util.FAVOURITE
+import com.kyberswap.android.util.KYBER_LISTED
+import com.kyberswap.android.util.LIST_TYPE
+import com.kyberswap.android.util.NAME
+import com.kyberswap.android.util.OTHERS
+import com.kyberswap.android.util.TOKEN_NAME
+import com.kyberswap.android.util.TOKEN_SORT
+import com.kyberswap.android.util.USD
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.exactAmount
@@ -103,6 +123,12 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     private val isOtherSelected: Boolean
         get() = currentSelectedView == binding.tvFavOther && isOther
 
+    private val isFavoriteSelected: Boolean
+        get() = currentSelectedView == binding.tvFavOther && !isOther
+
+    private val isKyberListed: Boolean
+        get() = currentSelectedView == binding.tvKyberList
+
     private val isOther: Boolean
         get() = binding.tvFavOther.text.toString().equals(other, true)
 
@@ -136,6 +162,13 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     private var tokenAdapter: TokenAdapter? = null
 
+    private val eventOrderParam: String
+        get() = when {
+            isKyberListed -> KYBER_LISTED
+            isOther -> OTHERS
+            else -> FAVOURITE
+        }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -151,6 +184,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         tokenAdapter =
             TokenAdapter(appExecutors, handler,
                 {
+                    analytics.logEvent(
+                        BALANCE_TOKEN_TAPPED,
+                        Bundle().createEvent(TOKEN_NAME, it.tokenSymbol)
+                    )
                     navigateToChartScreen(it)
                 },
                 {
@@ -159,6 +196,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     } else {
                         wallet?.address?.let { it1 -> viewModel.save(it1, it, false) }
                     }
+                    analytics.logEvent(
+                        BALANCE_SWIPELEFT_BUY,
+                        Bundle().createEvent(TOKEN_NAME, it.tokenSymbol)
+                    )
                 },
                 {
                     if (wallet?.isPromo == true) {
@@ -166,6 +207,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     } else {
                         wallet?.address?.let { it1 -> viewModel.save(it1, it, true) }
                     }
+                    analytics.logEvent(
+                        BALANCE_SWIPELEFT_SELL,
+                        Bundle().createEvent(TOKEN_NAME, it.tokenSymbol)
+                    )
                 },
                 {
                     if (it.tokenSymbol == getString(R.string.promo_source_token)) {
@@ -174,10 +219,18 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                         wallet?.address?.let { it1 -> viewModel.saveSendToken(it1, it) }
                     }
 
+                    analytics.logEvent(
+                        BALANCE_SWIPELEFT_TRANSFER,
+                        Bundle().createEvent(TOKEN_NAME, it.tokenSymbol)
+                    )
+
                 },
                 {
-
                     viewModel.saveFav(it)
+                    analytics.logEvent(
+                        if (it.fav) BALANCE_FAVOURITE_ADDED else BALANCE_FAVOURITE_REMOVED,
+                        Bundle().createEvent(TOKEN_NAME, it.tokenSymbol)
+                    )
                 }
             )
 
@@ -226,6 +279,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
         binding.imgFlag.setOnClickListener {
             navigator.navigateToNotificationScreen(currentFragment)
+            analytics.logEvent(
+                BALANCE_NOTI_FLAG,
+                Bundle().createEvent()
+            )
         }
 
         binding.tvKyberList.isSelected = true
@@ -247,7 +304,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             view.setOnClickListener {
                 navigator.navigateToBalanceAddressScreen(currentFragment)
                 analytics.logEvent(
-                    BA_USER_OPEN_QR_CODE_WALLET_ADDRESS,
+                    BALANCE_ADDRESS_SHOWN,
                     Bundle().createEvent()
                 )
             }
@@ -261,7 +318,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             }
             startActivity(sendIntent)
             analytics.logEvent(
-                BA_USER_CLICK_COPY_WALLET_ADDRESS,
+                BALANCE_ADDRESS_COPIED,
                 Bundle().createEvent()
             )
         }
@@ -280,6 +337,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             it.setOnClickListener {
                 binding.edtSearch.requestFocus()
                 it.showKeyboard()
+                analytics.logEvent(
+                    BALANCE_SEARCH_TOKEN,
+                    Bundle().createEvent()
+                )
             }
 
         }
@@ -384,6 +445,13 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     it.toggleEth(),
                     view as TextView
                 )
+                analytics.logEvent(
+                    BALANCE_TOKEN_SORT,
+                    Bundle().createEvent(
+                        listOf(LIST_TYPE, TOKEN_SORT),
+                        listOf(eventOrderParam, ETH)
+                    )
+                )
             }
         }
 
@@ -394,12 +462,27 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                     it.toggleUsd(),
                     view as TextView
                 )
+                analytics.logEvent(
+                    BALANCE_TOKEN_SORT,
+                    Bundle().createEvent(
+                        listOf(LIST_TYPE, TOKEN_SORT),
+                        listOf(eventOrderParam, USD)
+                    )
+                )
             }
         }
 
         binding.header.tvChange24h.setOnClickListener { view ->
             tokenAdapter?.let {
                 orderByChange24h(it.toggleChange24h(), view as TextView)
+
+                analytics.logEvent(
+                    BALANCE_TOKEN_SORT,
+                    Bundle().createEvent(
+                        listOf(LIST_TYPE, TOKEN_SORT),
+                        listOf(eventOrderParam, CHANGE_24H)
+                    )
+                )
             }
 
         }
@@ -473,7 +556,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
         binding.tvBuyEth.setOnClickListener {
             openUrl(getString(R.string.buy_eth_endpoint))
-            analytics.logEvent(BA_USER_CLICK_BUY_ETH, Bundle().createEvent())
+            analytics.logEvent(BALANCE_BUYETH_YES, Bundle().createEvent())
         }
     }
 
@@ -604,6 +687,13 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         tokenAdapter?.let {
             it.setOrderBy(type, getFilterTokenList(currentSearchString))
             updateOrderDrawable(it.isAsc, view)
+            analytics.logEvent(
+                BALANCE_TOKEN_SORT,
+                Bundle().createEvent(
+                    listOf(LIST_TYPE, TOKEN_SORT),
+                    listOf(eventOrderParam, CHANGE_24H)
+                )
+            )
         }
         updateOrderOption(orderByOptions.indexOf(view), view)
     }
@@ -720,11 +810,26 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             toggleDisplay(true, selectedView)
             if (selectedView == binding.header.tvName) {
                 it.setOrderBy(OrderType.NAME, getFilterTokenList(currentSearchString), forceUpdate)
+                analytics.logEvent(
+                    BALANCE_TOKEN_SORT,
+                    Bundle().createEvent(
+                        listOf(LIST_TYPE, TOKEN_SORT),
+                        listOf(eventOrderParam, NAME)
+                    )
+                )
             } else if (selectedView == binding.header.tvBalance) {
                 it.setOrderBy(
                     OrderType.BALANCE,
                     getFilterTokenList(currentSearchString),
                     forceUpdate
+                )
+
+                analytics.logEvent(
+                    BALANCE_TOKEN_SORT,
+                    Bundle().createEvent(
+                        listOf(LIST_TYPE, TOKEN_SORT),
+                        listOf(eventOrderParam, BAL)
+                    )
                 )
             }
             nameBalSelectedIndex = index
