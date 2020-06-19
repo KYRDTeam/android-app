@@ -109,7 +109,7 @@ object ImageViewBindingAdapter {
         }
 
         val stringUrl =
-            "https://files.kyber.network/DesignAssets/tokens/iOS/${id.toLowerCase(Locale.getDefault())}.png"
+            "https://files.kyberswap.com/DesignAssets/tokens/iOS/${id.toLowerCase(Locale.getDefault())}.png"
         var resourceIcon: Int?
         try {
 
