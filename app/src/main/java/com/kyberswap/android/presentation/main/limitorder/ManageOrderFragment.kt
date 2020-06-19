@@ -21,7 +21,10 @@ import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.profile.UserInfoState
-import com.kyberswap.android.util.USER_CLICK_CANCEL_ORDER
+import com.kyberswap.android.util.LO_MANAGER_CANCEL
+import com.kyberswap.android.util.LO_MANAGER_CLOSE_ORDER_TAPPED
+import com.kyberswap.android.util.LO_MANAGER_FILTER
+import com.kyberswap.android.util.LO_MANAGER_OPEN_ORDER_TAPPED
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.openUrl
@@ -96,7 +99,7 @@ class ManageOrderFragment : BaseFragment(), LoginState {
                         dialogHelper.showCancelOrder(it) {
                             viewModel.cancelOrder(it)
                             analytics.logEvent(
-                                USER_CLICK_CANCEL_ORDER,
+                                LO_MANAGER_CANCEL,
                                 Bundle().createEvent()
                             )
                         }
@@ -121,6 +124,7 @@ class ManageOrderFragment : BaseFragment(), LoginState {
                 currentFragment,
                 wallet
             )
+            analytics.logEvent(LO_MANAGER_FILTER, Bundle().createEvent())
         }
 
         if (currentSelectedView != null) {
@@ -257,6 +261,11 @@ class ManageOrderFragment : BaseFragment(), LoginState {
 
         binding.isEmpty = items.isEmpty()
         binding.executePendingBindings()
+
+        analytics.logEvent(
+            if (isOpenTab) LO_MANAGER_OPEN_ORDER_TAPPED else LO_MANAGER_CLOSE_ORDER_TAPPED,
+            Bundle().createEvent()
+        )
     }
 
     companion object {

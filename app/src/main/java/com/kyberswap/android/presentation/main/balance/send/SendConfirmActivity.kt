@@ -23,8 +23,13 @@ import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.main.swap.GetSendState
 import com.kyberswap.android.presentation.main.swap.TransferTokenTransactionState
+import com.kyberswap.android.util.AMOUNT
+import com.kyberswap.android.util.GAS_FEE
 import com.kyberswap.android.util.GET_GAS_LIMIT_ERROR
 import com.kyberswap.android.util.GET_GAS_PRICE_ERROR
+import com.kyberswap.android.util.TOKEN
+import com.kyberswap.android.util.TRANSFERCONFIRM_CONFIRM_CANCEL
+import com.kyberswap.android.util.TRANSFERCONFIRM_CONFIRM_TAPPED
 import com.kyberswap.android.util.TRANSFER_BROADCAST_ERROR
 import com.kyberswap.android.util.TRANSFER_CONFIRMED_ERROR
 import com.kyberswap.android.util.di.ViewModelFactory
@@ -170,14 +175,53 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
 
         binding.imgBack.setOnClickListener {
             onBackPressed()
+            firebaseAnalytics.logEvent(
+                TRANSFERCONFIRM_CONFIRM_CANCEL, Bundle().createEvent(
+                    listOf(
+                        TOKEN,
+                        AMOUNT,
+                        GAS_FEE
+                    ), listOf(
+                        binding.send?.tokenSource?.tokenSymbol,
+                        binding.send?.sourceAmount,
+                        binding.send?.transactionFeeEth
+                    )
+                )
+            )
         }
 
         binding.tvCancel.setOnClickListener {
             onBackPressed()
+            firebaseAnalytics.logEvent(
+                TRANSFERCONFIRM_CONFIRM_CANCEL, Bundle().createEvent(
+                    listOf(
+                        TOKEN,
+                        AMOUNT,
+                        GAS_FEE
+                    ), listOf(
+                        binding.send?.tokenSource?.tokenSymbol,
+                        binding.send?.sourceAmount,
+                        binding.send?.transactionFeeEth
+                    )
+                )
+            )
         }
 
         binding.tvConfirm.setOnClickListener {
             viewModel.send(wallet, binding.send)
+            firebaseAnalytics.logEvent(
+                TRANSFERCONFIRM_CONFIRM_TAPPED, Bundle().createEvent(
+                    listOf(
+                        TOKEN,
+                        AMOUNT,
+                        GAS_FEE
+                    ), listOf(
+                        binding.send?.tokenSource?.tokenSymbol,
+                        binding.send?.sourceAmount,
+                        binding.send?.transactionFeeEth
+                    )
+                )
+            )
         }
     }
 

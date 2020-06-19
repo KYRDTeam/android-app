@@ -18,7 +18,14 @@ import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.profile.UserInfoState
+import com.kyberswap.android.util.ENABLE_TOKEN
+import com.kyberswap.android.util.PRICETRENDING_APPLY_TAPPED
+import com.kyberswap.android.util.PRICETRENDING_NOTI_DISABLE
+import com.kyberswap.android.util.PRICETRENDING_NOTI_ENABLE
+import com.kyberswap.android.util.PRICETRENDING_RESET_TAPPED
+import com.kyberswap.android.util.PRICETRENDING_TOKEN
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
@@ -159,6 +166,10 @@ class NotificationSettingFragment : BaseFragment(), LoginState {
                 if (it != isPriceNotificationEnable) {
                     viewModel.togglePriceNoti(it)
                     binding.isPriceNotificationEnable = it
+                    analytics.logEvent(
+                        if (it) PRICETRENDING_NOTI_ENABLE else PRICETRENDING_NOTI_DISABLE,
+                        Bundle().createEvent()
+                    )
                 }
             })
 
@@ -179,11 +190,19 @@ class NotificationSettingFragment : BaseFragment(), LoginState {
             binding.tvSelectAll.text =
                 getString(R.string.filter_deselect_all)
 
+            analytics.logEvent(PRICETRENDING_RESET_TAPPED, Bundle().createEvent())
+
         }
 
         binding.tvApply.setOnClickListener {
-            viewModel.updateSubscribedTokens(adapter.getData().filter { it.subscribed }
-                .map { it.symbol })
+            val subscribedTokens = adapter.getData().filter { it.subscribed }
+                .map { it.symbol }
+            viewModel.updateSubscribedTokens(subscribedTokens)
+            analytics.logEvent(PRICETRENDING_APPLY_TAPPED, Bundle().createEvent())
+            subscribedTokens.forEach {
+                analytics.logEvent(PRICETRENDING_TOKEN, Bundle().createEvent(ENABLE_TOKEN, it))
+            }
+
         }
 
         viewModel.getLoginStatusCallback.observe(viewLifecycleOwner, Observer {

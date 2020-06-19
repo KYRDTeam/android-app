@@ -24,6 +24,16 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.setting.PassCodeLockActivity
+import com.kyberswap.android.util.COMMUNITY_ICON
+import com.kyberswap.android.util.SETTING_ALERT_METHOD
+import com.kyberswap.android.util.SETTING_CHANGE_PIN
+import com.kyberswap.android.util.SETTING_COMMUNITY
+import com.kyberswap.android.util.SETTING_CONTACT
+import com.kyberswap.android.util.SETTING_GET_STARTED
+import com.kyberswap.android.util.SETTING_LIVECHAT
+import com.kyberswap.android.util.SETTING_MANAGE_ALERT
+import com.kyberswap.android.util.SETTING_MANAGE_WALLET
+import com.kyberswap.android.util.SETTING_SUPPORT
 import com.kyberswap.android.util.ST_USER_CLICK_FAQ
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
@@ -88,6 +98,7 @@ class SettingFragment : BaseFragment() {
             navigator.navigateToManageWalletFragment(
                 currentFragment
             )
+            analytics.logEvent(SETTING_MANAGE_WALLET, Bundle().createEvent())
         }
 
         binding.lnManageAlert.setOnClickListener {
@@ -100,6 +111,8 @@ class SettingFragment : BaseFragment() {
                     message = getString(R.string.sign_in_required)
                 )
             }
+
+            analytics.logEvent(SETTING_MANAGE_ALERT, Bundle().createEvent())
         }
 
         binding.lnAlertMethod.setOnClickListener {
@@ -112,10 +125,12 @@ class SettingFragment : BaseFragment() {
                     message = getString(R.string.sign_in_required)
                 )
             }
+            analytics.logEvent(SETTING_ALERT_METHOD, Bundle().createEvent())
         }
 
         binding.lnContact.setOnClickListener {
             navigator.navigateToContactScreen(currentFragment)
+            analytics.logEvent(SETTING_CONTACT, Bundle().createEvent())
         }
 
         binding.lnSupport.setOnClickListener {
@@ -123,6 +138,7 @@ class SettingFragment : BaseFragment() {
                 Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:support@kyberswap.com"))
 
             startActivity(Intent.createChooser(emailIntent, "Chooser Title"))
+            analytics.logEvent(SETTING_SUPPORT, Bundle().createEvent())
         }
 
         binding.lnChangePin.setOnClickListener {
@@ -132,11 +148,13 @@ class SettingFragment : BaseFragment() {
                     PassCodeLockActivity.PASS_CODE_LOCK_TYPE_CHANGE
                 )
             })
+            analytics.logEvent(SETTING_CHANGE_PIN, Bundle().createEvent())
 
         }
 
         binding.lnAbount.setOnClickListener {
             openUrl(getString(R.string.setting_about_url))
+            analytics.logEvent(SETTING_GET_STARTED, Bundle().createEvent())
         }
 
         binding.lnCommunity.setOnClickListener {
@@ -145,10 +163,15 @@ class SettingFragment : BaseFragment() {
                 ST_USER_CLICK_FAQ,
                 Bundle().createEvent()
             )
+
         }
 
         binding.imgTelegram.setOnClickListener {
             openUrl(getString(R.string.setting_kyber_network_url))
+            analytics.logEvent(
+                SETTING_COMMUNITY,
+                Bundle().createEvent(COMMUNITY_ICON, "telegram group")
+            )
         }
 
 //        binding.imgTelegramDeveloper.setOnClickListener {
@@ -157,22 +180,42 @@ class SettingFragment : BaseFragment() {
 
         binding.imgGithub.setOnClickListener {
             openUrl(getString(R.string.setting_github_url))
+            analytics.logEvent(
+                SETTING_COMMUNITY,
+                Bundle().createEvent(COMMUNITY_ICON, "github")
+            )
         }
 
         binding.imgTwitter.setOnClickListener {
             openUrl(getString(R.string.setting_twitter_url))
+            analytics.logEvent(
+                SETTING_COMMUNITY,
+                Bundle().createEvent(COMMUNITY_ICON, "twitter")
+            )
         }
 
         binding.imgFacebook.setOnClickListener {
             openUrl(getString(R.string.setting_facebook_url))
+            analytics.logEvent(
+                SETTING_COMMUNITY,
+                Bundle().createEvent(COMMUNITY_ICON, "facebook")
+            )
         }
 
         binding.imgMedium.setOnClickListener {
             openUrl(getString(R.string.setting_medium_url))
+            analytics.logEvent(
+                SETTING_COMMUNITY,
+                Bundle().createEvent(COMMUNITY_ICON, "medium")
+            )
         }
 
         binding.imgLinkedin.setOnClickListener {
             openUrl(getString(R.string.setting_linkedin_url))
+            analytics.logEvent(
+                SETTING_COMMUNITY,
+                Bundle().createEvent(COMMUNITY_ICON, "linkedin")
+            )
         }
 
         binding.tvShare.setOnClickListener {
@@ -202,6 +245,10 @@ class SettingFragment : BaseFragment() {
             Freshchat.showConversations(it.context, lConvOptions)
             (context?.applicationContext as KyberSwapApplication).stopCounter()
             isCounterStop = true
+            analytics.logEvent(
+                SETTING_LIVECHAT,
+                Bundle().createEvent()
+            )
         }
     }
 

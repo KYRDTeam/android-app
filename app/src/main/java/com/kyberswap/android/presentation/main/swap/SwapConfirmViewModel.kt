@@ -53,19 +53,19 @@ class SwapConfirmViewModel @Inject constructor(
     }
 
     fun swap(wallet: Wallet?, swap: Swap?) {
-        swap?.let {
+        swap?.let { sw ->
             _swapTokenTransactionCallback.postValue(Event(SwapTokenTransactionState.Loading))
             swapTokenUseCase.execute(
                 Consumer {
                     _swapTokenTransactionCallback.value =
-                        Event(SwapTokenTransactionState.Success(it))
+                        Event(SwapTokenTransactionState.Success(it, sw))
                 },
                 Consumer {
                     it.printStackTrace()
                     _swapTokenTransactionCallback.value =
-                        Event(SwapTokenTransactionState.ShowError(it.localizedMessage))
+                        Event(SwapTokenTransactionState.ShowError(it.localizedMessage, sw))
                 },
-                SwapTokenUseCase.Param(wallet!!, swap)
+                SwapTokenUseCase.Param(wallet!!, sw)
 
             )
         }

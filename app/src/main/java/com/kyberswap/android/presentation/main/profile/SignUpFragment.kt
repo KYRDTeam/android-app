@@ -35,6 +35,9 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.util.METHOD
+import com.kyberswap.android.util.SIGNUP_METHOD
+import com.kyberswap.android.util.SIGNUP_SIGNUP_TAPPED
 import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_DISMISS
 import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_NO
 import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_NO_CONTINUE
@@ -170,6 +173,7 @@ class SignUpFragment : BaseFragment() {
                         edtPassword.text.toString(),
                         cbSubscription.isChecked
                     )
+                    analytics.logEvent(SIGNUP_SIGNUP_TAPPED, Bundle().createEvent())
                 }
             }
         }
@@ -261,6 +265,7 @@ class SignUpFragment : BaseFragment() {
             stopCounter()
             LoginManager.getInstance()
                 .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"))
+            analytics.logEvent(SIGNUP_METHOD, Bundle().createEvent(METHOD, "facebook"))
         }
 
         binding.imgGooglePlus.setOnClickListener {
@@ -277,6 +282,7 @@ class SignUpFragment : BaseFragment() {
                     startActivityForResult(signInIntent, RC_SIGN_IN)
                 }
             }
+            analytics.logEvent(SIGNUP_METHOD, Bundle().createEvent(METHOD, "google"))
         }
 
         binding.imgTwitter.setOnClickListener {
@@ -300,6 +306,8 @@ class SignUpFragment : BaseFragment() {
                     ).show()
                 }
             })
+
+            analytics.logEvent(SIGNUP_METHOD, Bundle().createEvent(METHOD, "twitter"))
         }
 
         binding.tvTermAndCondition.setOnClickListener {

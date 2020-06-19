@@ -40,6 +40,10 @@ import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.MainPagerAdapter
+import com.kyberswap.android.util.METHOD
+import com.kyberswap.android.util.SIGNIN_FORGOT_PASSWORD
+import com.kyberswap.android.util.SIGNIN_METHOD
+import com.kyberswap.android.util.SIGNIN_SIGNIN_TAPPED
 import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_DISMISS
 import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_NO
 import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_NO_CONTINUE
@@ -78,6 +82,9 @@ class ProfileFragment : BaseFragment() {
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
+
+    @Inject
+    lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private val handler by lazy { Handler() }
 
@@ -295,6 +302,7 @@ class ProfileFragment : BaseFragment() {
             stopCounter()
             LoginManager.getInstance()
                 .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"))
+            analytics.logEvent(SIGNIN_METHOD, Bundle().createEvent(METHOD, "facebook"))
         }
 
         binding.imgGooglePlus.setOnClickListener {
@@ -310,6 +318,7 @@ class ProfileFragment : BaseFragment() {
                     startActivityForResult(signInIntent, RC_SIGN_IN)
                 }
             }
+            analytics.logEvent(SIGNIN_METHOD, Bundle().createEvent(METHOD, "google"))
         }
 
         binding.imgTwitter.setOnClickListener {
@@ -333,6 +342,8 @@ class ProfileFragment : BaseFragment() {
                     ).show()
                 }
             })
+
+            analytics.logEvent(SIGNIN_METHOD, Bundle().createEvent(METHOD, "twitter"))
         }
 
         binding.tvForgotPassword.setOnClickListener {
@@ -344,6 +355,7 @@ class ProfileFragment : BaseFragment() {
                         message = getString(R.string.login_email_address_required)
                     )
                 } else {
+                    analytics.logEvent(SIGNIN_FORGOT_PASSWORD, Bundle().createEvent())
                     viewModel.resetPassword(email)
                 }
             }
@@ -387,6 +399,7 @@ class ProfileFragment : BaseFragment() {
 
                 else -> {
                     viewModel.login(edtEmail.text.toString(), edtPassword.text.toString())
+                    analytics.logEvent(SIGNIN_SIGNIN_TAPPED, Bundle().createEvent())
                 }
 
             }
