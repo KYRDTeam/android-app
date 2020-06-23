@@ -33,7 +33,7 @@ class TokenAdapter(
     appExecutors,
     diffCallback = object : DiffUtil.ItemCallback<Token>() {
         override fun areItemsTheSame(oldItem: Token, newItem: Token): Boolean {
-            return oldItem.tokenAddress == newItem.tokenAddress
+            return oldItem.tokenAddress.equals(newItem.tokenAddress, true)
         }
 
         override fun areContentsTheSame(oldItem: Token, newItem: Token): Boolean {
@@ -84,7 +84,7 @@ class TokenAdapter(
         val orderList = when (orderType) {
             OrderType.NAME -> tokens.sortedBy { it.tokenSymbol }
             OrderType.BALANCE -> tokens.sortedByDescending { it.currentBalance }
-                .sortedByDescending { it.currentBalance * it.rateEthNow }
+                .sortedByDescending { it.currentBalance * it.rateEthNowOrDefaultValue }
             OrderType.ETH_ASC -> tokens.sortedBy {
                 it.rateEthNowOrDefaultValue
             }
@@ -107,9 +107,10 @@ class TokenAdapter(
                 if (newTokens.isNotEmpty()) {
                     mutableTokens.removeAll(newTokens)
                     newTokens.union(mutableTokens.sortedByDescending { it.currentBalance }
-                        .sortedByDescending { it.currentBalance * it.rateEthNow })
+                        .sortedByDescending { it.currentBalance * it.rateEthNowOrDefaultValue })
                 } else {
                     mutableTokens.sortedByDescending { it.currentBalance }
+                        .sortedByDescending { it.currentBalance * it.rateEthNowOrDefaultValue }
                 }
             }
         }
@@ -127,7 +128,6 @@ class TokenAdapter(
                 isEven = index % 2 == 0
             }
         }
-
 
         if (forceUpdate) {
             submitList(null)

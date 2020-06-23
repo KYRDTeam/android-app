@@ -162,10 +162,6 @@ class SignUpFragment : BaseFragment() {
                     binding.ilPassword.error = error
                 }
 
-                !binding.cbTermCondition.isChecked -> {
-                    showAlert(getString(R.string.term_condition_notification))
-                }
-
                 else -> {
                     viewModel.signUp(
                         edtEmail.text.toString(),
@@ -308,10 +304,6 @@ class SignUpFragment : BaseFragment() {
             })
 
             analytics.logEvent(SIGNUP_METHOD, Bundle().createEvent(METHOD, "twitter"))
-        }
-
-        binding.tvTermAndCondition.setOnClickListener {
-            navigator.navigateToTermAndCondition()
         }
 
         viewModel.loginCallback.observe(viewLifecycleOwner, Observer {

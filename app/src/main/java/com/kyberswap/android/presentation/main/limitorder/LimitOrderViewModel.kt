@@ -519,7 +519,7 @@ class LimitOrderViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _submitOrderCallback.value =
-                    Event(SubmitOrderState.ShowError(errorHandler.getError(it)))
+                    Event(SubmitOrderState.ShowError(it.localizedMessage))
             },
             SubmitOrderUseCase.Param(order, wallet)
         )

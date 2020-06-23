@@ -199,7 +199,7 @@
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="@+id/ilPassword"
                     app:layout_constraintStart_toStartOf="@+id/ilPassword"
-                    app:layout_constraintTop_toBottomOf="@+id/cbTermCondition" />
+                    app:layout_constraintTop_toBottomOf="@+id/cbSubscription" />
 
 
                 <TextView
@@ -271,36 +271,6 @@
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/ilPassword"
                     app:layout_constraintTop_toBottomOf="@+id/ilPassword" />
-
-                <CheckBox
-                    android:id="@+id/cbTermCondition"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="#fea34c"
-                    android:text="@string/agree_to"
-                    android:theme="@style/CustomRadioTheme"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvTermAndCondition"
-                    app:layout_constraintEnd_toStartOf="@+id/tvTermAndCondition"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintHorizontal_chainStyle="spread_inside"
-                    app:layout_constraintStart_toEndOf="@+id/view9"
-                    app:layout_constraintStart_toStartOf="@+id/cbSubscription"
-                    app:layout_constraintTop_toTopOf="@+id/tvTermAndCondition" />
-
-                <TextView
-                    android:id="@+id/tvTermAndCondition"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
-                    android:text="@string/terms_conditions"
-                    android:textColor="#fea34c"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="@+id/ilPassword"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/cbTermCondition"
-                    app:layout_constraintTop_toBottomOf="@+id/cbSubscription" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

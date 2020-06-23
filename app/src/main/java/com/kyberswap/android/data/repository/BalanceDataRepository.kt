@@ -174,6 +174,7 @@ class BalanceDataRepository @Inject constructor(
     override fun getLocalTokens(): Flowable<List<Token>> {
         return tokenDao.all.map {
             it.distinctBy { token -> token.tokenAddress.toLowerCase(Locale.getDefault()) }
+                .sortedBy { it.tokenSymbol }
         }
     }
 
@@ -213,7 +214,7 @@ class BalanceDataRepository @Inject constructor(
                                 remoteToken
                             }
                         }
-                        remoteList.union(tokenDao.otherTokens).toList()
+                        remoteList.union(tokenDao.otherTokens).toList().sortedBy { it.tokenSymbol }
                     }
             }
             .doAfterSuccess { tokens ->

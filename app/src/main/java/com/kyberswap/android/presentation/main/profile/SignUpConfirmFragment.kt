@@ -140,10 +140,6 @@ class SignUpConfirmFragment : BaseFragment() {
         binding.social = socialInfo
 
         binding.btnRegister.setOnClickListener {
-            if (!binding.cbTermCondition.isChecked) {
-                showAlert(getString(R.string.term_condition_notification))
-                return@setOnClickListener
-            }
             socialInfo?.let { info ->
                 viewModel.login(info.copy(subscription = binding.cbSubscription.isChecked), true)
             }
@@ -204,10 +200,6 @@ class SignUpConfirmFragment : BaseFragment() {
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
-        }
-
-        binding.tvTermAndCondition.setOnClickListener {
-            navigator.navigateToTermAndCondition()
         }
 
         binding.tvLogin.setOnClickListener {
