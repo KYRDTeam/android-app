@@ -5,7 +5,7 @@
     <string name="promo_code">优惠码</string>
     <string name="create_wallet">创建钱包</string>
     <string name="import_wallet">导入钱包</string>
-    <string name="terms_and_conditions">By using KyberSwap, you agree to\nthe Terms &amp; Conditions</string>
+    <string name="terms_and_conditions">通过使用KyberSwap兑换，即表示您同意条款及条件</string>
     <string name="landing_1_title">安全 &amp; 兼容</string>
     <string name="landing_2_title">使用KyberSwap即时兑换</string>
     <string name="landing_3_title">资料</string>
@@ -234,7 +234,7 @@
     <string name="token_weth">WETH</string>
     <string name="pending_transaction">请等待其他交易上链完成后再发起新的交易</string>
     <string name="sign_in_with">或用其它方式登录</string>
-    <string name="agree_to">"By using KyberSwap, you agree to the Terms &amp; Conditions"</string>
+    <string name="agree_to">"“通过使用KyberSwap兑换，即表示您同意条款及条件"</string>
     <string name="term_condition_notification">请接受我们的条款和条件再继续</string>
     <string name="complete_profile_verification">完成您的个人资料验证</string>
     <string name="my_profile">我的资料</string>

@@ -5,7 +5,7 @@
     <string name="promo_code">Promo Code</string>
     <string name="create_wallet">지갑 만들기</string>
     <string name="import_wallet">지갑 가져 오기</string>
-    <string name="terms_and_conditions">By using KyberSwap, you agree to\nthe Terms &amp; Conditions</string>
+    <string name="terms_and_conditions">카이버스왑을 사용함으로써, 이용약관에 동의합니다.</string>
     <string name="landing_1_title">보안 및 호환성</string>
     <string name="landing_2_title">KyberSwap으로 쉽고 편하게 교환하세요</string>
     <string name="landing_3_title">프로필</string>
@@ -234,7 +234,7 @@
     <string name="token_weth">WETH</string>
     <string name="pending_transaction">Please wait for other transactions to be mined before making a transfer</string>
     <string name="sign_in_with">Or sign in with</string>
-    <string name="agree_to">"By using KyberSwap, you agree to the Terms &amp; Conditions"</string>
+    <string name="agree_to">"카이버스왑을 사용함으로써, 이용약관에 동의합니다."</string>
     <string name="term_condition_notification">Please accept our Terms and Conditions to continue</string>
     <string name="complete_profile_verification">프로필 확인 완료</string>
     <string name="my_profile">내 프로필</string>
