@@ -94,11 +94,30 @@ class TokenClient @Inject constructor(
     private val event = Event(
         "ExecuteTrade",
         listOf<TypeReference<*>>(
-            object : TypeReference<Uint256>() {
+            object : TypeReference<Address>() {
+            },
+            object : TypeReference<Address>() {
             },
             object : TypeReference<Uint256>() {
             },
             object : TypeReference<Uint256>() {
+            }
+        ))
+
+    private val executeTradeEvent = Event(
+        "ExecuteTrade",
+        listOf<TypeReference<*>>(
+            object : TypeReference<Address>() {
+            },
+            object : TypeReference<Address>() {
+            },
+            object : TypeReference<Address>() {
+            },
+            object : TypeReference<Uint256>() {
+            },
+            object : TypeReference<Uint256>() {
+            },
+            object : TypeReference<Address>() {
             },
             object : TypeReference<Uint256>() {
             }
@@ -1388,23 +1407,47 @@ class TokenClient @Inject constructor(
 
                                 val values = FunctionReturnDecoder.decode(
                                     filter.data,
-                                    event.nonIndexedParameters
+                                    if (BuildConfig.FLAVOR == "dev") {
+                                        executeTradeEvent.nonIndexedParameters
+                                    } else {
+                                        event.nonIndexedParameters
+                                    }
                                 )
-                                val destAmount = if (values.size > 3) {
-                                    val tokenBySymbol = tokenDao.getTokenBySymbol(pending.tokenDest)
-                                    if (tokenBySymbol != null) {
-                                        (values[3] as Uint256).value.toBigDecimal().divide(
-                                            BigDecimal.TEN
-                                                .pow(tokenBySymbol.tokenDecimal),
-                                            18,
-                                            RoundingMode.UP
-                                        ).toDisplayNumber()
+                                val tokenBySymbol =
+                                    tokenDao.getTokenBySymbol(pending.tokenDest)
+                                val destAmount = if (BuildConfig.FLAVOR == "dev") {
+                                    if (values.size > 4) {
+                                        if (tokenBySymbol != null) {
+                                            (values[4] as Uint256).value.toBigDecimal().divide(
+                                                BigDecimal.TEN
+                                                    .pow(tokenBySymbol.tokenDecimal),
+                                                18,
+                                                RoundingMode.UP
+                                            ).toDisplayNumber()
+                                        } else {
+                                            pending.destAmount
+                                        }
                                     } else {
                                         pending.destAmount
                                     }
                                 } else {
-                                    pending.destAmount
+                                    if (values.size > 3) {
+                                        if (tokenBySymbol != null) {
+                                            (values[3] as Uint256).value.toBigDecimal().divide(
+                                                BigDecimal.TEN
+                                                    .pow(tokenBySymbol.tokenDecimal),
+                                                18,
+                                                RoundingMode.UP
+                                            ).toDisplayNumber()
+                                        } else {
+                                            pending.destAmount
+                                        }
+                                    } else {
+                                        pending.destAmount
+                                    }
                                 }
+
+
                                 pending.copy(destAmount = destAmount)
                             } else {
                                 pending
@@ -1427,6 +1470,7 @@ class TokenClient @Inject constructor(
                         val latestTx = transactionDao.getLatestTransaction(wallet.address)
                         if (pending.nonce.toBigDecimalOrDefaultZero() > BigDecimal.ZERO &&
                             latestTx?.nonce.toBigDecimalOrDefaultZero() >= pending.nonce.toBigDecimalOrDefaultZero() &&
+                            !pending.hash.equals(latestTx?.nonce, true) &&
                             System.currentTimeMillis() / 1000 - pending.timeStamp > 30
                         ) {
                             analytics.logEvent(

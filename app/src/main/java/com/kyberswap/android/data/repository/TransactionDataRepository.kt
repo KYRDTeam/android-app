@@ -504,18 +504,21 @@ class TransactionDataRepository @Inject constructor(
                     }
                 }
                 if (it.isNotEmpty()) {
-                    val latestNonce = it.first { tx ->
+
+                    val latestTx = it.first { tx ->
                         tx.from.equals(
                             param.wallet.address,
                             true
                         )
-                    }.nonce.toBigIntegerOrDefaultZero()
+                    }
+                    val latestNonce = latestTx.nonce.toBigIntegerOrDefaultZero()
                     val pendingTransactions = transactionDao.getTransactions(
                         param.wallet.address,
                         Transaction.PENDING_TRANSACTION_STATUS
                     )
                     pendingTransactions.filter { pending ->
-                        pending.nonce.toBigIntegerOrDefaultZero() <= latestNonce
+                        pending.nonce.toBigIntegerOrDefaultZero() <= latestNonce &&
+                            !pending.hash.equals(latestTx.hash, true)
                     }.forEach { filteredPending ->
                         sendNotification(filteredPending, !filteredPending.isCancel)
                         transactionDao.delete(filteredPending)
@@ -852,7 +855,6 @@ class TransactionDataRepository @Inject constructor(
                     }
                 }, false)
             },
-
             Flowable.fromCallable {
                 transactionDao.getLatestTransaction(wallet.address) != null
             }.flatMap {
@@ -899,11 +901,7 @@ class TransactionDataRepository @Inject constructor(
                             .onErrorReturn { listOf() }
 
                     ) { local, remote ->
-
-                        val transactionList = mutableListOf<Transaction>()
-                        transactionList.addAll(remote)
-                        transactionList.addAll(local)
-                        transactionList
+                        remote.union(local)
                     }.map {
                         TransactionsData(it.map {
                             it.apply {
