@@ -5,6 +5,7 @@ import androidx.annotation.NonNull
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.android.parcel.Parcelize
+import java.util.Locale
 
 @Entity(tableName = "token_extras")
 @Parcelize
@@ -22,7 +23,7 @@ data class TokenExt(
     constructor(token: Token) : this(
         token.tokenSymbol,
         token.tokenName,
-        token.tokenAddress,
+        token.tokenAddress.toLowerCase(Locale.getDefault()),
         token.isGasFixed,
         token.gasLimit,
         token.delistTime,

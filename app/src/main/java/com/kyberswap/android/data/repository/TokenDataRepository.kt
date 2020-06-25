@@ -1,6 +1,7 @@
 package com.kyberswap.android.data.repository
 
 import android.content.Context
+import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.chart.Data
 import com.kyberswap.android.data.api.home.ChartApi
@@ -19,6 +20,7 @@ import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
 import com.kyberswap.android.domain.usecase.token.GetChartDataForTokenUseCase
 import com.kyberswap.android.domain.usecase.token.GetToken24hVolUseCase
 import com.kyberswap.android.domain.usecase.token.SaveTokenUseCase
+import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntSafe
@@ -30,6 +32,7 @@ import io.reactivex.Single
 import org.web3j.utils.Convert
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.math.RoundingMode
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.pow
@@ -122,10 +125,7 @@ class TokenDataRepository @Inject constructor(
                     throw RuntimeException("Can not get rate from: " + context.getString(R.string.token_endpoint_url) + "expectedRate")
                 } else {
                     listOf(
-                        Convert.fromWei(
-                            it.expectedRate.toBigDecimalOrDefaultZero(),
-                            Convert.Unit.ETHER
-                        ).toPlainString()
+                        getExpectedRateAfterFee(it.expectedRate, PLATFORM_FEE_BPS)
                     )
                 }
             }.repeatWhen {
@@ -150,6 +150,24 @@ class TokenDataRepository @Inject constructor(
 //            .retryWhen { throwable ->
 //                throwable.compose(zipWithFlatMap())
 //            }
+    }
+
+    private fun getExpectedRateAfterFee(expectedRate: String, bps: Int): String {
+        return if (BuildConfig.FLAVOR == "dev") {
+            Convert.fromWei(
+                expectedRate.toBigDecimalOrDefaultZero()
+                    .multiply(
+                        BigDecimal.ONE - bps.toBigDecimal()
+                            .divide(100.toBigDecimal(), 18, RoundingMode.UP)
+                    ),
+                Convert.Unit.ETHER
+            ).toPlainString()
+        } else {
+            Convert.fromWei(
+                expectedRate.toBigDecimalOrDefaultZero(),
+                Convert.Unit.ETHER
+            ).toPlainString()
+        }
     }
 
     override fun getChartData(param: GetChartDataForTokenUseCase.Param): Single<Chart> {

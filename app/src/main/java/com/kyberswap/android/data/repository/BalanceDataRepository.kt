@@ -179,47 +179,49 @@ class BalanceDataRepository @Inject constructor(
     }
 
     override fun getBalance(): Flowable<List<Token>> {
-        return getLocalTokens().first(listOf()).mergeWith(fetchChange24h()
-            .flatMap { remoteTokenList ->
-                currencyApi.internalCurrencies()
-                    .map { currencies -> currencies.data }
-                    .toFlowable()
-                    .flatMapIterable { tokenCurrency -> tokenCurrency }
-                    .map { internalCurrency ->
-                        val tokenBySymbol = remoteTokenList.find {
-                            it.tokenSymbol.equals(internalCurrency.symbol, true)
-                        }
-
-                        tokenBySymbol?.with(internalCurrency) ?: Token(internalCurrency)
-                    }
-                    .toList()
-                    .doAfterSuccess { tokens ->
-                        tokenExtDao.batchInsertTokenExtras(tokens.map {
-                            TokenExt(it)
-                        })
-                    }
-                    .map { remoteTokens ->
-                        val localTokenList = tokenDao.all.first(listOf()).blockingGet()
-                        val remoteList = remoteTokens.map { remoteToken ->
-                            val localToken = localTokenList.find {
-                                it.tokenAddress.equals(remoteToken.tokenAddress, true)
+        return getLocalTokens().first(listOf()).mergeWith(
+            fetchChange24h()
+                .flatMap { remoteTokenList ->
+                    currencyApi.internalCurrencies()
+                        .map { currencies -> currencies.data }
+                        .toFlowable()
+                        .flatMapIterable { tokenCurrency -> tokenCurrency }
+                        .map { internalCurrency ->
+                            val tokenBySymbol = remoteTokenList.find {
+                                it.tokenSymbol.equals(internalCurrency.symbol, true)
                             }
 
-                            if (localToken != null) {
-                                remoteToken.copy(
-                                    wallets = localToken.wallets,
-                                    fav = localToken.fav
-                                )
-                            } else {
-                                remoteToken
-                            }
+                            tokenBySymbol?.with(internalCurrency) ?: Token(internalCurrency)
                         }
-                        remoteList.union(tokenDao.otherTokens).toList().sortedBy { it.tokenSymbol }
-                    }
-            }
-            .doAfterSuccess { tokens ->
-                tokenDao.insertTokens(tokens)
-            })
+                        .toList()
+                        .doAfterSuccess { tokens ->
+                            tokenExtDao.batchInsertTokenExtras(tokens.map {
+                                TokenExt(it)
+                            })
+                        }
+                        .map { remoteTokens ->
+                            val localTokenList = tokenDao.all.first(listOf()).blockingGet()
+                            val remoteList = remoteTokens.map { remoteToken ->
+                                val localToken = localTokenList.find {
+                                    it.tokenAddress.equals(remoteToken.tokenAddress, true)
+                                }
+
+                                if (localToken != null) {
+                                    remoteToken.copy(
+                                        wallets = localToken.wallets,
+                                        fav = localToken.fav
+                                    )
+                                } else {
+                                    remoteToken
+                                }
+                            }
+                            remoteList.union(tokenDao.otherTokens).toList()
+                                .sortedBy { it.tokenSymbol }
+                        }
+                }
+                .doAfterSuccess { tokens ->
+                    tokenDao.insertTokens(tokens)
+                })
     }
 
     override fun preloadTokenInfo(): Single<List<Token>> {

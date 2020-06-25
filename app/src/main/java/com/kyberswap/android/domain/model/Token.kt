@@ -161,7 +161,7 @@ data class Token(
         return copy(
             tokenSymbol = entity.symbol,
             tokenName = entity.name,
-            tokenAddress = entity.address,
+            tokenAddress = entity.address.toLowerCase(Locale.getDefault()),
             tokenDecimal = entity.decimals,
             cgId = entity.cgId,
             gasApprove = entity.gasApprove,
