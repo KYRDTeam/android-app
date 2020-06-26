@@ -53,6 +53,9 @@ interface TransactionDao {
         walletAddress: String, pending: String = Transaction.PENDING_TRANSACTION_STATUS
     ): Transaction?
 
+    @Query("DELETE FROM transactions WHERE gasUsed = :gasUsed")
+    fun deleteTransactionByGasUsed(gasUsed: Long)
+
     @Delete
     fun delete(model: Transaction)
 
@@ -62,13 +65,13 @@ interface TransactionDao {
     @get:Query("SELECT * FROM transactions")
     val all: Flowable<List<Transaction>>
 
-    @Query("SELECT * FROM transactions WHERE (walletAddress = :walletAddress OR `from` = :walletAddress OR `to` = :walletAddress) AND transactionStatus != :pending")
+    @Query("SELECT * FROM transactions WHERE (walletAddress = :walletAddress OR `from` = :walletAddress OR `to` = :walletAddress) AND transactionStatus != :pending AND gasUsed > 0")
     fun getCompletedTransactionsFlowable(
         walletAddress: String,
         pending: String = Transaction.PENDING_TRANSACTION_STATUS
     ): Flowable<List<Transaction>>
 
-    @Query("SELECT * FROM transactions WHERE (walletAddress = :walletAddress OR `from` = :walletAddress OR `to` = :walletAddress) AND transactionStatus != :pending")
+    @Query("SELECT * FROM transactions WHERE (walletAddress = :walletAddress OR `from` = :walletAddress OR `to` = :walletAddress) AND transactionStatus != :pending ORDER BY timeStamp DESC")
     fun getCompletedTransactions(
         walletAddress: String,
         pending: String = Transaction.PENDING_TRANSACTION_STATUS

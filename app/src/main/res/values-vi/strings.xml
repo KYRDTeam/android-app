@@ -5,7 +5,7 @@
     <string name="promo_code">Mã khuyến mãi</string>
     <string name="create_wallet">Tạo Ví</string>
     <string name="import_wallet">Nhập Ví</string>
-    <string name="terms_and_conditions">Điều khoản và điều kiện</string>
+    <string name="terms_and_conditions">Bằng việc sử dụng KyberSwap, bạn đã đồng ý với Điều khoản sử dụng của chúng tôi</string>
 
     <string name="landing_1_title">An toàn &amp; Tương thích</string>
     <string name="landing_2_title">Hoán đổi tức thì với KyberSwap</string>
@@ -234,7 +234,7 @@
     <string name="token_weth">WETH</string>
     <string name="pending_transaction">Vui lòng đợi những giao dịch khác hoàn thành trước khi thực hiện chuyển token đi</string>
     <string name="sign_in_with">Hoặc sử dụng</string>
-    <string name="agree_to">"Đồng ý "</string>
+    <string name="agree_to">"Bằng việc sử dụng KyberSwap, bạn đã đồng ý với Điều khoản sử dụng của chúng tôi"</string>
     <string name="term_condition_notification">Vui lòng đồng ý với Terms &amp; Conditions để tiếp tục</string>
     <string name="complete_profile_verification">Hoàn tất xác minh hồ sơ của bạn</string>
     <string name="profile_unverified">Chưa được xác minh</string>

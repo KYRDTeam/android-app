@@ -6,7 +6,7 @@
     <string name="promo_code">Promo Code</string>
     <string name="create_wallet">Create Wallet</string>
     <string name="import_wallet">Import Wallet</string>
-    <string name="terms_and_conditions">Terms and Conditions</string>
+    <string name="terms_and_conditions">By using KyberSwap, you agree to\nthe Terms &amp; Conditions</string>
     <string name="landing_1_title">Secure &amp; Compatible</string>
     <string name="landing_2_title">Instant Swap with KyberSwap</string>
     <string name="landing_3_title">Profile</string>
@@ -245,7 +245,7 @@
     <string name="token_weth">WETH</string>
     <string name="pending_transaction">Please wait for other transactions to be mined before making a transfer</string>
     <string name="sign_in_with">Or sign in with</string>
-    <string name="agree_to">"Agree to "</string>
+    <string name="agree_to">"By using KyberSwap, you agree to the Terms &amp; Conditions"</string>
     <string name="term_and_condition" translatable="false">https://files.kyberswap.com/tac.pdf</string>
     <string name="term_condition_notification">Please accept our Terms and Conditions to continue</string>
     <string name="complete_profile_verification">Complete Your Profile Verification</string>

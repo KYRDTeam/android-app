@@ -171,7 +171,7 @@ data class Order(
         get() = status.toLowerCase(Locale.getDefault()) == Status.INVALIDATED.value.toLowerCase(
             Locale.getDefault()
         ) &&
-                msg.isNotEmpty()
+            msg.isNotEmpty()
 
     val hasErrorMessage: Boolean
         get() = msg.isNotEmpty()
@@ -202,27 +202,27 @@ data class Order(
     fun sameDisplay(other: Order): Boolean {
         if (isV1) {
             return this.id == other.id &&
-                    this.displayTokenPair == other.displayTokenPair &&
-                    this.displayAddress == other.displayAddress &&
-                    this.status == other.status &&
-                    this.sourceDisplay == other.sourceDisplay &&
-                    this.destDisplay == other.destDisplay &&
-                    this.destDisplayFee == other.destDisplayFee &&
-                    this.extraDisplay == other.extraDisplay &&
-                    this.msg == other.msg
+                this.displayTokenPair.equals(other.displayTokenPair, true) &&
+                this.displayAddress.equals(other.displayAddress, true) &&
+                this.status.equals(other.status, true) &&
+                this.sourceDisplay.equals(other.sourceDisplay, true) &&
+                this.destDisplay.equals(other.destDisplay, true) &&
+                this.destDisplayFee.equals(other.destDisplayFee, true) &&
+                this.extraDisplay.equals(other.extraDisplay, true) &&
+                this.msg.equals(other.msg, true)
         } else {
             return this.id == other.id &&
-                    this.displayTokenPair == other.displayTokenPair &&
-                    this.displayAddress == other.displayAddress &&
-                    this.status == other.status &&
-                    this.sideTrade == other.sideTrade &&
-                    this.displayPrice == other.displayPrice &&
-                    this.displayTotal == other.displayTotal &&
-                    this.displayAmount == other.displayAmount &&
-                    this.destDisplayFee == other.destDisplayFee &&
-                    this.extraDisplay == other.extraDisplay &&
-                    this.hasExtra == other.hasExtra &&
-                    this.msg == other.msg
+                this.displayTokenPair.equals(other.displayTokenPair, true) &&
+                this.displayAddress.equals(other.displayAddress, true) &&
+                this.status.equals(other.status, true) &&
+                this.sideTrade.equals(other.sideTrade, true) &&
+                this.displayPrice.equals(other.displayPrice, true) &&
+                this.displayTotal.equals(other.displayTotal, true) &&
+                this.displayAmount.equals(other.displayAmount, true) &&
+                this.destDisplayFee.equals(other.destDisplayFee, true) &&
+                this.extraDisplay.equals(other.extraDisplay, true) &&
+                this.msg.equals(other.msg, true) &&
+                this.hasExtra == other.hasExtra
         }
     }
 

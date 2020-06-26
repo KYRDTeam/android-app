@@ -1,6 +1,7 @@
 package com.kyberswap.android.util.ext
 
 fun Map<String, List<String>>.display(): String {
+    if (this.isEmpty()) return "undefined message"
     val builder = StringBuilder()
     for ((key, value) in this) {
         builder.append(key).append(" : ")

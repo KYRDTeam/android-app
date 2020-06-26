@@ -97,7 +97,7 @@ data class Transaction(
 
     val isCancelTransaction: Boolean
         get() = transactionType == TransactionType.SEND
-                && value.toBigDecimalOrDefaultZero() == BigDecimal.ZERO
+            && value.toBigDecimalOrDefaultZero() == BigDecimal.ZERO
 
     constructor(entity: TransactionEntity, address: String, txType: String) : this(
         entity.blockHash ?: "",
@@ -300,11 +300,11 @@ data class Transaction(
 
     fun sameDisplay(other: Transaction): Boolean {
 
-        return this.displayTransaction == other.displayTransaction &&
-                this.displayRate == other.displayRate &&
-                this.transactionType == other.transactionType &&
-                this.isTransactionFail == other.isTransactionFail &&
-                this.timeStamp == other.timeStamp
+        return this.displayTransaction.equals(other.displayTransaction, true) &&
+            this.displayRate.equals(other.displayRate, true) &&
+            this.transactionType == other.transactionType &&
+            this.isTransactionFail == other.isTransactionFail &&
+            this.timeStamp == other.timeStamp
     }
 
     val transactionType: TransactionType
@@ -321,9 +321,9 @@ data class Transaction(
         get() = this.isTransfer && this.from.isNotEmpty()
 
     fun sameKey(other: Transaction): Boolean {
-        return this.hash == other.hash &&
-                this.from == other.from &&
-                this.to == other.to
+        return this.hash.equals(other.hash, true) &&
+            this.from.equals(other.from, true) &&
+            this.to.equals(other.to, true)
     }
 
     val isPendingTransaction: Boolean

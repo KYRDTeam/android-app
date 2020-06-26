@@ -34,7 +34,10 @@ class TransactionStatusAdapter(
     diffCallback = object : DiffUtil.ItemCallback<TransactionItem>() {
         override fun areItemsTheSame(oldItem: TransactionItem, newItem: TransactionItem): Boolean {
             return when {
-                oldItem is TransactionItem.Header && newItem is TransactionItem.Header && oldItem.date == newItem.date -> true
+                oldItem is TransactionItem.Header && newItem is TransactionItem.Header && oldItem.date.equals(
+                    newItem.date,
+                    true
+                ) -> true
                 oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemOdd && oldItem.transaction.sameKey(
                     newItem.transaction
                 ) -> true
@@ -56,7 +59,10 @@ class TransactionStatusAdapter(
             oldItem: TransactionItem, newItem: TransactionItem
         ): Boolean {
             return when {
-                oldItem is TransactionItem.Header && newItem is TransactionItem.Header && oldItem.date == newItem.date -> true
+                oldItem is TransactionItem.Header && newItem is TransactionItem.Header && oldItem.date.equals(
+                    newItem.date,
+                    true
+                ) -> true
                 oldItem is TransactionItem.ItemOdd && newItem is TransactionItem.ItemOdd && oldItem.transaction.sameDisplay(
                     newItem.transaction
                 ) -> true

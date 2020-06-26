@@ -161,7 +161,7 @@ data class Token(
         return copy(
             tokenSymbol = entity.symbol,
             tokenName = entity.name,
-            tokenAddress = entity.address,
+            tokenAddress = entity.address.toLowerCase(Locale.getDefault()),
             tokenDecimal = entity.decimals,
             cgId = entity.cgId,
             gasApprove = entity.gasApprove,
@@ -337,13 +337,16 @@ data class Token(
         get() = tokenSymbol.toLowerCase(Locale.getDefault()) == ENJ.toLowerCase(Locale.getDefault())
 
     fun areContentsTheSame(other: Token): Boolean {
-        return this.tokenSymbol == other.tokenSymbol &&
-            this.tokenAddress == other.tokenAddress &&
-            this.currentBalance.toDisplayNumber() == other.currentBalance.toDisplayNumber() &&
-            this.rateEthNow.toDisplayNumber() == other.rateEthNow.toDisplayNumber() &&
-            this.rateUsdNow.toDisplayNumber() == other.rateUsdNow.toDisplayNumber() &&
-            this.changeUsd24h.toDisplayNumber() == other.changeUsd24h.toDisplayNumber() &&
-            this.changeEth24h.toDisplayNumber() == other.changeEth24h.toDisplayNumber() &&
+        return this.tokenSymbol.equals(other.tokenSymbol, true) &&
+            this.tokenAddress.equals(other.tokenAddress, true) &&
+            this.currentBalance.toDisplayNumber()
+                .equals(other.currentBalance.toDisplayNumber(), true) &&
+            this.rateEthNow.toDisplayNumber().equals(other.rateEthNow.toDisplayNumber(), true) &&
+            this.rateUsdNow.toDisplayNumber().equals(other.rateUsdNow.toDisplayNumber(), true) &&
+            this.changeUsd24h.toDisplayNumber()
+                .equals(other.changeUsd24h.toDisplayNumber(), true) &&
+            this.changeEth24h.toDisplayNumber()
+                .equals(other.changeEth24h.toDisplayNumber(), true) &&
             this.fav == other.fav &&
             this.shouldShowAsNew == other.shouldShowAsNew &&
             this.isEven == other.isEven &&

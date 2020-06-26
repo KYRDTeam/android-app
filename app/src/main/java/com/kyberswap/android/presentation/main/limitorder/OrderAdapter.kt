@@ -28,21 +28,26 @@ class OrderAdapter(
     diffCallback = object : DiffUtil.ItemCallback<OrderItem>() {
         override fun areItemsTheSame(oldItem: OrderItem, newItem: OrderItem): Boolean {
             return when {
-                oldItem is OrderItem.Header && newItem is OrderItem.Header && oldItem.date == newItem.date -> true
+                oldItem is OrderItem.Header && newItem is OrderItem.Header && oldItem.date.equals(
+                    newItem.date,
+                    true
+                ) -> true
                 oldItem is OrderItem.ItemEven && newItem is OrderItem.ItemEven && oldItem.order.id == newItem.order.id -> true
                 oldItem is OrderItem.ItemOdd && newItem is OrderItem.ItemOdd && oldItem.order.id == newItem.order.id -> true
                 oldItem is OrderItem.ItemOdd && newItem is OrderItem.ItemEven && oldItem.order.id == newItem.order.id -> true
                 oldItem is OrderItem.ItemEven && newItem is OrderItem.ItemOdd && oldItem.order.id == newItem.order.id -> true
                 else -> false
             }
-
         }
 
         override fun areContentsTheSame(
             oldItem: OrderItem, newItem: OrderItem
         ): Boolean {
             return when {
-                oldItem is OrderItem.Header && newItem is OrderItem.Header && oldItem.date == newItem.date -> true
+                oldItem is OrderItem.Header && newItem is OrderItem.Header && oldItem.date.equals(
+                    newItem.date,
+                    true
+                ) -> true
                 oldItem is OrderItem.ItemOdd && newItem is OrderItem.ItemOdd && oldItem.order.sameDisplay(
                     newItem.order
                 ) -> true
@@ -83,7 +88,6 @@ class OrderAdapter(
         submitList(
             items
         )
-
     }
 
     override fun onBindViewHolder(
@@ -129,8 +133,6 @@ class OrderAdapter(
                 onInvalidatedClick?.invoke(item)
             }
         }
-
-
     }
 
     fun setWarning(isWarning: Boolean) {
@@ -143,7 +145,6 @@ class OrderAdapter(
             is OrderItem.Header -> {
                 binding as ItemHeaderBinding
                 binding.tvDate.text = item.date
-
             }
 
             is OrderItem.ItemEven -> {
@@ -159,7 +160,6 @@ class OrderAdapter(
                 binding.tvExtra.setOnClickListener {
                     onExtraClick?.invoke(item.order)
                 }
-
             }
 
             is OrderItem.ItemOdd -> {

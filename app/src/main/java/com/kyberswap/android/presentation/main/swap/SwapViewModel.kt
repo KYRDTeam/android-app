@@ -2,6 +2,7 @@ package com.kyberswap.android.presentation.main.swap
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.domain.model.NotificationAlert
 import com.kyberswap.android.domain.model.NotificationExt
 import com.kyberswap.android.domain.model.Swap
@@ -23,6 +24,7 @@ import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.common.MIN_SUPPORT_AMOUNT
+import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
 import com.kyberswap.android.presentation.common.specialGasLimitDefault
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
@@ -37,6 +39,7 @@ import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.math.RoundingMode
 import java.net.UnknownHostException
 import javax.inject.Inject
 
@@ -291,7 +294,14 @@ class SwapViewModel @Inject constructor(
                     _estimateAmountState.value =
                         Event(EstimateAmountState.ShowError(it.additionalData))
                 } else {
-                    _estimateAmountState.value = Event(EstimateAmountState.Success(it.data))
+                    _estimateAmountState.value = Event(
+                        EstimateAmountState.Success(
+                            calcAmountWithPlatformBps(
+                                it.data,
+                                PLATFORM_FEE_BPS
+                            )
+                        )
+                    )
                 }
             },
             Consumer {
@@ -305,6 +315,17 @@ class SwapViewModel @Inject constructor(
                 destAmount
             )
         )
+    }
+
+    private fun calcAmountWithPlatformBps(amount: String, bps: Int): String {
+        return if (BuildConfig.FLAVOR == "dev") {
+            amount.toBigDecimalOrDefaultZero().multiply(
+                BigDecimal.ONE + bps.toBigDecimal()
+                    .divide(100.toBigDecimal(), 18, RoundingMode.UP)
+            ).toDisplayNumber()
+        } else {
+            amount
+        }
     }
 
     fun getGasLimit(wallet: Wallet?, swap: Swap?) {

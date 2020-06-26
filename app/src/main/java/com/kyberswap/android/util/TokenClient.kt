@@ -13,6 +13,7 @@ import android.util.Base64
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.db.NonceDao
@@ -27,6 +28,7 @@ import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
 import com.kyberswap.android.presentation.common.DEFAULT_MAX_AMOUNT
 import com.kyberswap.android.presentation.common.DEFAULT_WALLET_ID
 import com.kyberswap.android.presentation.common.PERM
+import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfer
 import com.kyberswap.android.util.ext.createEvent
@@ -92,11 +94,30 @@ class TokenClient @Inject constructor(
     private val event = Event(
         "ExecuteTrade",
         listOf<TypeReference<*>>(
-            object : TypeReference<Uint256>() {
+            object : TypeReference<Address>() {
+            },
+            object : TypeReference<Address>() {
             },
             object : TypeReference<Uint256>() {
             },
             object : TypeReference<Uint256>() {
+            }
+        ))
+
+    private val executeTradeEvent = Event(
+        "ExecuteTrade",
+        listOf<TypeReference<*>>(
+            object : TypeReference<Address>() {
+            },
+            object : TypeReference<Address>() {
+            },
+            object : TypeReference<Address>() {
+            },
+            object : TypeReference<Uint256>() {
+            },
+            object : TypeReference<Uint256>() {
+            },
+            object : TypeReference<Address>() {
             },
             object : TypeReference<Uint256>() {
             }
@@ -139,6 +160,28 @@ class TokenClient @Inject constructor(
                 },
                 object : TypeReference<Uint256>() {
 
+                })
+        )
+    }
+
+    private fun getExpectedRateAfterFee(
+        srcToken: String,
+        destToken: String,
+        srcTokenAmount: BigInteger,
+        platformFeeBps: BigInteger = PLATFORM_FEE_BPS.toBigInteger(),
+        hint: String = ""
+    ): Function {
+        return Function(
+            "getExpectedRateAfterFee",
+            listOf(
+                Address(srcToken),
+                Address(destToken),
+                Uint256(srcTokenAmount),
+                Uint256(platformFeeBps),
+                DynamicBytes(hint.toByteArray())
+            ),
+            listOf<TypeReference<*>>(
+                object : TypeReference<Uint256>() {
                 })
         )
     }
@@ -293,7 +336,19 @@ class TokenClient @Inject constructor(
         srcTokenAmount: BigInteger
     ): List<String> {
         val function =
-            getExpectedRate(tokenSource.tokenAddress, tokenDest.tokenAddress, srcTokenAmount)
+            if (BuildConfig.FLAVOR == "dev") {
+                getExpectedRateAfterFee(
+                    tokenSource.tokenAddress,
+                    tokenDest.tokenAddress,
+                    srcTokenAmount
+                )
+            } else {
+                getExpectedRate(
+                    tokenSource.tokenAddress,
+                    tokenDest.tokenAddress,
+                    srcTokenAmount
+                )
+            }
 
         val responseValue = callSmartContractFunction(function, contractAddress, null)
 
@@ -312,6 +367,7 @@ class TokenClient @Inject constructor(
                 toEther.toPlainString()
             )
         }
+
         return rateResult
     }
 
@@ -326,13 +382,24 @@ class TokenClient @Inject constructor(
         isEth: Boolean
     ): EthEstimateGas? {
 
-        val function = tradeWithHint(
-            fromAddress,
-            toAddress,
-            amount,
-            minConversionRate,
-            walletAddress
-        )
+        val function =
+            if (BuildConfig.FLAVOR == "dev") {
+                tradeWithHintAndFee(
+                    fromAddress,
+                    toAddress,
+                    amount,
+                    minConversionRate,
+                    walletAddress
+                )
+            } else {
+                tradeWithHint(
+                    fromAddress,
+                    toAddress,
+                    amount,
+                    minConversionRate,
+                    walletAddress
+                )
+            }
 
         return web3jAlchemyNode.ethEstimateGas(
             Transaction(
@@ -408,6 +475,34 @@ class TokenClient @Inject constructor(
                 Uint256(minConversionRate),
                 Address(DEFAULT_WALLET_ID),
                 DynamicBytes(PERM.toByteArray())
+            ),
+            listOf<TypeReference<*>>()
+        )
+    }
+
+    @Throws(IOException::class)
+    private fun tradeWithHintAndFee(
+        fromAddress: String,
+        toAddress: String,
+        value: BigInteger,
+        minConversionRate: BigInteger,
+        walletAddress: String,
+        platformFeeBps: BigInteger = PLATFORM_FEE_BPS.toBigInteger(),
+        hint: String = ""
+    ): Function {
+
+        return Function(
+            "tradeWithHintAndFee",
+            listOf(
+                Address(fromAddress),
+                Uint256(value),
+                Address(toAddress),
+                Address(walletAddress),
+                Uint256(DEFAULT_MAX_AMOUNT),
+                Uint256(minConversionRate),
+                Address(DEFAULT_WALLET_ID),
+                Uint256(platformFeeBps),
+                DynamicBytes(hint.toByteArray())
             ),
             listOf<TypeReference<*>>()
         )
@@ -694,13 +789,23 @@ class TokenClient @Inject constructor(
             contractAddress,
             transactionAmount,
             FunctionEncoder.encode(
-                tradeWithHint(
-                    fromAddress,
-                    toAddress,
-                    tradeWithHintAmount,
-                    minConversionRate,
-                    walletAddress
-                )
+                if (BuildConfig.FLAVOR == "dev") {
+                    tradeWithHintAndFee(
+                        fromAddress,
+                        toAddress,
+                        tradeWithHintAmount,
+                        minConversionRate,
+                        walletAddress
+                    )
+                } else {
+                    tradeWithHint(
+                        fromAddress,
+                        toAddress,
+                        tradeWithHintAmount,
+                        minConversionRate,
+                        walletAddress
+                    )
+                }
             )
         )
 
@@ -1110,13 +1215,24 @@ class TokenClient @Inject constructor(
                 if (tx.isSwapTx()) {
 
                     val input = FunctionEncoder.encode(
-                        tradeWithHint(
-                            tx.fromAddress(params),
-                            tx.toAddress(params),
-                            tx.txValue(params),
-                            tx.minConversionRate(params),
-                            wallet.walletAddress
-                        )
+                        if (BuildConfig.FLAVOR == "dev") {
+                            tradeWithHintAndFee(
+                                tx.fromAddress(params),
+                                tx.toAddress(params),
+                                tx.txValue(params),
+                                tx.minConversionRate(params),
+                                wallet.walletAddress
+                            )
+                        } else {
+                            tradeWithHint(
+                                tx.fromAddress(params),
+                                tx.toAddress(params),
+                                tx.txValue(params),
+                                tx.minConversionRate(params),
+                                wallet.walletAddress
+                            )
+                        }
+
                     )
 
                     val rawTransaction =
@@ -1291,23 +1407,47 @@ class TokenClient @Inject constructor(
 
                                 val values = FunctionReturnDecoder.decode(
                                     filter.data,
-                                    event.nonIndexedParameters
+                                    if (BuildConfig.FLAVOR == "dev") {
+                                        executeTradeEvent.nonIndexedParameters
+                                    } else {
+                                        event.nonIndexedParameters
+                                    }
                                 )
-                                val destAmount = if (values.size > 3) {
-                                    val tokenBySymbol = tokenDao.getTokenBySymbol(pending.tokenDest)
-                                    if (tokenBySymbol != null) {
-                                        (values[3] as Uint256).value.toBigDecimal().divide(
-                                            BigDecimal.TEN
-                                                .pow(tokenBySymbol.tokenDecimal),
-                                            18,
-                                            RoundingMode.UP
-                                        ).toDisplayNumber()
+                                val tokenBySymbol =
+                                    tokenDao.getTokenBySymbol(pending.tokenDest)
+                                val destAmount = if (BuildConfig.FLAVOR == "dev") {
+                                    if (values.size > 4) {
+                                        if (tokenBySymbol != null) {
+                                            (values[4] as Uint256).value.toBigDecimal().divide(
+                                                BigDecimal.TEN
+                                                    .pow(tokenBySymbol.tokenDecimal),
+                                                18,
+                                                RoundingMode.UP
+                                            ).toDisplayNumber()
+                                        } else {
+                                            pending.destAmount
+                                        }
                                     } else {
                                         pending.destAmount
                                     }
                                 } else {
-                                    pending.destAmount
+                                    if (values.size > 3) {
+                                        if (tokenBySymbol != null) {
+                                            (values[3] as Uint256).value.toBigDecimal().divide(
+                                                BigDecimal.TEN
+                                                    .pow(tokenBySymbol.tokenDecimal),
+                                                18,
+                                                RoundingMode.UP
+                                            ).toDisplayNumber()
+                                        } else {
+                                            pending.destAmount
+                                        }
+                                    } else {
+                                        pending.destAmount
+                                    }
                                 }
+
+
                                 pending.copy(destAmount = destAmount)
                             } else {
                                 pending
@@ -1330,6 +1470,7 @@ class TokenClient @Inject constructor(
                         val latestTx = transactionDao.getLatestTransaction(wallet.address)
                         if (pending.nonce.toBigDecimalOrDefaultZero() > BigDecimal.ZERO &&
                             latestTx?.nonce.toBigDecimalOrDefaultZero() >= pending.nonce.toBigDecimalOrDefaultZero() &&
+                            !pending.hash.equals(latestTx?.nonce, true) &&
                             System.currentTimeMillis() / 1000 - pending.timeStamp > 30
                         ) {
                             analytics.logEvent(

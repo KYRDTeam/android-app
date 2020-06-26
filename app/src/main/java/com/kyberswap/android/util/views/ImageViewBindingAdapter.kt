@@ -29,7 +29,8 @@ object ImageViewBindingAdapter {
             url.replace("http://", "https://")
         else
             url
-        Glide.with(view).load(finalUrl).into(view)
+        Glide.with(view).load(finalUrl).placeholder(R.drawable.ic_default_avartar)
+            .error(R.drawable.ic_default_avartar).into(view)
     }
 
     @BindingAdapter("app:imageUrl", "app:error")
@@ -67,7 +68,6 @@ object ImageViewBindingAdapter {
     fun loadResource(view: ImageView, resourceId: Int) {
         Glide.with(view).load("").error(resourceId).into(view)
     }
-
 
     @BindingAdapter("app:notificationType")
     @JvmStatic
@@ -119,9 +119,10 @@ object ImageViewBindingAdapter {
                 view.context.packageName
             )
 
-            if (identifier.toLowerCase(Locale.getDefault()) == view.context.getString(R.string.token_eth_star).toLowerCase(
-                    Locale.getDefault()
-                )
+            if (identifier.toLowerCase(Locale.getDefault()) == view.context.getString(R.string.token_eth_star)
+                    .toLowerCase(
+                        Locale.getDefault()
+                    )
             ) {
                 resourceIcon = R.drawable.eth
             }
@@ -207,7 +208,6 @@ object ImageViewBindingAdapter {
             view.visibility = View.GONE
         }
     }
-
 
     @BindingAdapter("app:address")
     @JvmStatic
