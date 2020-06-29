@@ -526,10 +526,12 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         }
                     }
                     is GetExpectedRateState.ShowError -> {
-                        val err = state.message ?: getString(R.string.something_wrong)
-                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
-                            showError(err)
-                        }
+                        analytics.logEvent(
+                            KBSWAP_ERROR, Bundle().createEvent(
+                                ERROR_TEXT,
+                                state.message
+                            )
+                        )
                     }
                 }
             }
@@ -552,10 +554,12 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         }
                     }
                     is GetMarketRateState.ShowError -> {
-                        val err = state.message ?: getString(R.string.something_wrong)
-                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
-                            showError(err)
-                        }
+                        analytics.logEvent(
+                            KBSWAP_ERROR, Bundle().createEvent(
+                                ERROR_TEXT,
+                                state.message
+                            )
+                        )
                     }
                 }
             }

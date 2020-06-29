@@ -156,7 +156,7 @@ class SendViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getGetGasPriceCallback.value =
-                    Event(GetGasPriceState.ShowError(errorHandler.getError(it)))
+                    Event(GetGasPriceState.ShowError(it.localizedMessage))
             },
             null
         )

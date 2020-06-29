@@ -71,7 +71,6 @@ import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.exactAmount
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isNetworkAvailable
-import com.kyberswap.android.util.ext.isSomethingWrongError
 import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.percentage
 import com.kyberswap.android.util.ext.setAmount
@@ -87,7 +86,6 @@ import io.reactivex.disposables.CompositeDisposable
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.concurrent.atomic.AtomicBoolean
@@ -168,6 +166,9 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
     var hasUserFocus: Boolean? = false
 
+    @Volatile
+    private var hasFee: Boolean = false
+
     private val totalLock = AtomicBoolean()
     private val amountLock = AtomicBoolean()
 
@@ -244,6 +245,9 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
     private var orderAdapter: OrderAdapter? = null
 
     private var userInfo: UserInfo? = null
+
+    private val hasUserInfo: Boolean
+        get() = userInfo != null && userInfo!!.uid > 0
 
     private var eligibleWalletStatus: EligibleWalletStatus? = null
 
@@ -343,7 +347,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                         }
                     }
                     is GetSelectedMarketState.ShowError -> {
-                        Timber.e(state.message)
+
                     }
                 }
             }
@@ -357,8 +361,8 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                             binding.order = state.order
                             binding.executePendingBindings()
                             resetUI()
+//                            getFee()
                             viewModel.getPendingBalances(wallet)
-                            getFee()
                             viewModel.getGasPrice()
                             binding.tvPrice.text = if (priceUsdQuote != "--") {
                                 "$marketPrice ~ $$priceUsdQuote"
@@ -426,13 +430,15 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                             binding.executePendingBindings()
                             binding.invalidateAll()
                         }
+                        hasFee = true
                     }
                     is GetFeeState.ShowError -> {
                         showDiscount(false)
-                        val err = state.message ?: getString(R.string.something_wrong)
-                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
-                            showError(err)
-                        }
+
+                        analytics.logEvent(
+                            USER_CLICK_BUY_SELL_ERROR,
+                            Bundle().createEvent(state.message)
+                        )
                     }
                 }
             }
@@ -442,16 +448,15 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetPendingBalancesState.Success -> {
-
                         this.pendingBalances = state.pendingBalances
 
                         updateAvailableAmount(state.pendingBalances)
                     }
                     is GetPendingBalancesState.ShowError -> {
-                        val err = state.message ?: getString(R.string.something_wrong)
-                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
-                            showError(err)
-                        }
+                        analytics.logEvent(
+                            USER_CLICK_BUY_SELL_ERROR,
+                            Bundle().createEvent(state.message)
+                        )
                     }
                 }
             }
@@ -465,11 +470,10 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                         binding.order = order
                     }
                     is GetNonceState.ShowError -> {
-                        if (isNetworkAvailable()) {
-                            showError(
-                                state.message ?: getString(R.string.something_wrong)
-                            )
-                        }
+                        analytics.logEvent(
+                            USER_CLICK_BUY_SELL_ERROR,
+                            Bundle().createEvent(state.message)
+                        )
                     }
                 }
             }
@@ -535,10 +539,10 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                             if (hasRelatedOrder) View.VISIBLE else View.GONE
                     }
                     is GetRelatedOrdersState.ShowError -> {
-                        val err = state.message ?: getString(R.string.something_wrong)
-                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
-                            showError(err)
-                        }
+                        analytics.logEvent(
+                            USER_CLICK_BUY_SELL_ERROR,
+                            Bundle().createEvent(state.message)
+                        )
                     }
                 }
             }
@@ -555,6 +559,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                                 pendingBalances = null
                                 updateAvailableAmount(pendingBalances)
                                 binding.tvRelatedOrder.visibility = View.GONE
+                                viewModel.terminateUserRequests()
                             }
                             else -> {
                                 refresh()
@@ -747,7 +752,6 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
                 binding.edtAmount.setAmount(calcAmount)
                 getFee()
-
                 if (text.isNullOrEmpty()) {
                     binding.edtAmount.setText("")
                 }
@@ -1159,6 +1163,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
     }
 
     fun getFee() {
+        hasFee = false
         showDiscount(false)
         viewModel.getFee(
             binding.order,
@@ -1232,7 +1237,11 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
     private fun onVerifyWalletComplete() {
         binding.tvSubmitOrder.setViewEnable(true)
-        saveLimitOrder()
+        if (hasFee) {
+            saveLimitOrder()
+        } else {
+            showError(getString(R.string.no_fee_error))
+        }
     }
 
     private fun saveLimitOrder() {
@@ -1276,7 +1285,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         EventBus.getDefault().unregister(this)
     }
 
-    fun showDiscount(isShown: Boolean) {
+    private fun showDiscount(isShown: Boolean) {
         val state = if (isShown) View.VISIBLE else View.GONE
         binding.tvOriginalFee.visibility = state
         binding.tvOff.visibility = state
@@ -1287,22 +1296,27 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         (activity as? MainActivity)?.moveToTab(MainPagerAdapter.PROFILE, true)
     }
 
-    fun getRelatedOrders() {
-        binding.order?.let { wallet?.let { it1 -> viewModel.getRelatedOrders(it, it1) } }
+    private fun getRelatedOrders() {
+        if (binding.order != null && wallet != null && hasUserInfo) {
+            viewModel.getRelatedOrders(binding.order!!, wallet!!)
+        }
     }
 
-    fun getNonce() {
-        binding.order?.let { wallet?.let { it1 -> viewModel.getNonce(it, it1) } }
+    private fun getNonce() {
+        if (binding.order != null && wallet != null && hasUserInfo) {
+            viewModel.getNonce(binding.order!!, wallet!!)
+        }
     }
 
-    fun getPendingBalance() {
+    private fun getPendingBalance() {
         viewModel.getPendingBalances(wallet)
     }
 
     fun refresh() {
+        getNonce()
+        getFee()
         getRelatedOrders()
         getPendingBalance()
-        getNonce()
     }
 
     fun resetUI() {
@@ -1402,6 +1416,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
     override fun onDestroyView() {
         compositeDisposable.clear()
+        hasFee = false
         hideKeyboard()
         super.onDestroyView()
     }

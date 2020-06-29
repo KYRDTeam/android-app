@@ -53,7 +53,6 @@ import com.kyberswap.android.util.ext.exactAmount
 import com.kyberswap.android.util.ext.getAmountOrDefaultValue
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isNetworkAvailable
-import com.kyberswap.android.util.ext.isSomethingWrongError
 import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.percentage
 import com.kyberswap.android.util.ext.setAmount
@@ -456,10 +455,10 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         }
                     }
                     is GetRelatedOrdersState.ShowError -> {
-                        val err = state.message ?: getString(R.string.something_wrong)
-                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
-                            showError(err)
-                        }
+//                        val err = state.message ?: getString(R.string.something_wrong)
+//                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
+//                            showError(err)
+//                        }
                     }
                 }
             }
@@ -510,11 +509,11 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         binding.order = order
                     }
                     is GetNonceState.ShowError -> {
-                        if (isNetworkAvailable()) {
-                            showError(
-                                state.message ?: getString(R.string.something_wrong)
-                            )
-                        }
+//                        if (isNetworkAvailable()) {
+//                            showError(
+//                                state.message ?: getString(R.string.something_wrong)
+//                            )
+//                        }
                     }
                 }
             }
@@ -576,10 +575,10 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         }
                     }
                     is GetMarketRateState.ShowError -> {
-                        val err = state.message ?: getString(R.string.something_wrong)
-                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
-                            showError(err)
-                        }
+//                        val err = state.message ?: getString(R.string.something_wrong)
+//                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
+//                            showError(err)
+//                        }
                     }
                 }
             }
@@ -781,10 +780,10 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         }
                     }
                     is GetExpectedRateState.ShowError -> {
-                        val err = state.message ?: getString(R.string.something_wrong)
-                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
-                            showError(err)
-                        }
+//                        val err = state.message ?: getString(R.string.something_wrong)
+//                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
+//                            showError(err)
+//                        }
                     }
                 }
             }
@@ -820,11 +819,11 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         }
                     }
                     is GetGasLimitState.ShowError -> {
-                        if (isNetworkAvailable()) {
-                            showError(
-                                state.message ?: getString(R.string.something_wrong)
-                            )
-                        }
+//                        if (isNetworkAvailable()) {
+//                            showError(
+//                                state.message ?: getString(R.string.something_wrong)
+//                            )
+//                        }
                     }
                 }
             }
@@ -931,10 +930,10 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         }
                     }
                     is GetFeeState.ShowError -> {
-                        val err = state.message ?: getString(R.string.something_wrong)
-                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
-                            showError(err)
-                        }
+//                        val err = state.message ?: getString(R.string.something_wrong)
+//                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
+//                            showError(err)
+//                        }
                     }
                 }
             }
@@ -1155,10 +1154,10 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         updateAvailableAmount(state.pendingBalances)
                     }
                     is GetPendingBalancesState.ShowError -> {
-                        val err = state.message ?: getString(R.string.something_wrong)
-                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
-                            showError(err)
-                        }
+//                        val err = state.message ?: getString(R.string.something_wrong)
+//                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
+//                            showError(err)
+//                        }
                     }
                 }
             }

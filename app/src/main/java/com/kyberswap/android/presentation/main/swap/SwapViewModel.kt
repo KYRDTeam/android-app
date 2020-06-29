@@ -130,7 +130,7 @@ class SwapViewModel @Inject constructor(
                     _getGetMarketRateCallback.value =
                         Event(
                             GetMarketRateState.ShowError(
-                                errorHandler.getError(it),
+                                it.localizedMessage,
                                 it is UnknownHostException
                             )
                         )
@@ -207,7 +207,7 @@ class SwapViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getExpectedRateCallback.value =
-                    Event(GetExpectedRateState.ShowError(errorHandler.getError(it)))
+                    Event(GetExpectedRateState.ShowError(it.localizedMessage))
             },
             GetExpectedRateUseCase.Param(
                 swap.walletAddress,

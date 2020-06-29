@@ -747,6 +747,7 @@
     <string name="under_price_error_message" translatable="false">replacement transaction underpriced</string>
     <string name="under_price_error_message_1" translatable="false">transaction underpriced</string>
     <string name="under_price_error_message_2" translatable="false">known transaction</string>
+    <string name="no_fee_error">Please wait for the limit order trading fees to be updated</string>
 
 
     <string-array name="proof_address">
