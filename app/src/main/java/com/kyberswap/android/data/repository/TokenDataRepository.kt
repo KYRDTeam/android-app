@@ -99,9 +99,11 @@ class TokenDataRepository @Inject constructor(
     override fun getExpectedRate(param: GetExpectedRateSequentialUseCase.Param): Single<List<String>> {
         val tokenSource = param.tokenSource
         val tokenDest = param.tokenDest
+        val isETHWETHPair =
+            (tokenSource.isETH || tokenSource.isWETH || tokenSource.isETHWETH) && (tokenDest.isETH || tokenDest.isWETH || tokenDest.isETHWETH)
         val amount = 10.0.pow(tokenSource.tokenDecimal).times(param.srcAmount.toDouble())
             .toBigDecimal().toBigInteger()
-        val platformFee = param.platformFee.toBigInteger()
+        val platformFee = if (isETHWETHPair) BigInteger.ZERO else param.platformFee.toBigInteger()
         return Single.fromCallable {
             val expectedRate = tokenClient.getExpectedRate(
                 context.getString(R.string.kyber_address),
@@ -117,6 +119,10 @@ class TokenDataRepository @Inject constructor(
     override fun getExpectedRate(param: GetExpectedRateUseCase.Param): Flowable<List<String>> {
         val tokenSource = param.tokenSource
         val tokenDest = param.tokenDest
+
+        val isETHWETHPair =
+            (tokenSource.isETH || tokenSource.isWETH || tokenSource.isETHWETH) && (tokenDest.isETH || tokenDest.isWETH || tokenDest.isETHWETH)
+
         val amount = 10.0.pow(tokenSource.tokenDecimal).times(param.srcAmount.toDouble())
             .toBigDecimal().toBigInteger()
         return tokenApi.getExpectedRate(tokenSource.tokenAddress, tokenDest.tokenAddress, amount)
@@ -125,7 +131,10 @@ class TokenDataRepository @Inject constructor(
                     throw RuntimeException("Can not get rate from: " + context.getString(R.string.token_endpoint_url) + "expectedRate")
                 } else {
                     listOf(
-                        getExpectedRateAfterFee(it.expectedRate, param.platFormFee)
+                        getExpectedRateAfterFee(
+                            it.expectedRate,
+                            if (isETHWETHPair) 0 else param.platFormFee
+                        )
                     )
                 }
             }.repeatWhen {

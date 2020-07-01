@@ -156,7 +156,9 @@ class SwapDataRepository @Inject constructor(
                 param,
                 credentials,
                 context.getString(R.string.kyber_address),
-                param.platformFee.toBigInteger()
+
+                if (param.swap.isETHWETHPair) BigInteger.ZERO else
+                    param.platformFee.toBigInteger()
             )
             hash?.let {
                 val swap = param.swap
