@@ -150,6 +150,8 @@ abstract class BaseFragment : DaggerFragment() {
         const val SHOW_BROADCAST = 1
         const val SWAP_CONFIRM = 1010
         const val SEND_CONFIRM = 1011
+        const val EDIT_WALLET = 1012
+        const val DELETE_WALLET = 1013
     }
 
     fun stopCounter() {

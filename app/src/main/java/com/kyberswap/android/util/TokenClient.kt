@@ -864,7 +864,7 @@ class TokenClient @Inject constructor(
             ?: transactionResponseSemiNode?.transactionHash
 
         // Insert into local nonce
-        saveLocalNonce(walletAddress, localNonce, hash)
+        saveLocalNonce(credentials.address, localNonce, hash)
 
         return Pair(hash, localNonce)
     }
@@ -938,7 +938,7 @@ class TokenClient @Inject constructor(
     ): Pair<String?, BigInteger> {
         val allowanceAmount =
             getContractAllowanceAmount(
-                walletAddress,
+                credentials.address,
                 fromToken.tokenAddress,
                 contractAddress,
                 credentials
@@ -949,8 +949,7 @@ class TokenClient @Inject constructor(
                 fromToken,
                 contractAddress,
                 gasPrice,
-                credentials,
-                walletAddress
+                credentials
             )
         }
         return executeTradeWithHint(
@@ -1020,8 +1019,7 @@ class TokenClient @Inject constructor(
         token: Token,
         contractAddress: String,
         gasPriceWei: BigInteger,
-        credentials: Credentials,
-        walletAddress: String
+        credentials: Credentials
     ) {
 
         if (allowanceAmount > BigInteger.ZERO) {
@@ -1031,8 +1029,7 @@ class TokenClient @Inject constructor(
                 contractAddress,
                 gasPriceWei,
                 if (token.gasApprove > BigDecimal.ZERO) token.gasApprove.toBigInteger() else Token.APPROVE_TOKEN_GAS_LIMIT_DEFAULT.toBigInteger(),
-                credentials,
-                walletAddress
+                credentials
             )
         }
         sendContractApproval(
@@ -1041,8 +1038,7 @@ class TokenClient @Inject constructor(
             contractAddress,
             gasPriceWei,
             if (token.gasApprove > BigDecimal.ZERO) token.gasApprove.toBigInteger() else Token.APPROVE_TOKEN_GAS_LIMIT_DEFAULT.toBigInteger(),
-            credentials,
-            walletAddress
+            credentials
         )
     }
 
@@ -1052,8 +1048,7 @@ class TokenClient @Inject constructor(
         contractAddress: String,
         gasPriceWei: BigInteger,
         gasLimit: BigInteger,
-        credentials: Credentials,
-        walletAddress: String
+        credentials: Credentials
     ) {
         val function = approve(contractAddress, allowanceAmount)
         val encodedFunction = FunctionEncoder.encode(function)
@@ -1136,7 +1131,7 @@ class TokenClient @Inject constructor(
             ?: transactionResponseInfuraNode?.transactionHash
             ?: transactionResponseSemiNode?.transactionHash
 
-        saveLocalNonce(walletAddress, localNonce, hash)
+        saveLocalNonce(credentials.address, localNonce, hash)
     }
 
     @Throws(Exception::class)
@@ -1640,8 +1635,7 @@ class TokenClient @Inject constructor(
                     order.gasPrice.toBigDecimalOrDefaultZero(),
                     Convert.Unit.GWEI
                 ).toBigInteger(),
-                credentials,
-                credentials.address
+                credentials
             )
         }
 
