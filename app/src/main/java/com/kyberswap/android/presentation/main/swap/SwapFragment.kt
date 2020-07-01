@@ -215,6 +215,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 enableTokenSearch(isSourceToken = true, isEnable = false)
                                 if (promo?.destinationToken?.isNotBlank() == true) {
                                     enableTokenSearch(isSourceToken = false, isEnable = false)
+                                } else {
+                                    enableTokenSearch(isSourceToken = false, isEnable = true)
                                 }
                             } else {
                                 enableTokenSearch(isSourceToken = true, isEnable = true)

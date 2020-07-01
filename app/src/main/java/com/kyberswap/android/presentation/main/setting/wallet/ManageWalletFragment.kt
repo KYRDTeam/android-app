@@ -81,12 +81,8 @@ class ManageWalletFragment : BaseFragment() {
                             showPassCodeLock(EDIT_WALLET)
                         }, {
 
-                            dialogHelper.showConfirmation(
-                                getString(R.string.title_delete),
-                                getString(R.string.delete_wallet_confirmation),
-                                {
-                                    viewModel.deleteWallet(it)
-                                })
+                            selectedWallet = it
+                            showPassCodeLock(DELETE_WALLET)
 
                         })
                 },
@@ -100,6 +96,7 @@ class ManageWalletFragment : BaseFragment() {
                     showPassCodeLock(EDIT_WALLET)
                 },
                 {
+                    selectedWallet = it
                     showPassCodeLock(DELETE_WALLET)
                 })
 
