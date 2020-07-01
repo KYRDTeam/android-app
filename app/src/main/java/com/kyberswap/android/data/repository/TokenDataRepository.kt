@@ -20,7 +20,6 @@ import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
 import com.kyberswap.android.domain.usecase.token.GetChartDataForTokenUseCase
 import com.kyberswap.android.domain.usecase.token.GetToken24hVolUseCase
 import com.kyberswap.android.domain.usecase.token.SaveTokenUseCase
-import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntSafe
@@ -102,12 +101,14 @@ class TokenDataRepository @Inject constructor(
         val tokenDest = param.tokenDest
         val amount = 10.0.pow(tokenSource.tokenDecimal).times(param.srcAmount.toDouble())
             .toBigDecimal().toBigInteger()
+        val platformFee = param.platformFee.toBigInteger()
         return Single.fromCallable {
             val expectedRate = tokenClient.getExpectedRate(
                 context.getString(R.string.kyber_address),
                 tokenSource,
                 tokenDest,
-                amount
+                amount,
+                platformFee
             )
             expectedRate
         }
@@ -118,14 +119,13 @@ class TokenDataRepository @Inject constructor(
         val tokenDest = param.tokenDest
         val amount = 10.0.pow(tokenSource.tokenDecimal).times(param.srcAmount.toDouble())
             .toBigDecimal().toBigInteger()
-
         return tokenApi.getExpectedRate(tokenSource.tokenAddress, tokenDest.tokenAddress, amount)
             .map {
                 if (it.error) {
                     throw RuntimeException("Can not get rate from: " + context.getString(R.string.token_endpoint_url) + "expectedRate")
                 } else {
                     listOf(
-                        getExpectedRateAfterFee(it.expectedRate, PLATFORM_FEE_BPS)
+                        getExpectedRateAfterFee(it.expectedRate, param.platFormFee)
                     )
                 }
             }.repeatWhen {
@@ -158,7 +158,7 @@ class TokenDataRepository @Inject constructor(
                 expectedRate.toBigDecimalOrDefaultZero()
                     .multiply(
                         BigDecimal.ONE - bps.toBigDecimal()
-                            .divide(100.toBigDecimal(), 18, RoundingMode.UP)
+                            .divide(10000.toBigDecimal(), 18, RoundingMode.UP)
                     ),
                 Convert.Unit.ETHER
             ).toPlainString()

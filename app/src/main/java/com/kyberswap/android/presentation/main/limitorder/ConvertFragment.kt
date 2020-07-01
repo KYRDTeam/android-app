@@ -17,9 +17,11 @@ import com.kyberswap.android.domain.model.PendingBalances
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.KEEP_ETH_BALANCE_FOR_GAS
+import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
+import com.kyberswap.android.presentation.main.swap.GetPlatformFeeState
 import com.kyberswap.android.util.LO_CONVERT_WETH_ACCEPT
 import com.kyberswap.android.util.LO_CONVERT_WETH_CANCEL
 import com.kyberswap.android.util.USER_CLICK_COVERT_ETH_WETH_ERROR
@@ -57,6 +59,8 @@ class ConvertFragment : BaseFragment() {
 
     private var hasUserFocus: Boolean? = false
 
+    private var platformFee: Int = PLATFORM_FEE_BPS
+
     private val viewModel by lazy {
         ViewModelProvider(this, viewModelFactory).get(LimitOrderViewModel::class.java)
     }
@@ -83,6 +87,7 @@ class ConvertFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.order = limitOrder
+        viewModel.getPlatformFee()
         wallet?.let {
             viewModel.getPendingBalances(it)
         }
@@ -104,7 +109,7 @@ class ConvertFragment : BaseFragment() {
         })
 
         viewModel.getGasPrice()
-        viewModel.getGasLimit(wallet, binding.order)
+        viewModel.getGasLimit(wallet, binding.order, platformFee)
 
         viewModel.getGetGasPriceCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -142,6 +147,22 @@ class ConvertFragment : BaseFragment() {
                         showError(
                             state.message ?: getString(R.string.something_wrong)
                         )
+                    }
+                }
+            }
+        })
+
+        viewModel.getPlatformFeeCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetPlatformFeeState.Success -> {
+                        if (state.platformFee.fee != platformFee) {
+                            platformFee = state.platformFee.fee
+                            viewModel.getGasLimit(wallet, binding.order, platformFee)
+                        }
+                    }
+                    is GetPlatformFeeState.ShowError -> {
+
                     }
                 }
             }
@@ -255,7 +276,8 @@ class ConvertFragment : BaseFragment() {
                         viewModel.convert(
                             wallet,
                             it,
-                            binding.edtConvertedAmount.toBigDecimalOrDefaultZero()
+                            binding.edtConvertedAmount.toBigDecimalOrDefaultZero(),
+                            platformFee
                         )
 
                         analytics.logEvent(

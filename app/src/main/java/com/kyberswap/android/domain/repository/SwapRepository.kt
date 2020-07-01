@@ -4,6 +4,7 @@ import com.kyberswap.android.domain.model.Cap
 import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.KyberEnabled
 import com.kyberswap.android.domain.model.MaxGasPrice
+import com.kyberswap.android.domain.model.PlatformFee
 import com.kyberswap.android.domain.model.QuoteAmount
 import com.kyberswap.android.domain.model.ResponseStatus
 import com.kyberswap.android.domain.model.Send
@@ -67,6 +68,8 @@ interface SwapRepository {
     fun ensRevertResolve(param: ENSRevertResolveUseCase.Param): Single<String>
 
     fun getKyberNetworkStatus(): Single<KyberEnabled>
+
+    fun getPlatformFee(): Single<PlatformFee>
 
     fun getMaxGasPrice(): Single<MaxGasPrice>
 }

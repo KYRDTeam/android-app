@@ -6,7 +6,7 @@ import com.google.gson.GsonBuilder
 import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.ChartApi
-import com.kyberswap.android.data.api.home.CurrencyApi
+import com.kyberswap.android.data.api.home.KyberSwapApi
 import com.kyberswap.android.data.api.home.LimitOrderApi
 import com.kyberswap.android.data.api.home.PromoApi
 import com.kyberswap.android.data.api.home.SwapApi
@@ -210,10 +210,10 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideChange24hApi(context: Context, client: OkHttpClient): CurrencyApi {
+    fun provideChange24hApi(context: Context, client: OkHttpClient): KyberSwapApi {
         return createApiClient(
-            CurrencyApi::class.java,
-            context.getString(R.string.currency_endpoint_url),
+            KyberSwapApi::class.java,
+            context.getString(R.string.ks_endpoint_url),
             client
         )
     }

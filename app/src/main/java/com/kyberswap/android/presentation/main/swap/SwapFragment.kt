@@ -42,6 +42,7 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.AlertDialogFragment
 import com.kyberswap.android.presentation.common.DEFAULT_ACCEPT_RATE_PERCENTAGE
 import com.kyberswap.android.presentation.common.KeyImeChange
+import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.common.WalletObserver
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -115,6 +116,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     private val isUserSelectSwap: Boolean
         get() = currentFragment is SwapFragment
 
+    private var platformFee: Int = PLATFORM_FEE_BPS
+
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -186,6 +189,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.getSelectedWallet()
+        viewModel.getPlatformFee()
         alertNotification?.let { viewModel.getAlert(it) }
         swap(notification)
         binding.tvContinue.setViewEnable(true)
@@ -246,11 +250,11 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
                             if (isUserSelectSwap) {
                                 getRate(state.swap)
-                                viewModel.getGasLimit(wallet, binding.swap)
+                                viewModel.getGasLimit(wallet, binding.swap, platformFee)
                             }
                             viewModel.getGasPrice()
                         } else if (isUserSelectSwap) {
-                            viewModel.getGasLimit(wallet, binding.swap)
+                            viewModel.getGasLimit(wallet, binding.swap, platformFee)
                         } else if (!isUserSelectSwap && hasExpectedRate) {
                             viewModel.disposeGetExpectedRate()
                         }
@@ -350,7 +354,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         if (dstAmount.isEmpty()) binding.edtSource.setText("")
                         binding.swap?.let { swap ->
                             viewModel.estimateAmount(
-                                swap.sourceAddress, swap.destAddress, dstAmount.toString()
+                                swap.sourceAddress,
+                                swap.destAddress,
+                                dstAmount.toString(),
+                                platformFee
                             )
                         }
                     }
@@ -738,6 +745,25 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
+        viewModel.getPlatformFeeCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetPlatformFeeState.Success -> {
+                        if (state.platformFee.fee != platformFee) {
+                            platformFee = state.platformFee.fee
+                            viewModel.getGasLimit(wallet, binding.swap, platformFee)
+                            if (binding.swap != null) {
+                                getRate(binding.swap!!)
+                            }
+                        }
+                    }
+                    is GetPlatformFeeState.ShowError -> {
+
+                    }
+                }
+            }
+        })
+
         viewModel.getKyberStatusback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -815,14 +841,20 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                     wallet?.isPromo == true -> when {
                                         wallet?.isPromoPayment == true -> PromoPaymentConfirmActivity.newIntent(
                                             currentActivity,
-                                            wallet
+                                            wallet,
+                                            platformFee
                                         )
                                         else -> PromoSwapConfirmActivity.newIntent(
                                             currentActivity,
-                                            wallet
+                                            wallet,
+                                            platformFee
                                         )
                                     }
-                                    else -> SwapConfirmActivity.newIntent(currentActivity, wallet)
+                                    else -> SwapConfirmActivity.newIntent(
+                                        currentActivity,
+                                        wallet,
+                                        platformFee
+                                    )
                                 }
 
                                 startActivityForResult(confirmedActivity, SWAP_CONFIRM)
@@ -956,8 +988,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 minAcceptedRatePercent = minAcceptedRatePercentage,
                                 gasPrice = gasPriceGwei
                             )
-
-                            viewModel.verifySwap(it, data)
+                            viewModel.verifySwap(it, data, platformFee)
                         }
                     }
                 }
@@ -1299,7 +1330,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         hasExpectedRate = false
         viewModel.getExpectedRate(
             swap,
-            edtSource.getAmountOrDefaultValue()
+            edtSource.getAmountOrDefaultValue(),
+            platformFee
         )
     }
 

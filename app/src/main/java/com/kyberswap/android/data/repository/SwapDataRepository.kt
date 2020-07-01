@@ -2,8 +2,10 @@ package com.kyberswap.android.data.repository
 
 import android.content.Context
 import android.util.Base64
+import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
+import com.kyberswap.android.data.api.home.KyberSwapApi
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.api.home.UserApi
 import com.kyberswap.android.data.api.home.UtilitiesApi
@@ -25,6 +27,7 @@ import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.GasLimit
 import com.kyberswap.android.domain.model.KyberEnabled
 import com.kyberswap.android.domain.model.MaxGasPrice
+import com.kyberswap.android.domain.model.PlatformFee
 import com.kyberswap.android.domain.model.Promo
 import com.kyberswap.android.domain.model.QuoteAmount
 import com.kyberswap.android.domain.model.ResponseStatus
@@ -52,6 +55,7 @@ import com.kyberswap.android.domain.usecase.swap.SaveSwapUseCase
 import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
 import com.kyberswap.android.presentation.common.ADDITIONAL_SWAP_GAS_LIMIT
 import com.kyberswap.android.presentation.common.DEFAULT_NAME
+import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
@@ -86,6 +90,7 @@ class SwapDataRepository @Inject constructor(
     private val userApi: UserApi,
     private val userMapper: UserMapper,
     private val utilitiesApi: UtilitiesApi,
+    private val kyberSwapApi: KyberSwapApi,
     private val tokenExtDao: TokenExtDao
 ) : SwapRepository {
     override fun getCap(param: GetCombinedCapUseCase.Param): Single<Cap> {
@@ -150,7 +155,8 @@ class SwapDataRepository @Inject constructor(
             val (hash, nonce) = tokenClient.doSwap(
                 param,
                 credentials,
-                context.getString(R.string.kyber_address)
+                context.getString(R.string.kyber_address),
+                param.platformFee.toBigInteger()
             )
             hash?.let {
                 val swap = param.swap
@@ -282,7 +288,8 @@ class SwapDataRepository @Inject constructor(
                                 .toBigDecimal()
                         ).toBigInteger(),
                         param.minConversionRate,
-                        param.tokenSource.isETH
+                        param.tokenSource.isETH,
+                        param.platformFee.toBigInteger()
                     )
                 } catch (ex: Exception) {
                     throw RuntimeException("error: " + ex.localizedMessage)
@@ -603,6 +610,18 @@ class SwapDataRepository @Inject constructor(
     override fun getKyberNetworkStatus(): Single<KyberEnabled> {
         return api.getKyberEnabled().map {
             userMapper.transform(it)
+        }
+    }
+
+    override fun getPlatformFee(): Single<PlatformFee> {
+        return if (BuildConfig.FLAVOR == "dev") {
+            kyberSwapApi.swapFee().map {
+                PlatformFee(it)
+            }
+        } else {
+            Single.fromCallable {
+                PlatformFee(true, PLATFORM_FEE_BPS)
+            }
         }
     }
 

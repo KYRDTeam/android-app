@@ -28,7 +28,6 @@ import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
 import com.kyberswap.android.presentation.common.DEFAULT_MAX_AMOUNT
 import com.kyberswap.android.presentation.common.DEFAULT_WALLET_ID
 import com.kyberswap.android.presentation.common.PERM
-import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfer
 import com.kyberswap.android.util.ext.createEvent
@@ -38,6 +37,7 @@ import com.kyberswap.android.util.ext.isSwapTx
 import com.kyberswap.android.util.ext.isTransferETHTx
 import com.kyberswap.android.util.ext.minConversionRate
 import com.kyberswap.android.util.ext.params
+import com.kyberswap.android.util.ext.platformFee
 import com.kyberswap.android.util.ext.shortenValue
 import com.kyberswap.android.util.ext.toAddress
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
@@ -168,7 +168,7 @@ class TokenClient @Inject constructor(
         srcToken: String,
         destToken: String,
         srcTokenAmount: BigInteger,
-        platformFeeBps: BigInteger = PLATFORM_FEE_BPS.toBigInteger(),
+        platformFeeBps: BigInteger,
         hint: String = ""
     ): Function {
         return Function(
@@ -333,14 +333,16 @@ class TokenClient @Inject constructor(
         contractAddress: String,
         tokenSource: Token,
         tokenDest: Token,
-        srcTokenAmount: BigInteger
+        srcTokenAmount: BigInteger,
+        platformFeeBps: BigInteger
     ): List<String> {
         val function =
             if (BuildConfig.FLAVOR == "dev") {
                 getExpectedRateAfterFee(
                     tokenSource.tokenAddress,
                     tokenDest.tokenAddress,
-                    srcTokenAmount
+                    srcTokenAmount,
+                    platformFeeBps
                 )
             } else {
                 getExpectedRate(
@@ -379,7 +381,8 @@ class TokenClient @Inject constructor(
         toAddress: String,
         amount: BigInteger,
         minConversionRate: BigInteger,
-        isEth: Boolean
+        isEth: Boolean,
+        platformFeeBps: BigInteger
     ): EthEstimateGas? {
 
         val function =
@@ -389,7 +392,8 @@ class TokenClient @Inject constructor(
                     toAddress,
                     amount,
                     minConversionRate,
-                    walletAddress
+                    walletAddress,
+                    platformFeeBps
                 )
             } else {
                 tradeWithHint(
@@ -487,7 +491,7 @@ class TokenClient @Inject constructor(
         value: BigInteger,
         minConversionRate: BigInteger,
         walletAddress: String,
-        platformFeeBps: BigInteger = PLATFORM_FEE_BPS.toBigInteger(),
+        platformFeeBps: BigInteger,
         hint: String = ""
     ): Function {
 
@@ -512,7 +516,8 @@ class TokenClient @Inject constructor(
     fun doSwap(
         param: SwapTokenUseCase.Param,
         credentials: Credentials,
-        contractAddress: String
+        contractAddress: String,
+        platformFeeBps: BigInteger
     ): Pair<String?, BigInteger> {
         val gasPrice = Convert.toWei(
             param.swap.gasPrice.toBigDecimalOrDefaultZero(),
@@ -556,7 +561,8 @@ class TokenClient @Inject constructor(
                 gasLimit,
                 contractAddress,
                 walletAddress,
-                credentials
+                credentials,
+                platformFeeBps
             )
         } else {
             handleSwapERC20Token(
@@ -569,7 +575,8 @@ class TokenClient @Inject constructor(
                 param.swap.tokenDest,
                 walletAddress,
                 contractAddress,
-                credentials
+                credentials,
+                platformFeeBps
             )
         }
     }
@@ -774,7 +781,8 @@ class TokenClient @Inject constructor(
         gasLimit: BigInteger,
         contractAddress: String,
         walletAddress: String,
-        credentials: Credentials
+        credentials: Credentials,
+        platformFeeBps: BigInteger
 
     ): Pair<String?, BigInteger> {
         val localNonce = getTransactionNonce(credentials.address)
@@ -795,7 +803,8 @@ class TokenClient @Inject constructor(
                         toAddress,
                         tradeWithHintAmount,
                         minConversionRate,
-                        walletAddress
+                        walletAddress,
+                        platformFeeBps
                     )
                 } else {
                     tradeWithHint(
@@ -924,7 +933,8 @@ class TokenClient @Inject constructor(
         toToken: Token,
         walletAddress: String,
         contractAddress: String,
-        credentials: Credentials
+        credentials: Credentials,
+        platformFeeBps: BigInteger
     ): Pair<String?, BigInteger> {
         val allowanceAmount =
             getContractAllowanceAmount(
@@ -953,7 +963,8 @@ class TokenClient @Inject constructor(
             gasLimit,
             contractAddress,
             walletAddress,
-            credentials
+            credentials,
+            platformFeeBps
         )
     }
 
@@ -1221,7 +1232,8 @@ class TokenClient @Inject constructor(
                                 tx.toAddress(params),
                                 tx.txValue(params),
                                 tx.minConversionRate(params),
-                                wallet.walletAddress
+                                wallet.walletAddress,
+                                tx.platformFee(params)
                             )
                         } else {
                             tradeWithHint(

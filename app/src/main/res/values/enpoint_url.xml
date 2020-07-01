@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="token_endpoint_url" formatted="false" translatable="false">https://ropsten-api.kyber.network/</string>
-    <string name="currency_endpoint_url" formatted="false" translatable="false">https://ropsten-api.kyber.network/</string>
+    <string name="ks_endpoint_url" formatted="false" translatable="false">https://ropsten-api.kyber.network/</string>
     <string name="base_rpc_url" translatable="false">https://ropsten.infura.io/v3/1b9c2fe6f5fa424cb1304b67fee3e71e</string>
     <string name="semi_node_base_rpc_url" translatable="false">https://ropsten-parity.knstats.com</string>
     <string name="infura_base_rpc_url" translatable="false">https://ropsten.infura.io/v3/1b9c2fe6f5fa424cb1304b67fee3e71e</string>

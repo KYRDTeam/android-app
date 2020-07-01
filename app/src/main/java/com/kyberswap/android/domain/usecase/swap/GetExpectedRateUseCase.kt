@@ -21,7 +21,8 @@ class GetExpectedRateUseCase @Inject constructor(
         val walletAddress: String,
         val tokenSource: Token,
         val tokenDest: Token,
-        val srcAmount: String
+        val srcAmount: String,
+        val platFormFee: Int
     )
 
 

@@ -2,7 +2,7 @@ package com.kyberswap.android.data.repository
 
 import android.content.Context
 import com.kyberswap.android.R
-import com.kyberswap.android.data.api.home.CurrencyApi
+import com.kyberswap.android.data.api.home.KyberSwapApi
 import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.db.LocalLimitOrderDao
 import com.kyberswap.android.data.db.SendDao
@@ -36,7 +36,7 @@ import javax.inject.Inject
 class BalanceDataRepository @Inject constructor(
     private val context: Context,
     private val api: TokenApi,
-    private val currencyApi: CurrencyApi,
+    private val kyberSwapApi: KyberSwapApi,
     private val tokenMapper: TokenMapper,
     private val tokenClient: TokenClient,
     private val tokenDao: TokenDao,
@@ -182,7 +182,7 @@ class BalanceDataRepository @Inject constructor(
         return getLocalTokens().first(listOf()).mergeWith(
             fetchChange24h()
                 .flatMap { remoteTokenList ->
-                    currencyApi.internalCurrencies()
+                    kyberSwapApi.internalCurrencies()
                         .map { currencies -> currencies.data }
                         .toFlowable()
                         .flatMapIterable { tokenCurrency -> tokenCurrency }
@@ -231,7 +231,7 @@ class BalanceDataRepository @Inject constructor(
                     tokenDao.insertTokens(it)
                 }
                 .flatMap { remoteTokenList ->
-                    currencyApi.internalCurrencies()
+                    kyberSwapApi.internalCurrencies()
                         .map { currencies -> currencies.data }
                         .toFlowable()
                         .flatMapIterable { tokenCurrency -> tokenCurrency }
@@ -289,7 +289,7 @@ class BalanceDataRepository @Inject constructor(
             response.entries.associate { it.key to tokenMapper.transform(it.value) }
         }
 
-        val singleListedToken = currencyApi.internalCurrencies().map {
+        val singleListedToken = kyberSwapApi.internalCurrencies().map {
             it.data.map { data -> data.address.toLowerCase(Locale.getDefault()) to Token(data) }
                 .toMap()
         }

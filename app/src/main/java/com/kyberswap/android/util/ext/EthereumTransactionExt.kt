@@ -1,11 +1,16 @@
 package com.kyberswap.android.util.ext
 
+import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.data.repository.WalletDataRepository
 import org.web3j.protocol.core.methods.response.Transaction
 import java.math.BigInteger
 
 fun Transaction.isSwapTx(): Boolean {
-    return this.input.take(10) == WalletDataRepository.METHOD_ID_SWAP
+    return if (BuildConfig.FLAVOR == "dev") {
+        this.input.take(10) == WalletDataRepository.METHOD_ID_TRADE_WITH_HINT_AND_FEE
+    } else {
+        this.input.take(10) == WalletDataRepository.METHOD_ID_SWAP
+    }
 }
 
 fun Transaction.isTransferETHTx(): Boolean {
@@ -41,6 +46,10 @@ fun Transaction.txValue(list: List<String>): BigInteger {
 
 fun Transaction.minConversionRate(list: List<String>): BigInteger {
     return list[WalletDataRepository.TRADE_WITH_HINT_MIN_CONVERSION_RATE_POSITION].toBigIntSafe()
+}
+
+fun Transaction.platformFee(list: List<String>): BigInteger {
+    return list[WalletDataRepository.TRADE_WITH_HINT_AND_FEE_PLATFORM_FEE_POSITION].toBigIntSafe()
 }
 
 fun Transaction.transferAmount(params: List<String>): BigInteger {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="token_endpoint_url" formatted="false" translatable="false">https://dev-kovan-api.knstats.com/</string>
-    <string name="currency_endpoint_url" formatted="false" translatable="false">https://dev-kovan-api.knstats.com/</string>
+    <string name="ks_endpoint_url" formatted="false" translatable="false">https://dev-kovan-api.knstats.com/</string>
     <string name="base_rpc_url" translatable="false">https://kovan.infura.io/v3/7c000d80b38c40729e5677b42e9fd5e7</string>
     <string name="rate_endpoint_url" formatted="false" translatable="false">https://ropsten-cache.knstats.com/</string>
     <string name="transaction_etherscan_endpoint_url" formatted="false" translatable="false">https://kovan.etherscan.io/tx/</string>
