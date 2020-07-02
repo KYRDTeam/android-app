@@ -77,8 +77,7 @@ class ManageWalletFragment : BaseFragment() {
                         {
                             viewModel.updateSelectedWallet(it.copy(isSelected = true))
                         }, {
-                            selectedWallet = it
-                            showPassCodeLock(EDIT_WALLET)
+                            navigator.navigateToEditWallet(currentFragment, it)
                         }, {
 
                             selectedWallet = it
@@ -92,8 +91,7 @@ class ManageWalletFragment : BaseFragment() {
                 },
                 {
 //                    navigator.navigateToEditWallet(currentFragment, it)
-                    selectedWallet = it
-                    showPassCodeLock(EDIT_WALLET)
+                    navigator.navigateToEditWallet(currentFragment, it)
                 },
                 {
                     selectedWallet = it
@@ -212,13 +210,7 @@ class ManageWalletFragment : BaseFragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == EDIT_WALLET) {
-            if (resultCode == Activity.RESULT_OK) {
-                selectedWallet?.let {
-                    navigator.navigateToEditWallet(currentFragment, it)
-                }
-            }
-        } else if (requestCode == DELETE_WALLET) {
+        if (requestCode == DELETE_WALLET) {
             if (resultCode == Activity.RESULT_OK) {
                 selectedWallet?.let {
                     dialogHelper.showConfirmation(

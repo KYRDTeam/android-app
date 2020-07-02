@@ -96,8 +96,19 @@ class PassCodeLockActivity : BaseActivity() {
                     result: BiometricPrompt.AuthenticationResult
                 ) {
                     super.onAuthenticationSucceeded(result)
-                    (applicationContext as KyberSwapApplication).startCounter()
-                    finish()
+                    if (isManageWallet) {
+                        val returnIntent = Intent()
+                        setResult(Activity.RESULT_OK, returnIntent)
+                        finish()
+                    } else if (isChangePinCode) {
+                        binding.pinLockView.resetPinLockView()
+                        binding.title = newPinTitle
+                        binding.content = newPinContent
+                        binding.executePendingBindings()
+                    } else {
+                        (applicationContext as KyberSwapApplication).startCounter()
+                        finish()
+                    }
                 }
             })
 
@@ -228,9 +239,10 @@ class PassCodeLockActivity : BaseActivity() {
                                 binding.executePendingBindings()
                             } else {
                                 binding.title = verifyAccess
-                                if (!isChangePinCode) {
-                                    showBiometricPrompt()
-                                }
+//                                if (!isChangePinCode) {
+//                                    showBiometricPrompt()
+//                                }
+                                showBiometricPrompt()
                             }
                         }
                     }
@@ -251,11 +263,12 @@ class PassCodeLockActivity : BaseActivity() {
         val biometricManager = BiometricManager.from(this)
         when (biometricManager.canAuthenticate()) {
             BiometricManager.BIOMETRIC_SUCCESS -> {
-                if (isChangePinCode) {
-                    binding.imgFingerPrint.visibility = View.GONE
-                } else {
-                    binding.imgFingerPrint.visibility = View.VISIBLE
-                }
+//                if (isChangePinCode) {
+//                    binding.imgFingerPrint.visibility = View.GONE
+//                } else {
+//                    binding.imgFingerPrint.visibility = View.VISIBLE
+//                }
+                binding.imgFingerPrint.visibility = View.VISIBLE
                 biometricPrompt.authenticate(promptInfo)
             }
 
