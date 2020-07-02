@@ -242,14 +242,6 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                 when (state) {
                     is GetLocalLimitOrderState.Success -> {
                         if (!state.order.isSameTokenPairForAddress(binding.order)) {
-
-                            if (state.order.tokenSource.tokenSymbol == state.order.tokenDest.tokenSymbol) {
-                                showAlertWithoutIcon(
-                                    title = getString(R.string.title_unsupported),
-                                    message = getString(R.string.limit_order_source_different_dest)
-                                )
-                            }
-
                             if (!state.order.isSameSourceDestToken(binding.order)) {
                                 hasUserFocus = false
                             }
@@ -257,10 +249,19 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                             if (state.order.hasSamePair) {
                                 edtRate.setText("1")
                             }
-
                             binding.order = state.order
                             binding.isQuote = state.order.tokenSource.isQuote
                             binding.executePendingBindings()
+                            handler.removeCallbacksAndMessages(null)
+                            handler.postDelayed({
+                                if (state.order.tokenSource.tokenSymbol == state.order.tokenDest.tokenSymbol) {
+                                    showAlertWithoutIcon(
+                                        title = getString(R.string.title_unsupported),
+                                        message = getString(R.string.limit_order_source_different_dest)
+                                    )
+                                }
+                            }, 250)
+
                             getPendingBalance()
                             viewModel.getFee(
                                 binding.order,
