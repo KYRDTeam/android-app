@@ -2,7 +2,6 @@ package com.kyberswap.android.presentation.main.swap
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.domain.model.NotificationAlert
 import com.kyberswap.android.domain.model.NotificationExt
 import com.kyberswap.android.domain.model.Swap
@@ -26,6 +25,7 @@ import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.common.MIN_SUPPORT_AMOUNT
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
+import com.kyberswap.android.presentation.common.isKatalyst
 import com.kyberswap.android.presentation.common.specialGasLimitDefault
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.alert.GetAlertState
@@ -342,7 +342,7 @@ class SwapViewModel @Inject constructor(
     }
 
     private fun calcAmountWithPlatformBps(amount: String, bps: Int): String {
-        return if (BuildConfig.FLAVOR == "dev") {
+        return if (isKatalyst) {
             amount.toBigDecimalOrDefaultZero().multiply(
                 BigDecimal.ONE + bps.toBigDecimal()
                     .divide(10000.toBigDecimal(), 18, RoundingMode.UP)

@@ -1,7 +1,6 @@
 package com.kyberswap.android.data.repository
 
 import android.content.Context
-import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.chart.Data
 import com.kyberswap.android.data.api.home.ChartApi
@@ -20,6 +19,7 @@ import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
 import com.kyberswap.android.domain.usecase.token.GetChartDataForTokenUseCase
 import com.kyberswap.android.domain.usecase.token.GetToken24hVolUseCase
 import com.kyberswap.android.domain.usecase.token.SaveTokenUseCase
+import com.kyberswap.android.presentation.common.isKatalyst
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntSafe
@@ -162,7 +162,7 @@ class TokenDataRepository @Inject constructor(
     }
 
     private fun getExpectedRateAfterFee(expectedRate: String, bps: Int): String {
-        return if (BuildConfig.FLAVOR == "dev") {
+        return if (isKatalyst) {
             Convert.fromWei(
                 expectedRate.toBigDecimalOrDefaultZero()
                     .multiply(

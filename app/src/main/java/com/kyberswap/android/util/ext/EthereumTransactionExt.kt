@@ -1,12 +1,12 @@
 package com.kyberswap.android.util.ext
 
-import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.data.repository.WalletDataRepository
+import com.kyberswap.android.presentation.common.isKatalyst
 import org.web3j.protocol.core.methods.response.Transaction
 import java.math.BigInteger
 
 fun Transaction.isSwapTx(): Boolean {
-    return if (BuildConfig.FLAVOR == "dev") {
+    return if (isKatalyst) {
         this.input.take(10) == WalletDataRepository.METHOD_ID_TRADE_WITH_HINT_AND_FEE
     } else {
         this.input.take(10) == WalletDataRepository.METHOD_ID_SWAP

@@ -2,7 +2,6 @@ package com.kyberswap.android.data.repository
 
 import android.content.Context
 import android.util.Base64
-import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.home.KyberSwapApi
@@ -57,6 +56,7 @@ import com.kyberswap.android.presentation.common.ADDITIONAL_SWAP_GAS_LIMIT
 import com.kyberswap.android.presentation.common.DEFAULT_NAME
 import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
+import com.kyberswap.android.presentation.common.isKatalyst
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.rx.operator.zipWithFlatMap
@@ -616,7 +616,7 @@ class SwapDataRepository @Inject constructor(
     }
 
     override fun getPlatformFee(): Single<PlatformFee> {
-        return if (BuildConfig.FLAVOR == "dev") {
+        return if (isKatalyst) {
             kyberSwapApi.swapFee().map {
                 PlatformFee(it)
             }

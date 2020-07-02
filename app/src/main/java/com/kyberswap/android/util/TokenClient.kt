@@ -13,7 +13,6 @@ import android.util.Base64
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.db.NonceDao
@@ -30,6 +29,7 @@ import com.kyberswap.android.presentation.common.DEFAULT_WALLET_ID
 import com.kyberswap.android.presentation.common.PERM
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfer
+import com.kyberswap.android.presentation.common.isKatalyst
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.fromAddress
 import com.kyberswap.android.util.ext.isFromKyberSwap
@@ -337,7 +337,7 @@ class TokenClient @Inject constructor(
         platformFeeBps: BigInteger
     ): List<String> {
         val function =
-            if (BuildConfig.FLAVOR == "dev") {
+            if (isKatalyst) {
                 getExpectedRateAfterFee(
                     tokenSource.tokenAddress,
                     tokenDest.tokenAddress,
@@ -386,7 +386,7 @@ class TokenClient @Inject constructor(
     ): EthEstimateGas? {
 
         val function =
-            if (BuildConfig.FLAVOR == "dev") {
+            if (isKatalyst) {
                 tradeWithHintAndFee(
                     fromAddress,
                     toAddress,
@@ -797,7 +797,7 @@ class TokenClient @Inject constructor(
             contractAddress,
             transactionAmount,
             FunctionEncoder.encode(
-                if (BuildConfig.FLAVOR == "dev") {
+                if (isKatalyst) {
                     tradeWithHintAndFee(
                         fromAddress,
                         toAddress,
@@ -1221,7 +1221,7 @@ class TokenClient @Inject constructor(
                 if (tx.isSwapTx()) {
 
                     val input = FunctionEncoder.encode(
-                        if (BuildConfig.FLAVOR == "dev") {
+                        if (isKatalyst) {
                             tradeWithHintAndFee(
                                 tx.fromAddress(params),
                                 tx.toAddress(params),
@@ -1414,7 +1414,7 @@ class TokenClient @Inject constructor(
 
                                 val values = FunctionReturnDecoder.decode(
                                     filter.data,
-                                    if (BuildConfig.FLAVOR == "dev") {
+                                    if (isKatalyst) {
                                         executeTradeEvent.nonIndexedParameters
                                     } else {
                                         event.nonIndexedParameters
@@ -1422,7 +1422,7 @@ class TokenClient @Inject constructor(
                                 )
                                 val tokenBySymbol =
                                     tokenDao.getTokenBySymbol(pending.tokenDest)
-                                val destAmount = if (BuildConfig.FLAVOR == "dev") {
+                                val destAmount = if (isKatalyst) {
                                     if (values.size > 4) {
                                         if (tokenBySymbol != null) {
                                             (values[4] as Uint256).value.toBigDecimal().divide(

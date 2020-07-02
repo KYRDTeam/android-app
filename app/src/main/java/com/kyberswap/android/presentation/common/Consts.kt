@@ -1,5 +1,6 @@
 package com.kyberswap.android.presentation.common
 
+import com.kyberswap.android.BuildConfig
 import java.math.BigDecimal
 import java.math.BigInteger
 
@@ -19,5 +20,6 @@ val MIN_SUPPORT_AMOUNT = BigDecimal(1E-10)
 const val BIOMETRIC_ERROR_NONE_ENROLLED = 11
 const val BIOMETRIC_ERROR_CANCEL = 13
 
-
 const val DEFAULT_ENS_ADDRESS = "0x0000000000000000000000000000000000000000"
+
+val isKatalyst = BuildConfig.FLAVOR == "dev" || BuildConfig.FLAVOR == "stg"
