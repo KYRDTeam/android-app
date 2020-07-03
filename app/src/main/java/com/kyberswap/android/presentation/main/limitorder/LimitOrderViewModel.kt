@@ -423,7 +423,8 @@ class LimitOrderViewModel @Inject constructor(
         )
     }
 
-    fun getPlatformFee() {
+    fun getPlatformFee(order: LocalLimitOrder?) {
+        if (order == null) return
         getPlatformFeeUseCase.dispose()
         getPlatformFeeUseCase.execute(
             Consumer {
@@ -434,7 +435,10 @@ class LimitOrderViewModel @Inject constructor(
                 _getPlatformFeeCallback.value =
                     Event(GetPlatformFeeState.ShowError(it.localizedMessage))
             },
-            null
+            GetPlatformFeeUseCase.Param(
+                order.tokenSource.tokenAddress,
+                order.tokenDest.tokenAddress
+            )
         )
     }
 

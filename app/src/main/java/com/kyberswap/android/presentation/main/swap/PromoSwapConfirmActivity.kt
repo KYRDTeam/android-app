@@ -58,13 +58,12 @@ class PromoSwapConfirmActivity : BaseActivity(), KeystoreStorage {
             binding.expiredDate = it.expiredDatePromoCode
         }
 
-        viewModel.getPlatformFee()
-
         viewModel.getSwapDataCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSwapState.Success -> {
                         binding.swap = state.swap
+                        viewModel.getPlatformFee(state.swap)
                         binding.executePendingBindings()
                     }
                     is GetSwapState.ShowError -> {

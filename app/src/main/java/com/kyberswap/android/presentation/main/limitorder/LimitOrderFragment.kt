@@ -274,7 +274,7 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                                 edtSource.setAmount(state.order.srcAmount)
                             }
                             getRate(state.order)
-                            viewModel.getPlatformFee()
+                            viewModel.getPlatformFee(state.order)
                             viewModel.getGasPrice()
                             viewModel.getGasLimit(wallet, binding.order, platformFee)
                             getRelatedOrders()

@@ -11,9 +11,14 @@ import javax.inject.Inject
 class GetPlatformFeeUseCase @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val swapRepository: SwapRepository
-) : SequentialUseCase<String?, PlatformFee>(schedulerProvider) {
+) : SequentialUseCase<GetPlatformFeeUseCase.Param, PlatformFee>(schedulerProvider) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    override fun buildUseCaseSingle(param: String?): Single<PlatformFee> {
-        return swapRepository.getPlatformFee()
+    override fun buildUseCaseSingle(param: Param): Single<PlatformFee> {
+        return swapRepository.getPlatformFee(param)
     }
+
+    class Param(
+        val source: String,
+        val dest: String
+    )
 }

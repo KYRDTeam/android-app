@@ -56,13 +56,12 @@ class PromoPaymentConfirmActivity : BaseActivity(), KeystoreStorage {
         wallet?.let {
             viewModel.getSwapData(it)
         }
-        viewModel.getPlatformFee()
-
         viewModel.getSwapDataCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSwapState.Success -> {
                         binding.swap = state.swap
+                        viewModel.getPlatformFee(state.swap)
                     }
                     is GetSwapState.ShowError -> {
 

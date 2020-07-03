@@ -87,7 +87,7 @@ class ConvertFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.order = limitOrder
-        viewModel.getPlatformFee()
+        viewModel.getPlatformFee(limitOrder)
         wallet?.let {
             viewModel.getPendingBalances(it)
         }

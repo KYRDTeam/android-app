@@ -90,7 +90,8 @@ class SwapConfirmViewModel @Inject constructor(
         )
     }
 
-    fun getPlatformFee() {
+    fun getPlatformFee(swap: Swap?) {
+        if (swap == null) return
         getPlatformFeeUseCase.dispose()
         getPlatformFeeUseCase.execute(
             Consumer {
@@ -101,7 +102,7 @@ class SwapConfirmViewModel @Inject constructor(
                 _getPlatformFeeCallback.value =
                     Event(GetPlatformFeeState.ShowError(it.localizedMessage))
             },
-            null
+            GetPlatformFeeUseCase.Param(swap.tokenSource.tokenAddress, swap.tokenDest.tokenAddress)
         )
     }
 

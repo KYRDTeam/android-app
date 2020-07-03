@@ -20,6 +20,7 @@ import com.kyberswap.android.domain.usecase.swap.EstimateGasUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetCapUseCase
 import com.kyberswap.android.domain.usecase.swap.GetCombinedCapUseCase
+import com.kyberswap.android.domain.usecase.swap.GetPlatformFeeUseCase
 import com.kyberswap.android.domain.usecase.swap.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.ResetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapDataTokenUseCase
@@ -69,7 +70,7 @@ interface SwapRepository {
 
     fun getKyberNetworkStatus(): Single<KyberEnabled>
 
-    fun getPlatformFee(): Single<PlatformFee>
+    fun getPlatformFee(param: GetPlatformFeeUseCase.Param): Single<PlatformFee>
 
     fun getMaxGasPrice(): Single<MaxGasPrice>
 }

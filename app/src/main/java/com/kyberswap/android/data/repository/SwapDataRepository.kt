@@ -47,6 +47,7 @@ import com.kyberswap.android.domain.usecase.swap.EstimateGasUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetCapUseCase
 import com.kyberswap.android.domain.usecase.swap.GetCombinedCapUseCase
+import com.kyberswap.android.domain.usecase.swap.GetPlatformFeeUseCase
 import com.kyberswap.android.domain.usecase.swap.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.ResetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapDataTokenUseCase
@@ -615,9 +616,9 @@ class SwapDataRepository @Inject constructor(
         }
     }
 
-    override fun getPlatformFee(): Single<PlatformFee> {
+    override fun getPlatformFee(param: GetPlatformFeeUseCase.Param): Single<PlatformFee> {
         return if (isKatalyst) {
-            kyberSwapApi.swapFee().map {
+            kyberSwapApi.swapFee(param.source, param.dest).map {
                 PlatformFee(it)
             }
         } else {

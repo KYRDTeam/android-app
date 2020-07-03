@@ -72,13 +72,12 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
             viewModel.getSwapData(it)
         }
 
-        viewModel.getPlatformFee()
-
         viewModel.getSwapDataCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSwapState.Success -> {
                         binding.swap = state.swap
+                        viewModel.getPlatformFee(state.swap)
                         viewModel.getGasLimit(wallet, binding.swap, platformFee)
                         viewModel.getGasPrice()
                         binding.executePendingBindings()

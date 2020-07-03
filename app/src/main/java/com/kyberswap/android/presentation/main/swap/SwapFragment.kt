@@ -189,7 +189,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.getSelectedWallet()
-        viewModel.getPlatformFee()
         alertNotification?.let { viewModel.getAlert(it) }
         swap(notification)
         binding.tvContinue.setViewEnable(true)
@@ -238,6 +237,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 when (state) {
                     is GetSwapState.Success -> {
                         if (!state.swap.isSameTokenPair(binding.swap)) {
+                            viewModel.getPlatformFee(state.swap)
                             if (state.swap.tokenSource.tokenSymbol == state.swap.tokenDest.tokenSymbol) {
                                 showAlertWithoutIcon(
                                     title = getString(R.string.title_unsupported),
