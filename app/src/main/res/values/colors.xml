@@ -98,5 +98,6 @@
     <color name="desc_color">#FA6566</color>
     <color name="inc_color">#31CB9E</color>
     <color name="freshchat_notification_accent_color">@color/colorAccent</color>
+    <color name="color_tutorial">#d91e1e1e</color>
 
 </resources>

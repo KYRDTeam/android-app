@@ -6,9 +6,12 @@ import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnPreDraw
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +21,9 @@ import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentBalanceBinding
+import com.kyberswap.android.databinding.LayoutBalanceTargetBinding
+import com.kyberswap.android.databinding.LayoutBalanceTargetBuyEthBinding
+import com.kyberswap.android.databinding.LayoutTokenBalanceTargetBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
@@ -54,12 +60,18 @@ import com.kyberswap.android.util.TOKEN_SORT
 import com.kyberswap.android.util.USD
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
+import com.kyberswap.android.util.ext.dpToPx
 import com.kyberswap.android.util.ext.exactAmount
 import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.setTextIfChange
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.showKeyboard
 import com.kyberswap.android.util.ext.toDisplayNumber
+import com.takusemba.spotlight.OnSpotlightListener
+import com.takusemba.spotlight.OnTargetListener
+import com.takusemba.spotlight.Spotlight
+import com.takusemba.spotlight.Target
+import com.takusemba.spotlight.shape.Circle
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_token_header.view.*
 import java.math.BigDecimal
@@ -558,10 +570,107 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             openUrl(getString(R.string.buy_eth_endpoint))
             analytics.logEvent(BALANCE_BUYETH_YES, Bundle().createEvent())
         }
+
+//        binding.root.doOnPreDraw {
+//            showTutorial()
+//        }
     }
 
     fun getSelectedWallet() {
         viewModel.getSelectedWallet()
+    }
+
+    fun showTutorial() {
+        val targets = ArrayList<Target>()
+        if (activity == null) return
+        val overlayTotalBalanceBinding =
+            DataBindingUtil.inflate<LayoutBalanceTargetBinding>(
+                LayoutInflater.from(activity), R.layout.layout_balance_target, null, false
+            )
+
+        val centreX = binding.textView3.x + binding.textView3.width / 1.5f
+        val centreY = binding.tvBalance.y + binding.tvBalance.height / 2
+
+        val firstTarget = Target.Builder()
+            .setAnchor(centreX, centreY)
+            .setShape(Circle(85.dpToPx(activity!!).toFloat()))
+            .setOverlay(overlayTotalBalanceBinding.root)
+            .setOnTargetListener(object : OnTargetListener {
+                override fun onStarted() {
+                }
+
+                override fun onEnded() {
+                }
+            })
+            .build()
+        targets.add(firstTarget)
+
+        val overlayBuyEthBalanceBinding =
+            DataBindingUtil.inflate<LayoutBalanceTargetBuyEthBinding>(
+                LayoutInflater.from(activity), R.layout.layout_balance_target_buy_eth, null, false
+            )
+
+        val secondTarget = Target.Builder()
+            .setAnchor(binding.tvBuyEth)
+            .setShape(Circle(65.dpToPx(activity!!).toFloat()))
+            .setOverlay(overlayBuyEthBalanceBinding.root)
+            .setOnTargetListener(object : OnTargetListener {
+                override fun onStarted() {
+                }
+
+                override fun onEnded() {
+                }
+            })
+            .build()
+
+        targets.add(secondTarget)
+        val overlayTokenBalanceBinding =
+            DataBindingUtil.inflate<LayoutTokenBalanceTargetBinding>(
+                LayoutInflater.from(activity), R.layout.layout_token_balance_target, null, false
+            )
+
+        val x = binding.header.bottom + 96.dpToPx(activity!!).toFloat()
+        val y = 56.dpToPx(activity!!).toFloat()
+        val thirdTarget = Target.Builder()
+            .setAnchor(x, y)
+            .setShape(Circle(85.dpToPx(activity!!).toFloat()))
+            .setOverlay(overlayTokenBalanceBinding.root)
+            .setOnTargetListener(object : OnTargetListener {
+                override fun onStarted() {
+                }
+
+                override fun onEnded() {
+                }
+            })
+            .build()
+
+        targets.add(thirdTarget)
+
+        // create spotlight
+        val spotlight = Spotlight.Builder(activity!!)
+            .setBackgroundColor(R.color.color_tutorial)
+            .setTargets(targets)
+            .setDuration(1000L)
+            .setAnimation(DecelerateInterpolator(2f))
+            .setContainer(activity!!.window.decorView.findViewById(android.R.id.content))
+            .setOnSpotlightListener(object : OnSpotlightListener {
+                override fun onStarted() {
+                }
+
+                override fun onEnded() {
+                }
+            })
+            .build()
+
+        spotlight.start()
+
+        overlayTotalBalanceBinding.tvNext.setOnClickListener {
+            spotlight.next()
+        }
+
+        overlayBuyEthBalanceBinding.tvNext.setOnClickListener {
+            spotlight.next()
+        }
     }
 
     fun scrollToTop() {
