@@ -497,9 +497,11 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
                         minedList.forEach { transaction ->
                             hasDone = true
+
+                            // update isCancel to indicate cancel successfully
                             showDialog(
                                 AlertDialogFragment.DIALOG_TYPE_DONE,
-                                transaction.copy(isCancel = state.transactions.filter { it.blockNumber.isEmpty() }
+                                transaction.copy(isCancel = state.transactions.filter { it.blockNumber.isEmpty() && it.isCancel }
                                     .any { tx -> transaction.nonce == tx.nonce })
                             )
                         }
