@@ -7,6 +7,7 @@ const val DEFAULT_ACCEPT_RATE_PERCENTAGE = 3
 const val PERM = "PERM"
 const val PLATFORM_FEE_BPS = 8
 val DEFAULT_MAX_AMOUNT: BigInteger = 2.toBigInteger().pow(255)
+val MAX_APPROVAL_AMOUNT: BigInteger = 2.toBigInteger().pow(256) - BigInteger.ONE
 const val DEFAULT_WALLET_ID = "0x3fFFF2F4f6C0831FAC59534694ACd14AC2Ea501b"
 val DEFAULT_GAS_LIMIT = 380_000.toBigInteger()
 const val DEFAULT_NAME = "Untitled"

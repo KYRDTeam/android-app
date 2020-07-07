@@ -26,6 +26,7 @@ import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
 import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
 import com.kyberswap.android.presentation.common.DEFAULT_MAX_AMOUNT
 import com.kyberswap.android.presentation.common.DEFAULT_WALLET_ID
+import com.kyberswap.android.presentation.common.MAX_APPROVAL_AMOUNT
 import com.kyberswap.android.presentation.common.PERM
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfer
@@ -1033,7 +1034,7 @@ class TokenClient @Inject constructor(
             )
         }
         sendContractApproval(
-            DEFAULT_MAX_AMOUNT,
+            MAX_APPROVAL_AMOUNT,
             token,
             contractAddress,
             gasPriceWei,
