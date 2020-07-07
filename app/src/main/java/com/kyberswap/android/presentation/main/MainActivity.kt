@@ -539,9 +539,9 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                         setPendingTransaction(pendingList.size)
                     }
                     is GetPendingTransactionState.ShowError -> {
-                        showError(
-                            state.message ?: getString(R.string.something_wrong)
-                        )
+//                        showError(
+//                            state.message ?: getString(R.string.something_wrong)
+//                        )
                     }
                 }
             }
