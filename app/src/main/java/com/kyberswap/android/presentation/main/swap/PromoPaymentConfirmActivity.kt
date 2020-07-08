@@ -13,6 +13,7 @@ import com.kyberswap.android.databinding.ActivityPromoPaymentConfirmBinding
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
 import org.consenlabs.tokencore.wallet.KeystoreStorage
@@ -24,6 +25,7 @@ import javax.inject.Inject
 class PromoPaymentConfirmActivity : BaseActivity(), KeystoreStorage {
     @Inject
     lateinit var navigator: Navigator
+
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -31,6 +33,8 @@ class PromoPaymentConfirmActivity : BaseActivity(), KeystoreStorage {
     lateinit var appExecutors: AppExecutors
 
     private var wallet: Wallet? = null
+
+    private var platformFee: Int = PLATFORM_FEE_BPS
 
     private val viewModel: SwapConfirmViewModel by lazy {
         ViewModelProvider(this, viewModelFactory).get(SwapConfirmViewModel::class.java)
@@ -48,15 +52,16 @@ class PromoPaymentConfirmActivity : BaseActivity(), KeystoreStorage {
         WalletManager.storage = this
         WalletManager.scanWallets()
         wallet = intent.getParcelableExtra(WALLET_PARAM)
+        platformFee = intent.getIntExtra(PLATFORM_FEE, PLATFORM_FEE_BPS)
         wallet?.let {
             viewModel.getSwapData(it)
         }
-
         viewModel.getSwapDataCallback.observe(this, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSwapState.Success -> {
                         binding.swap = state.swap
+                        viewModel.getPlatformFee(state.swap)
                     }
                     is GetSwapState.ShowError -> {
 
@@ -70,15 +75,6 @@ class PromoPaymentConfirmActivity : BaseActivity(), KeystoreStorage {
                 showProgress(state == SwapTokenTransactionState.Loading)
                 when (state) {
                     is SwapTokenTransactionState.Success -> {
-//                        showAlert(getString(R.string.transaction_broadcasted_message))
-//                        showBroadcastAlert(
-//                            CustomAlertActivity.DIALOG_TYPE_BROADCASTED,
-//                            Transaction(
-//                                type = Transaction.TransactionType.SWAP,
-//                                hash = state.responseStatus?.hash ?: ""
-//                            )
-//                        )
-//                        onBackPressed()
                         val returnIntent = Intent()
                         setResult(Activity.RESULT_OK, returnIntent)
                         returnIntent.putExtra(BaseFragment.HASH_PARAM, state.responseStatus?.hash)
@@ -93,6 +89,18 @@ class PromoPaymentConfirmActivity : BaseActivity(), KeystoreStorage {
             }
         })
 
+        viewModel.getPlatformFeeCallback.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetPlatformFeeState.Success -> {
+                        platformFee = state.platformFee.fee
+                    }
+                    is GetPlatformFeeState.ShowError -> {
+
+                    }
+                }
+            }
+        })
 
         binding.imgBack.setOnClickListener {
             onBackPressed()
@@ -103,7 +111,7 @@ class PromoPaymentConfirmActivity : BaseActivity(), KeystoreStorage {
         }
 
         binding.tvConfirm.setOnClickListener {
-            viewModel.swap(wallet, binding.swap)
+            viewModel.swap(wallet, binding.swap, platformFee)
         }
     }
 
@@ -114,9 +122,11 @@ class PromoPaymentConfirmActivity : BaseActivity(), KeystoreStorage {
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"
-        fun newIntent(context: Context, wallet: Wallet?) =
+        private const val PLATFORM_FEE = "platform_fee_param"
+        fun newIntent(context: Context, wallet: Wallet?, platformFee: Int) =
             Intent(context, PromoPaymentConfirmActivity::class.java).apply {
                 putExtra(WALLET_PARAM, wallet)
+                putExtra(PLATFORM_FEE, platformFee)
             }
     }
 }

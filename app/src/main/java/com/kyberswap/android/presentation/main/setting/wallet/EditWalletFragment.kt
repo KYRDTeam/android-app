@@ -1,6 +1,7 @@
 package com.kyberswap.android.presentation.main.setting.wallet
 
 
+import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -18,6 +19,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.setting.PassCodeLockActivity
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.hideKeyboard
 import java.io.OutputStream
@@ -63,43 +65,8 @@ class EditWalletFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
         binding.wallet = wallet
         binding.tvShowBackupPhrase.setOnClickListener {
-            dialogHelper.showBottomSheetBackupPhraseDialog(
-                wallet?.mnemonicAvailable == true,
-                {
-                    dialogHelper.showConfirmation(
-                        "",
-                        getString(R.string.warning_backup_keystore),
-                        {
-                            dialogHelper.showInputPassword(viewModel.compositeDisposable) {
-                                wallet?.let { it1 -> viewModel.backupKeyStore(it, it1) }
 
-                            }
-                        })
-
-
-                },
-                {
-
-                    dialogHelper.showConfirmation(
-                        "",
-                        getString(R.string.warning_backup_private_key),
-                        {
-                            wallet?.let { it1 -> viewModel.backupPrivateKey(it1) }
-                        })
-
-                },
-                {
-                    dialogHelper.showConfirmation(
-                        "",
-                        getString(R.string.warning_backup_mnemonic),
-                        {
-                            wallet?.let { it1 -> viewModel.backupMnemonic(it1) }
-                        })
-
-                }, {
-                    copyWalletAddress()
-                }
-            )
+            showPassCodeLock(EDIT_WALLET)
         }
 
         binding.imgBack.setOnClickListener {
@@ -107,13 +74,7 @@ class EditWalletFragment : BaseFragment() {
         }
 
         binding.tvDeleteWallet.setOnClickListener {
-
-            dialogHelper.showConfirmation(
-                getString(R.string.title_delete),
-                getString(R.string.delete_wallet_confirmation),
-                {
-                    wallet?.let { it1 -> viewModel.deleteWallet(it1) }
-                })
+            showPassCodeLock(DELETE_WALLET)
         }
 
         binding.imgDone.setOnClickListener {
@@ -210,6 +171,17 @@ class EditWalletFragment : BaseFragment() {
         })
     }
 
+    private fun showPassCodeLock(requestCode: Int) {
+        if (activity != null) {
+            startActivityForResult(
+                PassCodeLockActivity.newIntent(
+                    activity!!,
+                    PassCodeLockActivity.PASS_CODE_LOCK_TYPE_MANAGE_WALLET
+                ), requestCode
+            )
+        }
+    }
+
     private fun onSaveComplete() {
         activity?.onBackPressed()
     }
@@ -240,12 +212,63 @@ class EditWalletFragment : BaseFragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        val cr = context?.contentResolver
-        val uri = data?.data
-        uri?.let {
-            if (requestCode == WRITE_REQUEST_CODE) {
+        if (requestCode == EDIT_WALLET) {
+            if (resultCode == Activity.RESULT_OK) {
+                dialogHelper.showBottomSheetBackupPhraseDialog(
+                    wallet?.mnemonicAvailable == true,
+                    {
+                        dialogHelper.showConfirmation(
+                            "",
+                            getString(R.string.warning_backup_keystore),
+                            {
+                                dialogHelper.showInputPassword(viewModel.compositeDisposable) {
+                                    wallet?.let { it1 -> viewModel.backupKeyStore(it, it1) }
+
+                                }
+                            })
+
+                    },
+                    {
+
+                        dialogHelper.showConfirmation(
+                            "",
+                            getString(R.string.warning_backup_private_key),
+                            {
+                                wallet?.let { it1 -> viewModel.backupPrivateKey(it1) }
+                            })
+
+                    },
+                    {
+                        dialogHelper.showConfirmation(
+                            "",
+                            getString(R.string.warning_backup_mnemonic),
+                            {
+                                wallet?.let { it1 -> viewModel.backupMnemonic(it1) }
+                            })
+
+                    }, {
+                        copyWalletAddress()
+                    }
+                )
+            }
+        } else if (requestCode == DELETE_WALLET) {
+            if (resultCode == Activity.RESULT_OK) {
+                dialogHelper.showConfirmation(
+                    getString(R.string.title_delete),
+                    getString(R.string.delete_wallet_confirmation),
+                    {
+                        wallet?.let { it1 -> viewModel.deleteWallet(it1) }
+                    })
+            }
+        } else if (requestCode == WRITE_REQUEST_CODE) {
+            val cr = context?.contentResolver
+            val uri = data?.data
+            uri?.let {
                 try {
-                    cr?.takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                    cr?.takePersistableUriPermission(
+                        uri,
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    )
                 } catch (e: SecurityException) {
                     e.printStackTrace()
                 }

@@ -2,7 +2,7 @@ package com.kyberswap.android.util.di.module
 
 import android.content.Context
 import com.kyberswap.android.data.api.home.ChartApi
-import com.kyberswap.android.data.api.home.CurrencyApi
+import com.kyberswap.android.data.api.home.KyberSwapApi
 import com.kyberswap.android.data.api.home.LimitOrderApi
 import com.kyberswap.android.data.api.home.PromoApi
 import com.kyberswap.android.data.api.home.SwapApi
@@ -118,7 +118,7 @@ object DataModule {
     fun provideBalanceRepository(
         context: Context,
         api: TokenApi,
-        currencyApi: CurrencyApi,
+        kyberSwapApi: KyberSwapApi,
         tokenMapper: TokenMapper,
         client: TokenClient,
         tokenDao: TokenDao,
@@ -132,7 +132,7 @@ object DataModule {
         BalanceDataRepository(
             context,
             api,
-            currencyApi,
+            kyberSwapApi,
             tokenMapper,
             client,
             tokenDao,
@@ -193,6 +193,7 @@ object DataModule {
         userApi: UserApi,
         userMapper: UserMapper,
         utilitiesApi: UtilitiesApi,
+        kyberSwapApi: KyberSwapApi,
         tokenExtDao: TokenExtDao
     ): SwapRepository =
         SwapDataRepository(
@@ -210,6 +211,7 @@ object DataModule {
             userApi,
             userMapper,
             utilitiesApi,
+            kyberSwapApi,
             tokenExtDao
         )
 

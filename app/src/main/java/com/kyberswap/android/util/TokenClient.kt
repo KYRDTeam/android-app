@@ -13,7 +13,6 @@ import android.util.Base64
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
 import com.kyberswap.android.data.db.NonceDao
@@ -27,10 +26,11 @@ import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
 import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
 import com.kyberswap.android.presentation.common.DEFAULT_MAX_AMOUNT
 import com.kyberswap.android.presentation.common.DEFAULT_WALLET_ID
+import com.kyberswap.android.presentation.common.MAX_APPROVAL_AMOUNT
 import com.kyberswap.android.presentation.common.PERM
-import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimitTransfer
+import com.kyberswap.android.presentation.common.isKatalyst
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.fromAddress
 import com.kyberswap.android.util.ext.isFromKyberSwap
@@ -38,6 +38,7 @@ import com.kyberswap.android.util.ext.isSwapTx
 import com.kyberswap.android.util.ext.isTransferETHTx
 import com.kyberswap.android.util.ext.minConversionRate
 import com.kyberswap.android.util.ext.params
+import com.kyberswap.android.util.ext.platformFee
 import com.kyberswap.android.util.ext.shortenValue
 import com.kyberswap.android.util.ext.toAddress
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
@@ -168,7 +169,7 @@ class TokenClient @Inject constructor(
         srcToken: String,
         destToken: String,
         srcTokenAmount: BigInteger,
-        platformFeeBps: BigInteger = PLATFORM_FEE_BPS.toBigInteger(),
+        platformFeeBps: BigInteger,
         hint: String = ""
     ): Function {
         return Function(
@@ -333,14 +334,16 @@ class TokenClient @Inject constructor(
         contractAddress: String,
         tokenSource: Token,
         tokenDest: Token,
-        srcTokenAmount: BigInteger
+        srcTokenAmount: BigInteger,
+        platformFeeBps: BigInteger
     ): List<String> {
         val function =
-            if (BuildConfig.FLAVOR == "dev") {
+            if (isKatalyst) {
                 getExpectedRateAfterFee(
                     tokenSource.tokenAddress,
                     tokenDest.tokenAddress,
-                    srcTokenAmount
+                    srcTokenAmount,
+                    platformFeeBps
                 )
             } else {
                 getExpectedRate(
@@ -379,17 +382,19 @@ class TokenClient @Inject constructor(
         toAddress: String,
         amount: BigInteger,
         minConversionRate: BigInteger,
-        isEth: Boolean
+        isEth: Boolean,
+        platformFeeBps: BigInteger
     ): EthEstimateGas? {
 
         val function =
-            if (BuildConfig.FLAVOR == "dev") {
+            if (isKatalyst) {
                 tradeWithHintAndFee(
                     fromAddress,
                     toAddress,
                     amount,
                     minConversionRate,
-                    walletAddress
+                    walletAddress,
+                    platformFeeBps
                 )
             } else {
                 tradeWithHint(
@@ -487,7 +492,7 @@ class TokenClient @Inject constructor(
         value: BigInteger,
         minConversionRate: BigInteger,
         walletAddress: String,
-        platformFeeBps: BigInteger = PLATFORM_FEE_BPS.toBigInteger(),
+        platformFeeBps: BigInteger,
         hint: String = ""
     ): Function {
 
@@ -512,7 +517,8 @@ class TokenClient @Inject constructor(
     fun doSwap(
         param: SwapTokenUseCase.Param,
         credentials: Credentials,
-        contractAddress: String
+        contractAddress: String,
+        platformFeeBps: BigInteger
     ): Pair<String?, BigInteger> {
         val gasPrice = Convert.toWei(
             param.swap.gasPrice.toBigDecimalOrDefaultZero(),
@@ -556,7 +562,8 @@ class TokenClient @Inject constructor(
                 gasLimit,
                 contractAddress,
                 walletAddress,
-                credentials
+                credentials,
+                platformFeeBps
             )
         } else {
             handleSwapERC20Token(
@@ -569,7 +576,8 @@ class TokenClient @Inject constructor(
                 param.swap.tokenDest,
                 walletAddress,
                 contractAddress,
-                credentials
+                credentials,
+                platformFeeBps
             )
         }
     }
@@ -774,7 +782,8 @@ class TokenClient @Inject constructor(
         gasLimit: BigInteger,
         contractAddress: String,
         walletAddress: String,
-        credentials: Credentials
+        credentials: Credentials,
+        platformFeeBps: BigInteger
 
     ): Pair<String?, BigInteger> {
         val localNonce = getTransactionNonce(credentials.address)
@@ -789,13 +798,14 @@ class TokenClient @Inject constructor(
             contractAddress,
             transactionAmount,
             FunctionEncoder.encode(
-                if (BuildConfig.FLAVOR == "dev") {
+                if (isKatalyst) {
                     tradeWithHintAndFee(
                         fromAddress,
                         toAddress,
                         tradeWithHintAmount,
                         minConversionRate,
-                        walletAddress
+                        walletAddress,
+                        platformFeeBps
                     )
                 } else {
                     tradeWithHint(
@@ -855,7 +865,7 @@ class TokenClient @Inject constructor(
             ?: transactionResponseSemiNode?.transactionHash
 
         // Insert into local nonce
-        saveLocalNonce(walletAddress, localNonce, hash)
+        saveLocalNonce(credentials.address, localNonce, hash)
 
         return Pair(hash, localNonce)
     }
@@ -924,11 +934,12 @@ class TokenClient @Inject constructor(
         toToken: Token,
         walletAddress: String,
         contractAddress: String,
-        credentials: Credentials
+        credentials: Credentials,
+        platformFeeBps: BigInteger
     ): Pair<String?, BigInteger> {
         val allowanceAmount =
             getContractAllowanceAmount(
-                walletAddress,
+                credentials.address,
                 fromToken.tokenAddress,
                 contractAddress,
                 credentials
@@ -939,8 +950,7 @@ class TokenClient @Inject constructor(
                 fromToken,
                 contractAddress,
                 gasPrice,
-                credentials,
-                walletAddress
+                credentials
             )
         }
         return executeTradeWithHint(
@@ -953,7 +963,8 @@ class TokenClient @Inject constructor(
             gasLimit,
             contractAddress,
             walletAddress,
-            credentials
+            credentials,
+            platformFeeBps
         )
     }
 
@@ -1009,8 +1020,7 @@ class TokenClient @Inject constructor(
         token: Token,
         contractAddress: String,
         gasPriceWei: BigInteger,
-        credentials: Credentials,
-        walletAddress: String
+        credentials: Credentials
     ) {
 
         if (allowanceAmount > BigInteger.ZERO) {
@@ -1020,18 +1030,16 @@ class TokenClient @Inject constructor(
                 contractAddress,
                 gasPriceWei,
                 if (token.gasApprove > BigDecimal.ZERO) token.gasApprove.toBigInteger() else Token.APPROVE_TOKEN_GAS_LIMIT_DEFAULT.toBigInteger(),
-                credentials,
-                walletAddress
+                credentials
             )
         }
         sendContractApproval(
-            DEFAULT_MAX_AMOUNT,
+            MAX_APPROVAL_AMOUNT,
             token,
             contractAddress,
             gasPriceWei,
             if (token.gasApprove > BigDecimal.ZERO) token.gasApprove.toBigInteger() else Token.APPROVE_TOKEN_GAS_LIMIT_DEFAULT.toBigInteger(),
-            credentials,
-            walletAddress
+            credentials
         )
     }
 
@@ -1041,8 +1049,7 @@ class TokenClient @Inject constructor(
         contractAddress: String,
         gasPriceWei: BigInteger,
         gasLimit: BigInteger,
-        credentials: Credentials,
-        walletAddress: String
+        credentials: Credentials
     ) {
         val function = approve(contractAddress, allowanceAmount)
         val encodedFunction = FunctionEncoder.encode(function)
@@ -1125,7 +1132,7 @@ class TokenClient @Inject constructor(
             ?: transactionResponseInfuraNode?.transactionHash
             ?: transactionResponseSemiNode?.transactionHash
 
-        saveLocalNonce(walletAddress, localNonce, hash)
+        saveLocalNonce(credentials.address, localNonce, hash)
     }
 
     @Throws(Exception::class)
@@ -1215,13 +1222,14 @@ class TokenClient @Inject constructor(
                 if (tx.isSwapTx()) {
 
                     val input = FunctionEncoder.encode(
-                        if (BuildConfig.FLAVOR == "dev") {
+                        if (isKatalyst) {
                             tradeWithHintAndFee(
                                 tx.fromAddress(params),
                                 tx.toAddress(params),
                                 tx.txValue(params),
                                 tx.minConversionRate(params),
-                                wallet.walletAddress
+                                wallet.walletAddress,
+                                tx.platformFee(params)
                             )
                         } else {
                             tradeWithHint(
@@ -1407,7 +1415,7 @@ class TokenClient @Inject constructor(
 
                                 val values = FunctionReturnDecoder.decode(
                                     filter.data,
-                                    if (BuildConfig.FLAVOR == "dev") {
+                                    if (isKatalyst) {
                                         executeTradeEvent.nonIndexedParameters
                                     } else {
                                         event.nonIndexedParameters
@@ -1415,7 +1423,7 @@ class TokenClient @Inject constructor(
                                 )
                                 val tokenBySymbol =
                                     tokenDao.getTokenBySymbol(pending.tokenDest)
-                                val destAmount = if (BuildConfig.FLAVOR == "dev") {
+                                val destAmount = if (isKatalyst) {
                                     if (values.size > 4) {
                                         if (tokenBySymbol != null) {
                                             (values[4] as Uint256).value.toBigDecimal().divide(
@@ -1628,8 +1636,7 @@ class TokenClient @Inject constructor(
                     order.gasPrice.toBigDecimalOrDefaultZero(),
                     Convert.Unit.GWEI
                 ).toBigInteger(),
-                credentials,
-                credentials.address
+                credentials
             )
         }
 

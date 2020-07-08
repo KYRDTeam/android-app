@@ -65,6 +65,8 @@ data class Swap(
     val currentExpectedDestAmount: BigDecimal
         get() = getExpectedDestAmount(sourceAmount.toBigDecimalOrDefaultZero())
 
+    val isETHWETHPair: Boolean
+        get() = (tokenSource.isETH || tokenSource.isWETH || tokenSource.isETHWETH) && (tokenDest.isETH || tokenDest.isWETH || tokenDest.isETHWETH)
 
     constructor(limitOrder: LocalLimitOrder, minConvertedAmount: BigDecimal) : this(
         limitOrder.userAddr,

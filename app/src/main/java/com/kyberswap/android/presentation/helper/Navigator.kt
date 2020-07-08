@@ -25,7 +25,6 @@ import com.kyberswap.android.presentation.main.alert.PriceAlertFragment
 import com.kyberswap.android.presentation.main.alert.PriceAlertTokenSearchFragment
 import com.kyberswap.android.presentation.main.balance.address.BalanceAddressFragment
 import com.kyberswap.android.presentation.main.balance.chart.ChartFragment
-import com.kyberswap.android.presentation.main.balance.send.SendConfirmActivity
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.kybercode.KyberCodeFragment
 import com.kyberswap.android.presentation.main.limitorder.CancelOrderFragment
@@ -49,9 +48,6 @@ import com.kyberswap.android.presentation.main.setting.ContactFragment
 import com.kyberswap.android.presentation.main.setting.wallet.BackupWalletInfoFragment
 import com.kyberswap.android.presentation.main.setting.wallet.EditWalletFragment
 import com.kyberswap.android.presentation.main.setting.wallet.ManageWalletFragment
-import com.kyberswap.android.presentation.main.swap.PromoPaymentConfirmActivity
-import com.kyberswap.android.presentation.main.swap.PromoSwapConfirmActivity
-import com.kyberswap.android.presentation.main.swap.SwapConfirmActivity
 import com.kyberswap.android.presentation.main.swap.TokenSearchFragment
 import com.kyberswap.android.presentation.main.transaction.CustomizeGasFragment
 import com.kyberswap.android.presentation.main.transaction.TransactionDetailReceiveFragment
@@ -193,24 +189,24 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         )
     }
 
-    fun navigateToSwapConfirmationScreen(wallet: Wallet?) {
-        when {
-            wallet?.isPromo == true -> when {
-                wallet.isPromoPayment -> activity.startActivity(
-                    PromoPaymentConfirmActivity.newIntent(
-                        activity,
-                        wallet
-                    )
-                )
-                else -> activity.startActivity(PromoSwapConfirmActivity.newIntent(activity, wallet))
-            }
-            else -> activity.startActivity(SwapConfirmActivity.newIntent(activity, wallet))
-        }
-    }
-
-    fun navigateToSendConfirmationScreen(wallet: Wallet?, isContactExist: Boolean) {
-        activity.startActivity(SendConfirmActivity.newIntent(activity, wallet, isContactExist))
-    }
+//    fun navigateToSwapConfirmationScreen(wallet: Wallet?) {
+//        when {
+//            wallet?.isPromo == true -> when {
+//                wallet.isPromoPayment -> activity.startActivity(
+//                    PromoPaymentConfirmActivity.newIntent(
+//                        activity,
+//                        wallet
+//                    )
+//                )
+//                else -> activity.startActivity(PromoSwapConfirmActivity.newIntent(activity, wallet))
+//            }
+//            else -> activity.startActivity(SwapConfirmActivity.newIntent(activity, wallet))
+//        }
+//    }
+//
+//    fun navigateToSendConfirmationScreen(wallet: Wallet?, isContactExist: Boolean) {
+//        activity.startActivity(SendConfirmActivity.newIntent(activity, wallet, isContactExist))
+//    }
 
     fun navigateToWalletConnectScreen(
         currentFragment: Fragment?,

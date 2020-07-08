@@ -7,6 +7,7 @@ import com.kyberswap.android.domain.model.Swap
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.usecase.swap.EstimateGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
+import com.kyberswap.android.domain.usecase.swap.GetPlatformFeeUseCase
 import com.kyberswap.android.domain.usecase.swap.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
 import com.kyberswap.android.presentation.common.Event
@@ -18,6 +19,7 @@ class SwapConfirmViewModel @Inject constructor(
     private val getSwapData: GetSwapDataUseCase,
     private val estimateGasUseCase: EstimateGasUseCase,
     private val getGasPriceUseCase: GetGasPriceUseCase,
+    private val getPlatformFeeUseCase: GetPlatformFeeUseCase,
     private val swapTokenUseCase: SwapTokenUseCase
 ) : ViewModel() {
 
@@ -38,6 +40,10 @@ class SwapConfirmViewModel @Inject constructor(
     val getGetGasPriceCallback: LiveData<Event<GetGasPriceState>>
         get() = _getGetGasPriceCallback
 
+    private val _getPlatformFeeCallback = MutableLiveData<Event<GetPlatformFeeState>>()
+    val getPlatformFeeCallback: LiveData<Event<GetPlatformFeeState>>
+        get() = _getPlatformFeeCallback
+
 
     fun getSwapData(wallet: Wallet) {
         getSwapData.execute(
@@ -52,7 +58,7 @@ class SwapConfirmViewModel @Inject constructor(
         )
     }
 
-    fun swap(wallet: Wallet?, swap: Swap?) {
+    fun swap(wallet: Wallet?, swap: Swap?, platformFee: Int) {
         swap?.let { sw ->
             _swapTokenTransactionCallback.postValue(Event(SwapTokenTransactionState.Loading))
             swapTokenUseCase.execute(
@@ -65,7 +71,7 @@ class SwapConfirmViewModel @Inject constructor(
                     _swapTokenTransactionCallback.value =
                         Event(SwapTokenTransactionState.ShowError(it.localizedMessage, sw))
                 },
-                SwapTokenUseCase.Param(wallet!!, sw)
+                SwapTokenUseCase.Param(wallet!!, sw, platformFee)
 
             )
         }
@@ -84,7 +90,23 @@ class SwapConfirmViewModel @Inject constructor(
         )
     }
 
-    fun getGasLimit(wallet: Wallet?, swap: Swap?) {
+    fun getPlatformFee(swap: Swap?) {
+        if (swap == null) return
+        getPlatformFeeUseCase.dispose()
+        getPlatformFeeUseCase.execute(
+            Consumer {
+                _getPlatformFeeCallback.value = Event(GetPlatformFeeState.Success(it))
+            },
+            Consumer {
+                it.printStackTrace()
+                _getPlatformFeeCallback.value =
+                    Event(GetPlatformFeeState.ShowError(it.localizedMessage))
+            },
+            GetPlatformFeeUseCase.Param(swap.tokenSource.tokenAddress, swap.tokenDest.tokenAddress)
+        )
+    }
+
+    fun getGasLimit(wallet: Wallet?, swap: Swap?, platformFee: Int) {
         if (wallet == null || swap == null) return
         estimateGasUseCase.dispose()
         estimateGasUseCase.execute(
@@ -112,7 +134,8 @@ class SwapConfirmViewModel @Inject constructor(
                 swap.tokenSource,
                 swap.tokenDest,
                 swap.sourceAmount,
-                swap.minConversionRate
+                swap.minConversionRate,
+                platformFee
             )
         )
     }

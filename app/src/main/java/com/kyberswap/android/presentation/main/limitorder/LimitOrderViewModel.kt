@@ -22,6 +22,7 @@ import com.kyberswap.android.domain.usecase.swap.EstimateGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
 import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
+import com.kyberswap.android.domain.usecase.swap.GetPlatformFeeUseCase
 import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
 import com.kyberswap.android.domain.usecase.wallet.CheckEligibleWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
@@ -36,6 +37,7 @@ import com.kyberswap.android.presentation.main.swap.GetExpectedRateState
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.main.swap.GetMarketRateState
+import com.kyberswap.android.presentation.main.swap.GetPlatformFeeState
 import com.kyberswap.android.presentation.main.swap.SwapTokenTransactionState
 import com.kyberswap.android.util.ErrorHandler
 import com.kyberswap.android.util.ext.display
@@ -70,6 +72,7 @@ class LimitOrderViewModel @Inject constructor(
     private val pendingBalancesUseCase: GetPendingBalancesUseCase,
     private val elegibleAddressUseCase: CheckEligibleAddressUseCase,
     private val checkEligibleWalletUseCase: CheckEligibleWalletUseCase,
+    private val getPlatformFeeUseCase: GetPlatformFeeUseCase,
     getSelectedWalletUseCase: GetSelectedWalletUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getSelectedWalletUseCase, errorHandler) {
@@ -153,6 +156,10 @@ class LimitOrderViewModel @Inject constructor(
     private val _checkEligibleWalletCallback = MutableLiveData<Event<CheckEligibleWalletState>>()
     val checkEligibleWalletCallback: LiveData<Event<CheckEligibleWalletState>>
         get() = _checkEligibleWalletCallback
+
+    private val _getPlatformFeeCallback = MutableLiveData<Event<GetPlatformFeeState>>()
+    val getPlatformFeeCallback: LiveData<Event<GetPlatformFeeState>>
+        get() = _getPlatformFeeCallback
 
 
     fun getLoginStatus() {
@@ -380,7 +387,8 @@ class LimitOrderViewModel @Inject constructor(
 
     fun getExpectedRate(
         order: LocalLimitOrder,
-        srcAmount: String
+        srcAmount: String,
+        platformFee: Int
     ) {
         if (order.hasSamePair) {
             _getExpectedRateCallback.value =
@@ -409,7 +417,27 @@ class LimitOrderViewModel @Inject constructor(
                 order.userAddr,
                 order.tokenSource,
                 order.tokenDest,
-                srcAmount
+                srcAmount,
+                platformFee
+            )
+        )
+    }
+
+    fun getPlatformFee(order: LocalLimitOrder?) {
+        if (order == null) return
+        getPlatformFeeUseCase.dispose()
+        getPlatformFeeUseCase.execute(
+            Consumer {
+                _getPlatformFeeCallback.value = Event(GetPlatformFeeState.Success(it))
+            },
+            Consumer {
+                it.printStackTrace()
+                _getPlatformFeeCallback.value =
+                    Event(GetPlatformFeeState.ShowError(it.localizedMessage))
+            },
+            GetPlatformFeeUseCase.Param(
+                order.tokenSource.tokenAddress,
+                order.tokenDest.tokenAddress
             )
         )
     }
@@ -525,7 +553,7 @@ class LimitOrderViewModel @Inject constructor(
         )
     }
 
-    fun getGasLimit(wallet: Wallet?, order: LocalLimitOrder?) {
+    fun getGasLimit(wallet: Wallet?, order: LocalLimitOrder?, platformFee: Int) {
         if (wallet == null || order == null) return
         estimateGasUseCase.dispose()
         estimateGasUseCase.execute(
@@ -553,12 +581,18 @@ class LimitOrderViewModel @Inject constructor(
                 order.tokenSource,
                 order.tokenDest,
                 order.srcAmount,
-                order.minRateWithPrecision
+                order.minRateWithPrecision,
+                platformFee
             )
         )
     }
 
-    fun convert(wallet: Wallet?, limitOrder: LocalLimitOrder, minConvertedAmount: BigDecimal) {
+    fun convert(
+        wallet: Wallet?,
+        limitOrder: LocalLimitOrder,
+        minConvertedAmount: BigDecimal,
+        platformFee: Int
+    ) {
         val swap = Swap(limitOrder, minConvertedAmount)
         _convertCallback.postValue(Event(ConvertState.Loading))
         swapTokenUseCase.execute(
@@ -579,7 +613,7 @@ class LimitOrderViewModel @Inject constructor(
                 _convertCallback.value =
                     Event(ConvertState.ShowError(errorHandler.getError(it)))
             },
-            SwapTokenUseCase.Param(wallet!!, swap)
+            SwapTokenUseCase.Param(wallet!!, swap, platformFee)
 
         )
     }

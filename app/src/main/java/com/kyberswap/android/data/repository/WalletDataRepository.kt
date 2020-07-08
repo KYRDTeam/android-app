@@ -743,10 +743,16 @@ class WalletDataRepository @Inject constructor(
     companion object {
         /**
          * Define position for tradeWithHintFunction
-         * Function: tradeWithHint(address src, uint256 srcAmount, address dest, address destAddress, uint256 maxDestAmount, uint256 minConversionRate, address walletId, bytes hint)
+         * Function: tradeWithHint(
+         * address src, uint256 srcAmount, address dest, address destAddress, uint256 maxDestAmount, uint256 minConversionRate, address walletId, bytes hint)
+         *
+         *
+         * Function: tradeWithHintAndFee(
+         * address src, uint256 srcAmount, address dest, address destAddress, uint256 maxDestAmount, uint256 minConversionRate, address platformWallet, uint256 platformFeeBps, bytes hint)
          */
 
         const val METHOD_ID_SWAP = "0x29589f61"
+        const val METHOD_ID_TRADE_WITH_HINT_AND_FEE = "0xae591d54"
         const val METHOD_ID_TRANSFER = "0xa9059cbb"
         const val METHOD_ID_APPROVE = "0x095ea7b3"
         const val TRADE_WITH_HINT_SOURCE_POSITION = 0
@@ -756,6 +762,7 @@ class WalletDataRepository @Inject constructor(
         const val TRADE_WITH_HINT_MAX_DEST_AMOUNT_POSITION = 4
         const val TRADE_WITH_HINT_MIN_CONVERSION_RATE_POSITION = 5
         const val TRADE_WITH_HINT_WALLET_ID_POSITION = 6
+        const val TRADE_WITH_HINT_AND_FEE_PLATFORM_FEE_POSITION = 7
         const val TRANFER_TOKEN_ADDRESS_POSITION = 0
         const val TRANFER_TOKEN_AMOUNT_POSITION = 1
     }

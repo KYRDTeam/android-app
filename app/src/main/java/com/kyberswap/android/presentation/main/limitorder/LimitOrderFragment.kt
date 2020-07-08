@@ -32,6 +32,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.LoginState
+import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
@@ -42,6 +43,7 @@ import com.kyberswap.android.presentation.main.swap.GetExpectedRateState
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
 import com.kyberswap.android.presentation.main.swap.GetMarketRateState
+import com.kyberswap.android.presentation.main.swap.GetPlatformFeeState
 import com.kyberswap.android.presentation.main.swap.SwapTokenTransactionState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.USER_CLICK_SUBMIT_LO_V1
@@ -53,7 +55,6 @@ import com.kyberswap.android.util.ext.exactAmount
 import com.kyberswap.android.util.ext.getAmountOrDefaultValue
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isNetworkAvailable
-import com.kyberswap.android.util.ext.isSomethingWrongError
 import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.percentage
 import com.kyberswap.android.util.ext.setAmount
@@ -116,6 +117,8 @@ class LimitOrderFragment : BaseFragment(), LoginState {
     private var userInfo: UserInfo? = null
 
     private var notification: NotificationLimitOrder? = null
+
+    private var platformFee: Int = PLATFORM_FEE_BPS
 
     private val srcAmount: String
         get() = binding.edtSource.text.toString()
@@ -239,14 +242,6 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                 when (state) {
                     is GetLocalLimitOrderState.Success -> {
                         if (!state.order.isSameTokenPairForAddress(binding.order)) {
-
-                            if (state.order.tokenSource.tokenSymbol == state.order.tokenDest.tokenSymbol) {
-                                showAlertWithoutIcon(
-                                    title = getString(R.string.title_unsupported),
-                                    message = getString(R.string.limit_order_source_different_dest)
-                                )
-                            }
-
                             if (!state.order.isSameSourceDestToken(binding.order)) {
                                 hasUserFocus = false
                             }
@@ -254,10 +249,19 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                             if (state.order.hasSamePair) {
                                 edtRate.setText("1")
                             }
-
                             binding.order = state.order
                             binding.isQuote = state.order.tokenSource.isQuote
                             binding.executePendingBindings()
+                            handler.removeCallbacksAndMessages(null)
+                            handler.postDelayed({
+                                if (state.order.tokenSource.tokenSymbol == state.order.tokenDest.tokenSymbol) {
+                                    showAlertWithoutIcon(
+                                        title = getString(R.string.title_unsupported),
+                                        message = getString(R.string.limit_order_source_different_dest)
+                                    )
+                                }
+                            }, 250)
+
                             getPendingBalance()
                             viewModel.getFee(
                                 binding.order,
@@ -270,8 +274,9 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                                 edtSource.setAmount(state.order.srcAmount)
                             }
                             getRate(state.order)
+                            viewModel.getPlatformFee(state.order)
                             viewModel.getGasPrice()
-                            viewModel.getGasLimit(wallet, binding.order)
+                            viewModel.getGasLimit(wallet, binding.order, platformFee)
                             getRelatedOrders()
                         }
                     }
@@ -392,7 +397,7 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                 binding.isQuote = limitOrder.tokenSource.isQuote
                 binding.executePendingBindings()
                 viewModel.getGasPrice()
-                viewModel.getGasLimit(wallet, it)
+                viewModel.getGasLimit(wallet, it, platformFee)
                 updateAvailableAmount(pendingBalances)
                 getRelatedOrders()
                 getPendingBalance()
@@ -456,10 +461,10 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         }
                     }
                     is GetRelatedOrdersState.ShowError -> {
-                        val err = state.message ?: getString(R.string.something_wrong)
-                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
-                            showError(err)
-                        }
+//                        val err = state.message ?: getString(R.string.something_wrong)
+//                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
+//                            showError(err)
+//                        }
                     }
                 }
             }
@@ -510,11 +515,11 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         binding.order = order
                     }
                     is GetNonceState.ShowError -> {
-                        if (isNetworkAvailable()) {
-                            showError(
-                                state.message ?: getString(R.string.something_wrong)
-                            )
-                        }
+//                        if (isNetworkAvailable()) {
+//                            showError(
+//                                state.message ?: getString(R.string.something_wrong)
+//                            )
+//                        }
                     }
                 }
             }
@@ -576,10 +581,10 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         }
                     }
                     is GetMarketRateState.ShowError -> {
-                        val err = state.message ?: getString(R.string.something_wrong)
-                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
-                            showError(err)
-                        }
+//                        val err = state.message ?: getString(R.string.something_wrong)
+//                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
+//                            showError(err)
+//                        }
                     }
                 }
             }
@@ -656,7 +661,8 @@ class LimitOrderFragment : BaseFragment(), LoginState {
 
                             viewModel.getExpectedRate(
                                 order,
-                                if (text.isNullOrEmpty()) getString(R.string.default_source_amount) else text.toString()
+                                if (text.isNullOrEmpty()) getString(R.string.default_source_amount) else text.toString(),
+                                platformFee
                             )
                         }
                         text.isNullOrEmpty() -> edtDest.setText("")
@@ -682,7 +688,9 @@ class LimitOrderFragment : BaseFragment(), LoginState {
 
                         currentOrder?.let {
                             viewModel.getGasLimit(
-                                wallet, it
+                                wallet,
+                                it,
+                                platformFee
                             )
                         }
 
@@ -781,10 +789,10 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         }
                     }
                     is GetExpectedRateState.ShowError -> {
-                        val err = state.message ?: getString(R.string.something_wrong)
-                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
-                            showError(err)
-                        }
+//                        val err = state.message ?: getString(R.string.something_wrong)
+//                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
+//                            showError(err)
+//                        }
                     }
                 }
             }
@@ -820,11 +828,11 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         }
                     }
                     is GetGasLimitState.ShowError -> {
-                        if (isNetworkAvailable()) {
-                            showError(
-                                state.message ?: getString(R.string.something_wrong)
-                            )
-                        }
+//                        if (isNetworkAvailable()) {
+//                            showError(
+//                                state.message ?: getString(R.string.something_wrong)
+//                            )
+//                        }
                     }
                 }
             }
@@ -843,6 +851,25 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         }
                     }
                     is GetGasPriceState.ShowError -> {
+
+                    }
+                }
+            }
+        })
+
+        viewModel.getPlatformFeeCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetPlatformFeeState.Success -> {
+                        if (state.platformFee.fee != platformFee) {
+                            platformFee = state.platformFee.fee
+                            viewModel.getGasLimit(wallet, binding.order, platformFee)
+                            if (binding.order != null) {
+                                getRate(binding.order!!)
+                            }
+                        }
+                    }
+                    is GetPlatformFeeState.ShowError -> {
 
                     }
                 }
@@ -931,10 +958,10 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         }
                     }
                     is GetFeeState.ShowError -> {
-                        val err = state.message ?: getString(R.string.something_wrong)
-                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
-                            showError(err)
-                        }
+//                        val err = state.message ?: getString(R.string.something_wrong)
+//                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
+//                            showError(err)
+//                        }
                     }
                 }
             }
@@ -1155,10 +1182,10 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         updateAvailableAmount(state.pendingBalances)
                     }
                     is GetPendingBalancesState.ShowError -> {
-                        val err = state.message ?: getString(R.string.something_wrong)
-                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
-                            showError(err)
-                        }
+//                        val err = state.message ?: getString(R.string.something_wrong)
+//                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
+//                            showError(err)
+//                        }
                     }
                 }
             }
@@ -1391,7 +1418,8 @@ class LimitOrderFragment : BaseFragment(), LoginState {
         viewModel.getMarketRate(order)
         viewModel.getExpectedRate(
             order,
-            edtSource.getAmountOrDefaultValue()
+            edtSource.getAmountOrDefaultValue(),
+            platformFee
         )
     }
 

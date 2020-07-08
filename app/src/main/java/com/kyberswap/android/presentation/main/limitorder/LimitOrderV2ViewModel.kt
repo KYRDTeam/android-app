@@ -186,7 +186,7 @@ class LimitOrderV2ViewModel @Inject constructor(
                 val order = it.copy(gasLimit = calculateGasLimit(it))
                 _getLocalLimitOrderCallback.value =
                     Event(GetLocalLimitOrderState.Success(order))
-                getNonce(order, wallet)
+//                getNonce(order, wallet)
             },
             Consumer {
                 Timber.e(it.localizedMessage)
@@ -239,7 +239,7 @@ class LimitOrderV2ViewModel @Inject constructor(
                 _getGetNonceStateCallback.value =
                     Event(
                         GetNonceState.ShowError(
-                            errorHandler.getError(it),
+                            it.localizedMessage,
                             it is UnknownHostException
                         )
                     )
@@ -263,7 +263,7 @@ class LimitOrderV2ViewModel @Inject constructor(
                 _getRelatedOrderCallback.value =
                     Event(
                         GetRelatedOrdersState.ShowError(
-                            errorHandler.getError(it),
+                            it.localizedMessage,
                             it is UnknownHostException
                         )
                     )
@@ -315,6 +315,12 @@ class LimitOrderV2ViewModel @Inject constructor(
         )
     }
 
+    fun terminateUserRequests() {
+        pendingBalancesUseCase.dispose()
+        getRelatedLimitOrdersUseCase.dispose()
+        getNonceUseCase.dispose()
+    }
+
     fun getPendingBalances(wallet: Wallet?) {
         if (wallet == null) return
         pendingBalancesUseCase.dispose()
@@ -328,7 +334,7 @@ class LimitOrderV2ViewModel @Inject constructor(
                 _getPendingBalancesCallback.value =
                     Event(
                         GetPendingBalancesState.ShowError(
-                            errorHandler.getError(it)
+                            it.localizedMessage
                         )
                     )
             },
@@ -448,7 +454,7 @@ class LimitOrderV2ViewModel @Inject constructor(
                 it.printStackTrace()
                 _getFeeCallback.value = Event(
                     GetFeeState.ShowError(
-                        errorHandler.getError(it),
+                        it.localizedMessage,
                         isNetworkUnAvailable = it is UnknownHostException
                     )
                 )

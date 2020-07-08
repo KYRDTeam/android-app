@@ -2,7 +2,6 @@ package com.kyberswap.android.presentation.main.swap
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.domain.model.NotificationAlert
 import com.kyberswap.android.domain.model.NotificationExt
 import com.kyberswap.android.domain.model.Swap
@@ -16,6 +15,7 @@ import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
 import com.kyberswap.android.domain.usecase.swap.GetKyberNetworkStatusCase
 import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
+import com.kyberswap.android.domain.usecase.swap.GetPlatformFeeUseCase
 import com.kyberswap.android.domain.usecase.swap.GetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.ResetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapUseCase
@@ -24,8 +24,8 @@ import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.common.MIN_SUPPORT_AMOUNT
-import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
+import com.kyberswap.android.presentation.common.isKatalyst
 import com.kyberswap.android.presentation.common.specialGasLimitDefault
 import com.kyberswap.android.presentation.main.SelectedWalletViewModel
 import com.kyberswap.android.presentation.main.alert.GetAlertState
@@ -51,6 +51,7 @@ class SwapViewModel @Inject constructor(
     private val getMarketRate: GetMarketRateUseCase,
     private val saveSwapUseCase: SaveSwapUseCase,
     private val getGasPriceUseCase: GetGasPriceUseCase,
+    private val getPlatformFeeUseCase: GetPlatformFeeUseCase,
     private val estimateGasUseCase: EstimateGasUseCase,
     private val getAlertUseCase: GetAlertUseCase,
     private val estimateAmountUseCase: EstimateAmountUseCase,
@@ -73,6 +74,10 @@ class SwapViewModel @Inject constructor(
     private val _getGetGasPriceCallback = MutableLiveData<Event<GetGasPriceState>>()
     val getGetGasPriceCallback: LiveData<Event<GetGasPriceState>>
         get() = _getGetGasPriceCallback
+
+    private val _getPlatformFeeCallback = MutableLiveData<Event<GetPlatformFeeState>>()
+    val getPlatformFeeCallback: LiveData<Event<GetPlatformFeeState>>
+        get() = _getPlatformFeeCallback
 
 //    private val _getCapCallback = MutableLiveData<Event<GetCapState>>()
 //    val getCapCallback: LiveData<Event<GetCapState>>
@@ -130,7 +135,7 @@ class SwapViewModel @Inject constructor(
                     _getGetMarketRateCallback.value =
                         Event(
                             GetMarketRateState.ShowError(
-                                errorHandler.getError(it),
+                                it.localizedMessage,
                                 it is UnknownHostException
                             )
                         )
@@ -182,13 +187,30 @@ class SwapViewModel @Inject constructor(
         )
     }
 
+    fun getPlatformFee(swap: Swap?) {
+        if (swap == null) return
+        getPlatformFeeUseCase.dispose()
+        getPlatformFeeUseCase.execute(
+            Consumer {
+                _getPlatformFeeCallback.value = Event(GetPlatformFeeState.Success(it))
+            },
+            Consumer {
+                it.printStackTrace()
+                _getPlatformFeeCallback.value =
+                    Event(GetPlatformFeeState.ShowError(it.localizedMessage))
+            },
+            GetPlatformFeeUseCase.Param(swap.tokenSource.tokenAddress, swap.tokenDest.tokenAddress)
+        )
+    }
+
     fun disposeGetExpectedRate() {
         getExpectedRateUseCase.dispose()
     }
 
     fun getExpectedRate(
         swap: Swap,
-        srcAmount: String
+        srcAmount: String,
+        platformFee: Int
     ) {
         if (swap.hasSamePair) {
             _getExpectedRateCallback.value =
@@ -207,17 +229,19 @@ class SwapViewModel @Inject constructor(
             Consumer {
                 it.printStackTrace()
                 _getExpectedRateCallback.value =
-                    Event(GetExpectedRateState.ShowError(errorHandler.getError(it)))
+                    Event(GetExpectedRateState.ShowError(it.localizedMessage))
             },
             GetExpectedRateUseCase.Param(
                 swap.walletAddress,
                 swap.tokenSource,
-                swap.tokenDest, srcAmount
+                swap.tokenDest,
+                srcAmount,
+                platformFee
             )
         )
     }
 
-    fun verifySwap(wallet: Wallet, swap: Swap) {
+    fun verifySwap(wallet: Wallet, swap: Swap, platformFee: Int) {
         checkEligibleWalletUseCase.dispose()
         _checkEligibleWalletCallback.postValue(Event(CheckEligibleWalletState.Loading))
         getExpectedRateSequentialUseCase.dispose()
@@ -282,12 +306,13 @@ class SwapViewModel @Inject constructor(
                 swap.walletAddress,
                 swap.tokenSource,
                 swap.tokenDest,
-                swap.sourceAmount
+                swap.sourceAmount,
+                platformFee
             )
         )
     }
 
-    fun estimateAmount(source: String, dest: String, destAmount: String) {
+    fun estimateAmount(source: String, dest: String, destAmount: String, platformFee: Int) {
         estimateAmountUseCase.execute(
             Consumer {
                 if (it.error) {
@@ -298,7 +323,7 @@ class SwapViewModel @Inject constructor(
                         EstimateAmountState.Success(
                             calcAmountWithPlatformBps(
                                 it.data,
-                                PLATFORM_FEE_BPS
+                                platformFee
                             )
                         )
                     )
@@ -318,17 +343,17 @@ class SwapViewModel @Inject constructor(
     }
 
     private fun calcAmountWithPlatformBps(amount: String, bps: Int): String {
-        return if (BuildConfig.FLAVOR == "dev") {
+        return if (isKatalyst) {
             amount.toBigDecimalOrDefaultZero().multiply(
                 BigDecimal.ONE + bps.toBigDecimal()
-                    .divide(100.toBigDecimal(), 18, RoundingMode.UP)
+                    .divide(10000.toBigDecimal(), 18, RoundingMode.UP)
             ).toDisplayNumber()
         } else {
             amount
         }
     }
 
-    fun getGasLimit(wallet: Wallet?, swap: Swap?) {
+    fun getGasLimit(wallet: Wallet?, swap: Swap?, platformFee: Int) {
         if (wallet == null || swap == null) return
         if (swap.sourceAmount.isEmpty() || (swap.sourceAmount.toBigDecimalOrDefaultZero() == BigDecimal.ZERO)) return
         if (swap.ethToken.currentBalance <= MIN_SUPPORT_AMOUNT) return
@@ -356,7 +381,8 @@ class SwapViewModel @Inject constructor(
                 swap.tokenSource,
                 swap.tokenDest,
                 swap.sourceAmount,
-                swap.minConversionRate
+                swap.minConversionRate,
+                platformFee
             )
         )
     }
@@ -411,6 +437,7 @@ class SwapViewModel @Inject constructor(
         kyberNetworkStatusCase.dispose()
         checkEligibleWalletUseCase.dispose()
         getExpectedRateSequentialUseCase.dispose()
+        getPlatformFeeUseCase.dispose()
         super.onCleared()
     }
 

@@ -1,10 +1,15 @@
 package com.kyberswap.android.util.ext
 
 import com.kyberswap.android.data.repository.WalletDataRepository
+import com.kyberswap.android.presentation.common.isKatalyst
 import com.trustwallet.walletconnect.models.ethereum.WCEthereumTransaction
 
 fun WCEthereumTransaction.isSwapTx(): Boolean {
-    return this.data.take(10) == WalletDataRepository.METHOD_ID_SWAP
+    return if (isKatalyst) {
+        this.data.take(10) == WalletDataRepository.METHOD_ID_TRADE_WITH_HINT_AND_FEE
+    } else {
+        this.data.take(10) == WalletDataRepository.METHOD_ID_SWAP
+    }
 }
 
 fun WCEthereumTransaction.isTransferETHTx(): Boolean {

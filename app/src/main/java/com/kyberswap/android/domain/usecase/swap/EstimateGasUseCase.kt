@@ -25,6 +25,7 @@ class EstimateGasUseCase @Inject constructor(
         val tokenSource: Token,
         val tokenDest: Token,
         val sourceAmount: String,
-        val minConversionRate: BigInteger
+        val minConversionRate: BigInteger,
+        val platformFee: Int
     )
 }

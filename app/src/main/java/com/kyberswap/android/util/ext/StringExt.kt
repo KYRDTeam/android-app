@@ -181,7 +181,7 @@ fun String.exactAmount(): String {
 }
 
 fun String?.toDoubleOrDefaultZero(): Double {
-    if (this.isNullOrEmpty()) return 0.0
+    if (this.isNullOrEmpty() || this.trim() == "--") return 0.0
     return try {
         toDouble()
     } catch (ex: Exception) {

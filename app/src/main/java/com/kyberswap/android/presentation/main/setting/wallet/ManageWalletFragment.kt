@@ -1,6 +1,8 @@
 package com.kyberswap.android.presentation.main.setting.wallet
 
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -14,12 +16,14 @@ import com.daimajia.swipe.util.Attributes
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentManageWalletBinding
+import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.WalletChangeEvent
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.landing.CreateWalletState
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
+import com.kyberswap.android.presentation.setting.PassCodeLockActivity
 import com.kyberswap.android.presentation.wallet.UpdateWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
 import org.greenrobot.eventbus.EventBus
@@ -43,6 +47,8 @@ class ManageWalletFragment : BaseFragment() {
     lateinit var dialogHelper: DialogHelper
 
     private lateinit var walletAdapter: ManageWalletAdapter
+
+    private var selectedWallet: Wallet? = null
 
     private val handler by lazy {
         Handler()
@@ -74,12 +80,8 @@ class ManageWalletFragment : BaseFragment() {
                             navigator.navigateToEditWallet(currentFragment, it)
                         }, {
 
-                            dialogHelper.showConfirmation(
-                                getString(R.string.title_delete),
-                                getString(R.string.delete_wallet_confirmation),
-                                {
-                                    viewModel.deleteWallet(it)
-                                })
+                            selectedWallet = it
+                            showPassCodeLock(DELETE_WALLET)
 
                         })
                 },
@@ -88,15 +90,12 @@ class ManageWalletFragment : BaseFragment() {
                     viewModel.updateSelectedWallet(it.copy(isSelected = true))
                 },
                 {
+//                    navigator.navigateToEditWallet(currentFragment, it)
                     navigator.navigateToEditWallet(currentFragment, it)
                 },
                 {
-                    dialogHelper.showConfirmation(
-                        getString(R.string.title_delete),
-                        getString(R.string.delete_wallet_confirmation),
-                        {
-                            viewModel.deleteWallet(it)
-                        })
+                    selectedWallet = it
+                    showPassCodeLock(DELETE_WALLET)
                 })
 
 
@@ -195,6 +194,33 @@ class ManageWalletFragment : BaseFragment() {
 
         binding.imgBack.setOnClickListener {
             activity?.onBackPressed()
+        }
+    }
+
+    private fun showPassCodeLock(requestCode: Int) {
+        if (activity != null) {
+            startActivityForResult(
+                PassCodeLockActivity.newIntent(
+                    activity!!,
+                    PassCodeLockActivity.PASS_CODE_LOCK_TYPE_MANAGE_WALLET
+                ), requestCode
+            )
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == DELETE_WALLET) {
+            if (resultCode == Activity.RESULT_OK) {
+                selectedWallet?.let {
+                    dialogHelper.showConfirmation(
+                        getString(R.string.title_delete),
+                        getString(R.string.delete_wallet_confirmation),
+                        {
+                            viewModel.deleteWallet(it)
+                        })
+                }
+            }
         }
     }
 

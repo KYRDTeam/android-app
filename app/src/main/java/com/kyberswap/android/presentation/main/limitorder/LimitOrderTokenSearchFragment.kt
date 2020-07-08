@@ -130,9 +130,9 @@ class LimitOrderTokenSearchFragment : BaseFragment() {
 
                     }
                     is GetBalanceState.ShowError -> {
-                        showError(
-                            state.message ?: getString(R.string.something_wrong)
-                        )
+//                        showError(
+//                            state.message ?: getString(R.string.something_wrong)
+//                        )
                     }
                 }
             }

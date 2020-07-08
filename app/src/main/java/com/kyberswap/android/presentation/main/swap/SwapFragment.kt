@@ -42,6 +42,7 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.AlertDialogFragment
 import com.kyberswap.android.presentation.common.DEFAULT_ACCEPT_RATE_PERCENTAGE
 import com.kyberswap.android.presentation.common.KeyImeChange
+import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
 import com.kyberswap.android.presentation.common.WalletObserver
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -114,6 +115,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
     private val isUserSelectSwap: Boolean
         get() = currentFragment is SwapFragment
+
+    private var platformFee: Int = PLATFORM_FEE_BPS
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -211,6 +214,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 enableTokenSearch(isSourceToken = true, isEnable = false)
                                 if (promo?.destinationToken?.isNotBlank() == true) {
                                     enableTokenSearch(isSourceToken = false, isEnable = false)
+                                } else {
+                                    enableTokenSearch(isSourceToken = false, isEnable = true)
                                 }
                             } else {
                                 enableTokenSearch(isSourceToken = true, isEnable = true)
@@ -232,6 +237,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 when (state) {
                     is GetSwapState.Success -> {
                         if (!state.swap.isSameTokenPair(binding.swap)) {
+                            viewModel.getPlatformFee(state.swap)
                             if (state.swap.tokenSource.tokenSymbol == state.swap.tokenDest.tokenSymbol) {
                                 showAlertWithoutIcon(
                                     title = getString(R.string.title_unsupported),
@@ -246,11 +252,11 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
                             if (isUserSelectSwap) {
                                 getRate(state.swap)
-                                viewModel.getGasLimit(wallet, binding.swap)
+                                viewModel.getGasLimit(wallet, binding.swap, platformFee)
                             }
                             viewModel.getGasPrice()
                         } else if (isUserSelectSwap) {
-                            viewModel.getGasLimit(wallet, binding.swap)
+                            viewModel.getGasLimit(wallet, binding.swap, platformFee)
                         } else if (!isUserSelectSwap && hasExpectedRate) {
                             viewModel.disposeGetExpectedRate()
                         }
@@ -350,7 +356,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         if (dstAmount.isEmpty()) binding.edtSource.setText("")
                         binding.swap?.let { swap ->
                             viewModel.estimateAmount(
-                                swap.sourceAddress, swap.destAddress, dstAmount.toString()
+                                swap.sourceAddress,
+                                swap.destAddress,
+                                dstAmount.toString(),
+                                platformFee
                             )
                         }
                     }
@@ -526,10 +535,12 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         }
                     }
                     is GetExpectedRateState.ShowError -> {
-                        val err = state.message ?: getString(R.string.something_wrong)
-                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
-                            showError(err)
-                        }
+                        analytics.logEvent(
+                            KBSWAP_ERROR, Bundle().createEvent(
+                                ERROR_TEXT,
+                                state.message
+                            )
+                        )
                     }
                 }
             }
@@ -552,10 +563,12 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         }
                     }
                     is GetMarketRateState.ShowError -> {
-                        val err = state.message ?: getString(R.string.something_wrong)
-                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
-                            showError(err)
-                        }
+                        analytics.logEvent(
+                            KBSWAP_ERROR, Bundle().createEvent(
+                                ERROR_TEXT,
+                                state.message
+                            )
+                        )
                     }
                 }
             }
@@ -734,6 +747,25 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
+        viewModel.getPlatformFeeCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetPlatformFeeState.Success -> {
+                        if (state.platformFee.fee != platformFee) {
+                            platformFee = state.platformFee.fee
+                            viewModel.getGasLimit(wallet, binding.swap, platformFee)
+                            if (binding.swap != null) {
+                                getRate(binding.swap!!)
+                            }
+                        }
+                    }
+                    is GetPlatformFeeState.ShowError -> {
+
+                    }
+                }
+            }
+        })
+
         viewModel.getKyberStatusback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -811,14 +843,20 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                     wallet?.isPromo == true -> when {
                                         wallet?.isPromoPayment == true -> PromoPaymentConfirmActivity.newIntent(
                                             currentActivity,
-                                            wallet
+                                            wallet,
+                                            platformFee
                                         )
                                         else -> PromoSwapConfirmActivity.newIntent(
                                             currentActivity,
-                                            wallet
+                                            wallet,
+                                            platformFee
                                         )
                                     }
-                                    else -> SwapConfirmActivity.newIntent(currentActivity, wallet)
+                                    else -> SwapConfirmActivity.newIntent(
+                                        currentActivity,
+                                        wallet,
+                                        platformFee
+                                    )
                                 }
 
                                 startActivityForResult(confirmedActivity, SWAP_CONFIRM)
@@ -952,8 +990,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 minAcceptedRatePercent = minAcceptedRatePercentage,
                                 gasPrice = gasPriceGwei
                             )
-
-                            viewModel.verifySwap(it, data)
+                            viewModel.verifySwap(it, data, platformFee)
                         }
                     }
                 }
@@ -1295,7 +1332,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         hasExpectedRate = false
         viewModel.getExpectedRate(
             swap,
-            edtSource.getAmountOrDefaultValue()
+            edtSource.getAmountOrDefaultValue(),
+            platformFee
         )
     }
 

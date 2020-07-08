@@ -48,6 +48,7 @@ import com.kyberswap.android.presentation.main.swap.GetSendState
 import com.kyberswap.android.presentation.main.swap.SaveContactState
 import com.kyberswap.android.presentation.main.swap.SaveSendState
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.ERROR_TEXT
 import com.kyberswap.android.util.GAS_OPTION
 import com.kyberswap.android.util.GAS_OPTIONS_FAST
 import com.kyberswap.android.util.GAS_OPTIONS_REGULAR
@@ -55,6 +56,7 @@ import com.kyberswap.android.util.GAS_OPTIONS_SLOW
 import com.kyberswap.android.util.GAS_OPTIONS_SUPER_FAST
 import com.kyberswap.android.util.GAS_VALUE
 import com.kyberswap.android.util.TRANSFER_ADVANCED
+import com.kyberswap.android.util.TRANSFER_ERROR
 import com.kyberswap.android.util.TRANSFER_TOKEN_SELECT
 import com.kyberswap.android.util.TRANSFER_TRANSFERNOW_TAPPED
 import com.kyberswap.android.util.USER_CLICK_ADD_CONTACT_EVENT
@@ -69,8 +71,6 @@ import com.kyberswap.android.util.ext.ensAddress
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isContact
 import com.kyberswap.android.util.ext.isENSAddress
-import com.kyberswap.android.util.ext.isNetworkAvailable
-import com.kyberswap.android.util.ext.isSomethingWrongError
 import com.kyberswap.android.util.ext.onlyAddress
 import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.setAmount
@@ -243,10 +243,12 @@ class SendFragment : BaseFragment() {
                         binding.send = send
                     }
                     is GetGasPriceState.ShowError -> {
-                        val err = state.message ?: getString(R.string.something_wrong)
-                        if (isNetworkAvailable() && !isSomethingWrongError(err)) {
-                            showError(err)
-                        }
+                        analytics.logEvent(
+                            TRANSFER_ERROR, Bundle().createEvent(
+                                ERROR_TEXT,
+                                state.message
+                            )
+                        )
                     }
                 }
             }
@@ -515,11 +517,12 @@ class SendFragment : BaseFragment() {
                         }
                     }
                     is GetGasLimitState.ShowError -> {
-                        if (isNetworkAvailable()) {
-                            showError(
-                                state.message ?: getString(R.string.something_wrong)
+                        analytics.logEvent(
+                            TRANSFER_ERROR, Bundle().createEvent(
+                                ERROR_TEXT,
+                                state.message
                             )
-                        }
+                        )
                     }
                 }
             }

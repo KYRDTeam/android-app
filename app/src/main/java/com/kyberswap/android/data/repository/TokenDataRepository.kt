@@ -1,7 +1,6 @@
 package com.kyberswap.android.data.repository
 
 import android.content.Context
-import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.R
 import com.kyberswap.android.data.api.chart.Data
 import com.kyberswap.android.data.api.home.ChartApi
@@ -20,7 +19,7 @@ import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
 import com.kyberswap.android.domain.usecase.token.GetChartDataForTokenUseCase
 import com.kyberswap.android.domain.usecase.token.GetToken24hVolUseCase
 import com.kyberswap.android.domain.usecase.token.SaveTokenUseCase
-import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
+import com.kyberswap.android.presentation.common.isKatalyst
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntSafe
@@ -100,14 +99,18 @@ class TokenDataRepository @Inject constructor(
     override fun getExpectedRate(param: GetExpectedRateSequentialUseCase.Param): Single<List<String>> {
         val tokenSource = param.tokenSource
         val tokenDest = param.tokenDest
+        val isETHWETHPair =
+            (tokenSource.isETH || tokenSource.isWETH || tokenSource.isETHWETH) && (tokenDest.isETH || tokenDest.isWETH || tokenDest.isETHWETH)
         val amount = 10.0.pow(tokenSource.tokenDecimal).times(param.srcAmount.toDouble())
             .toBigDecimal().toBigInteger()
+        val platformFee = if (isETHWETHPair) BigInteger.ZERO else param.platformFee.toBigInteger()
         return Single.fromCallable {
             val expectedRate = tokenClient.getExpectedRate(
                 context.getString(R.string.kyber_address),
                 tokenSource,
                 tokenDest,
-                amount
+                amount,
+                platformFee
             )
             expectedRate
         }
@@ -116,16 +119,22 @@ class TokenDataRepository @Inject constructor(
     override fun getExpectedRate(param: GetExpectedRateUseCase.Param): Flowable<List<String>> {
         val tokenSource = param.tokenSource
         val tokenDest = param.tokenDest
+
+        val isETHWETHPair =
+            (tokenSource.isETH || tokenSource.isWETH || tokenSource.isETHWETH) && (tokenDest.isETH || tokenDest.isWETH || tokenDest.isETHWETH)
+
         val amount = 10.0.pow(tokenSource.tokenDecimal).times(param.srcAmount.toDouble())
             .toBigDecimal().toBigInteger()
-
         return tokenApi.getExpectedRate(tokenSource.tokenAddress, tokenDest.tokenAddress, amount)
             .map {
                 if (it.error) {
                     throw RuntimeException("Can not get rate from: " + context.getString(R.string.token_endpoint_url) + "expectedRate")
                 } else {
                     listOf(
-                        getExpectedRateAfterFee(it.expectedRate, PLATFORM_FEE_BPS)
+                        getExpectedRateAfterFee(
+                            it.expectedRate,
+                            if (isETHWETHPair) 0 else param.platFormFee
+                        )
                     )
                 }
             }.repeatWhen {
@@ -153,12 +162,12 @@ class TokenDataRepository @Inject constructor(
     }
 
     private fun getExpectedRateAfterFee(expectedRate: String, bps: Int): String {
-        return if (BuildConfig.FLAVOR == "dev") {
+        return if (isKatalyst) {
             Convert.fromWei(
                 expectedRate.toBigDecimalOrDefaultZero()
                     .multiply(
                         BigDecimal.ONE - bps.toBigDecimal()
-                            .divide(100.toBigDecimal(), 18, RoundingMode.UP)
+                            .divide(10000.toBigDecimal(), 18, RoundingMode.UP)
                     ),
                 Convert.Unit.ETHER
             ).toPlainString()

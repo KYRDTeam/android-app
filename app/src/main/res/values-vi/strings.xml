@@ -749,5 +749,6 @@
     <string name="higher_gas_faster_transaction">Chọn giá gas cao hơn để tăng tốc độ giao dịch</string>
     <string name="gas_price">Gas Price</string>
     <string name="nonce">Nonce</string>
+    <string name="no_fee_error">Please wait for the limit order trading fees to be updated</string>
 
 </resources>

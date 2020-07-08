@@ -1,5 +1,6 @@
 package com.kyberswap.android.presentation.setting
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -68,6 +69,9 @@ class PassCodeLockActivity : BaseActivity() {
     private val isChangePinCode: Boolean
         get() = PASS_CODE_LOCK_TYPE_CHANGE == type
 
+    private val isManageWallet: Boolean
+        get() = PASS_CODE_LOCK_TYPE_MANAGE_WALLET == type
+
     private var remainNum = MAX_NUMBER_INPUT
 
     private var passCode: PassCode? = null
@@ -92,8 +96,19 @@ class PassCodeLockActivity : BaseActivity() {
                     result: BiometricPrompt.AuthenticationResult
                 ) {
                     super.onAuthenticationSucceeded(result)
-                    (applicationContext as KyberSwapApplication).startCounter()
-                    finish()
+                    if (isManageWallet) {
+                        val returnIntent = Intent()
+                        setResult(Activity.RESULT_OK, returnIntent)
+                        finish()
+                    } else if (isChangePinCode) {
+                        binding.pinLockView.resetPinLockView()
+                        binding.title = newPinTitle
+                        binding.content = newPinContent
+                        binding.executePendingBindings()
+                    } else {
+                        (applicationContext as KyberSwapApplication).startCounter()
+                        finish()
+                    }
                 }
             })
 
@@ -169,12 +184,16 @@ class PassCodeLockActivity : BaseActivity() {
                 when (state) {
                     is VerifyPinState.Success -> {
                         if (state.verifyStatus.success) {
-                            if (type == PASS_CODE_LOCK_TYPE_CHANGE) {
-                                type = PASS_CODE_LOCK_TYPE_VERIFY
+                            if (isChangePinCode) {
+//                                type = PASS_CODE_LOCK_TYPE_VERIFY
                                 binding.pinLockView.resetPinLockView()
                                 binding.title = newPinTitle
                                 binding.content = newPinContent
                                 binding.executePendingBindings()
+                            } else if (isManageWallet) {
+                                val returnIntent = Intent()
+                                setResult(Activity.RESULT_OK, returnIntent)
+                                finish()
                             } else {
                                 (applicationContext as KyberSwapApplication).startCounter()
                                 cancelAuthentication()
@@ -220,9 +239,10 @@ class PassCodeLockActivity : BaseActivity() {
                                 binding.executePendingBindings()
                             } else {
                                 binding.title = verifyAccess
-                                if (!isChangePinCode) {
-                                    showBiometricPrompt()
-                                }
+//                                if (!isChangePinCode) {
+//                                    showBiometricPrompt()
+//                                }
+                                showBiometricPrompt()
                             }
                         }
                     }
@@ -243,11 +263,12 @@ class PassCodeLockActivity : BaseActivity() {
         val biometricManager = BiometricManager.from(this)
         when (biometricManager.canAuthenticate()) {
             BiometricManager.BIOMETRIC_SUCCESS -> {
-                if (isChangePinCode) {
-                    binding.imgFingerPrint.visibility = View.GONE
-                } else {
-                    binding.imgFingerPrint.visibility = View.VISIBLE
-                }
+//                if (isChangePinCode) {
+//                    binding.imgFingerPrint.visibility = View.GONE
+//                } else {
+//                    binding.imgFingerPrint.visibility = View.VISIBLE
+//                }
+                binding.imgFingerPrint.visibility = View.VISIBLE
                 biometricPrompt.authenticate(promptInfo)
             }
 
@@ -398,7 +419,7 @@ class PassCodeLockActivity : BaseActivity() {
 
 
     override fun onBackPressed() {
-        if (!isChangePinCode) {
+        if (!(isChangePinCode || isManageWallet)) {
             finishAffinity()
         }
         super.onBackPressed()
@@ -421,6 +442,7 @@ class PassCodeLockActivity : BaseActivity() {
         private const val MAX_NUMBER_INPUT = 5
         const val PASS_CODE_LOCK_TYPE_VERIFY = 0
         const val PASS_CODE_LOCK_TYPE_CHANGE = 1
+        const val PASS_CODE_LOCK_TYPE_MANAGE_WALLET = 2
         private const val TYPE_PARAM = "type_param"
         fun newIntent(context: Context, type: Int = PASS_CODE_LOCK_TYPE_VERIFY) =
             Intent(context, PassCodeLockActivity::class.java)

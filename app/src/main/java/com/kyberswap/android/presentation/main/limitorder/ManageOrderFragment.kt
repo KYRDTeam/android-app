@@ -68,6 +68,8 @@ class ManageOrderFragment : BaseFragment(), LoginState {
 
     var orderAdapter: OrderAdapter? = null
 
+    var error: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         wallet = arguments?.getParcelable(WALLET_PARAM)
@@ -172,9 +174,11 @@ class ManageOrderFragment : BaseFragment(), LoginState {
                         filterByTab(currentSelectedView == binding.tvOpenOrder)
                     }
                     is GetRelatedOrdersState.ShowError -> {
-                        showError(
-                            state.message ?: getString(R.string.something_wrong)
-                        )
+                        val msg = state.message ?: getString(R.string.something_wrong)
+                        if (error != msg) {
+                            error = msg
+                            showError(msg)
+                        }
                     }
                 }
             }
