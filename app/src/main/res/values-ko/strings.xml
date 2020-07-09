@@ -750,5 +750,21 @@
     <string name="gas_price">Gas Price</string>
     <string name="nonce">Nonce</string>
     <string name="no_fee_error">Please wait for the limit order trading fees to be updated</string>
+    <string name="tutorial_swap_step_3">3 단계 (선택사항)\n가스비와 슬리피지를 조정합니다.</string>
+    <string name="got_it">이해했어요.</string>
+    <string name="tutorial_balance_total_wallet_balance">지갑의 잔액 합계</string>
+    <string name="tutorial_lo_zero_fee">수수료 없음\n지갑에 2,000KNC 이상 소유하고 있는 경우, 수수료 없이 리밋오더 거래를 만들 수 있습니다. </string>
+    <string name="tutorial_lo_manage_order">오더(주문) 관리\n오더 내역과 펜딩 내역 등을 확인할 수 있습니다. 오더를 수정하기도 가능합니다.</string>
+    <string name="tutorial_lo_step1">1 단계\n거래 하고자 하는 쌍(페어)를 선택합니다.</string>
+    <string name="tutorial_lo_step2">2 단계\n원하는 가격을 설정합니다. 매도/매수를 클릭하면 거래가 완료됩니다.</string>
+    <string name="tutorial_swap_step2">2 단계\n빠른 선택을 사용하거나 직접 수량을 입력합니다.</string>
+    <string name="tutorial_swap_step1">1 단계\n교환하고자 하는 토큰을 선택합니다.</string>
+    <string name="tutorial_balance_token_balance">지갑내 해당 토큰의 잔액</string>
+    <string name="tutorial_swap_token_price">24시간 내 변동 폭과 실시간 토큰 가격 </string>
+    <string name="tutorial_balance_buy_eth">여기서 ETH를 구매할 수 있습니다.</string>
+    <string name="tutorial_balance_swipe">왼쪽으로 밀어 토큰 매도,매수,전송하기</string>
+    <string name="tutorial_transaction_speed_up_cancel">거래 속도를 높이거나 거래를 취소할 수 있습니다.</string>
+    <string name="tutorial_amount">2000</string>
+    <string name="tutorial_swap_amount">10</string>
 
 </resources>

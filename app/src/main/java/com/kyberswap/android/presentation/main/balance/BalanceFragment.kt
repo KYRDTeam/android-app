@@ -15,15 +15,20 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.OnChildAttachStateChangeListener
+import com.daimajia.swipe.SwipeLayout
 import com.daimajia.swipe.util.Attributes
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
+import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.databinding.FragmentBalanceBinding
 import com.kyberswap.android.databinding.LayoutBalanceTargetBinding
 import com.kyberswap.android.databinding.LayoutBalanceTargetBuyEthBinding
+import com.kyberswap.android.databinding.LayoutSwipeTargetBinding
 import com.kyberswap.android.databinding.LayoutTokenBalanceTargetBinding
+import com.kyberswap.android.databinding.LayoutTokenPriceTargetBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
@@ -180,6 +185,9 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             isOther -> OTHERS
             else -> FAVOURITE
         }
+
+    @Inject
+    lateinit var mediator: StorageMediator
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -570,17 +578,13 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             openUrl(getString(R.string.buy_eth_endpoint))
             analytics.logEvent(BALANCE_BUYETH_YES, Bundle().createEvent())
         }
-
-//        binding.root.doOnPreDraw {
-//            showTutorial()
-//        }
     }
 
     fun getSelectedWallet() {
         viewModel.getSelectedWallet()
     }
 
-    fun showTutorial() {
+    fun displaySpotLight() {
         val targets = ArrayList<Target>()
         if (activity == null) return
         val overlayTotalBalanceBinding =
@@ -629,8 +633,14 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                 LayoutInflater.from(activity), R.layout.layout_token_balance_target, null, false
             )
 
-        val x = binding.header.bottom + 96.dpToPx(activity!!).toFloat()
-        val y = 56.dpToPx(activity!!).toFloat()
+        val location = IntArray(2)
+        binding.header.tvName.getLocationInWindow(location)
+        val x = location[0] + binding.header.tvName.width / 2f + 48.dpToPx(activity!!).toFloat()
+        val y =
+            location[1] + binding.header.tvName.height / 2f + 96.dpToPx(
+                activity!!
+            ).toFloat()
+
         val thirdTarget = Target.Builder()
             .setAnchor(x, y)
             .setShape(Circle(85.dpToPx(activity!!).toFloat()))
@@ -646,6 +656,62 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
         targets.add(thirdTarget)
 
+        val overlayTokenPriceTargetBinding =
+            DataBindingUtil.inflate<LayoutTokenPriceTargetBinding>(
+                LayoutInflater.from(activity), R.layout.layout_token_price_target, null, false
+            )
+
+        binding.header.view25.getLocationInWindow(location)
+        val xUsd = location[0] + binding.header.view25.width / 2f + 36.dpToPx(activity!!).toFloat()
+        val yUsd =
+            location[1] + binding.header.view25.height / 2f + 80.dpToPx(
+                activity!!
+            ).toFloat()
+
+        val forthTarget = Target.Builder()
+            .setAnchor(xUsd, yUsd)
+            .setShape(Circle(120.dpToPx(activity!!).toFloat()))
+            .setOverlay(overlayTokenPriceTargetBinding.root)
+            .setOnTargetListener(object : OnTargetListener {
+                override fun onStarted() {
+                }
+
+                override fun onEnded() {
+                }
+            })
+            .build()
+
+        targets.add(forthTarget)
+
+        val overlaySwipeTargetBinding =
+            DataBindingUtil.inflate<LayoutSwipeTargetBinding>(
+                LayoutInflater.from(activity), R.layout.layout_swipe_target, null, false
+            )
+
+        val childView = binding.rvToken.findViewHolderForLayoutPosition(1)?.itemView
+        childView?.let {
+            childView.getLocationInWindow(location)
+            val xSwipe =
+                location[0] + childView.width * 3 / 4f
+            val ySwipe =
+                location[1] + childView.height / 2f
+            val fifthTarget = Target.Builder()
+                .setAnchor(xSwipe, ySwipe)
+                .setShape(Circle(120.dpToPx(activity!!).toFloat()))
+                .setOverlay(overlaySwipeTargetBinding.root)
+                .setOnTargetListener(object : OnTargetListener {
+                    override fun onStarted() {
+                    }
+
+                    override fun onEnded() {
+                    }
+                })
+                .build()
+
+            targets.add(fifthTarget)
+
+        }
+
         // create spotlight
         val spotlight = Spotlight.Builder(activity!!)
             .setBackgroundColor(R.color.color_tutorial)
@@ -655,6 +721,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             .setContainer(activity!!.window.decorView.findViewById(android.R.id.content))
             .setOnSpotlightListener(object : OnSpotlightListener {
                 override fun onStarted() {
+                    mediator.showBalanceTutorial(true)
                 }
 
                 override fun onEnded() {
@@ -670,6 +737,43 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
         overlayBuyEthBalanceBinding.tvNext.setOnClickListener {
             spotlight.next()
+        }
+
+        overlayTokenBalanceBinding.tvNext.setOnClickListener {
+            spotlight.next()
+        }
+
+        var swipeLayout: SwipeLayout? = null
+        overlayTokenPriceTargetBinding.tvNext.setOnClickListener {
+            spotlight.next()
+            swipeLayout =
+                binding.rvToken.findViewHolderForLayoutPosition(1)?.itemView?.findViewById<SwipeLayout>(
+                    R.id.swipe
+                )
+            swipeLayout?.open(true)
+        }
+
+        overlaySwipeTargetBinding.tvNext.setOnClickListener {
+            spotlight.next()
+            swipeLayout?.close(true)
+        }
+    }
+
+    fun showTutorial() {
+        if (activity == null) return
+        if (mediator.isShownBalanceTutorial()) return
+        binding.root.doOnPreDraw {
+            binding.rvToken.addOnChildAttachStateChangeListener(object :
+                OnChildAttachStateChangeListener {
+                override fun onChildViewAttachedToWindow(view: View) {
+                    if (binding.rvToken.childCount == 5) {
+                        binding.rvToken.removeOnChildAttachStateChangeListener(this)
+                        displaySpotLight()
+                    }
+                }
+
+                override fun onChildViewDetachedFromWindow(view: View) {}
+            })
         }
     }
 
