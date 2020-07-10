@@ -105,7 +105,7 @@
     <string name="custom_value">맞춤:</string>
     <string name="rate_revert_notification">%s-%s의 교환비가 %s보다 낮아진다면 거래는 취소됩니다. (현재 교환비 %s)</string>
     <string name="swap_continue">계속</string>
-    <string name="swap_rate_notification">This rate is %s%% lower than current Market</string>
+    <string name="swap_rate_notification">There is a %s%% difference between the estimated price for your swap amount and the reference price.\nNote: Estimated price depends on your swap amount. Reference price is from Chainlink and Kyber Network.</string>
     <string name="tab_day">24H</string>
     <string name="tab_week">7 일</string>
     <string name="tab_month">월</string>
@@ -766,5 +766,6 @@
     <string name="tutorial_transaction_speed_up_cancel">거래 속도를 높이거나 거래를 취소할 수 있습니다.</string>
     <string name="tutorial_amount">2000</string>
     <string name="tutorial_swap_amount">10</string>
+    <string name="slippage_too_high_warning"> 슬리피지(손해)가 높습니다. 더 나은 비율을 갖기 위해 교환할 양을 줄이거나 여러번에 나눠서 교환하는 게 좋습니다.</string>
 
 </resources>

@@ -113,7 +113,7 @@
     <string name="custom_value">Custom:</string>
     <string name="rate_revert_notification">Transaction will be reverted if rate of %s-%s is lower than %s (Current rate %s)</string>
     <string name="swap_continue">Continue</string>
-    <string name="swap_rate_notification">This rate is %s%% lower than current Market</string>
+    <string name="swap_rate_notification">There is a %s%% difference between the estimated price for your swap amount and the reference price.\nNote: Estimated price depends on your swap amount. Reference price is from Chainlink and Kyber Network.</string>
     <string name="tab_day">24H</string>
     <string name="tab_week">7 Days</string>
     <string name="tab_month">Month</string>
@@ -764,6 +764,7 @@
     <string name="tutorial_transaction_speed_up_cancel">Speed Up or Cancel transaction.</string>
     <string name="tutorial_amount">2000</string>
     <string name="tutorial_swap_amount">10</string>
+    <string name="slippage_too_high_warning">Slippage is high. You may want to reduce your swap amount and do multiple swaps for a better rate.</string>
 
 
     <string-array name="proof_address">

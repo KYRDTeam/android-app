@@ -105,7 +105,7 @@
     <string name="custom_value">自定义:</string>
     <string name="rate_revert_notification">如果费率%s-%s低于%s(当前费率%s),那么交易将被退回</string>
     <string name="swap_continue">继续</string>
-    <string name="swap_rate_notification">此价格比目前的市场价低%s%%</string>
+    <string name="swap_rate_notification">There is a %s%% difference between the estimated price for your swap amount and the reference price.\nNote: Estimated price depends on your swap amount. Reference price is from Chainlink and Kyber Network.</string>
     <string name="tab_day">24H</string>
     <string name="tab_week">7 天</string>
     <string name="tab_month">月</string>
@@ -767,5 +767,6 @@
     <string name="tutorial_transaction_speed_up_cancel">加快交易速度或取消交易。</string>
     <string name="tutorial_amount">2000</string>
     <string name="tutorial_swap_amount">10</string>
+    <string name="slippage_too_high_warning">滑点很高。为了得到更好的汇率，您可能需要减少兑换金额或分成多次兑换</string>
 
 </resources>

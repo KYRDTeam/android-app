@@ -105,7 +105,7 @@
     <string name="percentage">%</string>
     <string name="custom_value">Tùy chọn:</string>
     <string name="swap_continue">Tiếp tục</string>
-    <string name="swap_rate_notification">Giá này giảm %s%% so với giá Thị trường</string>
+    <string name="swap_rate_notification">Có chênh lệch %s%% giữa giá dự tính và giá tham khảo.\nLưu ý: giá dự tính phụ thuộc vào khối lượng mà bạn giao dịch. Giá tham khảo được lấy từ Chainlink và Kyber Network</string>
     <string name="tab_day">24H</string>
     <string name="tab_week">7 Ngày</string>
     <string name="tab_month">Tháng</string>
@@ -766,5 +766,6 @@
     <string name="tutorial_transaction_speed_up_cancel">Tăng tốc hoặc hủy giao dịch.</string>
     <string name="tutorial_amount">2000</string>
     <string name="tutorial_swap_amount">10</string>
+    <string name="slippage_too_high_warning">Mức trượt giá đang cao. Bạn có thể giảm lượng giao dịch hoặc chia nhỏ lệnh của bạn để có tỉ giá tốt hơn.</string>
 
 </resources>

@@ -841,7 +841,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         .abs()
                         .toDisplayNumber()
                 ),
-                R.drawable.ic_info
+                R.drawable.ic_info,
+                timeInSecond = 30
             )
         }
 
