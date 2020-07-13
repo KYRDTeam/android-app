@@ -65,7 +65,6 @@ import com.kyberswap.android.util.TOKEN_SORT
 import com.kyberswap.android.util.USD
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
-import com.kyberswap.android.util.ext.dpToPx
 import com.kyberswap.android.util.ext.exactAmount
 import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.setTextIfChange
@@ -597,7 +596,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
         val firstTarget = Target.Builder()
             .setAnchor(centreX, centreY)
-            .setShape(Circle(85.dpToPx(activity!!).toFloat()))
+            .setShape(Circle(resources.getDimension(R.dimen.tutorial_75_dp)))
             .setOverlay(overlayTotalBalanceBinding.root)
             .setOnTargetListener(object : OnTargetListener {
                 override fun onStarted() {
@@ -616,7 +615,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
         val secondTarget = Target.Builder()
             .setAnchor(binding.tvBuyEth)
-            .setShape(Circle(65.dpToPx(activity!!).toFloat()))
+            .setShape(Circle(resources.getDimension(R.dimen.tutorial_75_dp)))
             .setOverlay(overlayBuyEthBalanceBinding.root)
             .setOnTargetListener(object : OnTargetListener {
                 override fun onStarted() {
@@ -635,15 +634,14 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
         val location = IntArray(2)
         binding.header.tvName.getLocationInWindow(location)
-        val x = location[0] + binding.header.tvName.width / 2f + 48.dpToPx(activity!!).toFloat()
+        val x =
+            location[0] + binding.header.tvName.width / 2f + resources.getDimension(R.dimen.tutorial_48_dp)
         val y =
-            location[1] + binding.header.tvName.height / 2f + 96.dpToPx(
-                activity!!
-            ).toFloat()
+            location[1] + binding.header.tvName.height / 2f + resources.getDimension(R.dimen.tutorial_96_dp)
 
         val thirdTarget = Target.Builder()
             .setAnchor(x, y)
-            .setShape(Circle(85.dpToPx(activity!!).toFloat()))
+            .setShape(Circle(resources.getDimension(R.dimen.tutorial_96_dp)))
             .setOverlay(overlayTokenBalanceBinding.root)
             .setOnTargetListener(object : OnTargetListener {
                 override fun onStarted() {
@@ -662,15 +660,14 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             )
 
         binding.header.view25.getLocationInWindow(location)
-        val xUsd = location[0] + binding.header.view25.width / 2f + 36.dpToPx(activity!!).toFloat()
+        val xUsd =
+            location[0] + binding.header.view25.width / 2f + resources.getDimension(R.dimen.tutorial_36_dp)
         val yUsd =
-            location[1] + binding.header.view25.height / 2f + 80.dpToPx(
-                activity!!
-            ).toFloat()
+            location[1] + binding.header.view25.height / 2f + resources.getDimension(R.dimen.tutorial_80_dp)
 
         val forthTarget = Target.Builder()
             .setAnchor(xUsd, yUsd)
-            .setShape(Circle(120.dpToPx(activity!!).toFloat()))
+            .setShape(Circle(resources.getDimension(R.dimen.tutorial_120_dp)))
             .setOverlay(overlayTokenPriceTargetBinding.root)
             .setOnTargetListener(object : OnTargetListener {
                 override fun onStarted() {
@@ -697,7 +694,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                 location[1] + childView.height / 2f
             val fifthTarget = Target.Builder()
                 .setAnchor(xSwipe, ySwipe)
-                .setShape(Circle(120.dpToPx(activity!!).toFloat()))
+                .setShape(Circle(resources.getDimension(R.dimen.tutorial_120_dp)))
                 .setOverlay(overlaySwipeTargetBinding.root)
                 .setOnTargetListener(object : OnTargetListener {
                     override fun onStarted() {

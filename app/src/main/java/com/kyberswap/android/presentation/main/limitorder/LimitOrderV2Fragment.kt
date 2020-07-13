@@ -5,6 +5,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Paint
+import android.graphics.Rect
 import android.os.Bundle
 import android.os.Handler
 import android.view.KeyEvent
@@ -77,7 +78,6 @@ import com.kyberswap.android.util.USER_CLICK_PRICE_TEXT
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.colorRateV2
 import com.kyberswap.android.util.ext.createEvent
-import com.kyberswap.android.util.ext.dpToPx
 import com.kyberswap.android.util.ext.exactAmount
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isNetworkAvailable
@@ -1197,7 +1197,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
                 val firstTarget = Target.Builder()
                     .setAnchor(binding.tvPrice)
-                    .setShape(Circle(90.dpToPx(activity!!).toFloat()))
+                    .setShape(Circle(resources.getDimension(R.dimen.tutorial_90_dp)))
                     .setOverlay(overlayLOPairTargetBinding.root)
                     .setOnTargetListener(object : OnTargetListener {
                         override fun onStarted() {
@@ -1218,11 +1218,11 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 val view = binding.edtPrice
                 view.getLocationInWindow(location)
                 val x = location[0].toFloat()
-                val y = location[1] + view.height + 15.dpToPx(activity!!).toFloat()
+                val y = location[1] + view.height + resources.getDimension(R.dimen.tutorial_15_dp)
 
                 val secondTarget = Target.Builder()
                     .setAnchor(x, y)
-                    .setShape(Circle(120.dpToPx(activity!!).toFloat()))
+                    .setShape(Circle(resources.getDimension(R.dimen.tutorial_120_dp)))
                     .setOverlay(overlayLOPriceTargetBinding.root)
                     .setOnTargetListener(object : OnTargetListener {
                         override fun onStarted() {
@@ -1243,7 +1243,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
                 val third = Target.Builder()
                     .setAnchor(binding.tvFee)
-                    .setShape(Circle(90.dpToPx(activity!!).toFloat()))
+                    .setShape(Circle(resources.getDimension(R.dimen.tutorial_90_dp)))
                     .setOverlay(overlayFeeTargetBinding.root)
                     .setOnTargetListener(object : OnTargetListener {
                         override fun onStarted() {
@@ -1263,14 +1263,22 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                         false
                     )
 
+                val scrollBounds = Rect()
+                binding.scView.getHitRect(scrollBounds)
+                val offset = if (binding.tvManageOrder.getLocalVisibleRect(scrollBounds)) {
+                    0
+                } else {
+                    scrollHeight
+                }
+
                 val submitOrderView = binding.tvSubmitOrder
                 submitOrderView.getLocationInWindow(location)
                 val xManageOrderView = location[0].toFloat() + submitOrderView.width / 2
                 val yManageOrderView =
-                    (location[1] + submitOrderView.height + 48.dpToPx(activity!!) - scrollHeight).toFloat()
+                    (location[1] + submitOrderView.height + resources.getDimension(R.dimen.tutorial_48_dp) - offset)
                 val forth = Target.Builder()
                     .setAnchor(xManageOrderView, yManageOrderView)
-                    .setShape(Circle(80.dpToPx(activity!!).toFloat()))
+                    .setShape(Circle(resources.getDimension(R.dimen.tutorial_80_dp)))
                     .setOverlay(overlayManageOrderTargetBinding.root)
                     .setOnTargetListener(object : OnTargetListener {
                         override fun onStarted() {
@@ -1310,13 +1318,17 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 }
 
                 overlayFeeTargetBinding.tvNext.setOnClickListener {
+                    if (offset > 0) {
+                        playAnimation()
+                    }
                     spotlight.next()
-                    playAnimation()
                 }
 
                 overlayManageOrderTargetBinding.tvNext.setOnClickListener {
                     spotlight.next()
-                    playAnimation(true)
+                    if (offset > 0) {
+                        playAnimation(true)
+                    }
                 }
 
             }, 500)

@@ -74,7 +74,6 @@ import com.kyberswap.android.util.SLIPPAGE
 import com.kyberswap.android.util.SW_USER_CLICK_COPY_WALLET_ADDRESS
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
-import com.kyberswap.android.util.ext.dpToPx
 import com.kyberswap.android.util.ext.getAmountOrDefaultValue
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isNetworkAvailable
@@ -1196,8 +1195,11 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     )
 
                 val firstTarget = Target.Builder()
-                    .setAnchor(85.dpToPx(activity!!).toFloat(), 165.dpToPx(activity!!).toFloat())
-                    .setShape(Circle(90.dpToPx(activity!!).toFloat()))
+                    .setAnchor(
+                        resources.getDimension(R.dimen.tutorial_85_dp),
+                        resources.getDimension(R.dimen.tutorial_165_dp)
+                    )
+                    .setShape(Circle(resources.getDimension(R.dimen.tutorial_90_dp)))
                     .setOverlay(overlaySwapPairTargetBinding.root)
                     .setOnTargetListener(object : OnTargetListener {
                         override fun onStarted() {
@@ -1225,7 +1227,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
                 val secondTarget = Target.Builder()
                     .setAnchor(x, y)
-                    .setShape(Circle(120.dpToPx(activity!!).toFloat()))
+                    .setShape(Circle(resources.getDimension(R.dimen.tutorial_120_dp)))
                     .setOverlay(overlaySwapAmountTargetBinding.root)
                     .setOnTargetListener(object : OnTargetListener {
                         override fun onStarted() {
@@ -1254,7 +1256,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
                 val thirdTarget = Target.Builder()
                     .setAnchor(xContinue, yContinue)
-                    .setShape(Circle(150.dpToPx(activity!!).toFloat()))
+                    .setShape(Circle(resources.getDimension(R.dimen.tutorial_150_dp)))
                     .setOverlay(overlaySwapAdvanceTarget.root)
                     .setOnTargetListener(object : OnTargetListener {
                         override fun onStarted() {

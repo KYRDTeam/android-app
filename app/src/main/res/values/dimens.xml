@@ -51,4 +51,16 @@
     <dimen name="default_padding_large">24dp</dimen>
     <dimen name="fingerprint_square_dimen">40dp</dimen>
     <dimen name="fingerprint_square_dimen_viewport" type="float">40.0</dimen>
+    <dimen name="tutorial_15_dp">15dp</dimen>
+    <dimen name="tutorial_36_dp">36dp</dimen>
+    <dimen name="tutorial_48_dp">48dp</dimen>
+    <dimen name="tutorial_75_dp">75dp</dimen>
+    <dimen name="tutorial_80_dp">80dp</dimen>
+    <dimen name="tutorial_85_dp">85dp</dimen>
+    <dimen name="tutorial_90_dp">90dp</dimen>
+    <dimen name="tutorial_96_dp">96dp</dimen>
+    <dimen name="tutorial_100_dp">100dp</dimen>
+    <dimen name="tutorial_120_dp">120dp</dimen>
+    <dimen name="tutorial_165_dp">165dp</dimen>
+    <dimen name="tutorial_150_dp">150dp</dimen>
 </resources>

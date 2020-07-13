@@ -34,7 +34,6 @@ import com.kyberswap.android.util.TRANSACTION_SPEEDUP
 import com.kyberswap.android.util.USER_CLICK_SUBMIT_CANCEL_TX_EVENT
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
-import com.kyberswap.android.util.ext.dpToPx
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.takusemba.spotlight.OnSpotlightListener
@@ -416,7 +415,7 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                         location[1] + viewItem.height / 2f
                     val fifthTarget = Target.Builder()
                         .setAnchor(xSwipe, ySwipe)
-                        .setShape(Circle(120.dpToPx(activity!!).toFloat()))
+                        .setShape(Circle(resources.getDimension(R.dimen.tutorial_120_dp)))
                         .setOverlay(overlayTxSwipeTargetBinding.root)
                         .setOnTargetListener(object : OnTargetListener {
                             override fun onStarted() {
