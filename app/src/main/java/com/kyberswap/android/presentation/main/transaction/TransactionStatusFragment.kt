@@ -505,6 +505,7 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
         handler.removeCallbacksAndMessages(null)
         compositeDisposable.dispose()
         isViewVisible = false
+        spotlight?.finish()
         super.onDestroyView()
     }
 
