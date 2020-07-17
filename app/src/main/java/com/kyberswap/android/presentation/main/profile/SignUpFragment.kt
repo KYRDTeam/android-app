@@ -45,6 +45,7 @@ import com.kyberswap.android.util.USER_CLICK_DATA_TRANSFER_YES
 import com.kyberswap.android.util.USER_TRANSFER_DATA_FORCE_LOGOUT
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
+import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.kyberswap.android.util.ext.validPassword
 import com.twitter.sdk.android.core.Callback
@@ -111,7 +112,7 @@ class SignUpFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.btnRegister.setOnClickListener {
-
+            hideKeyboard()
             when {
                 binding.edtEmail.text.toString().isBlank() -> {
                     val errorMessage = getString(
@@ -258,6 +259,7 @@ class SignUpFragment : BaseFragment() {
         }
 
         binding.imgFacebook.setOnClickListener {
+            hideKeyboard()
             stopCounter()
             LoginManager.getInstance()
                 .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"))
@@ -265,6 +267,7 @@ class SignUpFragment : BaseFragment() {
         }
 
         binding.imgGooglePlus.setOnClickListener {
+            hideKeyboard()
             stopCounter()
             val googleSignInClient = GoogleSignIn.getClient(this.activity!!, gso)
             val account = GoogleSignIn.getLastSignedInAccount(this.activity)
@@ -282,6 +285,7 @@ class SignUpFragment : BaseFragment() {
         }
 
         binding.imgTwitter.setOnClickListener {
+            hideKeyboard()
             stopCounter()
 
             val twitterSession = TwitterCore.getInstance().sessionManager.activeSession
