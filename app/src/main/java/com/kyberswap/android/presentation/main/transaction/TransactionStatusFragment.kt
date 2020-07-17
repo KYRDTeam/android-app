@@ -18,6 +18,7 @@ import com.daimajia.swipe.SwipeLayout
 import com.daimajia.swipe.util.Attributes
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.AppExecutors
+import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentTransactionStatusBinding
 import com.kyberswap.android.databinding.LayoutTxSwipeTargetBinding
@@ -41,7 +42,12 @@ import com.takusemba.spotlight.OnTargetListener
 import com.takusemba.spotlight.Spotlight
 import com.takusemba.spotlight.Target
 import com.takusemba.spotlight.shape.Circle
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import org.web3j.utils.Convert
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -74,6 +80,12 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
 
     private var isShowTutorial: Boolean = false
 
+    private var isViewVisible: Boolean = false
+
+    val compositeDisposable by lazy {
+        CompositeDisposable()
+    }
+
     private val emptyTransaction: String
         get() = if (isPending) getString(R.string.empty_pending_transaction) else getString(
             R.string.empty_complete_transaction
@@ -84,14 +96,15 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
             .get(TransactionStatusViewModel::class.java)
     }
 
-    val overlayTxSwipeTargetBinding: LayoutTxSwipeTargetBinding? = null
-
     private var defaultGasPrice: String = 1.toString()
 
     @Inject
     lateinit var dialogHelper: DialogHelper
 
     private var spotlight: Spotlight? = null
+
+    private val threshold =
+        if (BuildConfig.FLAVOR == "dev" || BuildConfig.FLAVOR == "stg") 1f else 5f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -149,6 +162,25 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
 
         if (isPending) {
             viewModel.getGasPrice()
+            observePendingTransaction()
+            binding.root.doOnPreDraw {
+                binding.rvTransaction.addOnChildAttachStateChangeListener(object :
+                    RecyclerView.OnChildAttachStateChangeListener {
+                    override fun onChildViewAttachedToWindow(view: View) {
+                        val lastItemPosition = transactionStatusAdapter?.itemCount ?: 0 - 1
+                        if (lastItemPosition > 0) {
+                            if (binding.rvTransaction.childCount == transactionStatusAdapter?.itemCount) {
+                                binding.rvTransaction.removeOnChildAttachStateChangeListener(
+                                    this
+                                )
+                                isViewVisible = true
+                            }
+                        }
+                    }
+
+                    override fun onChildViewDetachedFromWindow(view: View) {}
+                })
+            }
         }
 
         viewModel.getTransactionCallback.observe(viewLifecycleOwner, Observer {
@@ -329,38 +361,38 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
         binding.rvTransaction.adapter = transactionStatusAdapter
     }
 
+    private fun observePendingTransaction() {
+        var counter = 0L
+        compositeDisposable.add(
+            Observable.interval(counter, 15, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    counter = it
+                    if (((counter * 15) % (threshold * 60).toLong()) == 0L) {
+                        showTutorial()
+                    }
+                }, {
+                    it.printStackTrace()
+                })
+        )
+    }
+
     private fun showTutorial() {
         if (isPending && !isShowTutorial) {
             val oldestTxTimestamp = viewModel.transactionList.filter { !it.isCancel }.minBy {
                 it.timeStamp
             }?.timeStamp ?: System.currentTimeMillis() / 1000
+
             val isShowSpotlight =
-                (System.currentTimeMillis() / 1000 - oldestTxTimestamp) / 60f > 5
-
-            if (isShowSpotlight) {
-                binding.root.doOnPreDraw {
-                    binding.rvTransaction.addOnChildAttachStateChangeListener(object :
-                        RecyclerView.OnChildAttachStateChangeListener {
-                        override fun onChildViewAttachedToWindow(view: View) {
-                            val lastItemPosition = transactionStatusAdapter?.itemCount ?: 0 - 1
-                            if (lastItemPosition > 0) {
-                                if (binding.rvTransaction.childCount == transactionStatusAdapter?.itemCount) {
-                                    binding.rvTransaction.removeOnChildAttachStateChangeListener(
-                                        this
-                                    )
-                                    handler.postDelayed(
-                                        {
-                                            isShowTutorial = true
-                                            displaySpotLight()
-                                        }, 250
-                                    )
-                                }
-                            }
-                        }
-
-                        override fun onChildViewDetachedFromWindow(view: View) {}
-                    })
-                }
+                (System.currentTimeMillis() / 1000 - oldestTxTimestamp) / 60f >= threshold
+            if (isShowSpotlight && isViewVisible) {
+                handler.removeCallbacksAndMessages(null)
+                handler.postDelayed(
+                    {
+                        displaySpotLight()
+                    }, 250
+                )
             }
         }
     }
@@ -384,6 +416,10 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
         if (transactions.isEmpty()) {
             binding.emptyTransaction = emptyTransaction
             spotlight?.finish()
+            if (isPending) {
+                isViewVisible = false
+                compositeDisposable.dispose()
+            }
         } else {
             binding.emptyTransaction = ""
         }
@@ -419,7 +455,6 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                         .setOverlay(overlayTxSwipeTargetBinding.root)
                         .setOnTargetListener(object : OnTargetListener {
                             override fun onStarted() {
-
                                 swipeLayout?.open(true)
                             }
 
@@ -444,6 +479,8 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
             .setContainer(activity!!.window.decorView.findViewById(android.R.id.content))
             .setOnSpotlightListener(object : OnSpotlightListener {
                 override fun onStarted() {
+                    isShowTutorial = true
+                    compositeDisposable.dispose()
                 }
 
                 override fun onEnded() {
@@ -466,6 +503,8 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
 
     override fun onDestroyView() {
         handler.removeCallbacksAndMessages(null)
+        compositeDisposable.dispose()
+        isViewVisible = false
         super.onDestroyView()
     }
 
