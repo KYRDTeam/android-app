@@ -4,6 +4,7 @@ import com.kyberswap.android.data.api.cap.CapEntity
 import com.kyberswap.android.data.api.gas.GasPriceEntity
 import com.kyberswap.android.data.api.gas.MaxGasPriceEntity
 import com.kyberswap.android.data.api.rate.MarketRateEntity
+import com.kyberswap.android.data.api.rate.ReferencePriceEntity
 import com.kyberswap.android.data.api.token.KyberEnabledEntity
 import io.reactivex.Single
 import retrofit2.http.GET
@@ -27,4 +28,9 @@ interface SwapApi {
     @GET("kyberEnabled")
     fun getKyberEnabled(): Single<KyberEnabledEntity>
 
+    @GET("refprice")
+    fun getReferencePrice(
+        @Query("base") base: String,
+        @Query("quote") quote: String
+    ): Single<ReferencePriceEntity>
 }

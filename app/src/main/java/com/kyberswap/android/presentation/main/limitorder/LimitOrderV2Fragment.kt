@@ -5,14 +5,19 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Paint
+import android.graphics.Rect
 import android.os.Bundle
+import android.os.Handler
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import androidx.core.view.doOnPreDraw
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,7 +29,12 @@ import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
+import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.databinding.FragmentLimitOrderV2Binding
+import com.kyberswap.android.databinding.LayoutLoFeeTargetBinding
+import com.kyberswap.android.databinding.LayoutLoManageOrderTargetBinding
+import com.kyberswap.android.databinding.LayoutLoPairTargetBinding
+import com.kyberswap.android.databinding.LayoutLoPriceTargetBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.EligibleAddress
 import com.kyberswap.android.domain.model.EligibleWalletStatus
@@ -82,6 +92,11 @@ import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
 import com.kyberswap.android.util.ext.toDoubleSafe
 import com.kyberswap.android.util.ext.underline
+import com.takusemba.spotlight.OnSpotlightListener
+import com.takusemba.spotlight.OnTargetListener
+import com.takusemba.spotlight.Spotlight
+import com.takusemba.spotlight.Target
+import com.takusemba.spotlight.shape.Circle
 import io.reactivex.disposables.CompositeDisposable
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -165,6 +180,10 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
     val compositeDisposable = CompositeDisposable()
 
     var hasUserFocus: Boolean? = false
+
+    private val handler by lazy {
+        Handler()
+    }
 
     @Volatile
     private var hasFee: Boolean = false
@@ -256,6 +275,9 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
 
     @Inject
     lateinit var dialogHelper: DialogHelper
+
+    @Inject
+    lateinit var mediator: StorageMediator
 
     private val currentActivity by lazy {
         activity as MainActivity
@@ -1160,6 +1182,157 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 }
             }
         })
+    }
+
+    fun showTutorial() {
+        if (activity == null) return
+        if (mediator.isShownLimitOrderTutorial()) return
+        binding.tvPrice.doOnPreDraw {
+            handler.postDelayed({
+                val targets = ArrayList<Target>()
+                val overlayLOPairTargetBinding =
+                    DataBindingUtil.inflate<LayoutLoPairTargetBinding>(
+                        LayoutInflater.from(activity), R.layout.layout_lo_pair_target, null, false
+                    )
+
+                val firstTarget = Target.Builder()
+                    .setAnchor(binding.tvPrice)
+                    .setShape(Circle(resources.getDimension(R.dimen.tutorial_90_dp)))
+                    .setOverlay(overlayLOPairTargetBinding.root)
+                    .setOnTargetListener(object : OnTargetListener {
+                        override fun onStarted() {
+                        }
+
+                        override fun onEnded() {
+                        }
+                    })
+                    .build()
+                targets.add(firstTarget)
+
+                val overlayLOPriceTargetBinding =
+                    DataBindingUtil.inflate<LayoutLoPriceTargetBinding>(
+                        LayoutInflater.from(activity), R.layout.layout_lo_price_target, null, false
+                    )
+
+                val location = IntArray(2)
+                val view = binding.edtPrice
+                view.getLocationInWindow(location)
+                val x = location[0].toFloat()
+                val y = location[1] + view.height + resources.getDimension(R.dimen.tutorial_15_dp)
+
+                val secondTarget = Target.Builder()
+                    .setAnchor(x, y)
+                    .setShape(Circle(resources.getDimension(R.dimen.tutorial_120_dp)))
+                    .setOverlay(overlayLOPriceTargetBinding.root)
+                    .setOnTargetListener(object : OnTargetListener {
+                        override fun onStarted() {
+                            binding.edtAmount.setText(getString(R.string.tutorial_amount))
+                        }
+
+                        override fun onEnded() {
+                            binding.edtAmount.setText("")
+                        }
+                    })
+                    .build()
+                targets.add(secondTarget)
+
+                val overlayFeeTargetBinding =
+                    DataBindingUtil.inflate<LayoutLoFeeTargetBinding>(
+                        LayoutInflater.from(activity), R.layout.layout_lo_fee_target, null, false
+                    )
+
+                val third = Target.Builder()
+                    .setAnchor(binding.tvFee)
+                    .setShape(Circle(resources.getDimension(R.dimen.tutorial_90_dp)))
+                    .setOverlay(overlayFeeTargetBinding.root)
+                    .setOnTargetListener(object : OnTargetListener {
+                        override fun onStarted() {
+                        }
+
+                        override fun onEnded() {
+                        }
+                    })
+                    .build()
+                targets.add(third)
+
+                val overlayManageOrderTargetBinding =
+                    DataBindingUtil.inflate<LayoutLoManageOrderTargetBinding>(
+                        LayoutInflater.from(activity),
+                        R.layout.layout_lo_manage_order_target,
+                        null,
+                        false
+                    )
+
+                val scrollBounds = Rect()
+                binding.scView.getHitRect(scrollBounds)
+                val offset = if (binding.tvManageOrder.getLocalVisibleRect(scrollBounds)) {
+                    0
+                } else {
+                    scrollHeight
+                }
+
+                val submitOrderView = binding.tvSubmitOrder
+                submitOrderView.getLocationInWindow(location)
+                val xManageOrderView = location[0].toFloat() + submitOrderView.width / 2
+                val yManageOrderView =
+                    (location[1] + submitOrderView.height + resources.getDimension(R.dimen.tutorial_48_dp) - offset)
+                val forth = Target.Builder()
+                    .setAnchor(xManageOrderView, yManageOrderView)
+                    .setShape(Circle(resources.getDimension(R.dimen.tutorial_80_dp)))
+                    .setOverlay(overlayManageOrderTargetBinding.root)
+                    .setOnTargetListener(object : OnTargetListener {
+                        override fun onStarted() {
+                        }
+
+                        override fun onEnded() {
+                        }
+                    })
+                    .build()
+                targets.add(forth)
+
+                // create spotlight
+                val spotlight = Spotlight.Builder(activity!!)
+                    .setBackgroundColor(R.color.color_tutorial)
+                    .setTargets(targets)
+                    .setDuration(1000L)
+                    .setAnimation(DecelerateInterpolator(2f))
+                    .setContainer(activity!!.window.decorView.findViewById(android.R.id.content))
+                    .setOnSpotlightListener(object : OnSpotlightListener {
+                        override fun onStarted() {
+                            mediator.showLimitOrderTutorial(true)
+                        }
+
+                        override fun onEnded() {
+                        }
+                    })
+                    .build()
+
+                spotlight.start()
+
+                overlayLOPairTargetBinding.tvNext.setOnClickListener {
+                    spotlight.next()
+                }
+
+                overlayLOPriceTargetBinding.tvNext.setOnClickListener {
+                    spotlight.next()
+                }
+
+                overlayFeeTargetBinding.tvNext.setOnClickListener {
+                    if (offset > 0) {
+                        playAnimation()
+                    }
+                    spotlight.next()
+                }
+
+                overlayManageOrderTargetBinding.tvNext.setOnClickListener {
+                    spotlight.next()
+                    if (offset > 0) {
+                        playAnimation(true)
+                    }
+                }
+
+            }, 500)
+        }
     }
 
     fun getFee() {

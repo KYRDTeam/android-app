@@ -6,6 +6,7 @@ import com.kyberswap.android.data.api.chart.Data
 import com.kyberswap.android.data.api.home.ChartApi
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.api.home.TokenApi
+import com.kyberswap.android.data.api.rate.ReferencePriceEntity
 import com.kyberswap.android.data.db.RateDao
 import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.data.mapper.ChartMapper
@@ -28,6 +29,7 @@ import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
+import io.reactivex.rxkotlin.Flowables
 import org.web3j.utils.Convert
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -39,7 +41,7 @@ import kotlin.math.pow
 class TokenDataRepository @Inject constructor(
     private val tokenClient: TokenClient,
     private val tokenApi: TokenApi,
-    private val api: SwapApi,
+    private val swapApi: SwapApi,
     private val chartApi: ChartApi,
     private val rateDao: RateDao,
     private val tokenDao: TokenDao,
@@ -49,11 +51,34 @@ class TokenDataRepository @Inject constructor(
 ) :
     TokenRepository {
 
-    override fun getMarketRate(param: GetMarketRateUseCase.Param): Flowable<String> {
+    private fun getReferencePrice(base: String): Single<ReferencePriceEntity> {
+        return if (base.equals(Token.ETH, true)) {
+            Single.fromCallable {
+                ReferencePriceEntity(true, 1.toString())
+            }
+        } else {
+            swapApi.getReferencePrice(base, Token.ETH)
+        }
+    }
 
-        return Flowable.mergeDelayError(
+    override fun getMarketRate(param: GetMarketRateUseCase.Param): Flowable<String> {
+        return Flowables.zip(
+            getReferencePrice(param.src).toFlowable(),
+            getReferencePrice(param.dest).toFlowable()
+        ) { srcRate, destRate ->
+            val destValue = destRate.value.toBigDecimalOrDefaultZero()
+            if (srcRate.success == true &&
+                destRate.success == true &&
+                destValue != BigDecimal.ZERO
+            ) {
+                srcRate.value.toBigDecimalOrDefaultZero().divide(destValue, 18, RoundingMode.UP)
+                    .toPlainString()
+            } else {
+                throw RuntimeException("don't have rate")
+            }
+        }.onErrorResumeNext(Flowable.mergeDelayError(
             rateDao.all,
-            api.getRate()
+            swapApi.getRate()
                 .map { it.data }
                 .map { rateMapper.transform(it) }
                 .doAfterSuccess {
@@ -62,7 +87,6 @@ class TokenDataRepository @Inject constructor(
                 .toFlowable()
         )
             .map { rates ->
-
                 val sourceTokenToEtherRate =
                     rates.firstOrNull { it.source == param.src && it.dest == Token.ETH }
 
@@ -88,12 +112,11 @@ class TokenDataRepository @Inject constructor(
                     } else {
                         etherToDestTokenRate?.rate?.updatePrecision().toBigDecimalOrDefaultZero()
                     }
-
                 srcToEtherRateValue
                     .multiply(
                         etherToDestRateValue
                     ).toPlainString()
-            }
+            })
     }
 
     override fun getExpectedRate(param: GetExpectedRateSequentialUseCase.Param): Single<List<String>> {

@@ -15,9 +15,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.EditorInfo
 import android.widget.CompoundButton
 import android.widget.EditText
+import androidx.core.view.doOnPreDraw
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -27,7 +30,11 @@ import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.BR
 import com.kyberswap.android.R
+import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.databinding.FragmentSwapBinding
+import com.kyberswap.android.databinding.LayoutSwapAdvanceTargetBinding
+import com.kyberswap.android.databinding.LayoutSwapInputtedTargetBinding
+import com.kyberswap.android.databinding.LayoutSwapPairTargetBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.EligibleWalletStatus
 import com.kyberswap.android.domain.model.Gas
@@ -78,6 +85,11 @@ import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleSafe
+import com.takusemba.spotlight.OnSpotlightListener
+import com.takusemba.spotlight.OnTargetListener
+import com.takusemba.spotlight.Spotlight
+import com.takusemba.spotlight.Target
+import com.takusemba.spotlight.shape.Circle
 import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.android.synthetic.main.layout_expanable.*
 import net.cachapa.expandablelayout.ExpandableLayout
@@ -147,6 +159,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     private var hasExpectedRate: Boolean = false
 
     private var eligibleWalletStatus: EligibleWalletStatus? = null
+
+    @Inject
+    lateinit var mediator: StorageMediator
 
     @Inject
     lateinit var analytics: FirebaseAnalytics
@@ -282,7 +297,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 val animator = ObjectAnimator.ofInt(
                     binding.scView,
                     "scrollY",
-                    tvRevertNotification.bottom
+                    tvRevertNotification.top
                 )
 
                 animator.duration = 300
@@ -825,7 +840,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         .abs()
                         .toDisplayNumber()
                 ),
-                R.drawable.ic_info
+                R.drawable.ic_info,
+                timeInSecond = 30
             )
         }
 
@@ -1164,6 +1180,131 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     timeInSecond = 5
                 )
             }
+        }
+    }
+
+    fun showTutorial() {
+        if (activity == null) return
+        if (mediator.isShownSwapTutorial()) return
+        binding.root.doOnPreDraw {
+            handler.postDelayed({
+                val targets = ArrayList<Target>()
+                val overlaySwapPairTargetBinding =
+                    DataBindingUtil.inflate<LayoutSwapPairTargetBinding>(
+                        LayoutInflater.from(activity), R.layout.layout_swap_pair_target, null, false
+                    )
+
+                val firstTarget = Target.Builder()
+                    .setAnchor(
+                        resources.getDimension(R.dimen.tutorial_85_dp),
+                        resources.getDimension(R.dimen.tutorial_165_dp)
+                    )
+                    .setShape(Circle(resources.getDimension(R.dimen.tutorial_90_dp)))
+                    .setOverlay(overlaySwapPairTargetBinding.root)
+                    .setOnTargetListener(object : OnTargetListener {
+                        override fun onStarted() {
+                        }
+
+                        override fun onEnded() {
+                        }
+                    })
+                    .build()
+                targets.add(firstTarget)
+
+                val overlaySwapAmountTargetBinding =
+                    DataBindingUtil.inflate<LayoutSwapInputtedTargetBinding>(
+                        LayoutInflater.from(activity),
+                        R.layout.layout_swap_inputted_target,
+                        null,
+                        false
+                    )
+
+                val location = IntArray(2)
+                val view = binding.tv50Percent
+                view.getLocationInWindow(location)
+                val x = location[0] + view.width / 2f
+                val y = (location[1] + view.height / 2f) * 3 / 4f
+
+                val secondTarget = Target.Builder()
+                    .setAnchor(x, y)
+                    .setShape(Circle(resources.getDimension(R.dimen.tutorial_120_dp)))
+                    .setOverlay(overlaySwapAmountTargetBinding.root)
+                    .setOnTargetListener(object : OnTargetListener {
+                        override fun onStarted() {
+                            binding.edtSource.setText(getString(R.string.tutorial_swap_amount))
+                        }
+
+                        override fun onEnded() {
+                            binding.edtSource.setText("")
+                        }
+                    })
+                    .build()
+                targets.add(secondTarget)
+
+                val overlaySwapAdvanceTarget =
+                    DataBindingUtil.inflate<LayoutSwapAdvanceTargetBinding>(
+                        LayoutInflater.from(activity),
+                        R.layout.layout_swap_advance_target,
+                        null,
+                        false
+                    )
+
+
+                binding.tvContinue.getLocationInWindow(location)
+                val xContinue = (location[0] + binding.tvContinue.width / 2f) / 2f
+                val yContinue = (location[1] + binding.tvContinue.height / 2f) * 3 / 4f
+
+                val thirdTarget = Target.Builder()
+                    .setAnchor(xContinue, yContinue)
+                    .setShape(Circle(resources.getDimension(R.dimen.tutorial_150_dp)))
+                    .setOverlay(overlaySwapAdvanceTarget.root)
+                    .setOnTargetListener(object : OnTargetListener {
+                        override fun onStarted() {
+                        }
+
+                        override fun onEnded() {
+                            expandableLayout.collapse(true)
+                        }
+                    })
+                    .build()
+                targets.add(thirdTarget)
+
+                // create spotlight
+                val spotlight = Spotlight.Builder(activity!!)
+                    .setBackgroundColor(R.color.color_tutorial)
+                    .setTargets(targets)
+                    .setDuration(1000L)
+                    .setAnimation(DecelerateInterpolator(2f))
+                    .setContainer(activity!!.window.decorView.findViewById(android.R.id.content))
+                    .setOnSpotlightListener(object : OnSpotlightListener {
+                        override fun onStarted() {
+                            mediator.showSwapTutorial(true)
+                        }
+
+                        override fun onEnded() {
+                        }
+                    })
+                    .build()
+
+                spotlight.start()
+
+                overlaySwapPairTargetBinding.tvNext.setOnClickListener {
+                    spotlight.next()
+
+                }
+
+                overlaySwapAmountTargetBinding.tvNext.setOnClickListener {
+                    expandableLayout.expand(true)
+                    handler.postDelayed({
+                        spotlight.next()
+                    }, 250)
+
+                }
+
+                overlaySwapAdvanceTarget.tvNext.setOnClickListener {
+                    spotlight.next()
+                }
+            }, 500)
         }
     }
 

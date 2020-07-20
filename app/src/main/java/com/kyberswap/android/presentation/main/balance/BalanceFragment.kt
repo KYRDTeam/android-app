@@ -6,18 +6,29 @@ import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnPreDraw
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.OnChildAttachStateChangeListener
+import com.daimajia.swipe.SwipeLayout
 import com.daimajia.swipe.util.Attributes
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
+import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.databinding.FragmentBalanceBinding
+import com.kyberswap.android.databinding.LayoutBalanceTargetBinding
+import com.kyberswap.android.databinding.LayoutBalanceTargetBuyEthBinding
+import com.kyberswap.android.databinding.LayoutSwipeTargetBinding
+import com.kyberswap.android.databinding.LayoutTokenBalanceTargetBinding
+import com.kyberswap.android.databinding.LayoutTokenPriceTargetBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Wallet
@@ -60,6 +71,11 @@ import com.kyberswap.android.util.ext.setTextIfChange
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.showKeyboard
 import com.kyberswap.android.util.ext.toDisplayNumber
+import com.takusemba.spotlight.OnSpotlightListener
+import com.takusemba.spotlight.OnTargetListener
+import com.takusemba.spotlight.Spotlight
+import com.takusemba.spotlight.Target
+import com.takusemba.spotlight.shape.Circle
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_token_header.view.*
 import java.math.BigDecimal
@@ -168,6 +184,9 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             isOther -> OTHERS
             else -> FAVOURITE
         }
+
+    @Inject
+    lateinit var mediator: StorageMediator
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -562,6 +581,197 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     fun getSelectedWallet() {
         viewModel.getSelectedWallet()
+    }
+
+    fun displaySpotLight() {
+        val targets = ArrayList<Target>()
+        if (activity == null) return
+        val overlayTotalBalanceBinding =
+            DataBindingUtil.inflate<LayoutBalanceTargetBinding>(
+                LayoutInflater.from(activity), R.layout.layout_balance_target, null, false
+            )
+
+        val centreX = binding.textView3.x + binding.textView3.width / 1.5f
+        val centreY = binding.tvBalance.y + binding.tvBalance.height / 2
+
+        val firstTarget = Target.Builder()
+            .setAnchor(centreX, centreY)
+            .setShape(Circle(resources.getDimension(R.dimen.tutorial_75_dp)))
+            .setOverlay(overlayTotalBalanceBinding.root)
+            .setOnTargetListener(object : OnTargetListener {
+                override fun onStarted() {
+                }
+
+                override fun onEnded() {
+                }
+            })
+            .build()
+        targets.add(firstTarget)
+
+        val overlayBuyEthBalanceBinding =
+            DataBindingUtil.inflate<LayoutBalanceTargetBuyEthBinding>(
+                LayoutInflater.from(activity), R.layout.layout_balance_target_buy_eth, null, false
+            )
+
+        val secondTarget = Target.Builder()
+            .setAnchor(binding.tvBuyEth)
+            .setShape(Circle(resources.getDimension(R.dimen.tutorial_75_dp)))
+            .setOverlay(overlayBuyEthBalanceBinding.root)
+            .setOnTargetListener(object : OnTargetListener {
+                override fun onStarted() {
+                }
+
+                override fun onEnded() {
+                }
+            })
+            .build()
+
+        targets.add(secondTarget)
+        val overlayTokenBalanceBinding =
+            DataBindingUtil.inflate<LayoutTokenBalanceTargetBinding>(
+                LayoutInflater.from(activity), R.layout.layout_token_balance_target, null, false
+            )
+
+        val location = IntArray(2)
+        binding.header.tvName.getLocationInWindow(location)
+        val x =
+            location[0] + binding.header.tvName.width / 2f + resources.getDimension(R.dimen.tutorial_48_dp)
+        val y =
+            location[1] + binding.header.tvName.height / 2f + resources.getDimension(R.dimen.tutorial_96_dp)
+
+        val thirdTarget = Target.Builder()
+            .setAnchor(x, y)
+            .setShape(Circle(resources.getDimension(R.dimen.tutorial_96_dp)))
+            .setOverlay(overlayTokenBalanceBinding.root)
+            .setOnTargetListener(object : OnTargetListener {
+                override fun onStarted() {
+                }
+
+                override fun onEnded() {
+                }
+            })
+            .build()
+
+        targets.add(thirdTarget)
+
+        val overlayTokenPriceTargetBinding =
+            DataBindingUtil.inflate<LayoutTokenPriceTargetBinding>(
+                LayoutInflater.from(activity), R.layout.layout_token_price_target, null, false
+            )
+
+        binding.header.view25.getLocationInWindow(location)
+        val xUsd =
+            location[0] + binding.header.view25.width / 2f + resources.getDimension(R.dimen.tutorial_36_dp)
+        val yUsd =
+            location[1] + binding.header.view25.height / 2f + resources.getDimension(R.dimen.tutorial_80_dp)
+
+        val forthTarget = Target.Builder()
+            .setAnchor(xUsd, yUsd)
+            .setShape(Circle(resources.getDimension(R.dimen.tutorial_120_dp)))
+            .setOverlay(overlayTokenPriceTargetBinding.root)
+            .setOnTargetListener(object : OnTargetListener {
+                override fun onStarted() {
+                }
+
+                override fun onEnded() {
+                }
+            })
+            .build()
+
+        targets.add(forthTarget)
+
+        val overlaySwipeTargetBinding =
+            DataBindingUtil.inflate<LayoutSwipeTargetBinding>(
+                LayoutInflater.from(activity), R.layout.layout_swipe_target, null, false
+            )
+
+        val childView = binding.rvToken.findViewHolderForLayoutPosition(1)?.itemView
+        childView?.let {
+            childView.getLocationInWindow(location)
+            val xSwipe =
+                location[0] + childView.width * 3 / 4f
+            val ySwipe =
+                location[1] + childView.height / 2f
+            val fifthTarget = Target.Builder()
+                .setAnchor(xSwipe, ySwipe)
+                .setShape(Circle(resources.getDimension(R.dimen.tutorial_120_dp)))
+                .setOverlay(overlaySwipeTargetBinding.root)
+                .setOnTargetListener(object : OnTargetListener {
+                    override fun onStarted() {
+                    }
+
+                    override fun onEnded() {
+                    }
+                })
+                .build()
+
+            targets.add(fifthTarget)
+
+        }
+
+        // create spotlight
+        val spotlight = Spotlight.Builder(activity!!)
+            .setBackgroundColor(R.color.color_tutorial)
+            .setTargets(targets)
+            .setDuration(1000L)
+            .setAnimation(DecelerateInterpolator(2f))
+            .setContainer(activity!!.window.decorView.findViewById(android.R.id.content))
+            .setOnSpotlightListener(object : OnSpotlightListener {
+                override fun onStarted() {
+                    mediator.showBalanceTutorial(true)
+                }
+
+                override fun onEnded() {
+                }
+            })
+            .build()
+
+        spotlight.start()
+
+        overlayTotalBalanceBinding.tvNext.setOnClickListener {
+            spotlight.next()
+        }
+
+        overlayBuyEthBalanceBinding.tvNext.setOnClickListener {
+            spotlight.next()
+        }
+
+        overlayTokenBalanceBinding.tvNext.setOnClickListener {
+            spotlight.next()
+        }
+
+        var swipeLayout: SwipeLayout? = null
+        overlayTokenPriceTargetBinding.tvNext.setOnClickListener {
+            spotlight.next()
+            swipeLayout =
+                binding.rvToken.findViewHolderForLayoutPosition(1)?.itemView?.findViewById<SwipeLayout>(
+                    R.id.swipe
+                )
+            swipeLayout?.open(true)
+        }
+
+        overlaySwipeTargetBinding.tvNext.setOnClickListener {
+            spotlight.next()
+            swipeLayout?.close(true)
+        }
+    }
+
+    fun showTutorial() {
+        if (activity == null) return
+        if (mediator.isShownBalanceTutorial()) return
+        binding.root.doOnPreDraw {
+            binding.rvToken.addOnChildAttachStateChangeListener(object :
+                OnChildAttachStateChangeListener {
+                override fun onChildViewAttachedToWindow(view: View) {
+                    if (binding.rvToken.childCount == 5) {
+                        binding.rvToken.removeOnChildAttachStateChangeListener(this)
+                        displaySpotLight()
+                    }
+                }
+
+                override fun onChildViewDetachedFromWindow(view: View) {}
+            })
+        }
     }
 
     fun scrollToTop() {

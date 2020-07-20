@@ -248,6 +248,9 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                 when (currentFragment) {
                     is BalanceFragment -> {
                         updateLoginStatus()
+                        with((currentFragment as BalanceFragment)) {
+                            showTutorial()
+                        }
                     }
                     is LimitOrderFragment -> {
                         with((currentFragment as LimitOrderFragment)) {
@@ -265,6 +268,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             getLoginStatus()
                             checkEligibleAddress()
                             verifyEligibleWallet()
+                            showTutorial()
                         }
 
                         updateLoginStatus()
@@ -276,6 +280,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             getKyberEnable()
                             verifyEligibleWallet()
                             getRate()
+                            showTutorial()
                         }
                         updateLoginStatus()
                     }

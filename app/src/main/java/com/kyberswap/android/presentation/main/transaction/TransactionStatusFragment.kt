@@ -5,17 +5,23 @@ import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnPreDraw
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.daimajia.swipe.SwipeLayout
 import com.daimajia.swipe.util.Attributes
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.AppExecutors
+import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentTransactionStatusBinding
+import com.kyberswap.android.databinding.LayoutTxSwipeTargetBinding
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
@@ -31,7 +37,17 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
+import com.takusemba.spotlight.OnSpotlightListener
+import com.takusemba.spotlight.OnTargetListener
+import com.takusemba.spotlight.Spotlight
+import com.takusemba.spotlight.Target
+import com.takusemba.spotlight.shape.Circle
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import org.web3j.utils.Convert
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -62,6 +78,14 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
     private val isPending: Boolean
         get() = transactionType == Transaction.PENDING
 
+    private var isShowTutorial: Boolean = false
+
+    private var isViewVisible: Boolean = false
+
+    val compositeDisposable by lazy {
+        CompositeDisposable()
+    }
+
     private val emptyTransaction: String
         get() = if (isPending) getString(R.string.empty_pending_transaction) else getString(
             R.string.empty_complete_transaction
@@ -76,6 +100,11 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
 
     @Inject
     lateinit var dialogHelper: DialogHelper
+
+    private var spotlight: Spotlight? = null
+
+    private val threshold =
+        if (BuildConfig.FLAVOR == "dev" || BuildConfig.FLAVOR == "stg") 1f else 5f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -133,6 +162,25 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
 
         if (isPending) {
             viewModel.getGasPrice()
+            observePendingTransaction()
+            binding.root.doOnPreDraw {
+                binding.rvTransaction.addOnChildAttachStateChangeListener(object :
+                    RecyclerView.OnChildAttachStateChangeListener {
+                    override fun onChildViewAttachedToWindow(view: View) {
+                        val lastItemPosition = transactionStatusAdapter?.itemCount ?: 0 - 1
+                        if (lastItemPosition > 0) {
+                            if (binding.rvTransaction.childCount == transactionStatusAdapter?.itemCount) {
+                                binding.rvTransaction.removeOnChildAttachStateChangeListener(
+                                    this
+                                )
+                                isViewVisible = true
+                            }
+                        }
+                    }
+
+                    override fun onChildViewDetachedFromWindow(view: View) {}
+                })
+            }
         }
 
         viewModel.getTransactionCallback.observe(viewLifecycleOwner, Observer {
@@ -149,7 +197,10 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                         if (state.isFilterChanged) {
                             transactionStatusAdapter?.submitList(null)
                         }
+
                         updateTransactionList(state.transactions)
+
+                        showTutorial()
                     }
                     is GetTransactionState.ShowError -> {
                         showProgress(false)
@@ -161,6 +212,7 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
                         showProgress(false)
                         if (transactionStatusAdapter?.itemCount == 0) {
                             binding.emptyTransaction = emptyTransaction
+                            spotlight?.finish()
                         } else {
                             binding.emptyTransaction = ""
                         }
@@ -309,6 +361,42 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
         binding.rvTransaction.adapter = transactionStatusAdapter
     }
 
+    private fun observePendingTransaction() {
+        var counter = 0L
+        compositeDisposable.add(
+            Observable.interval(counter, 15, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    counter = it
+                    if (((counter * 15) % (threshold * 60).toLong()) == 0L) {
+                        showTutorial()
+                    }
+                }, {
+                    it.printStackTrace()
+                })
+        )
+    }
+
+    private fun showTutorial() {
+        if (isPending && !isShowTutorial) {
+            val oldestTxTimestamp = viewModel.transactionList.filter { !it.isCancel }.minBy {
+                it.timeStamp
+            }?.timeStamp ?: System.currentTimeMillis() / 1000
+
+            val isShowSpotlight =
+                (System.currentTimeMillis() / 1000 - oldestTxTimestamp) / 60f >= threshold
+            if (isShowSpotlight && isViewVisible) {
+                handler.removeCallbacksAndMessages(null)
+                handler.postDelayed(
+                    {
+                        displaySpotLight()
+                    }, 250
+                )
+            }
+        }
+    }
+
     private fun getTransactionsByFilter(isForceRefresh: Boolean = false) {
         wallet?.let {
             viewModel.getTransactionFilter(transactionType, it, isForceRefresh)
@@ -327,8 +415,83 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
 
         if (transactions.isEmpty()) {
             binding.emptyTransaction = emptyTransaction
+            spotlight?.finish()
+            if (isPending) {
+                isViewVisible = false
+                compositeDisposable.dispose()
+            }
         } else {
             binding.emptyTransaction = ""
+        }
+    }
+
+
+    private fun displaySpotLight() {
+        val overlayTxSwipeTargetBinding =
+            DataBindingUtil.inflate<LayoutTxSwipeTargetBinding>(
+                LayoutInflater.from(activity), R.layout.layout_tx_swipe_target, null, false
+            )
+
+        val targets = ArrayList<Target>()
+        transactionStatusAdapter?.itemCount?.let { position ->
+            if (position - 1 > 0) {
+                val childView =
+                    binding.rvTransaction.findViewHolderForLayoutPosition(position - 1)?.itemView
+
+                childView?.let { viewItem ->
+                    val swipeLayout =
+                        viewItem.findViewById<SwipeLayout>(
+                            R.id.swipe
+                        )
+                    val location = IntArray(2)
+                    childView.getLocationInWindow(location)
+                    val xSwipe =
+                        location[0] + viewItem.width * 3 / 4f
+                    val ySwipe =
+                        location[1] + viewItem.height / 2f
+                    val fifthTarget = Target.Builder()
+                        .setAnchor(xSwipe, ySwipe)
+                        .setShape(Circle(resources.getDimension(R.dimen.tutorial_120_dp)))
+                        .setOverlay(overlayTxSwipeTargetBinding.root)
+                        .setOnTargetListener(object : OnTargetListener {
+                            override fun onStarted() {
+                                swipeLayout?.open(true)
+                            }
+
+                            override fun onEnded() {
+                                swipeLayout?.close(true)
+                            }
+                        })
+                        .build()
+
+                    targets.add(fifthTarget)
+                }
+            }
+
+        }
+
+        // create spotlight
+        spotlight = Spotlight.Builder(activity!!)
+            .setBackgroundColor(R.color.color_tutorial)
+            .setTargets(targets)
+            .setDuration(1000L)
+            .setAnimation(DecelerateInterpolator(2f))
+            .setContainer(activity!!.window.decorView.findViewById(android.R.id.content))
+            .setOnSpotlightListener(object : OnSpotlightListener {
+                override fun onStarted() {
+                    isShowTutorial = true
+                    compositeDisposable.dispose()
+                }
+
+                override fun onEnded() {
+                }
+            })
+            .build()
+
+        spotlight?.start()
+
+        overlayTxSwipeTargetBinding.tvNext.setOnClickListener {
+            spotlight?.next()
         }
     }
 
@@ -340,6 +503,9 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
 
     override fun onDestroyView() {
         handler.removeCallbacksAndMessages(null)
+        compositeDisposable.dispose()
+        isViewVisible = false
+        spotlight?.finish()
         super.onDestroyView()
     }
 

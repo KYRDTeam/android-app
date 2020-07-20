@@ -9,6 +9,33 @@ class StorageMediator @Inject constructor(private val hawkWrapper: HawkWrapper) 
         private const val KEY_REFRESH_TOKEN = "key_refresh_token"
         private const val KEY_EXPIRES_IN = "key_expiration_time"
         private const val KEY_INITIAL_FRESHCHAT = "key_initial_fresh_chat"
+        private const val KEY_SHOW_BALANCE_TUTORIAL = "key_show_balance_tutorial"
+        private const val KEY_SHOW_SWAP_TUTORIAL = "key_show_swap_tutorial"
+        private const val KEY_SHOW_LIMIT_ORDER_TUTORIAL = "key_show_limit_order_tutorial"
+    }
+
+    fun showBalanceTutorial(isShow: Boolean) {
+        hawkWrapper.put(KEY_SHOW_BALANCE_TUTORIAL, isShow)
+    }
+
+    fun isShownBalanceTutorial(): Boolean {
+        return hawkWrapper[KEY_SHOW_BALANCE_TUTORIAL, false]
+    }
+
+    fun showSwapTutorial(isShow: Boolean) {
+        hawkWrapper.put(KEY_SHOW_SWAP_TUTORIAL, isShow)
+    }
+
+    fun isShownSwapTutorial(): Boolean {
+        return hawkWrapper[KEY_SHOW_SWAP_TUTORIAL, false]
+    }
+
+    fun showLimitOrderTutorial(isShow: Boolean) {
+        hawkWrapper.put(KEY_SHOW_LIMIT_ORDER_TUTORIAL, isShow)
+    }
+
+    fun isShownLimitOrderTutorial(): Boolean {
+        return hawkWrapper[KEY_SHOW_LIMIT_ORDER_TUTORIAL, false]
     }
 
     fun setInitialFreshChat(isInitial: Boolean) {

@@ -105,7 +105,7 @@
     <string name="custom_value">自定义:</string>
     <string name="rate_revert_notification">如果费率%s-%s低于%s(当前费率%s),那么交易将被退回</string>
     <string name="swap_continue">继续</string>
-    <string name="swap_rate_notification">此价格比目前的市场价低%s%%</string>
+    <string name="swap_rate_notification">There is a %s%% difference between the estimated price for your swap amount and the reference price.\nNote: Estimated price depends on your swap amount. Reference price is from Chainlink and Kyber Network.</string>
     <string name="tab_day">24H</string>
     <string name="tab_week">7 天</string>
     <string name="tab_month">月</string>
@@ -751,5 +751,22 @@
     <string name="gas_price">Gas Price</string>
     <string name="nonce">Nonce</string>
     <string name="no_fee_error">Please wait for the limit order trading fees to be updated</string>
+    <string name="tutorial_swap_step_3">第3步骤（可选）\n调整燃料费用和滑点</string>
+    <string name="got_it">了解</string>
+    <string name="tutorial_balance_total_wallet_balance">钱包中的余额总计</string>
+    <string name="tutorial_lo_zero_fee">0费用\n如果您的钱包中持有2000 KNC，则使用限价订单交易时无须交易费。</string>
+    <string name="tutorial_lo_manage_order">管理订单\n检查您的订单历史记录、待处理订单等。您也可以对订单进行修改。</string>
+    <string name="tutorial_lo_step1">第1步骤\n选择您要交易的代币对</string>
+    <string name="tutorial_lo_step2">第2步骤\n设置您期望的价格。点击买/卖选项并完成。</string>
+    <string name="tutorial_swap_step2">第2步骤\n输入金额或使用快速选择。</string>
+    <string name="tutorial_swap_step1">第1步骤\n选择您想要兑换的代币。</string>
+    <string name="tutorial_balance_token_balance">钱包里的代币余额</string>
+    <string name="tutorial_swap_token_price">24小时变化的实时代币价格。</string>
+    <string name="tutorial_balance_buy_eth">您可以在这里购买ETH</string>
+    <string name="tutorial_balance_swipe">向左滑动即可购买、出售或发送代币。</string>
+    <string name="tutorial_transaction_speed_up_cancel">加快交易速度或取消交易。</string>
+    <string name="tutorial_amount">2000</string>
+    <string name="tutorial_swap_amount">10</string>
+    <string name="slippage_too_high_warning">滑点很高。为了得到更好的汇率，您可能需要减少兑换金额或分成多次兑换</string>
 
 </resources>

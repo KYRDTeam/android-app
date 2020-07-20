@@ -183,7 +183,7 @@ object ImageViewBindingAdapter {
             return
         }
 
-        if (percentageRate.toBigDecimalOrDefaultZero() > (-0.1).toBigDecimal()) {
+        if (percentageRate.toBigDecimalOrDefaultZero() >= (-10).toBigDecimal()) {
             view.visibility = View.GONE
         } else {
             if (warning != null && warning) {
