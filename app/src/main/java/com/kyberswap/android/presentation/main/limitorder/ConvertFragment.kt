@@ -31,6 +31,7 @@ import com.kyberswap.android.util.ext.exactAmount
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.setAmount
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
+import com.kyberswap.android.util.ext.toNumberFormat
 import kotlinx.android.synthetic.main.fragment_convert.*
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -309,7 +310,7 @@ class ConvertFragment : BaseFragment() {
 
             if (binding.tvEthBalance.text.toString() != availableEth) {
                 binding.tvEthBalance.text =
-                    String.format(getString(R.string.eth_balance), availableEth)
+                    String.format(getString(R.string.eth_balance), availableEth.toNumberFormat())
             }
 
             val availableWeth = viewModel.calAvailableAmount(
@@ -319,7 +320,7 @@ class ConvertFragment : BaseFragment() {
 
             if (binding.tvWethBalance.text.toString() != availableWeth) {
                 binding.tvWethBalance.text =
-                    String.format(getString(R.string.weth_balance), availableWeth)
+                    String.format(getString(R.string.weth_balance), availableWeth.toNumberFormat())
             }
 
 

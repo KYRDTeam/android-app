@@ -26,6 +26,7 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.toNumberFormat
 import kotlinx.android.synthetic.main.layout_expanable.*
 import org.web3j.utils.Convert
 import java.math.BigDecimal
@@ -119,11 +120,13 @@ class CustomizeGasFragment : BaseFragment() {
                                     gas,
                                     selectedGasFeeView?.id
                                 )
-                            )
-                            binding.feeSuperFast = transaction?.getFeeFromGwei(gas.superFast)
-                            binding.feeFast = transaction?.getFeeFromGwei(gas.fast)
-                            binding.feeStandard = transaction?.getFeeFromGwei(gas.standard)
-                            binding.feeSlow = transaction?.getFeeFromGwei(gas.low)
+                            ).toNumberFormat()
+                            binding.feeSuperFast =
+                                transaction?.getFeeFromGwei(gas.superFast).toNumberFormat()
+                            binding.feeFast = transaction?.getFeeFromGwei(gas.fast).toNumberFormat()
+                            binding.feeStandard =
+                                transaction?.getFeeFromGwei(gas.standard).toNumberFormat()
+                            binding.feeSlow = transaction?.getFeeFromGwei(gas.low).toNumberFormat()
 
                             binding.executePendingBindings()
                         }
@@ -177,7 +180,7 @@ class CustomizeGasFragment : BaseFragment() {
                         rb.isSelected = true
                         selectedGasFeeView = rb
 
-                        binding.fee = speedUpFee
+                        binding.fee = speedUpFee.toNumberFormat()
                     }
                 }
 
@@ -217,10 +220,14 @@ class CustomizeGasFragment : BaseFragment() {
 
                                 binding.gas = gas
 
-                                binding.feeSuperFast = transaction?.getFeeFromGwei(gas.superFast)
-                                binding.feeFast = transaction?.getFeeFromGwei(gas.fast)
-                                binding.feeStandard = transaction?.getFeeFromGwei(gas.standard)
-                                binding.feeSlow = transaction?.getFeeFromGwei(gas.low)
+                                binding.feeSuperFast =
+                                    transaction?.getFeeFromGwei(gas.superFast).toNumberFormat()
+                                binding.feeFast =
+                                    transaction?.getFeeFromGwei(gas.fast).toNumberFormat()
+                                binding.feeStandard =
+                                    transaction?.getFeeFromGwei(gas.standard).toNumberFormat()
+                                binding.feeSlow =
+                                    transaction?.getFeeFromGwei(gas.low).toNumberFormat()
 
                                 binding.executePendingBindings()
                             }

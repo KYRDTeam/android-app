@@ -8,12 +8,14 @@ import androidx.room.TypeConverters
 import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.data.api.transaction.TransactionEntity
 import com.kyberswap.android.data.db.TransactionTypeConverter
+import com.kyberswap.android.util.ext.formatDisplayNumber
 import com.kyberswap.android.util.ext.safeToString
 import com.kyberswap.android.util.ext.shortenValue
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleSafe
 import com.kyberswap.android.util.ext.toLongSafe
+import com.kyberswap.android.util.ext.toNumberFormat
 import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import org.web3j.protocol.core.methods.response.TransactionReceipt
@@ -227,7 +229,7 @@ data class Transaction(
                                     tokenDecimal
                                         .toBigDecimalOrDefaultZero().toInt()
                                 ), 18, RoundingMode.UP
-                        ).toDisplayNumber()
+                        ).formatDisplayNumber()
                 )
                 .append(" ")
                 .append(tokenSymbol)
@@ -235,17 +237,20 @@ data class Transaction(
 
     val displaySource: String
         get() = StringBuilder()
-            .append(sourceAmount.toBigDecimalOrDefaultZero().toDisplayNumber())
+            .append(sourceAmount.toBigDecimalOrDefaultZero().formatDisplayNumber())
             .append(" ")
             .append(tokenSource)
             .toString()
 
     val displayDest: String
         get() = StringBuilder()
-            .append(destAmount.toBigDecimalOrDefaultZero().toDisplayNumber())
+            .append(destAmount.toBigDecimalOrDefaultZero().formatDisplayNumber())
             .append(" ")
             .append(tokenDest)
             .toString()
+
+    val nonceWithSeparators: String
+        get() = nonce.toNumberFormat()
 
     val displayTransaction: String
         get() =
@@ -373,7 +378,7 @@ data class Transaction(
             .append(" ")
             .append(tokenSource)
             .append(" = ")
-            .append(rate)
+            .append(rate.toNumberFormat())
             .append(" ")
             .append(tokenDest)
             .toString()
@@ -385,11 +390,23 @@ data class Transaction(
                 .divide(sourceAmount.toBigDecimalOrDefaultZero(), 18, RoundingMode.CEILING))
                 .toDisplayNumber()
 
+    val rateWithSeparators: String
+        get() = if (sourceAmount.toDoubleSafe() == 0.0) "0" else
+            (destAmount.toBigDecimalOrDefaultZero()
+                .divide(sourceAmount.toBigDecimalOrDefaultZero(), 18, RoundingMode.CEILING))
+                .formatDisplayNumber()
+
     val fee: String
         get() = Convert.fromWei(
             gasPrice.toBigDecimalOrDefaultZero().multiply(gasUsed.toBigDecimalOrDefaultZero())
             , Convert.Unit.ETHER
         ).toDisplayNumber()
+
+    val feeWithSeparators: String
+        get() = Convert.fromWei(
+            gasPrice.toBigDecimalOrDefaultZero().multiply(gasUsed.toBigDecimalOrDefaultZero())
+            , Convert.Unit.ETHER
+        ).formatDisplayNumber()
 
     fun getFeeFromGwei(gasPrice: String): String {
         if (gasPrice.isEmpty()) return gasPrice
@@ -404,7 +421,7 @@ data class Transaction(
             Convert.fromWei(
                 gasPrice.toBigDecimalOrDefaultZero(),
                 Convert.Unit.ETHER
-            ).toDisplayNumber()
+            ).formatDisplayNumber()
         )
             .append(" ")
             .append("ETH")

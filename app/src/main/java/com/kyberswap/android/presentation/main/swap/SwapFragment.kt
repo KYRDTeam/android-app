@@ -74,6 +74,7 @@ import com.kyberswap.android.util.SLIPPAGE
 import com.kyberswap.android.util.SW_USER_CLICK_COPY_WALLET_ADDRESS
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
+import com.kyberswap.android.util.ext.formatDisplayNumber
 import com.kyberswap.android.util.ext.getAmountOrDefaultValue
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isNetworkAvailable
@@ -85,6 +86,7 @@ import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleSafe
+import com.kyberswap.android.util.ext.toNumberFormat
 import com.takusemba.spotlight.OnSpotlightListener
 import com.takusemba.spotlight.OnTargetListener
 import com.takusemba.spotlight.Spotlight
@@ -1159,7 +1161,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     binding.swap?.getExpectedDestUsdAmount(
                         edtSource.toBigDecimalOrDefaultZero(),
                         swap.tokenDest.rateUsdNow
-                    )?.toDisplayNumber()
+                    )?.formatDisplayNumber()
                 )
         } else {
             binding.tvValueInUSD.text = ""
@@ -1419,8 +1421,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             getString(R.string.rate_revert_notification),
             binding.tvSource.text,
             binding.tvDest.text,
-            binding.swap?.rateThreshold(getMinAcceptedRatePercent(id)),
-            binding.swap?.combineRate
+            binding.swap?.rateThreshold(getMinAcceptedRatePercent(id))?.toNumberFormat(),
+            binding.swap?.combineRate?.toNumberFormat()
         )
     }
 

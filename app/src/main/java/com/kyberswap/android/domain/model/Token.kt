@@ -11,9 +11,11 @@ import com.kyberswap.android.data.api.token.TokenEntity
 import com.kyberswap.android.data.db.DataTypeConverter
 import com.kyberswap.android.data.db.WalletBalanceTypeConverter
 import com.kyberswap.android.util.ext.exactAmount
+import com.kyberswap.android.util.ext.formatDisplayNumber
 import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.toNumberFormat
 import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import java.math.BigDecimal
@@ -260,15 +262,20 @@ data class Token(
 
     val displayRateEthNow: String
         get() = rateEthNowOrDefaultValue.toDisplayNumber()
+    val displayRateEthNowWithSeparators: String
+        get() = displayRateEthNow.toNumberFormat()
     val displayChangeEth24h: String
         get() = changeEth24h.toDisplayNumber()
     val displayRateUsdNow: String
         get() = rateUsdNow.toDisplayNumber()
+    val displayRateUsdNowWithSeparators: String
+        get() = displayRateUsdNow.toNumberFormat()
     val displayChangeUsd24h: String
         get() = changeUsd24h.toDisplayNumber()
 
     val displayCurrentBalance: String
-        get() = if (isHide) "******" else currentBalance.rounding().toDisplayNumber().exactAmount()
+        get() = if (isHide) "******" else currentBalance.rounding()
+            .formatDisplayNumber().exactAmount()
 
     val roundingBalance: BigDecimal
         get() = if (currentBalance - currentBalance.toBigInteger()
@@ -276,7 +283,8 @@ data class Token(
         ) currentBalance else currentBalance.toBigInteger().toBigDecimal()
 
     val displayLimitOrderBalance: String
-        get() = limitOrderBalance.rounding().max(BigDecimal.ZERO).toDisplayNumber().exactAmount()
+        get() = limitOrderBalance.rounding().max(BigDecimal.ZERO).formatDisplayNumber()
+            .exactAmount()
 
     val displayCurrentBalanceInEth: String
         get() = StringBuilder()
@@ -284,7 +292,7 @@ data class Token(
             .append(
                 if (currentBalance > BigDecimal.ZERO) currentBalance
                     .multiply(rateEthNowOrDefaultValue)
-                    .toDisplayNumber() else "0"
+                    .formatDisplayNumber() else "0"
             )
             .append(" ETH")
             .toString()
@@ -295,7 +303,7 @@ data class Token(
             .append(
                 if (currentBalance > BigDecimal.ZERO) currentBalance
                     .multiply(rateUsdNow)
-                    .toDisplayNumber() else "0"
+                    .formatDisplayNumber() else "0"
             )
             .append(" USD")
             .toString()

@@ -31,6 +31,7 @@ import com.kyberswap.android.util.CURRENT_PRICE
 import com.kyberswap.android.util.TOKEN_PAIR
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
+import com.kyberswap.android.util.ext.formatDisplayNumber
 import com.kyberswap.android.util.ext.percentage
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
@@ -322,7 +323,7 @@ class PriceAlertFragment : BaseFragment() {
         price?.let {
             binding.tvCurrentPrice.text = String.format(
                 getString(R.string.alert_current_price),
-                it.toDisplayNumber()
+                it.formatDisplayNumber()
             )
         }
     }

@@ -66,11 +66,11 @@ import com.kyberswap.android.util.USD
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.exactAmount
+import com.kyberswap.android.util.ext.formatDisplayNumber
 import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.setTextIfChange
 import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.showKeyboard
-import com.kyberswap.android.util.ext.toDisplayNumber
 import com.takusemba.spotlight.OnSpotlightListener
 import com.takusemba.spotlight.OnTargetListener
 import com.takusemba.spotlight.Spotlight
@@ -818,7 +818,8 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     private fun displayWalletBalance(isHide: Boolean) {
         binding.tvBalance.text =
-            if (isHide) "******" else walletBalance.toDisplayNumber().exactAmount()
+            if (isHide) "******" else
+                walletBalance.formatDisplayNumber().exactAmount()
     }
 
     override fun showPendingTxNotification(showNotification: Boolean) {

@@ -75,7 +75,8 @@ data class Wallet(
     }
 
     val displayBalance: String
-        get() = if (balance.toBigDecimalOrDefaultZero() > BigDecimal(1E-18)) balance.toBigDecimalOrDefaultZero().toDisplayNumber() else BigDecimal.ZERO.toDisplayNumber()
+        get() = if (balance.toBigDecimalOrDefaultZero() > BigDecimal(1E-18)) balance.toBigDecimalOrDefaultZero()
+            .toDisplayNumber() else BigDecimal.ZERO.toDisplayNumber()
 
     val isPromo: Boolean
         get() = promo != null && promo!!.type.isNotEmpty()

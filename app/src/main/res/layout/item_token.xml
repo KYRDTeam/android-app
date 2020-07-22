@@ -159,7 +159,7 @@
                 android:layout_marginBottom="8dp"
                 android:gravity="center|end"
                 android:singleLine="true"
-                android:text="@{showEth ? (token.isMaintainance ? @string/token_maintainance : token.displayRateEthNow) : (token.isMaintainance ? @string/token_maintainance : token.displayRateUsdNow)}"
+                android:text="@{showEth ? (token.isMaintainance ? @string/token_maintainance : token.displayRateEthNowWithSeparators) : (token.isMaintainance ? @string/token_maintainance : token.displayRateUsdNowWithSeparators)}"
                 android:textColor="#1d303a"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView123"

@@ -8,9 +8,11 @@ import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.data.db.BigIntegerDataTypeConverter
 import com.kyberswap.android.data.db.DataTypeConverter
 import com.kyberswap.android.presentation.common.KEEP_ETH_BALANCE_FOR_GAS
+import com.kyberswap.android.util.ext.formatDisplayNumber
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleSafe
+import com.kyberswap.android.util.ext.toNumberFormat
 import kotlinx.android.parcel.Parcelize
 import org.web3j.utils.Convert
 import java.math.BigDecimal
@@ -95,8 +97,8 @@ data class LocalLimitOrder(
                         marketRate.toBigDecimalOrDefaultZero(),
                         18,
                         RoundingMode.CEILING
-                    ).toDisplayNumber()
-            else marketRate.toBigDecimalOrDefaultZero().toDisplayNumber()
+                    ).formatDisplayNumber()
+            else marketRate.toBigDecimalOrDefaultZero().formatDisplayNumber()
         ).toString()
 
     val displayTotal: String
@@ -183,7 +185,7 @@ data class LocalLimitOrder(
         )
 
     val displayMarketRate: String
-        get() = marketRate.toBigDecimalOrDefaultZero().toDisplayNumber()
+        get() = marketRate.toBigDecimalOrDefaultZero().formatDisplayNumber()
 
     val wethBalance: BigDecimal
         get() = wethToken.limitOrderBalance
@@ -196,28 +198,28 @@ data class LocalLimitOrder(
 
     val displayEthBalance: String
         get() = StringBuilder()
-            .append(ethBalance.toDisplayNumber())
+            .append(ethBalance.formatDisplayNumber())
             .append(" ")
             .append(Token.ETH)
             .toString()
 
     val displayWethBalance: String
         get() = StringBuilder()
-            .append(wethBalance.toDisplayNumber())
+            .append(wethBalance.formatDisplayNumber())
             .append(" ")
             .append(Token.ETH)
             .toString()
 
     val displayedSrcAmount: String
         get() = StringBuilder()
-            .append(srcAmount)
+            .append(srcAmount.toNumberFormat())
             .append(" ")
             .append(tokenSource.symbol)
             .toString()
 
     val displayedSrcAmountV2: String
         get() = StringBuilder()
-            .append(srcAmount)
+            .append(srcAmount.toNumberFormat())
             .append(" ")
             .append(tokenSource.tokenSymbol)
             .toString()
@@ -233,7 +235,7 @@ data class LocalLimitOrder(
     val displayedDestAmount: String
         get() = StringBuilder()
             .append(
-                roundedDestAmount.toDisplayNumber()
+                roundedDestAmount.formatDisplayNumber()
             ).append(" ")
             .append(tokenDest.tokenSymbol)
             .toString()
@@ -241,7 +243,7 @@ data class LocalLimitOrder(
     val displayedDestAmountV2: String
         get() = StringBuilder()
             .append(
-                roundedDestAmount.toDisplayNumber()
+                roundedDestAmount.formatDisplayNumber()
             ).append(" ")
             .append(tokenDest.tokenSymbol)
             .toString()
@@ -251,7 +253,7 @@ data class LocalLimitOrder(
                 (BigDecimal.ONE - totalFee).multiply(srcAmount.toBigDecimalOrDefaultZero())
                     .multiply(
                         minRate
-                    ).toDisplayNumber()
+                    ).formatDisplayNumber()
             ).append(" ")
             .append(tokenDest.symbol)
             .toString()
@@ -260,25 +262,25 @@ data class LocalLimitOrder(
             .append("(")
             .append(srcAmount)
             .append(" - ")
-            .append(totalFee.multiply(srcAmount.toBigDecimalOrDefaultZero()).toDisplayNumber())
+            .append(totalFee.multiply(srcAmount.toBigDecimalOrDefaultZero()).formatDisplayNumber())
             .append(")")
             .append(tokenSource.symbol)
             .append(" * ")
-            .append(minRate.toDisplayNumber())
+            .append(minRate.formatDisplayNumber())
             .append(" = ")
             .append(displayReceivedAmount)
             .toString()
 
     val displayedFee: String
         get() = StringBuilder()
-            .append(feeAmount.toDisplayNumber())
+            .append(feeAmount.formatDisplayNumber())
             .append(" ")
             .append(tokenSource.symbol)
             .toString()
 
     val displayedFeeV2: String
         get() = StringBuilder()
-            .append(feeAmount.toDisplayNumber())
+            .append(feeAmount.formatDisplayNumber())
             .append(" ")
             .append(tokenSource.tokenSymbol)
             .toString()
@@ -312,7 +314,7 @@ data class LocalLimitOrder(
             .append("/")
             .append(tokenDest.symbol)
             .append(" >= ")
-            .append(minRate.toDisplayNumber())
+            .append(minRate.formatDisplayNumber())
             .toString()
 
     val minSupportSourceAmount: BigDecimal

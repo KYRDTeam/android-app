@@ -99,7 +99,8 @@
     <string name="advanced_optional">Advanced (optional)</string>
     <string name="rate">Rate</string>
     <string name="default_source_amount">0.001</string>
-    <string name="percentage_format" formatted="false" translatable="false">"%.2f%%"</string>
+    <string name="percentage_format" formatted="false" translatable="false">"%.2f"</string>
+    <string name="percentage_format_with_percent" formatted="false" translatable="false">"%s%%"</string>
     <string name="dest_balance_usd_format" formatted="false" translatable="false">"≈ %s USD"</string>
     <string name="default_dest_balance_usd">≈ 0.0 USD</string>
     <string name="gas_fee_gwei">GAS fee (Gwei)</string>
@@ -217,7 +218,7 @@
     <string name="percent_50">50%</string>
     <string name="percent_100">100%</string>
     <string name="limit_order_rate_of">Rate of</string>
-    <string name="limit_order_discount">Hold from 2000 KNC to get discount for your orders</string>
+    <string name="limit_order_discount">Hold from 2,000 KNC to get discount for your orders</string>
     <string name="limit_order_fee">%s %s </string>
     <string name="discount_fee">%.2f%% OFF</string>
     <string name="discount_fee_long_type" translatable="false">%d%% OFF</string>

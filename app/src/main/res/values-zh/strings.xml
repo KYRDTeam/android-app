@@ -207,7 +207,7 @@
     <string name="percent_50">50%</string>
     <string name="percent_100">100%</string>
     <string name="limit_order_rate_of">汇率</string>
-    <string name="limit_order_discount">持有2000KNC以上可享受享受折扣。</string>
+    <string name="limit_order_discount">持有2,000KNC以上可享受享受折扣。</string>
     <string name="limit_order_fee">%s %s </string>
     <string name="discount_fee">%.2f%% OFF</string>
     <string name="transaction_from">从</string>

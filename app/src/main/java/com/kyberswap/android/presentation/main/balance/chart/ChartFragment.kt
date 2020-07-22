@@ -41,10 +41,11 @@ import com.kyberswap.android.util.TIME
 import com.kyberswap.android.util.TOKEN_NAME
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
+import com.kyberswap.android.util.ext.formatDisplayNumber
 import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
-import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleSafe
+import com.kyberswap.android.util.ext.toNumberFormat
 import kotlinx.android.synthetic.main.activity_main.*
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -114,6 +115,9 @@ class ChartFragment : BaseFragment() {
     private val rate: String?
         get() = if (isLimitOrder) marketPrice else tokenRate
 
+    private val displayRate: String
+        get() = rate.toNumberFormat()
+
     private val isEth: Boolean
         get() = if (quoteToken.isEmpty()) isSelectedUnitEth else isEthQuote
 
@@ -159,7 +163,7 @@ class ChartFragment : BaseFragment() {
                         wallet = state.wallet
                         binding.isEth = isEth
                         binding.isLimitOrder = isLimitOrder
-                        binding.tvRate.text = rate
+                        binding.tvRate.text = displayRate
                         viewModel.getVol24h(token)
                     }
                     is GetWalletState.ShowError -> {
@@ -389,9 +393,9 @@ class ChartFragment : BaseFragment() {
 
                         val message =
                             if (isEth) {
-                                state.data.eth24hVolume?.toDisplayNumber() ?: ""
+                                state.data.eth24hVolume?.formatDisplayNumber() ?: ""
                             } else {
-                                state.data.usd24hVolume?.toDisplayNumber() ?: ""
+                                state.data.usd24hVolume?.formatDisplayNumber() ?: ""
                             }
                         if (message.toDoubleSafe() > 0 || isLimitOrder) {
                             binding.tv24hVol.visibility = View.VISIBLE

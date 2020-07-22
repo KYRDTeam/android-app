@@ -207,7 +207,7 @@
     <string name="percent_50">50%</string>
     <string name="percent_100">100%</string>
     <string name="limit_order_rate_of">Rate of</string>
-    <string name="limit_order_discount">2000KNC부터는 홀드하여 주문에 대한 할인을 받으세요.</string>
+    <string name="limit_order_discount">2,000KNC부터는 홀드하여 주문에 대한 할인을 받으세요.</string>
     <string name="limit_order_fee">%s %s </string>
     <string name="discount_fee">%.2f%% OFF</string>
     <string name="transaction_from">From</string>

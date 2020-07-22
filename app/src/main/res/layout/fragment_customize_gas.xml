@@ -247,7 +247,7 @@
                         android:layout_marginStart="16dp"
                         android:gravity="end"
                         android:lineSpacingExtra="12sp"
-                        android:text="@{transaction.fee + ` ETH`}"
+                        android:text="@{transaction.feeWithSeparators + ` ETH`}"
                         android:textAppearance="@style/TextAppearance.Roboto.Medium"
                         android:textColor="#141927"
                         android:textSize="14sp" />

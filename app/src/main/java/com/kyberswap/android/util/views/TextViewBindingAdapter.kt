@@ -16,12 +16,14 @@ import com.kyberswap.android.R
 import com.kyberswap.android.domain.model.KycInfo
 import com.kyberswap.android.domain.model.Order
 import com.kyberswap.android.domain.model.UserInfo
+import com.kyberswap.android.util.ext.formatDisplayNumber
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
-import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.toNumberFormat
 import io.github.inflationx.calligraphy3.CalligraphyTypefaceSpan
 import io.github.inflationx.calligraphy3.TypefaceUtils
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.util.Locale
 
 object TextViewBindingAdapter {
     @BindingAdapter("app:resourceId")
@@ -209,8 +211,13 @@ object TextViewBindingAdapter {
 
                 view.text =
                     String.format(
-                        view.context.getString(R.string.percentage_format),
-                        percentageRate.abs().toDouble()
+                        Locale.US,
+                        view.context.getString(R.string.percentage_format_with_percent),
+                        String.format(
+                            Locale.US,
+                            view.context.getString(R.string.percentage_format),
+                            percentageRate.abs().toDouble()
+                        ).toNumberFormat()
                     )
                 view.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawable, 0)
             } else {
@@ -243,11 +250,16 @@ object TextViewBindingAdapter {
 
         view.setTextColor(ContextCompat.getColor(view.context, color))
 
-        view.text =
+        view.text = String.format(
+            Locale.US,
+            view.context.getString(R.string.percentage_format_with_percent),
             String.format(
+                Locale.US,
                 view.context.getString(R.string.percentage_format),
                 percentageRate.abs().toDouble()
-            )
+            ).toNumberFormat()
+        )
+
         view.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawable, 0)
     }
 
@@ -276,8 +288,12 @@ object TextViewBindingAdapter {
         } else {
             view.text =
                 String.format(
-                    view.context.getString(R.string.percentage_format),
-                    percentageRate.abs().toDouble()
+                    Locale.US,
+                    view.context.getString(R.string.percentage_format_with_percent), String.format(
+                        Locale.US,
+                        view.context.getString(R.string.percentage_format),
+                        percentageRate.abs().toDouble()
+                    ).toNumberFormat()
                 )
             view.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawable, 0)
         }
@@ -347,7 +363,7 @@ object TextViewBindingAdapter {
 
         view.setTextColor(ContextCompat.getColor(view.context, color))
         view.text = StringBuilder().append(if (true == isAbove) "≥ " else "≤ ")
-            .append(alertPrice?.toDisplayNumber())
+            .append(alertPrice?.formatDisplayNumber())
     }
 
     @BindingAdapter("app:isAbove", "app:alertPrice", "app:isFilled")
@@ -368,7 +384,7 @@ object TextViewBindingAdapter {
 
         view.setTextColor(ContextCompat.getColor(view.context, color))
         view.text = StringBuilder().append(if (true == isAbove) "≥ " else "≤ ")
-            .append(alertPrice?.toDisplayNumber())
+            .append(alertPrice?.formatDisplayNumber())
     }
 
     @BindingAdapter("app:isAbove", "app:percentChange")
@@ -389,7 +405,7 @@ object TextViewBindingAdapter {
         view.setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0)
         view.setTextColor(ContextCompat.getColor(view.context, color))
         view.text = StringBuilder()
-            .append(percentChange?.setScale(2, RoundingMode.UP)?.toDisplayNumber()).append("%")
+            .append(percentChange?.setScale(2, RoundingMode.UP)?.formatDisplayNumber()).append("%")
     }
 
     @BindingAdapter("app:isAbove", "app:percentChange", "app:isFilled")
@@ -425,7 +441,7 @@ object TextViewBindingAdapter {
         }
         view.setTextColor(ContextCompat.getColor(view.context, color))
         view.text = StringBuilder()
-            .append(percentChange?.setScale(2, RoundingMode.UP)?.toDisplayNumber()).append("%")
+            .append(percentChange?.setScale(2, RoundingMode.UP)?.formatDisplayNumber()).append("%")
     }
 
     @BindingAdapter("app:rate")
@@ -444,7 +460,10 @@ object TextViewBindingAdapter {
             view.text = ""
         } else {
             view.text =
-                StringBuilder().append(String.format("%.2f", rate.abs())).append(" %").toString()
+                StringBuilder().append(
+                    String.format(Locale.US, "%.2f", rate.abs()).toNumberFormat()
+                ).append(" %")
+                    .toString()
         }
     }
 

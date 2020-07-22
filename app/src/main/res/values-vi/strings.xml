@@ -207,7 +207,7 @@
     <string name="percent_50">50%</string>
     <string name="percent_100">100%</string>
     <string name="limit_order_rate_of">Tỉ giá</string>
-    <string name="limit_order_discount">Giữ 2000 KNC trong ví để nhận được khuyến mại.</string>
+    <string name="limit_order_discount">Giữ 2,000 KNC trong ví để nhận được khuyến mại.</string>
     <string name="limit_order_fee">%s %s </string>
     <string name="discount_fee">%.2f%% OFF</string>
     <string name="transaction_from">Từ</string>

@@ -5,10 +5,12 @@ import androidx.annotation.NonNull
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.kyberswap.android.util.ext.formatDisplayNumber
 import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
+import com.kyberswap.android.util.ext.toNumberFormat
 import kotlinx.android.parcel.Parcelize
 import org.web3j.utils.Convert
 import java.math.BigDecimal
@@ -49,7 +51,8 @@ data class Send(
             .multiply(BigDecimal.TEN.pow(tokenSource.tokenDecimal)).toBigInteger()
 
     val displaySourceAmount: String
-        get() = StringBuilder().append(sourceAmount).append(" ").append(tokenSource.tokenSymbol)
+        get() = StringBuilder().append(sourceAmount.toNumberFormat()).append(" ")
+            .append(tokenSource.tokenSymbol)
             .toString()
 
     val isSendAll: Boolean
@@ -61,7 +64,7 @@ data class Send(
                 .append("≈ ")
                 .append(
                     sourceAmount.toBigDecimalOrDefaultZero().multiply(tokenSource.rateUsdNow)
-                        .toDisplayNumber()
+                        .formatDisplayNumber()
                 )
                 .append(" USD")
                 .toString()
@@ -70,25 +73,25 @@ data class Send(
         get() = Convert.fromWei(
             Convert.toWei(gas.fast.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
                 .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
-        ).toDisplayNumber()
+        ).formatDisplayNumber()
 
     val displayGasSuperFastFeeEth: String
         get() = Convert.fromWei(
             Convert.toWei(gas.superFast.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
                 .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
-        ).toDisplayNumber()
+        ).formatDisplayNumber()
 
     val displayGasStandardFeeEth: String
         get() = Convert.fromWei(
             Convert.toWei(gas.standard.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
                 .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
-        ).toDisplayNumber()
+        ).formatDisplayNumber()
 
     val displayGasLowFeeEth: String
         get() = Convert.fromWei(
             Convert.toWei(gas.low.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
                 .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
-        ).toDisplayNumber()
+        ).formatDisplayNumber()
 
     val transactionFeeEth: String
         get() = StringBuilder()
@@ -99,7 +102,7 @@ data class Send(
                         gasPrice.toBigDecimalOrDefaultZero(),
                         Convert.Unit.GWEI
                     ).multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
-                ).toDisplayNumber()
+                ).formatDisplayNumber()
             )
             .append(" ETH")
             .toString()
@@ -115,7 +118,7 @@ data class Send(
                     ).multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
                 ).multiply(
                     ethToken.rateUsdNow
-                ).toDisplayNumber()
+                ).formatDisplayNumber()
             )
             .append(" USD")
             .toString()

@@ -52,6 +52,7 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.colorRate
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.exactAmount
+import com.kyberswap.android.util.ext.formatDisplayNumber
 import com.kyberswap.android.util.ext.getAmountOrDefaultValue
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isNetworkAvailable
@@ -64,6 +65,7 @@ import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
 import com.kyberswap.android.util.ext.toDoubleSafe
+import com.kyberswap.android.util.ext.toNumberFormat
 import com.kyberswap.android.util.ext.underline
 import kotlinx.android.synthetic.main.fragment_limit_order.*
 import kotlinx.android.synthetic.main.fragment_swap.edtDest
@@ -568,12 +570,12 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         binding.tvRate.text = String.format(
                             getString(R.string.limit_order_current_rate),
                             tokenSourceSymbol,
-                            "$marketRate $tokenDestSymbol"
+                            "${marketRate.toNumberFormat()} $tokenDestSymbol"
                         )
                         binding.tvRateRevert.text = String.format(
                             getString(R.string.limit_order_current_rate),
                             tokenDestSymbol,
-                            "$revertedMarketRate $tokenSourceSymbol"
+                            "${revertedMarketRate.toNumberFormat()} $tokenSourceSymbol"
                         )
 
                         if (hasUserFocus != true) {
@@ -742,7 +744,7 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                                     "1 %s = %s %s",
                                     tokenDestSymbol,
                                     (1.0 / text.toString().toDoubleSafe()).toBigDecimal()
-                                        .toDisplayNumber(),
+                                        .formatDisplayNumber(),
                                     tokenSourceSymbol
                                 )
                         }
@@ -765,13 +767,13 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         binding.tvRate.text = String.format(
                             getString(R.string.limit_order_current_rate),
                             tokenSourceSymbol,
-                            "$marketRate $tokenDestSymbol"
+                            "${marketRate.toNumberFormat()} $tokenDestSymbol"
                         )
 
                         binding.tvRateRevert.text = String.format(
                             getString(R.string.limit_order_current_rate),
                             tokenDestSymbol,
-                            "$revertedMarketRate $tokenSourceSymbol"
+                            "${revertedMarketRate.toNumberFormat()} $tokenSourceSymbol"
                         )
 
                         if (hasUserFocus != true) {
@@ -913,7 +915,7 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         binding.tvFee.text = String.format(
                             getString(R.string.limit_order_fee),
                             srcAmount.toBigDecimalOrDefaultZero()
-                                .times(state.fee.totalFee.toBigDecimal()).toDisplayNumber()
+                                .times(state.fee.totalFee.toBigDecimal()).formatDisplayNumber()
                                 .exactAmount(),
                             tokenSourceSymbol
                         )
@@ -921,7 +923,7 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                         binding.tvFeeNoDiscount.text = String.format(
                             getString(R.string.limit_order_fee_no_discount),
                             srcAmount.toBigDecimalOrDefaultZero()
-                                .times(state.fee.totalFee.toBigDecimal()).toDisplayNumber()
+                                .times(state.fee.totalFee.toBigDecimal()).formatDisplayNumber()
                                 .exactAmount(),
                             tokenSourceSymbol
                         )
@@ -930,7 +932,7 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                             getString(R.string.limit_order_fee),
                             srcAmount.toBigDecimalOrDefaultZero()
                                 .times(state.fee.totalNonDiscountedFee.toBigDecimal())
-                                .toDisplayNumber().exactAmount(),
+                                .formatDisplayNumber().exactAmount(),
                             tokenSourceSymbol
                         )
 
@@ -1387,7 +1389,7 @@ class LimitOrderFragment : BaseFragment(), LoginState {
                 order.tokenSource,
                 pendingBalances
             )
-        }
+        }.toNumberFormat()
         if (binding.availableAmount != calAvailableAmount) {
             binding.availableAmount = calAvailableAmount
             binding.executePendingBindings()

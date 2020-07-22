@@ -91,6 +91,7 @@ import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
 import com.kyberswap.android.util.ext.toDoubleSafe
+import com.kyberswap.android.util.ext.toNumberFormat
 import com.kyberswap.android.util.ext.underline
 import com.takusemba.spotlight.OnSpotlightListener
 import com.takusemba.spotlight.OnTargetListener
@@ -157,6 +158,9 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
             val priceUsd = rateUsdQuote.multiply(marketPrice.toBigDecimalOrDefaultZero())
             return if (priceUsd == BigDecimal.ZERO) "--" else priceUsd.toDisplayNumber()
         }
+
+    val displayPriceUsdQuote: String
+        get() = priceUsdQuote.toNumberFormat()
 
     private var pendingBalances: PendingBalances? = null
 
@@ -235,13 +239,17 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         }
 
     private val balanceText: String
-        get() = binding.tvBalance.text.toString().split(" ").first()
+        get() = binding.tvBalance.text.toBigDecimalOrDefaultZero().toDisplayNumber().split(" ")
+            .first()
 
     private val marketPrice: String?
         get() {
-            return if (type == LocalLimitOrder.TYPE_SELL) binding.market?.displaySellPrice
-            else binding.market?.displayBuyPrice
+            return if (type == LocalLimitOrder.TYPE_SELL) binding.market?.sellPriceValue
+            else binding.market?.buyPriceValue
         }
+
+    private val displayMarketPrice: String?
+        get() = marketPrice.toNumberFormat()
 
     private val calcAmount: String
         get() = calcTotalAmount(priceText, totalAmount)
@@ -340,9 +348,9 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                             binding.executePendingBindings()
                             binding.tvPrice.text =
                                 if (priceUsdQuote != "--") {
-                                    "$marketPrice ~ $$priceUsdQuote"
+                                    "$displayMarketPrice ~ $$displayPriceUsdQuote"
                                 } else {
-                                    marketPrice
+                                    displayMarketPrice
                                 }
 
                             binding.tlHeader.getTabAt(0)?.text = String.format(
@@ -387,9 +395,9 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                             viewModel.getPendingBalances(wallet)
                             viewModel.getGasPrice()
                             binding.tvPrice.text = if (priceUsdQuote != "--") {
-                                "$marketPrice ~ $$priceUsdQuote"
+                                "$displayMarketPrice ~ $$displayPriceUsdQuote"
                             } else {
-                                marketPrice
+                                displayMarketPrice
                             }
                             refresh()
                         }
@@ -1561,7 +1569,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 order.tokenSource,
                 pendingBalances
             )
-        }
+        }.toNumberFormat()
 
         val availableAmount = "$calAvailableAmount $tokenSourceSymbol"
 

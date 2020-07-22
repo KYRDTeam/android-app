@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey
 import com.kyberswap.android.presentation.common.DEFAULT_GAS_LIMIT
 import com.kyberswap.android.presentation.common.MIN_SUPPORT_SWAP_SOURCE_AMOUNT
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
+import com.kyberswap.android.util.ext.formatDisplayNumber
 import com.kyberswap.android.util.ext.percentage
 import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
@@ -119,6 +120,9 @@ data class Swap(
     val combineRate: String?
         get() = rate.toBigDecimalOrDefaultZero().toDisplayNumber()
 
+    val combineRateLocale: String?
+        get() = rate.toBigDecimalOrDefaultZero().formatDisplayNumber()
+
     val hasSamePair: Boolean
         get() = tokenSource.tokenSymbol == tokenDest.tokenSymbol
 
@@ -126,7 +130,9 @@ data class Swap(
         get() = tokenSource.tokenSymbol.isNotBlank() && tokenDest.tokenSymbol.isNotBlank()
 
     val displaySourceAmount: String
-        get() = StringBuilder().append(sourceAmount.toBigDecimalOrDefaultZero().toDisplayNumber())
+        get() = StringBuilder().append(
+            sourceAmount.toBigDecimalOrDefaultZero().formatDisplayNumber()
+        )
             .append(
                 " "
             ).append(tokenSource.tokenSymbol).toString()
@@ -136,7 +142,7 @@ data class Swap(
             getExpectedAmount(
                 expectedRate,
                 sourceAmount
-            ).stripTrailingZeros().toDisplayNumber()
+            ).stripTrailingZeros().formatDisplayNumber()
         )
             .append(" ")
             .append(tokenDest.tokenSymbol)
@@ -160,6 +166,13 @@ data class Swap(
             .append(" = ").append(combineRate).append(" ")
             .append(tokenDest.tokenSymbol)
             .toString()
+
+    val displayRateByLocale: String
+        get() = StringBuilder().append("1 ")
+            .append(tokenSource.tokenSymbol)
+            .append(" = ").append(combineRateLocale).append(" ")
+            .append(tokenDest.tokenSymbol)
+            .toString()
     val displayPair: String
         get() = StringBuilder()
             .append(sourceSymbol)
@@ -177,7 +190,7 @@ data class Swap(
                 getExpectedAmount(
                     expectedRate,
                     1.toString()
-                ).toDisplayNumber()
+                ).formatDisplayNumber()
             )
             .append(" ")
             .append(tokenDest.tokenSymbol)
@@ -191,7 +204,7 @@ data class Swap(
                 getExpectedAmount(
                     expectedRate,
                     1.toString()
-                ).multiply(tokenDest.rateUsdNow).toDisplayNumber()
+                ).multiply(tokenDest.rateUsdNow).formatDisplayNumber()
             )
             .append(" USD")
             .toString()
@@ -203,7 +216,7 @@ data class Swap(
                 getExpectedAmount(
                     expectedRate,
                     sourceAmount
-                ).multiply(tokenDest.rateUsdNow).toDisplayNumber()
+                ).multiply(tokenDest.rateUsdNow).formatDisplayNumber()
             )
             .append(" USD")
             .toString()
@@ -255,25 +268,25 @@ data class Swap(
         get() = Convert.fromWei(
             Convert.toWei(gas.fast.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
                 .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
-        ).toDisplayNumber()
+        ).formatDisplayNumber()
 
     val displayGasSuperFastFeeEth: String
         get() = Convert.fromWei(
             Convert.toWei(gas.superFast.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
                 .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
-        ).toDisplayNumber()
+        ).formatDisplayNumber()
 
     val displayGasStandardFeeEth: String
         get() = Convert.fromWei(
             Convert.toWei(gas.standard.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
                 .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
-        ).toDisplayNumber()
+        ).formatDisplayNumber()
 
     val displayGasLowFeeEth: String
         get() = Convert.fromWei(
             Convert.toWei(gas.low.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
                 .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
-        ).toDisplayNumber()
+        ).formatDisplayNumber()
 
     private val gasFeeUsd: BigDecimal
         get() =
@@ -289,7 +302,7 @@ data class Swap(
         get() = StringBuilder()
             .append("≈ ")
             .append(
-                gasFeeEth.toDisplayNumber()
+                gasFeeEth.formatDisplayNumber()
             )
             .append(" ETH")
             .toString()
@@ -298,7 +311,7 @@ data class Swap(
         get() = StringBuilder()
             .append("≈ ")
             .append(
-                gasFeeUsd.toDisplayNumber()
+                gasFeeUsd.formatDisplayNumber()
             )
             .append(" USD")
             .toString()
@@ -312,7 +325,7 @@ data class Swap(
             )).multiply(
             expectedRate.toBigDecimalOrDefaultZero()
         ))
-            .toDisplayNumber()
+            .formatDisplayNumber()
 
     val minConversionRate: BigInteger
         get() = Convert.toWei(

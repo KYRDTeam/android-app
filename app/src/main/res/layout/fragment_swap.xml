@@ -427,7 +427,7 @@
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="15dp"
                         android:gravity="end"
-                        android:text="@{swap.hasSamePair ? `` : swap.displayRate}"
+                        android:text="@{swap.hasSamePair ? `` : swap.displayRateByLocale}"
                         android:textColor="#141927"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"

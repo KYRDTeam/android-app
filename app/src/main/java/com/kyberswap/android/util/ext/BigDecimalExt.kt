@@ -10,6 +10,13 @@ fun BigDecimal.toDisplayNumber(): String {
     return if (internalValue.abs() > MIN_SUPPORT_AMOUNT) internalValue.toPlainString() else "0"
 }
 
+fun BigDecimal.formatDisplayNumber(): String {
+    val internalValue = toDisplayNumberInternal().toBigDecimalOrDefaultZero().stripTrailingZeros()
+    return if (internalValue.abs() > MIN_SUPPORT_AMOUNT) {
+        getKSNumberFormat().format(internalValue)
+    } else "0"
+}
+
 fun BigDecimal.toDisplayNumber(length: Int): String {
     return toDisplayNumberInternal(length)
 }
@@ -23,7 +30,8 @@ fun BigDecimal.toDisplayNumberInternal(length: Int = 4): String {
         if (s[0] != '0') {
             val scaleString =
                 list[0] + '.' + s.substring(0, if (s.length > length) length else s.length)
-            return scaleString.toBigDecimal().setScale(scaleString.length, RoundingMode.UP)
+            return scaleString.toBigDecimalOrDefaultZero()
+                .setScale(scaleString.length, RoundingMode.UP)
                 .stripTrailingZeros().toPlainString()
         } else {
             var index = 0
@@ -40,7 +48,7 @@ fun BigDecimal.toDisplayNumberInternal(length: Int = 4): String {
             val scaleString =
                 list[0] + '.' + s.substring(0, if (s.length > length) length else s.length)
             return scaleString
-                .toBigDecimal()
+                .toBigDecimalOrDefaultZero()
                 .stripTrailingZeros()
                 .toPlainString()
         }
@@ -48,5 +56,7 @@ fun BigDecimal.toDisplayNumberInternal(length: Int = 4): String {
 }
 
 fun BigDecimal.rounding(): BigDecimal {
-    return if (this - this.toBigInteger().toBigDecimal() > BigDecimal(1E-6)) this else this.toBigInteger().toBigDecimal()
+    return if (this - this.toBigInteger()
+            .toBigDecimal() > BigDecimal(1E-6)
+    ) this else this.toBigInteger().toBigDecimal()
 }

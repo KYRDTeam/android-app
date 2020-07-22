@@ -5,7 +5,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.kyberswap.android.data.api.alert.AlertEntity
-import com.kyberswap.android.util.ext.toDisplayNumber
+import com.kyberswap.android.util.ext.formatDisplayNumber
 import com.kyberswap.android.util.views.DateTimeHelper
 import kotlinx.android.parcel.Parcelize
 import java.math.BigDecimal
@@ -101,18 +101,18 @@ data class Alert(
             .append(base).toString()
 
     val displayAlertPrice: String
-        get() = if (alertPrice != BigDecimal.ZERO) alertPrice.toDisplayNumber() else ""
+        get() = if (alertPrice != BigDecimal.ZERO) alertPrice.formatDisplayNumber() else ""
 
     val alertPriceWithPrefix: String
         get() = StringBuilder().append(if (isAbove) "≥ " else "≤ ")
-            .append(alertPrice.toDisplayNumber()).toString()
+            .append(alertPrice.formatDisplayNumber()).toString()
 
     val displayCreatedAtPrice: String
-        get() = createdAtPrice.toDisplayNumber()
+        get() = createdAtPrice.formatDisplayNumber()
 
     val displayPercentChange: String
         get() = StringBuilder()
-            .append(percentChange.setScale(2, RoundingMode.UP)?.toDisplayNumber()).append("%")
+            .append(percentChange.setScale(2, RoundingMode.UP)?.formatDisplayNumber()).append("%")
             .toString()
 
     val displayTriggerAt: String
