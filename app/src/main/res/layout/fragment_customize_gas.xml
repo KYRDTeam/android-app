@@ -103,11 +103,14 @@
 
 
                     <TextView
+                        android:id="@+id/tvGasFee"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
+                        android:drawableEnd="@drawable/ic_gas_fee_question_mark"
+                        android:drawablePadding="6dp"
                         android:lineSpacingExtra="8sp"
-                        android:text="@string/gas_fee_gwei"
+                        android:text="@string/gas_fee_title"
                         android:textColor="#5a5e67"
                         android:textSize="12sp" />
 
@@ -134,9 +137,9 @@
                                 android:backgroundTint="#fea34c"
                                 android:paddingStart="4dp"
                                 android:paddingEnd="0dp"
-                                app:data="@{ gas != null ? String.format(@string/gas_super_fast, gas.superFast, feeSuperFast) : ``}"
                                 android:textSize="12sp"
                                 android:theme="@style/CustomRadioTheme"
+                                app:data="@{ gas != null ? String.format(@string/gas_super_fast, gas.superFast, feeSuperFast) : ``}"
                                 app:font="@{@string/semi_bold_font_path}"
                                 app:styleBold="@{gas.superFast}" />
 
@@ -148,9 +151,9 @@
                                 android:backgroundTint="#fea34c"
                                 android:paddingStart="4dp"
                                 android:paddingEnd="0dp"
-                                app:data="@{gas != null ? String.format(@string/gas_fast, gas.fast, feeFast): ``}"
                                 android:textSize="12sp"
                                 android:theme="@style/CustomRadioTheme"
+                                app:data="@{gas != null ? String.format(@string/gas_fast, gas.fast, feeFast): ``}"
                                 app:font="@{@string/semi_bold_font_path}"
                                 app:styleBold="@{gas.fast}" />
                         </LinearLayout>
@@ -169,9 +172,9 @@
                                 android:backgroundTint="#fea34c"
                                 android:paddingStart="4dp"
                                 android:paddingEnd="0dp"
-                                app:data="@{gas != null ? String.format(@string/gas_regular, gas.standard, feeStandard) : ``}"
                                 android:textSize="12sp"
                                 android:theme="@style/CustomRadioTheme"
+                                app:data="@{gas != null ? String.format(@string/gas_regular, gas.standard, feeStandard) : ``}"
                                 app:font="@{@string/semi_bold_font_path}"
                                 app:styleBold="@{gas.standard}" />
 
@@ -183,9 +186,9 @@
                                 android:backgroundTint="#fea34c"
                                 android:paddingStart="4dp"
                                 android:paddingEnd="0dp"
-                                app:data="@{gas != null ? String.format(@string/gas_slow, gas.low, feeSlow) : ``}"
                                 android:textSize="12sp"
                                 android:theme="@style/CustomRadioTheme"
+                                app:data="@{gas != null ? String.format(@string/gas_slow, gas.low, feeSlow) : ``}"
                                 app:font="@{@string/semi_bold_font_path}"
                                 app:styleBold="@{gas.low}" />
                         </LinearLayout>

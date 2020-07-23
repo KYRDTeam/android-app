@@ -94,7 +94,7 @@
     <string name="rate">교환 비율</string>
     <string name="default_source_amount">0.001</string>
     <string name="default_dest_balance_usd">≈ 0.0 USD</string>
-    <string name="gas_fee_gwei">가스 비용 (Gwei)</string>
+    <string name="gas_fee_title">가스 비용</string>
     <string name="gas_super_fast">%s 빠른 슈퍼\n~ %s ETH</string>
     <string name="gas_fast">%s 빠른\n~ %s ETH</string>
     <string name="gas_regular">%s 표준\n~ %s ETH</string>
@@ -767,5 +767,6 @@
     <string name="tutorial_amount">2000</string>
     <string name="tutorial_swap_amount">10</string>
     <string name="slippage_too_high_warning"> 슬리피지(손해)가 높습니다. 더 나은 비율을 갖기 위해 교환할 양을 줄이거나 여러번에 나눠서 교환하는 게 좋습니다.</string>
+    <string name="gas_fee_explanation">Gas fee is the fee you pay to the miner (not to KyberSwap) to mine your transaction on blockchain. The price of gas generally reflect how fast you want a transaction mined.</string>
 
 </resources>

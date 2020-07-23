@@ -18,6 +18,7 @@ import com.kyberswap.android.databinding.ActivitySendConfirmBinding
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.base.BaseFragment.Companion.HASH_PARAM
+import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.swap.GetGasLimitState
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
@@ -54,6 +55,9 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
     private var wallet: Wallet? = null
 
     private var isContactExist: Boolean = false
+
+    @Inject
+    lateinit var dialogHelper: DialogHelper
 
     @Inject
     lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -222,6 +226,10 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
                     )
                 )
             )
+        }
+
+        binding.tvGasFee.setOnClickListener {
+            dialogHelper.showBottomSheetGasFeeDialog()
         }
     }
 

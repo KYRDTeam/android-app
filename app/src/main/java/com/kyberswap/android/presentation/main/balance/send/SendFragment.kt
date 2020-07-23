@@ -254,6 +254,10 @@ class SendFragment : BaseFragment() {
             }
         })
 
+        binding.tvGasFee.setOnClickListener {
+            dialogHelper.showBottomSheetGasFeeDialog()
+        }
+
 
         binding.tvAdvanceOption.setOnClickListener {
             binding.expandableLayout.expand()

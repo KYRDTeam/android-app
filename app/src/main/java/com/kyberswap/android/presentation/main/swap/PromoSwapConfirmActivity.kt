@@ -14,6 +14,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
+import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.di.ViewModelFactory
 import org.consenlabs.tokencore.wallet.KeystoreStorage
@@ -31,6 +32,9 @@ class PromoSwapConfirmActivity : BaseActivity(), KeystoreStorage {
 
     @Inject
     lateinit var appExecutors: AppExecutors
+
+    @Inject
+    lateinit var dialogHelper: DialogHelper
 
     private var wallet: Wallet? = null
 
@@ -112,6 +116,10 @@ class PromoSwapConfirmActivity : BaseActivity(), KeystoreStorage {
 
         binding.tvCancel.setOnClickListener {
             onBackPressed()
+        }
+
+        binding.tvGasFee.setOnClickListener {
+            dialogHelper.showBottomSheetGasFeeDialog()
         }
 
         binding.tvConfirm.setOnClickListener {

@@ -103,7 +103,7 @@
     <string name="percentage_format_with_percent" formatted="false" translatable="false">"%s%%"</string>
     <string name="dest_balance_usd_format" formatted="false" translatable="false">"≈ %s USD"</string>
     <string name="default_dest_balance_usd">≈ 0.0 USD</string>
-    <string name="gas_fee_gwei">GAS fee (Gwei)</string>
+    <string name="gas_fee_title">GAS fee</string>
     <string name="gas_super_fast">%s SUPER FAST\n~ %s ETH</string>
     <string name="gas_fast">%s FAST\n~ %s ETH</string>
     <string name="gas_regular">%s REGULAR\n~ %s ETH</string>
@@ -766,6 +766,7 @@
     <string name="tutorial_amount">2000</string>
     <string name="tutorial_swap_amount">10</string>
     <string name="slippage_too_high_warning">Slippage is high. You may want to reduce your swap amount and do multiple swaps for a better rate.</string>
+    <string name="gas_fee_explanation">Gas fee is the fee you pay to the miner (not to KyberSwap) to mine your transaction on blockchain. The price of gas generally reflect how fast you want a transaction mined.</string>
 
 
     <string-array name="proof_address">

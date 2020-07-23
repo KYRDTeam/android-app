@@ -15,6 +15,7 @@ import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.swap.GetGasPriceState
@@ -50,6 +51,9 @@ class CustomizeGasFragment : BaseFragment() {
 
     @Inject
     lateinit var analytics: FirebaseAnalytics
+
+    @Inject
+    lateinit var dialogHelper: DialogHelper
 
     private var wallet: Wallet? = null
 
@@ -238,6 +242,10 @@ class CustomizeGasFragment : BaseFragment() {
                     }
                 }
             })
+
+        binding.tvGasFee.setOnClickListener {
+            dialogHelper.showBottomSheetGasFeeDialog()
+        }
 
         binding.tvDone.setOnClickListener {
             selectedGasPrice?.let { price ->

@@ -847,6 +847,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             )
         }
 
+        tvGasFee.setOnClickListener {
+            dialogHelper.showBottomSheetGasFeeDialog()
+        }
+
         viewModel.saveSwapDataCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == SaveSwapState.Loading)

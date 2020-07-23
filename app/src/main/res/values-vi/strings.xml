@@ -95,7 +95,7 @@
     <string name="rate">Tỷ Giá</string>
     <string name="default_source_amount">0.001</string>
     <string name="default_dest_balance_usd">≈ 0.0 USD</string>
-    <string name="gas_fee_gwei">Phí GAS (Gwei)</string>
+    <string name="gas_fee_title">Phí GAS</string>
     <string name="gas_super_fast">%s Rất Nhanh\n~ %s ETH</string>
     <string name="gas_fast">%s Nhanh\n~ %s ETH</string>
     <string name="gas_regular">%s Thường\n~ %s ETH</string>
@@ -767,5 +767,6 @@
     <string name="tutorial_amount">2000</string>
     <string name="tutorial_swap_amount">10</string>
     <string name="slippage_too_high_warning">Mức trượt giá đang cao. Bạn có thể giảm lượng giao dịch hoặc chia nhỏ lệnh của bạn để có tỉ giá tốt hơn.</string>
+    <string name="gas_fee_explanation">Phí gas là phí bạn phải trả cho miner (không phải KyberSwap) để họ xác nhận giao dịch của bạn trên blockchain. Phí gas bạn chọn sẽ ảnh hưởng đến tốc độ giao dịch.</string>
 
 </resources>

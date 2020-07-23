@@ -452,11 +452,14 @@
                                 android:src="@drawable/ic_icon_24_px" />
 
                             <TextView
+                                android:id="@+id/tvGasFee"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="20dp"
+                                android:drawableEnd="@drawable/ic_gas_fee_question_mark"
+                                android:drawablePadding="6dp"
                                 android:lineSpacingExtra="8sp"
-                                android:text="@string/gas_fee_gwei"
+                                android:text="@string/gas_fee_title"
                                 android:textColor="#5a5e67"
                                 android:textSize="12sp" />
 
@@ -481,9 +484,9 @@
                                         android:backgroundTint="#fea34c"
                                         android:paddingStart="4dp"
                                         android:paddingEnd="0dp"
-                                        app:data="@{String.format(@string/gas_super_fast, send.gas.superFast, send.displayGasSuperFastFeeEth)}"
                                         android:textSize="12sp"
                                         android:theme="@style/CustomRadioTheme"
+                                        app:data="@{String.format(@string/gas_super_fast, send.gas.superFast, send.displayGasSuperFastFeeEth)}"
                                         app:font="@{@string/semi_bold_font_path}"
                                         app:styleBold="@{send.gas.superFast}" />
 
@@ -495,9 +498,9 @@
                                         android:backgroundTint="#fea34c"
                                         android:paddingStart="4dp"
                                         android:paddingEnd="0dp"
-                                        app:data="@{String.format(@string/gas_fast, send.gas.fast, send.displayGasFastFeeEth)}"
                                         android:textSize="12sp"
                                         android:theme="@style/CustomRadioTheme"
+                                        app:data="@{String.format(@string/gas_fast, send.gas.fast, send.displayGasFastFeeEth)}"
                                         app:font="@{@string/semi_bold_font_path}"
                                         app:styleBold="@{send.gas.fast}" />
                                 </LinearLayout>
@@ -516,9 +519,9 @@
                                         android:backgroundTint="#fea34c"
                                         android:paddingStart="4dp"
                                         android:paddingEnd="0dp"
-                                        app:data="@{String.format(@string/gas_regular, send.gas.standard, send.displayGasStandardFeeEth)}"
                                         android:textSize="12sp"
                                         android:theme="@style/CustomRadioTheme"
+                                        app:data="@{String.format(@string/gas_regular, send.gas.standard, send.displayGasStandardFeeEth)}"
                                         app:font="@{@string/semi_bold_font_path}"
                                         app:styleBold="@{send.gas.standard}" />
 
@@ -530,9 +533,9 @@
                                         android:backgroundTint="#fea34c"
                                         android:paddingStart="4dp"
                                         android:paddingEnd="0dp"
-                                        app:data="@{String.format(@string/gas_slow, send.gas.low, send.displayGasLowFeeEth)}"
                                         android:textSize="12sp"
                                         android:theme="@style/CustomRadioTheme"
+                                        app:data="@{String.format(@string/gas_slow, send.gas.low, send.displayGasLowFeeEth)}"
                                         app:font="@{@string/semi_bold_font_path}"
                                         app:styleBold="@{send.gas.low}" />
                                 </LinearLayout>
