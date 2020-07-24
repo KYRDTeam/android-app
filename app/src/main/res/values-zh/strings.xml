@@ -373,7 +373,7 @@
     <string name="name_your_wallet_optional">钱包名称 (可选)</string>
     <string name="edit_wallet">编辑钱包</string>
     <string name="ba_skip">跳跃?</string>
-    <string name="you_can_backup_your_wallet_later">您可以稍后备份您的钱包</string>
+    <string name="you_can_backup_your_wallet_later">"⚠️ Warning: You must back up your wallet and keep your mnemonics secure.\n\nWhy? If you lose your phone, or uninstall the app or clear app's memory, you won't be able to access your wallet and funds.\n\nWhy keep your backup secure? Anyone with your backup can steal your wallet assets"</string>
     <string name="show_backup_phrase">显示备份短语</string>
     <string name="delete_wallet">删除钱包</string>
     <string name="backup_keystore">备份Keystore</string>

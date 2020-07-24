@@ -372,7 +372,7 @@
     <string name="name_your_wallet_optional">Tên ví của bạn (tùy chọn)</string>
     <string name="edit_wallet">Chỉnh sử ví</string>
     <string name="ba_skip">Bỏ qua?</string>
-    <string name="you_can_backup_your_wallet_later">Bạn có thể sao lưu ví của mình sau: Cài đặt > Quản Lý Ví > Chỉnh sử ví > Hiển thị cụm từ sao lưu</string>
+    <string name="you_can_backup_your_wallet_later">"⚠️ Warning: You must back up your wallet and keep your mnemonics secure.\n\nWhy? If you lose your phone, or uninstall the app or clear app's memory, you won't be able to access your wallet and funds.\n\nWhy keep your backup secure? Anyone with your backup can steal your wallet assets"</string>
     <string name="show_backup_phrase">Hiển thị cụm từ sao lưu</string>
     <string name="delete_wallet">Xoá ví</string>
     <string name="backup_keystore">Sao lưu Keystore</string>

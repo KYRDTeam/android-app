@@ -361,7 +361,13 @@ class SwapDataRepository @Inject constructor(
     }
 
     override fun getGasPrice(): Flowable<Gas> {
-        return api.getGasPrice().map { it.data }
+        return api.getGasPrice().map {
+            if (it.success) {
+                it.data
+            } else {
+                tokenClient.getGasPrice()
+            }
+        }
             .map { mapper.transform(it) }
             .repeatWhen {
                 it.delay(30, TimeUnit.SECONDS)

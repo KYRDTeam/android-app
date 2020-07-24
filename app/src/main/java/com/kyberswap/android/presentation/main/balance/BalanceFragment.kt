@@ -35,6 +35,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.CustomLinearLayoutManager
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
+import com.kyberswap.android.presentation.common.TutorialView
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.swap.SaveSendState
@@ -83,7 +84,7 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class BalanceFragment : BaseFragment(), PendingTransactionNotification {
+class BalanceFragment : BaseFragment(), PendingTransactionNotification, TutorialView {
 
     private lateinit var binding: FragmentBalanceBinding
 
@@ -103,6 +104,8 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     lateinit var analytics: FirebaseAnalytics
 
     private var currentSelectedView: View? = null
+
+    private var isViewVisible: Boolean = false
 
     private val isCurrencySelected: Boolean
         get() = binding.header.tvEth == orderByOptions[orderBySelectedIndex] && binding.header.tvEth.compoundDrawables.isNotEmpty()
@@ -178,6 +181,8 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
     private var tokenAdapter: TokenAdapter? = null
 
+    private var spotlight: Spotlight? = null
+
     private val eventOrderParam: String
         get() = when {
             isKyberListed -> KYBER_LISTED
@@ -207,6 +212,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                         BALANCE_TOKEN_TAPPED,
                         Bundle().createEvent(TOKEN_NAME, it.tokenSymbol)
                     )
+                    skipTutorial()
                     navigateToChartScreen(it)
                 },
                 {
@@ -297,6 +303,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         }
 
         binding.imgFlag.setOnClickListener {
+            skipTutorial()
             navigator.navigateToNotificationScreen(currentFragment)
             analytics.logEvent(
                 BALANCE_NOTI_FLAG,
@@ -310,17 +317,20 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         binding.tvKyberList.setOnClickListener {
             if (it.isSelected) return@setOnClickListener
             tokenAdapter?.setTokenType(TokenType.LISTED, getFilterTokenList(currentSearchString))
+            skipTutorial()
             setSelectedOption(it)
             handleEmptyList()
         }
 
         binding.tvFavOther.setOnClickListener {
             toggleOtherFavDisplay(it as TextView)
+            skipTutorial()
             handleEmptyList()
         }
 
         openedAddressView.forEach { view ->
             view.setOnClickListener {
+                skipTutorial()
                 navigator.navigateToBalanceAddressScreen(currentFragment)
                 analytics.logEvent(
                     BALANCE_ADDRESS_SHOWN,
@@ -577,6 +587,21 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             openUrl(getString(R.string.buy_eth_endpoint))
             analytics.logEvent(BALANCE_BUYETH_YES, Bundle().createEvent())
         }
+
+        binding.root.doOnPreDraw {
+            binding.rvToken.addOnChildAttachStateChangeListener(object :
+                OnChildAttachStateChangeListener {
+                override fun onChildViewAttachedToWindow(view: View) {
+                    if (binding.rvToken.childCount == 5) {
+                        binding.rvToken.removeOnChildAttachStateChangeListener(this)
+                        isViewVisible = true
+                        showTutorial()
+                    }
+                }
+
+                override fun onChildViewDetachedFromWindow(view: View) {}
+            })
+        }
     }
 
     fun getSelectedWallet() {
@@ -584,8 +609,8 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     }
 
     fun displaySpotLight() {
-        val targets = ArrayList<Target>()
         if (activity == null) return
+        val targets = ArrayList<Target>()
         val overlayTotalBalanceBinding =
             DataBindingUtil.inflate<LayoutBalanceTargetBinding>(
                 LayoutInflater.from(activity), R.layout.layout_balance_target, null, false
@@ -603,6 +628,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
                 }
 
                 override fun onEnded() {
+                    mediator.showBalanceTutorial(true)
                 }
             })
             .build()
@@ -610,7 +636,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
 
         val overlayBuyEthBalanceBinding =
             DataBindingUtil.inflate<LayoutBalanceTargetBuyEthBinding>(
-                LayoutInflater.from(activity), R.layout.layout_balance_target_buy_eth, null, false
+                LayoutInflater.from(activity),
+                R.layout.layout_balance_target_buy_eth,
+                null,
+                false
             )
 
         val secondTarget = Target.Builder()
@@ -710,7 +739,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         }
 
         // create spotlight
-        val spotlight = Spotlight.Builder(activity!!)
+        spotlight = Spotlight.Builder(activity!!)
             .setBackgroundColor(R.color.color_tutorial)
             .setTargets(targets)
             .setDuration(1000L)
@@ -718,7 +747,6 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             .setContainer(activity!!.window.decorView.findViewById(android.R.id.content))
             .setOnSpotlightListener(object : OnSpotlightListener {
                 override fun onStarted() {
-                    mediator.showBalanceTutorial(true)
                 }
 
                 override fun onEnded() {
@@ -726,23 +754,28 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
             })
             .build()
 
-        spotlight.start()
+        if (currentFragment is BalanceFragment) {
+            spotlight?.start()
+        } else {
+            spotlight?.finish()
+        }
+
 
         overlayTotalBalanceBinding.tvNext.setOnClickListener {
-            spotlight.next()
+            spotlight?.next()
         }
 
         overlayBuyEthBalanceBinding.tvNext.setOnClickListener {
-            spotlight.next()
+            spotlight?.next()
         }
 
         overlayTokenBalanceBinding.tvNext.setOnClickListener {
-            spotlight.next()
+            spotlight?.next()
         }
 
         var swipeLayout: SwipeLayout? = null
         overlayTokenPriceTargetBinding.tvNext.setOnClickListener {
-            spotlight.next()
+            spotlight?.next()
             swipeLayout =
                 binding.rvToken.findViewHolderForLayoutPosition(1)?.itemView?.findViewById<SwipeLayout>(
                     R.id.swipe
@@ -751,7 +784,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
         }
 
         overlaySwipeTargetBinding.tvNext.setOnClickListener {
-            spotlight.next()
+            spotlight?.next()
             swipeLayout?.close(true)
         }
     }
@@ -759,18 +792,8 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     fun showTutorial() {
         if (activity == null) return
         if (mediator.isShownBalanceTutorial()) return
-        binding.root.doOnPreDraw {
-            binding.rvToken.addOnChildAttachStateChangeListener(object :
-                OnChildAttachStateChangeListener {
-                override fun onChildViewAttachedToWindow(view: View) {
-                    if (binding.rvToken.childCount == 5) {
-                        binding.rvToken.removeOnChildAttachStateChangeListener(this)
-                        displaySpotLight()
-                    }
-                }
-
-                override fun onChildViewDetachedFromWindow(view: View) {}
-            })
+        if (isViewVisible) {
+            displaySpotLight()
         }
     }
 
@@ -973,8 +996,15 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification {
     override fun onDestroyView() {
         viewModel.compositeDisposable.clear()
         handler.removeCallbacksAndMessages(null)
+        isViewVisible = false
+        spotlight?.finish()
         super.onDestroyView()
     }
+
+    override fun skipTutorial() {
+        spotlight?.finish()
+    }
+
 
     private fun moveToSwapTab() {
         if (activity is MainActivity) {

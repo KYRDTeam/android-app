@@ -389,7 +389,7 @@
     <string name="name_your_wallet_optional">Name of your wallet (optional)</string>
     <string name="edit_wallet">Edit Wallet</string>
     <string name="ba_skip">Skip?</string>
-    <string name="you_can_backup_your_wallet_later">You can backup your wallet later in Setting > Manage Wallet > Edit Wallet > Show Backup Phrase</string>
+    <string name="you_can_backup_your_wallet_later">"⚠️ Warning: You must back up your wallet and keep your mnemonics secure.\n\nWhy? If you lose your phone, or uninstall the app or clear app's memory, you won't be able to access your wallet and funds.\n\nWhy keep your backup secure? Anyone with your backup can steal your wallet assets"</string>
     <string name="show_backup_phrase">Show Backup Phrase</string>
     <string name="delete_wallet">Delete Wallet</string>
     <string name="backup_keystore">Backup Keystore</string>
