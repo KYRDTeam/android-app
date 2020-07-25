@@ -94,7 +94,7 @@
     <string name="rate">汇率</string>
     <string name="default_source_amount">0.001</string>
     <string name="default_dest_balance_usd">≈ 0.0 USD</string>
-    <string name="gas_fee_gwei">燃料费用（Gwei）</string>
+    <string name="gas_fee_title">燃料费用</string>
     <string name="gas_super_fast">%s 极速\n~ %s ETH</string>
     <string name="gas_fast">%s 快速\n~ %s ETH</string>
     <string name="gas_regular">%s 标准\n~ %s ETH</string>
@@ -207,7 +207,7 @@
     <string name="percent_50">50%</string>
     <string name="percent_100">100%</string>
     <string name="limit_order_rate_of">汇率</string>
-    <string name="limit_order_discount">持有2000KNC以上可享受享受折扣。</string>
+    <string name="limit_order_discount">持有2,000KNC以上可享受享受折扣。</string>
     <string name="limit_order_fee">%s %s </string>
     <string name="discount_fee">%.2f%% OFF</string>
     <string name="transaction_from">从</string>
@@ -373,7 +373,7 @@
     <string name="name_your_wallet_optional">钱包名称 (可选)</string>
     <string name="edit_wallet">编辑钱包</string>
     <string name="ba_skip">跳跃?</string>
-    <string name="you_can_backup_your_wallet_later">您可以稍后备份您的钱包</string>
+    <string name="you_can_backup_your_wallet_later">"⚠️ Warning: You must back up your wallet and keep your mnemonics secure.\n\nWhy? If you lose your phone, or uninstall the app or clear app's memory, you won't be able to access your wallet and funds.\n\nWhy keep your backup secure? Anyone with your backup can steal your wallet assets"</string>
     <string name="show_backup_phrase">显示备份短语</string>
     <string name="delete_wallet">删除钱包</string>
     <string name="backup_keystore">备份Keystore</string>
@@ -768,5 +768,6 @@
     <string name="tutorial_amount">2000</string>
     <string name="tutorial_swap_amount">10</string>
     <string name="slippage_too_high_warning">滑点很高。为了得到更好的汇率，您可能需要减少兑换金额或分成多次兑换</string>
+    <string name="gas_fee_explanation">向矿工（非Kyberswap）支付燃料费用，以促进在以太坊区块链上的交易。一般来说，燃料价格越高，交易执行得越快。燃料价格取决于区块链的拥挤程度，而不是由KyberSwap决定的。</string>
 
 </resources>

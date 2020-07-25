@@ -26,12 +26,13 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
-                android:gravity="center_horizontal"
                 android:letterSpacing="0.07"
+                android:lineSpacingExtra="4sp"
                 android:text="@string/you_can_backup_your_wallet_later"
+                android:textAppearance="@style/TextAppearance.Roboto.Medium"
                 android:textColor="#141927"
                 android:textSize="14sp" />
 

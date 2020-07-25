@@ -26,6 +26,14 @@ fun String.hexWithPrefix(): String {
     }
 }
 
+fun String?.toNumberFormat(): String {
+    return toBigDecimalOrDefaultZero().formatDisplayNumber()
+}
+
+fun String.withoutSeparator(): String {
+    return replace(getKSNumberFormat().thousandSeparator().toString(), "")
+}
+
 fun String.validPassword(): Boolean {
     return Pattern.compile(PATTERN_REGEX_PASSWORD).matcher(this).matches()
 }
@@ -68,7 +76,7 @@ fun String?.toBigIntSafe(): BigInteger {
 fun String.toDoubleSafe(): Double {
     if (isNullOrEmpty()) return 0.0
     return try {
-        toDouble()
+        toDoubleOrDefaultZero()
     } catch (ex: NumberFormatException) {
         ex.printStackTrace()
         0.0
@@ -106,9 +114,9 @@ fun CharSequence.ensAddress(): String? {
 
 fun String?.percentage(other: String?): BigDecimal {
     if (other.isNullOrEmpty() || this.isNullOrEmpty()) return BigDecimal.ZERO
-    if (other.toBigDecimal() == BigDecimal.ZERO || other.toDouble() == 0.0) return BigDecimal.ZERO
+    if (other.toBigDecimalOrDefaultZero() == BigDecimal.ZERO || other.toDoubleOrDefaultZero() == 0.0) return BigDecimal.ZERO
     return try {
-        (this.toDouble() - other.toDouble()).div(other.toDouble())
+        (this.toDoubleOrDefaultZero() - other.toDoubleOrDefaultZero()).div(other.toDoubleOrDefaultZero())
             .times(100f)
             .toBigDecimal()
             .setScale(2, RoundingMode.UP)
@@ -131,7 +139,8 @@ fun String.toDate(): Date {
 fun String?.toBigDecimalOrDefaultZero(): BigDecimal {
     if (this.isNullOrEmpty()) return BigDecimal.ZERO
     return try {
-        BigDecimal(this)
+        val format = getKSNumberFormat().parse(this).toString()
+        BigDecimal(format)
     } catch (ex: Exception) {
         ex.printStackTrace()
         BigDecimal.ZERO
@@ -141,7 +150,7 @@ fun String?.toBigDecimalOrDefaultZero(): BigDecimal {
 fun CharSequence?.toBigDecimalOrDefaultZero(): BigDecimal {
     if (this.isNullOrEmpty()) return BigDecimal.ZERO
     return try {
-        BigDecimal(this.toString())
+        toString().toBigDecimalOrDefaultZero()
     } catch (ex: Exception) {
         ex.printStackTrace()
         BigDecimal.ZERO
@@ -165,7 +174,8 @@ fun String.shortenValue(): String {
 fun String?.toBigIntegerOrDefaultZero(): BigInteger {
     if (this.isNullOrEmpty()) return BigInteger.ZERO
     return try {
-        BigInteger(this)
+        val format = getKSNumberFormat().parse(this).toString()
+        BigInteger(format)
     } catch (ex: Exception) {
         ex.printStackTrace()
         BigInteger.ZERO
@@ -183,7 +193,7 @@ fun String.exactAmount(): String {
 fun String?.toDoubleOrDefaultZero(): Double {
     if (this.isNullOrEmpty() || this.trim() == "--") return 0.0
     return try {
-        toDouble()
+        getKSNumberFormat().parse(this).toDouble()
     } catch (ex: Exception) {
         ex.printStackTrace()
         0.0
@@ -191,7 +201,7 @@ fun String?.toDoubleOrDefaultZero(): Double {
 }
 
 fun String.updatePrecision(): String {
-    return (this.toDouble() / 10.0.pow(18)).toBigDecimal().toPlainString()
+    return (this.toDoubleOrDefaultZero() / 10.0.pow(18)).toBigDecimal().toPlainString()
 }
 
 fun String.toBytes32(): CustomBytes32 {

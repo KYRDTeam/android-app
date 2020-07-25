@@ -24,6 +24,7 @@ import com.kyberswap.android.presentation.common.isKatalyst
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntSafe
+import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
 import com.kyberswap.android.util.ext.updatePrecision
 import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
@@ -124,8 +125,9 @@ class TokenDataRepository @Inject constructor(
         val tokenDest = param.tokenDest
         val isETHWETHPair =
             (tokenSource.isETH || tokenSource.isWETH || tokenSource.isETHWETH) && (tokenDest.isETH || tokenDest.isWETH || tokenDest.isETHWETH)
-        val amount = 10.0.pow(tokenSource.tokenDecimal).times(param.srcAmount.toDouble())
-            .toBigDecimal().toBigInteger()
+        val amount =
+            10.0.pow(tokenSource.tokenDecimal).times(param.srcAmount.toDoubleOrDefaultZero())
+                .toBigDecimal().toBigInteger()
         val platformFee = if (isETHWETHPair) BigInteger.ZERO else param.platformFee.toBigInteger()
         return Single.fromCallable {
             val expectedRate = tokenClient.getExpectedRate(
@@ -146,8 +148,9 @@ class TokenDataRepository @Inject constructor(
         val isETHWETHPair =
             (tokenSource.isETH || tokenSource.isWETH || tokenSource.isETHWETH) && (tokenDest.isETH || tokenDest.isWETH || tokenDest.isETHWETH)
 
-        val amount = 10.0.pow(tokenSource.tokenDecimal).times(param.srcAmount.toDouble())
-            .toBigDecimal().toBigInteger()
+        val amount =
+            10.0.pow(tokenSource.tokenDecimal).times(param.srcAmount.toDoubleOrDefaultZero())
+                .toBigDecimal().toBigInteger()
         return tokenApi.getExpectedRate(tokenSource.tokenAddress, tokenDest.tokenAddress, amount)
             .map {
                 if (it.error) {

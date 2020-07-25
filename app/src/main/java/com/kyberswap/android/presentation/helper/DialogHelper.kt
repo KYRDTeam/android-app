@@ -41,6 +41,7 @@ import com.kyberswap.android.databinding.DialogDataTranformationBinding
 import com.kyberswap.android.databinding.DialogEligibleTokenBinding
 import com.kyberswap.android.databinding.DialogExtraBottomSheetBinding
 import com.kyberswap.android.databinding.DialogForgotPasswordBinding
+import com.kyberswap.android.databinding.DialogGasFeeBottomSheetBinding
 import com.kyberswap.android.databinding.DialogImagePickerBottomSheetBinding
 import com.kyberswap.android.databinding.DialogInfoBinding
 import com.kyberswap.android.databinding.DialogInvalidatedBottomSheetBinding
@@ -237,6 +238,15 @@ class DialogHelper @Inject constructor(
 
         binding.tvExtra.colorize(order.extraDisplay, R.color.color_order_extra)
 
+        dialog.show()
+    }
+
+    fun showBottomSheetGasFeeDialog() {
+        val binding = DataBindingUtil.inflate<DialogGasFeeBottomSheetBinding>(
+            LayoutInflater.from(activity), R.layout.dialog_gas_fee_bottom_sheet, null, false
+        )
+        val dialog = BottomSheetDialog(activity)
+        dialog.setContentView(binding.root)
         dialog.show()
     }
 

@@ -15,6 +15,7 @@ import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.base.BaseFragment.Companion.HASH_PARAM
 import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
+import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.util.AMOUNT
 import com.kyberswap.android.util.CURRENT_RATE
@@ -48,6 +49,9 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
     lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private var wallet: Wallet? = null
+
+    @Inject
+    lateinit var dialogHelper: DialogHelper
 
     private var platformFee: Int = PLATFORM_FEE_BPS
 
@@ -254,6 +258,10 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
                 )
             )
             onBackPressed()
+        }
+
+        binding.tvGasFee.setOnClickListener {
+            dialogHelper.showBottomSheetGasFeeDialog()
         }
 
         binding.tvConfirm.setOnClickListener {

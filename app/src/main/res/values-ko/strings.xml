@@ -94,7 +94,7 @@
     <string name="rate">교환 비율</string>
     <string name="default_source_amount">0.001</string>
     <string name="default_dest_balance_usd">≈ 0.0 USD</string>
-    <string name="gas_fee_gwei">가스 비용 (Gwei)</string>
+    <string name="gas_fee_title">가스 비용</string>
     <string name="gas_super_fast">%s 빠른 슈퍼\n~ %s ETH</string>
     <string name="gas_fast">%s 빠른\n~ %s ETH</string>
     <string name="gas_regular">%s 표준\n~ %s ETH</string>
@@ -207,7 +207,7 @@
     <string name="percent_50">50%</string>
     <string name="percent_100">100%</string>
     <string name="limit_order_rate_of">Rate of</string>
-    <string name="limit_order_discount">2000KNC부터는 홀드하여 주문에 대한 할인을 받으세요.</string>
+    <string name="limit_order_discount">2,000KNC부터는 홀드하여 주문에 대한 할인을 받으세요.</string>
     <string name="limit_order_fee">%s %s </string>
     <string name="discount_fee">%.2f%% OFF</string>
     <string name="transaction_from">From</string>
@@ -376,7 +376,7 @@
     <string name="name_your_wallet_optional">지갑 이름 (선택 사항)</string>
     <string name="edit_wallet">지갑 수정</string>
     <string name="ba_skip">건너뛰기?</string>
-    <string name="you_can_backup_your_wallet_later">나중에 지갑을 백업 할 수 있습니다.</string>
+    <string name="you_can_backup_your_wallet_later">"⚠️ Warning: You must back up your wallet and keep your mnemonics secure.\n\nWhy? If you lose your phone, or uninstall the app or clear app's memory, you won't be able to access your wallet and funds.\n\nWhy keep your backup secure? Anyone with your backup can steal your wallet assets"</string>
     <string name="show_backup_phrase">백업 구문 표시</string>
     <string name="delete_wallet">지갑 삭제</string>
     <string name="backup_keystore">키스토어 백업</string>
@@ -767,5 +767,6 @@
     <string name="tutorial_amount">2000</string>
     <string name="tutorial_swap_amount">10</string>
     <string name="slippage_too_high_warning"> 슬리피지(손해)가 높습니다. 더 나은 비율을 갖기 위해 교환할 양을 줄이거나 여러번에 나눠서 교환하는 게 좋습니다.</string>
+    <string name="gas_fee_explanation">Gas fee is the fee you pay to the miner (not to KyberSwap) to mine your transaction on blockchain. The price of gas generally reflect how fast you want a transaction mined.</string>
 
 </resources>

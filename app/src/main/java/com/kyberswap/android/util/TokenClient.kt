@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
+import com.kyberswap.android.data.api.gas.GasEntity
 import com.kyberswap.android.data.db.NonceDao
 import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.data.db.TransactionDao
@@ -1670,5 +1671,24 @@ class TokenClient @Inject constructor(
 
     fun revertResolve(address: String): String {
         return EnsResolver(web3jAlchemyNode).reverseResolve(address)
+    }
+
+    @Throws(Exception::class)
+    fun getGasPrice(): GasEntity {
+        val send = web3jAlchemyNode.ethGasPrice().send()
+        return if (send?.hasError() == true) {
+            throw RuntimeException("can't get gas price from node")
+        } else {
+            val gasPrice = send.gasPrice
+            val gwei = Convert.fromWei(gasPrice.toString(), Convert.Unit.GWEI)
+            GasEntity(
+                default = gwei.toString(),
+                fast = (gwei * 1.2.toBigDecimal()).toBigInteger().toString(),
+                low = gwei.divide(1.2.toBigDecimal(), 18, RoundingMode.UP).toBigInteger()
+                    .toString(),
+                standard =
+                gwei.toString()
+            )
+        }
     }
 }

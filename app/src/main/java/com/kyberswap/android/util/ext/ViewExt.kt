@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.kyberswap.android.R
 import java.math.BigDecimal
+import java.util.Locale
 
 fun View.toggleSelection() {
     this.isSelected = !this.isSelected
@@ -28,7 +29,7 @@ fun EditText.swap(other: EditText) {
 fun EditText.textToDouble(): Double {
     if (this.text.isNullOrEmpty()) return 0.0
     return try {
-        text.toString().toDouble()
+        text.toString().toDoubleOrDefaultZero()
     } catch (ex: NumberFormatException) {
         ex.printStackTrace()
         0.0
@@ -84,7 +85,11 @@ fun TextView.colorRate(rate: BigDecimal) {
 
         val color: Int
         val ratePercent =
-            String.format(context.getString(R.string.rate_percent), rate.abs().toString())
+            String.format(
+                Locale.US,
+                context.getString(R.string.rate_percent),
+                rate.abs().formatDisplayNumber()
+            )
         val text: String
         when {
             rate > BigDecimal.ZERO -> {

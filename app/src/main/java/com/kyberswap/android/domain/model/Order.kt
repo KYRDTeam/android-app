@@ -5,8 +5,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.kyberswap.android.data.api.limitorder.OrderEntity
 import com.kyberswap.android.util.ext.exactAmount
+import com.kyberswap.android.util.ext.formatDisplayNumber
 import com.kyberswap.android.util.ext.shortenValue
-import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toLongSafe
 import kotlinx.android.parcel.Parcelize
 import java.math.BigDecimal
@@ -92,8 +92,8 @@ data class Order(
                 minRate,
                 10,
                 RoundingMode.CEILING
-            ).toDisplayNumber()
-        else minRate.toDisplayNumber()
+            ).formatDisplayNumber()
+        else minRate.formatDisplayNumber()
 
     val displayTotal: String
         get() = if (sideTrade.equals(SIDE_TRADE_BUY, true)) sourceDisplay else destDisplay
@@ -117,33 +117,33 @@ data class Order(
                 .append("/")
                 .append(dst)
                 .append(" >= ")
-                .append(minRate.toDisplayNumber())
+                .append(minRate.formatDisplayNumber())
                 .toString()
 
     val sourceDisplay: String
         get() = StringBuilder()
-            .append(srcAmount.toDisplayNumber())
+            .append(srcAmount.formatDisplayNumber())
             .append(" ")
             .append(src)
             .toString()
 
     val destDisplay: String
         get() = StringBuilder()
-            .append(receivedSource.multiply(minRate, MathContext(10)).toDisplayNumber())
+            .append(receivedSource.multiply(minRate, MathContext(10)).formatDisplayNumber())
             .append(" ")
             .append(dst)
             .toString()
 
     val receviedDisplay: String
         get() = StringBuilder()
-            .append(receive.toDisplayNumber())
+            .append(receive.formatDisplayNumber())
             .append(" ")
             .append(dst)
             .toString()
 
     val destDisplayFee: String
         get() = StringBuilder()
-            .append(fee.multiply(srcAmount).toDisplayNumber().exactAmount())
+            .append(fee.multiply(srcAmount).formatDisplayNumber().exactAmount())
             .append(" ")
             .append(src)
             .toString()
@@ -152,7 +152,7 @@ data class Order(
         get() = receive.minus(receivedSource.multiply(minRate))
 
     private val extraValue: String
-        get() = if (extra > BigDecimal.ZERO) extra.toDisplayNumber() else ""
+        get() = if (extra > BigDecimal.ZERO) extra.formatDisplayNumber() else ""
 
     val extraDisplay: String
         get() = if (extraValue.isNotEmpty())

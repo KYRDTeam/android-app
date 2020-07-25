@@ -49,6 +49,7 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.KeyImeChange
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
+import com.kyberswap.android.presentation.common.TutorialView
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
@@ -91,6 +92,7 @@ import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
 import com.kyberswap.android.util.ext.toDoubleSafe
+import com.kyberswap.android.util.ext.toNumberFormat
 import com.kyberswap.android.util.ext.underline
 import com.takusemba.spotlight.OnSpotlightListener
 import com.takusemba.spotlight.OnTargetListener
@@ -106,7 +108,8 @@ import java.math.RoundingMode
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
-class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, LoginState {
+class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, LoginState,
+    TutorialView {
 
     private lateinit var binding: FragmentLimitOrderV2Binding
 
@@ -158,6 +161,9 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
             return if (priceUsd == BigDecimal.ZERO) "--" else priceUsd.toDisplayNumber()
         }
 
+    val displayPriceUsdQuote: String
+        get() = priceUsdQuote.toNumberFormat()
+
     private var pendingBalances: PendingBalances? = null
 
     private val totalAmount: String
@@ -180,6 +186,8 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
     val compositeDisposable = CompositeDisposable()
 
     var hasUserFocus: Boolean? = false
+
+    private var spotlight: Spotlight? = null
 
     private val handler by lazy {
         Handler()
@@ -235,13 +243,17 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         }
 
     private val balanceText: String
-        get() = binding.tvBalance.text.toString().split(" ").first()
+        get() = binding.tvBalance.text.toBigDecimalOrDefaultZero().toDisplayNumber().split(" ")
+            .first()
 
     private val marketPrice: String?
         get() {
-            return if (type == LocalLimitOrder.TYPE_SELL) binding.market?.displaySellPrice
-            else binding.market?.displayBuyPrice
+            return if (type == LocalLimitOrder.TYPE_SELL) binding.market?.sellPriceValue
+            else binding.market?.buyPriceValue
         }
+
+    private val displayMarketPrice: String?
+        get() = marketPrice.toNumberFormat()
 
     private val calcAmount: String
         get() = calcTotalAmount(priceText, totalAmount)
@@ -340,9 +352,9 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                             binding.executePendingBindings()
                             binding.tvPrice.text =
                                 if (priceUsdQuote != "--") {
-                                    "$marketPrice ~ $$priceUsdQuote"
+                                    "$displayMarketPrice ~ $$displayPriceUsdQuote"
                                 } else {
-                                    marketPrice
+                                    displayMarketPrice
                                 }
 
                             binding.tlHeader.getTabAt(0)?.text = String.format(
@@ -387,9 +399,9 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                             viewModel.getPendingBalances(wallet)
                             viewModel.getGasPrice()
                             binding.tvPrice.text = if (priceUsdQuote != "--") {
-                                "$marketPrice ~ $$priceUsdQuote"
+                                "$displayMarketPrice ~ $$displayPriceUsdQuote"
                             } else {
-                                marketPrice
+                                displayMarketPrice
                             }
                             refresh()
                         }
@@ -1188,6 +1200,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         if (activity == null) return
         if (mediator.isShownLimitOrderTutorial()) return
         binding.tvPrice.doOnPreDraw {
+            handler.removeCallbacksAndMessages(null)
             handler.postDelayed({
                 val targets = ArrayList<Target>()
                 val overlayLOPairTargetBinding =
@@ -1204,6 +1217,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                         }
 
                         override fun onEnded() {
+                            mediator.showLimitOrderTutorial(true)
                         }
                     })
                     .build()
@@ -1291,7 +1305,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 targets.add(forth)
 
                 // create spotlight
-                val spotlight = Spotlight.Builder(activity!!)
+                spotlight = Spotlight.Builder(activity!!)
                     .setBackgroundColor(R.color.color_tutorial)
                     .setTargets(targets)
                     .setDuration(1000L)
@@ -1299,7 +1313,6 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                     .setContainer(activity!!.window.decorView.findViewById(android.R.id.content))
                     .setOnSpotlightListener(object : OnSpotlightListener {
                         override fun onStarted() {
-                            mediator.showLimitOrderTutorial(true)
                         }
 
                         override fun onEnded() {
@@ -1307,25 +1320,30 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                     })
                     .build()
 
-                spotlight.start()
+
+                if (currentFragment is LimitOrderV2Fragment) {
+                    spotlight?.start()
+                } else {
+                    spotlight?.finish()
+                }
 
                 overlayLOPairTargetBinding.tvNext.setOnClickListener {
-                    spotlight.next()
+                    spotlight?.next()
                 }
 
                 overlayLOPriceTargetBinding.tvNext.setOnClickListener {
-                    spotlight.next()
+                    spotlight?.next()
                 }
 
                 overlayFeeTargetBinding.tvNext.setOnClickListener {
                     if (offset > 0) {
                         playAnimation()
                     }
-                    spotlight.next()
+                    spotlight?.next()
                 }
 
                 overlayManageOrderTargetBinding.tvNext.setOnClickListener {
-                    spotlight.next()
+                    spotlight?.next()
                     if (offset > 0) {
                         playAnimation(true)
                     }
@@ -1561,7 +1579,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 order.tokenSource,
                 pendingBalances
             )
-        }
+        }.toNumberFormat()
 
         val availableAmount = "$calAvailableAmount $tokenSourceSymbol"
 
@@ -1591,7 +1609,12 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         compositeDisposable.clear()
         hasFee = false
         hideKeyboard()
+        spotlight?.finish()
         super.onDestroyView()
+    }
+
+    override fun skipTutorial() {
+        spotlight?.finish()
     }
 
     companion object {

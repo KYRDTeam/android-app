@@ -51,6 +51,7 @@ import com.kyberswap.android.presentation.common.DEFAULT_ACCEPT_RATE_PERCENTAGE
 import com.kyberswap.android.presentation.common.KeyImeChange
 import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
+import com.kyberswap.android.presentation.common.TutorialView
 import com.kyberswap.android.presentation.common.WalletObserver
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
@@ -74,6 +75,7 @@ import com.kyberswap.android.util.SLIPPAGE
 import com.kyberswap.android.util.SW_USER_CLICK_COPY_WALLET_ADDRESS
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
+import com.kyberswap.android.util.ext.formatDisplayNumber
 import com.kyberswap.android.util.ext.getAmountOrDefaultValue
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isNetworkAvailable
@@ -85,6 +87,7 @@ import com.kyberswap.android.util.ext.showDrawer
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleSafe
+import com.kyberswap.android.util.ext.toNumberFormat
 import com.takusemba.spotlight.OnSpotlightListener
 import com.takusemba.spotlight.OnTargetListener
 import com.takusemba.spotlight.Spotlight
@@ -102,7 +105,7 @@ import java.math.RoundingMode
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
-class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObserver {
+class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObserver, TutorialView {
 
     private lateinit var binding: FragmentSwapBinding
 
@@ -162,6 +165,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
     @Inject
     lateinit var mediator: StorageMediator
+
+    private var spotlight: Spotlight? = null
 
     @Inject
     lateinit var analytics: FirebaseAnalytics
@@ -845,6 +850,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             )
         }
 
+        tvGasFee.setOnClickListener {
+            dialogHelper.showBottomSheetGasFeeDialog()
+        }
+
         viewModel.saveSwapDataCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == SaveSwapState.Loading)
@@ -960,7 +969,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             )
                         }
                         swap.tokenSource.isETH &&
-                            availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
+                                availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
                             swapError = getString(R.string.not_enough_eth_blance)
                             showAlertWithoutIcon(
                                 getString(R.string.insufficient_eth),
@@ -1159,7 +1168,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     binding.swap?.getExpectedDestUsdAmount(
                         edtSource.toBigDecimalOrDefaultZero(),
                         swap.tokenDest.rateUsdNow
-                    )?.toDisplayNumber()
+                    )?.formatDisplayNumber()
                 )
         } else {
             binding.tvValueInUSD.text = ""
@@ -1187,11 +1196,15 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         if (activity == null) return
         if (mediator.isShownSwapTutorial()) return
         binding.root.doOnPreDraw {
+            handler.removeCallbacksAndMessages(null)
             handler.postDelayed({
                 val targets = ArrayList<Target>()
                 val overlaySwapPairTargetBinding =
                     DataBindingUtil.inflate<LayoutSwapPairTargetBinding>(
-                        LayoutInflater.from(activity), R.layout.layout_swap_pair_target, null, false
+                        LayoutInflater.from(activity),
+                        R.layout.layout_swap_pair_target,
+                        null,
+                        false
                     )
 
                 val firstTarget = Target.Builder()
@@ -1206,6 +1219,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         }
 
                         override fun onEnded() {
+
+                            mediator.showSwapTutorial(true)
                         }
                     })
                     .build()
@@ -1270,7 +1285,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 targets.add(thirdTarget)
 
                 // create spotlight
-                val spotlight = Spotlight.Builder(activity!!)
+                spotlight = Spotlight.Builder(activity!!)
                     .setBackgroundColor(R.color.color_tutorial)
                     .setTargets(targets)
                     .setDuration(1000L)
@@ -1278,7 +1293,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     .setContainer(activity!!.window.decorView.findViewById(android.R.id.content))
                     .setOnSpotlightListener(object : OnSpotlightListener {
                         override fun onStarted() {
-                            mediator.showSwapTutorial(true)
                         }
 
                         override fun onEnded() {
@@ -1286,23 +1300,28 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     })
                     .build()
 
-                spotlight.start()
+
+                if (currentFragment is SwapFragment) {
+                    spotlight?.start()
+                } else {
+                    spotlight?.finish()
+                }
 
                 overlaySwapPairTargetBinding.tvNext.setOnClickListener {
-                    spotlight.next()
+                    spotlight?.next()
 
                 }
 
                 overlaySwapAmountTargetBinding.tvNext.setOnClickListener {
                     expandableLayout.expand(true)
                     handler.postDelayed({
-                        spotlight.next()
+                        spotlight?.next()
                     }, 250)
 
                 }
 
                 overlaySwapAdvanceTarget.tvNext.setOnClickListener {
-                    spotlight.next()
+                    spotlight?.next()
                 }
             }, 500)
         }
@@ -1419,8 +1438,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             getString(R.string.rate_revert_notification),
             binding.tvSource.text,
             binding.tvDest.text,
-            binding.swap?.rateThreshold(getMinAcceptedRatePercent(id)),
-            binding.swap?.combineRate
+            binding.swap?.rateThreshold(getMinAcceptedRatePercent(id))?.toNumberFormat(),
+            binding.swap?.combineRate?.toNumberFormat()
         )
     }
 
@@ -1482,7 +1501,12 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         viewModel.compositeDisposable.clear()
         notificationExt = null
         handler.removeCallbacksAndMessages(null)
+        spotlight?.finish()
         super.onDestroyView()
+    }
+
+    override fun skipTutorial() {
+        spotlight?.finish()
     }
 
     override fun showPendingTxNotification(showNotification: Boolean) {

@@ -223,11 +223,13 @@
                     app:layout_constraintTop_toBottomOf="@+id/textView111" />
 
                 <TextView
-                    android:id="@+id/textView113"
+                    android:id="@+id/tvGasFee"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:text="@string/promo_transaction_fee"
+                    android:drawableEnd="@drawable/ic_gas_fee_question_mark"
+                    android:drawablePadding="6dp"
+                    android:text="@string/gas_fee_title"
                     android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                     android:textColor="#5a5e67"
                     android:textSize="14sp"
@@ -251,7 +253,7 @@
                     android:textSize="20sp"
                     app:layout_constraintEnd_toEndOf="@+id/view23"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/textView113"
+                    app:layout_constraintStart_toEndOf="@+id/tvGasFee"
                     app:layout_constraintTop_toBottomOf="@+id/view23"
                     tools:text="0.019532 ETH" />
 
@@ -283,7 +285,7 @@
                     android:textColor="#ffffff"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="@+id/tvFeeEth"
-                    app:layout_constraintStart_toStartOf="@+id/textView113"
+                    app:layout_constraintStart_toStartOf="@+id/tvGasFee"
                     app:layout_constraintTop_toBottomOf="@+id/tvFeeUsd" />
 
                 <TextView

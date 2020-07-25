@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.kyberswap.android.data.api.limitorder.MarketItemEntity
+import com.kyberswap.android.util.ext.formatDisplayNumber
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import kotlinx.android.parcel.Parcelize
@@ -73,11 +74,31 @@ data class MarketItem(
             return if (bp == BigDecimal.ZERO) {
                 "--"
             } else {
-                bp.toDisplayNumber()
+                bp.formatDisplayNumber()
             }
         }
 
     val displaySellPrice: String
+        get() {
+            val sp = sellPrice.toBigDecimalOrDefaultZero()
+            return if (sp == BigDecimal.ZERO) {
+                "--"
+            } else {
+                sp.formatDisplayNumber()
+            }
+        }
+
+    val buyPriceValue: String
+        get() {
+            val bp = buyPrice.toBigDecimalOrDefaultZero()
+            return if (bp == BigDecimal.ZERO) {
+                "--"
+            } else {
+                bp.toDisplayNumber()
+            }
+        }
+
+    val sellPriceValue: String
         get() {
             val sp = sellPrice.toBigDecimalOrDefaultZero()
             return if (sp == BigDecimal.ZERO) {
@@ -93,7 +114,7 @@ data class MarketItem(
             return if (vl == BigDecimal.ZERO) {
                 "--"
             } else {
-                vl.toDisplayNumber()
+                vl.formatDisplayNumber()
             }
         }
 

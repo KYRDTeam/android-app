@@ -95,7 +95,7 @@
     <string name="rate">Tỷ Giá</string>
     <string name="default_source_amount">0.001</string>
     <string name="default_dest_balance_usd">≈ 0.0 USD</string>
-    <string name="gas_fee_gwei">Phí GAS (Gwei)</string>
+    <string name="gas_fee_title">Phí GAS</string>
     <string name="gas_super_fast">%s Rất Nhanh\n~ %s ETH</string>
     <string name="gas_fast">%s Nhanh\n~ %s ETH</string>
     <string name="gas_regular">%s Thường\n~ %s ETH</string>
@@ -207,7 +207,7 @@
     <string name="percent_50">50%</string>
     <string name="percent_100">100%</string>
     <string name="limit_order_rate_of">Tỉ giá</string>
-    <string name="limit_order_discount">Giữ 2000 KNC trong ví để nhận được khuyến mại.</string>
+    <string name="limit_order_discount">Giữ 2,000 KNC trong ví để nhận được khuyến mại.</string>
     <string name="limit_order_fee">%s %s </string>
     <string name="discount_fee">%.2f%% OFF</string>
     <string name="transaction_from">Từ</string>
@@ -372,7 +372,7 @@
     <string name="name_your_wallet_optional">Tên ví của bạn (tùy chọn)</string>
     <string name="edit_wallet">Chỉnh sử ví</string>
     <string name="ba_skip">Bỏ qua?</string>
-    <string name="you_can_backup_your_wallet_later">Bạn có thể sao lưu ví của mình sau: Cài đặt > Quản Lý Ví > Chỉnh sử ví > Hiển thị cụm từ sao lưu</string>
+    <string name="you_can_backup_your_wallet_later">"⚠️ Warning: You must back up your wallet and keep your mnemonics secure.\n\nWhy? If you lose your phone, or uninstall the app or clear app's memory, you won't be able to access your wallet and funds.\n\nWhy keep your backup secure? Anyone with your backup can steal your wallet assets"</string>
     <string name="show_backup_phrase">Hiển thị cụm từ sao lưu</string>
     <string name="delete_wallet">Xoá ví</string>
     <string name="backup_keystore">Sao lưu Keystore</string>
@@ -767,5 +767,6 @@
     <string name="tutorial_amount">2000</string>
     <string name="tutorial_swap_amount">10</string>
     <string name="slippage_too_high_warning">Mức trượt giá đang cao. Bạn có thể giảm lượng giao dịch hoặc chia nhỏ lệnh của bạn để có tỉ giá tốt hơn.</string>
+    <string name="gas_fee_explanation">Phí gas là phí bạn phải trả cho miner (không phải KyberSwap) để họ xác nhận giao dịch của bạn trên blockchain. Phí gas bạn chọn sẽ ảnh hưởng đến tốc độ giao dịch.</string>
 
 </resources>

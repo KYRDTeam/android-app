@@ -240,7 +240,10 @@ class SendFragment : BaseFragment() {
                             gasPrice = getSelectedGasPrice(state.gas, selectedGasFeeView?.id),
                             gas = state.gas.copy(maxGasPrice = maxGasPrice)
                         )
-                        binding.send = send
+                        if (binding.send != send) {
+                            binding.send = send
+                            binding.executePendingBindings()
+                        }
                     }
                     is GetGasPriceState.ShowError -> {
                         analytics.logEvent(
@@ -253,6 +256,10 @@ class SendFragment : BaseFragment() {
                 }
             }
         })
+
+        binding.tvGasFee.setOnClickListener {
+            dialogHelper.showBottomSheetGasFeeDialog()
+        }
 
 
         binding.tvAdvanceOption.setOnClickListener {

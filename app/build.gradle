@@ -24,7 +24,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         def versionMajor = 1
         def versionMinor = 1
-        def versionPatch = 27
+        def versionPatch = 28
         versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch * 1
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         vectorDrawables.useSupportLibrary = true
@@ -132,10 +132,10 @@ dependencies {
     implementation "com.google.dagger:dagger-android:$rootProject.daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$rootProject.daggerVersion"
 
-    implementation 'com.google.firebase:firebase-config:19.1.4'
-    implementation 'com.google.firebase:firebase-core:17.4.3'
-    implementation 'com.google.firebase:firebase-analytics:17.4.3'
-    implementation 'com.google.firebase:firebase-messaging:20.2.1'
+    implementation 'com.google.firebase:firebase-config:19.2.0'
+    implementation 'com.google.firebase:firebase-core:17.4.4'
+    implementation 'com.google.firebase:firebase-analytics:17.4.4'
+    implementation 'com.google.firebase:firebase-messaging:20.2.3'
     kapt "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$rootProject.daggerVersion"
 
@@ -223,7 +223,7 @@ dependencies {
 
     implementation 'com.github.WycliffeAssociates:jdenticon-kotlin:7a4bbbd77e'
     implementation 'com.caverock:androidsvg-aar:1.3'
-    implementation 'com.google.android.gms:play-services-auth:18.0.0'
+    implementation 'com.google.android.gms:play-services-auth:18.1.0'
     implementation 'com.facebook.android:facebook-login:5.0.3'
     implementation 'com.twitter.sdk.android:twitter-core:3.3.0'
     implementation 'com.wdullaer:materialdatetimepicker:4.2.0'

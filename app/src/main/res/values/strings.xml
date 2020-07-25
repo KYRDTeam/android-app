@@ -99,10 +99,11 @@
     <string name="advanced_optional">Advanced (optional)</string>
     <string name="rate">Rate</string>
     <string name="default_source_amount">0.001</string>
-    <string name="percentage_format" formatted="false" translatable="false">"%.2f%%"</string>
+    <string name="percentage_format" formatted="false" translatable="false">"%.2f"</string>
+    <string name="percentage_format_with_percent" formatted="false" translatable="false">"%s%%"</string>
     <string name="dest_balance_usd_format" formatted="false" translatable="false">"≈ %s USD"</string>
     <string name="default_dest_balance_usd">≈ 0.0 USD</string>
-    <string name="gas_fee_gwei">GAS fee (Gwei)</string>
+    <string name="gas_fee_title">GAS fee</string>
     <string name="gas_super_fast">%s SUPER FAST\n~ %s ETH</string>
     <string name="gas_fast">%s FAST\n~ %s ETH</string>
     <string name="gas_regular">%s REGULAR\n~ %s ETH</string>
@@ -217,7 +218,7 @@
     <string name="percent_50">50%</string>
     <string name="percent_100">100%</string>
     <string name="limit_order_rate_of">Rate of</string>
-    <string name="limit_order_discount">Hold from 2000 KNC to get discount for your orders</string>
+    <string name="limit_order_discount">Hold from 2,000 KNC to get discount for your orders</string>
     <string name="limit_order_fee">%s %s </string>
     <string name="discount_fee">%.2f%% OFF</string>
     <string name="discount_fee_long_type" translatable="false">%d%% OFF</string>
@@ -388,7 +389,7 @@
     <string name="name_your_wallet_optional">Name of your wallet (optional)</string>
     <string name="edit_wallet">Edit Wallet</string>
     <string name="ba_skip">Skip?</string>
-    <string name="you_can_backup_your_wallet_later">You can backup your wallet later in Setting > Manage Wallet > Edit Wallet > Show Backup Phrase</string>
+    <string name="you_can_backup_your_wallet_later">"⚠️ Warning: You must back up your wallet and keep your mnemonics secure.\n\nWhy? If you lose your phone, or uninstall the app or clear app's memory, you won't be able to access your wallet and funds.\n\nWhy keep your backup secure? Anyone with your backup can steal your wallet assets"</string>
     <string name="show_backup_phrase">Show Backup Phrase</string>
     <string name="delete_wallet">Delete Wallet</string>
     <string name="backup_keystore">Backup Keystore</string>
@@ -765,6 +766,7 @@
     <string name="tutorial_amount">2000</string>
     <string name="tutorial_swap_amount">10</string>
     <string name="slippage_too_high_warning">Slippage is high. You may want to reduce your swap amount and do multiple swaps for a better rate.</string>
+    <string name="gas_fee_explanation">Gas fee is the fee you pay to the miner (not to KyberSwap) to mine your transaction on blockchain. The price of gas generally reflect how fast you want a transaction mined.</string>
 
 
     <string-array name="proof_address">

@@ -41,6 +41,7 @@ import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.common.AlertDialogFragment
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.common.PendingTransactionNotification
+import com.kyberswap.android.presentation.common.TutorialView
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.landing.CreateWalletState
@@ -238,6 +239,9 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             }
 
             override fun onPageSelected(position: Int) {
+                if (currentFragment is TutorialView) {
+                    (currentFragment as TutorialView).skipTutorial()
+                }
                 currentFragment = adapter?.getRegisteredFragment(position)
                 currentFragment?.let {
                     if (!isNetworkAvailable()) {
