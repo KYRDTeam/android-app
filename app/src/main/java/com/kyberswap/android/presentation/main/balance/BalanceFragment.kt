@@ -793,7 +793,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification, Tutorial
         if (activity == null) return
         if (mediator.isShownBalanceTutorial()) return
         if (isViewVisible) {
-            displaySpotLight()
+            handler.removeCallbacksAndMessages(null)
+            handler.postDelayed({
+                displaySpotLight()
+            }, 250)
         }
     }
 

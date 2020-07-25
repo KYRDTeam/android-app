@@ -969,7 +969,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             )
                         }
                         swap.tokenSource.isETH &&
-                            availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
+                                availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
                             swapError = getString(R.string.not_enough_eth_blance)
                             showAlertWithoutIcon(
                                 getString(R.string.insufficient_eth),
@@ -1196,6 +1196,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         if (activity == null) return
         if (mediator.isShownSwapTutorial()) return
         binding.root.doOnPreDraw {
+            handler.removeCallbacksAndMessages(null)
             handler.postDelayed({
                 val targets = ArrayList<Target>()
                 val overlaySwapPairTargetBinding =
