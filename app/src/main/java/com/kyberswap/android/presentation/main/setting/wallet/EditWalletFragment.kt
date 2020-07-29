@@ -187,11 +187,15 @@ class EditWalletFragment : BaseFragment() {
     }
 
     private fun copyWalletAddress() {
-        val clipboard =
-            context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
-        val clip = ClipData.newPlainText("Copy", wallet?.address)
-        clipboard!!.primaryClip = clip
-        showAlert(getString(R.string.address_copy))
+        if (context != null) {
+            val clipboard =
+                context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+            val clip = ClipData.newPlainText("Copy", wallet?.address)
+            if (clipboard != null && clip != null) {
+                clipboard.setPrimaryClip(clip)
+                showAlert(getString(R.string.address_copy))
+            }
+        }
     }
 
     private fun onExportWalletComplete(content: String) {

@@ -2,6 +2,7 @@ package com.kyberswap.android.domain.repository
 
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.AlertMethodsResponse
+import com.kyberswap.android.domain.model.Campaign
 import com.kyberswap.android.domain.model.DataTransferStatus
 import com.kyberswap.android.domain.model.KycResponseStatus
 import com.kyberswap.android.domain.model.LoginUser
@@ -85,6 +86,8 @@ interface UserRepository {
     fun saveRating(param: SaveRatingInfoUseCase.Param): Completable
 
     fun getNotifications(): Single<List<Notification>>
+
+    fun getCampaigns(): Single<List<Campaign>>
 
     fun getUnReadNotifications(): Flowable<Int>
 

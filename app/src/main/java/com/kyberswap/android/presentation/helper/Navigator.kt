@@ -355,8 +355,12 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         navigateByChildFragmentManager(currentFragment, SignUpFragment.newInstance())
     }
 
-    fun navigateToSignInScreen(currentFragment: Fragment?) {
-        navigateByChildFragmentManager(currentFragment, ProfileFragment.newInstance(), false)
+    fun navigateToSignInScreen(currentFragment: Fragment?, addToBackStack: Boolean = false) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            ProfileFragment.newInstance(),
+            addToBackStack
+        )
     }
 
     fun navigateToTermAndCondition() {
@@ -374,12 +378,23 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
     }
 
     fun navigateToProfileDetail(
-        currentFragment: Fragment?
+        currentFragment: Fragment?,
+        addToBackStack: Boolean = true
     ) {
         navigateByChildFragmentManager(
             currentFragment,
             ProfileDetailFragment.newInstance(),
-            false
+            addToBackStack
+        )
+    }
+
+    fun navigateToProfile(
+        currentFragment: Fragment?
+    ) {
+        navigateByChildFragmentManager(
+            currentFragment,
+            ProfileFragment.newInstance(),
+            true
         )
     }
 

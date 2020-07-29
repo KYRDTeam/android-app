@@ -21,7 +21,9 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.common.LoginState
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.alert.ManageAlertAdapter
+import com.kyberswap.android.presentation.main.explore.ExploreFragment
 import com.kyberswap.android.presentation.main.profile.alert.DeleteAlertsState
 import com.kyberswap.android.presentation.main.profile.alert.GetAlertsState
 import com.kyberswap.android.util.USER_TRANSFER_DATA_FORCE_LOGOUT
@@ -181,8 +183,9 @@ class ProfileDetailFragment : BaseFragment(), LoginState {
                 when (state) {
                     is LogoutState.Success -> {
                         EventBus.getDefault().post(UserStatusChangeEvent())
-                        if (currentFragment is ProfileFragment) {
-                            navigator.navigateToSignInScreen(currentFragment)
+                        if (currentFragment is ExploreFragment) {
+                            navigator.navigateToSignInScreen(currentFragment, true)
+//                            activity?.onBackPressed()
                         }
                     }
                     is LogoutState.ShowError -> {
@@ -219,6 +222,12 @@ class ProfileDetailFragment : BaseFragment(), LoginState {
 
         }
 
+        binding.imgBack.setOnClickListener {
+//            (activity as MainActivity).getCurrentFragment()?.childFragmentManager?.popBackStack()
+            activity?.onBackPressed()
+        }
+
+
 
         binding.imgLeaderBoard.setOnClickListener {
             navigator.navigateToLeaderBoard(
@@ -239,6 +248,14 @@ class ProfileDetailFragment : BaseFragment(), LoginState {
                 OneSignal.getPermissionSubscriptionState().subscriptionStatus.pushToken
             )
         }
+    }
+
+    fun onBackPress() {
+        val fm = (activity as MainActivity).getCurrentFragment()?.childFragmentManager
+        if (fm != null)
+            for (i in 0 until fm.backStackEntryCount) {
+                fm.popBackStack()
+            }
     }
 
     companion object {

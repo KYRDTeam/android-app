@@ -15,7 +15,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="34dp"
-            android:layout_marginTop="422dp"
+            android:layout_marginTop="476dp"
             android:layout_marginEnd="34dp"
             android:fontFamily="sans-serif"
             android:lineSpacingExtra="6sp"

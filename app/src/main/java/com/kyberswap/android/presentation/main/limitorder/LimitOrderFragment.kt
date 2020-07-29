@@ -1397,7 +1397,7 @@ class LimitOrderFragment : BaseFragment(), LoginState {
     }
 
     private fun moveToLoginTab() {
-        (activity as? MainActivity)?.moveToTab(MainPagerAdapter.PROFILE, true)
+        (activity as? MainActivity)?.moveToTab(MainPagerAdapter.EXPLORE, true)
     }
 
     override fun getLoginStatus() {

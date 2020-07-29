@@ -69,11 +69,16 @@ class BalanceAddressFragment : BaseFragment() {
         })
 
         binding.tvCopy.setOnClickListener {
-            val clipboard =
-                context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
-            val clip = ClipData.newPlainText("Copy", binding.wallet?.address)
-            clipboard!!.primaryClip = clip
-            showAlert(getString(R.string.address_copy))
+            if (context != null) {
+                val clipboard =
+                    context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+                val clip = ClipData.newPlainText("Copy", binding.wallet?.address)
+                if (clipboard != null && clip != null) {
+                    clipboard.setPrimaryClip(clip)
+                    showAlert(getString(R.string.address_copy))
+                }
+            }
+
         }
         binding.tvShare.setOnClickListener {
             val sendIntent: Intent = Intent().apply {
@@ -100,7 +105,6 @@ class BalanceAddressFragment : BaseFragment() {
                     R.dimen.bar_code_dimen
                 )
             )
-
         } catch (e: Exception) {
             e.printStackTrace()
             null

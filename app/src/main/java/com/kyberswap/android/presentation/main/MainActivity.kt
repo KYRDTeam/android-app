@@ -51,10 +51,12 @@ import com.kyberswap.android.presentation.main.balance.GetPendingTransactionStat
 import com.kyberswap.android.presentation.main.balance.GetRatingInfoState
 import com.kyberswap.android.presentation.main.balance.WalletAdapter
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
+import com.kyberswap.android.presentation.main.explore.ExploreFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderV2Fragment
 import com.kyberswap.android.presentation.main.notification.GetUnReadNotificationsState
 import com.kyberswap.android.presentation.main.profile.DataTransferState
+import com.kyberswap.android.presentation.main.profile.ProfileDetailFragment
 import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.setting.SettingFragment
@@ -88,6 +90,7 @@ import org.consenlabs.tokencore.wallet.WalletManager
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -293,6 +296,15 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                         updateLoginStatus()
                     }
 
+                    is ExploreFragment -> {
+                        with((currentFragment as ExploreFragment)) {
+                            getLoginStatus()
+                            updateView()
+
+                        }
+                        updateLoginStatus()
+                    }
+
                     is ProfileFragment -> {
                         updateLoginStatus()
                     }
@@ -365,12 +377,15 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             val clipboard =
                                 getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
                             val clip = ClipData.newPlainText("Copy", it.address)
-                            clipboard!!.primaryClip = clip
-                            showAlert(getString(R.string.address_copy))
-                            firebaseAnalytics.logEvent(
-                                MN_USER_CLICK_COPY_WALLET_ADDRESS,
-                                Bundle().createEvent()
-                            )
+                            if (clipboard != null && clip != null) {
+                                clipboard.setPrimaryClip(clip)
+                                showAlert(getString(R.string.address_copy))
+                                firebaseAnalytics.logEvent(
+                                    MN_USER_CLICK_COPY_WALLET_ADDRESS,
+                                    Bundle().createEvent()
+                                )
+                            }
+
                         }, 250
                     )
 
@@ -984,7 +999,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
     }
 
     val profileFragment: Fragment?
-        get() = adapter?.getRegisteredFragment(MainPagerAdapter.PROFILE)
+        get() = adapter?.getRegisteredFragment(MainPagerAdapter.EXPLORE)
 
     fun showDrawer(show: Boolean) {
         if (show) {
@@ -1000,6 +1015,16 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             currentFragment?.childFragmentManager?.fragments?.forEach {
                 when (it) {
                     is WalletConnectFragment -> {
+                        it.onBackPress()
+                    }
+
+                    is ProfileFragment -> {
+                        Timber.e("main activity profile : onBackPress")
+                        it.onBackPress()
+                    }
+
+                    is ProfileDetailFragment -> {
+                        Timber.e("main activity profile detail : onBackPress")
                         it.onBackPress()
                     }
                 }

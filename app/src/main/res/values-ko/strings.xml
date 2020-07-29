@@ -376,7 +376,7 @@
     <string name="name_your_wallet_optional">지갑 이름 (선택 사항)</string>
     <string name="edit_wallet">지갑 수정</string>
     <string name="ba_skip">건너뛰기?</string>
-    <string name="you_can_backup_your_wallet_later">"⚠️ Warning: You must back up your wallet and keep your mnemonics secure.\n\nWhy? If you lose your phone, or uninstall the app or clear app's memory, you won't be able to access your wallet and funds.\n\nWhy keep your backup secure? Anyone with your backup can steal your wallet assets"</string>
+    <string name="you_can_backup_your_wallet_later">"⚠️ 주의 : 반드시 지갑을 백업하고, 네모닉 단어를 안전한 곳에 기록해주세요.\n\n왜 필요한가요? 핸드폰을 잃어버리거나 앱을 지우거나 앱의 메모리를 지우는 경우, 더이상 지갑과 지갑 내 자금에 접근할 수 없게됩니다.\n\n왜 백업을 안전한 곳에 해야하나요? 백업정보를 가진 누구나 지갑 내 자산을 훔칠 수 있기 때문입니다."</string>
     <string name="show_backup_phrase">백업 구문 표시</string>
     <string name="delete_wallet">지갑 삭제</string>
     <string name="backup_keystore">키스토어 백업</string>
@@ -768,5 +768,10 @@
     <string name="tutorial_swap_amount">10</string>
     <string name="slippage_too_high_warning"> 슬리피지(손해)가 높습니다. 더 나은 비율을 갖기 위해 교환할 양을 줄이거나 여러번에 나눠서 교환하는 게 좋습니다.</string>
     <string name="gas_fee_explanation">Gas fee is the fee you pay to the miner (not to KyberSwap) to mine your transaction on blockchain. The price of gas generally reflect how fast you want a transaction mined.</string>
+    <string name="explore">Explore</string>
+    <string name="explore_notification">Notification</string>
+    <string name="explore_alert">Alert</string>
+    <string name="explore_history">History</string>
+    <string name="explore_title">Explore</string>
 
 </resources>

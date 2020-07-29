@@ -35,6 +35,7 @@ import com.kyberswap.android.databinding.FragmentProfileBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.SocialInfo
 import com.kyberswap.android.domain.model.UserInfo
+import com.kyberswap.android.domain.model.UserStatusChangeEvent
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
@@ -60,6 +61,7 @@ import com.twitter.sdk.android.core.TwitterSession
 import com.twitter.sdk.android.core.identity.TwitterAuthClient
 import com.twitter.sdk.android.core.models.User
 import kotlinx.android.synthetic.main.fragment_profile.*
+import org.greenrobot.eventbus.EventBus
 import timber.log.Timber
 import java.util.Arrays
 import javax.inject.Inject
@@ -285,7 +287,7 @@ class ProfileFragment : BaseFragment() {
 //                                    profileFragment
 //                                )
 //                            }
-                            navigateToProfileDetail(profileFragment)
+//                            navigateToProfileDetail(profileFragment)
                         }
                     }
                     is UserInfoState.ShowError -> {
@@ -350,6 +352,12 @@ class ProfileFragment : BaseFragment() {
             analytics.logEvent(SIGNIN_METHOD, Bundle().createEvent(METHOD, "twitter"))
         }
 
+        binding.imgBack.setOnClickListener {
+//            activity?.onBackPressed()
+//            (activity as MainActivity).getCurrentFragment()?.childFragmentManager?.popBackStack()
+            activity?.onBackPressed()
+        }
+
         binding.tvForgotPassword.setOnClickListener {
             dialogHelper.showResetPassword { email, dialog ->
                 resetPasswordDialog = dialog
@@ -379,7 +387,7 @@ class ProfileFragment : BaseFragment() {
                     binding.ilEmail.error = errorMessage
                 }
 
-                !Patterns.EMAIL_ADDRESS.matcher(binding.edtEmail.text).matches() -> {
+                !Patterns.EMAIL_ADDRESS.matcher(binding.edtEmail.text.toString()).matches() -> {
 
                     val errorMessage = getString(
                         R.string.login_invalid_email_address
@@ -453,6 +461,14 @@ class ProfileFragment : BaseFragment() {
             }
             false
         }
+    }
+
+    fun onBackPress() {
+        val fm = (activity as MainActivity).getCurrentFragment()?.childFragmentManager
+        if (fm != null)
+            for (i in 0 until fm.backStackEntryCount) {
+                fm.popBackStack()
+            }
     }
 
     private fun onTransferDataCompleted(userInfo: UserInfo) {
@@ -536,7 +552,7 @@ class ProfileFragment : BaseFragment() {
         if (fromLimitOrder) {
             moveToLimitOrder()
         }
-
+        EventBus.getDefault().post(UserStatusChangeEvent())
         navigateToProfileDetail(currentFragment)
     }
 
@@ -549,7 +565,7 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun moveToLimitOrder() {
-        (activity as? MainActivity)?.moveToTab(MainPagerAdapter.LIMIT_ORDER)
+        (activity as? MainActivity)?.moveToTab(MainPagerAdapter.LIMIT_ORDER, false)
     }
 
     private fun navigateToProfileDetail(currentFragment: Fragment?) {

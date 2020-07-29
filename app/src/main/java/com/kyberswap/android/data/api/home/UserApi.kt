@@ -4,6 +4,7 @@ import com.kyberswap.android.data.api.alert.AlertEntity
 import com.kyberswap.android.data.api.alert.AlertMethodsResponseEntity
 import com.kyberswap.android.data.api.alert.AlertResponseEntity
 import com.kyberswap.android.data.api.alert.LeaderBoardEntity
+import com.kyberswap.android.data.api.campaign.CampaignResponseEntity
 import com.kyberswap.android.data.api.cap.CapEntity
 import com.kyberswap.android.data.api.notification.NotificationsResponseEntity
 import com.kyberswap.android.data.api.notification.SubscriptionNotificationEntity
@@ -212,4 +213,7 @@ interface UserApi {
     @Headers("Content-Type: application/json")
     @POST("api/users/subscription_tokens")
     fun updateSubscribedTokens(@Body rawJsonString: RequestBody): Single<ResponseStatusEntity>
+
+    @GET("api/mobile_banners")
+    fun getCampaigns(): Single<CampaignResponseEntity>
 }

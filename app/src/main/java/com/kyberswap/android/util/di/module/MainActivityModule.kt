@@ -26,6 +26,10 @@ import com.kyberswap.android.presentation.main.balance.chart.LineChartFragment
 import com.kyberswap.android.presentation.main.balance.chart.LineChartViewModel
 import com.kyberswap.android.presentation.main.balance.send.SendFragment
 import com.kyberswap.android.presentation.main.balance.send.SendViewModel
+import com.kyberswap.android.presentation.main.explore.CampaignFragment
+import com.kyberswap.android.presentation.main.explore.CampaignViewModel
+import com.kyberswap.android.presentation.main.explore.ExploreFragment
+import com.kyberswap.android.presentation.main.explore.ExploreViewModel
 import com.kyberswap.android.presentation.main.kybercode.KyberCodeFragment
 import com.kyberswap.android.presentation.main.kybercode.KyberCodeViewModel
 import com.kyberswap.android.presentation.main.limitorder.CancelOrderFragment
@@ -197,6 +201,14 @@ interface MainActivityModule {
     @FragmentScoped
     @ContributesAndroidInjector
     fun contributeTransactionStatusFragment(): TransactionStatusFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeExploreFragment(): ExploreFragment
+
+    @FragmentScoped
+    @ContributesAndroidInjector
+    fun contributeCampaignFragment(): CampaignFragment
 
     @FragmentScoped
     @ContributesAndroidInjector
@@ -463,7 +475,6 @@ interface MainActivityModule {
         leaderBoardViewModel: LeaderBoardViewModel
     ): ViewModel
 
-
     @Binds
     @IntoMap
     @ViewModelKey(KyberCodeViewModel::class)
@@ -539,5 +550,19 @@ interface MainActivityModule {
     @ViewModelKey(LimitOrderV2ViewModel::class)
     fun bindLimitOrderV2ViewModel(
         limitOrderV2ViewModel: LimitOrderV2ViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ExploreViewModel::class)
+    fun bindExploreViewModel(
+        exploreViewModel: ExploreViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CampaignViewModel::class)
+    fun bindCampaignViewModel(
+        campaignViewModel: CampaignViewModel
     ): ViewModel
 }

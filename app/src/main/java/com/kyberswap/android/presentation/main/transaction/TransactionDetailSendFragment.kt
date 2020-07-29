@@ -63,19 +63,27 @@ class TransactionDetailSendFragment : BaseFragment() {
         }
 
         binding.imgTxHashCopy.setOnClickListener {
-            val clipboard =
-                context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
-            val clip = ClipData.newPlainText("Copy", transaction?.hash)
-            clipboard!!.primaryClip = clip
-            showAlert(getString(R.string.txhash_copy))
+            if (context != null) {
+                val clipboard =
+                    context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+                val clip = ClipData.newPlainText("Copy", transaction?.hash)
+                if (clipboard != null && clip != null) {
+                    clipboard.setPrimaryClip(clip)
+                    showAlert(getString(R.string.txhash_copy))
+                }
+            }
         }
 
         binding.imgAddressCopy.setOnClickListener {
-            val clipboard =
-                context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
-            val clip = ClipData.newPlainText("Copy", transaction?.to)
-            clipboard!!.primaryClip = clip
-            showAlert(getString(R.string.address_copy))
+            if (context != null) {
+                val clipboard =
+                    context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+                val clip = ClipData.newPlainText("Copy", transaction?.to)
+                if (clipboard != null && clip != null) {
+                    clipboard.setPrimaryClip(clip)
+                    showAlert(getString(R.string.address_copy))
+                }
+            }
         }
 
         binding.imgEtherscan.setOnClickListener {
@@ -84,7 +92,6 @@ class TransactionDetailSendFragment : BaseFragment() {
         binding.imgKyber.setOnClickListener {
             openUrl(getString(R.string.transaction_kyber_endpoint_url) + transaction?.hash)
         }
-
     }
 
 //    override fun showProgress(showProgress: Boolean) {

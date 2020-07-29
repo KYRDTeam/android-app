@@ -767,6 +767,11 @@
     <string name="tutorial_swap_amount">10</string>
     <string name="slippage_too_high_warning">Slippage is high. You may want to reduce your swap amount and do multiple swaps for a better rate.</string>
     <string name="gas_fee_explanation">Gas fee is the fee you pay to the miner (not to KyberSwap) to mine your transaction on blockchain. The price of gas generally reflect how fast you want a transaction mined.</string>
+    <string name="explore">Explore</string>
+    <string name="explore_notification">Notification</string>
+    <string name="explore_alert">Alert</string>
+    <string name="explore_history">History</string>
+    <string name="explore_title">Explore</string>
 
 
     <string-array name="proof_address">

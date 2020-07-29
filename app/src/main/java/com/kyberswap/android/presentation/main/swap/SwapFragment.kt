@@ -470,15 +470,21 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         }
 
         binding.tvName.setOnClickListener {
-            val clipboard =
-                context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
-            val clip = ClipData.newPlainText("Copy", wallet?.address)
-            clipboard!!.primaryClip = clip
-            showAlert(getString(R.string.address_copy))
-            analytics.logEvent(
-                SW_USER_CLICK_COPY_WALLET_ADDRESS,
-                Bundle().createEvent()
-            )
+            if (context != null) {
+                val clipboard =
+                    context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+                val clip = ClipData.newPlainText("Copy", wallet?.address)
+
+                if (clipboard != null && clip != null) {
+                    clipboard.setPrimaryClip(clip)
+                    showAlert(getString(R.string.address_copy))
+                    analytics.logEvent(
+                        SW_USER_CLICK_COPY_WALLET_ADDRESS,
+                        Bundle().createEvent()
+                    )
+                }
+            }
+
         }
 
         binding.tv100Percent.setOnClickListener {
@@ -969,7 +975,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             )
                         }
                         swap.tokenSource.isETH &&
-                                availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
+                            availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
                             swapError = getString(R.string.not_enough_eth_blance)
                             showAlertWithoutIcon(
                                 getString(R.string.insufficient_eth),
