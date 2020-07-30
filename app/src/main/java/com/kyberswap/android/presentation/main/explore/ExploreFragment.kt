@@ -22,6 +22,7 @@ import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.openUrl
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -31,7 +32,7 @@ import javax.inject.Inject
 
 class ExploreFragment : BaseFragment() {
 
-    private lateinit var binding: FragmentExploreBinding
+    lateinit var binding: FragmentExploreBinding
 
     @Inject
     lateinit var navigator: Navigator
@@ -85,10 +86,10 @@ class ExploreFragment : BaseFragment() {
                     is GetCampaignsState.Success -> {
                         if (state.campaigns.isEmpty()) {
                             binding.vpCampaign.visibility = View.GONE
-                            binding.tvEmpty.visibility = View.VISIBLE
+                            binding.imgDefault.visibility = View.VISIBLE
                         } else {
                             binding.vpCampaign.visibility = View.VISIBLE
-                            binding.tvEmpty.visibility = View.GONE
+                            binding.imgDefault.visibility = View.GONE
                             binding.vpCampaign.adapter =
                                 CampaignPagerAdapter(childFragmentManager, state.campaigns)
                             binding.indicator.setViewPager(binding.vpCampaign)
@@ -159,6 +160,10 @@ class ExploreFragment : BaseFragment() {
                 navigator.navigateToProfile(currentFragment)
             }
 
+        }
+
+        binding.imgDefault.setOnClickListener {
+            openUrl(getString(R.string.kyber_swap_url))
         }
     }
 

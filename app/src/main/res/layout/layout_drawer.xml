@@ -56,11 +56,11 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="13dp"
         android:background="@drawable/notification_drawable"
+        android:textColor="#ffffff"
+        android:textSize="12sp"
         android:gravity="center"
         android:minWidth="30dp"
         android:minHeight="20dp"
-        android:textColor="#ffffff"
-        android:textSize="12sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/tvTransaction"
         app:layout_constraintEnd_toEndOf="parent"
@@ -77,51 +77,51 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTransaction" />
 
-    <TextView
-        android:id="@+id/tvNotification"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="?selectableItemBackground"
-        android:gravity="center_vertical"
-        android:minHeight="54dp"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:text="@string/notifications"
-        android:textAllCaps="true"
-        android:textColor="#2e3957"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view2" />
+    <!--    <TextView-->
+    <!--        android:id="@+id/tvNotification"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:background="?selectableItemBackground"-->
+    <!--        android:gravity="center_vertical"-->
+    <!--        android:minHeight="54dp"-->
+    <!--        android:paddingStart="20dp"-->
+    <!--        android:paddingEnd="20dp"-->
+    <!--        android:text="@string/notifications"-->
+    <!--        android:textAllCaps="true"-->
+    <!--        android:textColor="#2e3957"-->
+    <!--        android:textSize="14sp"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintHorizontal_bias="0.5"-->
+    <!--        app:layout_constraintHorizontal_chainStyle="packed"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/view2" />-->
 
-    <TextView
-        android:id="@+id/tvPendingNotification"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="13dp"
-        android:background="@drawable/notification_drawable"
-        android:gravity="center"
-        android:minWidth="30dp"
-        android:minHeight="20dp"
-        android:textColor="#ffffff"
-        android:textSize="12sp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/tvNotification"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tvNotification"
-        tools:text="5" />
+    <!--    <TextView-->
+    <!--        android:id="@+id/tvPendingNotification"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginEnd="13dp"-->
+    <!--        android:background="@drawable/notification_drawable"-->
+    <!--        android:gravity="center"-->
+    <!--        android:minWidth="30dp"-->
+    <!--        android:minHeight="20dp"-->
+    <!--        android:textColor="#ffffff"-->
+    <!--        android:textSize="12sp"-->
+    <!--        android:visibility="invisible"-->
+    <!--        app:layout_constraintBottom_toBottomOf="@+id/tvNotification"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="@+id/tvNotification"-->
+    <!--        tools:text="5" />-->
 
-    <View
-        android:id="@+id/viewNotification"
-        android:layout_width="match_parent"
-        android:layout_height="0.1dp"
-        android:background="@color/drawer_divider_color"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvNotification" />
+    <!--    <View-->
+    <!--        android:id="@+id/viewNotification"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="0.1dp"-->
+    <!--        android:background="@color/drawer_divider_color"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintHorizontal_bias="0.0"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/tvNotification" />-->
 
     <TextView
         android:id="@+id/tvKyberCode"
@@ -139,7 +139,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/viewNotification" />
+        app:layout_constraintTop_toBottomOf="@+id/view2" />
 
     <View
         android:id="@+id/view3"

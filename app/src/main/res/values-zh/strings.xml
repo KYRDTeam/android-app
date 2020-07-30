@@ -769,10 +769,14 @@
     <string name="tutorial_swap_amount">10</string>
     <string name="slippage_too_high_warning">滑点很高。为了得到更好的汇率，您可能需要减少兑换金额或分成多次兑换</string>
     <string name="gas_fee_explanation">向矿工（非Kyberswap）支付燃料费用，以促进在以太坊区块链上的交易。一般来说，燃料价格越高，交易执行得越快。燃料价格取决于区块链的拥挤程度，而不是由KyberSwap决定的。</string>
-    <string name="explore">Explore</string>
+    <string name="explore">探索</string>
     <string name="explore_notification">Notification</string>
-    <string name="explore_alert">Alert</string>
-    <string name="explore_history">History</string>
+    <string name="explore_alert">价格警报</string>
+    <string name="explore_history">历史纪录</string>
     <string name="explore_title">Explore</string>
+    <string name="later">稍后</string>
+    <string name="back_up_now">立即备份</string>
+    <string name="i_already_did">已经备份</string>
+    <string name="backup_warning_message">请备份您的钱包。以便在手机发生损坏、丢失或被盗的情况下，能帮助您找回钱包.</string>
 
 </resources>

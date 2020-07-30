@@ -30,7 +30,8 @@ data class Wallet(
     var balance: String = "0",
     @Embedded
     var promo: Promo? = Promo(),
-    val createAt: Long = 0
+    val createAt: Long = 0,
+    val hasBackup: Boolean = false
 ) :
     Parcelable {
     constructor(wallet: Wallet) : this(

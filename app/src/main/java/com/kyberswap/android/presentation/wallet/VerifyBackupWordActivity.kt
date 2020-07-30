@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.ActivityVerifyBackupWordBinding
@@ -12,6 +14,8 @@ import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.presentation.base.BaseActivity
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
+import com.kyberswap.android.presentation.main.balance.SaveWalletState
+import com.kyberswap.android.util.di.ViewModelFactory
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.Observables
 import kotlinx.android.synthetic.main.activity_backup_wallet.btnNext
@@ -40,6 +44,13 @@ class VerifyBackupWordActivity : BaseActivity() {
         )
     }
 
+    val verifyBackupWordViewModel: VerifyBackupWordViewModel by lazy {
+        ViewModelProvider(this, viewModelFactory).get(VerifyBackupWordViewModel::class.java)
+    }
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val words = intent.getParcelableArrayListExtra<Word>(ARG_PARAM)
@@ -64,7 +75,11 @@ class VerifyBackupWordActivity : BaseActivity() {
             if (first.content == edtFirst.text.trim().toString() &&
                 second.content == edtSecond.text.trim().toString()
             ) {
-                navigator.navigateToHome()
+                if (wallet != null) {
+                    verifyBackupWordViewModel.saveWallet(wallet.copy(hasBackup = true))
+                } else {
+                    navigator.navigateToHome()
+                }
             } else {
 
                 if (numberOfTry > 0) {
@@ -88,6 +103,18 @@ class VerifyBackupWordActivity : BaseActivity() {
         val secondWordObservable = binding.edtSecond.textChanges().skip(1).map {
             it.toString()
         }
+
+        verifyBackupWordViewModel.saveWalletCallback.observe(this, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is SaveWalletState.Success -> {
+                        navigator.navigateToHome()
+                    }
+                    is SaveWalletState.ShowError -> {
+                    }
+                }
+            }
+        })
 
         disposable.add(
             Observables.combineLatest(

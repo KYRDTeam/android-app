@@ -772,6 +772,11 @@
     <string name="explore_alert">Alert</string>
     <string name="explore_history">History</string>
     <string name="explore_title">Explore</string>
+    <string name="later">Later</string>
+    <string name="back_up_now">Back up now</string>
+    <string name="i_already_did">I already did</string>
+    <string name="backup_warning_message">Please backup your wallet. It will allow you to recover your wallet if your phone is damaged, lost or stolen</string>
+    <string name="kyber_swap_url" translatable="false">https://kyberswap.com/</string>
 
 
     <string-array name="proof_address">

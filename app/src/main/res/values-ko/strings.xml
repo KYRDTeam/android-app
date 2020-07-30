@@ -768,10 +768,14 @@
     <string name="tutorial_swap_amount">10</string>
     <string name="slippage_too_high_warning"> 슬리피지(손해)가 높습니다. 더 나은 비율을 갖기 위해 교환할 양을 줄이거나 여러번에 나눠서 교환하는 게 좋습니다.</string>
     <string name="gas_fee_explanation">Gas fee is the fee you pay to the miner (not to KyberSwap) to mine your transaction on blockchain. The price of gas generally reflect how fast you want a transaction mined.</string>
-    <string name="explore">Explore</string>
+    <string name="explore">둘러보기</string>
     <string name="explore_notification">Notification</string>
-    <string name="explore_alert">Alert</string>
-    <string name="explore_history">History</string>
+    <string name="explore_alert">주의</string>
+    <string name="explore_history">거래내역</string>
     <string name="explore_title">Explore</string>
+    <string name="later">나중에</string>
+    <string name="back_up_now">지금 백업하기</string>
+    <string name="i_already_did">백업 완료</string>
+    <string name="backup_warning_message">지갑을 다른 곳에 백업해 주세요. 지갑이 백업되어 있으면 핸드폰의 고장, 분실, 도난의 경우 복원이 가능합니다.</string>
 
 </resources>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -8,30 +9,104 @@
             type="com.kyberswap.android.domain.model.Order" />
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:orientation="horizontal"
-        android:padding="16dp">
+        android:orientation="vertical"
+        android:paddingBottom="24dp">
+
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:padding="2dp"
-            android:src="@drawable/ic_gas_fee_question_mark" />
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/ic_backup"
+            app:layout_constraintEnd_toStartOf="@+id/tvContent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tvContent" />
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/tvContent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="20dp"
+            android:gravity="center|start"
             android:lineSpacingExtra="8sp"
+            android:text="@string/backup_warning_message"
             android:textAppearance="@style/TextAppearance.Roboto.Regular"
-            android:padding="0dp"
-            android:text="@string/gas_fee_explanation"
             android:textColor="#141927"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imageView2"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/tvLater"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/rounded_corner_button_border"
+            android:gravity="center"
+            android:minHeight="36dp"
+            android:padding="4dp"
+            android:text="@string/later"
+            android:textAppearance="@style/TextAppearance.Roboto.Bold"
+            android:textColor="@color/colorAccent"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvBackUpNow"
+            app:layout_constraintEnd_toStartOf="@+id/tvBackUpNow"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tvBackUpNow" />
+
+        <TextView
+            android:id="@+id/tvBackUpNow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/rounded_corner_button_border"
+            android:gravity="center"
+            android:minHeight="36dp"
+            android:padding="4dp"
+            android:text="@string/back_up_now"
+            android:textAppearance="@style/TextAppearance.Roboto.Bold"
+            android:textColor="@color/colorAccent"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvAlreadyDid"
+            app:layout_constraintEnd_toStartOf="@+id/tvAlreadyDid"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tvLater"
+            app:layout_constraintTop_toTopOf="@+id/tvAlreadyDid" />
+
+        <TextView
+
+            android:id="@+id/tvAlreadyDid"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/rounded_corner_button_border"
+            android:gravity="center"
+            android:minHeight="36dp"
+            android:padding="4dp"
+            android:text="@string/i_already_did"
+            android:textAppearance="@style/TextAppearance.Roboto.Bold"
+            android:textColor="@color/colorAccent"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tvBackUpNow"
+            app:layout_constraintTop_toBottomOf="@+id/tvContent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

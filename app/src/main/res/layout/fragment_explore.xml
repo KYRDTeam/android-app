@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|start"
                 android:layout_marginStart="20dp"
-                android:text="@string/explore_title"
+                android:text="@string/explore"
                 android:textColor="#ffffff"
                 android:textSize="18sp" />
 
@@ -47,19 +47,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
-                <TextView
-                    android:id="@+id/tvEmpty"
+                <ImageView
+                    android:id="@+id/imgDefault"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginEnd="24dp"
-                    android:gravity="center"
-                    android:lineSpacingExtra="8sp"
-                    android:text="@string/no_alert"
-                    android:textAppearance="@style/TextAppearance.Roboto.Medium"
-                    android:textColor="#5a5e67"
-                    android:textSize="14sp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/explore_default"
                     android:visibility="gone" />
             </FrameLayout>
 
@@ -97,11 +91,32 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/indicator">
 
-                <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_explore_notification" />
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_explore_notification" />
+
+                    <TextView
+                        android:id="@+id/tvNotificationNumber"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:background="@drawable/circle_new_alert_bg"
+                        android:gravity="center"
+                        android:minWidth="14dp"
+                        android:minHeight="14dp"
+                        android:textAppearance="@style/TextAppearance.Roboto.Medium"
+                        android:textColor="#ffffff"
+                        android:textSize="10sp"
+                        android:visibility="gone"
+                        tools:ignore="SmallSp" />
+                </FrameLayout>
+
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -109,7 +124,7 @@
                     android:layout_marginTop="10dp"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="center_horizontal"
-                    android:text="@string/explore_notification"
+                    android:text="@string/title_notification"
                     android:textAppearance="@style/TextAppearance.Roboto.Medium"
                     android:textColor="#565656"
                     android:textSize="12sp"
@@ -133,8 +148,8 @@
                 app:layout_constraintTop_toTopOf="@+id/lnNotification">
 
                 <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_explore_alert" />
 
@@ -211,7 +226,7 @@
                     android:layout_marginTop="10dp"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="center_horizontal"
-                    android:text="@string/login"
+                    android:text="@string/profile"
                     android:textAppearance="@style/TextAppearance.Roboto.Medium"
                     android:textColor="#565656"
                     android:textSize="12sp"

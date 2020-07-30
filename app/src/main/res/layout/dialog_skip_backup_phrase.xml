@@ -29,6 +29,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
+                android:gravity="start|center"
                 android:letterSpacing="0.07"
                 android:lineSpacingExtra="4sp"
                 android:text="@string/you_can_backup_your_wallet_later"

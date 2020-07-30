@@ -4,7 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kyberswap.android.domain.model.Wallet
-import com.kyberswap.android.domain.usecase.wallet.*
+import com.kyberswap.android.domain.usecase.wallet.DeleteWalletUseCase
+import com.kyberswap.android.domain.usecase.wallet.ExportKeystoreWalletUseCase
+import com.kyberswap.android.domain.usecase.wallet.ExportMnemonicWalletUseCase
+import com.kyberswap.android.domain.usecase.wallet.ExportPrivateKeyWalletUseCase
+import com.kyberswap.android.domain.usecase.wallet.SaveWalletUseCase
+import com.kyberswap.android.domain.usecase.wallet.UpdateWalletUseCase
 import com.kyberswap.android.presentation.common.Event
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
@@ -16,6 +21,7 @@ class EditWalletViewModel @Inject constructor(
     private val exportKeystoreWalletUseCase: ExportKeystoreWalletUseCase,
     private val exportPrivateKeyWalletUseCase: ExportPrivateKeyWalletUseCase,
     private val exportMnemonicWalletUseCase: ExportMnemonicWalletUseCase,
+    private val updateWalletUseCase: UpdateWalletUseCase,
     private val saveWalletUseCase: SaveWalletUseCase
 ) : ViewModel() {
     private val _deleteWalletCallback = MutableLiveData<Event<DeleteWalletState>>()
@@ -25,7 +31,6 @@ class EditWalletViewModel @Inject constructor(
     private val _exportKeystoreWalletCallback = MutableLiveData<Event<ExportWalletState>>()
     val exportKeystoreWalletCallback: LiveData<Event<ExportWalletState>>
         get() = _exportKeystoreWalletCallback
-
 
     private val _exportPrivateKeyWalletCallback = MutableLiveData<Event<ExportWalletState>>()
     val exportPrivateKeyWalletCallback: LiveData<Event<ExportWalletState>>
@@ -39,6 +44,9 @@ class EditWalletViewModel @Inject constructor(
     val saveWalletCallback: LiveData<Event<SaveWalletState>>
         get() = _saveWalletCallback
 
+    private val _updateWalletCallback = MutableLiveData<Event<SaveWalletState>>()
+    val updateWalletCallback: LiveData<Event<SaveWalletState>>
+        get() = _updateWalletCallback
 
     val compositeDisposable = CompositeDisposable()
 
@@ -88,7 +96,6 @@ class EditWalletViewModel @Inject constructor(
             },
             ExportPrivateKeyWalletUseCase.Param(wallet)
         )
-
     }
 
     fun backupMnemonic(wallet: Wallet) {
@@ -106,7 +113,24 @@ class EditWalletViewModel @Inject constructor(
         )
     }
 
+
+    fun updateWallet(wallet: Wallet, extra: String) {
+        updateWalletUseCase.dispose()
+        updateWalletUseCase.execute(
+            Action {
+                _updateWalletCallback.value = Event(SaveWalletState.Success("", extra))
+            },
+            Consumer {
+                it.printStackTrace()
+                _updateWalletCallback.value =
+                    Event(SaveWalletState.ShowError(it.localizedMessage))
+            },
+            wallet
+        )
+    }
+
     fun save(wallet: Wallet) {
+        saveWalletUseCase.dispose()
         saveWalletUseCase.execute(
             Action {
                 _saveWalletCallback.value = Event(SaveWalletState.Success(""))
@@ -120,7 +144,13 @@ class EditWalletViewModel @Inject constructor(
     }
 
     override fun onCleared() {
+        saveWalletUseCase.dispose()
+        updateWalletUseCase.dispose()
         compositeDisposable.dispose()
+        deleteWalletUseCase.dispose()
+        exportKeystoreWalletUseCase.dispose()
+        exportPrivateKeyWalletUseCase.dispose()
+        exportMnemonicWalletUseCase.dispose()
         super.onCleared()
     }
 }

@@ -250,6 +250,34 @@ class DialogHelper @Inject constructor(
         dialog.show()
     }
 
+    fun showBackupWalletDialog(
+        onBackUpLater: () -> Unit,
+        onBackUpNow: () -> Unit,
+        onBackUpAlready: () -> Unit
+
+    ) {
+        val binding = DataBindingUtil.inflate<DialogGasFeeBottomSheetBinding>(
+            LayoutInflater.from(activity), R.layout.dialog_gas_fee_bottom_sheet, null, false
+        )
+        val dialog = BottomSheetDialog(activity)
+        dialog.setContentView(binding.root)
+        binding.tvLater.setOnClickListener {
+            dialog.dismiss()
+            onBackUpLater.invoke()
+        }
+
+        binding.tvBackUpNow.setOnClickListener {
+            dialog.dismiss()
+            onBackUpNow.invoke()
+        }
+
+        binding.tvAlreadyDid.setOnClickListener {
+            dialog.dismiss()
+            onBackUpAlready.invoke()
+        }
+        dialog.show()
+    }
+
     fun showInvalidatedDialog(order: Order) {
 
         val binding = DataBindingUtil.inflate<DialogInvalidatedBottomSheetBinding>(

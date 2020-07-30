@@ -768,10 +768,14 @@
     <string name="tutorial_swap_amount">10</string>
     <string name="slippage_too_high_warning">Mức trượt giá đang cao. Bạn có thể giảm lượng giao dịch hoặc chia nhỏ lệnh của bạn để có tỉ giá tốt hơn.</string>
     <string name="gas_fee_explanation">Phí gas là phí bạn phải trả cho miner (không phải KyberSwap) để họ xác nhận giao dịch của bạn trên blockchain. Phí gas bạn chọn sẽ ảnh hưởng đến tốc độ giao dịch.</string>
-    <string name="explore">Explore</string>
+    <string name="explore">Khám phá</string>
     <string name="explore_notification">Notification</string>
-    <string name="explore_alert">Alert</string>
-    <string name="explore_history">History</string>
+    <string name="explore_alert">Thông báo</string>
+    <string name="explore_history">Lịch sử</string>
     <string name="explore_title">Explore</string>
+    <string name="later">Để sau</string>
+    <string name="back_up_now">Sao lưu ngay</string>
+    <string name="i_already_did">Đã sao lưu</string>
+    <string name="backup_warning_message">Vui lòng sao lưu ví của bạn. Nó sẽ giúp bạn khôi phục lại ví nếu điện thoại của bạn bị hỏng, mất hoặc bị cướp.</string>
 
 </resources>

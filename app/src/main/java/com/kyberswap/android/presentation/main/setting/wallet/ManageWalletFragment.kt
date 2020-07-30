@@ -22,6 +22,7 @@ import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.landing.CreateWalletState
+import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.setting.PassCodeLockActivity
 import com.kyberswap.android.presentation.wallet.UpdateWalletState
@@ -75,6 +76,7 @@ class ManageWalletFragment : BaseFragment() {
                     dialogHelper.showBottomSheetManageWalletDialog(
                         walletAdapter.getData().size == 1 || it.isSelected,
                         {
+                            (activity as MainActivity).isCreateWallet = true
                             viewModel.updateSelectedWallet(it.copy(isSelected = true))
                         }, {
                             navigator.navigateToEditWallet(currentFragment, it)
@@ -87,6 +89,7 @@ class ManageWalletFragment : BaseFragment() {
                 },
                 {
 
+                    (activity as MainActivity).isCreateWallet = true
                     viewModel.updateSelectedWallet(it.copy(isSelected = true))
                 },
                 {
@@ -127,6 +130,7 @@ class ManageWalletFragment : BaseFragment() {
             dialogHelper.showBottomSheetDialog(
                 {
                     dialogHelper.showConfirmation {
+                        (activity as MainActivity).isCreateWallet = true
                         viewModel.createWallet()
                     }
                 },

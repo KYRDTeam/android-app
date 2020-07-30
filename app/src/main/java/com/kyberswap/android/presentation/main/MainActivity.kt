@@ -28,6 +28,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.zxing.integration.android.IntentIntegrator
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
+import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.databinding.ActivityMainBinding
 import com.kyberswap.android.domain.model.Notification
 import com.kyberswap.android.domain.model.NotificationAlert
@@ -90,7 +91,6 @@ import org.consenlabs.tokencore.wallet.WalletManager
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -135,9 +135,18 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
     private var currentDialogFragment: AlertDialogFragment? = null
 
     @Inject
+    lateinit var mediator: StorageMediator
+
+    @Inject
     lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private var hasDone = false
+
+    var isCreateWallet: Boolean = false
+
+    var isSwitchWallet: Boolean = false
+
+    private var hasShowBackupWallet = false
 
     private var emptyCount = 0
 
@@ -240,6 +249,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                 positionOffsetPixels: Int
             ) {
             }
+
 
             override fun onPageSelected(position: Int) {
                 if (currentFragment is TutorialView) {
@@ -364,6 +374,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             WalletAdapter(appExecutors, handler,
                 {
                     showDrawer(false)
+                    isSwitchWallet = true
                     handler.postDelayed(
                         {
 
@@ -444,17 +455,18 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                     is GetAllWalletState.Success -> {
                         val selectedWallet = state.wallets.find { it.isSelected }
                         if (wallet?.address != selectedWallet?.address) {
-                            selectedWallet?.let {
+                            hasShowBackupWallet = false
+
+                            if (selectedWallet != null) {
                                 handler.postDelayed(
                                     {
                                         mainViewModel.pollingTokenBalance(
                                             state.wallets,
-                                            it
+                                            selectedWallet
                                         )
                                     }, 250
 
                                 )
-
                             }
                             wallet = selectedWallet
                             wallet?.let {
@@ -462,6 +474,16 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                                 mainViewModel.getTransactionPeriodically(it)
                                 mainViewModel.checkEligibleWallet(it)
 
+                            }
+                            if (selectedWallet != null &&
+                                !isCreateWallet
+                                && !isSwitchWallet
+                            ) {
+                                handler.postDelayed(
+                                    {
+                                        showBackupAlert(selectedWallet)
+                                    }, 250
+                                )
                             }
                         }
                         walletAdapter.submitList(listOf())
@@ -482,7 +504,11 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                 when (state) {
                     is UpdateWalletState.Success -> {
                         if (state.isWalletChangeEvent) {
+                            isSwitchWallet = false
                             EventBus.getDefault().post(WalletChangeEvent(state.wallet.address))
+                            if (wallet != null) {
+                                showBackupAlert(wallet!!)
+                            }
                         }
                     }
                     is UpdateWalletState.ShowError -> {
@@ -575,13 +601,13 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             showDrawer(false)
         }
 
-        tvNotification.setOnClickListener {
-            showDrawer(false)
-            handler.postDelayed({
-                navigator.navigateToNotificationScreen(currentFragment)
-            }, 250)
-
-        }
+//        tvNotification.setOnClickListener {
+//            showDrawer(false)
+//            handler.postDelayed({
+//                navigator.navigateToNotificationScreen(currentFragment)
+//            }, 250)
+//
+//        }
 
         tvTransaction.setOnClickListener {
             showDrawer(false)
@@ -619,6 +645,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                     dialogHelper.showBottomSheetDialog(
                         {
                             dialogHelper.showConfirmation {
+                                isCreateWallet = true
                                 mainViewModel.createWallet()
                                 firebaseAnalytics.logEvent(
                                     BALANCE_MENU_MYWALLET_CREATE,
@@ -846,6 +873,46 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (isCreateWallet) {
+            isCreateWallet = false
+            if (wallet != null) {
+                handler.postDelayed({
+                    showBackupAlert(wallet!!)
+                }, 500)
+            }
+        }
+    }
+
+    private fun showBackupAlert(wallet: Wallet) {
+        if (wallet.mnemonicAvailable &&
+            !wallet.hasBackup &&
+            !hasShowBackupWallet
+        ) {
+            hasShowBackupWallet = true
+
+            if ((currentFragment is BalanceFragment && mediator.isShownBalanceTutorial()) ||
+                (currentFragment is SwapFragment && mediator.isShownSwapTutorial()) ||
+                (currentFragment is LimitOrderV2Fragment && mediator.isShownLimitOrderTutorial())
+            ) {
+                dialogHelper.showBackupWalletDialog({
+
+                }, {
+                    if (currentFragment != null) {
+                        navigator.navigateToEditWallet(
+                            currentFragment!!,
+                            wallet,
+                            true
+                        )
+                    }
+                }, {
+                    mainViewModel.saveWallet(wallet.copy(hasBackup = true))
+                })
+            }
+        }
+    }
+
     fun refreshOthers() {
         mainViewModel.monitorOtherTokenBalance()
     }
@@ -955,9 +1022,13 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
     private fun setPendingNotification(numOfPendingNotification: Int) {
         hasPendingNotification = numOfPendingNotification > 0
-        tvPendingNotification.visibility =
-            if (numOfPendingNotification > 0 && isLoggedIn) View.VISIBLE else View.INVISIBLE
-        tvPendingNotification.text = numOfPendingNotification.toString()
+        if (currentFragment is ExploreFragment) {
+            val tvNotification = (currentFragment as ExploreFragment).binding.tvNotificationNumber
+            tvNotification.visibility =
+                if (numOfPendingNotification > 0 && isLoggedIn) View.VISIBLE else View.GONE
+            tvNotification.text = numOfPendingNotification.toString()
+        }
+
         showPendingIndicator()
     }
 
@@ -1019,12 +1090,10 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                     }
 
                     is ProfileFragment -> {
-                        Timber.e("main activity profile : onBackPress")
                         it.onBackPress()
                     }
 
                     is ProfileDetailFragment -> {
-                        Timber.e("main activity profile detail : onBackPress")
                         it.onBackPress()
                     }
                 }
@@ -1093,6 +1162,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         currentDialogFragment?.dismissAllowingStateLoss()
         currentDialogFragment = null
         handler.removeCallbacksAndMessages(null)
+        isCreateWallet = false
         super.onDestroy()
     }
 

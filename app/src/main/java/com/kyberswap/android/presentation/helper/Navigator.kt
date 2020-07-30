@@ -547,17 +547,21 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
         )
     }
 
-    fun navigateToEditWallet(currentFragment: Fragment, wallet: Wallet) {
+    fun navigateToEditWallet(
+        currentFragment: Fragment,
+        wallet: Wallet,
+        isFromWarningDialog: Boolean = false
+    ) {
         navigateByChildFragmentManager(
             currentFragment,
-            EditWalletFragment.newInstance(wallet)
+            EditWalletFragment.newInstance(wallet, isFromWarningDialog)
         )
     }
 
-    fun navigateToBackupWalletInfo(currentFragment: Fragment?, value: String) {
+    fun navigateToBackupWalletInfo(currentFragment: Fragment?, value: String, wallet: Wallet?) {
         navigateByChildFragmentManager(
             currentFragment,
-            BackupWalletInfoFragment.newInstance(value)
+            BackupWalletInfoFragment.newInstance(value, wallet)
         )
     }
 
