@@ -28,6 +28,7 @@ import com.kyberswap.android.databinding.DialogAlertTriggerBinding
 import com.kyberswap.android.databinding.DialogBackupMessageAgainBinding
 import com.kyberswap.android.databinding.DialogBackupMessageBinding
 import com.kyberswap.android.databinding.DialogBackupPhraseBottomSheetBinding
+import com.kyberswap.android.databinding.DialogBackupWalletBottomSheetBinding
 import com.kyberswap.android.databinding.DialogBottomDisconnectWalletConnectBinding
 import com.kyberswap.android.databinding.DialogBottomSheetBinding
 import com.kyberswap.android.databinding.DialogCancelOrderConfirmationBinding
@@ -256,8 +257,8 @@ class DialogHelper @Inject constructor(
         onBackUpAlready: () -> Unit
 
     ) {
-        val binding = DataBindingUtil.inflate<DialogGasFeeBottomSheetBinding>(
-            LayoutInflater.from(activity), R.layout.dialog_gas_fee_bottom_sheet, null, false
+        val binding = DataBindingUtil.inflate<DialogBackupWalletBottomSheetBinding>(
+            LayoutInflater.from(activity), R.layout.dialog_backup_wallet_bottom_sheet, null, false
         )
         val dialog = BottomSheetDialog(activity)
         dialog.setContentView(binding.root)

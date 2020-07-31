@@ -96,7 +96,8 @@ class ExploreFragment : BaseFragment() {
                         }
                     }
                     is GetCampaignsState.ShowError -> {
-
+                        binding.vpCampaign.visibility = View.GONE
+                        binding.imgDefault.visibility = View.VISIBLE
                     }
                 }
             }

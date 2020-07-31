@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="token_endpoint_url" formatted="false" translatable="false">https://dev-api.knstats.com/</string>
+    <string name="token_endpoint_url" formatted="false" translatable="false">https://ropsten-api.kyber.network/</string>
     <string name="ks_endpoint_url" formatted="false" translatable="false">https://dev-userdashboard.knstats.com/</string>
     <string name="base_rpc_url" translatable="false">https://ropsten.infura.io/v3/1b9c2fe6f5fa424cb1304b67fee3e71e</string>
     <string name="infura_base_rpc_url" translatable="false">https://ropsten.infura.io/v3/1b9c2fe6f5fa424cb1304b67fee3e71e</string>
@@ -17,10 +17,10 @@
     <string name="limit_order_contract" formatted="false" translatable="false">0xa33caaed059f0c574c07136a5da9f28dc2fa27c2</string>
     <string name="kyber_code_api_key" translatable="false">9872342987234234b</string>
     <string name="promo_source_token" translatable="false">OMG</string>
-    <string name="chart_endpoint_url" formatted="false" translatable="false">https://dev-api.knstats.com/</string>
+    <string name="chart_endpoint_url" formatted="false" translatable="false">https://ropsten-api.kyber.network/</string>
     <string name="wrapper_contract_address" translatable="false">0x665d34f192f4940da4e859ff7768c0a80ed3ae10</string>
     <!--    <string name="gas_limit_endpoint_url" translatable="false">https://dev-api.knstats.com/</string>-->
-    <string name="gas_limit_endpoint_url" translatable="false">https://dev-api.knstats.com/</string>
+    <string name="gas_limit_endpoint_url" translatable="false">https://ropsten-api.kyber.network/</string>
     <!--    <string name="kyber_event_topic" translatable="false">0x1849bd6a030a1bca28b83437fd3de96f3d27a5d172fa7e9c78e7b61468928a39</string>-->
     <string name="kyber_event_topic" translatable="false">0xf724b4df6617473612b53d7f88ecc6ea983074b30960a049fcd0657ffe808083</string>
 </resources>
