@@ -141,9 +141,14 @@ class SendFragment : BaseFragment() {
     private val isContactExist: Boolean
         get() = contacts.find { ct ->
             ct.address.equals(currentSelection?.address, true)
-                || ct.address.equals(edtAddress.text.toString().onlyAddress(), true)
-                || ct.address.equals(ilAddress.helperText?.toString(), true)
+                    || ct.address.equals(edtAddress.text.toString().onlyAddress(), true)
+                    || ct.address.equals(ilAddress.helperText?.toString(), true)
         } != null
+
+    private val contractByAddress: Contact?
+        get() = contacts.find { ct ->
+            ct.address.equals(edtAddress.text.toString().onlyAddress(), true)
+        }
 
     private val availableAmount: BigDecimal
         get() = binding.send?.let {
@@ -356,10 +361,14 @@ class SendFragment : BaseFragment() {
                         }
                     }
                 } else {
-                    currentSelection?.let {
-                        if (isContactExist) {
-                            binding.edtAddress.setText(it.nameAddressDisplay)
+                    if (binding.edtAddress.text.toString()
+                            .equals(currentSelection?.address, true)
+                    ) {
+                        if (isContactExist && currentSelection != null) {
+                            binding.edtAddress.setText(currentSelection!!.nameAddressDisplay)
                         }
+                    } else if (contractByAddress != null) {
+                        binding.edtAddress.setText(contractByAddress?.nameAddressDisplay)
                     }
                 }
             })
@@ -633,8 +642,8 @@ class SendFragment : BaseFragment() {
                         )
                     }
                     !(edtAddress.text.toString().onlyAddress().isContact() ||
-                        ilAddress.helperText.toString().isContact() ||
-                        edtAddress.text.toString().isENSAddress()) -> showAlertWithoutIcon(
+                            ilAddress.helperText.toString().isContact() ||
+                            edtAddress.text.toString().isENSAddress()) -> showAlertWithoutIcon(
                         title = getString(R.string.invalid_contact_address_title),
                         message = getString(R.string.specify_contact_address)
                     )
@@ -650,7 +659,7 @@ class SendFragment : BaseFragment() {
                     )
 
                     send.tokenSource.isETH &&
-                        availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
+                            availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
                         showAlertWithoutIcon(
                             getString(R.string.insufficient_eth),
                             getString(R.string.not_enough_eth_blance)
@@ -896,7 +905,6 @@ class SendFragment : BaseFragment() {
             saveSend(contactAddress)
         }
     }
-
 
     private fun saveSend(address: String = "") {
         binding.send?.let { send ->

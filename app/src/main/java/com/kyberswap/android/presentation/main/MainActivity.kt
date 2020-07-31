@@ -250,7 +250,6 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             ) {
             }
 
-
             override fun onPageSelected(position: Int) {
                 if (currentFragment is TutorialView) {
                     (currentFragment as TutorialView).skipTutorial()
@@ -1135,10 +1134,11 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        val allFragments = supportFragmentManager.fragments
-        allFragments.forEach {
-            if (it is ProfileFragment) {
-                it.onActivityResult(requestCode, resultCode, data)
+        if (currentFragment is ExploreFragment) {
+            currentFragment?.childFragmentManager?.fragments?.forEach {
+                if (it is ProfileFragment) {
+                    it.onActivityResult(requestCode, resultCode, data)
+                }
             }
         }
 

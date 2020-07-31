@@ -9,6 +9,7 @@ import com.kyberswap.android.data.db.BigIntegerDataTypeConverter
 import com.kyberswap.android.data.db.DataTypeConverter
 import com.kyberswap.android.presentation.common.KEEP_ETH_BALANCE_FOR_GAS
 import com.kyberswap.android.util.ext.formatDisplayNumber
+import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toDoubleSafe
@@ -79,8 +80,8 @@ data class LocalLimitOrder(
                 minRate,
                 18,
                 RoundingMode.CEILING
-            ).toDisplayNumber()
-        else minRate.toDisplayNumber()
+            ).rounding().toDisplayNumber()
+        else minRate.rounding().toDisplayNumber()
 
     val displayPrice: String
         get() = StringBuilder().append(
@@ -110,7 +111,6 @@ data class LocalLimitOrder(
     val displaySource: String
         get() = if (isSell) displayAmount else displayTotal
 
-
     fun swapToken(): LocalLimitOrder {
         return LocalLimitOrder(
             this.userAddr,
@@ -139,34 +139,34 @@ data class LocalLimitOrder(
 
     fun isSameTokenPair(other: LocalLimitOrder?): Boolean {
         return this.tokenSource.tokenSymbol == other?.tokenSource?.tokenSymbol &&
-            this.tokenDest.tokenSymbol == other.tokenDest.tokenSymbol &&
-            this.srcAmount == other.srcAmount &&
-            this.marketRate == other.marketRate &&
-            this.expectedRate == other.expectedRate &&
-            this.nonce == other.nonce &&
-            this.gasLimit == other.gasLimit &&
-            this.gasPrice == other.gasPrice &&
-            this.minRate == other.minRate &&
-            this.fee == other.fee &&
-            this.transferFee == other.transferFee &&
-            this.tokenSource.currentBalance == other.tokenSource.currentBalance &&
-            this.tokenDest.currentBalance == other.tokenDest.currentBalance
+                this.tokenDest.tokenSymbol == other.tokenDest.tokenSymbol &&
+                this.srcAmount == other.srcAmount &&
+                this.marketRate == other.marketRate &&
+                this.expectedRate == other.expectedRate &&
+                this.nonce == other.nonce &&
+                this.gasLimit == other.gasLimit &&
+                this.gasPrice == other.gasPrice &&
+                this.minRate == other.minRate &&
+                this.fee == other.fee &&
+                this.transferFee == other.transferFee &&
+                this.tokenSource.currentBalance == other.tokenSource.currentBalance &&
+                this.tokenDest.currentBalance == other.tokenDest.currentBalance
     }
 
     fun isSameTokenPairForAddress(other: LocalLimitOrder?): Boolean {
         return this.tokenSource.tokenSymbol == other?.tokenSource?.tokenSymbol &&
-            this.tokenDest.tokenSymbol == other.tokenDest.tokenSymbol &&
-            this.tokenSource.currentBalance == other.tokenSource.currentBalance &&
-            this.tokenDest.currentBalance == other.tokenDest.currentBalance &&
-            this.ethToken.currentBalance == other.ethToken.currentBalance &&
-            this.wethToken.currentBalance == other.wethToken.currentBalance &&
-            this.userAddr == other.userAddr
+                this.tokenDest.tokenSymbol == other.tokenDest.tokenSymbol &&
+                this.tokenSource.currentBalance == other.tokenSource.currentBalance &&
+                this.tokenDest.currentBalance == other.tokenDest.currentBalance &&
+                this.ethToken.currentBalance == other.ethToken.currentBalance &&
+                this.wethToken.currentBalance == other.wethToken.currentBalance &&
+                this.userAddr == other.userAddr
     }
 
     fun isSameSourceDestToken(other: LocalLimitOrder?): Boolean {
         return this.tokenSource.tokenSymbol == other?.tokenSource?.tokenSymbol &&
-            this.tokenDest.tokenSymbol == other.tokenDest.tokenSymbol &&
-            this.userAddr == other.userAddr
+                this.tokenDest.tokenSymbol == other.tokenDest.tokenSymbol &&
+                this.userAddr == other.userAddr
     }
 
     val displayGasFee: String
@@ -350,7 +350,7 @@ data class LocalLimitOrder(
             Convert.toWei(gasPrice, Convert.Unit.GWEI)
                 .multiply(KEEP_ETH_BALANCE_FOR_GAS), Convert.Unit.ETHER
         )
-            ).max(BigDecimal.ZERO)
+                ).max(BigDecimal.ZERO)
     }
 
     val tokenPair: String

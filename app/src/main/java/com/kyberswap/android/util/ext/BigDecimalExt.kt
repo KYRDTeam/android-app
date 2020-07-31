@@ -2,6 +2,7 @@ package com.kyberswap.android.util.ext
 
 import com.kyberswap.android.presentation.common.MIN_SUPPORT_AMOUNT
 import java.math.BigDecimal
+import java.math.BigInteger
 import java.math.RoundingMode
 
 fun BigDecimal.toDisplayNumber(): String {
@@ -58,5 +59,16 @@ fun BigDecimal.toDisplayNumberInternal(length: Int = 4): String {
 fun BigDecimal.rounding(): BigDecimal {
     return if (this - this.toBigInteger()
             .toBigDecimal() > BigDecimal(1E-6)
-    ) this else this.toBigInteger().toBigDecimal()
+    ) {
+        if ((this - this.toBigInteger().add(BigInteger.ONE).toBigDecimal()).abs() < BigDecimal(
+                1E-6
+            )
+        ) {
+            this.toBigInteger().add(BigInteger.ONE).toBigDecimal()
+        } else {
+            this
+        }
+    } else {
+        this.toBigInteger().toBigDecimal()
+    }
 }

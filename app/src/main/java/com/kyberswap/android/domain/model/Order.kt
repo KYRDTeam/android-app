@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import com.kyberswap.android.data.api.limitorder.OrderEntity
 import com.kyberswap.android.util.ext.exactAmount
 import com.kyberswap.android.util.ext.formatDisplayNumber
+import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.shortenValue
 import com.kyberswap.android.util.ext.toLongSafe
 import kotlinx.android.parcel.Parcelize
@@ -92,8 +93,8 @@ data class Order(
                 minRate,
                 10,
                 RoundingMode.CEILING
-            ).formatDisplayNumber()
-        else minRate.formatDisplayNumber()
+            ).rounding().formatDisplayNumber()
+        else minRate.rounding().formatDisplayNumber()
 
     val displayTotal: String
         get() = if (sideTrade.equals(SIDE_TRADE_BUY, true)) sourceDisplay else destDisplay
