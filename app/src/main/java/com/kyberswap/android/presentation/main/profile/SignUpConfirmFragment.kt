@@ -14,6 +14,7 @@ import com.kyberswap.android.databinding.FragmentConfirmSignupBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.SocialInfo
 import com.kyberswap.android.domain.model.UserInfo
+import com.kyberswap.android.domain.model.UserStatusChangeEvent
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
@@ -27,6 +28,7 @@ import com.kyberswap.android.util.USER_TRANSFER_DATA_FORCE_LOGOUT
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.isNetworkAvailable
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 
@@ -80,6 +82,7 @@ class SignUpConfirmFragment : BaseFragment() {
             for (i in 0 until fm.backStackEntryCount) {
                 fm.popBackStack()
             }
+        EventBus.getDefault().post(UserStatusChangeEvent())
         navigator.navigateToProfileDetail(
             (activity as MainActivity).getCurrentFragment()
         )

@@ -26,6 +26,10 @@
                 android:textColor="#ffffff"
                 android:textSize="18sp" />
 
+            <ImageView
+                android:id="@+id/imgBack"
+                style="@style/BackImage" />
+
         </FrameLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout

@@ -31,6 +31,7 @@ import com.kyberswap.android.databinding.FragmentSignupBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.SocialInfo
 import com.kyberswap.android.domain.model.UserInfo
+import com.kyberswap.android.domain.model.UserStatusChangeEvent
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
@@ -55,6 +56,7 @@ import com.twitter.sdk.android.core.TwitterSession
 import com.twitter.sdk.android.core.identity.TwitterAuthClient
 import com.twitter.sdk.android.core.models.User
 import kotlinx.android.synthetic.main.fragment_signup.*
+import org.greenrobot.eventbus.EventBus
 import timber.log.Timber
 import java.util.Arrays
 import javax.inject.Inject
@@ -125,7 +127,7 @@ class SignUpFragment : BaseFragment() {
                     binding.ilEmail.error = errorMessage
                 }
 
-                !Patterns.EMAIL_ADDRESS.matcher(binding.edtEmail.text).matches() -> {
+                !Patterns.EMAIL_ADDRESS.matcher(binding.edtEmail.text.toString()).matches() -> {
 
                     val errorMessage = getString(
                         R.string.login_invalid_email_address
@@ -398,6 +400,7 @@ class SignUpFragment : BaseFragment() {
             for (i in 0 until fm.backStackEntryCount) {
                 fm.popBackStack()
             }
+        EventBus.getDefault().post(UserStatusChangeEvent())
         navigateToProfileDetail()
     }
 

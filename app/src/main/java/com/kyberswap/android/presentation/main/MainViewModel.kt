@@ -31,6 +31,7 @@ import com.kyberswap.android.domain.usecase.wallet.CreateWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetAllWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.UpdateSelectedWalletUseCase
+import com.kyberswap.android.domain.usecase.wallet.UpdateWalletUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.landing.CreateWalletState
 import com.kyberswap.android.presentation.main.balance.CheckEligibleWalletState
@@ -38,6 +39,7 @@ import com.kyberswap.android.presentation.main.balance.GetAllWalletState
 import com.kyberswap.android.presentation.main.balance.GetPendingTransactionState
 import com.kyberswap.android.presentation.main.balance.GetRatingInfoState
 import com.kyberswap.android.presentation.main.balance.SaveRatingInfoState
+import com.kyberswap.android.presentation.main.balance.SaveWalletState
 import com.kyberswap.android.presentation.main.notification.GetUnReadNotificationsState
 import com.kyberswap.android.presentation.main.notification.ReadNotificationsState
 import com.kyberswap.android.presentation.main.profile.DataTransferState
@@ -76,6 +78,7 @@ class MainViewModel @Inject constructor(
     private val dataTransferUseCase: DataTransferUseCase,
     private val getMaxGasPriceUseCase: GetMaxGasPriceUseCase,
     private val checkEligibleWalletUseCase: CheckEligibleWalletUseCase,
+    private val updateWalletUseCase: UpdateWalletUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getWalletUseCase, errorHandler) {
 
@@ -157,6 +160,26 @@ class MainViewModel @Inject constructor(
                     Event(UserInfoState.ShowError(errorHandler.getError(it)))
             },
             null
+        )
+    }
+
+    private val _saveWalletCallback = MutableLiveData<Event<SaveWalletState>>()
+    val saveWalletCallback: LiveData<Event<SaveWalletState>>
+        get() = _saveWalletCallback
+
+
+    fun saveWallet(wallet: Wallet) {
+        updateWalletUseCase.dispose()
+        updateWalletUseCase.execute(
+            Action {
+                _saveWalletCallback.value = Event(SaveWalletState.Success(""))
+            },
+            Consumer {
+                it.printStackTrace()
+                _saveWalletCallback.value =
+                    Event(SaveWalletState.ShowError(it.localizedMessage))
+            },
+            wallet
         )
     }
 

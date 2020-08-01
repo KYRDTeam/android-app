@@ -1159,15 +1159,20 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         }
 
         binding.tvName.setOnClickListener {
-            val clipboard =
-                context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
-            val clip = ClipData.newPlainText("Copy", wallet?.address)
-            clipboard!!.primaryClip = clip
-            showAlert(getString(R.string.address_copy))
-            analytics.logEvent(
-                LO_USER_CLICK_COPY_WALLET_ADDRESS,
-                Bundle().createEvent()
-            )
+            if (context != null) {
+                val clipboard =
+                    context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+                val clip = ClipData.newPlainText("Copy", wallet?.address)
+                if (clipboard != null && clip != null) {
+                    clipboard.setPrimaryClip(clip)
+                    showAlert(getString(R.string.address_copy))
+                    analytics.logEvent(
+                        LO_USER_CLICK_COPY_WALLET_ADDRESS,
+                        Bundle().createEvent()
+                    )
+                }
+            }
+
         }
 
 
@@ -1484,7 +1489,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
     }
 
     private fun moveToLoginTab() {
-        (activity as? MainActivity)?.moveToTab(MainPagerAdapter.PROFILE, true)
+        (activity as? MainActivity)?.moveToTab(MainPagerAdapter.EXPLORE, true)
     }
 
     private fun getRelatedOrders() {

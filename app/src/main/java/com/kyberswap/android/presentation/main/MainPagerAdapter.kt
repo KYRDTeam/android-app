@@ -9,8 +9,8 @@ import com.kyberswap.android.domain.model.Notification
 import com.kyberswap.android.domain.model.NotificationAlert
 import com.kyberswap.android.domain.model.NotificationLimitOrder
 import com.kyberswap.android.presentation.main.balance.BalanceFragment
+import com.kyberswap.android.presentation.main.explore.ExploreFragment
 import com.kyberswap.android.presentation.main.limitorder.LimitOrderV2Fragment
-import com.kyberswap.android.presentation.main.profile.ProfileFragment
 import com.kyberswap.android.presentation.main.setting.SettingFragment
 import com.kyberswap.android.presentation.main.swap.SwapFragment
 
@@ -26,7 +26,7 @@ class MainPagerAdapter constructor(
         listFragment.add(BALANCE, BalanceFragment.newInstance())
         listFragment.add(SWAP, SwapFragment.newInstance(alert, notification))
         listFragment.add(LIMIT_ORDER, LimitOrderV2Fragment.newInstance(limitOrder))
-        listFragment.add(PROFILE, ProfileFragment.newInstance())
+        listFragment.add(EXPLORE, ExploreFragment.newInstance())
         listFragment.add(SETTING, SettingFragment.newInstance())
 
     }
@@ -58,7 +58,7 @@ class MainPagerAdapter constructor(
         const val BALANCE = 0
         const val SWAP = 1
         const val LIMIT_ORDER = 2
-        const val PROFILE = 3
+        const val EXPLORE = 3
         const val SETTING = 4
     }
 }

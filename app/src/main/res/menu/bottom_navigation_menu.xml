@@ -13,8 +13,8 @@
         android:title="@string/limit_order" />
 
     <item
-        android:icon="@drawable/ic_person_toggle"
-        android:title="@string/profile" />
+        android:icon="@drawable/ic_explore_toggle"
+        android:title="@string/explore" />
 
     <item
         android:icon="@drawable/ic_setting_toggle"

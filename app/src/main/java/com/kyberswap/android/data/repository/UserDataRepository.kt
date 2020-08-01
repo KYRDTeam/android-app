@@ -16,6 +16,7 @@ import com.kyberswap.android.data.mapper.UserMapper
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.AlertMethodsResponse
+import com.kyberswap.android.domain.model.Campaign
 import com.kyberswap.android.domain.model.DataTransferStatus
 import com.kyberswap.android.domain.model.KycResponseStatus
 import com.kyberswap.android.domain.model.LoginUser
@@ -433,6 +434,18 @@ class UserDataRepository @Inject constructor(
     override fun saveRating(param: SaveRatingInfoUseCase.Param): Completable {
         return Completable.fromCallable {
             ratingDao.updateRatingInfo(param.ratingInfo)
+        }
+    }
+
+    override fun getCampaigns(): Single<List<Campaign>> {
+        return userApi.getCampaigns().map { response ->
+            if (response.success == true) {
+                response.data.map {
+                    Campaign(it)
+                }
+            } else {
+                listOf()
+            }
         }
     }
 

@@ -64,11 +64,15 @@ class TransactionDetailSwapFragment : BaseFragment() {
         }
 
         binding.imgCopy.setOnClickListener {
-            val clipboard =
-                context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
-            val clip = ClipData.newPlainText("Copy", transaction?.hash)
-            clipboard!!.primaryClip = clip
-            showAlert(getString(R.string.txhash_copy))
+            if (context != null) {
+                val clipboard =
+                    context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+                val clip = ClipData.newPlainText("Copy", transaction?.hash)
+                if (clipboard != null && clip != null) {
+                    clipboard.setPrimaryClip(clip)
+                    showAlert(getString(R.string.txhash_copy))
+                }
+            }
         }
 
         binding.imgEtherscan.setOnClickListener {

@@ -373,7 +373,7 @@
     <string name="name_your_wallet_optional">钱包名称 (可选)</string>
     <string name="edit_wallet">编辑钱包</string>
     <string name="ba_skip">跳跃?</string>
-    <string name="you_can_backup_your_wallet_later">"⚠️ Warning: You must back up your wallet and keep your mnemonics secure.\n\nWhy? If you lose your phone, or uninstall the app or clear app's memory, you won't be able to access your wallet and funds.\n\nWhy keep your backup secure? Anyone with your backup can steal your wallet assets"</string>
+    <string name="you_can_backup_your_wallet_later">"⚠️ 警告：您必须备份您的钱包并确保助记符的安全。\n\n为什么要这么做呢？如果您的手机丢失，或者卸载了应用又或是清除了应用的内存，则将无法访问您的钱包和资金。\n\n为什么要确保备份文件的安全性？拥有备份文件的人可以窃取您的钱包资产"</string>
     <string name="show_backup_phrase">显示备份短语</string>
     <string name="delete_wallet">删除钱包</string>
     <string name="backup_keystore">备份Keystore</string>
@@ -769,5 +769,14 @@
     <string name="tutorial_swap_amount">10</string>
     <string name="slippage_too_high_warning">滑点很高。为了得到更好的汇率，您可能需要减少兑换金额或分成多次兑换</string>
     <string name="gas_fee_explanation">向矿工（非Kyberswap）支付燃料费用，以促进在以太坊区块链上的交易。一般来说，燃料价格越高，交易执行得越快。燃料价格取决于区块链的拥挤程度，而不是由KyberSwap决定的。</string>
+    <string name="explore">探索</string>
+    <string name="explore_notification">Notification</string>
+    <string name="explore_alert">价格警报</string>
+    <string name="explore_history">历史纪录</string>
+    <string name="explore_title">Explore</string>
+    <string name="later">稍后</string>
+    <string name="back_up_now">立即备份</string>
+    <string name="i_already_did">已经备份</string>
+    <string name="backup_warning_message">请备份您的钱包。以便在手机发生损坏、丢失或被盗的情况下，能帮助您找回钱包.</string>
 
 </resources>

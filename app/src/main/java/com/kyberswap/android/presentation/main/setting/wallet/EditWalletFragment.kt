@@ -28,7 +28,7 @@ import javax.inject.Inject
 
 class EditWalletFragment : BaseFragment() {
 
-    private lateinit var binding: FragmentEditWalletBinding
+    lateinit var binding: FragmentEditWalletBinding
 
     @Inject
     lateinit var navigator: Navigator
@@ -43,6 +43,8 @@ class EditWalletFragment : BaseFragment() {
 
     private var jsonContent: String? = null
 
+    private var isFromWarningDialog: Boolean = false
+
     private val viewModel by lazy {
         ViewModelProvider(this, viewModelFactory).get(EditWalletViewModel::class.java)
     }
@@ -51,6 +53,7 @@ class EditWalletFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         wallet = arguments?.getParcelable(WALLET_PARAM)
+        isFromWarningDialog = arguments?.getBoolean(IS_FROM_WARING_DIALOG_PARAM, false) ?: false
     }
 
     override fun onCreateView(
@@ -66,6 +69,10 @@ class EditWalletFragment : BaseFragment() {
         binding.wallet = wallet
         binding.tvShowBackupPhrase.setOnClickListener {
 
+            showPassCodeLock(EDIT_WALLET)
+        }
+
+        if (isFromWarningDialog) {
             showPassCodeLock(EDIT_WALLET)
         }
 
@@ -111,7 +118,9 @@ class EditWalletFragment : BaseFragment() {
                 showProgress(state == ExportWalletState.Loading)
                 when (state) {
                     is ExportWalletState.Success -> {
-                        onExportWalletComplete(state.value)
+                        if (wallet != null) {
+                            viewModel.updateWallet(wallet!!.copy(hasBackup = true), state.value)
+                        }
                     }
                     is ExportWalletState.ShowError -> {
                         showError(
@@ -127,7 +136,7 @@ class EditWalletFragment : BaseFragment() {
                 showProgress(state == ExportWalletState.Loading)
                 when (state) {
                     is ExportWalletState.Success -> {
-                        navigator.navigateToBackupWalletInfo(currentFragment, state.value)
+                        navigator.navigateToBackupWalletInfo(currentFragment, state.value, wallet)
                     }
                     is ExportWalletState.ShowError -> {
                         showError(
@@ -144,7 +153,7 @@ class EditWalletFragment : BaseFragment() {
                 showProgress(state == ExportWalletState.Loading)
                 when (state) {
                     is ExportWalletState.Success -> {
-                        navigator.navigateToBackupWalletInfo(currentFragment, state.value)
+                        navigator.navigateToBackupWalletInfo(currentFragment, state.value, wallet)
                     }
                     is ExportWalletState.ShowError -> {
                         showError(
@@ -160,6 +169,21 @@ class EditWalletFragment : BaseFragment() {
                 when (state) {
                     is SaveWalletState.Success -> {
                         onSaveComplete()
+                    }
+                    is SaveWalletState.ShowError -> {
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
+                        )
+                    }
+                }
+            }
+        })
+
+        viewModel.updateWalletCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is SaveWalletState.Success -> {
+                        onExportWalletComplete(state.extra)
                     }
                     is SaveWalletState.ShowError -> {
                         showError(
@@ -187,11 +211,15 @@ class EditWalletFragment : BaseFragment() {
     }
 
     private fun copyWalletAddress() {
-        val clipboard =
-            context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
-        val clip = ClipData.newPlainText("Copy", wallet?.address)
-        clipboard!!.primaryClip = clip
-        showAlert(getString(R.string.address_copy))
+        if (context != null) {
+            val clipboard =
+                context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+            val clip = ClipData.newPlainText("Copy", wallet?.address)
+            if (clipboard != null && clip != null) {
+                clipboard.setPrimaryClip(clip)
+                showAlert(getString(R.string.address_copy))
+            }
+        }
     }
 
     private fun onExportWalletComplete(content: String) {
@@ -308,11 +336,13 @@ class EditWalletFragment : BaseFragment() {
 
     companion object {
         private const val WALLET_PARAM = "param_wallet"
+        private const val IS_FROM_WARING_DIALOG_PARAM = "is_from_warning_dialog_param"
         private const val WRITE_REQUEST_CODE = 1000
-        fun newInstance(wallet: Wallet) =
+        fun newInstance(wallet: Wallet, isFromWarningDialog: Boolean = false) =
             EditWalletFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(WALLET_PARAM, wallet)
+                    putBoolean(IS_FROM_WARING_DIALOG_PARAM, isFromWarningDialog)
                 }
             }
     }

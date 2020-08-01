@@ -38,6 +38,10 @@
                 android:textColor="#ffffff"
                 android:textSize="18sp" />
 
+            <ImageView
+                android:id="@+id/imgBack"
+                style="@style/BackImage" />
+
             <TextView
                 android:id="@+id/tvLogout"
                 android:layout_width="wrap_content"

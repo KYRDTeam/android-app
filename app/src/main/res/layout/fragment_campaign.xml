@@ -1,0 +1,23 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.kyberswap.android.presentation.main.profile.ProfileFragment">
+
+    <data>
+
+        <variable
+            name="campaign"
+            type="com.kyberswap.android.domain.model.Campaign" />
+    </data>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        app:imageUrl="@{campaign.imageUrl}"
+        app:link="@{campaign.link}" />
+
+
+</layout>
+
+

@@ -372,7 +372,7 @@
     <string name="name_your_wallet_optional">Tên ví của bạn (tùy chọn)</string>
     <string name="edit_wallet">Chỉnh sử ví</string>
     <string name="ba_skip">Bỏ qua?</string>
-    <string name="you_can_backup_your_wallet_later">"⚠️ Warning: You must back up your wallet and keep your mnemonics secure.\n\nWhy? If you lose your phone, or uninstall the app or clear app's memory, you won't be able to access your wallet and funds.\n\nWhy keep your backup secure? Anyone with your backup can steal your wallet assets"</string>
+    <string name="you_can_backup_your_wallet_later">"⚠️ Cảnh báo: Bạn phải sao lưu ví và giữ Mnemonics an toàn.\n\nTại sao ư? Vì nếu bạn làm mất điện thoại, xóa ứng dụng hoặc xóa bộ nhớ của ứng dụng. Bạn sẽ không thể truy cập vào ví và sử dụng tiền của mình.\n\nTại sao phải bảo mật bản sao lưu của bạn ư? Bởi vì bất cứ ai có bản sao lưu này đều có thể lấy cắp toàn bộ tài sản trong ví của bạn."</string>
     <string name="show_backup_phrase">Hiển thị cụm từ sao lưu</string>
     <string name="delete_wallet">Xoá ví</string>
     <string name="backup_keystore">Sao lưu Keystore</string>
@@ -667,7 +667,7 @@
     <string name="mark_all_read">Đọc tất cả</string>
     <string name="token_24h_vol"> %s ETH</string>
     <string name="action_open">Open</string>
-    <string name="title_notification">Thông báo</string>
+    <string name="title_notification">Notification</string>
     <string name="eth_24h_vol">24h Vol:</string>
     <string name="defaut_24h_eth">0 ETH</string>
     <string name="transformation_data_content"><![CDATA[<div class="l-normal"><p>On Jan 24, 2020, KyberSwap.com and- related interfaces (the “Platform”) will no longer be operated by <strong class="text-black">Kyber Network International Limited </strong> (“Kyber Network”) and will be operated by <strong class="text-black">KYRD International Limited </strong> (“KYRD International”), a sister company incorporated and based in the <strong class="text-black">British Virgin Islands </strong>(“BVI”). There are no other changes apart from the new operating entity of KyberSwap.com being changed to KYRD International.</p><p><strong class="text-black">KYRD International </strong>is a company in BVI and as such, the country is not subject to an adequacy decision by the EU Commission on the processing of personal data. If you wish to continue using KyberSwap.com without providing personal data again, Kyber Network will transfer your current personal data to KYRD International upon your explicit consent. Please rest assured that KYRD International respects your privacy and is committed to protecting your personal data. For questions, please email <a href=mailto:support@kyberswap.com>support@kyberswap.com</a> or reach out to us at <a href="https://t.me/kyberswapofficial" target="_blank" class="text-orange">https://t.me/kyberswapofficial </a></p><p>Kindly select:</p><ul><li>\t<strong class="text-black">“Yes” </strong>if you wish to allow KyberSwap.com to copy your personal data to KYRD International; or</li><li>\t<strong class="text-black">“No”  </strong>if you do not wish to copy your personal data to KYRD International. Note that if you click “No”, your personal data shall be erased in accordance with the retention periods specified in Kyber Network’s Privacy Policy. You will have to create a new profile on KyberSwap.com in order to, but not limited to, access Limit Orders, price alerts, personalized notifications and other benefits. </li></ul></div>]]></string>
@@ -768,5 +768,14 @@
     <string name="tutorial_swap_amount">10</string>
     <string name="slippage_too_high_warning">Mức trượt giá đang cao. Bạn có thể giảm lượng giao dịch hoặc chia nhỏ lệnh của bạn để có tỉ giá tốt hơn.</string>
     <string name="gas_fee_explanation">Phí gas là phí bạn phải trả cho miner (không phải KyberSwap) để họ xác nhận giao dịch của bạn trên blockchain. Phí gas bạn chọn sẽ ảnh hưởng đến tốc độ giao dịch.</string>
+    <string name="explore">Khám phá</string>
+    <string name="explore_notification">Notification</string>
+    <string name="explore_alert">Alert</string>
+    <string name="explore_history">Lịch sử</string>
+    <string name="explore_title">Explore</string>
+    <string name="later">Để sau</string>
+    <string name="back_up_now">Sao lưu ngay</string>
+    <string name="i_already_did">Đã sao lưu</string>
+    <string name="backup_warning_message">Vui lòng sao lưu ví của bạn. Nó sẽ giúp bạn khôi phục lại ví nếu điện thoại của bạn bị hỏng, mất hoặc bị cướp.</string>
 
 </resources>

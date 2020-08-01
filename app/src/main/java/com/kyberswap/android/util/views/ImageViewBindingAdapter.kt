@@ -15,6 +15,7 @@ import com.kyberswap.android.domain.model.Notification
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.presentation.main.profile.LoginType
 import com.kyberswap.android.util.ext.dpToPx
+import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import jdenticon.Jdenticon
 import java.util.Locale
@@ -41,6 +42,18 @@ object ImageViewBindingAdapter {
             return
         }
         Glide.with(view).load(url).apply(RequestOptions().error(error)).into(view)
+    }
+
+    @BindingAdapter("app:imageUrl", "app:link")
+    @JvmStatic
+    fun loadImage(view: ImageView, url: String?, link: String?) {
+        if (url == null || url.isEmpty()) {
+            return
+        }
+        Glide.with(view).load(url).into(view)
+        view.setOnClickListener {
+            view.context.openUrl(link)
+        }
     }
 
     @BindingAdapter("imageUrl", "placeHolder")
