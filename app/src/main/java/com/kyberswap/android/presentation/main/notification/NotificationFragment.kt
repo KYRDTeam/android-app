@@ -212,6 +212,8 @@ class NotificationFragment : BaseFragment() {
                         if (state.isReadAll) {
                             updateReadAllView(false)
                             updateNotificationIndicator()
+                        } else {
+                            updateNotification()
                         }
                     }
                     is ReadNotificationsState.ShowError -> {
@@ -231,6 +233,12 @@ class NotificationFragment : BaseFragment() {
     private fun updateNotificationIndicator() {
         if (activity is MainActivity) {
             (activity as MainActivity).markReadAllNotification()
+        }
+    }
+
+    private fun updateNotification() {
+        if (activity is MainActivity) {
+            (activity as MainActivity).updateNotification()
         }
     }
 

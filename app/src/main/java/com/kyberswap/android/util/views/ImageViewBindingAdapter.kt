@@ -15,11 +15,9 @@ import com.kyberswap.android.domain.model.Notification
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.presentation.main.profile.LoginType
 import com.kyberswap.android.util.ext.dpToPx
-import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import jdenticon.Jdenticon
 import java.util.Locale
-
 
 object ImageViewBindingAdapter {
     @BindingAdapter("app:imageUrl")
@@ -51,9 +49,6 @@ object ImageViewBindingAdapter {
             return
         }
         Glide.with(view).load(url).into(view)
-        view.setOnClickListener {
-            view.context.openUrl(link)
-        }
     }
 
     @BindingAdapter("imageUrl", "placeHolder")
