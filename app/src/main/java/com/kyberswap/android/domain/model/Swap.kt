@@ -258,7 +258,7 @@ data class Swap(
             .append(tokenDest.rateUsdNow.toDisplayNumber() + " USD")
             .toString()
 
-    private val gasFeeEth: BigDecimal
+    val gasFeeEth: BigDecimal
         get() = Convert.fromWei(
             Convert.toWei(gasPrice.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
                 .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER

@@ -68,6 +68,7 @@ import com.kyberswap.android.util.USER_CLICK_RECENT_CONTACT_EVENT
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.ensAddress
+import com.kyberswap.android.util.ext.formatDisplayNumber
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isContact
 import com.kyberswap.android.util.ext.isENSAddress
@@ -655,14 +656,28 @@ class SendFragment : BaseFragment() {
                         )
                     ).insufficientEthBalance -> showAlertWithoutIcon(
                         getString(R.string.insufficient_eth),
-                        getString(R.string.not_enough_eth_blance)
+                        String.format(
+                            getString(R.string.not_enough_eth_blance), send.copy(
+                                gasPrice = getSelectedGasPrice(
+                                    send.gas,
+                                    selectedGasFeeView?.id
+                                )
+                            ).gasFeeEth.formatDisplayNumber()
+                        )
                     )
 
                     send.tokenSource.isETH &&
                             availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
                         showAlertWithoutIcon(
                             getString(R.string.insufficient_eth),
-                            getString(R.string.not_enough_eth_blance)
+                            String.format(
+                                getString(R.string.not_enough_eth_blance), send.copy(
+                                    gasPrice = getSelectedGasPrice(
+                                        send.gas,
+                                        selectedGasFeeView?.id
+                                    )
+                                ).gasFeeEth.formatDisplayNumber()
+                            )
                         )
                     }
 

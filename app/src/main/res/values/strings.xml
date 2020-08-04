@@ -371,7 +371,7 @@
     <string name="expired_date_notification">After swapping, please transfer your token to your personal wallet before %s</string>
     <string name="promo_gift">1 Gift</string>
     <string name="insufficient_eth">Insufficient ETH for transaction</string>
-    <string name="not_enough_eth_blance">Deposit more ETH or click Advanced to lower GAS fee</string>
+    <string name="not_enough_eth_blance">Deposit more ETH or click Advanced to lower GAS fee. Transaction fee: %s ETH</string>
     <string name="can_not_tranfer_token">Can not transfer this token</string>
     <string name="import_success_notification">Congratulations!!!</string>
     <string name="import_success_detail">You have successfully imported your wallet. Please move all assets to your wallet by %s</string>

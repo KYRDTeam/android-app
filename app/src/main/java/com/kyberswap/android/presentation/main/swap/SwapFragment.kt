@@ -963,7 +963,14 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 selectedGasFeeView?.id
                             )
                         ).insufficientEthBalance -> {
-                            swapError = getString(R.string.not_enough_eth_blance)
+                            swapError = String.format(
+                                getString(R.string.not_enough_eth_blance), swap.copy(
+                                    gasPrice = getSelectedGasPrice(
+                                        swap.gas,
+                                        selectedGasFeeView?.id
+                                    )
+                                ).gasFeeEth.formatDisplayNumber()
+                            )
                             showAlertWithoutIcon(
                                 getString(R.string.insufficient_eth),
                                 swapError
@@ -975,8 +982,15 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             )
                         }
                         swap.tokenSource.isETH &&
-                            availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
-                            swapError = getString(R.string.not_enough_eth_blance)
+                                availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
+                            swapError = String.format(
+                                getString(R.string.not_enough_eth_blance), swap.copy(
+                                    gasPrice = getSelectedGasPrice(
+                                        swap.gas,
+                                        selectedGasFeeView?.id
+                                    )
+                                ).gasFeeEth.formatDisplayNumber()
+                            )
                             showAlertWithoutIcon(
                                 getString(R.string.insufficient_eth),
                                 swapError
