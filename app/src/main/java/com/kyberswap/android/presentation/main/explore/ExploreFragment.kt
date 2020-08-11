@@ -31,7 +31,6 @@ import com.kyberswap.android.util.ext.openUrl
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import timber.log.Timber
 import javax.inject.Inject
 
 class ExploreFragment : BaseFragment() {
@@ -92,6 +91,12 @@ class ExploreFragment : BaseFragment() {
                             binding.vpCampaign.visibility = View.GONE
                             binding.imgDefault.visibility = View.VISIBLE
                         } else {
+                            if (state.campaigns.size == 1) {
+                                binding.indicator.visibility = View.INVISIBLE
+                            } else {
+                                binding.indicator.visibility = View.VISIBLE
+                            }
+
                             binding.vpCampaign.visibility = View.VISIBLE
                             binding.imgDefault.visibility = View.GONE
                             binding.vpCampaign.adapter =
@@ -179,7 +184,6 @@ class ExploreFragment : BaseFragment() {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: UserStatusChangeEvent) {
-        Timber.e("user status change event")
         getLoginStatus()
     }
 

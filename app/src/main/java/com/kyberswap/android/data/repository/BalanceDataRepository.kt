@@ -1,7 +1,10 @@
 package com.kyberswap.android.data.repository
 
 import android.content.Context
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.kyberswap.android.R
+import com.kyberswap.android.data.api.currencies.CurrencyEntity
 import com.kyberswap.android.data.api.home.KyberSwapApi
 import com.kyberswap.android.data.api.home.TokenApi
 import com.kyberswap.android.data.db.LocalLimitOrderDao
@@ -21,6 +24,7 @@ import com.kyberswap.android.domain.usecase.token.GetOtherBalancePollingUseCase
 import com.kyberswap.android.domain.usecase.token.GetOtherTokenBalancesUseCase
 import com.kyberswap.android.domain.usecase.token.GetTokensBalanceUseCase
 import com.kyberswap.android.presentation.common.MIN_SUPPORT_AMOUNT
+import com.kyberswap.android.util.FileUtils
 import com.kyberswap.android.util.TokenClient
 import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
@@ -266,6 +270,26 @@ class BalanceDataRepository @Inject constructor(
 
                             }
                         }
+                }.doOnError {
+                    try {
+                        val types = object : TypeToken<CurrencyEntity>() {
+                        }.type
+
+                        val entity: CurrencyEntity = Gson().fromJson(
+
+                            FileUtils.getStringFromPath(
+                                context,
+                                R.raw.currencies
+                            ), types
+                        )
+
+                        val fallbackTokens = entity.data.map {
+                            Token(it)
+                        }
+                        tokenDao.insertTokens(fallbackTokens)
+                    } catch (ex: Exception) {
+                        ex.printStackTrace()
+                    }
                 }
 
                 .doAfterSuccess { tokens ->

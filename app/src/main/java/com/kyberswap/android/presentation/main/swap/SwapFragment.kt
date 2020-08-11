@@ -612,8 +612,17 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             getRevertNotification(rgRate.checkedRadioButtonId)
 
                         if (swap != binding.swap) {
+                            val isSwapAll = availableAmount.toDisplayNumber()
+                                .equals(edtSource.text.toString(), true)
                             binding.swap = swap
                             binding.executePendingBindings()
+
+                            if (isSwapAll) {
+                                handler.postDelayed({
+                                    sourceAmount = availableAmount.toDisplayNumber()
+                                    binding.edtSource.setText(sourceAmount)
+                                }, 200)
+                            }
                         }
                     }
                     is GetGasLimitState.ShowError -> {
@@ -762,8 +771,18 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 .copy(maxGasPrice = maxGasPrice) else state.gas.copy(maxGasPrice = maxGasPrice)
                         )
                         if (swap != binding.swap) {
+
+                            val isSwapAll = availableAmount.toDisplayNumber()
+                                .equals(edtSource.text.toString(), true)
                             binding.swap = swap
                             binding.executePendingBindings()
+
+                            if (isSwapAll) {
+                                handler.postDelayed({
+                                    sourceAmount = availableAmount.toDisplayNumber()
+                                    binding.edtSource.setText(sourceAmount)
+                                }, 200)
+                            }
                         }
                     }
                     is GetGasPriceState.ShowError -> {
@@ -981,6 +1000,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 Bundle().createEvent(ERROR_TEXT, swapError)
                             )
                         }
+
                         swap.tokenSource.isETH &&
                                 availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
                             swapError = String.format(
@@ -1022,7 +1042,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 Bundle().createEvent(ERROR_TEXT, swapError)
                             )
                         }
-
                         else -> wallet?.let {
 
                             val gasPriceGwei = getSelectedGasPrice(swap.gas, selectedGasFeeView?.id)
