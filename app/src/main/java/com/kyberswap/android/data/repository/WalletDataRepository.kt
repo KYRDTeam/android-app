@@ -166,7 +166,8 @@ class WalletDataRepository @Inject constructor(
                 param.walletName,
                 cipher(generatedPassword),
                 isSelected = true,
-                mnemonicAvailable = true
+                mnemonicAvailable = true,
+                hasBackup = true
             )
 
             createContact(wallet)

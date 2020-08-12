@@ -15,6 +15,16 @@ android {
                     onesignal_google_project_number: 'REMOTE'
             ]
         }
+
+        devapi {
+            applicationIdSuffix ".devapi"
+            manifestPlaceholders = [
+                    onesignal_app_id               : oneSignalProperties.onesignalAppIdDev,
+                    onesignal_google_project_number: 'REMOTE'
+            ]
+        }
+
+
         kovan {
             applicationIdSuffix ".kovan"
             manifestPlaceholders = [

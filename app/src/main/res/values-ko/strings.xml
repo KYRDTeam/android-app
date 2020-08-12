@@ -358,7 +358,7 @@
     <string name="expired_date_notification">After swapping please transfer your token to your personal wallet before %s</string>
     <string name="promo_gift">1 Gift</string>
     <string name="insufficient_eth">거래에 필요한 ETH가 부족합니다</string>
-    <string name="not_enough_eth_blance">ETH를 더 입금하거나 Advanced를 클릭하여 가스비를 낮추세요.</string>
+    <string name="not_enough_eth_blance">ETH를 더 입금하거나 고급옵션(Advanced)을 클릭하여 이더를 가스비를 낮추세요. 거래 수수료: %sETH</string>
     <string name="can_not_tranfer_token">이 토큰을 전송할 수 없습니다.</string>
     <string name="import_success_notification">축하합니다!!!</string>
     <string name="import_success_detail">지갑을 성공적으로 가져 왔습니다. 지갑의 자산을 %s까지 이동해주세요</string>

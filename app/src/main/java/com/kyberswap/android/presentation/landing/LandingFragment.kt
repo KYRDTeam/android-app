@@ -50,6 +50,7 @@ class LandingFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.viewModel = viewModel.landingList[position]
+        binding.executePendingBindings()
     }
 
     companion object {

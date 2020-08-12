@@ -41,7 +41,7 @@ task clean(type: Delete) {
 ext {
     compileSdkVersion = 29
     minSdkVersion = 21
-    targetSdkVersion = 28
+    targetSdkVersion = 29
     buildToolsVersion = '29.0.2'
     supportLibVersion = '29.0.2'
     picasso_version = '2.71828'
@@ -72,8 +72,8 @@ ext {
     mockWebserverVersion = '3.10.0'
     materialDialogVersion = '0.9.6.0'
     indicatorVersion = '2.1.0'
-    calligraphy3Version = '3.1.0'
-    viewpumpVersion = '1.0.0'
+    calligraphy3Version = '3.1.1'
+    viewpumpVersion = '2.0.3'
     web3jVersion = '4.2.1-android'
     gethVersion = '1.7.3'
     bitcoinjVersion = '0.15.1'

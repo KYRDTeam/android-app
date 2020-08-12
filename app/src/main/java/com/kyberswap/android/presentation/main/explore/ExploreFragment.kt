@@ -1,6 +1,5 @@
 package com.kyberswap.android.presentation.main.explore
 
-
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -21,14 +20,18 @@ import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.splash.GetWalletState
+import com.kyberswap.android.util.EXPLORE_ALERT_TAPPED
+import com.kyberswap.android.util.EXPLORE_DEFAULT_TAPPED
+import com.kyberswap.android.util.EXPLORE_NOTIFICATION_TAPPED
+import com.kyberswap.android.util.EXPLORE_PROFILE_TAPPED
+import com.kyberswap.android.util.EXPLORE_TRANSACTION_TAPPED
 import com.kyberswap.android.util.di.ViewModelFactory
+import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.openUrl
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import timber.log.Timber
 import javax.inject.Inject
-
 
 class ExploreFragment : BaseFragment() {
 
@@ -88,6 +91,12 @@ class ExploreFragment : BaseFragment() {
                             binding.vpCampaign.visibility = View.GONE
                             binding.imgDefault.visibility = View.VISIBLE
                         } else {
+                            if (state.campaigns.size == 1) {
+                                binding.indicator.visibility = View.INVISIBLE
+                            } else {
+                                binding.indicator.visibility = View.VISIBLE
+                            }
+
                             binding.vpCampaign.visibility = View.VISIBLE
                             binding.imgDefault.visibility = View.GONE
                             binding.vpCampaign.adapter =
@@ -133,6 +142,7 @@ class ExploreFragment : BaseFragment() {
         })
 
         binding.lnAlert.setOnClickListener {
+            analytics.logEvent(EXPLORE_ALERT_TAPPED, Bundle().createEvent())
             if (hasUserInfo) {
                 navigator.navigateToManageAlert(
                     currentFragment
@@ -144,17 +154,20 @@ class ExploreFragment : BaseFragment() {
             }
         }
 
-        binding.lnHistory.setOnClickListener {
+        binding.lnTransaction.setOnClickListener {
+            analytics.logEvent(EXPLORE_TRANSACTION_TAPPED, Bundle().createEvent())
             if (wallet != null) {
                 navigator.navigateToTransactionScreen(currentFragment, wallet)
             }
         }
 
         binding.lnNotification.setOnClickListener {
+            analytics.logEvent(EXPLORE_NOTIFICATION_TAPPED, Bundle().createEvent())
             navigator.navigateToNotificationScreen(currentFragment)
         }
 
         binding.lnSignIn.setOnClickListener {
+            analytics.logEvent(EXPLORE_PROFILE_TAPPED, Bundle().createEvent())
             if (hasUserInfo) {
                 navigator.navigateToProfileDetail(currentFragment, true)
             } else {
@@ -164,13 +177,13 @@ class ExploreFragment : BaseFragment() {
         }
 
         binding.imgDefault.setOnClickListener {
+            analytics.logEvent(EXPLORE_DEFAULT_TAPPED, Bundle().createEvent())
             openUrl(getString(R.string.kyber_swap_url))
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: UserStatusChangeEvent) {
-        Timber.e("user status change event")
         getLoginStatus()
     }
 
@@ -199,7 +212,6 @@ class ExploreFragment : BaseFragment() {
         handler.removeCallbacksAndMessages(null)
         super.onDestroyView()
     }
-
 
     companion object {
         fun newInstance() =

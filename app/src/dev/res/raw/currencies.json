@@ -1,0 +1,205 @@
+{
+  "data": [
+    {
+      "symbol": "OMG",
+      "name": "OmiseGO",
+      "address": "0x4bfba4a8f28755cb2061c413459ee562c6b9c51b",
+      "decimals": 18,
+      "listing_time": 1580601600,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "ETH",
+      "name": "Ethereum",
+      "address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "decimals": 18,
+      "sp_limit_order": true,
+      "is_quote": true,
+      "quote_priority": 2
+    },
+    {
+      "symbol": "KNC",
+      "name": "KyberNetwork",
+      "address": "0x7b2810576aa1cce68f2b118cef1f36467c648f92",
+      "decimals": 18,
+      "listing_time": 1578370140,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "EOS",
+      "name": "Eos",
+      "address": "0xd5b4218b950a53ff07985e2d88346925c335eae7",
+      "decimals": 18,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "ELF",
+      "name": "Aelf",
+      "address": "0x9fcc27c7320703c43368cf1a4bf076402cd0d6b4",
+      "decimals": 18,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "POWR",
+      "name": "Power Ledger",
+      "address": "0xa577731515303f0c0d00e236041855a5c4f114dc",
+      "decimals": 6,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "GTO",
+      "name": "Gifto",
+      "address": "0xe55c607d58c53b2b06a8e38f67f4c0fcaeed2c31",
+      "decimals": 5,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "RDN",
+      "name": "Raiden",
+      "address": "0x5422ef695ed0b1213e2b953cfa877029637d9d26",
+      "decimals": 18,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "APPC",
+      "name": "AppCoins",
+      "address": "0x2799f05b55d56be756ca01af40bf7350787f48d4",
+      "decimals": 18,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "BQX",
+      "name": "Ethos",
+      "address": "0x9504a86a881f63da06302fb3639d4582022097db",
+      "decimals": 8,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "ADX",
+      "name": "AdEx",
+      "address": "0x499990db50b34687cdafb2c8dabae4e99d6f38a7",
+      "decimals": 4,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "AST",
+      "name": "AirSwap",
+      "address": "0xef06f410c26a0ff87b3a43927459cce99268a2ef",
+      "decimals": 4,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "RCN",
+      "name": "Ripio Credit Network",
+      "address": "0x99338aa9218c6c23aa9d8cc2f3efaf29954ea26b",
+      "decimals": 18,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "ZIL",
+      "name": "Zilliqa",
+      "address": "0xad78afbbe48ba7b670fbc54c65708cbc17450167",
+      "decimals": 12,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "LINK",
+      "name": "Chain Link",
+      "address": "0xb4f7332ed719eb4839f091eddb2a3ba309739521",
+      "decimals": 18,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "IOST",
+      "name": "IOStoken",
+      "address": "0x27db28a6c4ac3d82a08d490cfb746e6f02bc467c",
+      "decimals": 18,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "STORM",
+      "name": "Storm",
+      "address": "0x8fff7de21de8ad9c510704407337542073fdc44b",
+      "decimals": 18,
+      "listing_time": 1539077021,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "WETH",
+      "name": "Wrapped Ether",
+      "address": "0xbca556c912754bc8e7d4aad20ad69a1b1444f42d",
+      "decimals": 18,
+      "sp_limit_order": true,
+      "is_quote": true,
+      "quote_priority": 2
+    },
+    {
+      "symbol": "DAI",
+      "name": "DAI",
+      "address": "0xad6d458402f60fd3bd25163575031acdce07538d",
+      "decimals": 18,
+      "listing_time": 1578393540,
+      "sp_limit_order": true,
+      "is_quote": true,
+      "quote_priority": 3,
+      "is_gas_fixed": true
+    },
+    {
+      "symbol": "SNT",
+      "name": "Status",
+      "address": "0xbf5d8683b9be6c43fca607eb2a6f2626a18837a6",
+      "decimals": 18,
+      "listing_time": 1578466920,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "SALT",
+      "name": "Salt",
+      "address": "0xb47f1a9b121ba114d5e98722a8948e274d0f4042",
+      "decimals": 8,
+      "listing_time": 1578358800,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "MANA",
+      "name": "Mana",
+      "address": "0x72fd6c7c1397040a66f33c2ecc83a0f71ee46d5c",
+      "decimals": 18,
+      "listing_time": 1578531720,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "WBTC",
+      "name": "Wrapped BTC",
+      "address": "0x3dff0dce5fc4b367ec91d31de3837cf3840c8284",
+      "decimals": 8,
+      "listing_time": 1591963920,
+      "gasLimit": "975000",
+      "sp_limit_order": true,
+      "is_quote": true,
+      "quote_priority": 1
+    },
+    {
+      "symbol": "BAT",
+      "name": "Basic Attention Token",
+      "address": "0xdb0040451f373949a4be60dcd7b6b8d6e42658b6",
+      "decimals": 18,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "REQ",
+      "name": "Request",
+      "address": "0xb43d10bbe7222519da899b72bf2c7f094b6f79d7",
+      "decimals": 18,
+      "sp_limit_order": true
+    },
+    {
+      "symbol": "ENG",
+      "name": "Enigma",
+      "address": "0x95cc8d8f29d0f7fcc425e8708893e759d1599c97",
+      "decimals": 8,
+      "sp_limit_order": true
+    }
+  ],
+  "success": true
+}

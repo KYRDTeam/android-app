@@ -131,7 +131,7 @@ data class Send(
     val insufficientEthBalance: Boolean
         get() = ethToken.currentBalance < gasFeeEth
 
-    private val gasFeeEth: BigDecimal
+    val gasFeeEth: BigDecimal
         get() = Convert.fromWei(
             Convert.toWei(gasPrice.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
                 .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER

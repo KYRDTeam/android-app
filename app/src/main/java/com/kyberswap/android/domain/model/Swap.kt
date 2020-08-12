@@ -58,7 +58,10 @@ data class Swap(
 
     val allETHBalanceGasLimit: BigInteger
         get() {
-            return calculateDefaultGasLimit(tokenSource, tokenDest) + 10_000.toBigInteger()
+            return calculateDefaultGasLimit(
+                tokenSource,
+                tokenDest
+            ).max(gasLimit.toBigIntegerOrDefaultZero()) + 10_000.toBigInteger()
         }
 
     val isExpectedRateEmptyOrZero: Boolean
@@ -85,16 +88,15 @@ data class Swap(
 
     fun isSameTokenPair(other: Swap?): Boolean {
         return this.walletAddress == other?.walletAddress &&
-            this.tokenSource.tokenSymbol == other.tokenSource.tokenSymbol &&
-            this.tokenDest.tokenSymbol == other.tokenDest.tokenSymbol &&
-            this.tokenSource.currentBalance == other.tokenSource.currentBalance &&
-            this.tokenDest.currentBalance == other.tokenDest.currentBalance &&
-            this.ethToken.currentBalance == other.ethToken.currentBalance
+                this.tokenSource.tokenSymbol == other.tokenSource.tokenSymbol &&
+                this.tokenDest.tokenSymbol == other.tokenDest.tokenSymbol &&
+                this.tokenSource.currentBalance == other.tokenSource.currentBalance &&
+                this.tokenDest.currentBalance == other.tokenDest.currentBalance &&
+                this.ethToken.currentBalance == other.ethToken.currentBalance
     }
 
     val isSwapAll: Boolean
         get() = sourceAmount == tokenSource.currentBalance.rounding().toDisplayNumber()
-
 
     fun availableAmountForSwap(
         calAvailableAmount: BigDecimal,
@@ -106,7 +108,6 @@ data class Swap(
                 .multiply(gasLimit), Convert.Unit.ETHER
         )).max(BigDecimal.ZERO)
     }
-
 
     val defaultGasLimit: String
         get() = if (tokenSource.gasLimit.toBigIntegerOrDefaultZero()
@@ -258,7 +259,7 @@ data class Swap(
             .append(tokenDest.rateUsdNow.toDisplayNumber() + " USD")
             .toString()
 
-    private val gasFeeEth: BigDecimal
+    val gasFeeEth: BigDecimal
         get() = Convert.fromWei(
             Convert.toWei(gasPrice.toBigDecimalOrDefaultZero(), Convert.Unit.GWEI)
                 .multiply(gasLimit.toBigDecimalOrDefaultZero()), Convert.Unit.ETHER
@@ -344,7 +345,6 @@ data class Swap(
 
     val ratePercentageAbs: String
         get() = expectedRate.percentage(marketRate).abs().toDisplayNumber()
-
 
     fun swapToken(): Swap {
         return Swap(

@@ -354,7 +354,7 @@
     <string name="expired_date_notification">Sau khi trao đổi, hãy chuyển toàn bộ token vào ví riêng của bạn trước %s</string>
     <string name="promo_gift">1 Món quà</string>
     <string name="insufficient_eth">Không đủ ETH để thực hiện giao dịch</string>
-    <string name="not_enough_eth_blance">Gửi thêm ETH vào ví hoặc bấm Nâng cao để hạ thấp phí gas.</string>
+    <string name="not_enough_eth_blance">Gửi thêm ETH hoặc chọn Nâng cao để hạ thấp phí Gas. Phí giao dịch: %s ETH</string>
     <string name="can_not_tranfer_token">Không thể chuyển token này</string>
     <string name="import_success_notification">Chúc mừng!!!</string>
     <string name="import_success_detail">Bạn đã nhập ví thành công. Xin vui lòng chuyển tất cả tiền qua ví của bạn trước %s</string>

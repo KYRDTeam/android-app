@@ -921,6 +921,10 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         mainViewModel.getNotifications()
     }
 
+    fun updateNotification() {
+        mainViewModel.getNotifications()
+    }
+
     private fun updateLoginStatus() {
         if (currentFragment?.isAdded == false) return
         currentFragment?.childFragmentManager?.fragments?.forEach {

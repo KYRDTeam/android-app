@@ -408,15 +408,15 @@ data class Token(
         const val ENJIN = "ENJIN"
         const val FAV = "isFav"
 
-        const val DIGIX_GAS_LIMIT_DEFAULT = 975_000
-        const val EXCHANGE_ETH_TOKEN_GAS_LIMIT_DEFAULT = 500_000
-        const val APPROVE_TOKEN_GAS_LIMIT_DEFAULT = 150_000
-        const val TRANSFER_TOKEN_GAS_LIMIT_DEFAULT = 160_000
+        const val DIGIX_GAS_LIMIT_DEFAULT = 1_140_000
+        const val EXCHANGE_ETH_TOKEN_GAS_LIMIT_DEFAULT = 650_000
+        const val APPROVE_TOKEN_GAS_LIMIT_DEFAULT = 160_000
+        const val TRANSFER_TOKEN_GAS_LIMIT_DEFAULT = 180_000
         const val TRANSFER_ETH_GAS_LIMIT_DEFAULT = 130_000
-        const val DAI_GAS_LIMIT_DEFAULT = 650_000
-        const val MAKER_GAS_LIMIT_DEFAULT = 520_000
-        const val PROPY_GAS_LIMIT_DEFAULT = 650_000
-        const val PROMOTION_TOKEN_GAS_LIMIT_DEFAULT = 500_000
-        const val TRUE_USD_GAS_LIMIT_DEFAULT = 715_000
+        const val DAI_GAS_LIMIT_DEFAULT = 800_000
+        const val MAKER_GAS_LIMIT_DEFAULT = 700_000
+        const val PROPY_GAS_LIMIT_DEFAULT = 800_000
+        const val PROMOTION_TOKEN_GAS_LIMIT_DEFAULT = 650_00
+        const val TRUE_USD_GAS_LIMIT_DEFAULT = 870_000
     }
 }

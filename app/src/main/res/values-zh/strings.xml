@@ -355,7 +355,7 @@
     <string name="expired_date_notification">在兑换之后，请将您的代币在%s之前转移至您的私人钱包</string>
     <string name="promo_gift">1个礼物</string>
     <string name="insufficient_eth">没有足够的ETH交易</string>
-    <string name="not_enough_eth_blance">" 存入更多ETH或点击高级选项以降低GAS费用"</string>
+    <string name="not_enough_eth_blance">"存入更多的ETH或点击高级选项以降低燃料费用。交易费用：%s ETH"</string>
     <string name="can_not_tranfer_token">无法转移此令牌</string>
     <string name="import_success_notification">恭喜!!!</string>
     <string name="import_success_detail">您已成功导入钱包。请通过%s将所有资产移至钱包</string>
