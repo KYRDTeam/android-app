@@ -19,6 +19,7 @@ import com.kyberswap.android.presentation.main.swap.GetSendState
 import com.kyberswap.android.presentation.main.swap.TransferTokenTransactionState
 import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Consumer
+import java.math.BigInteger
 import javax.inject.Inject
 
 class SendConfirmViewModel @Inject constructor(
@@ -45,7 +46,6 @@ class SendConfirmViewModel @Inject constructor(
         MutableLiveData<Event<TransferTokenTransactionState>>()
     val transferTokenTransactionCallback: LiveData<Event<TransferTokenTransactionState>>
         get() = _transferTokenTransactionCallback
-
 
     fun getSendData(wallet: Wallet) {
         getSendTokenUseCase.execute(
@@ -84,7 +84,7 @@ class SendConfirmViewModel @Inject constructor(
                 val gasLimit = calculateDefaultGasLimitTransfer(send.tokenSource)
                     .min(
                         it.amountUsed.multiply(120.toBigInteger())
-                            .divide(100.toBigInteger()) + ADDITIONAL_SEND_GAS_LIMIT.toBigInteger()
+                            .divide(100.toBigInteger()) + if (send.tokenSource.isETH) BigInteger.ZERO else ADDITIONAL_SEND_GAS_LIMIT.toBigInteger()
                     )
 
                 val specialGasLimit = specialGasLimitDefault(send.tokenSource, send.tokenSource)

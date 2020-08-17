@@ -27,7 +27,6 @@ import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.model.Gas
 import com.kyberswap.android.domain.model.Send
-import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.WalletChangeEvent
@@ -152,11 +151,11 @@ class SendFragment : BaseFragment() {
             ct.address.equals(edtAddress.text.toString().onlyAddress(), true)
         }
 
-    private val availableAmount: BigDecimal
+    private val availableETHAmount: BigDecimal
         get() = binding.send?.let {
             it.availableAmountForTransfer(
                 it.tokenSource.currentBalance,
-                Token.TRANSFER_ETH_GAS_LIMIT_DEFAULT.toBigDecimal(),
+                it.gasLimit.toBigDecimal(),
                 getSelectedGasPrice(
                     it.gas, selectedGasFeeView?.id
                 ).toBigDecimalOrDefaultZero()
@@ -251,8 +250,16 @@ class SendFragment : BaseFragment() {
                         if (currentSend != null) {
                             val send = updateGasPrice(currentSend)
                             if (binding.send != send) {
+                                val isSendAllETH = availableETHAmount.toDisplayNumber()
+                                    .equals(binding.edtSource.text.toString(), true)
                                 binding.send = send
                                 binding.executePendingBindings()
+
+                                if (isSendAllETH) {
+                                    handler.postDelayed({
+                                        binding.edtSource.setText(availableETHAmount.toDisplayNumber())
+                                    }, 200)
+                                }
                             }
                         }
                     }
@@ -534,8 +541,15 @@ class SendFragment : BaseFragment() {
 
                         if (binding.send != send) {
                             hasGasLimit = true
+                            val isSendAllETH = availableETHAmount.toDisplayNumber()
+                                .equals(binding.edtSource.text.toString(), true)
                             binding.send = send
                             binding.executePendingBindings()
+                            if (isSendAllETH) {
+                                handler.postDelayed({
+                                    binding.edtSource.setText(availableETHAmount.toDisplayNumber())
+                                }, 200)
+                            }
                         }
                     }
                     is GetGasLimitState.ShowError -> {
@@ -672,7 +686,7 @@ class SendFragment : BaseFragment() {
                     )
 
                     send.tokenSource.isETH &&
-                            availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
+                            availableETHAmount < edtSource.toBigDecimalOrDefaultZero() -> {
                         showAlertWithoutIcon(
                             getString(R.string.insufficient_eth),
                             String.format(
@@ -737,16 +751,7 @@ class SendFragment : BaseFragment() {
                 binding.send?.let {
                     if (it.tokenSource.isETH) {
                         showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
-                        binding.edtSource.setAmount(
-                            it.availableAmountForTransfer(
-                                it.tokenSource.currentBalance,
-                                Token.TRANSFER_ETH_GAS_LIMIT_DEFAULT.toBigDecimal(),
-                                getSelectedGasPrice(
-                                    it.gas,
-                                    selectedGasFeeView?.id
-                                ).toBigDecimalOrDefaultZero()
-                            ).toDisplayNumber()
-                        )
+                        binding.edtSource.setAmount(availableETHAmount.toDisplayNumber())
                     } else {
                         binding.edtSource.setText(
                             it.tokenSource.currentBalance.rounding().toDisplayNumber()
@@ -805,16 +810,7 @@ class SendFragment : BaseFragment() {
             binding.send?.let {
                 if (it.tokenSource.isETH) {
                     showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
-                    binding.edtSource.setAmount(
-                        it.availableAmountForTransfer(
-                            it.tokenSource.currentBalance,
-                            Token.TRANSFER_ETH_GAS_LIMIT_DEFAULT.toBigDecimal(),
-                            getSelectedGasPrice(
-                                it.gas,
-                                selectedGasFeeView?.id
-                            ).toBigDecimalOrDefaultZero()
-                        ).toDisplayNumber()
-                    )
+                    binding.edtSource.setAmount(availableETHAmount.toDisplayNumber())
                 } else {
                     binding.edtSource.setText(it.tokenSource.currentBalance.toDisplayNumber())
                 }

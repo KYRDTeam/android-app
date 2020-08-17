@@ -53,7 +53,6 @@ import com.kyberswap.android.domain.usecase.swap.ResetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapDataTokenUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapUseCase
 import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
-import com.kyberswap.android.presentation.common.ADDITIONAL_SWAP_GAS_LIMIT
 import com.kyberswap.android.presentation.common.DEFAULT_NAME
 import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
@@ -303,39 +302,39 @@ class SwapDataRepository @Inject constructor(
             val srcTokenExt = tokenExtDao.getTokenExtByAddress(param.tokenSource.tokenAddress)
             val destTokenExt = tokenExtDao.getTokenExtByAddress(param.tokenDest.tokenAddress)
 
+            val calcGasLimitFromNode = ((ethEstimateGas?.amountUsed
+                ?: BigInteger.ZERO).multiply(120.toBigInteger())
+                .divide(100.toBigInteger())).toBigDecimal()
+
+            val calcGasLimitFromApi = gasLimitEntity.data
+
             val defaultValue = calculateDefaultGasLimit(
                 param.tokenSource,
                 param.tokenDest
             ).toBigDecimal()
 
-
             if (srcTokenExt?.isGasFixed == true) {
-                if (!gasLimitEntity.error) {
-                    gasLimitEntity.data
+                val gasLimitFromApiWithFallback = if (!gasLimitEntity.error) {
+                    calcGasLimitFromApi
                 } else {
                     srcTokenExt.gasLimit.toBigDecimalOrDefaultZero()
                 }
+                gasLimitFromApiWithFallback.max(calcGasLimitFromNode)
             } else if (destTokenExt?.isGasFixed == true) {
-                if (!gasLimitEntity.error) {
-                    gasLimitEntity.data
+                val gasLimitFromApiWithFallback = if (!gasLimitEntity.error) {
+                    calcGasLimitFromApi
                 } else {
                     destTokenExt.gasLimit.toBigDecimalOrDefaultZero()
                 }
+                gasLimitFromApiWithFallback.max(calcGasLimitFromNode)
             } else if (gasLimitEntity.error && ethEstimateGas?.error != null) {
                 defaultValue
             } else if (gasLimitEntity.error) {
-                ((ethEstimateGas?.amountUsed
-                    ?: BigInteger.ZERO).multiply(120.toBigInteger())
-                    .divide(100.toBigInteger()) + ADDITIONAL_SWAP_GAS_LIMIT.toBigInteger()).toBigDecimal()
-                    .min(defaultValue)
+                calcGasLimitFromNode
             } else if (ethEstimateGas?.error != null) {
-                gasLimitEntity.data
+                calcGasLimitFromApi
             } else {
-                (((ethEstimateGas?.amountUsed
-                    ?: BigInteger.ZERO).multiply(120.toBigInteger())
-                    .divide(100.toBigInteger()) + ADDITIONAL_SWAP_GAS_LIMIT.toBigInteger()).toBigDecimal()).min(
-                    gasLimitEntity.data
-                )
+                calcGasLimitFromNode.min(calcGasLimitFromApi)
             }
 
         }

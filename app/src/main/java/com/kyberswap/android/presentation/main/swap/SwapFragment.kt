@@ -171,7 +171,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     @Inject
     lateinit var analytics: FirebaseAnalytics
 
-    private val availableAmount: BigDecimal
+    private val availableETHAmount: BigDecimal
         get() = binding.swap?.let {
             it.availableAmountForSwap(
                 it.tokenSource.currentBalance,
@@ -438,7 +438,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             binding.swap?.let {
                 if (it.tokenSource.isETH) {
                     showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
-                    sourceAmount = availableAmount.toDisplayNumber()
+                    sourceAmount = availableETHAmount.toDisplayNumber()
                     binding.edtSource.setText(sourceAmount)
                 } else {
                     sourceAmount = it.tokenSource.currentBalance.rounding().toDisplayNumber()
@@ -493,7 +493,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             binding.swap?.let {
                 if (it.tokenSource.isETH) {
                     showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
-                    sourceAmount = availableAmount.toDisplayNumber()
+                    sourceAmount = availableETHAmount.toDisplayNumber()
                     binding.edtSource.setText(sourceAmount)
                 } else {
                     sourceAmount = it.tokenSource.currentBalance.rounding().toDisplayNumber()
@@ -612,14 +612,14 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             getRevertNotification(rgRate.checkedRadioButtonId)
 
                         if (swap != binding.swap) {
-                            val isSwapAll = availableAmount.toDisplayNumber()
+                            val isSwapAllETH = availableETHAmount.toDisplayNumber()
                                 .equals(edtSource.text.toString(), true)
                             binding.swap = swap
                             binding.executePendingBindings()
 
-                            if (isSwapAll) {
+                            if (isSwapAllETH) {
                                 handler.postDelayed({
-                                    sourceAmount = availableAmount.toDisplayNumber()
+                                    sourceAmount = availableETHAmount.toDisplayNumber()
                                     binding.edtSource.setText(sourceAmount)
                                 }, 200)
                             }
@@ -774,14 +774,14 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             val swap = updateGasPrice(currentSwap)
                             if (swap != binding.swap) {
 
-                                val isSwapAll = availableAmount.toDisplayNumber()
+                                val isSwapAllETH = availableETHAmount.toDisplayNumber()
                                     .equals(edtSource.text.toString(), true)
                                 binding.swap = swap
                                 binding.executePendingBindings()
 
-                                if (isSwapAll) {
+                                if (isSwapAllETH) {
                                     handler.postDelayed({
-                                        sourceAmount = availableAmount.toDisplayNumber()
+                                        sourceAmount = availableETHAmount.toDisplayNumber()
                                         binding.edtSource.setText(sourceAmount)
                                     }, 200)
                                 }
@@ -1005,7 +1005,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         }
 
                         swap.tokenSource.isETH &&
-                                availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
+                                availableETHAmount < edtSource.toBigDecimalOrDefaultZero() -> {
                             swapError = String.format(
                                 getString(R.string.not_enough_eth_blance), swap.copy(
                                     gasPrice = getSelectedGasPrice(

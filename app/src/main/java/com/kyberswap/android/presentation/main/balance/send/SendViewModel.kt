@@ -116,7 +116,6 @@ class SendViewModel @Inject constructor(
         return calculateDefaultGasLimitTransfer(send.tokenSource)
     }
 
-
     fun deleteContact(contact: Contact) {
         deleteContactUseCase.execute(
             Action {
@@ -131,7 +130,6 @@ class SendViewModel @Inject constructor(
         )
     }
 
-
     fun saveSendContact(walletAddress: String, contact: Contact) {
         saveContactUseCase.execute(
             Action {
@@ -145,7 +143,6 @@ class SendViewModel @Inject constructor(
             SaveContactUseCase.Param(walletAddress, contact.address, contact.name)
         )
     }
-
 
     fun getGasPrice() {
         getGasPriceUseCase.dispose()
@@ -223,7 +220,8 @@ class SendViewModel @Inject constructor(
                     calculateDefaultGasLimitTransfer(send.tokenSource)
                         .min(
                             it.amountUsed.multiply(120.toBigInteger())
-                                .divide(100.toBigInteger()) + ADDITIONAL_SEND_GAS_LIMIT.toBigInteger()
+                                .divide(100.toBigInteger()) +
+                                    if (send.tokenSource.isETH) BigInteger.ZERO else ADDITIONAL_SEND_GAS_LIMIT.toBigInteger()
                         )
                 }
 
