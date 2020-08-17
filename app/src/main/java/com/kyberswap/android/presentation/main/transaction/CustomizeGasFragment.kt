@@ -114,8 +114,7 @@ class CustomizeGasFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetGasPriceState.Success -> {
-
-                        val gas = state.gas.copy(maxGasPrice = maxGasPrice)
+                        val gas = updateGasPrice(state.gas)
                         if (gas != binding.gas) {
                             binding.gas = gas
 
@@ -218,9 +217,7 @@ class CustomizeGasFragment : BaseFragment() {
                             ).toDisplayNumber()
                             val currentGas = binding.gas
                             if (currentGas != null) {
-                                val gas = currentGas.copy(
-                                    maxGasPrice = maxGasPrice
-                                )
+                                val gas = updateGasPrice(currentGas)
 
                                 binding.gas = gas
 
@@ -279,6 +276,22 @@ class CustomizeGasFragment : BaseFragment() {
 
                 }
             }
+        }
+    }
+
+    private fun updateGasPrice(currentGas: Gas): Gas {
+        return if (maxGasPrice.toBigDecimalOrDefaultZero() >= currentGas.fast.toBigDecimalOrDefaultZero()) {
+            currentGas.copy(
+                maxGasPrice = maxGasPrice
+            )
+        } else {
+            currentGas.copy(
+                maxGasPrice = maxGasPrice,
+                fast = maxGasPrice,
+                standard = maxGasPrice,
+                low = maxGasPrice,
+                default = maxGasPrice
+            )
         }
     }
 

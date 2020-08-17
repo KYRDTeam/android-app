@@ -26,6 +26,7 @@ import com.kyberswap.android.databinding.FragmentSendBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.model.Gas
+import com.kyberswap.android.domain.model.Send
 import com.kyberswap.android.domain.model.Token
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
@@ -242,13 +243,17 @@ class SendFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetGasPriceState.Success -> {
-                        val send = binding.send?.copy(
+                        val currentSend = binding.send?.copy(
                             gasPrice = getSelectedGasPrice(state.gas, selectedGasFeeView?.id),
                             gas = state.gas.copy(maxGasPrice = maxGasPrice)
                         )
-                        if (binding.send != send) {
-                            binding.send = send
-                            binding.executePendingBindings()
+
+                        if (currentSend != null) {
+                            val send = updateGasPrice(currentSend)
+                            if (binding.send != send) {
+                                binding.send = send
+                                binding.executePendingBindings()
+                            }
                         }
                     }
                     is GetGasPriceState.ShowError -> {
@@ -765,9 +770,7 @@ class SendFragment : BaseFragment() {
                             ).toDisplayNumber()
                             val currentSend = binding.send
                             if (currentSend != null) {
-                                val send = currentSend.copy(
-                                    gas = currentSend.gas.copy(maxGasPrice = maxGasPrice)
-                                )
+                                val send = updateGasPrice(currentSend)
                                 binding.send = send
                                 binding.executePendingBindings()
                             }
@@ -918,6 +921,24 @@ class SendFragment : BaseFragment() {
         } else {
             showProgress(false)
             saveSend(contactAddress)
+        }
+    }
+
+    private fun updateGasPrice(currentSend: Send): Send {
+        return if (maxGasPrice.toBigDecimalOrDefaultZero() >= currentSend.gas.fast.toBigDecimalOrDefaultZero()) {
+            currentSend.copy(
+                gas = currentSend.gas.copy(maxGasPrice = maxGasPrice)
+            )
+        } else {
+            currentSend.copy(
+                gas = currentSend.gas.copy(
+                    fast = maxGasPrice,
+                    standard = maxGasPrice,
+                    maxGasPrice = maxGasPrice,
+                    low = maxGasPrice,
+                    default = maxGasPrice
+                )
+            )
         }
     }
 

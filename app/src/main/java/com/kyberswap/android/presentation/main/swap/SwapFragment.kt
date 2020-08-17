@@ -766,22 +766,25 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetGasPriceState.Success -> {
-                        val swap = binding.swap?.copy(
+                        val currentSwap = binding.swap?.copy(
                             gas = if (wallet?.isPromo == true) state.gas.toPromoGas()
                                 .copy(maxGasPrice = maxGasPrice) else state.gas.copy(maxGasPrice = maxGasPrice)
                         )
-                        if (swap != binding.swap) {
+                        if (currentSwap != null) {
+                            val swap = updateGasPrice(currentSwap)
+                            if (swap != binding.swap) {
 
-                            val isSwapAll = availableAmount.toDisplayNumber()
-                                .equals(edtSource.text.toString(), true)
-                            binding.swap = swap
-                            binding.executePendingBindings()
+                                val isSwapAll = availableAmount.toDisplayNumber()
+                                    .equals(edtSource.text.toString(), true)
+                                binding.swap = swap
+                                binding.executePendingBindings()
 
-                            if (isSwapAll) {
-                                handler.postDelayed({
-                                    sourceAmount = availableAmount.toDisplayNumber()
-                                    binding.edtSource.setText(sourceAmount)
-                                }, 200)
+                                if (isSwapAll) {
+                                    handler.postDelayed({
+                                        sourceAmount = availableAmount.toDisplayNumber()
+                                        binding.edtSource.setText(sourceAmount)
+                                    }, 200)
+                                }
                             }
                         }
                     }
@@ -1125,11 +1128,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             ).toDisplayNumber()
                             val currentSwap = binding.swap
                             if (currentSwap != null) {
-                                val swap = currentSwap.copy(
-                                    gas = currentSwap.gas.copy(maxGasPrice = maxGasPrice)
-                                )
-
-                                binding.swap = swap
+                                binding.swap = updateGasPrice(currentSwap)
                                 binding.executePendingBindings()
                             }
                         }
@@ -1158,6 +1157,24 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             } else {
                 binding.tvContinue.setViewEnable(true)
             }
+        }
+    }
+
+    private fun updateGasPrice(currentSwap: Swap): Swap {
+        return if (maxGasPrice.toBigDecimalOrDefaultZero() >= currentSwap.gas.fast.toBigDecimalOrDefaultZero()) {
+            currentSwap.copy(
+                gas = currentSwap.gas.copy(maxGasPrice = maxGasPrice)
+            )
+        } else {
+            currentSwap.copy(
+                gas = currentSwap.gas.copy(
+                    fast = maxGasPrice,
+                    standard = maxGasPrice,
+                    maxGasPrice = maxGasPrice,
+                    low = maxGasPrice,
+                    default = maxGasPrice
+                )
+            )
         }
     }
 
