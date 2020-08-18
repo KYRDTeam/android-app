@@ -39,6 +39,10 @@ class WalletConnectViewModel @Inject constructor(
     val approveSessionCallback: LiveData<Event<SessionRequestState>>
         get() = _approveSessionCallback
 
+    private val _sendTransactionCallback = MutableLiveData<Event<RequestState>>()
+    val sendTransactionCallback: LiveData<Event<RequestState>>
+        get() = _sendTransactionCallback
+
     private val _requestConnectCallback = MutableLiveData<Event<RequestState>>()
     val requestConnectCallback: LiveData<Event<RequestState>>
         get() = _requestConnectCallback
@@ -100,9 +104,15 @@ class WalletConnectViewModel @Inject constructor(
     }
 
     fun sendTransaction(id: Long, transaction: WCEthereumTransaction, wallet: Wallet) {
+        walletConnectApproveSessionUseCase.dispose()
+        _sendTransactionCallback.postValue(Event(RequestState.Loading))
         walletConnectSendTransactionUseCase.execute(
-            Action { },
-            Consumer { },
+            Action {
+                _sendTransactionCallback.value = Event(RequestState.Success(true))
+            },
+            Consumer {
+                _sendTransactionCallback.value = Event(RequestState.ShowError(it.localizedMessage))
+            },
             WalletConnectSendTransactionUseCase.Param(id, transaction, wallet)
         )
     }
