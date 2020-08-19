@@ -44,7 +44,6 @@
             android:textColor="#ffffff"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@+id/tvDescription"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/tvDescription"
             app:layout_constraintTop_toBottomOf="@+id/tvDescription" />
