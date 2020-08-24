@@ -58,7 +58,7 @@ class SwapConfirmViewModel @Inject constructor(
         )
     }
 
-    fun swap(wallet: Wallet?, swap: Swap?, platformFee: Int) {
+    fun swap(wallet: Wallet?, swap: Swap?, platformFee: Int, isReserveRouting: Boolean) {
         swap?.let { sw ->
             _swapTokenTransactionCallback.postValue(Event(SwapTokenTransactionState.Loading))
             swapTokenUseCase.execute(
@@ -71,7 +71,7 @@ class SwapConfirmViewModel @Inject constructor(
                     _swapTokenTransactionCallback.value =
                         Event(SwapTokenTransactionState.ShowError(it.localizedMessage, sw))
                 },
-                SwapTokenUseCase.Param(wallet!!, sw, platformFee)
+                SwapTokenUseCase.Param(wallet!!, sw, platformFee, isReserveRouting)
 
             )
         }
@@ -106,7 +106,7 @@ class SwapConfirmViewModel @Inject constructor(
         )
     }
 
-    fun getGasLimit(wallet: Wallet?, swap: Swap?, platformFee: Int) {
+    fun getGasLimit(wallet: Wallet?, swap: Swap?, platformFee: Int, isReserveRouting: Boolean) {
         if (wallet == null || swap == null) return
         estimateGasUseCase.dispose()
         estimateGasUseCase.execute(
@@ -135,7 +135,8 @@ class SwapConfirmViewModel @Inject constructor(
                 swap.tokenDest,
                 swap.sourceAmount,
                 swap.minConversionRate,
-                platformFee
+                platformFee,
+                isReserveRouting
             )
         )
     }

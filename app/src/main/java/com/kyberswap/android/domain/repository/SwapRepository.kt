@@ -73,4 +73,8 @@ interface SwapRepository {
     fun getPlatformFee(param: GetPlatformFeeUseCase.Param): Single<PlatformFee>
 
     fun getMaxGasPrice(): Single<MaxGasPrice>
+
+    fun getHint(
+        srcAddress: String, destAddress: String, amount: String, isReserveRouting: Boolean
+    ): Single<String?>
 }

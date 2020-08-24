@@ -777,6 +777,9 @@
     <string name="i_already_did">I already did</string>
     <string name="backup_warning_message">Please backup your wallet. It will allow you to recover your wallet if your phone is damaged, lost or stolen</string>
     <string name="kyber_swap_url" translatable="false">https://kyberswap.com/</string>
+    <string name="use_reserve_routing_to_enjoy_gas_savings">Use reserve routing to enjoy gas savings</string>
+    <string name="reserve_routing_is_used_in_this_transaction_to_reduce_gas_costs">Reserve routing is used in this transaction to reduce gas costs</string>
+    <string name="reserve_routing_explanation"><![CDATA[Reduce gas costs by routing your trade to predefined reserves. This is the default option for all trades <20 ETH]]></string>
 
 
     <string-array name="proof_address">

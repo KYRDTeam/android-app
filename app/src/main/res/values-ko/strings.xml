@@ -777,5 +777,8 @@
     <string name="back_up_now">지금 백업하기</string>
     <string name="i_already_did">백업 완료</string>
     <string name="backup_warning_message">지갑을 다른 곳에 백업해 주세요. 지갑이 백업되어 있으면 핸드폰의 고장, 분실, 도난의 경우 복원이 가능합니다.</string>
+    <string name="use_reserve_routing_to_enjoy_gas_savings">가스비 절약을 위해 리저브 라우팅을 사용하세요</string>
+    <string name="reserve_routing_is_used_in_this_transaction_to_reduce_gas_costs">가스비 절감을 위해 당 거래에서는 리저브 라우팅이 사용됩니다.</string>
+    <string name="reserve_routing_explanation"><![CDATA[미리 지정된 리저브로 거래를 라우팅하여 가스비를 절감하세요. 20이더 미만의 거래는 해당 옵션이 기본적으로 적용됩니다.]]></string>
 
 </resources>

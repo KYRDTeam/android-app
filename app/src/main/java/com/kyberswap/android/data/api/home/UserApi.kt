@@ -8,6 +8,7 @@ import com.kyberswap.android.data.api.campaign.CampaignResponseEntity
 import com.kyberswap.android.data.api.cap.CapEntity
 import com.kyberswap.android.data.api.notification.NotificationsResponseEntity
 import com.kyberswap.android.data.api.notification.SubscriptionNotificationEntity
+import com.kyberswap.android.data.api.reserve.HintEntity
 import com.kyberswap.android.data.api.user.DataTransferStatusEntity
 import com.kyberswap.android.data.api.user.KycResponseStatusEntity
 import com.kyberswap.android.data.api.user.LoginUserEntity
@@ -216,4 +217,14 @@ interface UserApi {
 
     @GET("api/mobile_banners")
     fun getCampaigns(): Single<CampaignResponseEntity>
+
+    @GET("api/swap_hint")
+    fun getHint(
+        @Query("src")
+        sourceTokenAddress: String,
+        @Query("dst")
+        destTokenAddress: String,
+        @Query("amount")
+        sourceAmount: String
+    ): Single<HintEntity>
 }

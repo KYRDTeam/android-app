@@ -2,6 +2,7 @@ package com.kyberswap.android.presentation.main.swap
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.kyberswap.android.data.repository.SwapDataRepository
 import com.kyberswap.android.domain.model.NotificationAlert
 import com.kyberswap.android.domain.model.NotificationExt
 import com.kyberswap.android.domain.model.Swap
@@ -13,6 +14,7 @@ import com.kyberswap.android.domain.usecase.swap.GetCombinedCapUseCase
 import com.kyberswap.android.domain.usecase.swap.GetExpectedRateSequentialUseCase
 import com.kyberswap.android.domain.usecase.swap.GetExpectedRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
+import com.kyberswap.android.domain.usecase.swap.GetHintUseCase
 import com.kyberswap.android.domain.usecase.swap.GetKyberNetworkStatusCase
 import com.kyberswap.android.domain.usecase.swap.GetMarketRateUseCase
 import com.kyberswap.android.domain.usecase.swap.GetPlatformFeeUseCase
@@ -59,6 +61,8 @@ class SwapViewModel @Inject constructor(
     private val resetSwapUserCase: ResetSwapDataUseCase,
     private val kyberNetworkStatusCase: GetKyberNetworkStatusCase,
     private val checkEligibleWalletUseCase: CheckEligibleWalletUseCase,
+    private val getHintUseCase: GetHintUseCase,
+    private val preloadHint: GetHintUseCase,
     getWalletUseCase: GetSelectedWalletUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getWalletUseCase, errorHandler) {
@@ -74,6 +78,10 @@ class SwapViewModel @Inject constructor(
     private val _getGetGasPriceCallback = MutableLiveData<Event<GetGasPriceState>>()
     val getGetGasPriceCallback: LiveData<Event<GetGasPriceState>>
         get() = _getGetGasPriceCallback
+
+    private val _getHintCallback = MutableLiveData<Event<GetHintState>>()
+    val getHintCallback: LiveData<Event<GetHintState>>
+        get() = _getHintCallback
 
     private val _getPlatformFeeCallback = MutableLiveData<Event<GetPlatformFeeState>>()
     val getPlatformFeeCallback: LiveData<Event<GetPlatformFeeState>>
@@ -207,6 +215,25 @@ class SwapViewModel @Inject constructor(
         getExpectedRateUseCase.dispose()
     }
 
+    fun getHint(swap: Swap, srcAmount: String) {
+        getHintUseCase.dispose()
+        getHintUseCase.execute(
+            Consumer {
+                _getHintCallback.value = Event(
+                    GetHintState.Success(
+                        !it.equals(SwapDataRepository.DEFAULT_HINT, true)
+                    )
+                )
+            },
+            Consumer {
+                it.printStackTrace()
+            },
+            GetHintUseCase.Param(
+                swap.sourceAddress, swap.destAddress, srcAmount, true
+            )
+        )
+    }
+
     fun getExpectedRate(
         swap: Swap,
         srcAmount: String,
@@ -241,7 +268,7 @@ class SwapViewModel @Inject constructor(
         )
     }
 
-    fun verifySwap(wallet: Wallet, swap: Swap, platformFee: Int) {
+    fun verifySwap(wallet: Wallet, swap: Swap, platformFee: Int, isReserveRouting: Boolean) {
         checkEligibleWalletUseCase.dispose()
         _checkEligibleWalletCallback.postValue(Event(CheckEligibleWalletState.Loading))
         getExpectedRateSequentialUseCase.dispose()
@@ -255,7 +282,6 @@ class SwapViewModel @Inject constructor(
                     } else {
                         swap.copy(expectedRate = swap.marketRate)
                     }
-
                 checkEligibleWalletUseCase.execute(
                     Consumer { eligibleWallet ->
                         _checkEligibleWalletCallback.value =
@@ -307,7 +333,8 @@ class SwapViewModel @Inject constructor(
                 swap.tokenSource,
                 swap.tokenDest,
                 swap.sourceAmount,
-                platformFee
+                platformFee,
+                isReserveRouting
             )
         )
     }
@@ -353,7 +380,7 @@ class SwapViewModel @Inject constructor(
         }
     }
 
-    fun getGasLimit(wallet: Wallet?, swap: Swap?, platformFee: Int) {
+    fun getGasLimit(wallet: Wallet?, swap: Swap?, platformFee: Int, isReserveRouting: Boolean) {
         if (wallet == null || swap == null) return
         if (swap.sourceAmount.isEmpty() || (swap.sourceAmount.toBigDecimalOrDefaultZero() == BigDecimal.ZERO)) return
         if (swap.ethToken.currentBalance <= MIN_SUPPORT_AMOUNT) return
@@ -382,7 +409,8 @@ class SwapViewModel @Inject constructor(
                 swap.tokenDest,
                 swap.sourceAmount,
                 swap.minConversionRate,
-                platformFee
+                platformFee,
+                isReserveRouting
             )
         )
     }
@@ -438,6 +466,7 @@ class SwapViewModel @Inject constructor(
         checkEligibleWalletUseCase.dispose()
         getExpectedRateSequentialUseCase.dispose()
         getPlatformFeeUseCase.dispose()
+        getHintUseCase.dispose()
         super.onCleared()
     }
 

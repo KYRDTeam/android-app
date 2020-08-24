@@ -64,7 +64,8 @@ data class Transaction(
     val destAmount: String = "",
     val transactionStatus: String = "",
     val walletAddress: String = "",
-    val isCancel: Boolean = false
+    val isCancel: Boolean = false,
+    val hint: String = ""
 
 ) : Parcelable {
     @IgnoredOnParcel
@@ -99,7 +100,7 @@ data class Transaction(
 
     val isCancelTransaction: Boolean
         get() = transactionType == TransactionType.SEND
-            && value.toBigDecimalOrDefaultZero() == BigDecimal.ZERO
+                && value.toBigDecimalOrDefaultZero() == BigDecimal.ZERO
 
     constructor(entity: TransactionEntity, address: String, txType: String) : this(
         entity.blockHash ?: "",
@@ -306,10 +307,10 @@ data class Transaction(
     fun sameDisplay(other: Transaction): Boolean {
 
         return this.displayTransaction.equals(other.displayTransaction, true) &&
-            this.displayRate.equals(other.displayRate, true) &&
-            this.transactionType == other.transactionType &&
-            this.isTransactionFail == other.isTransactionFail &&
-            this.timeStamp == other.timeStamp
+                this.displayRate.equals(other.displayRate, true) &&
+                this.transactionType == other.transactionType &&
+                this.isTransactionFail == other.isTransactionFail &&
+                this.timeStamp == other.timeStamp
     }
 
     val transactionType: TransactionType
@@ -327,8 +328,8 @@ data class Transaction(
 
     fun sameKey(other: Transaction): Boolean {
         return this.hash.equals(other.hash, true) &&
-            this.from.equals(other.from, true) &&
-            this.to.equals(other.to, true)
+                this.from.equals(other.from, true) &&
+                this.to.equals(other.to, true)
     }
 
     val isPendingTransaction: Boolean
@@ -398,21 +399,21 @@ data class Transaction(
 
     val fee: String
         get() = Convert.fromWei(
-            gasPrice.toBigDecimalOrDefaultZero().multiply(gasUsed.toBigDecimalOrDefaultZero())
-            , Convert.Unit.ETHER
+            gasPrice.toBigDecimalOrDefaultZero().multiply(gasUsed.toBigDecimalOrDefaultZero()),
+            Convert.Unit.ETHER
         ).toDisplayNumber()
 
     val feeWithSeparators: String
         get() = Convert.fromWei(
-            gasPrice.toBigDecimalOrDefaultZero().multiply(gasUsed.toBigDecimalOrDefaultZero())
-            , Convert.Unit.ETHER
+            gasPrice.toBigDecimalOrDefaultZero().multiply(gasUsed.toBigDecimalOrDefaultZero()),
+            Convert.Unit.ETHER
         ).formatDisplayNumber()
 
     fun getFeeFromGwei(gasPrice: String): String {
         if (gasPrice.isEmpty()) return gasPrice
         return Convert.fromWei(
-            Convert.toWei(gasPrice, Convert.Unit.GWEI).multiply(gas.toBigDecimalOrDefaultZero())
-            , Convert.Unit.ETHER
+            Convert.toWei(gasPrice, Convert.Unit.GWEI).multiply(gas.toBigDecimalOrDefaultZero()),
+            Convert.Unit.ETHER
         ).toDisplayNumber()
     }
 
@@ -434,8 +435,8 @@ data class Transaction(
 
     fun getFeeFromWei(gasPrice: String): String {
         return Convert.fromWei(
-            gasPrice.toBigDecimalOrDefaultZero().multiply(gas.toBigDecimalOrDefaultZero())
-            , Convert.Unit.ETHER
+            gasPrice.toBigDecimalOrDefaultZero().multiply(gas.toBigDecimalOrDefaultZero()),
+            Convert.Unit.ETHER
         ).toDisplayNumber()
     }
 

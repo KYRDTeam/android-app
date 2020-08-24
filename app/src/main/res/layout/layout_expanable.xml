@@ -32,6 +32,12 @@
             name="gas"
             type="com.kyberswap.android.domain.model.Gas" />
 
+        <variable
+            name="hasReserveRouting"
+            type="Boolean" />
+
+        <import type="android.view.View" />
+
     </data>
 
     <net.cachapa.expandablelayout.ExpandableLayout
@@ -66,12 +72,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:drawableEnd="@drawable/ic_gas_fee_question_mark"
                 android:drawablePadding="6dp"
                 android:lineSpacingExtra="8sp"
                 android:text="@string/gas_fee_title"
                 android:textColor="#5a5e67"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                app:drawableEndCompat="@drawable/ic_gas_fee_question_mark" />
 
             <RadioGroup
                 android:id="@+id/rgGas"
@@ -242,6 +248,58 @@
                 android:textColor="#5a5e67"
                 android:textSize="12sp"
                 android:textStyle="italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="20dp"
+                android:background="#e1e4eb"
+                android:visibility="@{hasReserveRouting ? View.VISIBLE : View.GONE }" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="7dp"
+                android:layout_marginEnd="20dp"
+                android:visibility="@{hasReserveRouting ? View.VISIBLE : View.GONE }">
+
+                <CheckBox
+                    android:id="@+id/cbReserveRouting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:gravity="start|center"
+                    android:minHeight="20dp"
+                    android:text="@string/use_reserve_routing_to_enjoy_gas_savings"
+                    android:textAppearance="@style/TextAppearance.Roboto.Medium"
+                    android:textColor="#5a5e67"
+                    android:textSize="12sp"
+                    android:theme="@style/CustomCheckTheme"
+                    app:layout_constrainedWidth="true"
+                    app:layout_constraintEnd_toStartOf="@+id/imgRRQuestionMark"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/imgRRQuestionMark"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_gas_fee_question_mark"
+                    app:layout_constraintBottom_toBottomOf="@+id/cbReserveRouting"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/cbReserveRouting"
+                    app:layout_constraintTop_toTopOf="@+id/cbReserveRouting" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
         </LinearLayout>
 
 

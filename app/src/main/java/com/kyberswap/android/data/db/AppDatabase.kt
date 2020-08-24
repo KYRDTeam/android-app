@@ -54,7 +54,7 @@ import com.kyberswap.android.domain.model.Wallet
         SelectedMarketItem::class,
         Nonce::class
     ],
-    version = 13
+    version = 14
 )
 @TypeConverters(
     DataTypeConverter::class,
@@ -285,6 +285,13 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        @VisibleForTesting
+        internal val MIGRATION_13_14: Migration = object : Migration(13, 14) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE transactions " + " ADD COLUMN `hint` TEXT NOT NULL default '' ")
+            }
+        }
+
         private fun buildDatabase(context: Context) =
             Room.databaseBuilder(
                 context.applicationContext,
@@ -302,7 +309,8 @@ abstract class AppDatabase : RoomDatabase() {
                     MIGRATION_9_10,
                     MIGRATION_10_11,
                     MIGRATION_11_12,
-                    MIGRATION_12_13
+                    MIGRATION_12_13,
+                    MIGRATION_13_14
                 )
 //                .fallbackToDestructiveMigration()
 //                .allowMainThreadQueries()

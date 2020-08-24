@@ -6,6 +6,7 @@ import com.kyberswap.android.data.api.chart.Data
 import com.kyberswap.android.data.api.home.ChartApi
 import com.kyberswap.android.data.api.home.SwapApi
 import com.kyberswap.android.data.api.home.TokenApi
+import com.kyberswap.android.data.api.home.UserApi
 import com.kyberswap.android.data.api.rate.ReferencePriceEntity
 import com.kyberswap.android.data.db.RateDao
 import com.kyberswap.android.data.db.TokenDao
@@ -48,6 +49,7 @@ class TokenDataRepository @Inject constructor(
     private val tokenDao: TokenDao,
     private val rateMapper: RateMapper,
     private val chartMapper: ChartMapper,
+    private val userApi: UserApi,
     private val context: Context
 ) :
     TokenRepository {
@@ -93,7 +95,7 @@ class TokenDataRepository @Inject constructor(
 
                 val srcToEtherRateValue =
                     if ((sourceTokenToEtherRate == null ||
-                            sourceTokenToEtherRate.rate.toBigIntSafe() == BigInteger.ZERO)
+                                sourceTokenToEtherRate.rate.toBigIntSafe() == BigInteger.ZERO)
                         && (param.src == Token.ETH_SYMBOL || param.src == Token.WETH_SYMBOL)
                     ) {
                         BigDecimal.ONE
@@ -106,7 +108,7 @@ class TokenDataRepository @Inject constructor(
 
                 val etherToDestRateValue =
                     if ((etherToDestTokenRate == null ||
-                            etherToDestTokenRate.rate.toBigIntSafe() == BigInteger.ZERO)
+                                etherToDestTokenRate.rate.toBigIntSafe() == BigInteger.ZERO)
                         && (param.dest == Token.ETH_SYMBOL || param.dest == Token.WETH_SYMBOL)
                     ) {
                         BigDecimal.ONE
@@ -129,15 +131,44 @@ class TokenDataRepository @Inject constructor(
             10.0.pow(tokenSource.tokenDecimal).times(param.srcAmount.toDoubleOrDefaultZero())
                 .toBigDecimal().toBigInteger()
         val platformFee = if (isETHWETHPair) BigInteger.ZERO else param.platformFee.toBigInteger()
-        return Single.fromCallable {
-            val expectedRate = tokenClient.getExpectedRate(
-                context.getString(R.string.kyber_address),
-                tokenSource,
-                tokenDest,
-                amount,
-                platformFee
-            )
-            expectedRate
+        return getHint(
+            tokenSource.tokenAddress,
+            tokenDest.tokenAddress,
+            param.srcAmount,
+            param.isReserveRouting
+        ).flatMap { hint ->
+            Single.fromCallable {
+                val expectedRate = tokenClient.getExpectedRate(
+                    context.getString(R.string.kyber_address),
+                    tokenSource,
+                    tokenDest,
+                    amount,
+                    platformFee,
+                    hint
+                )
+                expectedRate
+            }
+        }
+    }
+
+    private fun getHint(
+        srcAddress: String,
+        destAddress: String,
+        amount: String,
+        isReserveRouting: Boolean
+    ): Single<String?> {
+        return if (isReserveRouting) {
+            userApi.getHint(srcAddress, destAddress, amount).map {
+                if (it.success) {
+                    it.hint ?: SwapDataRepository.DEFAULT_HINT
+                } else {
+                    SwapDataRepository.DEFAULT_HINT
+                }
+            }.onErrorReturnItem(SwapDataRepository.DEFAULT_HINT)
+        } else {
+            Single.fromCallable {
+                SwapDataRepository.DEFAULT_HINT
+            }
         }
     }
 

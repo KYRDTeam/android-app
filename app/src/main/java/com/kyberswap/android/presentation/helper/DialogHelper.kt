@@ -53,6 +53,7 @@ import com.kyberswap.android.databinding.DialogOrderFilledBinding
 import com.kyberswap.android.databinding.DialogPasswordBackupWalletBinding
 import com.kyberswap.android.databinding.DialogPdpaUpdateBinding
 import com.kyberswap.android.databinding.DialogRateUsBinding
+import com.kyberswap.android.databinding.DialogReserveRoutingBottomSheetBinding
 import com.kyberswap.android.databinding.DialogSkipBackupPhraseBinding
 import com.kyberswap.android.domain.model.Alert
 import com.kyberswap.android.domain.model.Notification
@@ -245,6 +246,15 @@ class DialogHelper @Inject constructor(
     fun showBottomSheetGasFeeDialog() {
         val binding = DataBindingUtil.inflate<DialogGasFeeBottomSheetBinding>(
             LayoutInflater.from(activity), R.layout.dialog_gas_fee_bottom_sheet, null, false
+        )
+        val dialog = BottomSheetDialog(activity)
+        dialog.setContentView(binding.root)
+        dialog.show()
+    }
+
+    fun showBottomSheetReserveRoutingDialog() {
+        val binding = DataBindingUtil.inflate<DialogReserveRoutingBottomSheetBinding>(
+            LayoutInflater.from(activity), R.layout.dialog_reserve_routing_bottom_sheet, null, false
         )
         val dialog = BottomSheetDialog(activity)
         dialog.setContentView(binding.root)

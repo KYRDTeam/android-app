@@ -55,6 +55,8 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
 
     private var platformFee: Int = PLATFORM_FEE_BPS
 
+    private var isReserveRouting: Boolean = false
+
     private val viewModel: SwapConfirmViewModel by lazy {
         ViewModelProvider(this, viewModelFactory).get(SwapConfirmViewModel::class.java)
     }
@@ -72,6 +74,8 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
         WalletManager.scanWallets()
         wallet = intent.getParcelableExtra(WALLET_PARAM)
         platformFee = intent.getIntExtra(PLATFORM_FEE, PLATFORM_FEE_BPS)
+        isReserveRouting = intent.getBooleanExtra(RESERVE_ROUTING_PARAM, false)
+        binding.isReserveRouting = isReserveRouting
         wallet?.let {
             viewModel.getSwapData(it)
         }
@@ -82,7 +86,7 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
                     is GetSwapState.Success -> {
                         binding.swap = state.swap
                         viewModel.getPlatformFee(state.swap)
-                        viewModel.getGasLimit(wallet, binding.swap, platformFee)
+                        viewModel.getGasLimit(wallet, binding.swap, platformFee, isReserveRouting)
                         viewModel.getGasPrice()
                         binding.executePendingBindings()
                     }
@@ -99,7 +103,12 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
                     is GetPlatformFeeState.Success -> {
                         if (state.platformFee.fee != platformFee) {
                             platformFee = state.platformFee.fee
-                            viewModel.getGasLimit(wallet, binding.swap, platformFee)
+                            viewModel.getGasLimit(
+                                wallet,
+                                binding.swap,
+                                platformFee,
+                                isReserveRouting
+                            )
                             viewModel.getGasPrice()
                         }
                     }
@@ -265,7 +274,7 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
         }
 
         binding.tvConfirm.setOnClickListener {
-            viewModel.swap(wallet, binding.swap, platformFee)
+            viewModel.swap(wallet, binding.swap, platformFee, isReserveRouting)
         }
     }
 
@@ -277,10 +286,18 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
     companion object {
         private const val WALLET_PARAM = "wallet_param"
         private const val PLATFORM_FEE = "platform_fee_param"
-        fun newIntent(context: Context, wallet: Wallet?, platformFee: Int) =
+        private const val RESERVE_ROUTING_PARAM = "reserve_routing_param"
+
+        fun newIntent(
+            context: Context,
+            wallet: Wallet?,
+            platformFee: Int,
+            isReserveRouting: Boolean
+        ) =
             Intent(context, SwapConfirmActivity::class.java).apply {
                 putExtra(WALLET_PARAM, wallet)
                 putExtra(PLATFORM_FEE, platformFee)
+                putExtra(RESERVE_ROUTING_PARAM, isReserveRouting)
             }
     }
 }
