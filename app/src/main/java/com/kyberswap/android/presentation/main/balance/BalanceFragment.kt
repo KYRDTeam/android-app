@@ -109,7 +109,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification, Tutorial
 
     private val isCurrencySelected: Boolean
         get() = binding.header.tvEth == orderByOptions[orderBySelectedIndex] && binding.header.tvEth.compoundDrawables.isNotEmpty()
-            || binding.header.tvUsd == orderByOptions[orderBySelectedIndex] && binding.header.tvUsd.compoundDrawables.isNotEmpty()
+                || binding.header.tvUsd == orderByOptions[orderBySelectedIndex] && binding.header.tvUsd.compoundDrawables.isNotEmpty()
 
     private val viewModel by lazy {
         ViewModelProvider(this, viewModelFactory).get(BalanceViewModel::class.java)
@@ -584,8 +584,13 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification, Tutorial
         })
 
         binding.tvBuyEth.setOnClickListener {
-            openUrl(getString(R.string.buy_eth_endpoint))
-            analytics.logEvent(BALANCE_BUYETH_YES, Bundle().createEvent())
+            (activity as MainActivity).dialogHelper.showConfirmOpenBuyEth(
+                {
+                    openUrl(getString(R.string.buy_eth_endpoint))
+                    analytics.logEvent(BALANCE_BUYETH_YES, Bundle().createEvent())
+                }
+            )
+
         }
 
         binding.root.doOnPreDraw {
@@ -968,7 +973,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification, Tutorial
         if (searchedString.isEmpty()) return tokens
         return tokens.filter { token ->
             token.tokenSymbol.toLowerCase(Locale.getDefault()).contains(searchedString, true) or
-                token.tokenName.toLowerCase(Locale.getDefault()).contains(searchedString, true)
+                    token.tokenName.toLowerCase(Locale.getDefault()).contains(searchedString, true)
         }
     }
 
@@ -1007,7 +1012,6 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification, Tutorial
     override fun skipTutorial() {
         spotlight?.finish()
     }
-
 
     private fun moveToSwapTab() {
         if (activity is MainActivity) {

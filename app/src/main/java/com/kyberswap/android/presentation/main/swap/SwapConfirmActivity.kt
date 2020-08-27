@@ -25,6 +25,7 @@ import com.kyberswap.android.util.SWAPCONFIRM_BROADCAST_FAILED
 import com.kyberswap.android.util.SWAPCONFIRM_BROADCAST_SUCCESS
 import com.kyberswap.android.util.SWAPCONFIRM_CANCEL
 import com.kyberswap.android.util.SWAPCONFIRM_ERROR
+import com.kyberswap.android.util.SWAPCONFIRM_USED_RESERVE_ROUTING
 import com.kyberswap.android.util.TOKEN_PAIR
 import com.kyberswap.android.util.TX_FEE
 import com.kyberswap.android.util.di.ViewModelFactory
@@ -33,7 +34,6 @@ import org.consenlabs.tokencore.wallet.KeystoreStorage
 import org.consenlabs.tokencore.wallet.WalletManager
 import java.io.File
 import javax.inject.Inject
-
 
 class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
     @Inject
@@ -275,13 +275,15 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
 
         binding.tvConfirm.setOnClickListener {
             viewModel.swap(wallet, binding.swap, platformFee, isReserveRouting)
+            if (isReserveRouting) {
+                firebaseAnalytics.logEvent(SWAPCONFIRM_USED_RESERVE_ROUTING, Bundle().createEvent())
+            }
         }
     }
 
     override fun getKeystoreDir(): File {
         return this.filesDir
     }
-
 
     companion object {
         private const val WALLET_PARAM = "wallet_param"

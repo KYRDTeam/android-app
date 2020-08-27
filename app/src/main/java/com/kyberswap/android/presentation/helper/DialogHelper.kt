@@ -36,6 +36,7 @@ import com.kyberswap.android.databinding.DialogCancelTransactionBinding
 import com.kyberswap.android.databinding.DialogConfirmDataTransferBinding
 import com.kyberswap.android.databinding.DialogConfirmDeleteAlertBinding
 import com.kyberswap.android.databinding.DialogConfirmDeleteAllTriggeredAlertBinding
+import com.kyberswap.android.databinding.DialogConfirmOpenBuyEthBinding
 import com.kyberswap.android.databinding.DialogConfirmationBinding
 import com.kyberswap.android.databinding.DialogConfirmationWithNegativeOptionBinding
 import com.kyberswap.android.databinding.DialogDataTranformationBinding
@@ -72,7 +73,6 @@ import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.underline
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
-
 
 class DialogHelper @Inject constructor(
     private val activity: AppCompatActivity,
@@ -119,7 +119,6 @@ class DialogHelper @Inject constructor(
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
-
     fun showConfirmation(
         title: String,
         content: String,
@@ -155,7 +154,6 @@ class DialogHelper @Inject constructor(
         dialog.show()
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
-
 
     fun showBottomSheetDialog(
         onClickCreateWallet: () -> Unit,
@@ -312,7 +310,6 @@ class DialogHelper @Inject constructor(
         }
     }
 
-
     fun showBottomSheetBackupPhraseDialog(
         mnemonicAvailable: Boolean,
         backupKeyStore: () -> Unit,
@@ -448,7 +445,6 @@ class DialogHelper @Inject constructor(
         dialog.show()
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
-
 
     fun showInputPassword(
         compositeDisposable: CompositeDisposable,
@@ -615,7 +611,6 @@ class DialogHelper @Inject constructor(
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
-
     fun showConfirmDeleteAlert(
         positiveListener: () -> Unit,
         negativeListener: () -> Unit = {}
@@ -627,6 +622,36 @@ class DialogHelper @Inject constructor(
         val binding =
             DataBindingUtil.inflate<DialogConfirmDeleteAlertBinding>(
                 LayoutInflater.from(activity), R.layout.dialog_confirm_delete_alert, null, false
+            )
+
+        binding.tvOk.setOnClickListener {
+            positiveListener.invoke()
+            dialog.dismiss()
+        }
+
+        binding.tvCancel.setOnClickListener {
+            negativeListener.invoke()
+            dialog.dismiss()
+        }
+
+
+
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    }
+
+    fun showConfirmOpenBuyEth(
+        positiveListener: () -> Unit,
+        negativeListener: () -> Unit = {}
+    ) {
+
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogConfirmOpenBuyEthBinding>(
+                LayoutInflater.from(activity), R.layout.dialog_confirm_open_buy_eth, null, false
             )
 
         binding.tvOk.setOnClickListener {

@@ -493,22 +493,31 @@ class SendFragment : BaseFragment() {
                         contacts.clear()
                         contacts.addAll(state.contacts)
 
-                        if (currentSelection == null) {
-                            currentSelection = contacts.find { ct ->
-                                ct.address.equals(
-                                    edtAddress.text.toString().onlyAddress(), true
-                                )
-                            }
+//                        if (currentSelection == null) {
+//                            currentSelection = contacts.find { ct ->
+//                                ct.address.equals(
+//                                    edtAddress.text.toString().onlyAddress(), true
+//                                )
+//                            }
+//                        }
+
+//                        currentSelection?.let {
+//                            currentSelection = contacts.find { ct ->
+//                                ct.address.equals(it.address, true)
+//                            }
+//
+//                            currentSelection?.let { it1 -> sendToContact(it1) }
+//
+//                        }
+
+                        currentSelection = contacts.find { ct ->
+                            ct.address.equals(
+                                currentSelection?.address ?: edtAddress.text.toString()
+                                    .onlyAddress(), true
+                            )
                         }
 
-                        currentSelection?.let {
-                            currentSelection = contacts.find { ct ->
-                                ct.address.equals(it.address, true)
-                            }
-
-                            currentSelection?.let { it1 -> sendToContact(it1) }
-
-                        }
+                        sendToContact(currentSelection ?: Contact())
 
                         updateContactAction()
 
@@ -938,7 +947,7 @@ class SendFragment : BaseFragment() {
         }
     }
 
-    private fun saveSend(address: String = "") {
+    fun saveSend(address: String = "") {
         binding.send?.let { send ->
             viewModel.saveSend(
                 send.copy(
@@ -989,11 +998,12 @@ class SendFragment : BaseFragment() {
         ilAddress.helperText = null
         val send = binding.send?.copy(contact = contact)
         binding.send = send
+        binding.executePendingBindings()
         currentSelection = contact
         if (isContactExist) {
             binding.edtAddress.setText(contact.nameAddressDisplay)
         } else {
-            binding.edtAddress.setText(contact.address)
+            binding.edtAddress.setText("")
         }
     }
 

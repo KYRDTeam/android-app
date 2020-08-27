@@ -780,6 +780,7 @@
     <string name="use_reserve_routing_to_enjoy_gas_savings">Use reserve routing to enjoy gas savings</string>
     <string name="reserve_routing_is_used_in_this_transaction_to_reduce_gas_costs">Reserve routing is used in this transaction to reduce gas costs</string>
     <string name="reserve_routing_explanation"><![CDATA[Reduce gas costs by routing your trade to predefined reserves. This is the default option for all trades <20 ETH]]></string>
+    <string name="buying_eth_confirmed_message">Buying ETH with Fiat is only supported on KyberSwap\'s website at the moment. Do you want to open it?</string>
 
 
     <string-array name="proof_address">

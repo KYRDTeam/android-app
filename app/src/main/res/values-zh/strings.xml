@@ -781,5 +781,6 @@
     <string name="use_reserve_routing_to_enjoy_gas_savings">使用储备库路由来节省gas费用</string>
     <string name="reserve_routing_is_used_in_this_transaction_to_reduce_gas_costs">在该笔交易中使用储备库路由来降低gas费用</string>
     <string name="reserve_routing_explanation"><![CDATA[通过将您的交易发送到预定义的储备库来降低gas费用。这是所有小于20 ETH交易的默认选项]]></string>
+    <string name="buying_eth_confirmed_message">目前仅在KyberSwap的网页版上支持通过法币购买ETH。您想访问该网站吗？</string>
 
 </resources>

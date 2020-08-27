@@ -1099,6 +1099,10 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                     is ProfileDetailFragment -> {
                         it.onBackPress()
                     }
+
+                    is SendFragment -> {
+                        it.saveSend()
+                    }
                 }
             }
 

@@ -780,5 +780,6 @@
     <string name="use_reserve_routing_to_enjoy_gas_savings">Sử dụng Reserve routing để giảm thiểu phí gas</string>
     <string name="reserve_routing_is_used_in_this_transaction_to_reduce_gas_costs">Reserve routing được sử dụng trong giao dịch này để giảm phí gas</string>
     <string name="reserve_routing_explanation"><![CDATA[Giảm phí gas bằng cách giao dịch với các quỹ được chọn trước. Đây là tùy chọn mặc định cho các giao dịch < 20 ETH]]></string>
+    <string name="buying_eth_confirmed_message">Hiện tại, dịch vụ mua ETH qua thẻ chỉ được hỗ trợ trên trang web của KyberSwap. Bạn có muốn chuyển sang website không?</string>
 
 </resources>

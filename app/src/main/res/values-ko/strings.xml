@@ -780,5 +780,6 @@
     <string name="use_reserve_routing_to_enjoy_gas_savings">가스비 절약을 위해 리저브 라우팅을 사용하세요</string>
     <string name="reserve_routing_is_used_in_this_transaction_to_reduce_gas_costs">가스비 절감을 위해 당 거래에서는 리저브 라우팅이 사용됩니다.</string>
     <string name="reserve_routing_explanation"><![CDATA[미리 지정된 리저브로 거래를 라우팅하여 가스비를 절감하세요. 20이더 미만의 거래는 해당 옵션이 기본적으로 적용됩니다.]]></string>
+    <string name="buying_eth_confirmed_message">법정화폐를 사용한 ETH구매하기는 현재 카이버스왑 웹사이트에서만 가능합니다. 웹사이트로 이동하시겠습니까?</string>
 
 </resources>

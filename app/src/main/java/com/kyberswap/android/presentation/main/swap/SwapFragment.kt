@@ -67,6 +67,7 @@ import com.kyberswap.android.util.GAS_OPTIONS_SLOW
 import com.kyberswap.android.util.GAS_OPTIONS_SUPER_FAST
 import com.kyberswap.android.util.GAS_VALUE
 import com.kyberswap.android.util.KBSWAP_ADVANCED
+import com.kyberswap.android.util.KBSWAP_ADVANCED_DISABLE_RESERVE_ROUTING
 import com.kyberswap.android.util.KBSWAP_ERROR
 import com.kyberswap.android.util.KBSWAP_SWAP_TAPPED
 import com.kyberswap.android.util.KBSWAP_TOKEN_SELECT
@@ -1209,7 +1210,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             navigator.navigateToNotificationScreen(currentFragment)
         }
 
-        cbReserveRouting.setOnCheckedChangeListener { buttonView, isChecked ->
+        cbReserveRouting.setOnCheckedChangeListener { _, isChecked ->
             if (binding.swap != null) {
                 getRate(binding.swap!!)
                 viewModel.getGasLimit(
@@ -1218,6 +1219,13 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     platformFee,
                     isReserveRouting
                 )
+
+                if (!isChecked) {
+                    analytics.logEvent(
+                        KBSWAP_ADVANCED_DISABLE_RESERVE_ROUTING,
+                        Bundle().createEvent()
+                    )
+                }
             }
 
         }
