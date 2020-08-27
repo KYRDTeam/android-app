@@ -496,6 +496,14 @@ class SendFragment : BaseFragment() {
                         contacts.clear()
                         contacts.addAll(state.contacts)
 
+                        if (contacts.isEmpty()) {
+                            binding.tvRecentTitle.visibility = View.GONE
+                            binding.tvMore.visibility = View.GONE
+                        } else {
+                            binding.tvRecentTitle.visibility = View.VISIBLE
+                            binding.tvMore.visibility = View.VISIBLE
+                        }
+
 //                        if (currentSelection == null) {
 //                            currentSelection = contacts.find { ct ->
 //                                ct.address.equals(

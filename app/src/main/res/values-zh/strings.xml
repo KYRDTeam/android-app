@@ -780,9 +780,9 @@
     <string name="backup_warning_message">请备份您的钱包。以便在手机发生损坏、丢失或被盗的情况下，能帮助您找回钱包.</string>
     <string name="use_reserve_routing_to_enjoy_gas_savings">使用储备库路由来节省gas费用</string>
     <string name="reserve_routing_is_used_in_this_transaction_to_reduce_gas_costs">在该笔交易中使用储备库路由来降低gas费用</string>
-    <string name="reserve_routing_explanation"><![CDATA[通过将您的交易发送到预定义的储备库来降低gas费用。这是所有小于20 ETH交易的默认选项]]></string>
+    <string name="reserve_routing_explanation"><![CDATA[通过将您的交易发送到预定义的储备库来降低gas费用。这是所有交易的默认选项。]]></string>
     <string name="buying_eth_confirmed_message">目前仅在KyberSwap的网页版上支持通过法币购买ETH。您想访问该网站吗？</string>
-    <string name="maximum_gas_fee">Maximum gas fee</string>
-    <string name="max_gas_fee_explanation">The actual cost of the transaction is generally lower than the maximum estimated cost</string>
+    <string name="maximum_gas_fee">最高的gas费用。</string>
+    <string name="max_gas_fee_explanation">交易的实际费用一般低于最高估计费用</string>
 
 </resources>
