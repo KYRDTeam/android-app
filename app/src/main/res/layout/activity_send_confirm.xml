@@ -189,9 +189,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
-            android:drawableEnd="@drawable/ic_gas_fee_question_mark"
             android:drawablePadding="6dp"
-            android:text="@string/gas_fee_title"
+            android:text="@string/maximum_gas_fee"
             android:textColor="#9ea1aa"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="@+id/textView31"
@@ -199,6 +198,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
+            app:drawableEndCompat="@drawable/ic_gas_fee_question_mark"
             app:layout_constraintTop_toTopOf="@+id/textView31" />
 
 

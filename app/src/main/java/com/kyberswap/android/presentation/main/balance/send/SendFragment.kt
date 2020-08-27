@@ -142,8 +142,8 @@ class SendFragment : BaseFragment() {
     private val isContactExist: Boolean
         get() = contacts.find { ct ->
             ct.address.equals(currentSelection?.address, true)
-                    || ct.address.equals(edtAddress.text.toString().onlyAddress(), true)
-                    || ct.address.equals(ilAddress.helperText?.toString(), true)
+                || ct.address.equals(edtAddress.text.toString().onlyAddress(), true)
+                || ct.address.equals(ilAddress.helperText?.toString(), true)
         } != null
 
     private val contractByAddress: Contact?
@@ -276,7 +276,7 @@ class SendFragment : BaseFragment() {
         })
 
         binding.tvGasFee.setOnClickListener {
-            dialogHelper.showBottomSheetGasFeeDialog()
+            dialogHelper.showBottomSheetGasFeeDialog(getString(R.string.gas_fee_explanation))
         }
 
 
@@ -401,6 +401,9 @@ class SendFragment : BaseFragment() {
                         currentSelection = null
                         it.ensAddress()?.let { it1 -> viewModel.resolve(it1) }
                     } else {
+                        if (it.isNullOrBlank()) {
+                            currentSelection = null
+                        }
                         updateContactAction()
 
                         if (it.toString().onlyAddress().isContact()) {
@@ -671,8 +674,8 @@ class SendFragment : BaseFragment() {
                         )
                     }
                     !(edtAddress.text.toString().onlyAddress().isContact() ||
-                            ilAddress.helperText.toString().isContact() ||
-                            edtAddress.text.toString().isENSAddress()) -> showAlertWithoutIcon(
+                        ilAddress.helperText.toString().isContact() ||
+                        edtAddress.text.toString().isENSAddress()) -> showAlertWithoutIcon(
                         title = getString(R.string.invalid_contact_address_title),
                         message = getString(R.string.specify_contact_address)
                     )
@@ -695,7 +698,7 @@ class SendFragment : BaseFragment() {
                     )
 
                     send.tokenSource.isETH &&
-                            availableETHAmount < edtSource.toBigDecimalOrDefaultZero() -> {
+                        availableETHAmount < edtSource.toBigDecimalOrDefaultZero() -> {
                         showAlertWithoutIcon(
                             getString(R.string.insufficient_eth),
                             String.format(

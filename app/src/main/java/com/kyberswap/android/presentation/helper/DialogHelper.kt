@@ -241,10 +241,12 @@ class DialogHelper @Inject constructor(
         dialog.show()
     }
 
-    fun showBottomSheetGasFeeDialog() {
+    fun showBottomSheetGasFeeDialog(message: String) {
         val binding = DataBindingUtil.inflate<DialogGasFeeBottomSheetBinding>(
             LayoutInflater.from(activity), R.layout.dialog_gas_fee_bottom_sheet, null, false
         )
+        binding.message = message
+        binding.executePendingBindings()
         val dialog = BottomSheetDialog(activity)
         dialog.setContentView(binding.root)
         dialog.show()

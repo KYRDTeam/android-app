@@ -4,8 +4,8 @@
     <data>
 
         <variable
-            name="order"
-            type="com.kyberswap.android.domain.model.Order" />
+            name="message"
+            type="String" />
     </data>
 
     <LinearLayout
@@ -26,9 +26,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:lineSpacingExtra="8sp"
-            android:textAppearance="@style/TextAppearance.Roboto.Regular"
             android:padding="0dp"
-            android:text="@string/gas_fee_explanation"
+            android:text="@{message}"
+            android:textAppearance="@style/TextAppearance.Roboto.Regular"
             android:textColor="#141927"
             android:textSize="14sp" />
 

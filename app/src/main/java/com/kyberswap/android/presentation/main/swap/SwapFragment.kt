@@ -939,7 +939,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         }
 
         tvGasFee.setOnClickListener {
-            dialogHelper.showBottomSheetGasFeeDialog()
+            dialogHelper.showBottomSheetGasFeeDialog(getString(R.string.gas_fee_explanation))
         }
 
         imgRRQuestionMark.setOnClickListener {

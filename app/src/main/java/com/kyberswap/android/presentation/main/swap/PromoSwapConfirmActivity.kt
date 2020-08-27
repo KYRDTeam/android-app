@@ -122,7 +122,7 @@ class PromoSwapConfirmActivity : BaseActivity(), KeystoreStorage {
         }
 
         binding.tvGasFee.setOnClickListener {
-            dialogHelper.showBottomSheetGasFeeDialog()
+            dialogHelper.showBottomSheetGasFeeDialog(getString(R.string.max_gas_fee_explanation))
         }
 
         binding.tvConfirm.setOnClickListener {

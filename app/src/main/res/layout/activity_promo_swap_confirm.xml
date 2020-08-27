@@ -230,7 +230,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:drawablePadding="6dp"
-                    android:text="@string/gas_fee_title"
+                    android:text="@string/maximum_gas_fee"
                     android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                     android:textColor="#5a5e67"
                     android:textSize="14sp"

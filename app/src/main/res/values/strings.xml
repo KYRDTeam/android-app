@@ -766,7 +766,7 @@
     <string name="tutorial_amount">2000</string>
     <string name="tutorial_swap_amount">10</string>
     <string name="slippage_too_high_warning">Slippage is high. You may want to reduce your swap amount and do multiple swaps for a better rate.</string>
-    <string name="gas_fee_explanation">Gas fee is the fee you pay to the miner (not to KyberSwap) to mine your transaction on blockchain. The price of gas generally reflect how fast you want a transaction mined.</string>
+    <string name="gas_fee_explanation">Gas fee is the fee you pay to the miner (not to Kyberswap) to mine your transaction on blockchain. The price of gas generally reflect how fast you want a transaction mined.</string>
     <string name="explore">Explore</string>
     <string name="explore_notification">Notification</string>
     <string name="explore_alert">Alert</string>
@@ -779,8 +779,10 @@
     <string name="kyber_swap_url" translatable="false">https://kyberswap.com/</string>
     <string name="use_reserve_routing_to_enjoy_gas_savings">Use reserve routing to enjoy gas savings</string>
     <string name="reserve_routing_is_used_in_this_transaction_to_reduce_gas_costs">Reserve routing is used in this transaction to reduce gas costs</string>
-    <string name="reserve_routing_explanation"><![CDATA[Reduce gas costs by routing your trade to predefined reserves. This is the default option for all trades <20 ETH]]></string>
+    <string name="reserve_routing_explanation"><![CDATA[Reduce gas costs by routing your trade to predefined reserves. This is the default option for all trades]]></string>
     <string name="buying_eth_confirmed_message">Buying ETH with Fiat is only supported on KyberSwap\'s website at the moment. Do you want to open it?</string>
+    <string name="maximum_gas_fee">Maximum gas fee</string>
+    <string name="max_gas_fee_explanation">The actual cost of the transaction is generally lower than the maximum estimated cost</string>
 
 
     <string-array name="proof_address">

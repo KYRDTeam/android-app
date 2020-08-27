@@ -241,7 +241,7 @@ class CustomizeGasFragment : BaseFragment() {
             })
 
         binding.tvGasFee.setOnClickListener {
-            dialogHelper.showBottomSheetGasFeeDialog()
+            dialogHelper.showBottomSheetGasFeeDialog(getString(R.string.gas_fee_explanation))
         }
 
         binding.tvDone.setOnClickListener {
