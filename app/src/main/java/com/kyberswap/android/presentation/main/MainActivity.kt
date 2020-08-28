@@ -297,6 +297,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             verifyEligibleWallet()
                             getRate()
                             showTutorial()
+                            getHint()
                         }
                         updateLoginStatus()
                     }

@@ -62,7 +62,6 @@ class SwapViewModel @Inject constructor(
     private val kyberNetworkStatusCase: GetKyberNetworkStatusCase,
     private val checkEligibleWalletUseCase: CheckEligibleWalletUseCase,
     private val getHintUseCase: GetHintUseCase,
-    private val preloadHint: GetHintUseCase,
     getWalletUseCase: GetSelectedWalletUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getWalletUseCase, errorHandler) {

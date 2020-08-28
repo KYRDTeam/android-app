@@ -220,7 +220,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         alertNotification?.let { viewModel.getAlert(it) }
         swap(notification)
         binding.tvContinue.setViewEnable(true)
-
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -1072,7 +1071,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         }
 
                         swap.tokenSource.isETH &&
-                                availableETHAmount < edtSource.toBigDecimalOrDefaultZero() -> {
+                            availableETHAmount < edtSource.toBigDecimalOrDefaultZero() -> {
                             swapError = String.format(
                                 getString(R.string.not_enough_eth_blance), swap.copy(
                                     gasPrice = getSelectedGasPrice(
@@ -1516,6 +1515,17 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     resetInfo()
                 }
             }
+            getHint()
+        }
+    }
+
+    fun getHint() {
+        val swap = binding.swap
+        if (swap != null) {
+            viewModel.getHint(
+                swap,
+                edtSource.getAmountOrDefaultValue()
+            )
         }
     }
 
