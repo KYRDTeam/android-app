@@ -67,6 +67,7 @@ import com.kyberswap.android.util.GAS_OPTIONS_SLOW
 import com.kyberswap.android.util.GAS_OPTIONS_SUPER_FAST
 import com.kyberswap.android.util.GAS_VALUE
 import com.kyberswap.android.util.KBSWAP_ADVANCED
+import com.kyberswap.android.util.KBSWAP_ADVANCED_DISABLE_RESERVE_ROUTING
 import com.kyberswap.android.util.KBSWAP_ERROR
 import com.kyberswap.android.util.KBSWAP_SWAP_TAPPED
 import com.kyberswap.android.util.KBSWAP_TOKEN_SELECT
@@ -138,6 +139,13 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
     private var sourceAmount: String? = null
 
+    private var hasReserveRouting: Boolean = false
+
+    private val isReserveRouting: Boolean
+        get() {
+            return hasReserveRouting && cbReserveRouting.isChecked
+        }
+
     private val displaySourceAmount: String
         get() = sourceAmount.toBigDecimalOrDefaultZero().toDisplayNumber()
 
@@ -171,7 +179,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     @Inject
     lateinit var analytics: FirebaseAnalytics
 
-    private val availableAmount: BigDecimal
+    private val availableETHAmount: BigDecimal
         get() = binding.swap?.let {
             it.availableAmountForSwap(
                 it.tokenSource.currentBalance,
@@ -212,7 +220,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         alertNotification?.let { viewModel.getAlert(it) }
         swap(notification)
         binding.tvContinue.setViewEnable(true)
-
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -265,6 +272,12 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 )
                             }
 
+                            if (state.swap.isTokenPairChange(binding.swap)) {
+                                viewModel.getHint(
+                                    state.swap,
+                                    edtSource.getAmountOrDefaultValue()
+                                )
+                            }
                             // Token pair change need to reset rate and get the new one
                             binding.swap = state.swap.copy(marketRate = "", expectedRate = "")
                             binding.executePendingBindings()
@@ -272,11 +285,21 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
                             if (isUserSelectSwap) {
                                 getRate(state.swap)
-                                viewModel.getGasLimit(wallet, binding.swap, platformFee)
+                                viewModel.getGasLimit(
+                                    wallet,
+                                    binding.swap,
+                                    platformFee,
+                                    isReserveRouting
+                                )
                             }
                             viewModel.getGasPrice()
                         } else if (isUserSelectSwap) {
-                            viewModel.getGasLimit(wallet, binding.swap, platformFee)
+                            viewModel.getGasLimit(
+                                wallet,
+                                binding.swap,
+                                platformFee,
+                                isReserveRouting
+                            )
                         } else if (!isUserSelectSwap && hasExpectedRate) {
                             viewModel.disposeGetExpectedRate()
                         }
@@ -323,6 +346,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             val swap = binding.swap?.swapToken()
             swap?.let {
                 viewModel.saveSwap(swap)
+                viewModel.getHint(
+                    it,
+                    edtSource.getAmountOrDefaultValue()
+                )
                 getRate(it)
             }
             binding.setVariable(BR.swap, swap)
@@ -438,7 +465,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             binding.swap?.let {
                 if (it.tokenSource.isETH) {
                     showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
-                    sourceAmount = availableAmount.toDisplayNumber()
+                    sourceAmount = availableETHAmount.toDisplayNumber()
                     binding.edtSource.setText(sourceAmount)
                 } else {
                     sourceAmount = it.tokenSource.currentBalance.rounding().toDisplayNumber()
@@ -493,7 +520,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             binding.swap?.let {
                 if (it.tokenSource.isETH) {
                     showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
-                    sourceAmount = availableAmount.toDisplayNumber()
+                    sourceAmount = availableETHAmount.toDisplayNumber()
                     binding.edtSource.setText(sourceAmount)
                 } else {
                     sourceAmount = it.tokenSource.currentBalance.rounding().toDisplayNumber()
@@ -612,14 +639,14 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             getRevertNotification(rgRate.checkedRadioButtonId)
 
                         if (swap != binding.swap) {
-                            val isSwapAll = availableAmount.toDisplayNumber()
+                            val isSwapAllETH = availableETHAmount.toDisplayNumber()
                                 .equals(edtSource.text.toString(), true)
                             binding.swap = swap
                             binding.executePendingBindings()
 
-                            if (isSwapAll) {
+                            if (isSwapAllETH) {
                                 handler.postDelayed({
-                                    sourceAmount = availableAmount.toDisplayNumber()
+                                    sourceAmount = availableETHAmount.toDisplayNumber()
                                     binding.edtSource.setText(sourceAmount)
                                 }, 200)
                             }
@@ -766,22 +793,25 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetGasPriceState.Success -> {
-                        val swap = binding.swap?.copy(
+                        val currentSwap = binding.swap?.copy(
                             gas = if (wallet?.isPromo == true) state.gas.toPromoGas()
                                 .copy(maxGasPrice = maxGasPrice) else state.gas.copy(maxGasPrice = maxGasPrice)
                         )
-                        if (swap != binding.swap) {
+                        if (currentSwap != null) {
+                            val swap = updateGasPrice(currentSwap)
+                            if (swap != binding.swap) {
 
-                            val isSwapAll = availableAmount.toDisplayNumber()
-                                .equals(edtSource.text.toString(), true)
-                            binding.swap = swap
-                            binding.executePendingBindings()
+                                val isSwapAllETH = availableETHAmount.toDisplayNumber()
+                                    .equals(edtSource.text.toString(), true)
+                                binding.swap = swap
+                                binding.executePendingBindings()
 
-                            if (isSwapAll) {
-                                handler.postDelayed({
-                                    sourceAmount = availableAmount.toDisplayNumber()
-                                    binding.edtSource.setText(sourceAmount)
-                                }, 200)
+                                if (isSwapAllETH) {
+                                    handler.postDelayed({
+                                        sourceAmount = availableETHAmount.toDisplayNumber()
+                                        binding.edtSource.setText(sourceAmount)
+                                    }, 200)
+                                }
                             }
                         }
                     }
@@ -798,13 +828,45 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     is GetPlatformFeeState.Success -> {
                         if (state.platformFee.fee != platformFee) {
                             platformFee = state.platformFee.fee
-                            viewModel.getGasLimit(wallet, binding.swap, platformFee)
+                            viewModel.getGasLimit(
+                                wallet,
+                                binding.swap,
+                                platformFee,
+                                isReserveRouting
+                            )
                             if (binding.swap != null) {
                                 getRate(binding.swap!!)
                             }
                         }
                     }
                     is GetPlatformFeeState.ShowError -> {
+
+                    }
+                }
+            }
+        })
+
+        viewModel.getHintCallback.observe(viewLifecycleOwner, Observer {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is GetHintState.Success -> {
+                        if (hasReserveRouting != state.hasReserveRouting) {
+                            hasReserveRouting = state.hasReserveRouting
+                            binding.hasReserveRouting = hasReserveRouting
+                            binding.executePendingBindings()
+
+                            if (binding.swap != null) {
+                                getRate(binding.swap!!)
+                                viewModel.getGasLimit(
+                                    wallet,
+                                    binding.swap,
+                                    platformFee,
+                                    isReserveRouting
+                                )
+                            }
+                        }
+                    }
+                    is GetHintState.ShowError -> {
 
                     }
                 }
@@ -876,7 +938,11 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         }
 
         tvGasFee.setOnClickListener {
-            dialogHelper.showBottomSheetGasFeeDialog()
+            dialogHelper.showBottomSheetGasFeeDialog(getString(R.string.gas_fee_explanation))
+        }
+
+        imgRRQuestionMark.setOnClickListener {
+            dialogHelper.showBottomSheetReserveRoutingDialog()
         }
 
         viewModel.saveSwapDataCallback.observe(viewLifecycleOwner, Observer {
@@ -894,18 +960,21 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                         wallet?.isPromoPayment == true -> PromoPaymentConfirmActivity.newIntent(
                                             currentActivity,
                                             wallet,
-                                            platformFee
+                                            platformFee,
+                                            isReserveRouting
                                         )
                                         else -> PromoSwapConfirmActivity.newIntent(
                                             currentActivity,
                                             wallet,
-                                            platformFee
+                                            platformFee,
+                                            isReserveRouting
                                         )
                                     }
                                     else -> SwapConfirmActivity.newIntent(
                                         currentActivity,
                                         wallet,
-                                        platformFee
+                                        platformFee,
+                                        isReserveRouting
                                     )
                                 }
 
@@ -1002,7 +1071,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         }
 
                         swap.tokenSource.isETH &&
-                                availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
+                            availableETHAmount < edtSource.toBigDecimalOrDefaultZero() -> {
                             swapError = String.format(
                                 getString(R.string.not_enough_eth_blance), swap.copy(
                                     gasPrice = getSelectedGasPrice(
@@ -1054,7 +1123,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 minAcceptedRatePercent = minAcceptedRatePercentage,
                                 gasPrice = gasPriceGwei
                             )
-                            viewModel.verifySwap(it, data, platformFee)
+                            viewModel.verifySwap(it, data, platformFee, isReserveRouting)
                         }
                     }
                 }
@@ -1125,11 +1194,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             ).toDisplayNumber()
                             val currentSwap = binding.swap
                             if (currentSwap != null) {
-                                val swap = currentSwap.copy(
-                                    gas = currentSwap.gas.copy(maxGasPrice = maxGasPrice)
-                                )
-
-                                binding.swap = swap
+                                binding.swap = updateGasPrice(currentSwap)
                                 binding.executePendingBindings()
                             }
                         }
@@ -1142,6 +1207,26 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
         binding.imgFlag.setOnClickListener {
             navigator.navigateToNotificationScreen(currentFragment)
+        }
+
+        cbReserveRouting.setOnCheckedChangeListener { _, isChecked ->
+            if (binding.swap != null) {
+                getRate(binding.swap!!)
+                viewModel.getGasLimit(
+                    wallet,
+                    binding.swap,
+                    platformFee,
+                    isReserveRouting
+                )
+
+                if (!isChecked) {
+                    analytics.logEvent(
+                        KBSWAP_ADVANCED_DISABLE_RESERVE_ROUTING,
+                        Bundle().createEvent()
+                    )
+                }
+            }
+
         }
 
         setDefaultSelection()
@@ -1158,6 +1243,24 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             } else {
                 binding.tvContinue.setViewEnable(true)
             }
+        }
+    }
+
+    private fun updateGasPrice(currentSwap: Swap): Swap {
+        return if (maxGasPrice.toBigDecimalOrDefaultZero() >= currentSwap.gas.fast.toBigDecimalOrDefaultZero()) {
+            currentSwap.copy(
+                gas = currentSwap.gas.copy(maxGasPrice = maxGasPrice)
+            )
+        } else {
+            currentSwap.copy(
+                gas = currentSwap.gas.copy(
+                    fast = maxGasPrice,
+                    standard = maxGasPrice,
+                    maxGasPrice = maxGasPrice,
+                    low = maxGasPrice,
+                    default = maxGasPrice
+                )
+            )
         }
     }
 
@@ -1412,6 +1515,17 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     resetInfo()
                 }
             }
+            getHint()
+        }
+    }
+
+    fun getHint() {
+        val swap = binding.swap
+        if (swap != null) {
+            viewModel.getHint(
+                swap,
+                edtSource.getAmountOrDefaultValue()
+            )
         }
     }
 

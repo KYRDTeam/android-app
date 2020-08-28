@@ -22,6 +22,7 @@ class GetExpectedRateSequentialUseCase @Inject constructor(
         val tokenSource: Token,
         val tokenDest: Token,
         val srcAmount: String,
-        val platformFee: Int
+        val platformFee: Int,
+        val isReserveRouting: Boolean
     )
 }

@@ -15,6 +15,10 @@
 
         <import type="android.text.TextUtils" />
 
+        <variable
+            name="hasReserveRouting"
+            type="Boolean" />
+
     </data>
 
     <FrameLayout
@@ -458,7 +462,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/swap_background_trend"
-                        android:drawableEnd="@drawable/ic_down"
                         android:gravity="end"
                         android:paddingStart="4dp"
                         android:paddingEnd="4dp"
@@ -472,6 +475,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tvRate"
                         app:ratePercentage="@{swap.ratePercentage}"
+                        app:drawableEndCompat="@drawable/ic_down"
                         app:warning="@{swap.warning}" />
 
                     <TextView
@@ -498,12 +502,13 @@
 
                         <include
                             layout="@layout/layout_expanable"
-                            app:gas="@{swap.gas}"
                             app:dest="@{swap.tokenDest.tokenSymbol}"
                             app:feeFast="@{swap.displayGasFastFeeEth}"
                             app:feeSlow="@{swap.displayGasLowFeeEth}"
                             app:feeStandard="@{swap.displayGasStandardFeeEth}"
                             app:feeSuperFast="@{swap.displayGasSuperFastFeeEth}"
+                            app:gas="@{swap.gas}"
+                            app:hasReserveRouting="@{hasReserveRouting}"
                             app:source="@{swap.tokenSource.tokenSymbol}" />
 
                         <TextView

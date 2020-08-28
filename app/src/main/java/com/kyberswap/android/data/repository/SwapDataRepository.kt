@@ -53,7 +53,6 @@ import com.kyberswap.android.domain.usecase.swap.ResetSwapDataUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapDataTokenUseCase
 import com.kyberswap.android.domain.usecase.swap.SaveSwapUseCase
 import com.kyberswap.android.domain.usecase.swap.SwapTokenUseCase
-import com.kyberswap.android.presentation.common.ADDITIONAL_SWAP_GAS_LIMIT
 import com.kyberswap.android.presentation.common.DEFAULT_NAME
 import com.kyberswap.android.presentation.common.PLATFORM_FEE_BPS
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
@@ -93,6 +92,10 @@ class SwapDataRepository @Inject constructor(
     private val kyberSwapApi: KyberSwapApi,
     private val tokenExtDao: TokenExtDao
 ) : SwapRepository {
+
+    private var currentHintParams: String? = null
+    private var currentHintPair: Pair<Long, String?>? = null
+
     override fun getCap(param: GetCombinedCapUseCase.Param): Single<Cap> {
         return Single.fromCallable {
             userDao.getUser() ?: UserInfo()
@@ -138,69 +141,77 @@ class SwapDataRepository @Inject constructor(
     }
 
     override fun swapToken(param: SwapTokenUseCase.Param): Single<ResponseStatus> {
-        return Single.fromCallable {
-            var password = ""
-            if (context is KyberSwapApplication) {
-                password = String(
-                    context.aead.decrypt(
-                        Base64.decode(param.wallet.cipher, Base64.DEFAULT), ByteArray(0)
-                    ), Charsets.UTF_8
-                )
-            }
-            val credentials = WalletUtils.loadCredentials(
-                password,
-                WalletManager.storage.keystoreDir.toString() + "/wallets/" + param.wallet.walletId + ".json"
-            )
-
-            val (hash, nonce) = tokenClient.doSwap(
-                param,
-                credentials,
-                context.getString(R.string.kyber_address),
-
-                if (param.swap.isETHWETHPair) BigInteger.ZERO else
-                    param.platformFee.toBigInteger()
-            )
-            hash?.let {
-                val swap = param.swap
-                transactionDao.insertTransaction(
-                    Transaction(
-                        hash = it.toLowerCase(Locale.getDefault()),
-                        transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
-                        timeStamp = System.currentTimeMillis() / 1000L,
-                        from = param.wallet.address,
-                        gas = swap.gasLimit,
-                        gasUsed = swap.gasLimit,
-                        gasPrice = Convert.toWei(
-                            swap.gasPrice.toBigDecimalOrDefaultZero(),
-                            Convert.Unit.GWEI
-                        ).toString(),
-                        nonce = nonce.toString(),
-                        to = param.wallet.address,
-                        tokenSource = swap.tokenSource.tokenSymbol,
-                        tokenDest = swap.tokenDest.tokenSymbol,
-                        sourceAmount = swap.sourceAmount,
-                        destAmount = swap.destAmount,
-                        walletAddress = swap.walletAddress,
-                        type = Transaction.TransactionType.SWAP
+        return getHint(
+            param.swap.tokenSource.tokenAddress,
+            param.swap.tokenDest.tokenAddress,
+            param.swap.sourceAmount,
+            param.isReserveRouting
+        ).flatMap { hint ->
+            Single.fromCallable {
+                var password = ""
+                if (context is KyberSwapApplication) {
+                    password = String(
+                        context.aead.decrypt(
+                            Base64.decode(param.wallet.cipher, Base64.DEFAULT), ByteArray(0)
+                        ), Charsets.UTF_8
                     )
+                }
+                val credentials = WalletUtils.loadCredentials(
+                    password,
+                    WalletManager.storage.keystoreDir.toString() + "/wallets/" + param.wallet.walletId + ".json"
                 )
-            }
 
-            hash ?: ""
-        }.flatMap { hash ->
-            val userInfo = userDao.getUser()
-            val isLogin = userInfo != null && userInfo.uid > 0
-            if (isLogin) {
-                userApi.submitTx(hash).map {
-                    it.copy(hash = hash)
+                val (hash, nonce) = tokenClient.doSwap(
+                    param,
+                    credentials,
+                    context.getString(R.string.kyber_address),
+
+                    if (param.swap.isETHWETHPair) BigInteger.ZERO else param.platformFee.toBigInteger(),
+                    hint
+                )
+                hash?.let {
+                    val swap = param.swap
+                    transactionDao.insertTransaction(
+                        Transaction(
+                            hash = it.toLowerCase(Locale.getDefault()),
+                            transactionStatus = Transaction.PENDING_TRANSACTION_STATUS,
+                            timeStamp = System.currentTimeMillis() / 1000L,
+                            from = param.wallet.address,
+                            gas = swap.gasLimit,
+                            gasUsed = swap.gasLimit,
+                            gasPrice = Convert.toWei(
+                                swap.gasPrice.toBigDecimalOrDefaultZero(),
+                                Convert.Unit.GWEI
+                            ).toString(),
+                            nonce = nonce.toString(),
+                            to = param.wallet.address,
+                            tokenSource = swap.tokenSource.tokenSymbol,
+                            tokenDest = swap.tokenDest.tokenSymbol,
+                            sourceAmount = swap.sourceAmount,
+                            destAmount = swap.destAmount,
+                            walletAddress = swap.walletAddress,
+                            type = Transaction.TransactionType.SWAP,
+                            hint = hint
+                        )
+                    )
                 }
-            } else {
-                Single.fromCallable {
-                    ResponseStatusEntity().copy(hash = hash, success = true)
+
+                hash ?: ""
+            }.flatMap { hash ->
+                val userInfo = userDao.getUser()
+                val isLogin = userInfo != null && userInfo.uid > 0
+                if (isLogin) {
+                    userApi.submitTx(hash).map {
+                        it.copy(hash = hash)
+                    }
+                } else {
+                    Single.fromCallable {
+                        ResponseStatusEntity().copy(hash = hash, success = true)
+                    }
                 }
+            }.map {
+                userMapper.transform(it)
             }
-        }.map {
-            userMapper.transform(it)
         }
     }
 
@@ -263,7 +274,43 @@ class SwapDataRepository @Inject constructor(
         }
     }
 
+    private fun needUpdateHint(): Boolean {
+        if (currentHintPair == null) return true
+        val lastRequestTime = currentHintPair!!.first
+        val currentTimeStamp = System.currentTimeMillis() / 1000L
+        return (currentTimeStamp - lastRequestTime) > 30
+    }
+
+    override fun getHint(
+        srcAddress: String,
+        destAddress: String,
+        amount: String,
+        isReserveRouting: Boolean
+    ): Single<String?> {
+        if (!isReserveRouting) return Single.fromCallable {
+            DEFAULT_HINT
+        }
+        val hintParams = srcAddress + destAddress + amount
+        val isHintParamsChanged = hintParams != currentHintParams
+        currentHintParams = hintParams
+        return if (isHintParamsChanged || needUpdateHint()) {
+            userApi.getHint(srcAddress, destAddress, amount).map {
+                if (it.success) {
+                    currentHintPair = System.currentTimeMillis() / 1000L to it.hint
+                    currentHintPair?.second
+                } else {
+                    DEFAULT_HINT
+                }
+            }.onErrorReturnItem(DEFAULT_HINT)
+        } else {
+            Single.fromCallable {
+                currentHintPair?.second
+            }
+        }
+    }
+
     override fun estimateGas(param: EstimateGasUseCase.Param): Single<BigDecimal> {
+
         return Singles.zip(
             utilitiesApi.estimateGas(
                 param.tokenSource.tokenAddress,
@@ -278,23 +325,32 @@ class SwapDataRepository @Inject constructor(
                         param.tokenDest
                     ).toBigDecimal(), false
                 )
-            ), Single.fromCallable {
-                try {
-                    tokenClient.estimateGas(
-                        param.wallet.address,
-                        context.getString(R.string.kyber_address),
-                        param.tokenSource.tokenAddress,
-                        param.tokenDest.tokenAddress,
-                        param.sourceAmount.toBigDecimalOrDefaultZero().times(
-                            10.0.pow(param.tokenSource.tokenDecimal)
-                                .toBigDecimal()
-                        ).toBigInteger(),
-                        param.minConversionRate,
-                        param.tokenSource.isETH,
-                        param.platformFee.toBigInteger()
-                    )
-                } catch (ex: Exception) {
-                    throw RuntimeException("error: " + ex.localizedMessage)
+            ),
+            getHint(
+                param.tokenSource.tokenAddress,
+                param.tokenDest.tokenAddress,
+                param.sourceAmount,
+                param.isReserveRouting
+            ).flatMap {
+                Single.fromCallable {
+                    try {
+                        tokenClient.estimateGas(
+                            param.wallet.address,
+                            context.getString(R.string.kyber_address),
+                            param.tokenSource.tokenAddress,
+                            param.tokenDest.tokenAddress,
+                            param.sourceAmount.toBigDecimalOrDefaultZero().times(
+                                10.0.pow(param.tokenSource.tokenDecimal)
+                                    .toBigDecimal()
+                            ).toBigInteger(),
+                            param.minConversionRate,
+                            param.tokenSource.isETH,
+                            param.platformFee.toBigInteger(),
+                            it
+                        )
+                    } catch (ex: Exception) {
+                        throw RuntimeException("error: " + ex.localizedMessage)
+                    }
                 }
             }
 
@@ -303,39 +359,39 @@ class SwapDataRepository @Inject constructor(
             val srcTokenExt = tokenExtDao.getTokenExtByAddress(param.tokenSource.tokenAddress)
             val destTokenExt = tokenExtDao.getTokenExtByAddress(param.tokenDest.tokenAddress)
 
+            val calcGasLimitFromNode = ((ethEstimateGas?.amountUsed
+                ?: BigInteger.ZERO).multiply(120.toBigInteger())
+                .divide(100.toBigInteger())).toBigDecimal()
+
+            val calcGasLimitFromApi = gasLimitEntity.data
+
             val defaultValue = calculateDefaultGasLimit(
                 param.tokenSource,
                 param.tokenDest
             ).toBigDecimal()
 
-
             if (srcTokenExt?.isGasFixed == true) {
-                if (!gasLimitEntity.error) {
-                    gasLimitEntity.data
+                val gasLimitFromApiWithFallback = if (!gasLimitEntity.error) {
+                    calcGasLimitFromApi
                 } else {
                     srcTokenExt.gasLimit.toBigDecimalOrDefaultZero()
                 }
+                gasLimitFromApiWithFallback.max(calcGasLimitFromNode)
             } else if (destTokenExt?.isGasFixed == true) {
-                if (!gasLimitEntity.error) {
-                    gasLimitEntity.data
+                val gasLimitFromApiWithFallback = if (!gasLimitEntity.error) {
+                    calcGasLimitFromApi
                 } else {
                     destTokenExt.gasLimit.toBigDecimalOrDefaultZero()
                 }
+                gasLimitFromApiWithFallback.max(calcGasLimitFromNode)
             } else if (gasLimitEntity.error && ethEstimateGas?.error != null) {
                 defaultValue
             } else if (gasLimitEntity.error) {
-                ((ethEstimateGas?.amountUsed
-                    ?: BigInteger.ZERO).multiply(120.toBigInteger())
-                    .divide(100.toBigInteger()) + ADDITIONAL_SWAP_GAS_LIMIT.toBigInteger()).toBigDecimal()
-                    .min(defaultValue)
+                calcGasLimitFromNode
             } else if (ethEstimateGas?.error != null) {
-                gasLimitEntity.data
+                calcGasLimitFromApi
             } else {
-                (((ethEstimateGas?.amountUsed
-                    ?: BigInteger.ZERO).multiply(120.toBigInteger())
-                    .divide(100.toBigInteger()) + ADDITIONAL_SWAP_GAS_LIMIT.toBigInteger()).toBigDecimal()).min(
-                    gasLimitEntity.data
-                )
+                calcGasLimitFromNode.min(calcGasLimitFromApi)
             }
 
         }
@@ -545,8 +601,7 @@ class SwapDataRepository @Inject constructor(
                     defaultSwap.tokenSource.updateSelectedWallet(wallet)
                 } else {
                     defaultSwap.tokenSource
-                }
-                ,
+                },
                 tokenDest =
                 if (wallet.address != defaultSwap.tokenDest.selectedWalletAddress) {
                     defaultSwap.tokenDest.updateSelectedWallet(wallet)
@@ -657,5 +712,6 @@ class SwapDataRepository @Inject constructor(
 
     companion object {
         const val BUY_TYPE = "buy"
+        const val DEFAULT_HINT = "0x"
     }
 }

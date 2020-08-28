@@ -419,6 +419,7 @@ class LimitOrderViewModel @Inject constructor(
                 order.tokenDest,
                 srcAmount,
                 platformFee
+
             )
         )
     }
@@ -582,7 +583,8 @@ class LimitOrderViewModel @Inject constructor(
                 order.tokenDest,
                 order.srcAmount,
                 order.minRateWithPrecision,
-                platformFee
+                platformFee,
+                DEFAULT_RESERVE_ROUTING_LIMIT_ORDER
             )
         )
     }
@@ -613,7 +615,7 @@ class LimitOrderViewModel @Inject constructor(
                 _convertCallback.value =
                     Event(ConvertState.ShowError(errorHandler.getError(it)))
             },
-            SwapTokenUseCase.Param(wallet!!, swap, platformFee)
+            SwapTokenUseCase.Param(wallet!!, swap, platformFee, DEFAULT_RESERVE_ROUTING_LIMIT_ORDER)
 
         )
     }
@@ -652,5 +654,9 @@ class LimitOrderViewModel @Inject constructor(
         pendingBalancesUseCase.dispose()
         elegibleAddressUseCase.dispose()
         super.onCleared()
+    }
+
+    companion object {
+        const val DEFAULT_RESERVE_ROUTING_LIMIT_ORDER = true
     }
 }

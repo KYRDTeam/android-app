@@ -155,6 +155,7 @@ object DataModule {
         tokenDao: TokenDao,
         rateMapper: RateMapper,
         chartMapper: ChartMapper,
+        userApi: UserApi,
         context: Context
     ): TokenRepository =
         TokenDataRepository(
@@ -166,6 +167,7 @@ object DataModule {
             tokenDao,
             rateMapper,
             chartMapper,
+            userApi,
             context
         )
 

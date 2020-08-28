@@ -4,8 +4,8 @@
     <data>
 
         <variable
-            name="message"
-            type="String" />
+            name="order"
+            type="com.kyberswap.android.domain.model.Order" />
     </data>
 
     <LinearLayout
@@ -27,7 +27,7 @@
             android:layout_marginStart="12dp"
             android:lineSpacingExtra="8sp"
             android:padding="0dp"
-            android:text="@{message}"
+            android:text="@string/reserve_routing_explanation"
             android:textAppearance="@style/TextAppearance.Roboto.Regular"
             android:textColor="#141927"
             android:textSize="14sp" />

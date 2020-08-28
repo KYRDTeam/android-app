@@ -767,7 +767,7 @@
     <string name="tutorial_amount">2000</string>
     <string name="tutorial_swap_amount">10</string>
     <string name="slippage_too_high_warning"> 슬리피지(손해)가 높습니다. 더 나은 비율을 갖기 위해 교환할 양을 줄이거나 여러번에 나눠서 교환하는 게 좋습니다.</string>
-    <string name="gas_fee_explanation">Gas fee is the fee you pay to the miner (not to KyberSwap) to mine your transaction on blockchain. The price of gas generally reflect how fast you want a transaction mined.</string>
+    <string name="gas_fee_explanation">가스비는 (카이버 스왑이 아닌) 블록체인 상의 트랜잭션을 채굴하는 채굴자에게 지불하는 비용입니다.  가스의 가격은 보통 얼마나 빠르게 트랜잭션이 채굴되기 원하는 지에 따라 책정됩니다. </string>
     <string name="explore">둘러보기</string>
     <string name="explore_notification">Notification</string>
     <string name="explore_alert">주의</string>
@@ -777,5 +777,11 @@
     <string name="back_up_now">지금 백업하기</string>
     <string name="i_already_did">백업 완료</string>
     <string name="backup_warning_message">지갑을 다른 곳에 백업해 주세요. 지갑이 백업되어 있으면 핸드폰의 고장, 분실, 도난의 경우 복원이 가능합니다.</string>
+    <string name="use_reserve_routing_to_enjoy_gas_savings">가스비 절약을 위해 리저브 라우팅을 사용하세요</string>
+    <string name="reserve_routing_is_used_in_this_transaction_to_reduce_gas_costs">가스비 절감을 위해 당 거래에서는 리저브 라우팅이 사용됩니다.</string>
+    <string name="reserve_routing_explanation"><![CDATA[미리 지정된 리저브에 거래를 라우팅 시킴으로서 가스비를 줄일 수 있습니다. 이 옵션은 모든 거래에 기본으로 설정됩니다.]]></string>
+    <string name="buying_eth_confirmed_message">법정화폐를 사용한 ETH구매하기는 현재 카이버스왑 웹사이트에서만 가능합니다. 웹사이트로 이동하시겠습니까?</string>
+    <string name="maximum_gas_fee">최대 가스비</string>
+    <string name="max_gas_fee_explanation">The actual cost of the transaction is generally lower than the maximum estimated cost</string>
 
 </resources>

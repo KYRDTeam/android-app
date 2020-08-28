@@ -95,6 +95,11 @@ data class Swap(
                 this.ethToken.currentBalance == other.ethToken.currentBalance
     }
 
+    fun isTokenPairChange(other: Swap?): Boolean {
+        return this.tokenSource.tokenAddress != other?.tokenSource?.tokenAddress ||
+                this.tokenDest.tokenAddress != other.tokenDest.tokenAddress
+    }
+
     val isSwapAll: Boolean
         get() = sourceAmount == tokenSource.currentBalance.rounding().toDisplayNumber()
 

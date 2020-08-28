@@ -22,7 +22,6 @@ import org.consenlabs.tokencore.wallet.WalletManager
 import java.io.File
 import javax.inject.Inject
 
-
 class PromoPaymentConfirmActivity : BaseActivity(), KeystoreStorage {
     @Inject
     lateinit var navigator: Navigator
@@ -37,6 +36,8 @@ class PromoPaymentConfirmActivity : BaseActivity(), KeystoreStorage {
     lateinit var dialogHelper: DialogHelper
 
     private var wallet: Wallet? = null
+
+    private var isReserveRouting: Boolean = false
 
     private var platformFee: Int = PLATFORM_FEE_BPS
 
@@ -57,6 +58,8 @@ class PromoPaymentConfirmActivity : BaseActivity(), KeystoreStorage {
         WalletManager.scanWallets()
         wallet = intent.getParcelableExtra(WALLET_PARAM)
         platformFee = intent.getIntExtra(PLATFORM_FEE, PLATFORM_FEE_BPS)
+        isReserveRouting = intent.getBooleanExtra(RESERVE_ROUTING_PARAM, false)
+        binding.isReserveRouting = isReserveRouting
         wallet?.let {
             viewModel.getSwapData(it)
         }
@@ -115,11 +118,11 @@ class PromoPaymentConfirmActivity : BaseActivity(), KeystoreStorage {
         }
 
         binding.tvConfirm.setOnClickListener {
-            viewModel.swap(wallet, binding.swap, platformFee)
+            viewModel.swap(wallet, binding.swap, platformFee, isReserveRouting)
         }
 
         binding.tvGasFee.setOnClickListener {
-            dialogHelper.showBottomSheetGasFeeDialog()
+            dialogHelper.showBottomSheetGasFeeDialog(getString(R.string.max_gas_fee_explanation))
         }
     }
 
@@ -127,14 +130,20 @@ class PromoPaymentConfirmActivity : BaseActivity(), KeystoreStorage {
         return this.filesDir
     }
 
-
     companion object {
         private const val WALLET_PARAM = "wallet_param"
         private const val PLATFORM_FEE = "platform_fee_param"
-        fun newIntent(context: Context, wallet: Wallet?, platformFee: Int) =
+        private const val RESERVE_ROUTING_PARAM = "reserve_routing_param"
+        fun newIntent(
+            context: Context,
+            wallet: Wallet?,
+            platformFee: Int,
+            isReserveRouting: Boolean
+        ) =
             Intent(context, PromoPaymentConfirmActivity::class.java).apply {
                 putExtra(WALLET_PARAM, wallet)
                 putExtra(PLATFORM_FEE, platformFee)
+                putExtra(RESERVE_ROUTING_PARAM, isReserveRouting)
             }
     }
 }

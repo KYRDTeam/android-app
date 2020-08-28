@@ -81,7 +81,6 @@ import java.util.ArrayList
 import javax.inject.Inject
 import kotlin.math.pow
 
-
 class TokenClient @Inject constructor(
     private val web3jAlchemyNode: Web3j,
     private val web3jSemiNode: Web3j,
@@ -171,7 +170,7 @@ class TokenClient @Inject constructor(
         destToken: String,
         srcTokenAmount: BigInteger,
         platformFeeBps: BigInteger,
-        hint: String = ""
+        hint: String
     ): Function {
         return Function(
             "getExpectedRateAfterFee",
@@ -180,7 +179,7 @@ class TokenClient @Inject constructor(
                 Address(destToken),
                 Uint256(srcTokenAmount),
                 Uint256(platformFeeBps),
-                DynamicBytes(hint.toByteArray())
+                DynamicBytes(Numeric.hexStringToByteArray(if (hint.isBlank()) "0x" else hint))
             ),
             listOf<TypeReference<*>>(
                 object : TypeReference<Uint256>() {
@@ -336,7 +335,8 @@ class TokenClient @Inject constructor(
         tokenSource: Token,
         tokenDest: Token,
         srcTokenAmount: BigInteger,
-        platformFeeBps: BigInteger
+        platformFeeBps: BigInteger,
+        hint: String
     ): List<String> {
         val function =
             if (isKatalyst) {
@@ -344,7 +344,8 @@ class TokenClient @Inject constructor(
                     tokenSource.tokenAddress,
                     tokenDest.tokenAddress,
                     srcTokenAmount,
-                    platformFeeBps
+                    platformFeeBps,
+                    hint
                 )
             } else {
                 getExpectedRate(
@@ -384,7 +385,8 @@ class TokenClient @Inject constructor(
         amount: BigInteger,
         minConversionRate: BigInteger,
         isEth: Boolean,
-        platformFeeBps: BigInteger
+        platformFeeBps: BigInteger,
+        hint: String
     ): EthEstimateGas? {
 
         val function =
@@ -395,7 +397,8 @@ class TokenClient @Inject constructor(
                     amount,
                     minConversionRate,
                     walletAddress,
-                    platformFeeBps
+                    platformFeeBps,
+                    hint
                 )
             } else {
                 tradeWithHint(
@@ -494,7 +497,7 @@ class TokenClient @Inject constructor(
         minConversionRate: BigInteger,
         walletAddress: String,
         platformFeeBps: BigInteger,
-        hint: String = ""
+        hint: String
     ): Function {
 
         return Function(
@@ -508,7 +511,7 @@ class TokenClient @Inject constructor(
                 Uint256(minConversionRate),
                 Address(DEFAULT_WALLET_ID),
                 Uint256(platformFeeBps),
-                DynamicBytes(hint.toByteArray())
+                DynamicBytes(Numeric.hexStringToByteArray(if (hint.isBlank()) "0x" else hint))
             ),
             listOf<TypeReference<*>>()
         )
@@ -519,7 +522,8 @@ class TokenClient @Inject constructor(
         param: SwapTokenUseCase.Param,
         credentials: Credentials,
         contractAddress: String,
-        platformFeeBps: BigInteger
+        platformFeeBps: BigInteger,
+        hint: String
     ): Pair<String?, BigInteger> {
         val gasPrice = Convert.toWei(
             param.swap.gasPrice.toBigDecimalOrDefaultZero(),
@@ -564,7 +568,8 @@ class TokenClient @Inject constructor(
                 contractAddress,
                 walletAddress,
                 credentials,
-                platformFeeBps
+                platformFeeBps,
+                hint
             )
         } else {
             handleSwapERC20Token(
@@ -578,7 +583,8 @@ class TokenClient @Inject constructor(
                 walletAddress,
                 contractAddress,
                 credentials,
-                platformFeeBps
+                platformFeeBps,
+                hint
             )
         }
     }
@@ -588,9 +594,6 @@ class TokenClient @Inject constructor(
         wcTransaction: WCEthereumTransaction,
         credentials: Credentials
     ): Pair<String?, BigInteger> {
-
-//        val txManager = RawTransactionManager(web3jAlchemyNode, credentials)
-
         val txManagerWithAlchemyNode = RawTransactionManager(web3jAlchemyNode, credentials)
         val txManagerWithInfuraNode = RawTransactionManager(web3jInfuraNode, credentials)
         val txManagerWithSemiNode = RawTransactionManager(web3jSemiNode, credentials)
@@ -599,10 +602,46 @@ class TokenClient @Inject constructor(
 
         val localNonce = getTransactionNonce(walletAddress)
 
+        val wcGasPrice = wcTransaction.gasPrice.toBigIntSafe()
+        val gasPrice = if (wcGasPrice == BigInteger.ZERO) {
+            val send = web3jAlchemyNode.ethGasPrice().send()
+            if (send?.hasError() == true) {
+                throw RuntimeException("can't get gas price from node")
+            } else {
+                send.gasPrice.multiply(120.toBigInteger()).divide(100.toBigInteger())
+            }
+        } else {
+            wcGasPrice
+        }
+
+        val wcGasLimit = wcTransaction.gasLimit.toBigIntSafe()
+
+        val gasLimit = if (wcGasLimit == BigInteger.ZERO) {
+            val limit = web3jAlchemyNode.ethEstimateGas(
+                Transaction(
+                    wcTransaction.from,
+                    null,
+                    null,
+                    null,
+                    wcTransaction.to,
+                    wcTransaction.value.toBigIntSafe(),
+                    wcTransaction.data
+                )
+            ).send()
+
+            if (limit?.hasError() == true) {
+                throw RuntimeException("can't get gas limit from node")
+            } else {
+                limit.amountUsed.multiply(120.toBigInteger()).divide(100.toBigInteger())
+            }
+        } else {
+            wcGasLimit
+        }
+
         val tx = RawTransaction.createTransaction(
             localNonce,
-            wcTransaction.gasPrice.toBigIntSafe(),
-            wcTransaction.gasLimit.toBigIntSafe(),
+            gasPrice,
+            gasLimit,
             wcTransaction.to,
             wcTransaction.value.toBigIntSafe(),
             wcTransaction.data
@@ -622,7 +661,6 @@ class TokenClient @Inject constructor(
         val transactionResponseAlchemyNode = txManagerWithAlchemyNode.signAndSend(tx)
         val transactionResponseInfuraNode = txManagerWithInfuraNode.signAndSend(tx)
         val transactionResponseSemiNode = txManagerWithSemiNode.signAndSend(tx)
-
         if (transactionResponseAlchemyNode?.hasError() == true &&
             transactionResponseInfuraNode?.hasError() == true &&
             transactionResponseSemiNode?.hasError() == true
@@ -655,7 +693,7 @@ class TokenClient @Inject constructor(
             } else {
                 throw RuntimeException(
                     "Error processing transaction request: " +
-                        transactionResponseAlchemyNode.error?.message
+                            transactionResponseAlchemyNode.error?.message
                 )
             }
         }
@@ -753,7 +791,7 @@ class TokenClient @Inject constructor(
             } else {
                 throw RuntimeException(
                     "Error processing transaction request: " +
-                        transactionResponseAlchemyNode.error?.message
+                            transactionResponseAlchemyNode.error?.message
                 )
             }
         }
@@ -784,7 +822,8 @@ class TokenClient @Inject constructor(
         contractAddress: String,
         walletAddress: String,
         credentials: Credentials,
-        platformFeeBps: BigInteger
+        platformFeeBps: BigInteger,
+        hint: String
 
     ): Pair<String?, BigInteger> {
         val localNonce = getTransactionNonce(credentials.address)
@@ -806,7 +845,8 @@ class TokenClient @Inject constructor(
                         tradeWithHintAmount,
                         minConversionRate,
                         walletAddress,
-                        platformFeeBps
+                        platformFeeBps,
+                        hint
                     )
                 } else {
                     tradeWithHint(
@@ -856,7 +896,7 @@ class TokenClient @Inject constructor(
             } else {
                 throw RuntimeException(
                     "Error processing transaction request: " +
-                        transactionResponseAlchemyNode.error?.message
+                            transactionResponseAlchemyNode.error?.message
                 )
             }
         }
@@ -873,6 +913,7 @@ class TokenClient @Inject constructor(
 
     @Synchronized
     private fun saveLocalNonce(walletAddress: String, localNonce: BigInteger, hash: String?) {
+        if (hash.isNullOrBlank()) return
         // Insert into local nonce
         nonceDao.insertNonce(Nonce(walletAddress = walletAddress, nonce = localNonce, hash = hash))
     }
@@ -936,7 +977,8 @@ class TokenClient @Inject constructor(
         walletAddress: String,
         contractAddress: String,
         credentials: Credentials,
-        platformFeeBps: BigInteger
+        platformFeeBps: BigInteger,
+        hint: String
     ): Pair<String?, BigInteger> {
         val allowanceAmount =
             getContractAllowanceAmount(
@@ -965,7 +1007,8 @@ class TokenClient @Inject constructor(
             contractAddress,
             walletAddress,
             credentials,
-            platformFeeBps
+            platformFeeBps,
+            hint
         )
     }
 
@@ -1125,7 +1168,7 @@ class TokenClient @Inject constructor(
             } else {
                 throw RuntimeException(
                     "Error processing transaction request: " +
-                        transactionResponseAlchemyNode.error?.message
+                            transactionResponseAlchemyNode.error?.message
                 )
             }
         }
@@ -1186,7 +1229,7 @@ class TokenClient @Inject constructor(
                 )
                 throw RuntimeException(
                     "Error processing transaction request: " +
-                        transactionResponseAlchemyNode.error?.message
+                            transactionResponseAlchemyNode.error?.message
                 )
             }
             return transactionResponseAlchemyNode?.transactionHash
@@ -1201,7 +1244,8 @@ class TokenClient @Inject constructor(
     private fun speedUp(
         wallet: Wallet,
         tx: org.web3j.protocol.core.methods.response.Transaction,
-        gasPrice: BigInteger
+        gasPrice: BigInteger,
+        hint: String
     ): String {
         if (context is KyberSwapApplication) {
             val password = String(
@@ -1230,7 +1274,8 @@ class TokenClient @Inject constructor(
                                 tx.txValue(params),
                                 tx.minConversionRate(params),
                                 wallet.walletAddress,
-                                tx.platformFee(params)
+                                tx.platformFee(params),
+                                hint
                             )
                         } else {
                             tradeWithHint(
@@ -1293,7 +1338,7 @@ class TokenClient @Inject constructor(
                         } else {
                             throw RuntimeException(
                                 "Error processing transaction request: " +
-                                    transactionResponseAlchemyNode.error?.message
+                                        transactionResponseAlchemyNode.error?.message
                             )
                         }
                     }
@@ -1367,7 +1412,7 @@ class TokenClient @Inject constructor(
                         } else {
                             throw RuntimeException(
                                 "Error processing transaction request: " +
-                                    transactionResponseAlchemyNode.error?.message
+                                        transactionResponseAlchemyNode.error?.message
                             )
                         }
                     }
@@ -1381,7 +1426,6 @@ class TokenClient @Inject constructor(
 
         return ""
     }
-
 
     fun monitorPendingTransactions(
         transactions: List<com.kyberswap.android.domain.model.Transaction>,
@@ -1406,7 +1450,7 @@ class TokenClient @Inject constructor(
                                     context.getString(R.string.kyber_address),
                                     true
                                 ) &&
-                                    it.topics.isNotEmpty() && it.topics.first().equals(
+                                        it.topics.isNotEmpty() && it.topics.first().equals(
                                     context.getString(R.string.kyber_event_topic),
                                     true
                                 )
@@ -1571,7 +1615,7 @@ class TokenClient @Inject constructor(
             wallet,
             txResponse,
             tx.gasPrice.toBigIntegerOrDefaultZero()
-        ) else speedUp(wallet, txResponse, tx.gasPrice.toBigIntegerOrDefaultZero())
+        ) else speedUp(wallet, txResponse, tx.gasPrice.toBigIntegerOrDefaultZero(), tx.hint)
         val newTx =
             web3jAlchemyNode.ethGetTransactionByHash(newHash).send().transaction.get()
 
@@ -1614,7 +1658,6 @@ class TokenClient @Inject constructor(
             tx.with(txResponse)
         }
     }
-
 
     fun signOrder(
         order: LocalLimitOrder,

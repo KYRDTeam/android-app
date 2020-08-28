@@ -26,7 +26,7 @@ import com.kyberswap.android.databinding.FragmentSendBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Contact
 import com.kyberswap.android.domain.model.Gas
-import com.kyberswap.android.domain.model.Token
+import com.kyberswap.android.domain.model.Send
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.domain.model.WalletChangeEvent
@@ -142,8 +142,8 @@ class SendFragment : BaseFragment() {
     private val isContactExist: Boolean
         get() = contacts.find { ct ->
             ct.address.equals(currentSelection?.address, true)
-                    || ct.address.equals(edtAddress.text.toString().onlyAddress(), true)
-                    || ct.address.equals(ilAddress.helperText?.toString(), true)
+                || ct.address.equals(edtAddress.text.toString().onlyAddress(), true)
+                || ct.address.equals(ilAddress.helperText?.toString(), true)
         } != null
 
     private val contractByAddress: Contact?
@@ -151,11 +151,11 @@ class SendFragment : BaseFragment() {
             ct.address.equals(edtAddress.text.toString().onlyAddress(), true)
         }
 
-    private val availableAmount: BigDecimal
+    private val availableETHAmount: BigDecimal
         get() = binding.send?.let {
             it.availableAmountForTransfer(
                 it.tokenSource.currentBalance,
-                Token.TRANSFER_ETH_GAS_LIMIT_DEFAULT.toBigDecimal(),
+                it.gasLimit.toBigDecimal(),
                 getSelectedGasPrice(
                     it.gas, selectedGasFeeView?.id
                 ).toBigDecimalOrDefaultZero()
@@ -242,13 +242,25 @@ class SendFragment : BaseFragment() {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetGasPriceState.Success -> {
-                        val send = binding.send?.copy(
+                        val currentSend = binding.send?.copy(
                             gasPrice = getSelectedGasPrice(state.gas, selectedGasFeeView?.id),
                             gas = state.gas.copy(maxGasPrice = maxGasPrice)
                         )
-                        if (binding.send != send) {
-                            binding.send = send
-                            binding.executePendingBindings()
+
+                        if (currentSend != null) {
+                            val send = updateGasPrice(currentSend)
+                            if (binding.send != send) {
+                                val isSendAllETH = availableETHAmount.toDisplayNumber()
+                                    .equals(binding.edtSource.text.toString(), true)
+                                binding.send = send
+                                binding.executePendingBindings()
+
+                                if (isSendAllETH) {
+                                    handler.postDelayed({
+                                        binding.edtSource.setText(availableETHAmount.toDisplayNumber())
+                                    }, 200)
+                                }
+                            }
                         }
                     }
                     is GetGasPriceState.ShowError -> {
@@ -264,7 +276,7 @@ class SendFragment : BaseFragment() {
         })
 
         binding.tvGasFee.setOnClickListener {
-            dialogHelper.showBottomSheetGasFeeDialog()
+            dialogHelper.showBottomSheetGasFeeDialog(getString(R.string.gas_fee_explanation))
         }
 
 
@@ -389,6 +401,9 @@ class SendFragment : BaseFragment() {
                         currentSelection = null
                         it.ensAddress()?.let { it1 -> viewModel.resolve(it1) }
                     } else {
+                        if (it.isNullOrBlank()) {
+                            currentSelection = null
+                        }
                         updateContactAction()
 
                         if (it.toString().onlyAddress().isContact()) {
@@ -481,22 +496,39 @@ class SendFragment : BaseFragment() {
                         contacts.clear()
                         contacts.addAll(state.contacts)
 
-                        if (currentSelection == null) {
-                            currentSelection = contacts.find { ct ->
-                                ct.address.equals(
-                                    edtAddress.text.toString().onlyAddress(), true
-                                )
-                            }
+                        if (contacts.isEmpty()) {
+                            binding.tvRecentTitle.visibility = View.GONE
+                            binding.tvMore.visibility = View.GONE
+                        } else {
+                            binding.tvRecentTitle.visibility = View.VISIBLE
+                            binding.tvMore.visibility = View.VISIBLE
                         }
 
-                        currentSelection?.let {
-                            currentSelection = contacts.find { ct ->
-                                ct.address.equals(it.address, true)
-                            }
+//                        if (currentSelection == null) {
+//                            currentSelection = contacts.find { ct ->
+//                                ct.address.equals(
+//                                    edtAddress.text.toString().onlyAddress(), true
+//                                )
+//                            }
+//                        }
 
-                            currentSelection?.let { it1 -> sendToContact(it1) }
+//                        currentSelection?.let {
+//                            currentSelection = contacts.find { ct ->
+//                                ct.address.equals(it.address, true)
+//                            }
+//
+//                            currentSelection?.let { it1 -> sendToContact(it1) }
+//
+//                        }
 
+                        currentSelection = contacts.find { ct ->
+                            ct.address.equals(
+                                currentSelection?.address ?: edtAddress.text.toString()
+                                    .onlyAddress(), true
+                            )
                         }
+
+                        sendToContact(currentSelection ?: Contact())
 
                         updateContactAction()
 
@@ -529,8 +561,15 @@ class SendFragment : BaseFragment() {
 
                         if (binding.send != send) {
                             hasGasLimit = true
+                            val isSendAllETH = availableETHAmount.toDisplayNumber()
+                                .equals(binding.edtSource.text.toString(), true)
                             binding.send = send
                             binding.executePendingBindings()
+                            if (isSendAllETH) {
+                                handler.postDelayed({
+                                    binding.edtSource.setText(availableETHAmount.toDisplayNumber())
+                                }, 200)
+                            }
                         }
                     }
                     is GetGasLimitState.ShowError -> {
@@ -643,8 +682,8 @@ class SendFragment : BaseFragment() {
                         )
                     }
                     !(edtAddress.text.toString().onlyAddress().isContact() ||
-                            ilAddress.helperText.toString().isContact() ||
-                            edtAddress.text.toString().isENSAddress()) -> showAlertWithoutIcon(
+                        ilAddress.helperText.toString().isContact() ||
+                        edtAddress.text.toString().isENSAddress()) -> showAlertWithoutIcon(
                         title = getString(R.string.invalid_contact_address_title),
                         message = getString(R.string.specify_contact_address)
                     )
@@ -667,7 +706,7 @@ class SendFragment : BaseFragment() {
                     )
 
                     send.tokenSource.isETH &&
-                            availableAmount < edtSource.toBigDecimalOrDefaultZero() -> {
+                        availableETHAmount < edtSource.toBigDecimalOrDefaultZero() -> {
                         showAlertWithoutIcon(
                             getString(R.string.insufficient_eth),
                             String.format(
@@ -732,16 +771,7 @@ class SendFragment : BaseFragment() {
                 binding.send?.let {
                     if (it.tokenSource.isETH) {
                         showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
-                        binding.edtSource.setAmount(
-                            it.availableAmountForTransfer(
-                                it.tokenSource.currentBalance,
-                                Token.TRANSFER_ETH_GAS_LIMIT_DEFAULT.toBigDecimal(),
-                                getSelectedGasPrice(
-                                    it.gas,
-                                    selectedGasFeeView?.id
-                                ).toBigDecimalOrDefaultZero()
-                            ).toDisplayNumber()
-                        )
+                        binding.edtSource.setAmount(availableETHAmount.toDisplayNumber())
                     } else {
                         binding.edtSource.setText(
                             it.tokenSource.currentBalance.rounding().toDisplayNumber()
@@ -765,9 +795,7 @@ class SendFragment : BaseFragment() {
                             ).toDisplayNumber()
                             val currentSend = binding.send
                             if (currentSend != null) {
-                                val send = currentSend.copy(
-                                    gas = currentSend.gas.copy(maxGasPrice = maxGasPrice)
-                                )
+                                val send = updateGasPrice(currentSend)
                                 binding.send = send
                                 binding.executePendingBindings()
                             }
@@ -802,16 +830,7 @@ class SendFragment : BaseFragment() {
             binding.send?.let {
                 if (it.tokenSource.isETH) {
                     showAlertWithoutIcon(message = getString(R.string.small_amount_of_eth_transaction_fee))
-                    binding.edtSource.setAmount(
-                        it.availableAmountForTransfer(
-                            it.tokenSource.currentBalance,
-                            Token.TRANSFER_ETH_GAS_LIMIT_DEFAULT.toBigDecimal(),
-                            getSelectedGasPrice(
-                                it.gas,
-                                selectedGasFeeView?.id
-                            ).toBigDecimalOrDefaultZero()
-                        ).toDisplayNumber()
-                    )
+                    binding.edtSource.setAmount(availableETHAmount.toDisplayNumber())
                 } else {
                     binding.edtSource.setText(it.tokenSource.currentBalance.toDisplayNumber())
                 }
@@ -921,7 +940,25 @@ class SendFragment : BaseFragment() {
         }
     }
 
-    private fun saveSend(address: String = "") {
+    private fun updateGasPrice(currentSend: Send): Send {
+        return if (maxGasPrice.toBigDecimalOrDefaultZero() >= currentSend.gas.fast.toBigDecimalOrDefaultZero()) {
+            currentSend.copy(
+                gas = currentSend.gas.copy(maxGasPrice = maxGasPrice)
+            )
+        } else {
+            currentSend.copy(
+                gas = currentSend.gas.copy(
+                    fast = maxGasPrice,
+                    standard = maxGasPrice,
+                    maxGasPrice = maxGasPrice,
+                    low = maxGasPrice,
+                    default = maxGasPrice
+                )
+            )
+        }
+    }
+
+    fun saveSend(address: String = "") {
         binding.send?.let { send ->
             viewModel.saveSend(
                 send.copy(
@@ -972,11 +1009,12 @@ class SendFragment : BaseFragment() {
         ilAddress.helperText = null
         val send = binding.send?.copy(contact = contact)
         binding.send = send
+        binding.executePendingBindings()
         currentSelection = contact
         if (isContactExist) {
             binding.edtAddress.setText(contact.nameAddressDisplay)
         } else {
-            binding.edtAddress.setText(contact.address)
+            binding.edtAddress.setText("")
         }
     }
 

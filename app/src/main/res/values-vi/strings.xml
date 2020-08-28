@@ -777,5 +777,11 @@
     <string name="back_up_now">Sao lưu ngay</string>
     <string name="i_already_did">Đã sao lưu</string>
     <string name="backup_warning_message">Vui lòng sao lưu ví của bạn. Nó sẽ giúp bạn khôi phục lại ví nếu điện thoại của bạn bị hỏng, mất hoặc bị cướp.</string>
+    <string name="use_reserve_routing_to_enjoy_gas_savings">Sử dụng Reserve routing để giảm thiểu phí gas</string>
+    <string name="reserve_routing_is_used_in_this_transaction_to_reduce_gas_costs">Reserve routing được sử dụng trong giao dịch này để giảm phí gas</string>
+    <string name="reserve_routing_explanation"><![CDATA[Giảm chi phí gas bằng cách giao dịch với các quỹ dự trữ được chọn sẵn. Đây là bước mặc định cho mọi giao dịch]]></string>
+    <string name="buying_eth_confirmed_message">Hiện tại, dịch vụ mua ETH qua thẻ chỉ được hỗ trợ trên trang web của KyberSwap. Bạn có muốn chuyển sang website không?</string>
+    <string name="maximum_gas_fee">Phí gas tối đa</string>
+    <string name="max_gas_fee_explanation">Chi phí thực tế của giao dịch thông thường sẽ thấp hơn chi phí ước tính tối đa.</string>
 
 </resources>

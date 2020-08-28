@@ -9,6 +9,12 @@
         <variable
             name="swap"
             type="com.kyberswap.android.domain.model.Swap" />
+
+        <variable
+            name="isReserveRouting"
+            type="Boolean" />
+
+        <import type="android.view.View" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -131,39 +137,21 @@
 
 
             <TextView
-                android:id="@+id/tvConfirm"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="36dp"
-                android:layout_marginEnd="32dp"
-                android:background="@drawable/default_button"
-                android:gravity="center"
-                android:minHeight="45dp"
-                android:text="@string/swap_continue"
-                android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
-                android:textColor="#ffffff"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/view5" />
-
-            <TextView
                 android:id="@+id/tvGasFee"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="42dp"
                 android:layout_marginEnd="8dp"
-                android:drawableEnd="@drawable/ic_gas_fee_question_mark"
                 android:drawablePadding="6dp"
-                android:text="@string/gas_fee_title"
+                android:text="@string/maximum_gas_fee"
                 android:textColor="#9ea1aa"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toStartOf="@+id/textView19"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintHorizontal_chainStyle="spread_inside"
                 app:layout_constraintStart_toStartOf="parent"
+                app:drawableEndCompat="@drawable/ic_gas_fee_question_mark"
                 app:layout_constraintTop_toBottomOf="@+id/textView17" />
 
             <TextView
@@ -269,6 +257,48 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView23" />
+
+            <TextView
+                android:id="@+id/tvReserveRouting"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/rounded_corner_reserve_routing"
+                android:drawablePadding="15dp"
+                android:fontFamily="sans-serif"
+                android:lineSpacingExtra="4sp"
+                android:minHeight="50dp"
+                android:padding="10dp"
+                android:text="@string/reserve_routing_is_used_in_this_transaction_to_reduce_gas_costs"
+                android:textAppearance="@style/TextAppearance.Roboto.Regular"
+                android:textColor="#4e9336"
+                android:textSize="12sp"
+                android:textStyle="normal"
+                android:visibility="@{isReserveRouting ? View.VISIBLE : View.GONE }"
+                app:drawableStartCompat="@drawable/ic_saving"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/view5" />
+
+            <TextView
+                android:id="@+id/tvConfirm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="36dp"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/default_button"
+                android:gravity="center"
+                android:minHeight="45dp"
+                android:text="@string/swap_continue"
+                android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
+                android:textColor="#ffffff"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvReserveRouting" />
 
             <TextView
                 android:id="@+id/tvCancel"

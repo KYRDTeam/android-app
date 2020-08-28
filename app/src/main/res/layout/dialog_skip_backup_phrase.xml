@@ -1,47 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/transparent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="18dp"
+            android:layout_marginTop="24dp"
             android:layout_marginEnd="18dp"
+            android:layout_marginBottom="24dp"
             android:background="@drawable/rounded_corner_dialog_background"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tvTitle"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:gravity="center_horizontal"
                 android:letterSpacing="0.07"
                 android:text="@string/ba_skip"
                 android:textColor="#141927"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="spread" />
 
-            <TextView
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/scView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginTop="22dp"
-                android:gravity="start|center"
-                android:letterSpacing="0.07"
-                android:lineSpacingExtra="4sp"
-                android:text="@string/you_can_backup_your_wallet_later"
-                android:textAppearance="@style/TextAppearance.Roboto.Medium"
-                android:textColor="#141927"
-                android:textSize="14sp" />
+                android:layout_marginBottom="30dp"
+                android:fillViewport="true"
+                app:layout_constraintBottom_toTopOf="@+id/lnAction"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvTitle">
+
+                <TextView
+                    android:id="@+id/tvMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start|center"
+                    android:letterSpacing="0.07"
+                    android:lineSpacingExtra="4sp"
+                    android:text="@string/you_can_backup_your_wallet_later"
+                    android:textAppearance="@style/TextAppearance.Roboto.Medium"
+                    android:textColor="#141927"
+                    android:textSize="14sp" />
+
+            </androidx.core.widget.NestedScrollView>
 
             <LinearLayout
+                android:id="@+id/lnAction"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:gravity="center">
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent">
 
                 <TextView
                     android:id="@+id/tvCancel"
@@ -54,6 +86,7 @@
                     android:text="@string/cancel"
                     android:textColor="#141927"
                     android:textSize="16sp" />
+
 
                 <TextView
                     android:id="@+id/tvOk"
@@ -69,8 +102,7 @@
                     android:textColor="#ffffff"
                     android:textSize="16sp" />
             </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-        </LinearLayout>
-    </FrameLayout>
+    </LinearLayout>
 </layout>

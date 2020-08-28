@@ -40,7 +40,6 @@ import com.kyberswap.android.util.ext.isApproveTx
 import com.kyberswap.android.util.ext.isNetworkAvailable
 import javax.inject.Inject
 
-
 class WalletConnectFragment : BaseFragment() {
 
     private lateinit var binding: FragmentWalletConnectBinding
@@ -77,7 +76,6 @@ class WalletConnectFragment : BaseFragment() {
     private var disConnectSessionDialog: AlertDialog? = null
 
     private var isOnline = false
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -249,6 +247,22 @@ class WalletConnectFragment : BaseFragment() {
                         showDialog(approvedTransactionDialog)
                     }
                     is DecodeTransactionState.ShowError -> {
+                        showError(
+                            state.message ?: getString(R.string.something_wrong)
+                        )
+                    }
+                }
+            }
+        })
+
+        viewModel.sendTransactionCallback.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                showProgress(state == RequestState.Loading)
+                when (state) {
+                    is RequestState.Success -> {
+
+                    }
+                    is RequestState.ShowError -> {
                         showError(
                             state.message ?: getString(R.string.something_wrong)
                         )
@@ -475,7 +489,6 @@ class WalletConnectFragment : BaseFragment() {
         }
     }
 
-
     private fun popBackStack() {
         (activity as MainActivity).getCurrentFragment()?.childFragmentManager?.popBackStack()
     }
@@ -488,7 +501,6 @@ class WalletConnectFragment : BaseFragment() {
         disConnectSessionDialog?.dismiss()
         super.onDestroyView()
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
