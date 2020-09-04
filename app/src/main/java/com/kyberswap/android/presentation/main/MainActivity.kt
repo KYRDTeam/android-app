@@ -16,7 +16,6 @@ import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -199,7 +198,6 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         WalletManager.storage = this
         WalletManager.scanWallets()
 
@@ -449,7 +447,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             }
         })
         mainViewModel.getWallets()
-        mainViewModel.getAllWalletStateCallback.observe(this, Observer { event ->
+        mainViewModel.getAllWalletStateCallback.observe(this, { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetAllWalletState.Success -> {
@@ -485,6 +483,18 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                                     }, 250
                                 )
                             }
+
+                            handler.postDelayed(
+                                {
+                                    if (intent?.dataString?.startsWith("wc:") == true) {
+                                        navigator.navigateToWalletConnectScreen(
+                                            currentFragment,
+                                            wallet,
+                                            intent?.dataString!!
+                                        )
+                                    }
+                                }, 250
+                            )
                         }
                         walletAdapter.submitList(listOf())
                         walletAdapter.submitList(state.wallets)
@@ -498,7 +508,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
         mainViewModel.getMaxGasPrice()
 
-        mainViewModel.switchWalletCompleteCallback.observe(this, Observer { event ->
+        mainViewModel.switchWalletCompleteCallback.observe(this, { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == UpdateWalletState.Loading)
                 when (state) {
@@ -519,7 +529,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         })
 
         mainViewModel.getLoginStatus()
-        mainViewModel.getLoginStatusCallback.observe(this, Observer { event ->
+        mainViewModel.getLoginStatusCallback.observe(this, { event ->
             event?.getContentIfNotHandled()?.let { state ->
 
                 when (state) {
@@ -537,7 +547,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             }
         })
 
-        mainViewModel.getPendingTransactionStateCallback.observe(this, Observer {
+        mainViewModel.getPendingTransactionStateCallback.observe(this, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetPendingTransactionState.Success -> {
@@ -671,7 +681,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             )
         }
 
-        mainViewModel.createWalletCallback.observe(this, Observer {
+        mainViewModel.createWalletCallback.observe(this, {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == CreateWalletState.Loading)
                 when (state) {
@@ -688,7 +698,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             }
         })
 
-        mainViewModel.getNotificationsCallback.observe(this, Observer {
+        mainViewModel.getNotificationsCallback.observe(this, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetUnReadNotificationsState.Success -> {
@@ -704,7 +714,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
 
 
-        mainViewModel.getRatingInfoCallback.observe(this, Observer {
+        mainViewModel.getRatingInfoCallback.observe(this, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetRatingInfoState.Success -> {
@@ -778,7 +788,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         }
 
         mainViewModel.getDataTransferInfo()
-        mainViewModel.getDataTransferCallback.observe(this, Observer {
+        mainViewModel.getDataTransferCallback.observe(this, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is UserInfoState.Success -> {
@@ -849,7 +859,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             }
         })
 
-        mainViewModel.dataTransferCallback.observe(this, Observer {
+        mainViewModel.dataTransferCallback.observe(this, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
 
@@ -1154,7 +1164,6 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         val scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (scanResult != null && scanResult.contents != null) {
             wallet?.address?.let {
-
                 navigator.navigateToWalletConnectScreen(
                     currentFragment,
                     wallet,

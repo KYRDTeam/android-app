@@ -21,7 +21,6 @@ import android.widget.CompoundButton
 import android.widget.EditText
 import androidx.core.view.doOnPreDraw
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.view.focusChanges
@@ -220,7 +219,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         alertNotification?.let { viewModel.getAlert(it) }
         swap(notification)
         binding.tvContinue.setViewEnable(true)
-        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
@@ -259,7 +258,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
-        viewModel.getSwapDataCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getSwapDataCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSwapState.Success -> {
@@ -531,7 +530,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         }
 
-        viewModel.getExpectedRateCallback.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.getExpectedRateCallback.observe(viewLifecycleOwner, { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetExpectedRateState.Success -> {
@@ -599,7 +598,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
-        viewModel.getGetMarketRateCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getGetMarketRateCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetMarketRateState.Success -> {
@@ -627,7 +626,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
-        viewModel.getGetGasLimitCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getGetGasLimitCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetGasLimitState.Success -> {
@@ -789,7 +788,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         }
 
 
-        viewModel.getGetGasPriceCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getGetGasPriceCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetGasPriceState.Success -> {
@@ -822,7 +821,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
-        viewModel.getPlatformFeeCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getPlatformFeeCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetPlatformFeeState.Success -> {
@@ -846,7 +845,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
-        viewModel.getHintCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getHintCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetHintState.Success -> {
@@ -873,7 +872,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
-        viewModel.getKyberStatusback.observe(viewLifecycleOwner, Observer {
+        viewModel.getKyberStatusback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetKyberStatusState.Success -> {
@@ -891,7 +890,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
-        viewModel.getAlertState.observe(viewLifecycleOwner, Observer {
+        viewModel.getAlertState.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetAlertState.Success -> {
@@ -906,7 +905,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
-        viewModel.estimateAmountState.observe(viewLifecycleOwner, Observer {
+        viewModel.estimateAmountState.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is EstimateAmountState.Success -> {
@@ -945,7 +944,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             dialogHelper.showBottomSheetReserveRoutingDialog()
         }
 
-        viewModel.saveSwapDataCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.saveSwapDataCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == SaveSwapState.Loading)
                 when (state) {
@@ -1146,7 +1145,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
         }
 
-        viewModel.checkEligibleWalletCallback.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.checkEligibleWalletCallback.observe(viewLifecycleOwner, { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == CheckEligibleWalletState.Loading)
                 when (state) {
@@ -1168,7 +1167,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
         currentActivity.mainViewModel.checkEligibleWalletCallback.observe(
             viewLifecycleOwner,
-            Observer { event ->
+            { event ->
                 event?.peekContent()?.let { state ->
                     when (state) {
                         is CheckEligibleWalletState.Success -> {
@@ -1184,7 +1183,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
         currentActivity.mainViewModel.getMaxPriceCallback.observe(
             viewLifecycleOwner,
-            Observer { event ->
+            { event ->
                 event?.peekContent()?.let { state ->
                     when (state) {
                         is GetMaxPriceState.Success -> {
@@ -1389,10 +1388,12 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     .setOnTargetListener(object : OnTargetListener {
                         override fun onStarted() {
                             binding.edtSource.setText(getString(R.string.tutorial_swap_amount))
+                            binding.edtSource.clearFocus()
                         }
 
                         override fun onEnded() {
                             binding.edtSource.setText("")
+                            binding.edtSource.clearFocus()
                         }
                     })
                     .build()
