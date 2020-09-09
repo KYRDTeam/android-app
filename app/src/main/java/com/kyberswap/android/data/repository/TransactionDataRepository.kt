@@ -254,116 +254,10 @@ class TransactionDataRepository @Inject constructor(
 
     private fun updateTokenBalance(token: Token, wallet: Wallet) {
         val updatedBalanceToken = tokenClient.updateBalance(token)
-
         updateTokenBalance(updatedBalanceToken)
-//        tokenDao.updateToken(updatedBalanceToken)
-
         updateSwapBalance(updatedBalanceToken, wallet)
-//        val swapByAddress = swapDao.findSwapByAddress(wallet.address)
-//        swapByAddress?.let { swap ->
-//            if (swap.tokenSource.tokenAddress.equals(updatedBalanceToken.tokenAddress, true)) {
-//                swapDao.updateSwap(swap.copy(tokenSource = updatedBalanceToken))
-//            } else if (swap.tokenDest.tokenAddress.equals(updatedBalanceToken.tokenAddress, true)) {
-//                swapDao.updateSwap(swap.copy(tokenDest = updatedBalanceToken))
-//            }
-//        }
-
         updateSendBalance(updatedBalanceToken, wallet)
-//        val sendByAddress = sendDao.findSendByAddress(wallet.address)
-//        sendByAddress?.let { send ->
-//            if (send.tokenSource.tokenAddress.equals(updatedBalanceToken.tokenAddress, true)) {
-//                sendDao.updateSend(send.copy(tokenSource = updatedBalanceToken))
-//            }
-//
-//        }
-
         updateLimitOrderBalance(updatedBalanceToken, wallet)
-//        val ordersByAddress =
-//            limitOrderDao.findAllLimitOrderByAddress(wallet.address)
-//        ordersByAddress.forEach { order ->
-//            when {
-//                order.tokenSource.tokenAddress.equals(
-//                    updatedBalanceToken.tokenAddress,
-//                    true
-//                ) -> limitOrderDao.updateOrder(
-//                    order.copy(
-//                        tokenSource = order.tokenSource.updateBalance(
-//                            updatedBalanceToken.currentBalance
-//                        )
-//                    )
-//                )
-//
-//                order.tokenDest.tokenAddress.equals(
-//                    updatedBalanceToken.tokenAddress,
-//                    true
-//                ) -> limitOrderDao.updateOrder(
-//                    order.copy(
-//                        tokenDest = order.tokenDest.updateBalance(updatedBalanceToken.currentBalance)
-//                    )
-//                )
-//
-//                order.tokenSource.tokenSymbol == Token.ETH_SYMBOL_STAR && updatedBalanceToken.tokenSymbol == Token.ETH_SYMBOL -> {
-//                    val wethToken = tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)
-//                    val ethBalance = updatedBalanceToken.currentBalance
-//                    val wethBalance = wethToken?.currentBalance ?: BigDecimal.ZERO
-//
-//                    limitOrderDao.updateOrder(
-//                        order.copy(
-//                            tokenSource = order.tokenSource.updateBalance(
-//                                ethBalance.plus(wethBalance)
-//                            ),
-//                            wethToken = wethToken ?: order.wethToken,
-//                            ethToken = updatedBalanceToken
-//                        )
-//                    )
-//                }
-//                order.tokenDest.tokenSymbol == Token.ETH_SYMBOL_STAR && updatedBalanceToken.tokenSymbol == Token.ETH_SYMBOL -> {
-//                    val wethToken = tokenDao.getTokenBySymbol(Token.WETH_SYMBOL)
-//                    val ethBalance = updatedBalanceToken.currentBalance
-//                    val wethBalance = wethToken?.currentBalance ?: BigDecimal.ZERO
-//
-//                    limitOrderDao.updateOrder(
-//                        order.copy(
-//                            tokenDest = order.tokenDest.updateBalance(
-//                                ethBalance.plus(wethBalance)
-//                            ),
-//                            wethToken = wethToken ?: order.wethToken,
-//                            ethToken = updatedBalanceToken
-//                        )
-//                    )
-//                }
-//                order.tokenSource.tokenSymbol == Token.ETH_SYMBOL_STAR && updatedBalanceToken.tokenSymbol == Token.WETH_SYMBOL -> {
-//                    val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)
-//                    val wethBalance = updatedBalanceToken.currentBalance
-//                    val ethBalance = ethToken?.currentBalance ?: BigDecimal.ZERO
-//
-//                    limitOrderDao.updateOrder(
-//                        order.copy(
-//                            tokenSource = order.tokenSource.updateBalance(
-//                                ethBalance.plus(wethBalance)
-//                            ),
-//                            ethToken = ethToken ?: order.ethToken,
-//                            wethToken = updatedBalanceToken
-//                        )
-//                    )
-//                }
-//                order.tokenDest.tokenSymbol == Token.ETH_SYMBOL_STAR && updatedBalanceToken.tokenSymbol == Token.WETH_SYMBOL -> {
-//                    val ethToken = tokenDao.getTokenBySymbol(Token.ETH_SYMBOL)
-//                    val wethBalance = updatedBalanceToken.currentBalance
-//                    val ethBalance = ethToken?.currentBalance ?: BigDecimal.ZERO
-//
-//                    limitOrderDao.updateOrder(
-//                        order.copy(
-//                            tokenDest = order.tokenDest.updateBalance(
-//                                ethBalance.plus(wethBalance)
-//                            ),
-//                            ethToken = ethToken ?: order.ethToken,
-//                            wethToken = updatedBalanceToken
-//                        )
-//                    )
-//                }
-//            }
-//        }
     }
 
     override fun fetchPendingTransaction(address: String): Flowable<List<Transaction>> {
@@ -393,13 +287,13 @@ class TransactionDataRepository @Inject constructor(
         )
             .map {
                 transactionMapper.transform(it.result, wallet.address, TOKEN_TRANSACTION)
-            }.doAfterSuccess {
+            }.doAfterSuccess { transactions ->
                 val tokenAddress = tokenDao.allTokens.filter {
                     !it.isOther
                 }.map {
                     it.tokenAddress.toLowerCase(Locale.getDefault())
                 }
-                val otherTokenList = it.filterNot { tx ->
+                val otherTokenList = transactions.filterNot { tx ->
                     tokenAddress.contains(tx.contractAddress.toLowerCase(Locale.getDefault()))
                 }.map { tx ->
                     Token(tx).copy(isOther = true).updateSelectedWallet(wallet)
@@ -472,8 +366,8 @@ class TransactionDataRepository @Inject constructor(
         }
             .flatMap { latestBlockNumber ->
                 getTransactionRemote(param.wallet, max(latestBlockNumber - 10, 1))
-            }.doOnNext {
-                val txs = it.filter { it.from.equals(param.wallet.address, true) }
+            }.doOnNext { transactions ->
+                val txs = transactions.filter { it.from.equals(param.wallet.address, true) }
                 if (txs.isNotEmpty()) {
                     val latestMinedNonce = txs.first().nonce.toBigIntegerOrDefaultZero()
                     val localNonce = nonceDao.findNonce(param.wallet.address)
@@ -483,29 +377,10 @@ class TransactionDataRepository @Inject constructor(
                         }
                     }
                 }
+                handleNewTransactions(param.wallet, transactions)
+                if (transactions.isNotEmpty()) {
 
-                val latestTransaction = transactionDao.getLatestTransaction(param.wallet.address)
-                val latestBlock =
-                    latestTransaction?.blockNumber?.toLongSafe() ?: 1
-                it.forEach { tx ->
-                    val blockNumber = tx.blockNumber.toLongSafe()
-                    latestTransaction?.let {
-                        if (blockNumber > latestBlock) {
-                            if (tx.isReceived(
-                                    param.wallet.address.toLowerCase(
-                                        Locale.getDefault()
-                                    )
-                                )
-                            ) {
-                                sendNotification(tx)
-                            }
-                            updateBalance(tx, param.wallet)
-                        }
-                    }
-                }
-                if (it.isNotEmpty()) {
-
-                    val latestTx = it.first { tx ->
+                    val latestTx = transactions.first { tx ->
                         tx.from.equals(
                             param.wallet.address,
                             true
@@ -524,7 +399,7 @@ class TransactionDataRepository @Inject constructor(
                         transactionDao.delete(filteredPending)
                     }
                 }
-                transactionDao.insertTransactionBatch(it)
+                transactionDao.insertTransactionBatch(transactions)
 
             }
             .repeatWhen {
@@ -626,8 +501,7 @@ class TransactionDataRepository @Inject constructor(
                     .pow(
                         received.tokenDecimal
                             .toBigDecimalOrDefaultZero().toInt()
-                    )
-                , 18,
+                    ), 18,
                 RoundingMode.HALF_EVEN
             )
         val tx =
@@ -759,19 +633,6 @@ class TransactionDataRepository @Inject constructor(
                                             ?: transactions.first().tokenSymbol
                                     )
                                 )
-
-//                                transactionList.addAll(
-//                                    transactions
-//                                        .filter {
-//                                        it.value.toBigDecimalOrDefaultZero() > BigDecimal.ZERO
-//                                    }
-//                                        .map {
-//                                            it.copy(
-//                                                walletAddress = wallet.address,
-//                                                tokenSymbol = addressToSymbolMap[it.contractAddress]
-//                                                    ?: it.tokenSymbol
-//                                            )
-//                                        })
                             }
                         }
                     } else if (transactions.size > 2) {
@@ -844,120 +705,102 @@ class TransactionDataRepository @Inject constructor(
             }.toFlowable()
     }
 
+    private fun getRemoteResourceWithLatestBlockNumberFlowable(
+        wallet: Wallet,
+        isForceRefresh: Boolean
+    ): Flowable<List<Transaction>> {
+        return Flowable.fromCallable {
+            getLatestBlockNumberOrDefaultValue(wallet.address)
+        }.flatMap { latestBlockNumber ->
+            getTransactionRemote(
+                wallet,
+                if (isForceRefresh) 1 else max(latestBlockNumber - 10, 1)
+            )
+                .doOnNext {
+                    handleOnNext(wallet, it, isForceRefresh)
+                }
+        }.onErrorReturn { listOf() }
+    }
+
+    private fun getLocalResourceFlowable(wallet: Wallet): Flowable<List<Transaction>> {
+        return transactionDao.getCompletedTransactionsFlowable(wallet.address)
+    }
+
     private fun getTransactions(
         wallet: Wallet, isForceRefresh: Boolean
     ): Flowable<TransactionsData> {
         return Flowable.mergeDelayError(
-            transactionDao.getCompletedTransactionsFlowable(wallet.address).map {
-                TransactionsData(it.map {
-                    it.apply {
-                        currentAddress = wallet.address
-                    }
-                }, false)
-            },
+            getLocalResourceFlowable(wallet)
+                .map { txs ->
+                    transactionMapper.transform(txs, wallet.address, false)
+                },
             Flowable.fromCallable {
                 transactionDao.getLatestTransaction(wallet.address) != null
-            }.flatMap {
-                if (it) {
+            }.flatMap { hasTransaction ->
+                if (hasTransaction) {
                     Flowables.zip(
-                        transactionDao.getCompletedTransactionsFlowable(wallet.address),
-                        Flowable.fromCallable {
-                            transactionDao.getLatestTransaction(wallet.address)?.blockNumber?.toLongSafe()
-                                ?: 1
-                        }.flatMap {
-                            getTransactionRemote(wallet, if (isForceRefresh) 1 else max(it - 10, 1))
-                                .doOnNext {
-                                    val latestTransaction =
-                                        transactionDao.getLatestTransaction(wallet.address)
-                                    val latestBlock =
-                                        latestTransaction?.blockNumber?.toLongSafe() ?: 1
-                                    it.forEach { tx ->
-                                        val blockNumber = tx.blockNumber.toLongSafe()
-                                        latestTransaction?.let {
-                                            if (blockNumber > latestBlock) {
-                                                if (tx.isReceived(
-                                                        wallet.address.toLowerCase(
-                                                            Locale.getDefault()
-                                                        )
-                                                    )
-                                                ) {
-                                                    sendNotification(tx)
-                                                }
-                                                updateBalance(tx, wallet)
-                                            }
-                                        }
-                                    }
-                                    if (isForceRefresh) {
-
-                                        transactionDao.forceUpdateTransactionBatch(
-                                            it,
-                                            wallet.address
-                                        )
-                                    } else {
-                                        transactionDao.insertTransactionBatch(it)
-                                    }
-                                }
-                        }
-                            .onErrorReturn { listOf() }
+                        getLocalResourceFlowable(wallet),
+                        getRemoteResourceWithLatestBlockNumberFlowable(wallet, isForceRefresh)
 
                     ) { local, remote ->
                         remote.union(local)
-                    }.map {
-                        TransactionsData(it.map {
-                            it.apply {
-                                currentAddress = wallet.address
-                            }
-                        }, true)
+                    }.map { txSet ->
+                        transactionMapper.transform(txSet.toList(), wallet.address, true)
                     }
                 } else {
-                    Flowable.fromCallable {
-                        transactionDao.getLatestTransaction(wallet.address)?.blockNumber?.toLongSafe()
-                            ?: 1
-                    }.flatMap {
-                        getTransactionRemote(wallet, if (isForceRefresh) 1 else max(it - 10, 1))
-                            .map {
-                                TransactionsData(it.map {
-                                    it.apply {
-                                        currentAddress = wallet.address
-                                    }
-                                }, true)
-                            }
-                            .doOnNext {
-                                val latestTransaction =
-                                    transactionDao.getLatestTransaction(wallet.address)
-                                val latestBlock =
-                                    latestTransaction?.blockNumber?.toLongSafe() ?: 1
-                                it.transactionList.forEach { tx ->
-                                    val blockNumber = tx.blockNumber.toLongSafe()
-                                    latestTransaction?.let {
-                                        if (blockNumber > latestBlock) {
-                                            if (tx.isReceived(
-                                                    wallet.address.toLowerCase(
-                                                        Locale.getDefault()
-                                                    )
-                                                )
-                                            ) {
-                                                sendNotification(tx)
-                                            }
-                                            updateBalance(tx, wallet)
-                                        }
-                                    }
-                                }
-                                if (isForceRefresh) {
-                                    transactionDao.forceUpdateTransactionBatch(
-                                        it.transactionList,
-                                        wallet.address
-                                    )
-                                } else {
-                                    transactionDao.insertTransactionBatch(it.transactionList)
-                                }
-                            }
+                    getRemoteResourceWithLatestBlockNumberFlowable(
+                        wallet,
+                        isForceRefresh
+                    ).map { txs ->
+                        transactionMapper.transform(txs, wallet.address, true)
                     }
                 }
-
             }
-
         )
+    }
+
+    private fun getLatestBlockNumberOrDefaultValue(address: String): Long {
+        return transactionDao.getLatestTransaction(address)?.blockNumber?.toLongSafe()
+            ?: 1
+    }
+
+    private fun handleNewTransactions(wallet: Wallet, transactions: List<Transaction>) {
+        val latestTransaction =
+            transactionDao.getLatestTransaction(wallet.address)
+        val latestBlock =
+            latestTransaction?.blockNumber?.toLongSafe() ?: 1
+        transactions.forEach { tx ->
+            latestTransaction?.let {
+                if (tx.blockNumber.toLongSafe() > latestBlock) {
+                    if (tx.isReceived(
+                            wallet.address.toLowerCase(
+                                Locale.getDefault()
+                            )
+                        )
+                    ) {
+                        sendNotification(tx)
+                    }
+                    updateBalance(tx, wallet)
+                }
+            }
+        }
+    }
+
+    private fun handleOnNext(
+        wallet: Wallet,
+        transactions: List<Transaction>,
+        isForceRefresh: Boolean
+    ) {
+        handleNewTransactions(wallet, transactions)
+        if (isForceRefresh) {
+
+            transactionDao.forceUpdateTransactionBatch(
+                transactions,
+                wallet.address
+            )
+        } else {
+            transactionDao.insertTransactionBatch(transactions)
+        }
     }
 
     override fun saveTransactionFilter(param: SaveTransactionFilterUseCase.Param): Completable {

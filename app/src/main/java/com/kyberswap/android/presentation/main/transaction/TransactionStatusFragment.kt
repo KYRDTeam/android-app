@@ -380,7 +380,7 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
 
     private fun showTutorial() {
         if (isPending && !isShowTutorial) {
-            val oldestTxTimestamp = viewModel.transactionList.filter { !it.isCancel }.minBy {
+            val oldestTxTimestamp = viewModel.transactionList.filter { !it.isCancel }.minByOrNull {
                 it.timeStamp
             }?.timeStamp ?: System.currentTimeMillis() / 1000
 

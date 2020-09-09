@@ -65,7 +65,7 @@ interface TransactionDao {
     @get:Query("SELECT * FROM transactions")
     val all: Flowable<List<Transaction>>
 
-    @Query("SELECT * FROM transactions WHERE (walletAddress = :walletAddress OR `from` = :walletAddress OR `to` = :walletAddress) AND transactionStatus != :pending AND gasUsed > 0")
+    @Query("SELECT * FROM transactions WHERE (walletAddress = :walletAddress OR `from` = :walletAddress OR `to` = :walletAddress) AND transactionStatus != :pending")
     fun getCompletedTransactionsFlowable(
         walletAddress: String,
         pending: String = Transaction.PENDING_TRANSACTION_STATUS

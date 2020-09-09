@@ -18,8 +18,6 @@ import com.kyberswap.android.util.ErrorHandler
 import com.trustwallet.walletconnect.models.WCPeerMeta
 import com.trustwallet.walletconnect.models.ethereum.WCEthereumSignMessage
 import com.trustwallet.walletconnect.models.ethereum.WCEthereumTransaction
-import io.reactivex.functions.Action
-import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class WalletConnectViewModel @Inject constructor(
@@ -69,11 +67,12 @@ class WalletConnectViewModel @Inject constructor(
         onFailure: (Throwable) -> Unit
     ) {
         _requestConnectCallback.postValue(Event(RequestState.Loading))
+        walletConnectUseCase.dispose()
         walletConnectUseCase.execute(
-            Consumer {
+            {
                 _requestConnectCallback.value = Event(RequestState.Success(it))
             },
-            Consumer {
+            {
                 _requestConnectCallback.value =
                     Event(RequestState.ShowError(errorHandler.getError(it)))
             },
@@ -91,11 +90,11 @@ class WalletConnectViewModel @Inject constructor(
 
     fun approveSession(walletAddress: String, meta: WCPeerMeta) {
         walletConnectApproveSessionUseCase.execute(
-            Consumer {
+            {
                 _approveSessionCallback.value =
                     Event(SessionRequestState.Success(it, meta))
             },
-            Consumer {
+            {
 
             },
             WalletConnectApproveSessionUseCase.Param(walletAddress)
@@ -107,10 +106,10 @@ class WalletConnectViewModel @Inject constructor(
         walletConnectApproveSessionUseCase.dispose()
         _sendTransactionCallback.postValue(Event(RequestState.Loading))
         walletConnectSendTransactionUseCase.execute(
-            Action {
+            {
                 _sendTransactionCallback.value = Event(RequestState.Success(true))
             },
-            Consumer {
+            {
                 _sendTransactionCallback.value = Event(RequestState.ShowError(it.localizedMessage))
             },
             WalletConnectSendTransactionUseCase.Param(id, transaction, wallet)
@@ -119,27 +118,27 @@ class WalletConnectViewModel @Inject constructor(
 
     fun rejectTransaction(id: Long) {
         rejectTransactionUseCase.execute(
-            Consumer { },
-            Consumer { },
+            { },
+            { },
             WalletConnectRejectTransactionUseCase.Param(id)
         )
     }
 
     fun sign(id: Long, signedMessage: WCEthereumSignMessage, wallet: Wallet) {
         walletConnectSignedTransactionUseCase.execute(
-            Action { },
-            Consumer { },
+            { },
+            { },
             WalletConnectSignedTransactionUseCase.Param(id, signedMessage, wallet)
         )
     }
 
     fun decodeTransaction(id: Long, wcTransaction: WCEthereumTransaction, wallet: Wallet) {
         decodeTransactionUseCase.execute(
-            Consumer {
+            {
                 _decodeTransactionCallback.value =
                     Event(DecodeTransactionState.Success(id, wcTransaction, it))
             },
-            Consumer {
+            {
                 _decodeTransactionCallback.value =
                     Event(DecodeTransactionState.ShowError(errorHandler.getError(it)))
             },
@@ -149,10 +148,10 @@ class WalletConnectViewModel @Inject constructor(
 
     fun rejectSession() {
         walletConnectRejectSessionUseCase.execute(
-            Consumer {
+            {
                 _rejectSessionCallback.value = Event(RequestState.Success(it))
             },
-            Consumer {
+            {
                 _rejectSessionCallback.value = Event(RequestState.ShowError(it.message))
             },
             WalletConnectRejectSessionUseCase.Param()
@@ -161,10 +160,10 @@ class WalletConnectViewModel @Inject constructor(
 
     fun killSession() {
         killSessionUseCase.execute(
-            Consumer {
+            {
                 _killSessionCallback.value = Event(RequestState.Success(it))
             },
-            Consumer {
+            {
                 _killSessionCallback.value =
                     Event(RequestState.ShowError(errorHandler.getError(it)))
             },

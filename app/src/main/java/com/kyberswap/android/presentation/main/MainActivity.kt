@@ -493,6 +493,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                                             intent?.dataString!!
                                         )
                                     }
+                                    intent?.data = null
                                 }, 250
                             )
                         }

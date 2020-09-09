@@ -28,15 +28,11 @@
         android:background="@drawable/screen_background"
         android:fitsSystemWindows="true">
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:focusable="true"
-            android:focusableInTouchMode="true" />
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
 
             <View
                 android:id="@+id/vNotification"
@@ -468,6 +464,7 @@
                         android:textColor="#f96363"
                         android:textSize="12sp"
                         android:visibility="gone"
+                        app:drawableEndCompat="@drawable/ic_down"
                         app:hasSamePair="@{swap.hasSamePair}"
                         app:layout_constraintEnd_toStartOf="@+id/imgInfo"
                         app:layout_constraintHorizontal_bias="1.0"
@@ -475,7 +472,6 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tvRate"
                         app:ratePercentage="@{swap.ratePercentage}"
-                        app:drawableEndCompat="@drawable/ic_down"
                         app:warning="@{swap.warning}" />
 
                     <TextView

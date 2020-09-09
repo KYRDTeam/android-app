@@ -2,6 +2,7 @@ package com.kyberswap.android.data.mapper
 
 import com.kyberswap.android.data.api.transaction.TransactionEntity
 import com.kyberswap.android.domain.model.Transaction
+import com.kyberswap.android.domain.usecase.transaction.TransactionsData
 import java.util.Locale
 import javax.inject.Inject
 
@@ -17,6 +18,14 @@ class TransactionMapper @Inject constructor() {
 
     fun transform(entity: TransactionEntity, address: String, txType: String): Transaction {
         return Transaction(entity, address, txType)
+    }
+
+    fun transform(txs: List<Transaction>, address: String, isLoaded: Boolean): TransactionsData {
+        return TransactionsData(txs.map {
+            it.apply {
+                currentAddress = address
+            }
+        }, isLoaded)
     }
 
 
