@@ -50,8 +50,8 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Flowables
-import okhttp3.MediaType
-import okhttp3.RequestBody
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.Locale
@@ -161,8 +161,7 @@ class UserDataRepository @Inject constructor(
                             UserInfo()
                         }
                     }
-                }
-                ,
+                },
                 userApi.getUserInfo().map {
                     userMapper.transform(it)
                 }.toFlowable()
@@ -405,7 +404,7 @@ class UserDataRepository @Inject constructor(
 
     override fun updateAlertMethods(param: UpdateAlertMethodsUseCase.Param): Single<ResponseStatus> {
         val body =
-            RequestBody.create(MediaType.parse("text/plain"), Gson().toJson(param.alertMethods))
+            Gson().toJson(param.alertMethods).toRequestBody("text/plain".toMediaType())
         return userApi.updateAlertMethods(body).map {
             userMapper.transform(it)
         }
@@ -506,12 +505,9 @@ class UserDataRepository @Inject constructor(
 
     override fun readNotifications(param: ReadNotificationsUseCase.Param): Single<ResponseStatus> {
         val body =
-            RequestBody.create(
-                MediaType.parse("text/plain"),
-                Gson().toJson(NotificationRequestBody(param.notifications.map {
-                    it.id
-                }))
-            )
+            Gson().toJson(NotificationRequestBody(param.notifications.map {
+                it.id
+            })).toRequestBody("text/plain".toMediaType())
         return userApi.markAsRead(body).map {
             userMapper.transform(it)
         }
@@ -519,10 +515,8 @@ class UserDataRepository @Inject constructor(
 
     override fun updateSubscribedTokensNotification(param: UpdateSubscribedTokenNotificationUseCase.Param): Single<ResponseStatus> {
         val body =
-            RequestBody.create(
-                MediaType.parse("text/plain"),
-                Gson().toJson(UpdateSubscribedNotificationRequestBody(param.notifications))
-            )
+            Gson().toJson(UpdateSubscribedNotificationRequestBody(param.notifications))
+                .toRequestBody("text/plain".toMediaType())
         return userApi.updateSubscribedTokens(body).map {
             userMapper.transform(it)
         }

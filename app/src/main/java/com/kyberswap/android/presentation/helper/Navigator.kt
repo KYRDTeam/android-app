@@ -211,7 +211,7 @@ class Navigator @Inject constructor(private val activity: AppCompatActivity) {
     fun navigateToWalletConnectScreen(
         currentFragment: Fragment?,
         wallet: Wallet?,
-        content: String
+        content: String = ""
     ) {
 //        activity.startActivity(WalletConnectActivity.newIntent(activity, wallet, content))
         navigateByChildFragmentManager(

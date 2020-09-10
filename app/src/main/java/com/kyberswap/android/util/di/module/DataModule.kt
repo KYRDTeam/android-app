@@ -30,6 +30,7 @@ import com.kyberswap.android.data.db.TransactionDao
 import com.kyberswap.android.data.db.TransactionFilterDao
 import com.kyberswap.android.data.db.UnitDao
 import com.kyberswap.android.data.db.UserDao
+import com.kyberswap.android.data.db.WalletConnectDao
 import com.kyberswap.android.data.db.WalletDao
 import com.kyberswap.android.data.mapper.AlertMapper
 import com.kyberswap.android.data.mapper.CapMapper
@@ -92,7 +93,8 @@ object DataModule {
         transactionDao: TransactionDao,
         contactDao: ContactDao,
         nonceDao: NonceDao,
-        userApi: UserApi
+        userApi: UserApi,
+        walletConnectDao: WalletConnectDao
     ): WalletRepository =
         WalletDataRepository(
             context,
@@ -109,7 +111,8 @@ object DataModule {
             transactionDao,
             contactDao,
             nonceDao,
-            userApi
+            userApi,
+            walletConnectDao
         )
 
     @Singleton

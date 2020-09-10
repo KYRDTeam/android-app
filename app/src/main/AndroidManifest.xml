@@ -130,6 +130,11 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name=".presentation.main.walletconnect.service.WcSessionManagerService"
+            android:exported="false"
+            android:stopWithTask="false" />
+
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"

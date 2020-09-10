@@ -29,6 +29,7 @@ import com.kyberswap.android.domain.model.TransactionFilter
 import com.kyberswap.android.domain.model.Unit
 import com.kyberswap.android.domain.model.UserInfo
 import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.WalletConnect
 
 @Database(
     entities = [
@@ -52,9 +53,10 @@ import com.kyberswap.android.domain.model.Wallet
         RatingInfo::class,
         MarketItem::class,
         SelectedMarketItem::class,
-        Nonce::class
+        Nonce::class,
+        WalletConnect::class
     ],
-    version = 14
+    version = 15
 )
 @TypeConverters(
     DataTypeConverter::class,
@@ -64,7 +66,8 @@ import com.kyberswap.android.domain.model.Wallet
     ListStringConverter::class,
     WalletBalanceTypeConverter::class,
     PendingBalancesConverter::class,
-    TransactionTypesConverter::class
+    TransactionTypesConverter::class,
+    WalletConnectDataTypeConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -89,6 +92,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun marketDao(): MarketDao
     abstract fun selectedMarketDao(): SelectedMarketDao
     abstract fun nonceDao(): NonceDao
+    abstract fun walletConnectDao(): WalletConnectDao
 
     companion object {
         @Volatile
@@ -292,6 +296,17 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        @VisibleForTesting
+        internal val MIGRATION_14_15: Migration = object : Migration(14, 15) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `walletconnects` (`address` TEXT NOT NULL, `sessionInfo` TEXT NOT NULL, `wcSessionRequest` TEXT, `wcEthSendTransaction` TEXT, `wcEthSign` TEXT, PRIMARY KEY(`address`))
+                """.trimIndent()
+                )
+            }
+        }
+
         private fun buildDatabase(context: Context) =
             Room.databaseBuilder(
                 context.applicationContext,
@@ -310,7 +325,8 @@ abstract class AppDatabase : RoomDatabase() {
                     MIGRATION_10_11,
                     MIGRATION_11_12,
                     MIGRATION_12_13,
-                    MIGRATION_13_14
+                    MIGRATION_13_14,
+                    MIGRATION_14_15
                 )
 //                .fallbackToDestructiveMigration()
 //                .allowMainThreadQueries()

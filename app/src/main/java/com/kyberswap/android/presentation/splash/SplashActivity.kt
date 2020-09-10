@@ -49,6 +49,7 @@ class SplashActivity : BaseActivity() {
                     when (state) {
                         is GetUserWalletState.Success -> {
                             navigator.navigateToHome(isPromoCode = state.wallet.isPromo)
+                            finishAffinity()
                         }
                         is GetUserWalletState.ShowError -> {
                             navigator.navigateToLandingPage()

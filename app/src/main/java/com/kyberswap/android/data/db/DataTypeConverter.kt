@@ -5,6 +5,9 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.WalletBalance
+import com.kyberswap.android.domain.model.WcEthSendTransaction
+import com.kyberswap.android.domain.model.WcEthSign
+import com.kyberswap.android.domain.model.WcSessionRequest
 import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntegerOrDefaultZero
 import java.math.BigDecimal
@@ -56,7 +59,6 @@ class TokenPairTypeConverter {
         return Gson().fromJson(value, listType)
     }
 
-
     @TypeConverter
     fun tokenPairTypeToString(list: List<Pair<String, String>>): String {
         return Gson().toJson(list)
@@ -72,7 +74,6 @@ class PendingBalancesConverter {
         return Gson().fromJson(value, listType)
     }
 
-
     @TypeConverter
     fun pendingBalancesTypeToString(list: Map<String, BigDecimal>): String {
         return Gson().toJson(list)
@@ -86,7 +87,6 @@ class ListStringConverter {
         }.type
         return Gson().fromJson(value, listType)
     }
-
 
     @TypeConverter
     fun tokenPairTypeToString(list: List<String>): String {
@@ -103,7 +103,6 @@ class TransactionTypesConverter {
         return Gson().fromJson(value, listType)
     }
 
-
     @TypeConverter
     fun transactionsTypeToString(list: List<Transaction.TransactionType>): String {
         return Gson().toJson(list)
@@ -118,9 +117,52 @@ class WalletBalanceTypeConverter {
         return Gson().fromJson(value, listType)
     }
 
-
     @TypeConverter
     fun walletBalanceTypeToString(list: List<WalletBalance>): String {
         return Gson().toJson(list)
+    }
+}
+
+class WalletConnectDataTypeConverter {
+    @TypeConverter
+    fun stringToWcEthSendTransaction(value: String?): WcEthSendTransaction? {
+        if (value.isNullOrBlank()) return null
+        val typeToken = object : TypeToken<WcEthSendTransaction>() {
+        }.type
+        return Gson().fromJson(value, typeToken)
+    }
+
+    @TypeConverter
+    fun wcEthSendTransactionToString(wcEthSendTransaction: WcEthSendTransaction?): String {
+        if (wcEthSendTransaction == null) return ""
+        return Gson().toJson(wcEthSendTransaction)
+    }
+
+    @TypeConverter
+    fun stringToWcSessionRequest(value: String?): WcSessionRequest? {
+        if (value.isNullOrBlank()) return null
+        val typeToken = object : TypeToken<WcSessionRequest>() {
+        }.type
+        return Gson().fromJson(value, typeToken)
+    }
+
+    @TypeConverter
+    fun wcSessionRequestToString(wcSessionRequest: WcSessionRequest?): String {
+        if (wcSessionRequest == null) return ""
+        return Gson().toJson(wcSessionRequest)
+    }
+
+    @TypeConverter
+    fun stringToWcEthSign(value: String?): WcEthSign? {
+        if (value.isNullOrBlank()) return null
+        val typeToken = object : TypeToken<WcEthSign>() {
+        }.type
+        return Gson().fromJson(value, typeToken)
+    }
+
+    @TypeConverter
+    fun wcEthSignToString(wcEthSign: WcEthSign?): String {
+        if (wcEthSign == null) return ""
+        return Gson().toJson(wcEthSign)
     }
 }

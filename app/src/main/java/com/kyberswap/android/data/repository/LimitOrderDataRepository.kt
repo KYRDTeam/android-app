@@ -57,8 +57,8 @@ import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
-import okhttp3.MediaType
-import okhttp3.RequestBody
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.consenlabs.tokencore.wallet.WalletManager
 import org.web3j.crypto.WalletUtils
 import java.math.BigDecimal
@@ -632,25 +632,21 @@ class LimitOrderDataRepository @Inject constructor(
         if (param.isLogin) {
             val base = param.marketItem.baseSymbol
             val quote = param.marketItem.quoteSymbol
-            val body =
-                RequestBody.create(
-                    MediaType.parse("text/plain"),
-                    Gson().toJson(
-                        FavoritePairStatus(
-                            if (base.equals(
-                                    Token.ETH_SYMBOL_STAR,
-                                    true
-                                )
-                            ) Token.WETH_SYMBOL else base,
-                            if (quote.equals(
-                                    Token.ETH_SYMBOL_STAR,
-                                    true
-                                )
-                            ) Token.WETH_SYMBOL else quote,
-                            param.marketItem.isFav
+            val body = Gson().toJson(
+                FavoritePairStatus(
+                    if (base.equals(
+                            Token.ETH_SYMBOL_STAR,
+                            true
                         )
-                    )
+                    ) Token.WETH_SYMBOL else base,
+                    if (quote.equals(
+                            Token.ETH_SYMBOL_STAR,
+                            true
+                        )
+                    ) Token.WETH_SYMBOL else quote,
+                    param.marketItem.isFav
                 )
+            ).toRequestBody("text/plain".toMediaType())
             return limitOrderApi.favPair(body).map {
                 ResponseStatus(it)
             }

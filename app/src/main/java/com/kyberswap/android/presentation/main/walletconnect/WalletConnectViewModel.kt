@@ -3,7 +3,11 @@ package com.kyberswap.android.presentation.main.walletconnect
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.WalletConnect
+import com.kyberswap.android.domain.model.WcEthSendTransaction
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
+import com.kyberswap.android.domain.usecase.wallet.GetWalletConnectUseCase
+import com.kyberswap.android.domain.usecase.wallet.UpdateWalletConnectUseCase
 import com.kyberswap.android.domain.usecase.walletconnect.DecodeTransactionUseCase
 import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectApproveSessionUseCase
 import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectKillSessionUseCase
@@ -18,6 +22,7 @@ import com.kyberswap.android.util.ErrorHandler
 import com.trustwallet.walletconnect.models.WCPeerMeta
 import com.trustwallet.walletconnect.models.ethereum.WCEthereumSignMessage
 import com.trustwallet.walletconnect.models.ethereum.WCEthereumTransaction
+import timber.log.Timber
 import javax.inject.Inject
 
 class WalletConnectViewModel @Inject constructor(
@@ -29,6 +34,8 @@ class WalletConnectViewModel @Inject constructor(
     private val killSessionUseCase: WalletConnectKillSessionUseCase,
     private val decodeTransactionUseCase: DecodeTransactionUseCase,
     private val rejectTransactionUseCase: WalletConnectRejectTransactionUseCase,
+    private val updateWalletConnectUseCase: UpdateWalletConnectUseCase,
+    private val getWalletConnectUseCase: GetWalletConnectUseCase,
     getWalletUseCase: GetSelectedWalletUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getWalletUseCase, errorHandler) {
@@ -57,6 +64,51 @@ class WalletConnectViewModel @Inject constructor(
     val decodeTransactionCallback: LiveData<Event<DecodeTransactionState>>
         get() = _decodeTransactionCallback
 
+    private val _getWalletConnectCallback = MutableLiveData<Event<WalletConnectState>>()
+    val getWalletConnectCallback: LiveData<Event<WalletConnectState>>
+        get() = _getWalletConnectCallback
+
+    fun saveWalletConnect(walletConnect: WalletConnect?) {
+        if (walletConnect == null) return
+        updateWalletConnectUseCase.execute(
+            {
+
+            },
+            {
+                it.printStackTrace()
+            },
+            walletConnect
+        )
+    }
+
+    fun resetWalletConnect(address: String) {
+        val wc = WalletConnect(address = address)
+        updateWalletConnectUseCase.dispose()
+        updateWalletConnectUseCase.execute(
+            {
+
+            },
+            {
+                it.printStackTrace()
+            },
+            wc
+        )
+    }
+
+    fun getWalletConnect(address: String) {
+        getWalletConnectUseCase.dispose()
+        getWalletConnectUseCase.execute(
+            {
+                _getWalletConnectCallback.value = Event(WalletConnectState.Success(it))
+            },
+            {
+                it.printStackTrace()
+                Timber.e(it.localizedMessage)
+            },
+            address
+        )
+    }
+
     fun connect(
         walletAddress: String,
         contents: String,
@@ -73,6 +125,8 @@ class WalletConnectViewModel @Inject constructor(
                 _requestConnectCallback.value = Event(RequestState.Success(it))
             },
             {
+                it.printStackTrace()
+                Timber.e(it.localizedMessage)
                 _requestConnectCallback.value =
                     Event(RequestState.ShowError(errorHandler.getError(it)))
             },
@@ -95,7 +149,7 @@ class WalletConnectViewModel @Inject constructor(
                     Event(SessionRequestState.Success(it, meta))
             },
             {
-
+                it.printStackTrace()
             },
             WalletConnectApproveSessionUseCase.Param(walletAddress)
 
@@ -118,8 +172,11 @@ class WalletConnectViewModel @Inject constructor(
 
     fun rejectTransaction(id: Long) {
         rejectTransactionUseCase.execute(
-            { },
-            { },
+            {
+            },
+            {
+                it.printStackTrace()
+            },
             WalletConnectRejectTransactionUseCase.Param(id)
         )
     }
@@ -132,11 +189,26 @@ class WalletConnectViewModel @Inject constructor(
         )
     }
 
-    fun decodeTransaction(id: Long, wcTransaction: WCEthereumTransaction, wallet: Wallet) {
+    fun decodeTransaction(
+        id: Long,
+        wcTransaction: WCEthereumTransaction,
+        wallet: Wallet,
+        walletConnect: WalletConnect?
+    ) {
         decodeTransactionUseCase.execute(
             {
                 _decodeTransactionCallback.value =
                     Event(DecodeTransactionState.Success(id, wcTransaction, it))
+
+                val wc = walletConnect?.copy(
+                    address = wallet.address,
+                    wcEthSendTransaction = WcEthSendTransaction(
+                        id,
+                        wcTransaction,
+                        it
+                    )
+                )
+                saveWalletConnect(wc)
             },
             {
                 _decodeTransactionCallback.value =
@@ -164,10 +236,26 @@ class WalletConnectViewModel @Inject constructor(
                 _killSessionCallback.value = Event(RequestState.Success(it))
             },
             {
+                it.printStackTrace()
+                Timber.e("error: %s", it.localizedMessage)
                 _killSessionCallback.value =
                     Event(RequestState.ShowError(errorHandler.getError(it)))
             },
             WalletConnectKillSessionUseCase.Param()
         )
+    }
+
+    override fun onCleared() {
+        walletConnectUseCase.dispose()
+        walletConnectSendTransactionUseCase.dispose()
+        walletConnectRejectSessionUseCase.dispose()
+        walletConnectApproveSessionUseCase.dispose()
+        walletConnectSignedTransactionUseCase.dispose()
+        killSessionUseCase.dispose()
+        decodeTransactionUseCase.dispose()
+        rejectTransactionUseCase.dispose()
+        updateWalletConnectUseCase.dispose()
+        getWalletConnectUseCase.dispose()
+        super.onCleared()
     }
 }

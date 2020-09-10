@@ -8,6 +8,7 @@ import com.kyberswap.android.util.di.module.AppModule
 import com.kyberswap.android.util.di.module.DataModule
 import com.kyberswap.android.util.di.module.DatabaseModule
 import com.kyberswap.android.util.di.module.NetworkModule
+import com.kyberswap.android.util.di.module.ServiceModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjector
@@ -24,7 +25,8 @@ import javax.inject.Singleton
         NetworkModule::class,
         DatabaseModule::class,
         DataModule::class,
-        AnalyticModule::class
+        AnalyticModule::class,
+        ServiceModule::class
     ]
 )
 interface AppComponent : AndroidInjector<KyberSwapApplication> {

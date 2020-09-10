@@ -17,11 +17,16 @@ import com.google.zxing.integration.android.IntentIntegrator
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.databinding.FragmentWalletConnectBinding
+import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.WalletConnect
+import com.kyberswap.android.domain.model.WcEthSign
+import com.kyberswap.android.domain.model.WcSessionRequest
 import com.kyberswap.android.presentation.base.BaseFragment
 import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.MainActivity
+import com.kyberswap.android.presentation.main.walletconnect.service.WcSessionManagerService
 import com.kyberswap.android.presentation.splash.GetWalletState
 import com.kyberswap.android.util.APPROVE_WALLET_CONNECT_ACTION
 import com.kyberswap.android.util.APPROVE_WALLET_CONNECT_SESSION_ACTION
@@ -38,6 +43,9 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.isApproveTx
 import com.kyberswap.android.util.ext.isNetworkAvailable
+import com.trustwallet.walletconnect.models.WCPeerMeta
+import com.trustwallet.walletconnect.models.ethereum.WCEthereumSignMessage
+import com.trustwallet.walletconnect.models.ethereum.WCEthereumTransaction
 import javax.inject.Inject
 
 class WalletConnectFragment : BaseFragment() {
@@ -75,12 +83,33 @@ class WalletConnectFragment : BaseFragment() {
     private var approveSessionDialog: AlertDialog? = null
     private var disConnectSessionDialog: AlertDialog? = null
 
+    private val isTransactionRequest: Boolean
+        get() = connectionInfo != null && connectionInfo?.contains(
+            "bridge",
+            true
+        ) != true
+
+    private val hasSession: Boolean
+        get() = walletConnect?.hasSession == true
+
+    private val isSessionRequest: Boolean
+        get() = connectionInfo?.contains("bridge", true) == true
     private var isOnline = false
+
+    private val hasDataPayload: Boolean
+        get() = walletConnect?.wcEthSendTransaction != null || walletConnect?.wcEthSign != null
+
+    private val hasSessionInfo: Boolean
+        get() = walletConnect?.wcSessionRequest != null && walletConnect?.wcSessionRequest!!.status && walletConnect?.wcSessionRequest!!.meta.name.isNotBlank()
+
+    private var walletConnect: WalletConnect? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         wallet = arguments?.getParcelable(WALLET_PARAM)
         connectionInfo = arguments?.getString(CONTENT_PARAM)
+        walletConnect =
+            WalletConnect(address = wallet?.address ?: "")
     }
 
     override fun onCreateView(
@@ -91,6 +120,22 @@ class WalletConnectFragment : BaseFragment() {
         binding = FragmentWalletConnectBinding.inflate(inflater, container, false)
         return binding.root
     }
+
+
+    private fun startConnectionService() {
+        if (activity != null) {
+            val stickyService = Intent(activity, WcSessionManagerService::class.java)
+            activity?.startService(stickyService)
+        }
+    }
+
+    private fun stopConnectionService() {
+        if (activity != null) {
+            val stickyService = Intent(activity, WcSessionManagerService::class.java)
+            activity?.stopService(stickyService)
+        }
+    }
+
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -105,6 +150,9 @@ class WalletConnectFragment : BaseFragment() {
             }
         }
 
+        wallet?.address?.let {
+            viewModel.getWalletConnect(it)
+        }
         binding.imgWalletConnect.setOnClickListener {
             if (isOnline) {
                 showDisconnectSessionDialog(REQUEST_SCAN)
@@ -113,6 +161,8 @@ class WalletConnectFragment : BaseFragment() {
             }
             analytics.logEvent(OPEN_SCAN_IN_WALLET_CONNECT_ACTION, Bundle().createEvent("1"))
         }
+
+
 
         viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let { state ->
@@ -125,6 +175,7 @@ class WalletConnectFragment : BaseFragment() {
                             )
                             viewModel.killSession()
                             wallet = state.wallet
+                            viewModel.getWalletConnect(state.wallet.address)
                         }
                     }
                     is GetWalletState.ShowError -> {
@@ -134,7 +185,9 @@ class WalletConnectFragment : BaseFragment() {
             }
         })
 
-        handleWalletConnect()
+        if (isSessionRequest) {
+            handleWalletConnect(connectionInfo)
+        }
 
         viewModel.requestConnectCallback.observe(viewLifecycleOwner, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
@@ -145,8 +198,8 @@ class WalletConnectFragment : BaseFragment() {
                     is RequestState.Success -> {
                         isOnline = state.status
                         showStatus(state.status)
+                        showProgress(false)
                         if (!state.status) {
-                            showProgress(false)
                             showError(
                                 getString(R.string.can_not_connect_wallet),
                                 time = 10
@@ -164,10 +217,54 @@ class WalletConnectFragment : BaseFragment() {
             }
         })
 
+        viewModel.getWalletConnectCallback.observe(viewLifecycleOwner, Observer { event ->
+            event?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is WalletConnectState.Success -> {
+                        if (walletConnect != state.walletConnect) {
+                            walletConnect = state.walletConnect
+                            if (hasSession) {
+                                if (isTransactionRequest) {
+                                    if (hasDataPayload) {
+                                        if (hasSessionInfo) {
+                                            showSessionInfo(
+                                                walletConnect?.wcSessionRequest?.status,
+                                                walletConnect?.wcSessionRequest?.meta
+                                            )
+                                        }
+                                    }
+
+                                    if (!connectionInfo.isNullOrBlank()) {
+                                        walletConnect?.wcEthSendTransaction?.let {
+                                            if (it.id > 0 && it.wcTransaction.from.isNotBlank()) {
+                                                showEthSendTransactionApprovalDialog(
+                                                    it.id,
+                                                    it.wcTransaction,
+                                                    it.transaction
+                                                )
+                                            }
+                                        }
+
+                                        walletConnect?.wcEthSign?.let {
+                                            if (it.id > 0 && it.message.data.isNotBlank()) {
+                                                showEthSignApprovalDialog(it.id, it.message)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    is WalletConnectState.ShowError -> {
+
+                    }
+                }
+            }
+        })
+
         viewModel.rejectSessionCallback.observe(viewLifecycleOwner, Observer { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
-
                     is RequestState.Success -> {
                         showStatus(false)
                     }
@@ -183,13 +280,9 @@ class WalletConnectFragment : BaseFragment() {
                 showProgress(state == SessionRequestState.Loading)
                 when (state) {
                     is SessionRequestState.Success -> {
-                        isOnline = state.status
-                        binding.lnContent.visibility = View.VISIBLE
-                        Glide.with(this).load(state.meta.icons.first())
-                            .into(binding.imgConnectedTo)
-                        binding.tvTitle.text = state.meta.name
-                        binding.tvConnectedTo.text = state.meta.url
-                        binding.tvAddress.text = wallet?.address
+                        startConnectionService()
+                        showSessionInfo(state.status, state.meta)
+                        saveWcSessionRequest(WcSessionRequest(state.status, state.meta))
                     }
                     is SessionRequestState.ShowError -> {
                         isOnline = false
@@ -205,46 +298,15 @@ class WalletConnectFragment : BaseFragment() {
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is DecodeTransactionState.Success -> {
-                        val transaction = state.transaction
-                        approvedTransactionDialog = AlertDialog.Builder(activity)
-                            .setTitle(
-                                if (state.wcTransaction.isApproveTx()) {
-                                    getString(R.string.approve_token)
-                                } else {
-                                    getString(R.string.approve_transaction)
-                                }
-                            )
-                            .setMessage(
-                                if (state.wcTransaction.isApproveTx()) {
-                                    getString(R.string.request_approve_message) + " " + transaction.tokenSource
-                                } else {
-
-                                    (if (transaction.isSwap) getString(R.string.dialog_swap) else getString(
-                                        R.string.dialog_transfer
-                                    )) + " " + transaction.displayWalletConnectTransaction
-                                }
-                            )
-                            .setPositiveButton(
-                                getString(R.string.dialog_approve)
-                            ) { _, _ ->
-                                analytics.logEvent(
-                                    APPROVE_WALLET_CONNECT_ACTION,
-                                    Bundle().createEvent(state.id.toString())
+                        handler.postDelayed(
+                            {
+                                showEthSendTransactionApprovalDialog(
+                                    state.id,
+                                    state.wcTransaction,
+                                    state.transaction
                                 )
-                                viewModel.sendTransaction(state.id, state.wcTransaction, wallet!!)
-
-                            }
-                            .setNegativeButton(getString(R.string.dialog_reject)) { dialogInterface, _ ->
-                                dialogInterface.dismiss()
-                                analytics.logEvent(
-                                    REJECT_WALLET_CONNECT_ACTION,
-                                    Bundle().createEvent(state.id.toString())
-                                )
-                                viewModel.rejectTransaction(state.id)
-
-                            }
-                            .create()
-                        showDialog(approvedTransactionDialog)
+                            }, 250
+                        )
                     }
                     is DecodeTransactionState.ShowError -> {
                         showError(
@@ -282,6 +344,7 @@ class WalletConnectFragment : BaseFragment() {
                         } else if (requestCode == REQUEST_WALLET_CHANGE || requestCode == REQUEST_BACK) {
                             popBackStack()
                         }
+                        viewModel.resetWalletConnect(wallet?.address ?: "")
                     }
                     is RequestState.ShowError -> {
                         showError(
@@ -294,6 +357,114 @@ class WalletConnectFragment : BaseFragment() {
                 }
             }
         })
+    }
+
+    private fun showEthSendTransactionApprovalDialog(
+        id: Long,
+        wcTransaction: WCEthereumTransaction,
+        transaction: Transaction
+    ) {
+        approvedTransactionDialog = AlertDialog.Builder(activity)
+            .setTitle(
+                if (wcTransaction.isApproveTx()) {
+                    getString(R.string.approve_token)
+                } else {
+                    getString(R.string.approve_transaction)
+                }
+            )
+            .setMessage(
+                if (wcTransaction.isApproveTx()) {
+                    getString(R.string.request_approve_message) + " " + transaction.tokenSource
+                } else {
+
+                    (if (transaction.isSwap) getString(R.string.dialog_swap) else getString(
+                        R.string.dialog_transfer
+                    )) + " " + transaction.displayWalletConnectTransaction
+                }
+            )
+            .setPositiveButton(
+                getString(R.string.dialog_approve)
+            ) { _, _ ->
+                analytics.logEvent(
+                    APPROVE_WALLET_CONNECT_ACTION,
+                    Bundle().createEvent(id.toString())
+                )
+                viewModel.sendTransaction(id, wcTransaction, wallet!!)
+
+            }
+            .setNegativeButton(getString(R.string.dialog_reject)) { dialogInterface, _ ->
+                dialogInterface.dismiss()
+                analytics.logEvent(
+                    REJECT_WALLET_CONNECT_ACTION,
+                    Bundle().createEvent(id.toString())
+                )
+                viewModel.rejectTransaction(id)
+
+            }
+            .create()
+        approvedTransactionDialog?.setCanceledOnTouchOutside(false)
+        showDialog(approvedTransactionDialog)
+    }
+
+    private fun showEthSignApprovalDialog(id: Long, signedMessage: WCEthereumSignMessage) {
+        val alertDialog = AlertDialog.Builder(context)
+            .setTitle(getString(R.string.signature_request))
+            .setMessage(getString(R.string.you_are_signing) + signedMessage.raw.first())
+            .setPositiveButton(
+                getString(R.string.dialog_sign)
+            ) { _, _ ->
+                viewModel.sign(id, signedMessage, wallet!!)
+                saveWcEthSign()
+                analytics.logEvent(
+                    APPROVE_WALLET_CONNECT_SIGN_ACTION,
+                    Bundle().createEvent(id.toString())
+                )
+
+            }
+            .setNegativeButton(getString(R.string.dialog_cancel)) { dialog, _ ->
+                viewModel.rejectTransaction(id)
+                saveWcEthSign()
+                analytics.logEvent(
+                    REJECT_WALLET_CONNECT_SIGN_ACTION,
+                    Bundle().createEvent(id.toString())
+                )
+                dialog.dismiss()
+
+            }
+            .create()
+        alertDialog.setCanceledOnTouchOutside(false)
+        alertDialog.show()
+    }
+
+    private fun showSessionInfo(
+        status: Boolean?, meta: WCPeerMeta?
+    ) {
+        if (status == null) return
+        if (meta == null) return
+        isOnline = status
+        showStatus(isOnline)
+        binding.lnContent.visibility = View.VISIBLE
+        Glide.with(this).load(meta.icons.first())
+            .into(binding.imgConnectedTo)
+        binding.tvTitle.text = meta.name
+        binding.tvConnectedTo.text = meta.url
+        binding.tvAddress.text = wallet?.address
+    }
+
+    private fun saveWcSessionRequest(wcSessionRequest: WcSessionRequest) {
+        val wc = walletConnect?.copy(
+            address = wallet?.address ?: "",
+            wcSessionRequest = wcSessionRequest
+        )
+        viewModel.saveWalletConnect(wc)
+    }
+
+    private fun saveWcEthSign(wcEthSign: WcEthSign? = null) {
+        val wc = walletConnect?.copy(
+            address = wallet?.address ?: "",
+            wcEthSign = wcEthSign
+        )
+        viewModel.saveWalletConnect(wc)
     }
 
     private fun showStatus(isOnLine: Boolean) {
@@ -341,16 +512,16 @@ class WalletConnectFragment : BaseFragment() {
                 }
                 .setNegativeButton(getString(R.string.dialog_cancel)) { dialog, _ ->
                     dialog.dismiss()
-
                 }
                 .create()
             disConnectSessionDialog?.show()
         }
     }
 
-    private fun handleWalletConnect() {
+    private fun handleWalletConnect(connectionInfo: String?) {
         wallet?.address?.let { walletAddress ->
             connectionInfo?.let { info ->
+                viewModel.saveWalletConnect(walletConnect?.copy(sessionInfo = info))
                 viewModel.connect(walletAddress, info, { id, meta ->
                     if (isAdded) {
                         handler.post {
@@ -381,38 +552,17 @@ class WalletConnectFragment : BaseFragment() {
                     }
 
                 }, { id, transaction ->
-                    viewModel.decodeTransaction(id, transaction, wallet!!)
+                    viewModel.decodeTransaction(id, transaction, wallet!!, walletConnect)
                 }, { id, signedMessage ->
+                    saveWcEthSign(WcEthSign(id, signedMessage))
                     if (isAdded) {
                         handler.post {
-                            val alertDialog = AlertDialog.Builder(context)
-                                .setTitle(getString(R.string.signature_request))
-                                .setMessage(getString(R.string.you_are_signing) + signedMessage.raw.first())
-                                .setPositiveButton(
-                                    getString(R.string.dialog_sign)
-                                ) { _, _ ->
-                                    viewModel.sign(id, signedMessage, wallet!!)
-                                    analytics.logEvent(
-                                        APPROVE_WALLET_CONNECT_SIGN_ACTION,
-                                        Bundle().createEvent(id.toString())
-                                    )
-
-                                }
-                                .setNegativeButton(getString(R.string.dialog_cancel)) { dialog, _ ->
-                                    viewModel.rejectTransaction(id)
-                                    analytics.logEvent(
-                                        REJECT_WALLET_CONNECT_SIGN_ACTION,
-                                        Bundle().createEvent(id.toString())
-                                    )
-                                    dialog.dismiss()
-
-                                }
-                                .create()
-                            alertDialog.show()
+                            showEthSignApprovalDialog(id, signedMessage)
                         }
                     }
 
                 }, { code, _ ->
+                    viewModel.resetWalletConnect(walletAddress)
                     if (isAdded) {
                         handler.post {
                             isOnline = false
@@ -421,7 +571,7 @@ class WalletConnectFragment : BaseFragment() {
                                 handler.post { activity?.onBackPressed() }
                             } else {
                                 showStatus(false)
-                                if (requestCode != REQUEST_SCAN) {
+                                if (requestCode != REQUEST_SCAN && requestCode > 0) {
                                     dialogHelper.showDisconnectDialog({
                                         openQRScan()
                                     }, {
@@ -441,18 +591,18 @@ class WalletConnectFragment : BaseFragment() {
 
                 }, {
                     isOnline = false
+                    viewModel.resetWalletConnect(walletAddress)
                     if (isAdded) {
                         handler.post {
                             showProgress(false)
                             if (requestCode == REQUEST_BACK) {
                                 activity?.onBackPressed()
                             }
-
                             showStatus(false)
                             if (!isNetworkAvailable()) {
                                 showNetworkUnAvailable()
-                            } else {
-                                showError(it.message ?: getString(R.string.something_wrong))
+                            } else if (!it.message.isNullOrEmpty()) {
+                                showError(it.message!!)
                             }
 
                             it.message?.let {
@@ -471,6 +621,7 @@ class WalletConnectFragment : BaseFragment() {
 
     private fun onBack(code: Int = REQUEST_BACK) {
         requestCode = code
+        stopConnectionService()
         if (isOnline) {
             viewModel.killSession()
         } else {
@@ -495,7 +646,6 @@ class WalletConnectFragment : BaseFragment() {
 
     override fun onDestroyView() {
         handler.removeCallbacksAndMessages(null)
-        viewModel.killSession()
         approveSessionDialog?.dismiss()
         approvedTransactionDialog?.dismiss()
         disConnectSessionDialog?.dismiss()
@@ -507,7 +657,7 @@ class WalletConnectFragment : BaseFragment() {
         val scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (scanResult != null && scanResult.contents != null) {
             this.connectionInfo = scanResult.contents
-            handleWalletConnect()
+            handleWalletConnect(connectionInfo)
         }
     }
 

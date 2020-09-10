@@ -193,6 +193,9 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
 
     val pendingTransactions = mutableListOf<Transaction>()
 
+    val selectedWallet: Wallet?
+        get() = wallet
+
     private var adapter: MainPagerAdapter? = null
 
     @SuppressLint("ClickableViewAccessibility")
@@ -451,6 +454,11 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetAllWalletState.Success -> {
+                        if (state.wallets.isEmpty()) {
+                            navigator.navigateToLandingPage()
+                            return@observe
+                        }
+
                         val selectedWallet = state.wallets.find { it.isSelected }
                         if (wallet?.address != selectedWallet?.address) {
                             hasShowBackupWallet = false
@@ -1102,6 +1110,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                 when (it) {
                     is WalletConnectFragment -> {
                         it.onBackPress()
+                        return
                     }
 
                     is ProfileFragment -> {
