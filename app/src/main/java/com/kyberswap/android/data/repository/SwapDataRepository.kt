@@ -370,14 +370,14 @@ class SwapDataRepository @Inject constructor(
                 param.tokenDest
             ).toBigDecimal()
 
-            if (srcTokenExt?.isGasFixed == true) {
+            if (srcTokenExt?.isGasFixed == true && !param.isReserveRouting) {
                 val gasLimitFromApiWithFallback = if (!gasLimitEntity.error) {
                     calcGasLimitFromApi
                 } else {
                     srcTokenExt.gasLimit.toBigDecimalOrDefaultZero()
                 }
                 gasLimitFromApiWithFallback.max(calcGasLimitFromNode)
-            } else if (destTokenExt?.isGasFixed == true) {
+            } else if (destTokenExt?.isGasFixed == true && !param.isReserveRouting) {
                 val gasLimitFromApiWithFallback = if (!gasLimitEntity.error) {
                     calcGasLimitFromApi
                 } else {

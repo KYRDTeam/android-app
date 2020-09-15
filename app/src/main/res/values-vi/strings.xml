@@ -783,14 +783,6 @@
     <string name="buying_eth_confirmed_message">Hiện tại, dịch vụ mua ETH qua thẻ chỉ được hỗ trợ trên trang web của KyberSwap. Bạn có muốn chuyển sang website không?</string>
     <string name="maximum_gas_fee">Phí gas tối đa</string>
     <string name="max_gas_fee_explanation">Chi phí thực tế của giao dịch thông thường sẽ thấp hơn chi phí ước tính tối đa.</string>
-    <string name="wallet_erc20_warning">Chỉ gửi token ERC20 hoặc ETH đến địa chỉ này.</string>
-    <string name="send_erc20_warning">*Nếu bạn gửi token khác ERC20 hoặc ETH đến địa chỉ này, tài sản của bạn có thể bị mất.</string>
-    <string name="erc20_bold">ERC20</string>
-    <string name="eth_bold">ETH</string>
-    <string name="address_bold">địa chỉ</string>
-    <string-array name="wallet_erc20_bold">
-        <item>@string/erc20_bold</item>
-        <item>@string/eth_bold</item>
-        <item>@string/address_bold</item>
-    </string-array>
+    <string name="wallet_erc20_warning">Chỉ gửi ETH hoặc các loại token ERC-20 đến địa chỉ này.</string>
+    <string name="send_erc20_warning">* Nếu bạn gửi token khác đến địa chỉ này, tài sản của bạn có thể bị mất.</string>
 </resources>

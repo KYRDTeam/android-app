@@ -390,7 +390,7 @@ class SwapViewModel @Inject constructor(
                 val specialGasLimit = specialGasLimitDefault(swap.tokenSource, swap.tokenDest)
                 _getGetGasLimitCallback.value = Event(
                     GetGasLimitState.Success(
-                        if (specialGasLimit != null) {
+                        if (specialGasLimit != null && !isReserveRouting) {
                             specialGasLimit.max(gasLimit)
                         } else {
                             gasLimit
@@ -407,7 +407,7 @@ class SwapViewModel @Inject constructor(
                 swap.tokenSource,
                 swap.tokenDest,
                 swap.sourceAmount,
-                swap.minConversionRate,
+                BigInteger.ZERO,
                 platformFee,
                 isReserveRouting
             )

@@ -783,14 +783,6 @@
     <string name="buying_eth_confirmed_message">법정화폐를 사용한 ETH구매하기는 현재 카이버스왑 웹사이트에서만 가능합니다. 웹사이트로 이동하시겠습니까?</string>
     <string name="maximum_gas_fee">최대 가스비</string>
     <string name="max_gas_fee_explanation">The actual cost of the transaction is generally lower than the maximum estimated cost</string>
-    <string name="wallet_erc20_warning">이 주소로는 ERC20 토큰만 전송해야합니다.</string>
-    <string name="send_erc20_warning">* ERC20가 아닌 토큰을 이 주소로 전송할 시 보유 코인이 손실될 수 있습니다.</string>
-    <string name="erc20_bold">ERC20</string>
-    <string name="eth_bold">ETH</string>
-    <string name="address_bold">주소</string>
-    <string-array name="wallet_erc20_bold">
-        <item>@string/erc20_bold</item>
-        <item>@string/eth_bold</item>
-        <item>@string/address_bold</item>
-    </string-array>
+    <string name="wallet_erc20_warning">이 주소로는 ETH 혹은 ERC20토큰만 전송하세요.</string>
+    <string name="send_erc20_warning">* 그 외 토큰 전송 시 토큰이 손실될 수 있습니다.</string>
 </resources>

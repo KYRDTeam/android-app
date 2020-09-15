@@ -117,7 +117,7 @@ class SwapConfirmViewModel @Inject constructor(
 
                 _getGetGasLimitCallback.value = Event(
                     GetGasLimitState.Success(
-                        if (specialGasLimit != null) {
+                        if (specialGasLimit != null && !isReserveRouting) {
                             specialGasLimit.max(gasLimit)
                         } else {
                             gasLimit

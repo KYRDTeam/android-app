@@ -24,7 +24,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         def versionMajor = 1
         def versionMinor = 1
-        def versionPatch = 33
+        def versionPatch = 32
         versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch * 1
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         vectorDrawables.useSupportLibrary = true
