@@ -22,7 +22,8 @@ class GetExpectedRateUseCase @Inject constructor(
         val tokenSource: Token,
         val tokenDest: Token,
         val srcAmount: String,
-        val platFormFee: Int
+        val platFormFee: Int,
+        val isReserveRouting: Boolean
     )
 
 

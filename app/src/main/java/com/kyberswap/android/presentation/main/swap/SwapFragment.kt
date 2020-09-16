@@ -1647,7 +1647,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         viewModel.getExpectedRate(
             swap,
             edtSource.getAmountOrDefaultValue(),
-            platformFee
+            platformFee,
+            isReserveRouting
         )
     }
 

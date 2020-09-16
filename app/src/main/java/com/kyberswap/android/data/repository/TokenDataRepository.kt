@@ -27,7 +27,6 @@ import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toBigIntSafe
 import com.kyberswap.android.util.ext.toDoubleOrDefaultZero
 import com.kyberswap.android.util.ext.updatePrecision
-import com.kyberswap.android.util.rx.operator.zipWithFlatMap
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -95,7 +94,7 @@ class TokenDataRepository @Inject constructor(
 
                 val srcToEtherRateValue =
                     if ((sourceTokenToEtherRate == null ||
-                                sourceTokenToEtherRate.rate.toBigIntSafe() == BigInteger.ZERO)
+                            sourceTokenToEtherRate.rate.toBigIntSafe() == BigInteger.ZERO)
                         && (param.src == Token.ETH_SYMBOL || param.src == Token.WETH_SYMBOL)
                     ) {
                         BigDecimal.ONE
@@ -108,7 +107,7 @@ class TokenDataRepository @Inject constructor(
 
                 val etherToDestRateValue =
                     if ((etherToDestTokenRate == null ||
-                                etherToDestTokenRate.rate.toBigIntSafe() == BigInteger.ZERO)
+                            etherToDestTokenRate.rate.toBigIntSafe() == BigInteger.ZERO)
                         && (param.dest == Token.ETH_SYMBOL || param.dest == Token.WETH_SYMBOL)
                     ) {
                         BigDecimal.ONE
@@ -144,7 +143,8 @@ class TokenDataRepository @Inject constructor(
                     tokenDest,
                     amount,
                     platformFee,
-                    hint
+                    hint,
+                    param.useKyberNode
                 )
                 expectedRate
             }
@@ -172,7 +172,8 @@ class TokenDataRepository @Inject constructor(
         }
     }
 
-    override fun getExpectedRate(param: GetExpectedRateUseCase.Param): Flowable<List<String>> {
+
+    private fun getExpectedRateFallbackFromApi(param: GetExpectedRateUseCase.Param): Single<List<String>> {
         val tokenSource = param.tokenSource
         val tokenDest = param.tokenDest
 
@@ -194,12 +195,25 @@ class TokenDataRepository @Inject constructor(
                         )
                     )
                 }
-            }.repeatWhen {
-                it.delay(15, TimeUnit.SECONDS)
             }
-            .retryWhen { throwable ->
-                throwable.compose(zipWithFlatMap())
-            }
+    }
+
+    override fun getExpectedRate(param: GetExpectedRateUseCase.Param): Flowable<List<String>> {
+        return getExpectedRate(
+            GetExpectedRateSequentialUseCase.Param(
+                param.walletAddress,
+                param.tokenSource,
+                param.tokenDest,
+                param.srcAmount,
+                param.platFormFee,
+                param.isReserveRouting,
+                true
+            )
+        ).repeatWhen {
+            it.delay(15, TimeUnit.SECONDS)
+        }.onErrorResumeNext(
+            getExpectedRateFallbackFromApi(param).toFlowable()
+        )
 
 //        return Flowable.fromCallable {
 //            val expectedRate = tokenClient.getExpectedRate(

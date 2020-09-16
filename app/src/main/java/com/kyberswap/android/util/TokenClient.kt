@@ -83,7 +83,7 @@ import kotlin.math.pow
 
 class TokenClient @Inject constructor(
     private val web3jAlchemyNode: Web3j,
-    private val web3jSemiNode: Web3j,
+    private val web3jKyberNode: Web3j,
     private val web3jInfuraNode: Web3j,
     private val tokenDao: TokenDao,
     private val transactionDao: TransactionDao,
@@ -204,11 +204,11 @@ class TokenClient @Inject constructor(
         function: Function,
         contractAddress: String,
         fromAddress: String?,
-        isOtherToken: Boolean = false
+        useKyberNode: Boolean = false
     ): String? {
         val encodedFunction = FunctionEncoder.encode(function)
-        val response = if (isOtherToken) {
-            web3jSemiNode.ethCall(
+        val response = if (useKyberNode) {
+            web3jKyberNode.ethCall(
                 Transaction.createEthCallTransaction(fromAddress, contractAddress, encodedFunction),
                 DefaultBlockParameterName.LATEST
             )
@@ -336,7 +336,8 @@ class TokenClient @Inject constructor(
         tokenDest: Token,
         srcTokenAmount: BigInteger,
         platformFeeBps: BigInteger,
-        hint: String
+        hint: String,
+        userKyberNode: Boolean = false
     ): List<String> {
         val function =
             if (isKatalyst) {
@@ -355,7 +356,8 @@ class TokenClient @Inject constructor(
                 )
             }
 
-        val responseValue = callSmartContractFunction(function, contractAddress, null)
+        val responseValue =
+            callSmartContractFunction(function, contractAddress, null, userKyberNode)
 
         val responses = FunctionReturnDecoder.decode(
             responseValue, function.outputParameters
@@ -596,7 +598,7 @@ class TokenClient @Inject constructor(
     ): Pair<String?, BigInteger> {
         val txManagerWithAlchemyNode = RawTransactionManager(web3jAlchemyNode, credentials)
         val txManagerWithInfuraNode = RawTransactionManager(web3jInfuraNode, credentials)
-        val txManagerWithSemiNode = RawTransactionManager(web3jSemiNode, credentials)
+        val txManagerWithSemiNode = RawTransactionManager(web3jKyberNode, credentials)
 
         val walletAddress = credentials.address
 
@@ -693,7 +695,7 @@ class TokenClient @Inject constructor(
             } else {
                 throw RuntimeException(
                     "Error processing transaction request: " +
-                            transactionResponseAlchemyNode.error?.message
+                        transactionResponseAlchemyNode.error?.message
                 )
             }
         }
@@ -736,7 +738,7 @@ class TokenClient @Inject constructor(
         val transactionAmount = if (isEth) amount else BigInteger.ZERO
         val txManagerWithAlchemyNode = RawTransactionManager(web3jAlchemyNode, credentials)
         val txManagerWithInfuraNode = RawTransactionManager(web3jInfuraNode, credentials)
-        val txManagerWithSemiNode = RawTransactionManager(web3jSemiNode, credentials)
+        val txManagerWithSemiNode = RawTransactionManager(web3jKyberNode, credentials)
 
         val walletAddress = credentials.address
         val localNonce = getTransactionNonce(walletAddress)
@@ -791,7 +793,7 @@ class TokenClient @Inject constructor(
             } else {
                 throw RuntimeException(
                     "Error processing transaction request: " +
-                            transactionResponseAlchemyNode.error?.message
+                        transactionResponseAlchemyNode.error?.message
                 )
             }
         }
@@ -829,7 +831,7 @@ class TokenClient @Inject constructor(
         val localNonce = getTransactionNonce(credentials.address)
         val txManagerWithAlchemyNode = RawTransactionManager(web3jAlchemyNode, credentials)
         val txManagerWithInfuraNode = RawTransactionManager(web3jInfuraNode, credentials)
-        val txManagerWithSemiNode = RawTransactionManager(web3jSemiNode, credentials)
+        val txManagerWithSemiNode = RawTransactionManager(web3jKyberNode, credentials)
 
         val tx = RawTransaction.createTransaction(
             localNonce,
@@ -896,7 +898,7 @@ class TokenClient @Inject constructor(
             } else {
                 throw RuntimeException(
                     "Error processing transaction request: " +
-                            transactionResponseAlchemyNode.error?.message
+                        transactionResponseAlchemyNode.error?.message
                 )
             }
         }
@@ -1111,7 +1113,7 @@ class TokenClient @Inject constructor(
 
         val txManagerWithAlchemyNode = RawTransactionManager(web3jAlchemyNode, credentials)
         val txManagerWithInfuraNode = RawTransactionManager(web3jInfuraNode, credentials)
-        val txManagerWithSemiNode = RawTransactionManager(web3jSemiNode, credentials)
+        val txManagerWithSemiNode = RawTransactionManager(web3jKyberNode, credentials)
 
         val tx = RawTransaction.createTransaction(
             localNonce,
@@ -1168,7 +1170,7 @@ class TokenClient @Inject constructor(
             } else {
                 throw RuntimeException(
                     "Error processing transaction request: " +
-                            transactionResponseAlchemyNode.error?.message
+                        transactionResponseAlchemyNode.error?.message
                 )
             }
         }
@@ -1208,7 +1210,7 @@ class TokenClient @Inject constructor(
 
             val txManagerWithAlchemyNode = RawTransactionManager(web3jAlchemyNode, credentials)
             val txManagerWithInfuraNode = RawTransactionManager(web3jInfuraNode, credentials)
-            val txManagerWithSemiNode = RawTransactionManager(web3jSemiNode, credentials)
+            val txManagerWithSemiNode = RawTransactionManager(web3jKyberNode, credentials)
 
             val transactionResponseAlchemyNode =
                 txManagerWithAlchemyNode.signAndSend(rawTransaction)
@@ -1229,7 +1231,7 @@ class TokenClient @Inject constructor(
                 )
                 throw RuntimeException(
                     "Error processing transaction request: " +
-                            transactionResponseAlchemyNode.error?.message
+                        transactionResponseAlchemyNode.error?.message
                 )
             }
             return transactionResponseAlchemyNode?.transactionHash
@@ -1263,7 +1265,7 @@ class TokenClient @Inject constructor(
 
                 val txManagerWithAlchemyNode = RawTransactionManager(web3jAlchemyNode, credentials)
                 val txManagerWithInfuraNode = RawTransactionManager(web3jInfuraNode, credentials)
-                val txManagerWithSemiNode = RawTransactionManager(web3jSemiNode, credentials)
+                val txManagerWithSemiNode = RawTransactionManager(web3jKyberNode, credentials)
                 if (tx.isSwapTx()) {
 
                     val input = FunctionEncoder.encode(
@@ -1338,7 +1340,7 @@ class TokenClient @Inject constructor(
                         } else {
                             throw RuntimeException(
                                 "Error processing transaction request: " +
-                                        transactionResponseAlchemyNode.error?.message
+                                    transactionResponseAlchemyNode.error?.message
                             )
                         }
                     }
@@ -1412,7 +1414,7 @@ class TokenClient @Inject constructor(
                         } else {
                             throw RuntimeException(
                                 "Error processing transaction request: " +
-                                        transactionResponseAlchemyNode.error?.message
+                                    transactionResponseAlchemyNode.error?.message
                             )
                         }
                     }
@@ -1450,7 +1452,7 @@ class TokenClient @Inject constructor(
                                     context.getString(R.string.kyber_address),
                                     true
                                 ) &&
-                                        it.topics.isNotEmpty() && it.topics.first().equals(
+                                    it.topics.isNotEmpty() && it.topics.first().equals(
                                     context.getString(R.string.kyber_event_topic),
                                     true
                                 )

@@ -236,7 +236,8 @@ class SwapViewModel @Inject constructor(
     fun getExpectedRate(
         swap: Swap,
         srcAmount: String,
-        platformFee: Int
+        platformFee: Int,
+        isReserveRouting: Boolean
     ) {
         if (swap.hasSamePair) {
             _getExpectedRateCallback.value =
@@ -262,7 +263,8 @@ class SwapViewModel @Inject constructor(
                 swap.tokenSource,
                 swap.tokenDest,
                 srcAmount,
-                platformFee
+                platformFee,
+                isReserveRouting
             )
         )
     }

@@ -418,7 +418,8 @@ class LimitOrderViewModel @Inject constructor(
                 order.tokenSource,
                 order.tokenDest,
                 srcAmount,
-                platformFee
+                platformFee,
+                true
 
             )
         )
