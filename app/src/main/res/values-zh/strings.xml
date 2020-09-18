@@ -784,5 +784,6 @@
     <string name="buying_eth_confirmed_message">目前仅在KyberSwap的网页版上支持通过法币购买ETH。您想访问该网站吗？</string>
     <string name="maximum_gas_fee">最高的gas费用。</string>
     <string name="max_gas_fee_explanation">交易的实际费用一般低于最高估计费用</string>
-
+    <string name="wallet_erc20_warning">仅将ETH或ERC-20代币发送到该地址</string>
+    <string name="send_erc20_warning">*发送其他类型的代币可能会导致您的代币遗失</string>
 </resources>

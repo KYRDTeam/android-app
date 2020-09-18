@@ -59,7 +59,7 @@ class NetworkModule {
             }
             builder.addHeader("CLIENT", "com.kyberswap.android")
 
-            val request = builder.method(original.method(), original.body())
+            val request = builder.method(original.method, original.body)
                 .build()
             it.proceed(request)
         }

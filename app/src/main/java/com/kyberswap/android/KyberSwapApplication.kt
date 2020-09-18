@@ -16,8 +16,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.crypto.tink.Aead
 import com.google.crypto.tink.KeysetHandle
 import com.google.crypto.tink.aead.AeadConfig
-import com.google.crypto.tink.aead.AeadFactory
-import com.google.crypto.tink.aead.AeadKeyTemplates
+import com.google.crypto.tink.aead.AesGcmKeyManager
 import com.google.crypto.tink.integration.android.AndroidKeysetManager
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
@@ -108,7 +107,8 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
 
         try {
             AeadConfig.register()
-            aead = AeadFactory.getPrimitive(getOrGenerateNewKeySetHandle())
+            val keysetHandle = getOrGenerateNewKeySetHandle()
+            aead = keysetHandle.getPrimitive(Aead::class.java)
         } catch (e: GeneralSecurityException) {
             throw RuntimeException(e)
         } catch (e: IOException) {
@@ -203,7 +203,8 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
     fun getOrGenerateNewKeySetHandle(): KeysetHandle {
         return AndroidKeysetManager.Builder()
             .withSharedPref(applicationContext, TINK_KEYSET_NAME, PREF_FILE_NAME)
-            .withKeyTemplate(AeadKeyTemplates.AES256_GCM)
+//            .withKeyTemplate(AeadKeyTemplates.AES256_GCM)
+            .withKeyTemplate(AesGcmKeyManager.aes256GcmTemplate())
             .withMasterKeyUri(MASTER_KEY_URI)
             .build()
             .keysetHandle

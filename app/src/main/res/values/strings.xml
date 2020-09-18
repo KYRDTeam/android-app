@@ -783,7 +783,8 @@
     <string name="buying_eth_confirmed_message">Buying ETH with Fiat is only supported on KyberSwap\'s website at the moment. Do you want to open it?</string>
     <string name="maximum_gas_fee">Maximum gas fee</string>
     <string name="max_gas_fee_explanation">The actual cost of the transaction is generally lower than the maximum estimated cost</string>
-
+    <string name="wallet_erc20_warning">Only send ETH or any ERC-20 token to this address</string>
+    <string name="send_erc20_warning">*Sending any other tokens may result in loss of your funds.</string>
 
     <string-array name="proof_address">
         <item>Bank Statement</item>

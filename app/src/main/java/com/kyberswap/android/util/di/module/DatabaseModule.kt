@@ -22,6 +22,7 @@ import com.kyberswap.android.data.db.TransactionDao
 import com.kyberswap.android.data.db.TransactionFilterDao
 import com.kyberswap.android.data.db.UnitDao
 import com.kyberswap.android.data.db.UserDao
+import com.kyberswap.android.data.db.WalletConnectDao
 import com.kyberswap.android.data.db.WalletDao
 import dagger.Module
 import dagger.Provides
@@ -157,5 +158,11 @@ class DatabaseModule {
     @Singleton
     fun provideSelectedMarketDao(appDatabase: AppDatabase): SelectedMarketDao {
         return appDatabase.selectedMarketDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideWalletConnectDao(appDatabase: AppDatabase): WalletConnectDao {
+        return appDatabase.walletConnectDao()
     }
 }

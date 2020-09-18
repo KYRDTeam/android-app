@@ -23,6 +23,7 @@ class GetExpectedRateSequentialUseCase @Inject constructor(
         val tokenDest: Token,
         val srcAmount: String,
         val platformFee: Int,
-        val isReserveRouting: Boolean
+        val isReserveRouting: Boolean,
+        val useKyberNode: Boolean = false
     )
 }

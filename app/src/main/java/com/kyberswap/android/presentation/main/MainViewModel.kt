@@ -32,6 +32,7 @@ import com.kyberswap.android.domain.usecase.wallet.GetAllWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.UpdateSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.UpdateWalletUseCase
+import com.kyberswap.android.domain.usecase.walletconnect.WalletConnectKillSessionUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.landing.CreateWalletState
 import com.kyberswap.android.presentation.main.balance.CheckEligibleWalletState
@@ -46,6 +47,7 @@ import com.kyberswap.android.presentation.main.profile.DataTransferState
 import com.kyberswap.android.presentation.main.profile.LogoutState
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.main.swap.GetMaxPriceState
+import com.kyberswap.android.presentation.main.walletconnect.RequestState
 import com.kyberswap.android.presentation.wallet.UpdateWalletState
 import com.kyberswap.android.util.ErrorHandler
 import io.reactivex.functions.Action
@@ -79,6 +81,7 @@ class MainViewModel @Inject constructor(
     private val getMaxGasPriceUseCase: GetMaxGasPriceUseCase,
     private val checkEligibleWalletUseCase: CheckEligibleWalletUseCase,
     private val updateWalletUseCase: UpdateWalletUseCase,
+    private val killSessionUseCase: WalletConnectKillSessionUseCase,
     private val errorHandler: ErrorHandler
 ) : SelectedWalletViewModel(getWalletUseCase, errorHandler) {
 
@@ -151,10 +154,10 @@ class MainViewModel @Inject constructor(
     fun getLoginStatus() {
         getLoginStatusUseCase.dispose()
         getLoginStatusUseCase.execute(
-            Consumer {
+            {
                 _getLoginStatusCallback.value = Event(UserInfoState.Success(it))
             },
-            Consumer {
+            {
                 it.printStackTrace()
                 _getLoginStatusCallback.value =
                     Event(UserInfoState.ShowError(errorHandler.getError(it)))
@@ -171,10 +174,10 @@ class MainViewModel @Inject constructor(
     fun saveWallet(wallet: Wallet) {
         updateWalletUseCase.dispose()
         updateWalletUseCase.execute(
-            Action {
+            {
                 _saveWalletCallback.value = Event(SaveWalletState.Success(""))
             },
-            Consumer {
+            {
                 it.printStackTrace()
                 _saveWalletCallback.value =
                     Event(SaveWalletState.ShowError(it.localizedMessage))
@@ -185,14 +188,14 @@ class MainViewModel @Inject constructor(
 
     fun getWallets() {
         getAllWalletUseCase.execute(
-            Consumer {
+            {
                 _getAllWalletStateCallback.value = Event(
                     GetAllWalletState.Success(
                         it
                     )
                 )
             },
-            Consumer {
+            {
                 it.printStackTrace()
                 _getAllWalletStateCallback.value =
                     Event(
@@ -213,10 +216,10 @@ class MainViewModel @Inject constructor(
     private fun monitorListedTokenBalance(wallets: List<Wallet>, selectedWallet: Wallet) {
         getBalancePollingUseCase.dispose()
         getBalancePollingUseCase.execute(
-            Consumer {
+            {
                 loadBalances(Pair(selectedWallet, it))
             },
-            Consumer {
+            {
                 it.printStackTrace()
             },
             GetBalancePollingUseCase.Param(wallets)
@@ -226,10 +229,10 @@ class MainViewModel @Inject constructor(
     fun monitorOtherTokenBalance() {
         getOtherBalancePollingUseCase.dispose()
         getOtherBalancePollingUseCase.execute(
-            Consumer {
+            {
                 loadOtherBalances(it)
             },
-            Consumer {
+            {
                 it.printStackTrace()
                 Timber.e(it.localizedMessage)
             },
@@ -241,11 +244,11 @@ class MainViewModel @Inject constructor(
     fun checkEligibleWallet(wallet: Wallet) {
         checkEligibleWalletUseCase.dispose()
         checkEligibleWalletUseCase.execute(
-            Consumer {
+            {
 
                 _checkEligibleWalletCallback.value = Event(CheckEligibleWalletState.Success(it))
             },
-            Consumer {
+            {
                 _checkEligibleWalletCallback.value =
                     Event(CheckEligibleWalletState.ShowError(errorHandler.getError(it)))
             },
@@ -255,7 +258,7 @@ class MainViewModel @Inject constructor(
 
     fun getRatingInfo() {
         getRatingInfoUseCase.execute(
-            Consumer {
+            {
                 ratingInfo = it
                 if ((it.isShowAlert || it.reShowAlert) && hasTransaction) {
                     _getRatingInfoCallback.value = Event(
@@ -268,7 +271,7 @@ class MainViewModel @Inject constructor(
                 }
 
             },
-            Consumer {
+            {
                 it.printStackTrace()
             },
             null
@@ -277,10 +280,10 @@ class MainViewModel @Inject constructor(
 
     private fun saveRatingInfo(ratingInfo: RatingInfo) {
         saveRatingInfoUseCase.execute(
-            Action {
+            {
 
             },
-            Consumer {
+            {
                 it.printStackTrace()
             }, SaveRatingInfoUseCase.Param(ratingInfo)
         )
@@ -564,6 +567,20 @@ class MainViewModel @Inject constructor(
                     Event(LogoutState.ShowError(errorHandler.getError(it)))
             },
             null
+        )
+    }
+
+    fun killSession() {
+        killSessionUseCase.execute(
+            {
+
+            },
+            {
+                it.printStackTrace()
+                Timber.e("error: %s", it.localizedMessage)
+
+            },
+            WalletConnectKillSessionUseCase.Param()
         )
     }
 

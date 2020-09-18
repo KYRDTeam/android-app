@@ -21,7 +21,6 @@ import android.widget.CompoundButton
 import android.widget.EditText
 import androidx.core.view.doOnPreDraw
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.rxbinding3.view.focusChanges
@@ -171,6 +170,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
     private var eligibleWalletStatus: EligibleWalletStatus? = null
 
+//    private var estimateSourceError: Boolean = false
+
     @Inject
     lateinit var mediator: StorageMediator
 
@@ -220,7 +221,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         alertNotification?.let { viewModel.getAlert(it) }
         swap(notification)
         binding.tvContinue.setViewEnable(true)
-        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
@@ -259,7 +260,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
-        viewModel.getSwapDataCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getSwapDataCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSwapState.Success -> {
@@ -271,6 +272,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                     message = getString(R.string.can_not_swap_same_token)
                                 )
                             }
+
 
                             if (state.swap.isTokenPairChange(binding.swap)) {
                                 viewModel.getHint(
@@ -285,21 +287,11 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
                             if (isUserSelectSwap) {
                                 getRate(state.swap)
-                                viewModel.getGasLimit(
-                                    wallet,
-                                    binding.swap,
-                                    platformFee,
-                                    isReserveRouting
-                                )
+                                getGasLimit()
                             }
                             viewModel.getGasPrice()
                         } else if (isUserSelectSwap) {
-                            viewModel.getGasLimit(
-                                wallet,
-                                binding.swap,
-                                platformFee,
-                                isReserveRouting
-                            )
+                            getGasLimit()
                         } else if (!isUserSelectSwap && hasExpectedRate) {
                             viewModel.disposeGetExpectedRate()
                         }
@@ -362,7 +354,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 .skipInitialValue()
                 .observeOn(schedulerProvider.ui())
                 .subscribe { text ->
+
                     if (destLock.get() || currentFocus == binding.edtDest) {
+                        getHint()
+                        getGasLimit()
                         return@subscribe
                     }
                     sourceAmount = text.toString()
@@ -379,6 +374,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                     text.toString()
                                 ).toDisplayNumber()
                             )
+                            getHint()
                             getRate(swap)
                             wallet?.let {
 
@@ -402,6 +398,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     if (destLock.get()) {
                         if (dstAmount.isEmpty()) binding.edtSource.setText("")
                         binding.swap?.let { swap ->
+//                            estimateSourceError = false
                             viewModel.estimateAmount(
                                 swap.sourceAddress,
                                 swap.destAddress,
@@ -531,10 +528,11 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         }
 
-        viewModel.getExpectedRateCallback.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.getExpectedRateCallback.observe(viewLifecycleOwner, { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetExpectedRateState.Success -> {
+//                        estimateSourceError = false
                         hasExpectedRate = true
                         val swap =
                             if (state.list.first().toBigDecimalOrDefaultZero() > BigDecimal.ZERO) {
@@ -599,7 +597,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
-        viewModel.getGetMarketRateCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getGetMarketRateCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetMarketRateState.Success -> {
@@ -627,7 +625,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
-        viewModel.getGetGasLimitCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getGetGasLimitCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetGasLimitState.Success -> {
@@ -789,7 +787,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         }
 
 
-        viewModel.getGetGasPriceCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getGetGasPriceCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetGasPriceState.Success -> {
@@ -822,19 +820,14 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
-        viewModel.getPlatformFeeCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getPlatformFeeCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetPlatformFeeState.Success -> {
                         if (state.platformFee.fee != platformFee) {
                             platformFee = state.platformFee.fee
-                            viewModel.getGasLimit(
-                                wallet,
-                                binding.swap,
-                                platformFee,
-                                isReserveRouting
-                            )
                             if (binding.swap != null) {
+                                getGasLimit()
                                 getRate(binding.swap!!)
                             }
                         }
@@ -846,7 +839,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
-        viewModel.getHintCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getHintCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetHintState.Success -> {
@@ -857,12 +850,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
                             if (binding.swap != null) {
                                 getRate(binding.swap!!)
-                                viewModel.getGasLimit(
-                                    wallet,
-                                    binding.swap,
-                                    platformFee,
-                                    isReserveRouting
-                                )
+                                getGasLimit()
                             }
                         }
                     }
@@ -873,7 +861,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
-        viewModel.getKyberStatusback.observe(viewLifecycleOwner, Observer {
+        viewModel.getKyberStatusback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetKyberStatusState.Success -> {
@@ -891,7 +879,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
-        viewModel.getAlertState.observe(viewLifecycleOwner, Observer {
+        viewModel.getAlertState.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetAlertState.Success -> {
@@ -906,7 +894,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
-        viewModel.estimateAmountState.observe(viewLifecycleOwner, Observer {
+        viewModel.estimateAmountCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is EstimateAmountState.Success -> {
@@ -917,7 +905,23 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         }
                     }
                     is EstimateAmountState.ShowError -> {
+                        if (binding.swap != null) {
+                            sourceAmount =
+                                if (binding.swap!!.expectedRate.toDoubleSafe() == 0.0) {
+                                    BigDecimal.ZERO.toDisplayNumber()
+                                } else {
+                                    edtDest.toBigDecimalOrDefaultZero().divide(
+                                        binding.swap!!.expectedRate.toBigDecimalOrDefaultZero(),
+                                        18,
+                                        RoundingMode.UP
+                                    ).stripTrailingZeros().toPlainString()
+                                }
 
+                            edtSource.setAmount(
+                                displaySourceAmount
+                            )
+                            getRate(binding.swap!!)
+                        }
                     }
                 }
             }
@@ -945,7 +949,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             dialogHelper.showBottomSheetReserveRoutingDialog()
         }
 
-        viewModel.saveSwapDataCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.saveSwapDataCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == SaveSwapState.Loading)
                 when (state) {
@@ -1146,7 +1150,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
         }
 
-        viewModel.checkEligibleWalletCallback.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.checkEligibleWalletCallback.observe(viewLifecycleOwner, { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == CheckEligibleWalletState.Loading)
                 when (state) {
@@ -1168,7 +1172,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
         currentActivity.mainViewModel.checkEligibleWalletCallback.observe(
             viewLifecycleOwner,
-            Observer { event ->
+            { event ->
                 event?.peekContent()?.let { state ->
                     when (state) {
                         is CheckEligibleWalletState.Success -> {
@@ -1184,7 +1188,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
         currentActivity.mainViewModel.getMaxPriceCallback.observe(
             viewLifecycleOwner,
-            Observer { event ->
+            { event ->
                 event?.peekContent()?.let { state ->
                     when (state) {
                         is GetMaxPriceState.Success -> {
@@ -1209,25 +1213,39 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             navigator.navigateToNotificationScreen(currentFragment)
         }
 
-        cbReserveRouting.setOnCheckedChangeListener { _, isChecked ->
-            if (binding.swap != null) {
-                getRate(binding.swap!!)
-                viewModel.getGasLimit(
-                    wallet,
-                    binding.swap,
-                    platformFee,
-                    isReserveRouting
-                )
+        viewModel.compositeDisposable.add(cbReserveRouting.checkedChanges().skipInitialValue()
+            .subscribe {
+                if (binding.swap != null) {
+                    getRate(binding.swap!!)
+                    getGasLimit()
 
-                if (!isChecked) {
-                    analytics.logEvent(
-                        KBSWAP_ADVANCED_DISABLE_RESERVE_ROUTING,
-                        Bundle().createEvent()
-                    )
+                    if (!it) {
+                        analytics.logEvent(
+                            KBSWAP_ADVANCED_DISABLE_RESERVE_ROUTING,
+                            Bundle().createEvent()
+                        )
+                    }
                 }
-            }
-
-        }
+            })
+//        cbReserveRouting.setOnCheckedChangeListener { _, isChecked ->
+//            if (binding.swap != null) {
+//                getRate(binding.swap!!)
+//                viewModel.getGasLimit(
+//                    wallet,
+//                    binding.swap,
+//                    platformFee,
+//                    hasReserveRouting && isChecked
+//                )
+//
+//                if (!isChecked) {
+//                    analytics.logEvent(
+//                        KBSWAP_ADVANCED_DISABLE_RESERVE_ROUTING,
+//                        Bundle().createEvent()
+//                    )
+//                }
+//            }
+//
+//        }
 
         setDefaultSelection()
     }
@@ -1389,10 +1407,12 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     .setOnTargetListener(object : OnTargetListener {
                         override fun onStarted() {
                             binding.edtSource.setText(getString(R.string.tutorial_swap_amount))
+                            binding.edtSource.clearFocus()
                         }
 
                         override fun onEnded() {
                             binding.edtSource.setText("")
+                            binding.edtSource.clearFocus()
                         }
                     })
                     .build()
@@ -1646,7 +1666,21 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         viewModel.getExpectedRate(
             swap,
             edtSource.getAmountOrDefaultValue(),
-            platformFee
+            platformFee,
+            isReserveRouting
+        )
+    }
+
+    private fun getGasLimit() {
+        viewModel.getGasLimit(
+            wallet,
+            binding.swap?.copy(
+                sourceAmount = (if (sourceAmount.toBigDecimalOrDefaultZero() > BigDecimal.ZERO) sourceAmount else edtSource.text.toString())
+                    ?: "",
+                destAmount = edtDest.text.toString()
+            ),
+            platformFee,
+            isReserveRouting
         )
     }
 

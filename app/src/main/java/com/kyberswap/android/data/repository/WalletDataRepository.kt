@@ -14,6 +14,7 @@ import com.kyberswap.android.data.db.SwapDao
 import com.kyberswap.android.data.db.TokenDao
 import com.kyberswap.android.data.db.TransactionDao
 import com.kyberswap.android.data.db.UnitDao
+import com.kyberswap.android.data.db.WalletConnectDao
 import com.kyberswap.android.data.db.WalletDao
 import com.kyberswap.android.data.mapper.PromoMapper
 import com.kyberswap.android.domain.model.Contact
@@ -23,6 +24,7 @@ import com.kyberswap.android.domain.model.Transaction
 import com.kyberswap.android.domain.model.Unit
 import com.kyberswap.android.domain.model.VerifyStatus
 import com.kyberswap.android.domain.model.Wallet
+import com.kyberswap.android.domain.model.WalletConnect
 import com.kyberswap.android.domain.model.Word
 import com.kyberswap.android.domain.repository.WalletRepository
 import com.kyberswap.android.domain.usecase.wallet.ApplyKyberCodeUseCase
@@ -94,7 +96,8 @@ class WalletDataRepository @Inject constructor(
     private val transactionDao: TransactionDao,
     private val contactDao: ContactDao,
     private val nonceDao: NonceDao,
-    private val userApi: UserApi
+    private val userApi: UserApi,
+    private val walletConnectDao: WalletConnectDao
 ) : WalletRepository {
 
     override fun updatedSelectedWallet(param: UpdateSelectedWalletUseCase.Param): Single<Wallet> {
@@ -738,6 +741,18 @@ class WalletDataRepository @Inject constructor(
 
             val currentWallet = walletDao.findWalletByAddress(param.wallet.address)
             walletDao.updateWallet(currentWallet.copy(name = param.wallet.name))
+        }
+    }
+
+    override fun updateWalletConnect(param: WalletConnect): Completable {
+        return Completable.fromCallable {
+            walletConnectDao.updateWalletConnect(param)
+        }
+    }
+
+    override fun getWalletConnect(address: String): Flowable<WalletConnect> {
+        return walletConnectDao.getWalletConnectFlowable(address).map {
+            it.copy(hasSession = wcClient.session != null)
         }
     }
 

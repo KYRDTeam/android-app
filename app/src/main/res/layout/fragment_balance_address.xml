@@ -55,16 +55,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="59dp"
+                android:layout_marginTop="32dp"
                 android:scaleType="fitXY" />
 
             <TextView
                 android:id="@+id/tvAddress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
+                android:layout_marginStart="32dp"
                 android:layout_marginTop="32dp"
-                android:layout_marginEnd="25dp"
+                android:layout_marginEnd="32dp"
                 android:gravity="center_horizontal"
                 android:letterSpacing="0.07"
                 android:lineSpacingExtra="7sp"
@@ -73,12 +73,39 @@
                 android:textSize="14sp"
                 tools:text="98i76yuin7uhy643xujhoui63huyhty6432fvbhyjnbvfe447uhyt8" />
 
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                android:lineSpacingExtra="5sp"
+                android:text="@string/wallet_erc20_warning"
+                android:textAppearance="@style/TextAppearance.Roboto.Bold"
+                android:textColor="#141927"
+                android:textSize="14sp"
+
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="32dp"
+                android:lineSpacingExtra="5sp"
+                android:text="@string/send_erc20_warning"
+                android:textAppearance="@style/TextAppearance.Roboto.Regular"
+                android:textColor="#141927"
+                android:textSize="14sp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="75dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
                 android:orientation="horizontal">
 
                 <TextView
