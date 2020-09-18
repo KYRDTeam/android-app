@@ -99,7 +99,7 @@ class SwapViewModel @Inject constructor(
         get() = _getAlertState
 
     private val _estimateAmountState = MutableLiveData<Event<EstimateAmountState>>()
-    val estimateAmountState: LiveData<Event<EstimateAmountState>>
+    val estimateAmountCallback: LiveData<Event<EstimateAmountState>>
         get() = _estimateAmountState
 
     val compositeDisposable by lazy {
@@ -341,6 +341,7 @@ class SwapViewModel @Inject constructor(
     }
 
     fun estimateAmount(source: String, dest: String, destAmount: String, platformFee: Int) {
+        if (destAmount.isBlank()) return
         estimateAmountUseCase.execute(
             Consumer {
                 if (it.error) {
@@ -384,10 +385,12 @@ class SwapViewModel @Inject constructor(
     fun getGasLimit(wallet: Wallet?, swap: Swap?, platformFee: Int, isReserveRouting: Boolean) {
         if (wallet == null || swap == null) return
         if (swap.sourceAmount.isEmpty() || (swap.sourceAmount.toBigDecimalOrDefaultZero() == BigDecimal.ZERO)) return
+        if (swap.sourceAmount.toBigDecimalOrDefaultZero() > swap.tokenSource.currentBalance) return
         if (swap.ethToken.currentBalance <= MIN_SUPPORT_AMOUNT) return
         estimateGasUseCase.dispose()
         estimateGasUseCase.execute(
             Consumer {
+
                 val gasLimit = it.toBigInteger()
                 val specialGasLimit = specialGasLimitDefault(swap.tokenSource, swap.tokenDest)
                 _getGetGasLimitCallback.value = Event(
