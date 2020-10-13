@@ -114,7 +114,7 @@
     <string name="custom_value">Custom:</string>
     <string name="rate_revert_notification">Transaction will be reverted if rate of %s-%s is lower than %s (Current rate %s)</string>
     <string name="swap_continue">Continue</string>
-    <string name="swap_rate_notification">There is a %s%% difference between the estimated price for your swap amount and the reference price.\nNote: Estimated price depends on your swap amount. Reference price is from Chainlink and Kyber Network.</string>
+    <string name="swap_rate_notification">There is a %s%% difference between the estimated price for your swap amount and the reference price.\nNote: Estimated price depends on your swap amount. Reference price is from Chainlink, Band protocol and Kyber Network.</string>
     <string name="tab_day">24H</string>
     <string name="tab_week">7 Days</string>
     <string name="tab_month">Month</string>

@@ -105,7 +105,7 @@
     <string name="custom_value">맞춤:</string>
     <string name="rate_revert_notification">%s-%s의 교환비가 %s보다 낮아진다면 거래는 취소됩니다. (현재 교환비 %s)</string>
     <string name="swap_continue">계속</string>
-    <string name="swap_rate_notification">There is a %s%% difference between the estimated price for your swap amount and the reference price.\nNote: Estimated price depends on your swap amount. Reference price is from Chainlink and Kyber Network.</string>
+    <string name="swap_rate_notification">There is a %s%% difference between the estimated price for your swap amount and the reference price.\nNote: Estimated price depends on your swap amount. Reference price is from Chainlink, Band protocol and Kyber Network.</string>
     <string name="tab_day">24H</string>
     <string name="tab_week">7 일</string>
     <string name="tab_month">월</string>
