@@ -188,7 +188,7 @@ object TextViewBindingAdapter {
             view.visibility = View.GONE
         } else {
             val percentageRate = percent.toBigDecimalOrDefaultZero()
-            if (percentageRate >= (-10).toBigDecimal()) {
+            if (percentageRate >= (-5).toBigDecimal()) {
                 view.visibility = View.GONE
                 return
             }
