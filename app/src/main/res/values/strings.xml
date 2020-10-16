@@ -442,7 +442,7 @@
     <string name="setting_rate_my_app" translatable="false">https://play.google.com/store/apps/details?id=com.kyberswap.android</string>
     <string name="order_why_order_not_filled" translatable="false">https://kyberswap.com/faq#I-submitted-the-limit-order-but-it-was-not-triggered-even-though-my-desired-price-was-hit</string>
     <string name="extra_url" translatable="false">https://kyberswap.com/faq#Why-received-amount-is-higher-than-estimated-amount</string>
-    <string name="order_fee_url" translatable="false">https://kyberswap.com/faq#I-have-KNC-in-my-wallet-Do-I-get-any-discount-on-trading-fees</string>
+    <string name="order_fee_url" translatable="false">https://support.kyberswap.com/support/solutions/folders/47000769429</string>
     <string name="same_token_pair_url" translatable="false">https://kyberswap.com/faq#can-I-submit-multiple-limit-orders-for-same-token-pair</string>
     <string name="item_token_header_bal">Bal</string>
     <string name="token_new">New</string>
