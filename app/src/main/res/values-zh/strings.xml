@@ -469,7 +469,7 @@
     <string name="cancel_order_confirm">"通过提交此订单，您将取消以下订单: "</string>
     <string name="cancel_order_understand">我明白了</string>
     <string name="change_rate">改变汇率</string>
-    <string name="hold_from_2000_knc_to_get_discount_for_your_orders_learn_more">持有2000KNC以上可享受享受折扣。 學到更多</string>
+    <string name="lo_learn_more">學到更多</string>
     <string name="limit_order_fee_no_discount">"费用: %s %s "</string>
     <string name="market_rate">市场价格</string>
     <string name="current_rate">当前汇率:</string>

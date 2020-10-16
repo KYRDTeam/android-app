@@ -473,7 +473,7 @@
     <string name="cancel_order_confirm">해당 주문을 제출하는 동시에 다음의 주문을 취소 합니다:</string>
     <string name="cancel_order_understand">이해했습니다</string>
     <string name="change_rate">변동률</string>
-    <string name="hold_from_2000_knc_to_get_discount_for_your_orders_learn_more">2000KNC부터는 홀드하여 주문에 대한 할인을 받으세요. 더 알아보기</string>
+    <string name="lo_learn_more">더 알아보기</string>
     <string name="limit_order_fee_no_discount">"수수료: %s %s "</string>
     <string name="market_rate">시장 비율</string>
     <string name="current_rate">Current Rate:</string>

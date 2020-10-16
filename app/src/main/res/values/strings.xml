@@ -500,7 +500,7 @@
     <string name="cancel_order_confirm">By submitting this order, you also CANCEL the following orders:</string>
     <string name="cancel_order_understand">I understand</string>
     <string name="change_rate">Change Rate</string>
-    <string name="hold_from_2000_knc_to_get_discount_for_your_orders_learn_more">Hold from 2000 KNC to get discount for your orders. Learn more</string>
+    <string name="lo_learn_more">Learn more</string>
     <string name="limit_order_fee_no_discount">Fee: %s %s </string>
     <string name="market_rate">Market Rate</string>
     <string name="current_rate">Current Rate:</string>

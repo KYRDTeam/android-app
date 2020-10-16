@@ -467,7 +467,7 @@
     <string name="cancel_order_confirm">Bằng việc tạo lệnh này, bạn sẽ HỦY những lệnh sau:</string>
     <string name="cancel_order_understand">Tôi hiểu</string>
     <string name="change_rate">Thay đổi giá</string>
-    <string name="hold_from_2000_knc_to_get_discount_for_your_orders_learn_more">Giữ 2000 KNC trong ví để nhận được khuyến mại. Tìm hiểu thêm</string>
+    <string name="lo_learn_more">Tìm hiểu thêm</string>
     <string name="limit_order_fee_no_discount">"Phí: %s %s "</string>
     <string name="market_rate">Tỉ giá thị trường</string>
     <string name="current_rate">Tỉ giá hiện tại</string>
