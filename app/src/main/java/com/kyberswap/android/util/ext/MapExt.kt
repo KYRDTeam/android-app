@@ -4,7 +4,7 @@ fun Map<String, List<String>>.display(): String {
     if (this.isEmpty()) return "undefined message"
     val builder = StringBuilder()
     for ((key, value) in this) {
-        builder.append(key).append(" : ")
+        builder.append(key).append(": ")
         value.forEachIndexed { index, s ->
             builder.append(s)
             if (index < value.size - 1) {
