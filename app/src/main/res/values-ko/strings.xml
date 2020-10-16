@@ -105,7 +105,7 @@
     <string name="custom_value">맞춤:</string>
     <string name="rate_revert_notification">%s-%s의 교환비가 %s보다 낮아진다면 거래는 취소됩니다. (현재 교환비 %s)</string>
     <string name="swap_continue">계속</string>
-    <string name="swap_rate_notification">There is a %s%% difference between the estimated price for your swap amount and the reference price.\nNote: Estimated price depends on your swap amount. Reference price is from Chainlink and Kyber Network.</string>
+    <string name="swap_rate_notification">There is a %s%% difference between the estimated price for your swap amount and the reference price.\nNote: Estimated price depends on your swap amount. Reference price is from Chainlink, Band protocol and Kyber Network.</string>
     <string name="tab_day">24H</string>
     <string name="tab_week">7 일</string>
     <string name="tab_month">월</string>
@@ -473,7 +473,7 @@
     <string name="cancel_order_confirm">해당 주문을 제출하는 동시에 다음의 주문을 취소 합니다:</string>
     <string name="cancel_order_understand">이해했습니다</string>
     <string name="change_rate">변동률</string>
-    <string name="hold_from_2000_knc_to_get_discount_for_your_orders_learn_more">2000KNC부터는 홀드하여 주문에 대한 할인을 받으세요. 더 알아보기</string>
+    <string name="lo_learn_more">더 알아보기</string>
     <string name="limit_order_fee_no_discount">"수수료: %s %s "</string>
     <string name="market_rate">시장 비율</string>
     <string name="current_rate">Current Rate:</string>

@@ -286,7 +286,9 @@ class DialogHelper @Inject constructor(
             dialog.dismiss()
             onBackUpAlready.invoke()
         }
-        dialog.show()
+        if (!activity.isFinishing) {
+            dialog.show()
+        }
     }
 
     fun showInvalidatedDialog(order: Order) {

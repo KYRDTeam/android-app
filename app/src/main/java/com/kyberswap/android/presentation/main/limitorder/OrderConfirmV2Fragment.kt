@@ -136,7 +136,8 @@ class OrderConfirmV2Fragment : BaseFragment(), LoginState {
                         val error = state.message ?: getString(R.string.something_wrong)
                         showAlert(
                             error,
-                            R.drawable.ic_confirm_info
+                            R.drawable.ic_info_error,
+                            timeInSecond = 30
                         )
                         analytics.logEvent(
                             LOCONFIRM_ORDER_FAILED,

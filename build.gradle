@@ -12,11 +12,11 @@ buildscript {
             }
     dependencies {
         classpath "gradle.plugin.io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.0.0.RC8"
-        classpath 'com.android.tools.build:gradle:4.0.1'
+        classpath 'com.android.tools.build:gradle:4.0.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'com.deploygate:gradle:2.2.0'
         classpath 'gradle.plugin.com.onesignal:onesignal-gradle-plugin:[0.11.0, 0.99.99]'
-        classpath 'com.google.gms:google-services:4.3.3'
+        classpath 'com.google.gms:google-services:4.3.4'
     }
     repositories {
         google()
@@ -53,7 +53,7 @@ ext {
     fabVersion = '1.6.4'
     glideVersion = '4.9.0'
     archLifeCycleVersion = '1.1.1'
-    daggerVersion = '2.22'
+    daggerVersion = '2.24'
     multidexVersion = '1.0.3'
     retrofitVersion = '2.5.0'
     gsonVersion = '2.8.6'

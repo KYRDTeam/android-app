@@ -188,7 +188,7 @@ object TextViewBindingAdapter {
             view.visibility = View.GONE
         } else {
             val percentageRate = percent.toBigDecimalOrDefaultZero()
-            if (percentageRate >= (-10).toBigDecimal()) {
+            if (percentageRate >= (-5).toBigDecimal()) {
                 view.visibility = View.GONE
                 return
             }
@@ -304,7 +304,7 @@ object TextViewBindingAdapter {
     fun rateWarning(view: TextView, percent: String?) {
 
         val percentageRate = percent.toBigDecimalOrDefaultZero()
-        if (percentageRate >= (-10).toBigDecimal()) {
+        if (percentageRate >= (-5).toBigDecimal()) {
             view.visibility = View.GONE
             return
         }
@@ -429,7 +429,7 @@ object TextViewBindingAdapter {
             else -> R.drawable.ic_arrow_down
         }
         if (isFilled == true) {
-            val icon = view.context.getDrawable(drawable)
+            val icon = ContextCompat.getDrawable(view.context, drawable)
             val matrix = ColorMatrix()
             matrix.setSaturation(0f)
 

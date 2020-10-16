@@ -114,7 +114,7 @@
     <string name="custom_value">Custom:</string>
     <string name="rate_revert_notification">Transaction will be reverted if rate of %s-%s is lower than %s (Current rate %s)</string>
     <string name="swap_continue">Continue</string>
-    <string name="swap_rate_notification">There is a %s%% difference between the estimated price for your swap amount and the reference price.\nNote: Estimated price depends on your swap amount. Reference price is from Chainlink and Kyber Network.</string>
+    <string name="swap_rate_notification">There is a %s%% difference between the estimated price for your swap amount and the reference price.\nNote: Estimated price depends on your swap amount. Reference price is from Chainlink, Band protocol and Kyber Network.</string>
     <string name="tab_day">24H</string>
     <string name="tab_week">7 Days</string>
     <string name="tab_month">Month</string>
@@ -442,7 +442,7 @@
     <string name="setting_rate_my_app" translatable="false">https://play.google.com/store/apps/details?id=com.kyberswap.android</string>
     <string name="order_why_order_not_filled" translatable="false">https://kyberswap.com/faq#I-submitted-the-limit-order-but-it-was-not-triggered-even-though-my-desired-price-was-hit</string>
     <string name="extra_url" translatable="false">https://kyberswap.com/faq#Why-received-amount-is-higher-than-estimated-amount</string>
-    <string name="order_fee_url" translatable="false">https://kyberswap.com/faq#I-have-KNC-in-my-wallet-Do-I-get-any-discount-on-trading-fees</string>
+    <string name="order_fee_url" translatable="false">https://support.kyberswap.com/support/solutions/folders/47000769429</string>
     <string name="same_token_pair_url" translatable="false">https://kyberswap.com/faq#can-I-submit-multiple-limit-orders-for-same-token-pair</string>
     <string name="item_token_header_bal">Bal</string>
     <string name="token_new">New</string>
@@ -500,7 +500,7 @@
     <string name="cancel_order_confirm">By submitting this order, you also CANCEL the following orders:</string>
     <string name="cancel_order_understand">I understand</string>
     <string name="change_rate">Change Rate</string>
-    <string name="hold_from_2000_knc_to_get_discount_for_your_orders_learn_more">Hold from 2000 KNC to get discount for your orders. Learn more</string>
+    <string name="lo_learn_more">Learn more</string>
     <string name="limit_order_fee_no_discount">Fee: %s %s </string>
     <string name="market_rate">Market Rate</string>
     <string name="current_rate">Current Rate:</string>

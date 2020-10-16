@@ -719,7 +719,7 @@
                                     android:layout_marginTop="6dp"
                                     android:layout_marginEnd="24dp"
                                     android:background="?selectableItemBackground"
-                                    android:text="@string/hold_from_2000_knc_to_get_discount_for_your_orders_learn_more"
+                                    android:text="@string/lo_learn_more"
                                     android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
                                     android:textColor="#5a5e67"
                                     android:textSize="14sp"

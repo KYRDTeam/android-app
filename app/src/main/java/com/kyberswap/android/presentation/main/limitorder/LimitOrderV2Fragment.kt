@@ -31,7 +31,6 @@ import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.databinding.FragmentLimitOrderV2Binding
-import com.kyberswap.android.databinding.LayoutLoFeeTargetBinding
 import com.kyberswap.android.databinding.LayoutLoManageOrderTargetBinding
 import com.kyberswap.android.databinding.LayoutLoPairTargetBinding
 import com.kyberswap.android.databinding.LayoutLoPriceTargetBinding
@@ -1213,7 +1212,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                         LayoutInflater.from(activity), R.layout.layout_lo_pair_target, null, false
                     )
 
-                val firstTarget = Target.Builder()
+                val loPairTarget = Target.Builder()
                     .setAnchor(binding.tvPrice)
                     .setShape(Circle(resources.getDimension(R.dimen.tutorial_90_dp)))
                     .setOverlay(overlayLOPairTargetBinding.root)
@@ -1226,7 +1225,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                         }
                     })
                     .build()
-                targets.add(firstTarget)
+                targets.add(loPairTarget)
 
                 val overlayLOPriceTargetBinding =
                     DataBindingUtil.inflate<LayoutLoPriceTargetBinding>(
@@ -1239,7 +1238,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 val x = location[0].toFloat()
                 val y = location[1] + view.height + resources.getDimension(R.dimen.tutorial_15_dp)
 
-                val secondTarget = Target.Builder()
+                val loPriceTarget = Target.Builder()
                     .setAnchor(x, y)
                     .setShape(Circle(resources.getDimension(R.dimen.tutorial_120_dp)))
                     .setOverlay(overlayLOPriceTargetBinding.root)
@@ -1253,26 +1252,26 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                         }
                     })
                     .build()
-                targets.add(secondTarget)
+                targets.add(loPriceTarget)
 
-                val overlayFeeTargetBinding =
-                    DataBindingUtil.inflate<LayoutLoFeeTargetBinding>(
-                        LayoutInflater.from(activity), R.layout.layout_lo_fee_target, null, false
-                    )
-
-                val third = Target.Builder()
-                    .setAnchor(binding.tvFee)
-                    .setShape(Circle(resources.getDimension(R.dimen.tutorial_90_dp)))
-                    .setOverlay(overlayFeeTargetBinding.root)
-                    .setOnTargetListener(object : OnTargetListener {
-                        override fun onStarted() {
-                        }
-
-                        override fun onEnded() {
-                        }
-                    })
-                    .build()
-                targets.add(third)
+//                val overlayFeeTargetBinding =
+//                    DataBindingUtil.inflate<LayoutLoFeeTargetBinding>(
+//                        LayoutInflater.from(activity), R.layout.layout_lo_fee_target, null, false
+//                    )
+//
+//                val third = Target.Builder()
+//                    .setAnchor(binding.tvFee)
+//                    .setShape(Circle(resources.getDimension(R.dimen.tutorial_90_dp)))
+//                    .setOverlay(overlayFeeTargetBinding.root)
+//                    .setOnTargetListener(object : OnTargetListener {
+//                        override fun onStarted() {
+//                        }
+//
+//                        override fun onEnded() {
+//                        }
+//                    })
+//                    .build()
+//                targets.add(third)
 
                 val overlayManageOrderTargetBinding =
                     DataBindingUtil.inflate<LayoutLoManageOrderTargetBinding>(
@@ -1295,7 +1294,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 val xManageOrderView = location[0].toFloat() + submitOrderView.width / 2
                 val yManageOrderView =
                     (location[1] + submitOrderView.height + resources.getDimension(R.dimen.tutorial_48_dp) - offset)
-                val forth = Target.Builder()
+                val loManageOrderTarget = Target.Builder()
                     .setAnchor(xManageOrderView, yManageOrderView)
                     .setShape(Circle(resources.getDimension(R.dimen.tutorial_80_dp)))
                     .setOverlay(overlayManageOrderTargetBinding.root)
@@ -1307,7 +1306,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                         }
                     })
                     .build()
-                targets.add(forth)
+                targets.add(loManageOrderTarget)
 
                 // create spotlight
                 spotlight = Spotlight.Builder(activity!!)
@@ -1337,15 +1336,18 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
                 }
 
                 overlayLOPriceTargetBinding.tvNext.setOnClickListener {
-                    spotlight?.next()
-                }
-
-                overlayFeeTargetBinding.tvNext.setOnClickListener {
                     if (offset > 0) {
                         playAnimation()
                     }
                     spotlight?.next()
                 }
+
+//                overlayFeeTargetBinding.tvNext.setOnClickListener {
+//                    if (offset > 0) {
+//                        playAnimation()
+//                    }
+//                    spotlight?.next()
+//                }
 
                 overlayManageOrderTargetBinding.tvNext.setOnClickListener {
                     spotlight?.next()
