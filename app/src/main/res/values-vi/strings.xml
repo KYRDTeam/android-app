@@ -517,7 +517,7 @@
     <string name="limit_order_insufficient_balance">Tài khoản của bạn không đủ để đặt lệnh. Vui lòng kiểm tra số dư của bạn và các lệnh đã đặt</string>
     <string name="limit_order_invalid_rate">Tỉ giá phải lớn hơn 0</string>
     <string name="limit_order_rate_too_big">Tỉ giá quá cao, vui lòng đặt tỉ giá không vượt quá 10 lần giá hiện tại</string>
-    <string name="limit_order_amount_too_small">Lượng giao dịch quá nhỏ. Lệnh giao dịch chỉ hỗ trợ lượng giao dịch tối thiểu 0.1 ETH.</string>
+    <string name="limit_order_amount_too_small">Lượng giao dịch quá nhỏ. Lệnh giao dịch chỉ hỗ trợ lượng giao dịch tối thiểu 1 ETH.</string>
     <string name="limit_order_amount_too_big">Lượng giao dịch quá lớn. Lệnh giao dịch chỉ hỗ trợ lượng giao dịch tối đa 10 ETH.</string>
     <string name="empty_pending_transaction">Bạn không có bất kỳ giao dịch đang chờ xử lý.</string>
     <string name="empty_complete_transaction">Bạn không có bất kỳ giao dịch đã hoàn tất.</string>
