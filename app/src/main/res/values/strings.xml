@@ -550,7 +550,7 @@
     <string name="limit_order_insufficient_balance">Your balance is insufficent for the order. Please check your balance and your pending order</string>
     <string name="limit_order_invalid_rate">Your target rate should be greater than 0</string>
     <string name="limit_order_rate_too_big">Your target rate is too high, should be at most 10 times of current rate</string>
-    <string name="limit_order_amount_too_small">Amount is too small. Limit order only support min 0.1 ETH equivalent order</string>
+    <string name="limit_order_amount_too_small">Amount is too small. Limit order only support min 1 ETH equivalent order</string>
     <string name="limit_order_amount_too_big">Amount is too big. Limit order only support max 10 ETH equivalent order</string>
     <string name="empty_pending_transaction">You do not have any pending transactions.</string>
     <string name="empty_complete_transaction">You do not have any completed transactions.</string>

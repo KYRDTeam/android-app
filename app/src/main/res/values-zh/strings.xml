@@ -518,7 +518,7 @@
     <string name="limit_order_insufficient_balance">您的余额不足。请检查您的余额和正在缓冲的订单。</string>
     <string name="limit_order_invalid_rate">您的目标汇率应大于0</string>
     <string name="limit_order_rate_too_big">您的目标汇率太高，应至多为当前汇率的10倍</string>
-    <string name="limit_order_amount_too_small">数量太小。限价订单仅支持0.1ETH以上的订单</string>
+    <string name="limit_order_amount_too_small">数量太小。限价订单仅支持1ETH以上的订单</string>
     <string name="limit_order_amount_too_big">数量太大。限价订单仅支持10ETH以下的订单</string>
     <string name="empty_pending_transaction">您没有任何待处理的交易。</string>
     <string name="empty_complete_transaction">您没有任何已完成的交易。</string>
