@@ -1,6 +1,9 @@
 package com.kyberswap.android.util.ext
 
+import android.text.SpannableString
+import android.text.Spanned
 import com.kyberswap.android.domain.model.CustomBytes32
+import com.kyberswap.android.presentation.common.ClickableSpan
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
@@ -28,6 +31,24 @@ fun String.hexWithPrefix(): String {
 
 fun String?.toNumberFormat(): String {
     return toBigDecimalOrDefaultZero().formatDisplayNumber()
+}
+
+
+fun String.clickableSpan(text: String, link: String): SpannableString {
+    val spannableString = SpannableString(this)
+    val clickableSpan = ClickableSpan(link)
+
+    try {
+        spannableString.setSpan(
+            clickableSpan,
+            spannableString.indexOf(text),
+            spannableString.length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+    } catch (exception: Exception) {
+        exception.printStackTrace()
+    }
+    return spannableString
 }
 
 fun String.withoutSeparator(): String {
@@ -66,7 +87,7 @@ fun String.toLongSafe(radix: Int): Long {
 fun String?.toBigIntSafe(): BigInteger {
     if (isNullOrEmpty()) return BigInteger.ZERO
     try {
-        return BigInteger(this?.removePrefix("0x"), 16)
+        return BigInteger(this.removePrefix("0x"), 16)
     } catch (ex: java.lang.NumberFormatException) {
         ex.printStackTrace()
         return BigInteger.ZERO

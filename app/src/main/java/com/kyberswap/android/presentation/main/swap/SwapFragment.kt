@@ -998,7 +998,14 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     when {
                         swap.isExpectedRateZero && swap.isMarketRateZero -> {
                             swapError = getString(R.string.reserve_under_maintainance)
-                            showAlertWithoutIcon(message = swapError)
+
+                            showAlertWithLink(
+                                message = swapError,
+                                clickableText = getString(R.string.reserve_learn_more),
+                                clickableLink = getString(
+                                    R.string.faq_reserve_maintenance
+                                )
+                            )
                             analytics.logEvent(
                                 KBSWAP_ERROR,
                                 Bundle().createEvent(ERROR_TEXT, swapError)
@@ -1019,7 +1026,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             .toBigDecimalOrDefaultZero() > swap.tokenSource.currentBalance -> {
                             swapError = getString(R.string.exceed_balance)
                             showAlertWithoutIcon(
-                                title = getString(R.string.title_amount_too_big),
                                 message = swapError
                             )
                             analytics.logEvent(
@@ -1106,9 +1112,12 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
                         swap.isExpectedRateZero -> {
                             swapError = getString(R.string.can_not_handle_amount)
-                            showAlertWithoutIcon(
-                                title = getString(R.string.title_amount_too_big),
-                                message = swapError
+                            showAlertWithLink(
+                                message = swapError,
+                                clickableText = getString(R.string.reserve_learn_more),
+                                clickableLink = getString(
+                                    R.string.faq_reserve_maintenance
+                                )
                             )
                             analytics.logEvent(
                                 KBSWAP_ERROR,
@@ -1338,15 +1347,21 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     fun verifyAmount() {
         binding.swap?.let {
             if (it.isExpectedRateZero && it.isMarketRateZero) {
-                showAlertWithoutIcon(
+
+                showAlertWithLink(
                     message = getString(R.string.reserve_under_maintainance),
-                    timeInSecond = 5
+                    clickableText = getString(R.string.reserve_learn_more),
+                    clickableLink = getString(
+                        R.string.faq_reserve_maintenance
+                    )
                 )
             } else if (it.isExpectedRateZero) {
-                showAlertWithoutIcon(
-                    title = getString(R.string.title_amount_too_big),
+                showAlertWithLink(
                     message = getString(R.string.can_not_handle_amount),
-                    timeInSecond = 5
+                    clickableText = getString(R.string.reserve_learn_more),
+                    clickableLink = getString(
+                        R.string.faq_reserve_maintenance
+                    )
                 )
             }
         }

@@ -561,7 +561,8 @@
     <string name="fail_import_private_key">Failed to import private key</string>
     <string name="fail_import_mnemonic">Please check your seeds/mnemonic again.</string>
     <string name="fail_import_json">Fail to import json file</string>
-    <string name="reserve_under_maintainance">This token pair is temporarily under maintenance</string>
+    <string name="reserve_under_maintainance">This token pair is temporarily under maintenance. Liquidity is managed by an external party. Learn more</string>
+    <string name="reserve_learn_more">Learn more</string>
     <string name="app_version">Version %s</string>
     <string name="error_http_exception">An error occurred while attempting to connect to the server, please try again later</string>
     <string name="error_unknown_host">The host could not be determined, please try again later</string>
@@ -591,7 +592,7 @@
     <string name="use_password">Use password</string>
     <string name="description_fingerprint_icon">Fingerprint icon</string>
     <string name="fingerprint_description">Confirm fingerprint to continue</string>
-    <string name="can_not_handle_amount">Can not handle your amount</string>
+    <string name="can_not_handle_amount">This token reserve currently cannot handle your trade amount. Please make a smaller trade or wait for liquidity to be added by the external party. Learn more</string>
     <string name="separate_words_with_a_space">*Separate words with a space</string>
     <string name="private_key_length_condition">*Private key has to be 64 characters</string>
     <string name="invalid_password">Can not import your wallet. Invalid Password</string>
@@ -730,8 +731,10 @@
     <string name="please_wait_for_expected_rate_updated">Please wait for expected rate to be updated</string>
     <string name="freshchat_file_provider_authority" translatable="false">com.kyberswap.android</string>
     <string name="freshchat_campaign_notification_channel_name" translatable="false">Customer support messages</string>
-    <string name="freshchat_app_id" translatable="false">72400344-182f-4680-865f-49cf56d64a1f</string>
-    <string name="freshchat_app_key" translatable="false">1fba28af-bc60-4f7d-b77d-83d055178cd7</string>
+    <!--    <string name="freshchat_app_id" translatable="false">72400344-182f-4680-865f-49cf56d64a1f</string>-->
+    <string name="freshchat_app_id" translatable="false">194b2b3e-cdfa-452c-870b-069d5207edb1</string>
+    <string name="freshchat_app_key" translatable="false">6ba666a1-3902-4731-83b6-c78a5279e067</string>
+    <!--    <string name="freshchat_app_key" translatable="false">1fba28af-bc60-4f7d-b77d-83d055178cd7</string>-->
     <string name="warning_backup_private_key">⚠️NEVER share your private key with anyone (including KyberSwap). Your private key grants access to all your funds and they may get stolen.</string>
     <string name="warning_backup_mnemonic">⚠️NEVER share your mnemonic with anyone (including KyberSwap). Your mnemonic grants access to all your funds and they may get stolen.</string>
     <string name="warning_backup_keystore">⚠️NEVER share your keystore with anyone (including KyberSwap). Your keystore grants access to all your funds and they may get stolen.</string>
@@ -785,6 +788,7 @@
     <string name="max_gas_fee_explanation">The actual cost of the transaction is generally lower than the maximum estimated cost</string>
     <string name="wallet_erc20_warning">Only send ETH or any ERC-20 token to this address</string>
     <string name="send_erc20_warning">*Sending any other tokens may result in loss of your funds.</string>
+    <string name="faq_reserve_maintenance" translatable="false">https://support.kyberswap.com/support/solutions/articles/47001143483-the-token-is-under-maintenance-what-does-it-mean-</string>
 
     <string-array name="proof_address">
         <item>Bank Statement</item>
