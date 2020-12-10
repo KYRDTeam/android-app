@@ -201,7 +201,6 @@ class TokenDataRepository @Inject constructor(
     override fun getExpectedRate(param: GetExpectedRateUseCase.Param): Flowable<List<String>> {
         return getExpectedRate(
             GetExpectedRateSequentialUseCase.Param(
-                param.walletAddress,
                 param.tokenSource,
                 param.tokenDest,
                 param.srcAmount,

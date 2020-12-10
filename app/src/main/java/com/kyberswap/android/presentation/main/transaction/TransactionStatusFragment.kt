@@ -148,8 +148,6 @@ class TransactionStatusFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshLi
 
         setupTransactionList()
 
-
-
         context?.let {
             binding.swipeLayout.setColorSchemeColors(
                 ContextCompat.getColor(

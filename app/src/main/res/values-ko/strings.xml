@@ -533,8 +533,8 @@
     <string name="fail_import_private_key">개인 키를 가져 오지 못했습니다.</string>
     <string name="fail_import_mnemonic">Seeds/Mnemonic를 다시 확인하십시오.</string>
     <string name="fail_import_json">json 파일 불러오기 실패</string>
-    <string name="reserve_under_maintainance">This token pair is temporarily under maintenance. Liquidity is managed by an external party. Learn more</string>
-    <string name="reserve_learn_more">Learn more</string>
+    <string name="reserve_under_maintainance">이 토큰 페어는 일시적으로 유지보수 중입니다. 유동성은 외부 당사자가 관리합니다. 자세히 알아보기</string>
+    <string name="reserve_learn_more">자세히 알아보기</string>
     <string name="app_version">버젼 %s</string>
     <string name="error_http_exception">"서버 연결 시도 중 에러가 발생했습니다. 다시 시도 해주세요. "</string>
     <string name="error_unknown_host">"연결가능한 호스트를 찾을 수 없습니다. 나중에 다시 시도해주세요. "</string>
@@ -604,7 +604,7 @@
     <string name="use_password">Use password</string>
     <string name="description_fingerprint_icon">Fingerprint icon</string>
     <string name="fingerprint_description">Confirm fingerprint to continue</string>
-    <string name="can_not_handle_amount">This token reserve currently cannot handle your trade amount. Please make a smaller trade or wait for liquidity to be added by the external party. Learn more</string>
+    <string name="can_not_handle_amount">이 토큰 리저브는 현재 귀하의 거래량을 처리할 수 없습니다. 더 적은 양으로 거래하거나 외부에서 유동성을 추가할 때 까지 기다려주세요. 자세히 알아보기</string>
     <string name="separate_words_with_a_space">*단어를 공백으로 분리하십시오.</string>
     <string name="private_key_length_condition">*프라이빗 키는 64자 여야합니다.</string>
     <string name="invalid_password">지갑을 가져올 수 없습니다. 잘못된 비밀번호</string>
