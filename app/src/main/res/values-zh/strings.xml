@@ -529,7 +529,8 @@
     <string name="fail_import_private_key">无法导入私钥</string>
     <string name="fail_import_mnemonic">请再次检查你的seeds/mnemonic。</string>
     <string name="fail_import_json">导入json文件失败</string>
-    <string name="reserve_under_maintainance">此对正在暂时维修中</string>
+    <string name="reserve_under_maintainance">该代币对暂时处于维护状态。 流动性是由外部机构管理。了解更多</string>
+    <string name="reserve_learn_more">了解更多</string>
     <string name="app_version">版本 %s</string>
     <string name="error_http_exception">尝试连接服务器时出错，请稍后再试</string>
     <string name="error_unknown_host">找不到可连接的主机，请稍后再试</string>
@@ -604,7 +605,7 @@
     <string name="use_password">Use password</string>
     <string name="description_fingerprint_icon">Fingerprint icon</string>
     <string name="fingerprint_description">Confirm fingerprint to continue</string>
-    <string name="can_not_handle_amount">无法处理您的数量</string>
+    <string name="can_not_handle_amount">该代币储备库目前无法处理您的交易金额。 请进行金额较小的交易，或等待外部机构增加流动性。了解更多</string>
     <string name="separate_words_with_a_space">*用空格分隔单词</string>
     <string name="private_key_length_condition">*私钥必须是64个字符</string>
     <string name="invalid_password">无法导入您的钱包. 无效的密码</string>

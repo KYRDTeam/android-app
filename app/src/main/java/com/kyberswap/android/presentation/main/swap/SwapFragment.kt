@@ -180,6 +180,8 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     @Inject
     lateinit var analytics: FirebaseAnalytics
 
+    private var isMaintenance: Boolean = false
+
     private val availableETHAmount: BigDecimal
         get() = binding.swap?.let {
             it.availableAmountForSwap(
@@ -199,6 +201,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
     private val currentActivity by lazy {
         activity as MainActivity
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -625,6 +628,19 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             }
         })
 
+        viewModel.checkMaintenanceCallback.observe(viewLifecycleOwner, {
+            it?.getContentIfNotHandled()?.let { state ->
+                when (state) {
+                    is CheckMaintenanceState.Success -> {
+                        isMaintenance = state.isMaintenance
+                    }
+                    is CheckMaintenanceState.ShowError -> {
+
+                    }
+                }
+            }
+        })
+
         viewModel.getGetGasLimitCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
@@ -996,9 +1012,16 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                 swap != null -> {
                     val swapError: String
                     when {
-                        swap.isExpectedRateZero && swap.isMarketRateZero -> {
+                        swap.isExpectedRateZero && isMaintenance -> {
                             swapError = getString(R.string.reserve_under_maintainance)
-                            showAlertWithoutIcon(message = swapError)
+
+                            showAlertWithLink(
+                                message = swapError,
+                                clickableText = getString(R.string.reserve_learn_more),
+                                clickableLink = getString(
+                                    R.string.faq_reserve_maintenance
+                                )
+                            )
                             analytics.logEvent(
                                 KBSWAP_ERROR,
                                 Bundle().createEvent(ERROR_TEXT, swapError)
@@ -1019,7 +1042,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             .toBigDecimalOrDefaultZero() > swap.tokenSource.currentBalance -> {
                             swapError = getString(R.string.exceed_balance)
                             showAlertWithoutIcon(
-                                title = getString(R.string.title_amount_too_big),
                                 message = swapError
                             )
                             analytics.logEvent(
@@ -1106,9 +1128,12 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
                         swap.isExpectedRateZero -> {
                             swapError = getString(R.string.can_not_handle_amount)
-                            showAlertWithoutIcon(
-                                title = getString(R.string.title_amount_too_big),
-                                message = swapError
+                            showAlertWithLink(
+                                message = swapError,
+                                clickableText = getString(R.string.reserve_learn_more),
+                                clickableLink = getString(
+                                    R.string.faq_reserve_maintenance
+                                )
                             )
                             analytics.logEvent(
                                 KBSWAP_ERROR,
@@ -1337,16 +1362,21 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
     fun verifyAmount() {
         binding.swap?.let {
-            if (it.isExpectedRateZero && it.isMarketRateZero) {
-                showAlertWithoutIcon(
+            if (it.isExpectedRateZero && isMaintenance) {
+                showAlertWithLink(
                     message = getString(R.string.reserve_under_maintainance),
-                    timeInSecond = 5
+                    clickableText = getString(R.string.reserve_learn_more),
+                    clickableLink = getString(
+                        R.string.faq_reserve_maintenance
+                    )
                 )
             } else if (it.isExpectedRateZero) {
-                showAlertWithoutIcon(
-                    title = getString(R.string.title_amount_too_big),
+                showAlertWithLink(
                     message = getString(R.string.can_not_handle_amount),
-                    timeInSecond = 5
+                    clickableText = getString(R.string.reserve_learn_more),
+                    clickableLink = getString(
+                        R.string.faq_reserve_maintenance
+                    )
                 )
             }
         }

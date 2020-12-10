@@ -83,6 +83,28 @@ abstract class BaseFragment : DaggerFragment() {
         }
     }
 
+    fun showAlertWithLink(
+        title: String? = null,
+        message: String,
+        clickableText: String,
+        clickableLink: String,
+        timeInSecond: Int = 30,
+        listener: () -> Unit = {}
+    ) {
+        if (context != null) {
+            this.alertListener = listener
+            val intent = AlertWithoutIconActivity.newIntent(
+                context!!,
+                title,
+                message,
+                timeInSecond,
+                clickableText,
+                clickableLink
+            )
+            startActivityForResult(intent, SHOW_ALERT)
+        }
+    }
+
     fun showAlert(
         message: String,
         resourceIcon: Int,

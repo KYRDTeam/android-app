@@ -26,6 +26,7 @@ import com.kyberswap.android.domain.usecase.wallet.GetSelectedWalletUseCase
 import com.kyberswap.android.domain.usecase.wallet.GetWalletByAddressUseCase
 import com.kyberswap.android.presentation.common.Event
 import com.kyberswap.android.presentation.common.MIN_SUPPORT_AMOUNT
+import com.kyberswap.android.presentation.common.MIN_SUPPORT_SWAP_SOURCE_AMOUNT
 import com.kyberswap.android.presentation.common.calculateDefaultGasLimit
 import com.kyberswap.android.presentation.common.isKatalyst
 import com.kyberswap.android.presentation.common.specialGasLimitDefault
@@ -37,8 +38,6 @@ import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toDisplayNumber
 import com.kyberswap.android.util.ext.toLongSafe
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.Action
-import io.reactivex.functions.Consumer
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
@@ -114,6 +113,11 @@ class SwapViewModel @Inject constructor(
     val getExpectedRateCallback: LiveData<Event<GetExpectedRateState>>
         get() = _getExpectedRateCallback
 
+    private val _checkMaintenanceCallback =
+        MutableLiveData<Event<CheckMaintenanceState>>()
+    val checkMaintenanceCallback: LiveData<Event<CheckMaintenanceState>>
+        get() = _checkMaintenanceCallback
+
     private val _saveSwapCallback = MutableLiveData<Event<SaveSwapState>>()
     val saveSwapDataCallback: LiveData<Event<SaveSwapState>>
         get() = _saveSwapCallback
@@ -133,10 +137,10 @@ class SwapViewModel @Inject constructor(
         getMarketRate.dispose()
         if (swap.hasTokenPair) {
             getMarketRate.execute(
-                Consumer {
+                {
                     _getGetMarketRateCallback.value = Event(GetMarketRateState.Success(it))
                 },
-                Consumer {
+                {
                     it.printStackTrace()
 
                     _getGetMarketRateCallback.value =
@@ -163,11 +167,11 @@ class SwapViewModel @Inject constructor(
     ) {
         getSwapDataUseCase.dispose()
         getSwapDataUseCase.execute(
-            Consumer {
+            {
                 it.gasLimit = calculateGasLimit(it).toString()
                 _getSwapCallback.value = Event(GetSwapState.Success(it))
             },
-            Consumer {
+            {
                 it.printStackTrace()
                 _getSwapCallback.value = Event(GetSwapState.ShowError(errorHandler.getError(it)))
             },
@@ -182,10 +186,10 @@ class SwapViewModel @Inject constructor(
     fun getGasPrice() {
         getGasPriceUseCase.dispose()
         getGasPriceUseCase.execute(
-            Consumer {
+            {
                 _getGetGasPriceCallback.value = Event(GetGasPriceState.Success(it))
             },
-            Consumer {
+            {
                 it.printStackTrace()
                 _getGetGasPriceCallback.value =
                     Event(GetGasPriceState.ShowError(errorHandler.getError(it)))
@@ -198,10 +202,10 @@ class SwapViewModel @Inject constructor(
         if (swap == null) return
         getPlatformFeeUseCase.dispose()
         getPlatformFeeUseCase.execute(
-            Consumer {
+            {
                 _getPlatformFeeCallback.value = Event(GetPlatformFeeState.Success(it))
             },
-            Consumer {
+            {
                 it.printStackTrace()
                 _getPlatformFeeCallback.value =
                     Event(GetPlatformFeeState.ShowError(it.localizedMessage))
@@ -217,14 +221,14 @@ class SwapViewModel @Inject constructor(
     fun getHint(swap: Swap, srcAmount: String) {
         getHintUseCase.dispose()
         getHintUseCase.execute(
-            Consumer {
+            {
                 _getHintCallback.value = Event(
                     GetHintState.Success(
                         !it.equals(SwapDataRepository.DEFAULT_HINT, true)
                     )
                 )
             },
-            Consumer {
+            {
                 it.printStackTrace()
             },
             GetHintUseCase.Param(
@@ -247,24 +251,55 @@ class SwapViewModel @Inject constructor(
 
         getExpectedRateUseCase.dispose()
         getExpectedRateUseCase.execute(
-            Consumer {
+            {
                 if (it.isNotEmpty()) {
                     _getExpectedRateCallback.value = Event(GetExpectedRateState.Success(it))
                 }
 
             },
-            Consumer {
+            {
                 it.printStackTrace()
                 _getExpectedRateCallback.value =
                     Event(GetExpectedRateState.ShowError(it.localizedMessage))
             },
             GetExpectedRateUseCase.Param(
-                swap.walletAddress,
                 swap.tokenSource,
                 swap.tokenDest,
                 srcAmount,
                 platformFee,
                 isReserveRouting
+            )
+        )
+
+        checkMaintenance(swap, platformFee, isReserveRouting)
+    }
+
+    private fun checkMaintenance(
+        swap: Swap,
+        platformFee: Int,
+        isReserveRouting: Boolean
+    ) {
+        getExpectedRateSequentialUseCase.dispose()
+        getExpectedRateSequentialUseCase.execute(
+            {
+                _checkMaintenanceCallback.value = Event(
+                    CheckMaintenanceState.Success(
+                        it.isNotEmpty() && it.first()
+                            .toBigDecimalOrDefaultZero() <= BigDecimal.ZERO
+                    )
+                )
+
+            },
+            {
+
+            },
+            GetExpectedRateSequentialUseCase.Param(
+                swap.tokenSource,
+                swap.tokenDest,
+                MIN_SUPPORT_SWAP_SOURCE_AMOUNT.toString(),
+                platformFee,
+                isReserveRouting,
+                true
             )
         )
     }
@@ -274,7 +309,7 @@ class SwapViewModel @Inject constructor(
         _checkEligibleWalletCallback.postValue(Event(CheckEligibleWalletState.Loading))
         getExpectedRateSequentialUseCase.dispose()
         getExpectedRateSequentialUseCase.execute(
-            Consumer {
+            {
                 val sw =
                     if (it.isNotEmpty() && it.first()
                             .toBigDecimalOrDefaultZero() > BigDecimal.ZERO
@@ -284,11 +319,11 @@ class SwapViewModel @Inject constructor(
                         swap.copy(expectedRate = swap.marketRate)
                     }
                 checkEligibleWalletUseCase.execute(
-                    Consumer { eligibleWallet ->
+                    { eligibleWallet ->
                         _checkEligibleWalletCallback.value =
                             Event(CheckEligibleWalletState.Success(eligibleWallet, sw))
                     },
-                    Consumer { error ->
+                    { error ->
                         _checkEligibleWalletCallback.value =
                             Event(
                                 CheckEligibleWalletState.ShowError(
@@ -301,14 +336,14 @@ class SwapViewModel @Inject constructor(
                 )
 
             },
-            Consumer {
+            {
                 val sw = if (swap.expectedRate.toBigDecimalOrDefaultZero() == BigDecimal.ZERO) {
                     swap.copy(expectedRate = swap.marketRate)
                 } else {
                     swap
                 }
                 checkEligibleWalletUseCase.execute(
-                    Consumer { eligibleWallet ->
+                    { eligibleWallet ->
                         _checkEligibleWalletCallback.value =
                             Event(
                                 CheckEligibleWalletState.Success(
@@ -317,7 +352,7 @@ class SwapViewModel @Inject constructor(
                                 )
                             )
                     },
-                    Consumer { error ->
+                    { error ->
                         _checkEligibleWalletCallback.value =
                             Event(
                                 CheckEligibleWalletState.ShowError(
@@ -330,7 +365,6 @@ class SwapViewModel @Inject constructor(
                 )
             },
             GetExpectedRateSequentialUseCase.Param(
-                swap.walletAddress,
                 swap.tokenSource,
                 swap.tokenDest,
                 swap.sourceAmount,
@@ -343,7 +377,7 @@ class SwapViewModel @Inject constructor(
     fun estimateAmount(source: String, dest: String, destAmount: String, platformFee: Int) {
         if (destAmount.isBlank()) return
         estimateAmountUseCase.execute(
-            Consumer {
+            {
                 if (it.error) {
                     _estimateAmountState.value =
                         Event(EstimateAmountState.ShowError(it.additionalData))
@@ -358,7 +392,7 @@ class SwapViewModel @Inject constructor(
                     )
                 }
             },
-            Consumer {
+            {
                 it.printStackTrace()
                 _estimateAmountState.value =
                     Event(EstimateAmountState.ShowError(errorHandler.getError(it)))
@@ -389,7 +423,7 @@ class SwapViewModel @Inject constructor(
         if (swap.ethToken.currentBalance <= MIN_SUPPORT_AMOUNT) return
         estimateGasUseCase.dispose()
         estimateGasUseCase.execute(
-            Consumer {
+            {
 
                 val gasLimit = it.toBigInteger()
                 val specialGasLimit = specialGasLimitDefault(swap.tokenSource, swap.tokenDest)
@@ -403,7 +437,7 @@ class SwapViewModel @Inject constructor(
                     )
                 )
             },
-            Consumer {
+            {
                 it.printStackTrace()
                 Event(GetGasLimitState.ShowError(errorHandler.getError(it)))
             },
@@ -423,13 +457,13 @@ class SwapViewModel @Inject constructor(
         if (swap == null) return
         saveSwapUseCase.dispose()
         saveSwapUseCase.execute(
-            Action {
+            {
                 if (fromContinue) {
                     _saveSwapCallback.value =
                         Event(SaveSwapState.Success(swap.isExpectedRateEmptyOrZero))
                 }
             },
-            Consumer {
+            {
                 it.printStackTrace()
                 _saveSwapCallback.value = Event(SaveSwapState.ShowError(errorHandler.getError(it)))
             },
@@ -439,10 +473,10 @@ class SwapViewModel @Inject constructor(
 
     fun getAlert(alertNotification: NotificationAlert) {
         getAlertUseCase.execute(
-            Consumer {
+            {
                 _getAlertState.value = Event(GetAlertState.Success(it))
             },
-            Consumer {
+            {
                 it.printStackTrace()
                 _getAlertState.value = Event(GetAlertState.ShowError(errorHandler.getError(it)))
             },
@@ -491,10 +525,10 @@ class SwapViewModel @Inject constructor(
     fun getKyberStatus() {
         kyberNetworkStatusCase.dispose()
         kyberNetworkStatusCase.execute(
-            Consumer {
+            {
                 _getKyberStatusback.value = Event(GetKyberStatusState.Success(it))
             },
-            Consumer {
+            {
                 _getKyberStatusback.value =
                     Event(GetKyberStatusState.ShowError(errorHandler.getError(it)))
             },

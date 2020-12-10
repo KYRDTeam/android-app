@@ -414,7 +414,6 @@ class LimitOrderViewModel @Inject constructor(
                     )
             },
             GetExpectedRateUseCase.Param(
-                order.userAddr,
                 order.tokenSource,
                 order.tokenDest,
                 srcAmount,

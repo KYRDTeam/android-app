@@ -216,7 +216,7 @@ class KyberSwapApplication : DaggerApplication(), LifecycleObserver {
         firebaseRemoteConfig.fetch(3 * 60) // fetch every minutes
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    firebaseRemoteConfig.activateFetched()
+                    firebaseRemoteConfig.activate()
                 }
             }
     }

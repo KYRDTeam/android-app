@@ -18,7 +18,6 @@ class GetExpectedRateUseCase @Inject constructor(
     }
 
     class Param(
-        val walletAddress: String,
         val tokenSource: Token,
         val tokenDest: Token,
         val srcAmount: String,

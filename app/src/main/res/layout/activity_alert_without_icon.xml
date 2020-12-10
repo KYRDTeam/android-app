@@ -50,11 +50,11 @@
 
 
             <TextView
+                android:id="@+id/tvContent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:lineSpacingExtra="8sp"
-                android:text="@{content}"
                 android:textColor="#141927"
                 android:textSize="14sp"
                 tools:text="Don’t worry. You will not be charged now. You pay fees only when transaction is executed (broadcasted &amp; mined)." />

@@ -528,7 +528,8 @@
     <string name="fail_import_private_key">Không thể nhập khóa cá nhân</string>
     <string name="fail_import_mnemonic">Vui lòng kiểm tra lại.</string>
     <string name="fail_import_json">Nhập file json thất bại</string>
-    <string name="reserve_under_maintainance">Cặp token này tạm thời đang được bảo trì</string>
+    <string name="reserve_under_maintainance"> Token này hiện đang được bảo trì. Nguồn thanh khoản của token này được quản lý bởi bên thứ 3. Tìm hiểu thêm</string>
+    <string name="reserve_learn_more">Tìm hiểu thêm</string>
     <string name="app_version">Phiên bản %s</string>
     <string name="error_http_exception">Không thể kết nối được tới server, vui lòng thử lại sau</string>
     <string name="error_unknown_host">Không thể xác định được máy chủ, vui lòng thử lại sau</string>
@@ -603,7 +604,7 @@
     <string name="use_password">Use password</string>
     <string name="description_fingerprint_icon">Fingerprint icon</string>
     <string name="fingerprint_description">Confirm fingerprint to continue</string>
-    <string name="can_not_handle_amount">Không thể xử lý số tiền của bạn</string>
+    <string name="can_not_handle_amount">Quỹ dự trữ của token này không thể xử lý khối lượng giao dịch của bạn. Vui lòng chia nhỏ giao dịch hoặc chờ cho thanh khoản được bổ sung bởi bên thứ 3. Tìm hiểu thêm</string>
     <string name="separate_words_with_a_space">*Dấu cách giữa các từ</string>
     <string name="private_key_length_condition">*Khóa riêng phải có 64 ký tự</string>
     <string name="invalid_password">Không thể nhập ví của bạn. Mật khẩu không hợp lệ</string>
