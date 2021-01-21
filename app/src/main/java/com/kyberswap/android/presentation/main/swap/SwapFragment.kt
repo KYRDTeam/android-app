@@ -27,7 +27,6 @@ import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
-import com.kyberswap.android.BR
 import com.kyberswap.android.R
 import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.databinding.FragmentSwapBinding
@@ -170,6 +169,9 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
 
     private var eligibleWalletStatus: EligibleWalletStatus? = null
 
+    private val gasWarning: BigDecimal
+        get() = mediator.getGasPriceWarningValue().toBigDecimalOrDefaultZero()
+
 //    private var estimateSourceError: Boolean = false
 
     @Inject
@@ -187,7 +189,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             it.availableAmountForSwap(
                 it.tokenSource.currentBalance,
                 it.allETHBalanceGasLimit.toBigDecimal(),
-                getSelectedGasPrice(it.gas, selectedGasFeeView?.id).toBigDecimalOrDefaultZero()
+                getSelectedGasPriceOrDefaultSuperFast(
+                    it.gas,
+                    selectedGasFeeView?.id
+                ).toBigDecimalOrDefaultZero()
             )
         } ?: BigDecimal.ZERO
 
@@ -267,6 +272,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSwapState.Success -> {
+                        displayGasWarning(state.swap)
                         if (!state.swap.isSameTokenPair(binding.swap)) {
                             viewModel.getPlatformFee(state.swap)
                             if (state.swap.tokenSource.tokenSymbol == state.swap.tokenDest.tokenSymbol) {
@@ -283,6 +289,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                     edtSource.getAmountOrDefaultValue()
                                 )
                             }
+
                             // Token pair change need to reset rate and get the new one
                             binding.swap = state.swap.copy(marketRate = "", expectedRate = "")
                             binding.executePendingBindings()
@@ -346,9 +353,12 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                     edtSource.getAmountOrDefaultValue()
                 )
                 getRate(it)
+                binding.swap = it
+                binding.executePendingBindings()
+                displayGasWarning(swap)
             }
-            binding.setVariable(BR.swap, swap)
-            binding.executePendingBindings()
+
+
             analytics.logEvent(KBSWAP_TOKEN_SWITCH, Bundle().createEvent())
         }
 
@@ -422,7 +432,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             sourceAmount = sourceAmount ?: "",
                             destAmount = edtDest.text.toString(),
                             minAcceptedRatePercent = getMinAcceptedRatePercent(rgRate.checkedRadioButtonId),
-                            gasPrice = getSelectedGasPrice(swap.gas, selectedGasFeeView?.id)
+                            gasPrice = getSelectedGasPriceOrDefaultSuperFast(
+                                swap.gas,
+                                selectedGasFeeView?.id
+                            )
                         )
                     )
                 }
@@ -445,7 +458,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             sourceAmount = sourceAmount ?: "",
                             destAmount = edtDest.text.toString(),
                             minAcceptedRatePercent = getMinAcceptedRatePercent(rgRate.checkedRadioButtonId),
-                            gasPrice = getSelectedGasPrice(swap.gas, selectedGasFeeView?.id)
+                            gasPrice = getSelectedGasPriceOrDefaultSuperFast(
+                                swap.gas,
+                                selectedGasFeeView?.id
+                            )
                         )
                     )
                 }
@@ -649,15 +665,16 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             gasLimit = state.gasLimit.toString()
                         )
 
+                        displayGasWarning(swap)
                         tvRevertNotification.text =
                             getRevertNotification(rgRate.checkedRadioButtonId)
+
 
                         if (swap != binding.swap) {
                             val isSwapAllETH = availableETHAmount.toDisplayNumber()
                                 .equals(edtSource.text.toString(), true)
                             binding.swap = swap
                             binding.executePendingBindings()
-
                             if (isSwapAllETH) {
                                 handler.postDelayed({
                                     sourceAmount = availableETHAmount.toDisplayNumber()
@@ -753,14 +770,21 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         rb.isSelected = true
                         selectedGasFeeView = rb
                         binding.swap?.let { swap ->
-                            viewModel.saveSwap(
-                                swap.copy(
-                                    gasPrice = getSelectedGasPrice(
-                                        swap.gas,
-                                        rb.id
-                                    )
+                            val updatedSwap = swap.copy(
+                                gasPrice = getSelectedGasPriceOrDefaultSuperFast(
+                                    swap.gas,
+                                    rb.id
                                 )
                             )
+
+                            if (swap != updatedSwap) {
+                                viewModel.saveSwap(
+                                    updatedSwap
+                                )
+                                binding.swap = updatedSwap
+                                binding.executePendingBindings()
+                            }
+
                         }
                     }
                 }
@@ -814,12 +838,11 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         if (currentSwap != null) {
                             val swap = updateGasPrice(currentSwap)
                             if (swap != binding.swap) {
-
                                 val isSwapAllETH = availableETHAmount.toDisplayNumber()
                                     .equals(edtSource.text.toString(), true)
                                 binding.swap = swap
                                 binding.executePendingBindings()
-
+                                displayGasWarning(swap)
                                 if (isSwapAllETH) {
                                     handler.postDelayed({
                                         sourceAmount = availableETHAmount.toDisplayNumber()
@@ -1072,14 +1095,14 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             )
                         }
                         swap.copy(
-                            gasPrice = getSelectedGasPrice(
+                            gasPrice = getSelectedGasPriceOrDefaultSuperFast(
                                 swap.gas,
                                 selectedGasFeeView?.id
                             )
                         ).insufficientEthBalance -> {
                             swapError = String.format(
                                 getString(R.string.not_enough_eth_blance), swap.copy(
-                                    gasPrice = getSelectedGasPrice(
+                                    gasPrice = getSelectedGasPriceOrDefaultSuperFast(
                                         swap.gas,
                                         selectedGasFeeView?.id
                                     )
@@ -1100,7 +1123,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             availableETHAmount < edtSource.toBigDecimalOrDefaultZero() -> {
                             swapError = String.format(
                                 getString(R.string.not_enough_eth_blance), swap.copy(
-                                    gasPrice = getSelectedGasPrice(
+                                    gasPrice = getSelectedGasPriceOrDefaultSuperFast(
                                         swap.gas,
                                         selectedGasFeeView?.id
                                     )
@@ -1142,7 +1165,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         }
                         else -> wallet?.let {
 
-                            val gasPriceGwei = getSelectedGasPrice(swap.gas, selectedGasFeeView?.id)
+                            val gasPriceGwei = getSelectedGasPriceOrDefaultSuperFast(
+                                swap.gas,
+                                selectedGasFeeView?.id
+                            )
                             val minAcceptedRatePercentage =
                                 getMinAcceptedRatePercent(rgRate.checkedRadioButtonId)
                             val data = swap.copy(
@@ -1166,7 +1192,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                         ),
                         listOf(
                             getGasPriceOption(selectedGasFeeView?.id),
-                            getSelectedGasPrice(it.gas, selectedGasFeeView?.id),
+                            getSelectedGasPriceOrDefaultSuperFast(it.gas, selectedGasFeeView?.id),
                             getMinAcceptedRatePercent(rgRate.checkedRadioButtonId)
                         )
                     )
@@ -1311,6 +1337,23 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         if (notification != null) {
             newSwap(notification.data)
         }
+    }
+
+    private fun displayGasWarning(swap: Swap?) {
+        if (swap == null) return
+        handler.postDelayed({
+            val selectedGasPrice = getSelectedGasPriceOrDefaultSuperFast(
+                swap.gas,
+                selectedGasFeeView?.id
+            )
+            val sw = swap.copy(
+                gasPrice = selectedGasPrice
+            )
+            binding.showGasWarning =
+                gasWarning > BigDecimal.ZERO && sw.gasPriceValue > BigDecimal.ZERO &&
+                    sw.gasPriceValue >= gasWarning
+            binding.gasWarningValue = sw.displayGasFee
+        }, 250)
     }
 
     fun newSwap(notificationExt: NotificationExt) {
@@ -1662,16 +1705,20 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         )
     }
 
+    private fun getSelectedGasPriceOrDefaultSuperFast(gas: Gas, id: Int?): String {
+        val value = getSelectedGasPrice(gas, id)
+        return if (value.isBlank()) {
+            gas.superFast
+        } else value
+    }
+
     private fun getSelectedGasPrice(gas: Gas, id: Int?): String {
-        val value = when (id) {
+        return when (id) {
             R.id.rbSuperFast -> gas.superFast
             R.id.rbRegular -> gas.standard
             R.id.rbSlow -> gas.low
             else -> gas.fast
         }
-        return if (value.isBlank()) {
-            gas.superFast
-        } else value
     }
 
     private fun getGasPriceOption(id: Int?): String {
