@@ -14,6 +14,7 @@ import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
+import android.widget.CompoundButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -44,6 +45,7 @@ import com.kyberswap.android.databinding.DialogEligibleTokenBinding
 import com.kyberswap.android.databinding.DialogExtraBottomSheetBinding
 import com.kyberswap.android.databinding.DialogForgotPasswordBinding
 import com.kyberswap.android.databinding.DialogGasFeeBottomSheetBinding
+import com.kyberswap.android.databinding.DialogGasWarningBinding
 import com.kyberswap.android.databinding.DialogImagePickerBottomSheetBinding
 import com.kyberswap.android.databinding.DialogInfoBinding
 import com.kyberswap.android.databinding.DialogInvalidatedBottomSheetBinding
@@ -70,8 +72,11 @@ import com.kyberswap.android.util.RATING_DIALOG_EVENT
 import com.kyberswap.android.util.UlTagHandler
 import com.kyberswap.android.util.ext.colorize
 import com.kyberswap.android.util.ext.createEvent
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.underline
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.android.synthetic.main.layout_expanable.*
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class DialogHelper @Inject constructor(
@@ -960,6 +965,89 @@ class DialogHelper @Inject constructor(
         }
 
         binding.notification = notification
+
+        dialog.setView(binding.root)
+        dialog.show()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    }
+
+    fun showGasWarningDialog(
+        currentSelection: String,
+        onConfirm: (String) -> Unit,
+        onError: () -> Unit
+    ) {
+        var selectedGasPrice = currentSelection
+        var selectedGasPriceView: CompoundButton?
+
+        val dialog = AlertDialog.Builder(activity).create()
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+        val binding =
+            DataBindingUtil.inflate<DialogGasWarningBinding>(
+                LayoutInflater.from(activity), R.layout.dialog_gas_warning, null, false
+            )
+
+        selectedGasPriceView = when {
+            currentSelection.isBlank() -> {
+                binding.rb200
+            }
+            currentSelection.equals("500", true) -> {
+                binding.rb500
+            }
+            currentSelection.equals("200", true) -> {
+                binding.rb200
+            }
+            currentSelection.equals("100", true) -> {
+                binding.rb100
+            }
+            else -> {
+                binding.edtCustom.setText(currentSelection)
+                binding.rbCustom
+            }
+        }
+
+        selectedGasPriceView.isChecked = true
+
+        binding.tvCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        binding.tvConfirm.setOnClickListener {
+            if (binding.rbCustom.isChecked && binding.edtCustom.text.toBigDecimalOrDefaultZero() <= BigDecimal.ZERO) {
+                onError.invoke()
+            } else {
+                selectedGasPrice = if (binding.rb500.isChecked) {
+                    "500"
+                } else if (binding.rb200.isChecked) {
+                    "200"
+                } else if (binding.rb100.isChecked) {
+                    "100"
+                } else {
+                    binding.edtCustom.text.toString()
+                }
+                onConfirm.invoke(selectedGasPrice)
+                dialog.dismiss()
+            }
+        }
+
+        listOf(binding.rb500, binding.rb200, binding.rb100, binding.rbCustom).forEach {
+            it.setOnCheckedChangeListener { rb, isChecked ->
+                if (isChecked) {
+                    if (rb != selectedGasPriceView) {
+                        selectedGasPriceView?.isChecked = false
+                        rb.isSelected = true
+                        selectedGasPriceView = rb
+                    }
+                }
+
+                if (rb == binding.rbCustom) {
+                    binding.edtCustom.isEnabled = isChecked
+                    if (isChecked) {
+                        binding.edtCustom.requestFocus()
+                    }
+                }
+            }
+        }
 
         dialog.setView(binding.root)
         dialog.show()

@@ -14,6 +14,7 @@ import com.caverock.androidsvg.SVG
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
+import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.databinding.ActivitySendConfirmBinding
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
@@ -35,10 +36,12 @@ import com.kyberswap.android.util.TRANSFER_BROADCAST_ERROR
 import com.kyberswap.android.util.TRANSFER_CONFIRMED_ERROR
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import jdenticon.Jdenticon
 import org.consenlabs.tokencore.wallet.KeystoreStorage
 import org.consenlabs.tokencore.wallet.WalletManager
 import java.io.File
+import java.math.BigDecimal
 import javax.inject.Inject
 
 
@@ -61,6 +64,12 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
 
     @Inject
     lateinit var firebaseAnalytics: FirebaseAnalytics
+
+    @Inject
+    lateinit var mediator: StorageMediator
+
+    private val gasWarning: BigDecimal
+        get() = mediator.getGasPriceWarningValue().toBigDecimalOrDefaultZero()
 
     private val viewModel: SendConfirmViewModel by lazy {
         ViewModelProvider(this, viewModelFactory).get(SendConfirmViewModel::class.java)
@@ -89,6 +98,13 @@ class SendConfirmActivity : BaseActivity(), KeystoreStorage {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSendState.Success -> {
+
+                        if (state.send.isGasPriceChange(binding.send)) {
+                            binding.showGasWarning =
+                                gasWarning > BigDecimal.ZERO && state.send.gasPriceValue > BigDecimal.ZERO &&
+                                    state.send.gasPriceValue >= gasWarning
+                        }
+
                         if (binding.send?.contact?.address != state.send.contact.address) {
                             generateAdressImage(binding.imgContact, state.send.contact.address)
                         }

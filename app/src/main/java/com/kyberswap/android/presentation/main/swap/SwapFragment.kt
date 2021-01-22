@@ -272,7 +272,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSwapState.Success -> {
-                        displayGasWarning(state.swap)
+//                        displayGasWarning(state.swap)
                         if (!state.swap.isSameTokenPair(binding.swap)) {
                             viewModel.getPlatformFee(state.swap)
                             if (state.swap.tokenSource.tokenSymbol == state.swap.tokenDest.tokenSymbol) {
@@ -665,7 +665,6 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                             gasLimit = state.gasLimit.toString()
                         )
 
-                        displayGasWarning(swap)
                         tvRevertNotification.text =
                             getRevertNotification(rgRate.checkedRadioButtonId)
 
@@ -675,6 +674,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 .equals(edtSource.text.toString(), true)
                             binding.swap = swap
                             binding.executePendingBindings()
+                            displayGasWarning(swap)
                             if (isSwapAllETH) {
                                 handler.postDelayed({
                                     sourceAmount = availableETHAmount.toDisplayNumber()
@@ -783,6 +783,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
                                 )
                                 binding.swap = updatedSwap
                                 binding.executePendingBindings()
+                                displayGasWarning(updatedSwap)
                             }
 
                         }
@@ -831,6 +832,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetGasPriceState.Success -> {
+
                         val currentSwap = binding.swap?.copy(
                             gas = if (wallet?.isPromo == true) state.gas.toPromoGas()
                                 .copy(maxGasPrice = maxGasPrice) else state.gas.copy(maxGasPrice = maxGasPrice)
@@ -1337,6 +1339,10 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         if (notification != null) {
             newSwap(notification.data)
         }
+    }
+
+    fun displayGasWarning() {
+        displayGasWarning(binding.swap)
     }
 
     private fun displayGasWarning(swap: Swap?) {

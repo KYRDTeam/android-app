@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="notification"
+            type="com.kyberswap.android.domain.model.Notification" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="18dp"
+            android:layout_marginEnd="18dp"
+            android:background="@drawable/rounded_corner_dialog_background"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:letterSpacing="0.07"
+                android:text="@string/gas_warning"
+                android:textColor="#141927"
+                android:textSize="18sp" />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:fillViewport="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center|start"
+                        android:letterSpacing="0.07"
+                        android:text="Save gas fees. Get an extra warning on trade confirmation screen when gas price is high. Simply set up your alert below.\n\nShow me a warning if gas price is:"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+
+                    <RadioButton
+                        android:id="@+id/rb500"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:backgroundTint="#fea34c"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="0dp"
+                        android:text="@string/warning_500_gwei"
+                        android:textSize="12sp"
+                        android:theme="@style/CustomRadioTheme" />
+
+                    <RadioButton
+                        android:id="@+id/rb200"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="#fea34c"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="0dp"
+                        android:text="@string/warning_200_gwei"
+                        android:textSize="12sp"
+                        android:theme="@style/CustomRadioTheme" />
+
+                    <RadioButton
+                        android:id="@+id/rb100"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="#fea34c"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="0dp"
+                        android:text="@string/warning_100_gwei"
+                        android:textSize="12sp"
+                        android:theme="@style/CustomRadioTheme" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <RadioButton
+                            android:id="@+id/rbCustom"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="#fea34c"
+                            android:paddingStart="4dp"
+                            android:paddingEnd="0dp"
+                            android:text="@string/warning_enter_your_own"
+                            android:textSize="12sp"
+                            android:theme="@style/CustomRadioTheme" />
+
+                        <com.kyberswap.android.presentation.common.ClearFocusEditText
+                            android:id="@+id/edtCustom"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="15dp"
+                            android:background="@drawable/rounded_corner_edittext_toggle_background"
+                            android:enabled="false"
+                            android:gravity="center|start"
+                            android:inputType="numberDecimal"
+                            android:minWidth="92dp"
+                            android:minHeight="36dp"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:textColor="#5a5e67"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </ScrollView>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tvCancel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/dialog_negative_button_background"
+                    android:gravity="center"
+                    android:minHeight="45dp"
+                    android:text="@string/cancel"
+                    android:textColor="#141927"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvConfirm"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="7dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/default_button"
+                    android:gravity="center"
+                    android:minHeight="45dp"
+                    android:text="@string/confirm"
+                    android:textAppearance="@style/TextAppearance.Roboto.SemiBold"
+                    android:textColor="#ffffff"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </FrameLayout>
+</layout>

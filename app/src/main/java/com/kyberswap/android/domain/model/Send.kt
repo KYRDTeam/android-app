@@ -36,8 +36,20 @@ data class Send(
 
 ) : Parcelable {
 
+    val gasPriceValue: BigDecimal
+        get() = this.gasPrice.toBigDecimalOrDefaultZero()
+
     val estimateSource: String
         get() = if (sourceAmount.toDoubleOrDefaultZero() > 0.0) sourceAmount else "0.001"
+
+    fun isGasPriceChange(other: Send?): Boolean {
+        return !this.gasPrice.equals(other?.gasPrice, true)
+    }
+
+    fun isGasLimitChange(other: Send?): Boolean {
+        return !this.gasLimit.equals(other?.gasLimit, true)
+    }
+
 
     fun isSameTokenPair(other: Send?): Boolean {
         return this.walletAddress == other?.walletAddress &&

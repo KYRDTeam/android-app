@@ -19,8 +19,10 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.KyberSwapApplication
 import com.kyberswap.android.R
+import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.databinding.FragmentSettingBinding
 import com.kyberswap.android.presentation.base.BaseFragment
+import com.kyberswap.android.presentation.helper.DialogHelper
 import com.kyberswap.android.presentation.helper.Navigator
 import com.kyberswap.android.presentation.main.profile.UserInfoState
 import com.kyberswap.android.presentation.setting.PassCodeLockActivity
@@ -59,6 +61,12 @@ class SettingFragment : BaseFragment() {
     lateinit var analytics: FirebaseAnalytics
 
     private var isCounterStop: Boolean = false
+
+    @Inject
+    lateinit var mediator: StorageMediator
+
+    @Inject
+    lateinit var dialogHelper: DialogHelper
 
     private val viewModel by lazy {
         ViewModelProvider(this, viewModelFactory).get(SettingViewModel::class.java)
@@ -113,6 +121,14 @@ class SettingFragment : BaseFragment() {
             }
 
             analytics.logEvent(SETTING_MANAGE_ALERT, Bundle().createEvent())
+        }
+
+        binding.lnGasWarning.setOnClickListener {
+            dialogHelper.showGasWarningDialog(mediator.getGasPriceWarningValue(), {
+                mediator.setGasPriceWarningValue(it)
+            }, {
+                showError("Please input valid gas price")
+            })
         }
 
         binding.lnAlertMethod.setOnClickListener {

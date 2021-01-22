@@ -128,7 +128,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/lnContact"
+                    android:id="@+id/lnGasWarning"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="?selectableItemBackground"
@@ -139,6 +139,37 @@
                     app:layout_constraintEnd_toEndOf="@+id/lnAlertMethod"
                     app:layout_constraintStart_toStartOf="@+id/lnAlertMethod"
                     app:layout_constraintTop_toBottomOf="@+id/lnAlertMethod">
+
+                    <ImageView
+                        android:id="@+id/imgGasWarning"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_gas_warning" />
+
+                    <TextView
+                        android:id="@+id/tvGasWarning"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:lineSpacingExtra="10sp"
+                        android:text="@string/gas_warning"
+                        android:textColor="#141927"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lnContact"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:minHeight="45dp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    app:layout_constraintEnd_toEndOf="@+id/lnGasWarning"
+                    app:layout_constraintStart_toStartOf="@+id/lnGasWarning"
+                    app:layout_constraintTop_toBottomOf="@+id/lnGasWarning">
 
                     <ImageView
                         android:id="@+id/imgContact"

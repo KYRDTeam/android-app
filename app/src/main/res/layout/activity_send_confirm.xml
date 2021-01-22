@@ -13,6 +13,12 @@
         <variable
             name="isContactExist"
             type="Boolean" />
+
+        <variable
+            name="showGasWarning"
+            type="Boolean" />
+
+        <import type="android.view.View" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -106,8 +112,8 @@
             android:layout_marginStart="32dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="32dp"
-            android:layerType="software"
             android:background="@drawable/dash_line"
+            android:layerType="software"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -164,14 +170,38 @@
             app:layout_constraintTop_toBottomOf="@+id/textView29"
             tools:text="≈ 123.987653 USD" />
 
+        <TextView
+            android:id="@+id/tvGasWarning"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/rounded_corner_gas_warning"
+            android:drawablePadding="15dp"
+            android:fontFamily="sans-serif"
+            android:lineSpacingExtra="4sp"
+            android:minHeight="50dp"
+            android:padding="10dp"
+            android:text="@{String.format(@string/gas_warning_message, send.transactionFeeEth)}"
+            android:textAppearance="@style/TextAppearance.Roboto.Regular"
+            android:textColor="#ff9008"
+            android:textSize="12sp"
+            android:textStyle="normal"
+            android:visibility="@{showGasWarning ? View.VISIBLE : View.GONE }"
+            app:drawableStartCompat="@drawable/ic_warning"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view5" />
+
 
         <TextView
             android:id="@+id/tvConfirm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="36dp"
             android:layout_marginEnd="32dp"
+            android:layout_marginTop="36dp"
             android:background="@drawable/default_button"
             android:gravity="center"
             android:minHeight="45dp"
@@ -181,7 +211,7 @@
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view5" />
+            app:layout_constraintTop_toBottomOf="@+id/tvGasWarning" />
 
         <TextView
             android:id="@+id/tvGasFee"
@@ -193,12 +223,12 @@
             android:text="@string/maximum_gas_fee"
             android:textColor="#9ea1aa"
             android:textSize="14sp"
+            app:drawableEndCompat="@drawable/ic_gas_fee_question_mark"
             app:layout_constraintBottom_toBottomOf="@+id/textView31"
             app:layout_constraintEnd_toStartOf="@+id/textView31"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
-            app:drawableEndCompat="@drawable/ic_gas_fee_question_mark"
             app:layout_constraintTop_toTopOf="@+id/textView31" />
 
 
@@ -239,8 +269,8 @@
             android:layout_marginStart="32dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="32dp"
-            android:layerType="software"
             android:background="@drawable/dash_line"
+            android:layerType="software"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
