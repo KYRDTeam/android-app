@@ -19,6 +19,9 @@
             android:layout_marginStart="18dp"
             android:layout_marginEnd="18dp"
             android:background="@drawable/rounded_corner_dialog_background"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:gravity="center"
             android:orientation="vertical"
             android:padding="24dp">
@@ -49,7 +52,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center|start"
                         android:letterSpacing="0.07"
-                        android:text="Save gas fees. Get an extra warning on trade confirmation screen when gas price is high. Simply set up your alert below.\n\nShow me a warning if gas price is:"
+                        android:text="@string/show_gas_warning_message"
                         android:textColor="#141927"
                         android:textSize="14sp" />
 

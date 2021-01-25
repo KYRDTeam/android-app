@@ -1007,6 +1007,9 @@ class DialogHelper @Inject constructor(
         }
 
         selectedGasPriceView.isChecked = true
+        if (selectedGasPriceView == binding.rbCustom) {
+            binding.edtCustom.isEnabled = true
+        }
 
         binding.tvCancel.setOnClickListener {
             dialog.dismiss()
