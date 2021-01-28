@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
+import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.databinding.ActivitySwapConfirmBinding
 import com.kyberswap.android.domain.model.Wallet
 import com.kyberswap.android.presentation.base.BaseActivity
@@ -30,9 +31,11 @@ import com.kyberswap.android.util.TOKEN_PAIR
 import com.kyberswap.android.util.TX_FEE
 import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import org.consenlabs.tokencore.wallet.KeystoreStorage
 import org.consenlabs.tokencore.wallet.WalletManager
 import java.io.File
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
@@ -52,6 +55,12 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
 
     @Inject
     lateinit var dialogHelper: DialogHelper
+
+    @Inject
+    lateinit var mediator: StorageMediator
+
+    private val gasWarning: BigDecimal
+        get() = mediator.getGasPriceWarningValue().toBigDecimalOrDefaultZero()
 
     private var platformFee: Int = PLATFORM_FEE_BPS
 
@@ -84,6 +93,11 @@ class SwapConfirmActivity : BaseActivity(), KeystoreStorage {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetSwapState.Success -> {
+                        if (state.swap.isGasPriceChange(binding.swap)) {
+                            binding.showGasWarning =
+                                gasWarning > BigDecimal.ZERO && state.swap.gasPriceValue > BigDecimal.ZERO &&
+                                    state.swap.gasPriceValue >= gasWarning
+                        }
                         binding.swap = state.swap
                         viewModel.getPlatformFee(state.swap)
                         viewModel.getGasLimit(wallet, binding.swap, platformFee, isReserveRouting)

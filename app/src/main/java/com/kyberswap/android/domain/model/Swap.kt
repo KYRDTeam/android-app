@@ -88,17 +88,28 @@ data class Swap(
 
     fun isSameTokenPair(other: Swap?): Boolean {
         return this.walletAddress == other?.walletAddress &&
-                this.tokenSource.tokenSymbol == other.tokenSource.tokenSymbol &&
-                this.tokenDest.tokenSymbol == other.tokenDest.tokenSymbol &&
-                this.tokenSource.currentBalance == other.tokenSource.currentBalance &&
-                this.tokenDest.currentBalance == other.tokenDest.currentBalance &&
-                this.ethToken.currentBalance == other.ethToken.currentBalance
+            this.tokenSource.tokenSymbol == other.tokenSource.tokenSymbol &&
+            this.tokenDest.tokenSymbol == other.tokenDest.tokenSymbol &&
+            this.tokenSource.currentBalance == other.tokenSource.currentBalance &&
+            this.tokenDest.currentBalance == other.tokenDest.currentBalance &&
+            this.ethToken.currentBalance == other.ethToken.currentBalance
     }
 
     fun isTokenPairChange(other: Swap?): Boolean {
         return this.tokenSource.tokenAddress != other?.tokenSource?.tokenAddress ||
-                this.tokenDest.tokenAddress != other.tokenDest.tokenAddress
+            this.tokenDest.tokenAddress != other.tokenDest.tokenAddress
     }
+
+    fun isGasPriceChange(other: Swap?): Boolean {
+        return !this.gasPrice.equals(other?.gasPrice, true)
+    }
+
+    fun isGasChange(other: Swap?): Boolean {
+        return this.gas != other?.gas
+    }
+
+    val gasPriceValue: BigDecimal
+        get() = this.gasPrice.toBigDecimalOrDefaultZero()
 
     val isSwapAll: Boolean
         get() = sourceAmount == tokenSource.currentBalance.rounding().toDisplayNumber()

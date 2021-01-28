@@ -787,4 +787,11 @@
     <string name="max_gas_fee_explanation">交易的实际费用一般低于最高估计费用</string>
     <string name="wallet_erc20_warning">仅将ETH或ERC-20代币发送到该地址</string>
     <string name="send_erc20_warning">*发送其他类型的代币可能会导致您的代币遗失</string>
+    <string name="gas_warning_message">High network congestion. Please double check gas fee (%s) before confirmation.</string>
+    <string name="warning_500_gwei"><![CDATA[> 500 Gwei]]></string>
+    <string name="warning_200_gwei"><![CDATA[> 200 Gwei]]></string>
+    <string name="warning_100_gwei"><![CDATA[> 100 Gwei]]></string>
+    <string name="warning_enter_your_own"><![CDATA[Enter your own >]]></string>
+    <string name="gas_warning">Gas Warning</string>
+    <string name="show_gas_warning_message">Save gas fees. Get an extra warning on trade confirmation screen when gas price is high. Simply set up your alert below.\n\nShow me a warning if gas price is:</string>
 </resources>

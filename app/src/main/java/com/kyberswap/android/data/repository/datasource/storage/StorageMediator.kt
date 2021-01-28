@@ -12,6 +12,7 @@ class StorageMediator @Inject constructor(private val hawkWrapper: HawkWrapper) 
         private const val KEY_SHOW_BALANCE_TUTORIAL = "key_show_balance_tutorial"
         private const val KEY_SHOW_SWAP_TUTORIAL = "key_show_swap_tutorial"
         private const val KEY_SHOW_LIMIT_ORDER_TUTORIAL = "key_show_limit_order_tutorial"
+        private const val KEY_GAS_PRICE_WARING_VALUE = "key_gas_price_warning_value"
     }
 
     fun showBalanceTutorial(isShow: Boolean) {
@@ -20,6 +21,14 @@ class StorageMediator @Inject constructor(private val hawkWrapper: HawkWrapper) 
 
     fun isShownBalanceTutorial(): Boolean {
         return hawkWrapper[KEY_SHOW_BALANCE_TUTORIAL, false]
+    }
+
+    fun getGasPriceWarningValue(): String {
+        return hawkWrapper[KEY_GAS_PRICE_WARING_VALUE, ""] ?: ""
+    }
+
+    fun setGasPriceWarningValue(value: String): Boolean {
+        return hawkWrapper.put(KEY_GAS_PRICE_WARING_VALUE, value)
     }
 
     fun showSwapTutorial(isShow: Boolean) {

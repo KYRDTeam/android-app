@@ -786,4 +786,11 @@
     <string name="max_gas_fee_explanation">The actual cost of the transaction is generally lower than the maximum estimated cost</string>
     <string name="wallet_erc20_warning">이 주소로는 ETH 혹은 ERC20토큰만 전송하세요.</string>
     <string name="send_erc20_warning">* 그 외 토큰 전송 시 토큰이 손실될 수 있습니다.</string>
+    <string name="gas_warning_message">High network congestion. Please double check gas fee (%s) before confirmation.</string>
+    <string name="warning_500_gwei"><![CDATA[> 500 Gwei]]></string>
+    <string name="warning_200_gwei"><![CDATA[> 200 Gwei]]></string>
+    <string name="warning_100_gwei"><![CDATA[> 100 Gwei]]></string>
+    <string name="warning_enter_your_own"><![CDATA[Enter your own >]]></string>
+    <string name="gas_warning">Gas Warning</string>
+    <string name="show_gas_warning_message">Save gas fees. Get an extra warning on trade confirmation screen when gas price is high. Simply set up your alert below.\n\nShow me a warning if gas price is:</string>
 </resources>

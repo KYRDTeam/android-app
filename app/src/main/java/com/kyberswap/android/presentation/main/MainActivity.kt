@@ -81,6 +81,7 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.kyberswap.android.util.ext.openUrl
+import com.kyberswap.android.util.ext.toBigDecimalOrDefaultZero
 import com.kyberswap.android.util.ext.toLongSafe
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_drawer.*
@@ -91,6 +92,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callback,
@@ -299,6 +301,7 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                             getRate()
                             showTutorial()
                             getHint()
+                            displayGasWarning()
                         }
                         updateLoginStatus()
                     }
@@ -319,7 +322,15 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                     is ProfileFragment -> {
                         updateLoginStatus()
                     }
+                }
 
+
+                if (currentFragment != null) {
+                    val lastAddedFragment =
+                        currentFragment!!.childFragmentManager.fragments.lastOrNull()
+                    if (lastAddedFragment is SendFragment) {
+                        lastAddedFragment.displayGasWarning()
+                    }
                 }
             }
         }
@@ -904,19 +915,30 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
         }
     }
 
+    private fun showGasPriceWarning() {
+        val hasGasWarning =
+            mediator.getGasPriceWarningValue().toBigDecimalOrDefaultZero() > BigDecimal.ZERO
+        if (!hasGasWarning) {
+            dialogHelper.showGasWarningDialog("", {
+                mediator.setGasPriceWarningValue(it)
+            }, {
+                showError("Please input valid gas price")
+            })
+        }
+    }
+
     private fun showBackupAlert(wallet: Wallet) {
-        if (wallet.mnemonicAvailable &&
-            !wallet.hasBackup &&
-            !hasShowBackupWallet
+        if ((currentFragment is BalanceFragment && mediator.isShownBalanceTutorial()) ||
+            (currentFragment is SwapFragment && mediator.isShownSwapTutorial()) ||
+            (currentFragment is LimitOrderV2Fragment && mediator.isShownLimitOrderTutorial())
         ) {
-            hasShowBackupWallet = true
-
-            if ((currentFragment is BalanceFragment && mediator.isShownBalanceTutorial()) ||
-                (currentFragment is SwapFragment && mediator.isShownSwapTutorial()) ||
-                (currentFragment is LimitOrderV2Fragment && mediator.isShownLimitOrderTutorial())
+            if (wallet.mnemonicAvailable &&
+                !wallet.hasBackup &&
+                !hasShowBackupWallet
             ) {
+                hasShowBackupWallet = true
                 dialogHelper.showBackupWalletDialog({
-
+                    showGasPriceWarning()
                 }, {
                     if (currentFragment != null) {
                         navigator.navigateToEditWallet(
@@ -927,7 +949,10 @@ class MainActivity : BaseActivity(), KeystoreStorage, AlertDialogFragment.Callba
                     }
                 }, {
                     mainViewModel.saveWallet(wallet.copy(hasBackup = true))
+                    showGasPriceWarning()
                 })
+            } else {
+                showGasPriceWarning()
             }
         }
     }

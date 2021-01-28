@@ -789,6 +789,13 @@
     <string name="wallet_erc20_warning">Only send ETH or any ERC-20 token to this address</string>
     <string name="send_erc20_warning">*Sending any other tokens may result in loss of your funds.</string>
     <string name="faq_reserve_maintenance" translatable="false">https://support.kyberswap.com/support/solutions/articles/47001143483-the-token-is-under-maintenance-what-does-it-mean-</string>
+    <string name="gas_warning_message">High network congestion. Please double check gas fee (%s) before confirmation.</string>
+    <string name="warning_500_gwei"><![CDATA[> 500 Gwei]]></string>
+    <string name="warning_200_gwei"><![CDATA[> 200 Gwei]]></string>
+    <string name="warning_100_gwei"><![CDATA[> 100 Gwei]]></string>
+    <string name="warning_enter_your_own"><![CDATA[Enter your own >]]></string>
+    <string name="gas_warning">Gas Warning</string>
+    <string name="show_gas_warning_message">Save gas fees. Get an extra warning on trade confirmation screen when gas price is high. Simply set up your alert below.\n\nShow me a warning if gas price is:</string>
 
     <string-array name="proof_address">
         <item>Bank Statement</item>

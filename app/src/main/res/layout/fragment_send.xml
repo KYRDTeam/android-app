@@ -12,6 +12,16 @@
         <variable
             name="send"
             type="com.kyberswap.android.domain.model.Send" />
+
+        <variable
+            name="showGasWarning"
+            type="Boolean" />
+
+        <variable
+            name="gasWarningValue"
+            type="String" />
+
+        <import type="android.view.View" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -400,6 +410,30 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvRecentTitle" />
 
+                <TextView
+                    android:id="@+id/tvGasWarning"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:background="@drawable/rounded_corner_gas_warning"
+                    android:drawablePadding="15dp"
+                    android:fontFamily="sans-serif"
+                    android:lineSpacingExtra="4sp"
+                    android:minHeight="50dp"
+                    android:padding="10dp"
+                    android:text="@{String.format(@string/gas_warning_message, gasWarningValue)}"
+                    android:textAppearance="@style/TextAppearance.Roboto.Regular"
+                    android:textColor="#ff9008"
+                    android:textSize="12sp"
+                    android:textStyle="normal"
+                    android:visibility="@{showGasWarning ? View.VISIBLE : View.GONE }"
+                    app:drawableStartCompat="@drawable/ic_warning"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvAddContact" />
+
 
                 <TextView
                     android:id="@+id/tvAdvanceOption"
@@ -411,7 +445,7 @@
                     android:textColor="#9ea8b3"
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvAddContact" />
+                    app:layout_constraintTop_toBottomOf="@+id/tvGasWarning" />
 
                 <LinearLayout
                     android:id="@+id/linearLayout3"

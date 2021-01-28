@@ -220,10 +220,9 @@ class SendViewModel @Inject constructor(
                     calculateDefaultGasLimitTransfer(send.tokenSource)
                         .min(
                             it.amountUsed.multiply(120.toBigInteger())
-                                .divide(100.toBigInteger()) +
-                                    if (send.tokenSource.isETH) BigInteger.ZERO else ADDITIONAL_SEND_GAS_LIMIT.toBigInteger()
+                                .divide(100.toBigInteger())
                         )
-                }
+                } + if (send.tokenSource.isETH) BigInteger.ZERO else ADDITIONAL_SEND_GAS_LIMIT.toBigInteger()
 
                 val specialGasLimit = specialGasLimitDefault(send.tokenSource, send.tokenSource)
 

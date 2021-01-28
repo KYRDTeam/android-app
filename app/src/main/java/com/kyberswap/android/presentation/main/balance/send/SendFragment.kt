@@ -22,6 +22,7 @@ import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.kyberswap.android.AppExecutors
 import com.kyberswap.android.R
+import com.kyberswap.android.data.repository.datasource.storage.StorageMediator
 import com.kyberswap.android.databinding.FragmentSendBinding
 import com.kyberswap.android.domain.SchedulerProvider
 import com.kyberswap.android.domain.model.Contact
@@ -112,6 +113,12 @@ class SendFragment : BaseFragment() {
     @Inject
     lateinit var analytics: FirebaseAnalytics
 
+    @Inject
+    lateinit var mediator: StorageMediator
+
+    private val gasWarning: BigDecimal
+        get() = mediator.getGasPriceWarningValue().toBigDecimalOrDefaultZero()
+
     private val viewModel by lazy {
         ViewModelProvider(this, viewModelFactory).get(SendViewModel::class.java)
     }
@@ -173,7 +180,7 @@ class SendFragment : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentSendBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -254,7 +261,7 @@ class SendFragment : BaseFragment() {
                                     .equals(binding.edtSource.text.toString(), true)
                                 binding.send = send
                                 binding.executePendingBindings()
-
+                                displayGasWarning(send)
                                 if (isSendAllETH) {
                                     handler.postDelayed({
                                         binding.edtSource.setText(availableETHAmount.toDisplayNumber())
@@ -307,7 +314,10 @@ class SendFragment : BaseFragment() {
                         selectedGasFeeView?.isChecked = false
                         rb.isSelected = true
                         selectedGasFeeView = rb
-                        saveSend()
+                        val send = saveSend()
+                        binding.send = send
+                        binding.executePendingBindings()
+                        displayGasWarning(send)
                     }
                 }
 
@@ -565,6 +575,7 @@ class SendFragment : BaseFragment() {
                                 .equals(binding.edtSource.text.toString(), true)
                             binding.send = send
                             binding.executePendingBindings()
+                            displayGasWarning(send)
                             if (isSendAllETH) {
                                 handler.postDelayed({
                                     binding.edtSource.setText(availableETHAmount.toDisplayNumber())
@@ -921,6 +932,27 @@ class SendFragment : BaseFragment() {
         }
     }
 
+    fun displayGasWarning() {
+        displayGasWarning(binding.send)
+    }
+
+    private fun displayGasWarning(send: Send?) {
+        if (send == null) return
+        handler.postDelayed({
+            val selectedGasPrice = getSelectedGasPrice(
+                send.gas,
+                selectedGasFeeView?.id
+            )
+            val newSend = send.copy(
+                gasPrice = selectedGasPrice
+            )
+            binding.showGasWarning =
+                gasWarning > BigDecimal.ZERO && newSend.gasPriceValue > BigDecimal.ZERO &&
+                    newSend.gasPriceValue >= gasWarning
+            binding.gasWarningValue = newSend.transactionFeeEth
+        }, 250)
+    }
+
     private fun getGasPriceOption(id: Int?): String {
         return when (id) {
             R.id.rbSuperFast -> GAS_OPTIONS_SUPER_FAST
@@ -958,24 +990,26 @@ class SendFragment : BaseFragment() {
         }
     }
 
-    fun saveSend(address: String = "") {
-        binding.send?.let { send ->
-            viewModel.saveSend(
-                send.copy(
-                    gasPrice = getSelectedGasPrice(
-                        send.gas,
-                        selectedGasFeeView?.id
-                    ),
-                    contact = send.contact.copy(
-                        address = if (ilAddress.helperText.toString().isContact())
-                            ilAddress.helperText.toString()
-                        else edtAddress.text.toString().onlyAddress(),
-                        name = if (send.contact.name.isNotEmpty()) send.contact.name
-                        else currentSelection?.name ?: ""
-                    ),
-                    sourceAmount = edtSource.text.toString()
-                ), address
+    fun saveSend(address: String = ""): Send? {
+        return binding.send?.let { send ->
+            val newSend = send.copy(
+                gasPrice = getSelectedGasPrice(
+                    send.gas,
+                    selectedGasFeeView?.id
+                ),
+                contact = send.contact.copy(
+                    address = if (ilAddress.helperText.toString().isContact())
+                        ilAddress.helperText.toString()
+                    else edtAddress.text.toString().onlyAddress(),
+                    name = if (send.contact.name.isNotEmpty()) send.contact.name
+                    else currentSelection?.name ?: ""
+                ),
+                sourceAmount = edtSource.text.toString()
             )
+            viewModel.saveSend(
+                newSend, address
+            )
+            newSend
         }
     }
 
