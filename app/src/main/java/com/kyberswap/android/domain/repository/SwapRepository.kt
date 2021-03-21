@@ -15,6 +15,7 @@ import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendUseCase
 import com.kyberswap.android.domain.usecase.send.TransferTokenUseCase
+import com.kyberswap.android.domain.usecase.send.UDResolveUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateAmountUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateGasUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
@@ -67,6 +68,8 @@ interface SwapRepository {
     fun ensResolve(param: ENSResolveUseCase.Param): Single<String>
 
     fun ensRevertResolve(param: ENSRevertResolveUseCase.Param): Single<String>
+
+    fun udResolve(param: UDResolveUseCase.Param): Single<String>
 
     fun getKyberNetworkStatus(): Single<KyberEnabled>
 

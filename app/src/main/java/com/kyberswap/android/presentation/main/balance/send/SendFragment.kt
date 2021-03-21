@@ -72,6 +72,7 @@ import com.kyberswap.android.util.ext.formatDisplayNumber
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isContact
 import com.kyberswap.android.util.ext.isENSAddress
+import com.kyberswap.android.util.ext.isUDAddress
 import com.kyberswap.android.util.ext.onlyAddress
 import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.setAmount
@@ -138,6 +139,13 @@ class SendFragment : BaseFragment() {
     private val isENSAddress: Boolean
         get() = edtAddress.text.toString().isENSAddress() && !edtAddress.text.toString()
             .onlyAddress().isContact()
+
+    private val isUDAddress: Boolean
+        get() = edtAddress.text.toString().isUDAddress() && !edtAddress.text.toString()
+                .onlyAddress().isContact()
+
+    private val udSymbol: String
+        get() = if (edtAddress.text.toString().endsWith(".zil", true)) "ZIL" else "ETH"
 
     private val isContactExist: Boolean
         get() = contacts.find { ct ->
@@ -397,7 +405,10 @@ class SendFragment : BaseFragment() {
                 .subscribe {
                     ilAddress.error = null
                     ilAddress.helperText = null
-                    if (isENSAddress) {
+                    if (isUDAddress) {
+                        currentSelection = null
+                        it.ensAddress()?.let { it1 -> viewModel.resolveUD(it1, udSymbol) }
+                    } else if (isENSAddress) {
                         currentSelection = null
                         it.ensAddress()?.let { it1 -> viewModel.resolve(it1) }
                     } else {
@@ -932,11 +943,13 @@ class SendFragment : BaseFragment() {
 
     private fun onVerifyWalletComplete() {
         binding.tvContinue.setViewEnable(true)
-        if (isENSAddress) {
-            viewModel.resolve(edtAddress.text.toString(), true)
-        } else {
-            showProgress(false)
-            saveSend(contactAddress)
+        when {
+            isUDAddress -> viewModel.resolveUD(edtAddress.text.toString(), udSymbol, true)
+            isENSAddress -> viewModel.resolve(edtAddress.text.toString(), true)
+            else -> {
+                showProgress(false)
+                saveSend(contactAddress)
+            }
         }
     }
 

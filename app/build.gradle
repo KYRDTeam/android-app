@@ -195,6 +195,8 @@ dependencies {
     // web3j
     implementation "org.web3j:core:$web3jVersion"
 
+    implementation "com.unstoppabledomains:resolution:$udVersion"
+
     implementation "com.github.tbruyelle:rxpermissions:$rxPermissionVersion"
 
     implementation "com.journeyapps:zxing-android-embedded:$zxingVersion"

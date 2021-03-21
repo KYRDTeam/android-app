@@ -93,4 +93,5 @@ ext {
     androidMPChartVersion = 'v3.1.0'
     androidTinkVersion = '1.4.0'
     threeTenAbpVersion = '1.2.0'
+    udVersion = '1.13.0'
 }
