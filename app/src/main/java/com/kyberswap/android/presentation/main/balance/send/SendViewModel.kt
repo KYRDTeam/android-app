@@ -11,6 +11,7 @@ import com.kyberswap.android.domain.usecase.contact.SaveContactUseCase
 import com.kyberswap.android.domain.usecase.send.ENSResolveUseCase
 import com.kyberswap.android.domain.usecase.send.GetSendTokenUseCase
 import com.kyberswap.android.domain.usecase.send.SaveSendUseCase
+import com.kyberswap.android.domain.usecase.send.UDResolveUseCase
 import com.kyberswap.android.domain.usecase.swap.EstimateTransferGasUseCase
 import com.kyberswap.android.domain.usecase.swap.GetGasPriceUseCase
 import com.kyberswap.android.domain.usecase.wallet.CheckEligibleWalletUseCase
@@ -46,6 +47,7 @@ class SendViewModel @Inject constructor(
     private val deleteContactUseCase: DeleteContactUseCase,
     private val estimateTransferGasUseCase: EstimateTransferGasUseCase,
     private val ensResolveUseCase: ENSResolveUseCase,
+    private val udResolveUseCase: UDResolveUseCase,
     private val checkEligibleWalletUseCase: CheckEligibleWalletUseCase,
     getSelectedWalletUseCase: GetSelectedWalletUseCase,
     private val errorHandler: ErrorHandler
@@ -272,6 +274,20 @@ class SendViewModel @Inject constructor(
                 _getGetENSCallback.value = Event(GetENSAddressState.ShowError(it.message))
             },
             ENSResolveUseCase.Param(name.toString())
+        )
+    }
+
+    fun resolveUD(name: CharSequence, symbol: String, isFromContinue: Boolean = false) {
+        udResolveUseCase.dispose()
+        udResolveUseCase.execute(
+            Consumer {
+                _getGetENSCallback.value =
+                    Event(GetENSAddressState.Success(name.toString(), it, isFromContinue))
+            },
+            Consumer {
+                _getGetENSCallback.value = Event(GetENSAddressState.ShowError(it.message))
+            },
+            UDResolveUseCase.Param(name.toString(), symbol)
         )
     }
 }

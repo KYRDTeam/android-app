@@ -51,6 +51,7 @@ import com.kyberswap.android.util.ext.transferToAddress
 import com.kyberswap.android.util.ext.txValue
 import com.trustwallet.walletconnect.models.ethereum.WCEthereumSignMessage
 import com.trustwallet.walletconnect.models.ethereum.WCEthereumTransaction
+import com.unstoppabledomains.resolution.Resolution
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.FunctionReturnDecoder
 import org.web3j.abi.TypeReference
@@ -1716,6 +1717,10 @@ class TokenClient @Inject constructor(
 
     fun revertResolve(address: String): String {
         return EnsResolver(web3jAlchemyNode).reverseResolve(address)
+    }
+
+    fun resolveUD(name: String, symbol: String): String {
+        return Resolution().getAddress(name, symbol)
     }
 
     @Throws(Exception::class)

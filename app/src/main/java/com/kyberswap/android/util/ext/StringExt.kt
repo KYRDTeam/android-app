@@ -108,6 +108,10 @@ fun CharSequence?.isENSAddress(): Boolean {
     return this?.contains(".") == true
 }
 
+fun CharSequence?.isUDAddress(): Boolean {
+    return (this?.endsWith(".crypto", true) == true) || (this?.endsWith(".zil", true) == true)
+}
+
 fun String.onlyAddress(): String {
     val index = this.indexOf("0x")
     return if (index >= 0) {
