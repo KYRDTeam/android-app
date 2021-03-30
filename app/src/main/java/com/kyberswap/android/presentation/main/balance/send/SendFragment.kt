@@ -145,7 +145,7 @@ class SendFragment : BaseFragment() {
                 .onlyAddress().isContact()
 
     private val udSymbol: String
-        get() = if (edtAddress.text.toString().endsWith(".zil", true)) "ZIL" else "ETH"
+        get() = tvSource.text.toString()
 
     private val isContactExist: Boolean
         get() = contacts.find { ct ->
