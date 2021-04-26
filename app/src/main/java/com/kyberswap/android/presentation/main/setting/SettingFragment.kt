@@ -1,20 +1,14 @@
 package com.kyberswap.android.presentation.main.setting
 
 
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.freshchat.consumer.sdk.ConversationOptions
-import com.freshchat.consumer.sdk.Freshchat
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.kyberswap.android.BuildConfig
 import com.kyberswap.android.KyberSwapApplication
@@ -32,7 +26,6 @@ import com.kyberswap.android.util.SETTING_CHANGE_PIN
 import com.kyberswap.android.util.SETTING_COMMUNITY
 import com.kyberswap.android.util.SETTING_CONTACT
 import com.kyberswap.android.util.SETTING_GET_STARTED
-import com.kyberswap.android.util.SETTING_LIVECHAT
 import com.kyberswap.android.util.SETTING_MANAGE_ALERT
 import com.kyberswap.android.util.SETTING_MANAGE_WALLET
 import com.kyberswap.android.util.SETTING_SUPPORT
@@ -41,7 +34,6 @@ import com.kyberswap.android.util.di.ViewModelFactory
 import com.kyberswap.android.util.ext.createEvent
 import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.shareUrl
-import kotlinx.android.synthetic.main.fragment_setting.*
 import javax.inject.Inject
 
 
@@ -75,7 +67,7 @@ class SettingFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentSettingBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -88,7 +80,7 @@ class SettingFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.getLoginStatus()
-        viewModel.getLoginStatusCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.getLoginStatusCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is UserInfoState.Success -> {
@@ -245,27 +237,26 @@ class SettingFragment : BaseFragment() {
         binding.tvVersion.text =
             String.format(getString(R.string.app_version), BuildConfig.VERSION_NAME)
 
+//        registerBroadcastReceiver()
 
-        registerBroadcastReceiver()
+//        context?.applicationContext?.let {
+//            Freshchat.getInstance(it)
+//                .getUnreadCountAsync { _, unreadCount ->
+//                    showBadge(unreadCount)
+//                }
+//        }
 
-        context?.applicationContext?.let {
-            Freshchat.getInstance(it)
-                .getUnreadCountAsync { _, unreadCount ->
-                    showBadge(unreadCount)
-                }
-        }
-
-        binding.fabChat.setOnClickListener {
-            val lConvOptions = ConversationOptions()
-            lConvOptions.filterByTags(listOf("conversations"), "")
-            Freshchat.showConversations(it.context, lConvOptions)
-            (context?.applicationContext as KyberSwapApplication).stopCounter()
-            isCounterStop = true
-            analytics.logEvent(
-                SETTING_LIVECHAT,
-                Bundle().createEvent()
-            )
-        }
+//        binding.fabChat.setOnClickListener {
+//            val lConvOptions = ConversationOptions()
+//            lConvOptions.filterByTags(listOf("conversations"), "")
+//            Freshchat.showConversations(it.context, lConvOptions)
+//            (context?.applicationContext as KyberSwapApplication).stopCounter()
+//            isCounterStop = true
+//            analytics.logEvent(
+//                SETTING_LIVECHAT,
+//                Bundle().createEvent()
+//            )
+//        }
     }
 
     private fun getLocalBroadcastManager(): LocalBroadcastManager? {
@@ -281,41 +272,41 @@ class SettingFragment : BaseFragment() {
         super.onResume()
     }
 
-    private fun registerBroadcastReceiver() {
-        val intentFilterUnreadMessagCount =
-            IntentFilter(Freshchat.FRESHCHAT_UNREAD_MESSAGE_COUNT_CHANGED)
-        getLocalBroadcastManager()?.registerReceiver(
-            unreadCountChangeReceiver,
-            intentFilterUnreadMessagCount
-        )
-    }
+//    private fun registerBroadcastReceiver() {
+//        val intentFilterUnreadMessagCount =
+//            IntentFilter(Freshchat.FRESHCHAT_UNREAD_MESSAGE_COUNT_CHANGED)
+//        getLocalBroadcastManager()?.registerReceiver(
+//            unreadCountChangeReceiver,
+//            intentFilterUnreadMessagCount
+//        )
+//    }
 
-    private var unreadCountChangeReceiver: BroadcastReceiver =
-        object : BroadcastReceiver() {
-            override fun onReceive(
-                context: Context,
-                intent: Intent
-            ) {
-                activity?.applicationContext?.let {
-                    Freshchat.getInstance(it)
-                        .getUnreadCountAsync { _, unreadCount ->
-                            showBadge(unreadCount)
-                        }
-                }
-            }
-        }
+//    private var unreadCountChangeReceiver: BroadcastReceiver =
+//        object : BroadcastReceiver() {
+//            override fun onReceive(
+//                context: Context,
+//                intent: Intent
+//            ) {
+//                activity?.applicationContext?.let {
+//                    Freshchat.getInstance(it)
+//                        .getUnreadCountAsync { _, unreadCount ->
+//                            showBadge(unreadCount)
+//                        }
+//                }
+//            }
+//        }
 
-    private fun showBadge(unreadCount: Int) {
-        if (activity != null && isAdded) {
-            if (unreadCount > 0) {
-                tvBadge.visibility = View.VISIBLE
-                tvBadge.text = unreadCount.toString()
-            } else {
-                tvBadge.visibility = View.GONE
-                tvBadge.text = ""
-            }
-        }
-    }
+//    private fun showBadge(unreadCount: Int) {
+//        if (activity != null && isAdded) {
+//            if (unreadCount > 0) {
+//                tvBadge.visibility = View.VISIBLE
+//                tvBadge.text = unreadCount.toString()
+//            } else {
+//                tvBadge.visibility = View.GONE
+//                tvBadge.text = ""
+//            }
+//        }
+//    }
 
     companion object {
         fun newInstance() =

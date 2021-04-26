@@ -12,7 +12,6 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnPreDraw
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnChildAttachStateChangeListener
@@ -109,7 +108,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification, Tutorial
 
     private val isCurrencySelected: Boolean
         get() = binding.header.tvEth == orderByOptions[orderBySelectedIndex] && binding.header.tvEth.compoundDrawables.isNotEmpty()
-                || binding.header.tvUsd == orderByOptions[orderBySelectedIndex] && binding.header.tvUsd.compoundDrawables.isNotEmpty()
+            || binding.header.tvUsd == orderByOptions[orderBySelectedIndex] && binding.header.tvUsd.compoundDrawables.isNotEmpty()
 
     private val viewModel by lazy {
         ViewModelProvider(this, viewModelFactory).get(BalanceViewModel::class.java)
@@ -197,7 +196,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification, Tutorial
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentBalanceBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -265,7 +264,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification, Tutorial
         tokenAdapter?.mode = Attributes.Mode.Single
         binding.rvToken.adapter = tokenAdapter
 
-        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.getSelectedWalletCallback.observe(viewLifecycleOwner, { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetWalletState.Success -> {
@@ -287,7 +286,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification, Tutorial
             }
         })
 
-        viewModel.visibilityCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.visibilityCallback.observe(viewLifecycleOwner, {
             it?.peekContent()?.let { visibility ->
                 displayWalletBalance(visibility)
             }
@@ -405,7 +404,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification, Tutorial
         )
 
 
-        viewModel.getBalanceStateCallback.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.getBalanceStateCallback.observe(viewLifecycleOwner, { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetBalanceState.Success -> {
@@ -423,7 +422,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification, Tutorial
             }
         })
 
-        viewModel.refreshBalanceStateCallback.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.refreshBalanceStateCallback.observe(viewLifecycleOwner, { event ->
             event?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is GetBalanceState.Success -> {
@@ -449,7 +448,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification, Tutorial
             }
         })
 
-        viewModel.saveTokenCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.saveTokenCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 when (state) {
                     is SaveTokenState.Success -> {
@@ -526,7 +525,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification, Tutorial
             }
         }
 
-        viewModel.visibilityCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.visibilityCallback.observe(viewLifecycleOwner, {
             it?.peekContent()?.let { visibility ->
                 tokenAdapter?.hideBalance(visibility)
             }
@@ -536,7 +535,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification, Tutorial
             refresh()
         }
 
-        viewModel.saveWalletCallback.observe(viewLifecycleOwner, Observer {
+        viewModel.saveWalletCallback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == SaveWalletState.Loading)
                 when (state) {
@@ -551,7 +550,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification, Tutorial
             }
         })
 
-        viewModel.callback.observe(viewLifecycleOwner, Observer {
+        viewModel.callback.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == SaveSwapDataState.Loading)
                 when (state) {
@@ -567,7 +566,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification, Tutorial
             }
         })
 
-        viewModel.callbackSaveSend.observe(viewLifecycleOwner, Observer {
+        viewModel.callbackSaveSend.observe(viewLifecycleOwner, {
             it?.getContentIfNotHandled()?.let { state ->
                 showProgress(state == SaveSendState.Loading)
                 when (state) {
@@ -744,12 +743,12 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification, Tutorial
         }
 
         // create spotlight
-        spotlight = Spotlight.Builder(activity!!)
+        spotlight = Spotlight.Builder(requireActivity())
             .setBackgroundColor(R.color.color_tutorial)
             .setTargets(targets)
             .setDuration(1000L)
             .setAnimation(DecelerateInterpolator(2f))
-            .setContainer(activity!!.window.decorView.findViewById(android.R.id.content))
+            .setContainer(requireActivity().window.decorView.findViewById(android.R.id.content))
             .setOnSpotlightListener(object : OnSpotlightListener {
                 override fun onStarted() {
                 }
@@ -973,7 +972,7 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification, Tutorial
         if (searchedString.isEmpty()) return tokens
         return tokens.filter { token ->
             token.tokenSymbol.toLowerCase(Locale.getDefault()).contains(searchedString, true) or
-                    token.tokenName.toLowerCase(Locale.getDefault()).contains(searchedString, true)
+                token.tokenName.toLowerCase(Locale.getDefault()).contains(searchedString, true)
         }
     }
 

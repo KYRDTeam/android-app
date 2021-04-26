@@ -28,7 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/color_bg_gray"
-                android:paddingBottom="42dp">
+                android:paddingBottom="88dp">
 
                 <LinearLayout
                     android:id="@+id/lnManageWallet"
@@ -487,31 +487,55 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabChat"
-            android:layout_width="wrap_content"
+        <!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+        <!--            android:id="@+id/fabChat"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_gravity="end|bottom"-->
+        <!--            android:layout_margin="16dp"-->
+        <!--            android:src="@drawable/ic_customer_support"-->
+        <!--            app:elevation="0dp">-->
+
+        <!--        </com.google.android.material.floatingactionbutton.FloatingActionButton>-->
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/tvBadge"-->
+        <!--            android:layout_width="18sp"-->
+        <!--            android:layout_height="18sp"-->
+        <!--            android:layout_gravity="end|bottom"-->
+        <!--            android:layout_marginEnd="16dp"-->
+        <!--            android:layout_marginBottom="56dp"-->
+        <!--            android:background="@drawable/circle_chat_badge"-->
+        <!--            android:elevation="0dp"-->
+        <!--            android:gravity="center"-->
+        <!--            android:textColor="#fff"-->
+        <!--            android:textSize="10sp"-->
+        <!--            android:visibility="gone"-->
+        <!--            tools:ignore="SmallSp" />-->
+        <LinearLayout
+            android:id="@+id/lnBanner"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_margin="16dp"
-            android:src="@drawable/ic_customer_support"
-            app:elevation="0dp">
-
-        </com.google.android.material.floatingactionbutton.FloatingActionButton>
-
-        <TextView
-            android:id="@+id/tvBadge"
-            android:layout_width="18sp"
-            android:layout_height="18sp"
-            android:layout_gravity="end|bottom"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="56dp"
-            android:background="@drawable/circle_chat_badge"
-            android:elevation="0dp"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/banner_krystal"
             android:gravity="center"
-            android:textColor="#fff"
-            android:textSize="10sp"
-            android:visibility="gone"
-            tools:ignore="SmallSp" />
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center|start"
+                android:lineSpacingExtra="7sp"
+                android:minHeight="68dp"
+                android:text="@string/down_load_krystal_app"
+                android:textColor="#ffffff"
+                android:textSize="14sp"
+                android:textStyle="normal" />
+        </LinearLayout>
 
     </FrameLayout>
 
