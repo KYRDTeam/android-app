@@ -63,4 +63,6 @@
     <dimen name="tutorial_120_dp">120dp</dimen>
     <dimen name="tutorial_165_dp">165dp</dimen>
     <dimen name="tutorial_150_dp">150dp</dimen>
+    <dimen name="default_padding_bottom">108dp</dimen>
+    <dimen name="default_padding_bottom_swap">124dp</dimen>
 </resources>

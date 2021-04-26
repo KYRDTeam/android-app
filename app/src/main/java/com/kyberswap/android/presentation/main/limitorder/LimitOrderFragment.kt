@@ -333,6 +333,10 @@ class LimitOrderFragment : BaseFragment(), LoginState {
             }
         }
 
+        binding.lnBanner.setOnClickListener {
+            openUrl(getString(R.string.download_krystal_app))
+        }
+
         binding.tv25Percent.setOnClickListener {
             updateCurrentFocus(edtSource)
             hideKeyboard()

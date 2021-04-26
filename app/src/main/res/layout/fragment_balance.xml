@@ -23,9 +23,9 @@
             android:id="@+id/placeHolder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/screen_background"
             android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:background="@drawable/screen_background">
+            android:focusableInTouchMode="true">
 
             <View
                 android:id="@+id/vNotification"
@@ -130,12 +130,12 @@
                 android:text="@{walletAddress}"
                 android:textColor="#ffffff"
                 android:textSize="14sp"
+                app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toStartOf="@+id/tvQr"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvBalance"
-                app:layout_constrainedWidth="true"
                 tools:text="a…" />
 
             <ImageView
@@ -185,8 +185,8 @@
                 android:lineSpacingExtra="16sp"
                 android:padding="8dp"
                 android:singleLine="true"
-                android:textAllCaps="true"
                 android:text="@string/buy_eth"
+                android:textAllCaps="true"
                 android:textColor="#ffffff"
                 android:textSize="12sp"
                 android:textStyle="bold"
@@ -320,7 +320,9 @@
                             android:id="@+id/rvToken"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="@android:color/white" />
+                            android:background="@android:color/white"
+                            android:clipToPadding="false"
+                            android:paddingBottom="@dimen/default_padding_bottom" />
                     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
                     <TextView
@@ -363,6 +365,33 @@
                 app:layout_constraintBottom_toBottomOf="@+id/textView3"
                 app:layout_constraintStart_toEndOf="@+id/textView3"
                 app:layout_constraintTop_toTopOf="@+id/textView3" />
+
+            <LinearLayout
+                android:id="@+id/lnBanner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/banner_krystal"
+                android:gravity="center"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center|start"
+                    android:lineSpacingExtra="7sp"
+                    android:minHeight="68dp"
+                    android:text="@string/down_load_krystal_app"
+                    android:textColor="#ffffff"
+                    android:textSize="14sp"
+                    android:textStyle="normal" />
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
