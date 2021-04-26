@@ -286,6 +286,10 @@ class BalanceFragment : BaseFragment(), PendingTransactionNotification, Tutorial
             }
         })
 
+        binding.lnBanner.setOnClickListener {
+            openUrl(getString(R.string.download_krystal_app))
+        }
+
         viewModel.visibilityCallback.observe(viewLifecycleOwner, {
             it?.peekContent()?.let { visibility ->
                 displayWalletBalance(visibility)

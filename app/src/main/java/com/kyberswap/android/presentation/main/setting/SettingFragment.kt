@@ -174,6 +174,10 @@ class SettingFragment : BaseFragment() {
 
         }
 
+        binding.lnBanner.setOnClickListener {
+            openUrl(getString(R.string.download_krystal_app))
+        }
+
         binding.imgTelegram.setOnClickListener {
             openUrl(getString(R.string.setting_kyber_network_url))
             analytics.logEvent(

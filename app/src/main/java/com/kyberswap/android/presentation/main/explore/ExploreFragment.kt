@@ -154,6 +154,10 @@ class ExploreFragment : BaseFragment() {
             }
         }
 
+        binding.lnBanner.setOnClickListener {
+            openUrl(getString(R.string.download_krystal_app))
+        }
+
         binding.lnTransaction.setOnClickListener {
             analytics.logEvent(EXPLORE_TRANSACTION_TAPPED, Bundle().createEvent())
             if (wallet != null) {

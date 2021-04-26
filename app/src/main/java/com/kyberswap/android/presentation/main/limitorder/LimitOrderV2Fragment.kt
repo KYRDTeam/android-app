@@ -531,6 +531,10 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
             }
         })
 
+        binding.lnBanner.setOnClickListener {
+            openUrl(getString(R.string.download_krystal_app))
+        }
+
         binding.rvRelatedOrder.layoutManager = LinearLayoutManager(
             activity,
             RecyclerView.VERTICAL,
@@ -540,8 +544,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         if (orderAdapter == null) {
             orderAdapter =
                 OrderAdapter(
-                    appExecutors
-                    , {
+                    appExecutors, {
 
                         dialogHelper.showCancelOrder(it) {
                             viewModel.cancelOrder(it)
