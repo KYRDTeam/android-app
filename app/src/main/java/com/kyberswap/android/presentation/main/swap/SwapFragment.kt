@@ -79,6 +79,7 @@ import com.kyberswap.android.util.ext.getAmountOrDefaultValue
 import com.kyberswap.android.util.ext.hideKeyboard
 import com.kyberswap.android.util.ext.isNetworkAvailable
 import com.kyberswap.android.util.ext.isSomethingWrongError
+import com.kyberswap.android.util.ext.openUrl
 import com.kyberswap.android.util.ext.rounding
 import com.kyberswap.android.util.ext.setAmount
 import com.kyberswap.android.util.ext.setViewEnable
@@ -218,7 +219,7 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentSwapBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -1266,20 +1267,25 @@ class SwapFragment : BaseFragment(), PendingTransactionNotification, WalletObser
             navigator.navigateToNotificationScreen(currentFragment)
         }
 
-        viewModel.compositeDisposable.add(cbReserveRouting.checkedChanges().skipInitialValue()
-            .subscribe {
-                if (binding.swap != null) {
-                    getRate(binding.swap!!)
-                    getGasLimit()
+        binding.lnBanner.setOnClickListener {
+            openUrl(getString(R.string.download_krystal_app))
+        }
 
-                    if (!it) {
-                        analytics.logEvent(
-                            KBSWAP_ADVANCED_DISABLE_RESERVE_ROUTING,
-                            Bundle().createEvent()
-                        )
+        viewModel.compositeDisposable.add(
+            cbReserveRouting.checkedChanges().skipInitialValue()
+                .subscribe {
+                    if (binding.swap != null) {
+                        getRate(binding.swap!!)
+                        getGasLimit()
+
+                        if (!it) {
+                            analytics.logEvent(
+                                KBSWAP_ADVANCED_DISABLE_RESERVE_ROUTING,
+                                Bundle().createEvent()
+                            )
+                        }
                     }
-                }
-            })
+                })
 //        cbReserveRouting.setOnCheckedChangeListener { _, isChecked ->
 //            if (binding.swap != null) {
 //                getRate(binding.swap!!)
