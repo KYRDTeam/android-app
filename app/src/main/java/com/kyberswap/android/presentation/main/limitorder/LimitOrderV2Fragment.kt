@@ -532,7 +532,7 @@ class LimitOrderV2Fragment : BaseFragment(), PendingTransactionNotification, Log
         })
 
         binding.lnBanner.setOnClickListener {
-            openUrl(getString(R.string.download_krystal_app))
+            openUrl(getString(R.string.banner_url))
         }
 
         binding.rvRelatedOrder.layoutManager = LinearLayoutManager(

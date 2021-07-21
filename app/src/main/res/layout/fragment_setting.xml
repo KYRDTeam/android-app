@@ -531,7 +531,7 @@
                 android:gravity="center|start"
                 android:lineSpacingExtra="7sp"
                 android:minHeight="68dp"
-                android:text="@string/down_load_krystal_app"
+                android:text="@string/banner_message"
                 android:textColor="#ffffff"
                 android:textSize="14sp"
                 android:textStyle="normal" />

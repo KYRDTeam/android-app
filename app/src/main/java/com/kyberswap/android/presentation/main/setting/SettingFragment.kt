@@ -175,7 +175,7 @@ class SettingFragment : BaseFragment() {
         }
 
         binding.lnBanner.setOnClickListener {
-            openUrl(getString(R.string.download_krystal_app))
+            openUrl(getString(R.string.banner_url))
         }
 
         binding.imgTelegram.setOnClickListener {
