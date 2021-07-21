@@ -74,7 +74,7 @@ class ExploreFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         binding = FragmentExploreBinding.inflate(inflater, container, false)
         return binding.root
@@ -155,7 +155,7 @@ class ExploreFragment : BaseFragment() {
         }
 
         binding.lnBanner.setOnClickListener {
-            openUrl(getString(R.string.download_krystal_app))
+            openUrl(getString(R.string.banner_url))
         }
 
         binding.lnTransaction.setOnClickListener {

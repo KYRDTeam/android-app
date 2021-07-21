@@ -334,7 +334,7 @@ class LimitOrderFragment : BaseFragment(), LoginState {
         }
 
         binding.lnBanner.setOnClickListener {
-            openUrl(getString(R.string.download_krystal_app))
+            openUrl(getString(R.string.banner_url))
         }
 
         binding.tv25Percent.setOnClickListener {

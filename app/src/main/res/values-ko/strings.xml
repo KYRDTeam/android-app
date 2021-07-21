@@ -793,5 +793,5 @@
     <string name="warning_enter_your_own"><![CDATA[Enter your own >]]></string>
     <string name="gas_warning">Gas Warning</string>
     <string name="show_gas_warning_message">Save gas fees. Get an extra warning on trade confirmation screen when gas price is high. Simply set up your alert below.\n\nShow me a warning if gas price is:</string>
-    <string name="down_load_krystal_app">Tap here to download our new app Krystal for more features, cheaper gas and attractive prizes</string>
+    <string name="banner_message">KyberSwap services will be terminated on 30 July 2021. Find out how this will affect you.</string>
 </resources>

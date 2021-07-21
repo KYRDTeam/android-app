@@ -572,7 +572,7 @@
             <LinearLayout
                 android:id="@+id/lnBanner"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="80dp"
                 android:layout_marginStart="12dp"
                 android:layout_marginEnd="12dp"
                 android:layout_marginBottom="12dp"
@@ -590,7 +590,7 @@
                     android:gravity="center|start"
                     android:lineSpacingExtra="7sp"
                     android:minHeight="68dp"
-                    android:text="@string/down_load_krystal_app"
+                    android:text="@string/banner_message"
                     android:textColor="#ffffff"
                     android:textSize="14sp"
                     android:textStyle="normal" />
